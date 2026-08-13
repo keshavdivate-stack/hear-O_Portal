@@ -1,6 +1,3 @@
-/* ---------------- Page date ---------------- */
-document.getElementById("mktDate").textContent = "13 Aug, 2026";
-
 /* ---------------- Ring gauge (Recorded / Did not upload / Left study) ---------------- */
 const ringSegments = [
   { label: "Recorded", value: 21, color: "#1F3C73" },
