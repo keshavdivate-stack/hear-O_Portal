@@ -14,21 +14,3 @@ const orgs = [
 ];
 
 orgs.forEach((o, i) => (o.id = i));
-
-/* ---------------- Per-organization users (used by org-profile.html) ---------------- */
-const orgUsers = {
-  0: [
-    { name: "Rachel Cohen", email: "rachel.cohen@clinic120.com", role: "Admin", status: "Active", lastLogin: "01/08/2028" },
-    { name: "David Levi", email: "david.levi@clinic120.com", role: "Clinician", status: "Active", lastLogin: "28/07/2028" },
-  ],
-  10: [
-    { name: "Maya Green", email: "maya.green@b01.org", role: "Admin", status: "Active", lastLogin: "05/08/2028" },
-    { name: "Omer Katz", email: "omer.katz@b01.org", role: "Clinician", status: "Inactive", lastLogin: "12/05/2028" },
-    { name: "Noa Peretz", email: "noa.peretz@b01.org", role: "Nurse", status: "Active", lastLogin: "02/08/2028" },
-  ],
-};
-
-function getOrgUsers(orgId) {
-  if (!orgUsers[orgId]) orgUsers[orgId] = [];
-  return orgUsers[orgId];
-}

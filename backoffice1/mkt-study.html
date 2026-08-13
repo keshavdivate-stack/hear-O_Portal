@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>HearO Backoffice | Session Data</title>
+<title>HearO Backoffice | Test Dashboard MKT Study</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=optional" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="css/style.css" />
 </head>
-<body>
+<body class="bo-page-scroll">
 
   <!-- TOP NAV -->
   <header class="bo-nav">
@@ -19,15 +19,15 @@
 
     <nav class="bo-nav-links">
       <div class="bo-nav-item bo-hover-dropdown">
-        <a href="index.html" class="bo-nav-link">
+        <a href="index.html" class="bo-nav-link active">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="m9 16 2 2 4-4"/></svg>
           Dashboard
           <svg class="bo-nav-caret" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
         </a>
         <div class="bo-popover bo-nav-popover" id="dashboardPopover">
           <a href="#" class="bo-popover-item">ATP &amp; MKT</a>
-          <a href="#" class="bo-popover-item">Test Dashboard MKT Study</a>
-          <a href="#" class="bo-popover-item">Test Dashboard MKT Summary</a>
+          <a href="mkt-study.html" class="bo-popover-item active">Test Dashboard MKT Study</a>
+          <a href="mkt-summary.html" class="bo-popover-item">Test Dashboard MKT Summary</a>
         </div>
       </div>
       <a href="organizations.html" class="bo-nav-link">
@@ -47,7 +47,7 @@
         </div>
       </div>
       <div class="bo-nav-item">
-        <button type="button" class="bo-nav-link active" id="settingsNavBtn">
+        <button type="button" class="bo-nav-link" id="settingsNavBtn">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
           Settings
           <svg class="bo-nav-caret" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
@@ -61,7 +61,7 @@
             <div class="bo-popover bo-nav-popover bo-submenu" id="configSubmenu">
               <a href="allocation.html" class="bo-popover-item">Allocation</a>
               <a href="components.html" class="bo-popover-item">Components</a>
-              <a href="session-data.html" class="bo-popover-item active">Session Data</a>
+              <a href="session-data.html" class="bo-popover-item">Session Data</a>
             </div>
           </div>
           <a href="manage-users.html" class="bo-popover-item">Manage Users</a>
@@ -101,119 +101,148 @@
   </header>
 
   <!-- PAGE -->
-  <main class="bo-page bo-page-list">
+  <main class="bo-page">
 
-    <div class="bo-list-toolbar" style="margin-bottom:18px;">
-      <h1>Session Data:</h1>
-      <div class="bo-tabs bo-seg-toggle" id="sessionDataTabs" style="flex-wrap:wrap;">
-        <button class="bo-tab bo-seg-btn active" data-tab="sentences">Sentences</button>
-        <button class="bo-tab bo-seg-btn" data-tab="questions">Questions</button>
-        <button class="bo-tab bo-seg-btn" data-tab="answers">Answers</button>
-        <button class="bo-tab bo-seg-btn" data-tab="iaErrors">IA Errors</button>
-        <button class="bo-tab bo-seg-btn" data-tab="reminderTimeRange">Reminder Time Range</button>
+    <div class="bo-page-head">
+      <div>
+        <h1>Test Dashboard MKT Study <span class="mkt-page-date" id="mktDate"></span></h1>
+        <div class="mkt-legend">
+          <span><span class="mkt-sw" style="background:var(--navy)"></span>Recorded</span>
+          <span><span class="mkt-sw" style="background:var(--orange)"></span>Did not upload</span>
+          <span><span class="mkt-sw" style="background:var(--cyan)"></span>Left study</span>
+        </div>
       </div>
-      <span class="bo-list-toolbar-spacer"></span>
-      <div class="bo-filter-field">
-        <select class="bo-filter-select" id="sentenceLangFilter">
-          <option value="">Language</option>
-          <option value="AR">AR</option>
-          <option value="EN">EN</option>
-          <option value="HE">HE</option>
-          <option value="RU">RU</option>
-          <option value="ES">ES</option>
-          <option value="DE">DE</option>
-        </select>
-      </div>
-      <button class="bo-btn-primary" id="sdAddConfigBtn" data-tab="sentences">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-        <span id="sdAddConfigBtnLabel">Sentence</span>
-      </button>
-    </div>
-
-    <!-- SENTENCES -->
-    <div class="bo-tab-panel active" id="tab-sentences">
-      <div class="bo-table-card">
-        <div class="bo-table-scroll">
-          <table class="bo-list-table bo-list-table--compact">
-            <thead><tr><th>IDENTIFIER</th><th>LANGUAGE</th><th>SENTENCE</th><th></th></tr></thead>
-            <tbody id="rows-sentences"></tbody>
-          </table>
+      <div class="mkt-head-stats">
+        <div class="mkt-head-stat">
+          <span class="mkt-head-stat-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="18" x="4" y="3" rx="1"/><path d="M9 8h1"/><path d="M14 8h1"/><path d="M9 12h1"/><path d="M14 12h1"/><path d="M9 16h1"/><path d="M14 16h1"/><path d="M10 21v-3a2 2 0 0 1 4 0v3"/></svg>
+          </span>
+          <span><span class="mkt-head-stat-num">5</span><span class="mkt-head-stat-label">Sites Enrolled</span></span>
+        </div>
+        <div class="mkt-head-stat">
+          <span class="mkt-head-stat-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7V12L15.5 14"/></svg>
+          </span>
+          <span><span class="mkt-head-stat-num">42</span><span class="mkt-head-stat-label">Avg. Days in Study</span></span>
+        </div>
+        <div class="mkt-head-stat alert">
+          <span class="mkt-head-stat-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.9 2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4"/><path d="M12 16h.01"/></svg>
+          </span>
+          <span><span class="mkt-head-stat-num">11</span><span class="mkt-head-stat-label">Need Attention</span></span>
         </div>
       </div>
     </div>
 
-    <!-- QUESTIONS -->
-    <div class="bo-tab-panel" id="tab-questions">
-      <div class="bo-table-card">
-        <div class="bo-table-scroll">
-          <table class="bo-list-table bo-list-table--compact">
-            <thead><tr><th>TYPE</th><th>EN QUESTION</th><th></th></tr></thead>
-            <tbody id="rows-questions"></tbody>
-          </table>
+    <div class="mkt-hero-row">
+      <section class="bo-card mkt-hero-card">
+        <div class="mkt-hero">
+          <div class="mkt-hero-label">
+            <h2>MKT</h2>
+            <div class="mkt-compliance">
+              <p class="mkt-compliance-title">Compliance</p>
+              <div class="mkt-compliance-row">
+                <span class="mkt-compliance-val">0%</span>
+                <span class="mkt-compliance-none">None</span>
+              </div>
+              <div class="mkt-compliance-tabs">
+                <span class="active">To Date</span>
+                <span>Today</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="mkt-gauge-wrap">
+            <span class="mkt-tick mkt-tick-top">11</span>
+            <div class="mkt-ring" id="mktRing"></div>
+            <div class="mkt-gauge-center"><span id="mktGaugeMain">263</span><b id="mktGaugeSub">/0</b></div>
+            <span class="mkt-tick mkt-tick-bottom">1</span>
+          </div>
+
+          <div class="mkt-ring-breakdown" id="mktRingBreakdown"></div>
         </div>
-      </div>
+      </section>
+
+      <section class="bo-card mkt-card mkt-card-bins mkt-hero-bins">
+        <div class="mkt-bins-tabs" id="mktBinsTabs">
+          <button type="button" class="active" data-tab="usable">Usable Compliance</button>
+          <button type="button" data-tab="compliance">Compliance</button>
+        </div>
+        <div class="bo-days-row">Last <input type="number" class="bo-days-input" value="31" min="1" /> days</div>
+        <div class="mkt-bins-list" id="mktBinsList"></div>
+      </section>
     </div>
 
-    <!-- ANSWERS -->
-    <div class="bo-tab-panel" id="tab-answers">
-      <div class="bo-table-card">
-        <div class="bo-table-scroll">
-          <table class="bo-list-table bo-list-table--compact">
-            <thead><tr><th>NAME</th><th>OPINIONS</th><th></th></tr></thead>
-            <tbody id="rows-answers"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
+    <div class="mkt-cards-row">
 
-    <!-- IA ERRORS -->
-    <div class="bo-tab-panel" id="tab-iaErrors">
-      <div class="bo-table-card">
-        <div class="bo-table-scroll">
-          <table class="bo-list-table bo-list-table--compact">
-            <thead><tr><th>NAME</th><th>IDENTIFIER</th><th>PRIORITY</th><th>RERECORD ATTEMPTS</th><th>SESSION RERECORD ATTEMPTS</th><th></th></tr></thead>
-            <tbody id="rows-iaErrors"></tbody>
-          </table>
+      <section class="bo-card mkt-card mkt-card-screened">
+        <h3 class="bo-panel-title">Screened</h3>
+        <div class="mkt-stat-block">
+          <span class="mkt-stat-label">Total</span>
+          <span class="mkt-stat-big">263</span>
         </div>
-      </div>
-    </div>
+        <div class="mkt-stat-row">
+          <span class="mkt-stat-label">Week</span>
+          <span class="mkt-stat-num">0</span>
+          <span class="mkt-stat-num">0</span>
+        </div>
+        <div class="mkt-stat-row">
+          <span class="mkt-stat-label">Month</span>
+          <span class="mkt-stat-num">0</span>
+          <span class="mkt-stat-num">0</span>
+        </div>
+      </section>
 
-    <!-- REMINDER TIME RANGE -->
-    <div class="bo-tab-panel" id="tab-reminderTimeRange">
-      <div class="bo-table-card">
-        <div class="bo-table-scroll">
-          <table class="bo-list-table bo-list-table--compact">
-            <thead><tr><th>NAME</th><th>START HOUR</th><th>END HOUR</th><th>DEFAULT REMINDER TIME</th><th></th></tr></thead>
-            <tbody id="rows-reminderTimeRange"></tbody>
-          </table>
+      <section class="bo-card mkt-card mkt-card-chart">
+        <h3 class="bo-panel-title">Screened Over Time</h3>
+        <div id="screenedChart" class="mkt-chart"></div>
+      </section>
+
+      <section class="bo-card mkt-card mkt-card-enrolled">
+        <h3 class="bo-panel-title">Enrolled</h3>
+        <div class="mkt-stat-block">
+          <span class="mkt-stat-label">Total</span>
+          <span class="mkt-stat-big">5</span>
         </div>
-      </div>
+        <div class="mkt-enroll-bar">
+          <span class="mkt-stat-num">4</span>
+          <div class="bo-bin-bar-track"><div class="bo-bin-bar-fill" style="width:80%; background:var(--cyan);"></div></div>
+          <span class="mkt-stat-label">Active</span>
+        </div>
+        <div class="mkt-enroll-bar">
+          <span class="mkt-stat-num">1</span>
+          <div class="bo-bin-bar-track"><div class="bo-bin-bar-fill" style="width:20%; background:var(--navy);"></div></div>
+          <span class="mkt-stat-label">Drop Out</span>
+        </div>
+      </section>
+
+      <section class="bo-card mkt-card mkt-card-compliance">
+        <h3 class="bo-panel-title">Compliance</h3>
+        <div class="mkt-compliance-grid">
+          <div class="mkt-compliance-cell">
+            <span class="mkt-compliance-pct">0%</span>
+            <span class="mkt-stat-label">Today's Compliance</span>
+          </div>
+          <div class="mkt-compliance-cell">
+            <span class="mkt-compliance-pct">0%</span>
+            <span class="mkt-stat-label">Compliance Over Time</span>
+          </div>
+          <div class="mkt-compliance-cell">
+            <span class="mkt-compliance-pct">0%</span>
+            <span class="mkt-stat-label">Today's Usable Compliance</span>
+          </div>
+          <div class="mkt-compliance-cell">
+            <span class="mkt-compliance-pct">0%</span>
+            <span class="mkt-stat-label">Usable Compliance Over Time</span>
+          </div>
+        </div>
+      </section>
+
     </div>
 
   </main>
 
-  <!-- Add/Edit drawer (shared by all tabs) -->
-  <div class="bo-drawer-overlay" id="sdDrawerOverlay">
-    <div class="bo-drawer">
-      <div class="bo-drawer-head">
-        <h2 id="sdDrawerTitle">Add/Edit</h2>
-        <button type="button" class="bo-drawer-close" id="sdCloseDrawerX" aria-label="Close">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6L18 18M6 18L18 6"/></svg>
-        </button>
-      </div>
-      <form id="sdDrawerForm" class="bo-drawer-form">
-        <div class="bo-drawer-body" id="sdDrawerBody"></div>
-        <div class="bo-drawer-foot">
-          <button type="button" class="bo-btn-text" id="sdCancelDrawer">Cancel</button>
-          <button type="submit" class="bo-btn-primary" id="sdSaveDrawer" disabled>Save</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
 <script src="js/dashboard-nav.js"></script>
-<script src="js/bo-pagination.js"></script>
-<script src="js/session-data-data.js"></script>
-<script src="js/session-data.js"></script>
+<script src="js/mkt-study.js"></script>
 </body>
 </html>

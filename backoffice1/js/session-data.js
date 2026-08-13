@@ -46,94 +46,97 @@ document.querySelectorAll("#sessionDataTabs .bo-tab").forEach((tab) => {
 sdAddBtn.addEventListener("click", () => sdOpenDrawer(sdAddBtn.dataset.tab, null));
 
 /* ---------------- Table rendering ---------------- */
+const SD_PAGE_SIZE = 10;
 let sentenceLangFilter = "";
 
-function renderSentencesTable() {
-  const rows = sentencesData
-    .map((r, i) => [r, i])
-    .filter(([r]) => !sentenceLangFilter || r.language === sentenceLangFilter);
-  document.getElementById("rows-sentences").innerHTML = rows
-    .map(
-      ([r, i]) => `
-      <tr>
-        <td>${sdEsc(r.identifier)}</td>
-        <td>${sdEsc(r.language)}</td>
-        <td>${sdEsc(r.sentence)}</td>
-        <td>${sdActions("sentences", i)}</td>
-      </tr>`
-    )
-    .join("");
+function sdEntries(tabKey, filterFn) {
+  return SD_DATA[tabKey].map((r, i) => ({ r, i })).filter(filterFn || (() => true));
 }
 
-function renderQuestionsTable() {
-  document.getElementById("rows-questions").innerHTML = questionsData
-    .map(
-      (r, i) => `
+const sdSentencesPager = boCreatePager(
+  "rows-sentences",
+  () => sdEntries("sentences", (e) => !sentenceLangFilter || e.r.language === sentenceLangFilter),
+  (e) => `
       <tr>
-        <td>${sdEsc(r.type)}</td>
-        <td>${sdEsc(r.questions.EN)}</td>
-        <td>${sdActions("questions", i)}</td>
-      </tr>`
-    )
-    .join("");
-}
+        <td>${sdEsc(e.r.identifier)}</td>
+        <td>${sdEsc(e.r.language)}</td>
+        <td>${sdEsc(e.r.sentence)}</td>
+        <td>${sdActions("sentences", e.i)}</td>
+      </tr>`,
+  { pageSize: SD_PAGE_SIZE, emptyColspan: 4, emptyText: "No sentences yet." }
+);
 
-function renderAnswersTable() {
-  document.getElementById("rows-answers").innerHTML = answersData
-    .map(
-      (r, i) => `
+const sdQuestionsPager = boCreatePager(
+  "rows-questions",
+  () => sdEntries("questions"),
+  (e) => `
       <tr>
-        <td>${sdEsc(r.name)}</td>
-        <td>${sdEsc(r.answers.EN || r.answers.AR || "")}</td>
-        <td>${sdActions("answers", i)}</td>
-      </tr>`
-    )
-    .join("");
-}
+        <td>${sdEsc(e.r.type)}</td>
+        <td>${sdEsc(e.r.questions.EN)}</td>
+        <td>${sdActions("questions", e.i)}</td>
+      </tr>`,
+  { pageSize: SD_PAGE_SIZE, emptyColspan: 3, emptyText: "No questions yet." }
+);
 
-function renderIaErrorsTable() {
-  document.getElementById("rows-iaErrors").innerHTML = iaErrorsData
-    .map(
-      (r, i) => `
+const sdAnswersPager = boCreatePager(
+  "rows-answers",
+  () => sdEntries("answers"),
+  (e) => `
       <tr>
-        <td>${sdEsc(r.name)}</td>
-        <td>${sdEsc(r.identifier)}</td>
-        <td>${sdEsc(r.priority)}</td>
-        <td>${sdEsc(r.rerecordAttempts)}</td>
-        <td>${sdEsc(r.sessionRerecordAttempts)}</td>
-        <td>${sdActions("iaErrors", i)}</td>
-      </tr>`
-    )
-    .join("");
-}
+        <td>${sdEsc(e.r.name)}</td>
+        <td>${sdEsc(e.r.answers.EN || e.r.answers.AR || "")}</td>
+        <td>${sdActions("answers", e.i)}</td>
+      </tr>`,
+  { pageSize: SD_PAGE_SIZE, emptyColspan: 3, emptyText: "No answers yet." }
+);
 
-function renderReminderTimeRangeTable() {
-  document.getElementById("rows-reminderTimeRange").innerHTML = reminderTimeRangeData
-    .map(
-      (r, i) => `
+const sdIaErrorsPager = boCreatePager(
+  "rows-iaErrors",
+  () => sdEntries("iaErrors"),
+  (e) => `
       <tr>
-        <td>${sdEsc(r.name)}</td>
-        <td>${sdEsc(r.start)}</td>
-        <td>${sdEsc(r.end)}</td>
-        <td>${sdEsc(r.defaultTime)}</td>
-        <td>${sdActions("reminderTimeRange", i)}</td>
-      </tr>`
-    )
-    .join("");
-}
+        <td>${sdEsc(e.r.name)}</td>
+        <td>${sdEsc(e.r.identifier)}</td>
+        <td>${sdEsc(e.r.priority)}</td>
+        <td>${sdEsc(e.r.rerecordAttempts)}</td>
+        <td>${sdEsc(e.r.sessionRerecordAttempts)}</td>
+        <td>${sdActions("iaErrors", e.i)}</td>
+      </tr>`,
+  { pageSize: SD_PAGE_SIZE, emptyColspan: 6, emptyText: "No IA errors yet." }
+);
+
+const sdReminderTimeRangePager = boCreatePager(
+  "rows-reminderTimeRange",
+  () => sdEntries("reminderTimeRange"),
+  (e) => `
+      <tr>
+        <td>${sdEsc(e.r.name)}</td>
+        <td>${sdEsc(e.r.start)}</td>
+        <td>${sdEsc(e.r.end)}</td>
+        <td>${sdEsc(e.r.defaultTime)}</td>
+        <td>${sdActions("reminderTimeRange", e.i)}</td>
+      </tr>`,
+  { pageSize: SD_PAGE_SIZE, emptyColspan: 5, emptyText: "No reminder time ranges yet." }
+);
+
+const SD_PAGERS = {
+  sentences: sdSentencesPager,
+  questions: sdQuestionsPager,
+  answers: sdAnswersPager,
+  iaErrors: sdIaErrorsPager,
+  reminderTimeRange: sdReminderTimeRangePager,
+};
 
 function sdRenderAllTables() {
-  renderSentencesTable();
-  renderQuestionsTable();
-  renderAnswersTable();
-  renderIaErrorsTable();
-  renderReminderTimeRangeTable();
+  Object.values(SD_PAGERS).forEach((p) => p());
 }
 sdRenderAllTables();
 
 document.getElementById("sentenceLangFilter").addEventListener("change", (e) => {
   sentenceLangFilter = e.target.value;
-  renderSentencesTable();
+  e.target.classList.toggle("has-value", e.target.value !== "");
+  sdSentencesPager.resetPage();
+  sdSentencesPager();
 });
 
 document.querySelectorAll(".bo-list-table").forEach((table) => {

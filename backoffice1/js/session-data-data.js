@@ -14,7 +14,11 @@ let sentencesData = [
   { identifier: "S0008", language: "AR", sentence: "فاتنة شايفة ديب" },
 ];
 
-let questionsData = [];
+let questionsData = [
+  { type: "YES NO", questions: { AR: "هل تشعر بتحسن اليوم؟", EN: "Do you feel better today?", HE: "האם אתה מרגיש טוב יותר היום?", RU: "Вы чувствуете себя лучше сегодня?", ES: "¿Te sientes mejor hoy?", DE: "Fühlst du dich heute besser?" } },
+  { type: "OPINION", questions: { AR: "كيف تقيم مستوى طاقتك اليوم؟", EN: "How would you rate your energy level today?", HE: "איך היית מדרג את רמת האנרגיה שלך היום?", RU: "Как бы вы оценили свой уровень энергии сегодня?", ES: "¿Cómo calificarías tu nivel de energía hoy?", DE: "Wie würden Sie Ihr Energieniveau heute einschätzen?" } },
+  { type: "FREE TEXT", questions: { AR: "صف أي أعراض لاحظتها اليوم", EN: "Describe any symptoms you noticed today", HE: "תאר תסמינים שהבחנת בהם היום", RU: "Опишите любые симптомы, которые вы заметили сегодня", ES: "Describe cualquier síntoma que hayas notado hoy", DE: "Beschreiben Sie alle Symptome, die Sie heute bemerkt haben" } },
+];
 
 let answersData = [
   { name: "EN Answer", answers: { AR: "", EN: "Strongly agree,Agree,No opinion, Disagree,Strongly disagree", HE: "", RU: "", ES: "", DE: "" } },

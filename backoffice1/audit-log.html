@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>HearO Backoffice | Session Data</title>
+<title>HearO Backoffice | Audit Log</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=optional" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
@@ -26,8 +26,8 @@
         </a>
         <div class="bo-popover bo-nav-popover" id="dashboardPopover">
           <a href="#" class="bo-popover-item">ATP &amp; MKT</a>
-          <a href="#" class="bo-popover-item">Test Dashboard MKT Study</a>
-          <a href="#" class="bo-popover-item">Test Dashboard MKT Summary</a>
+          <a href="mkt-study.html" class="bo-popover-item">Test Dashboard MKT Study</a>
+          <a href="mkt-summary.html" class="bo-popover-item">Test Dashboard MKT Summary</a>
         </div>
       </div>
       <a href="organizations.html" class="bo-nav-link">
@@ -47,7 +47,7 @@
         </div>
       </div>
       <div class="bo-nav-item">
-        <button type="button" class="bo-nav-link active" id="settingsNavBtn">
+        <button type="button" class="bo-nav-link" id="settingsNavBtn">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
           Settings
           <svg class="bo-nav-caret" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
@@ -61,7 +61,7 @@
             <div class="bo-popover bo-nav-popover bo-submenu" id="configSubmenu">
               <a href="allocation.html" class="bo-popover-item">Allocation</a>
               <a href="components.html" class="bo-popover-item">Components</a>
-              <a href="session-data.html" class="bo-popover-item active">Session Data</a>
+              <a href="session-data.html" class="bo-popover-item">Session Data</a>
             </div>
           </div>
           <a href="manage-users.html" class="bo-popover-item">Manage Users</a>
@@ -75,7 +75,7 @@
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12H21"/><path d="M12 3C14.5 5.7 15.8 8.8 15.8 12C15.8 15.2 14.5 18.3 12 21C9.5 18.3 8.2 15.2 8.2 12C8.2 8.8 9.5 5.7 12 3Z"/></svg>
         Language Res
       </a>
-      <a href="audit-log.html" class="bo-nav-link">
+      <a href="audit-log.html" class="bo-nav-link active">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg>
         Audit Log
       </a>
@@ -103,117 +103,76 @@
   <!-- PAGE -->
   <main class="bo-page bo-page-list">
 
-    <div class="bo-list-toolbar" style="margin-bottom:18px;">
-      <h1>Session Data:</h1>
-      <div class="bo-tabs bo-seg-toggle" id="sessionDataTabs" style="flex-wrap:wrap;">
-        <button class="bo-tab bo-seg-btn active" data-tab="sentences">Sentences</button>
-        <button class="bo-tab bo-seg-btn" data-tab="questions">Questions</button>
-        <button class="bo-tab bo-seg-btn" data-tab="answers">Answers</button>
-        <button class="bo-tab bo-seg-btn" data-tab="iaErrors">IA Errors</button>
-        <button class="bo-tab bo-seg-btn" data-tab="reminderTimeRange">Reminder Time Range</button>
-      </div>
-      <span class="bo-list-toolbar-spacer"></span>
-      <div class="bo-filter-field">
-        <select class="bo-filter-select" id="sentenceLangFilter">
-          <option value="">Language</option>
-          <option value="AR">AR</option>
-          <option value="EN">EN</option>
-          <option value="HE">HE</option>
-          <option value="RU">RU</option>
-          <option value="ES">ES</option>
-          <option value="DE">DE</option>
+    <div class="bo-list-toolbar">
+      <h1>Audit Log</h1>
+    </div>
+
+    <div class="bo-alloc-grid bo-alloc-grid--tight">
+      <div class="bo-alloc-field">
+        <label for="alActionFilter">Action:</label>
+        <select id="alActionFilter">
+          <option value="">All</option>
         </select>
       </div>
-      <button class="bo-btn-primary" id="sdAddConfigBtn" data-tab="sentences">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-        <span id="sdAddConfigBtnLabel">Sentence</span>
-      </button>
-    </div>
-
-    <!-- SENTENCES -->
-    <div class="bo-tab-panel active" id="tab-sentences">
-      <div class="bo-table-card">
-        <div class="bo-table-scroll">
-          <table class="bo-list-table bo-list-table--compact">
-            <thead><tr><th>IDENTIFIER</th><th>LANGUAGE</th><th>SENTENCE</th><th></th></tr></thead>
-            <tbody id="rows-sentences"></tbody>
-          </table>
-        </div>
+      <div class="bo-alloc-field">
+        <label for="alDescriptionFilter">Description:</label>
+        <input type="text" id="alDescriptionFilter" placeholder="Description" />
       </div>
-    </div>
-
-    <!-- QUESTIONS -->
-    <div class="bo-tab-panel" id="tab-questions">
-      <div class="bo-table-card">
-        <div class="bo-table-scroll">
-          <table class="bo-list-table bo-list-table--compact">
-            <thead><tr><th>TYPE</th><th>EN QUESTION</th><th></th></tr></thead>
-            <tbody id="rows-questions"></tbody>
-          </table>
-        </div>
+      <div class="bo-alloc-field">
+        <label for="alUserFilter">User:</label>
+        <input type="text" id="alUserFilter" placeholder="User" />
       </div>
-    </div>
-
-    <!-- ANSWERS -->
-    <div class="bo-tab-panel" id="tab-answers">
-      <div class="bo-table-card">
-        <div class="bo-table-scroll">
-          <table class="bo-list-table bo-list-table--compact">
-            <thead><tr><th>NAME</th><th>OPINIONS</th><th></th></tr></thead>
-            <tbody id="rows-answers"></tbody>
-          </table>
-        </div>
+      <div class="bo-alloc-field">
+        <label for="alRoleFilter">Role:</label>
+        <select id="alRoleFilter">
+          <option value="">All</option>
+        </select>
       </div>
-    </div>
-
-    <!-- IA ERRORS -->
-    <div class="bo-tab-panel" id="tab-iaErrors">
-      <div class="bo-table-card">
-        <div class="bo-table-scroll">
-          <table class="bo-list-table bo-list-table--compact">
-            <thead><tr><th>NAME</th><th>IDENTIFIER</th><th>PRIORITY</th><th>RERECORD ATTEMPTS</th><th>SESSION RERECORD ATTEMPTS</th><th></th></tr></thead>
-            <tbody id="rows-iaErrors"></tbody>
-          </table>
-        </div>
+      <div class="bo-alloc-field">
+        <label for="alOrgFilter">Organization:</label>
+        <select id="alOrgFilter">
+          <option value="">All</option>
+        </select>
       </div>
+      <div class="bo-alloc-field">
+        <label for="alUsercodeFilter">Patient usercode:</label>
+        <input type="text" id="alUsercodeFilter" placeholder="Patient Usercode" />
+      </div>
+      <div class="bo-alloc-field">
+        <label for="alFromDate">From Date:</label>
+        <input type="date" id="alFromDate" />
+      </div>
+      <div class="bo-alloc-field">
+        <label for="alToDate">To Date:</label>
+        <input type="date" id="alToDate" />
+      </div>
+      <button class="bo-btn-primary" id="alApplyBtn">Apply</button>
     </div>
 
-    <!-- REMINDER TIME RANGE -->
-    <div class="bo-tab-panel" id="tab-reminderTimeRange">
-      <div class="bo-table-card">
-        <div class="bo-table-scroll">
-          <table class="bo-list-table bo-list-table--compact">
-            <thead><tr><th>NAME</th><th>START HOUR</th><th>END HOUR</th><th>DEFAULT REMINDER TIME</th><th></th></tr></thead>
-            <tbody id="rows-reminderTimeRange"></tbody>
-          </table>
-        </div>
+    <div class="bo-table-card">
+      <div class="bo-table-scroll">
+        <table class="bo-list-table bo-list-table--fluid">
+          <thead>
+            <tr>
+              <th>ACTION</th>
+              <th>DESCRIPTION</th>
+              <th>USER</th>
+              <th>ROLE</th>
+              <th>ORGANIZATION</th>
+              <th>PATIENT USERCODE</th>
+              <th>TIME</th>
+            </tr>
+          </thead>
+          <tbody id="alRows"></tbody>
+        </table>
       </div>
     </div>
 
   </main>
 
-  <!-- Add/Edit drawer (shared by all tabs) -->
-  <div class="bo-drawer-overlay" id="sdDrawerOverlay">
-    <div class="bo-drawer">
-      <div class="bo-drawer-head">
-        <h2 id="sdDrawerTitle">Add/Edit</h2>
-        <button type="button" class="bo-drawer-close" id="sdCloseDrawerX" aria-label="Close">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6L18 18M6 18L18 6"/></svg>
-        </button>
-      </div>
-      <form id="sdDrawerForm" class="bo-drawer-form">
-        <div class="bo-drawer-body" id="sdDrawerBody"></div>
-        <div class="bo-drawer-foot">
-          <button type="button" class="bo-btn-text" id="sdCancelDrawer">Cancel</button>
-          <button type="submit" class="bo-btn-primary" id="sdSaveDrawer" disabled>Save</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
 <script src="js/dashboard-nav.js"></script>
 <script src="js/bo-pagination.js"></script>
-<script src="js/session-data-data.js"></script>
-<script src="js/session-data.js"></script>
+<script src="js/audit-log-data.js"></script>
+<script src="js/audit-log.js"></script>
 </body>
 </html>

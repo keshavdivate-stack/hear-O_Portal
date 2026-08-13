@@ -18,11 +18,18 @@
     </div>
 
     <nav class="bo-nav-links">
-      <a href="index.html" class="bo-nav-link">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="m9 16 2 2 4-4"/></svg>
-        Dashboard
-        <svg class="bo-nav-caret" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-      </a>
+      <div class="bo-nav-item bo-hover-dropdown">
+        <a href="index.html" class="bo-nav-link">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="m9 16 2 2 4-4"/></svg>
+          Dashboard
+          <svg class="bo-nav-caret" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </a>
+        <div class="bo-popover bo-nav-popover" id="dashboardPopover">
+          <a href="#" class="bo-popover-item">ATP &amp; MKT</a>
+          <a href="#" class="bo-popover-item">Test Dashboard MKT Study</a>
+          <a href="#" class="bo-popover-item">Test Dashboard MKT Summary</a>
+        </div>
+      </div>
       <a href="organizations.html" class="bo-nav-link active">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="18" x="4" y="3" rx="1"/><path d="M9 8h1"/><path d="M14 8h1"/><path d="M9 12h1"/><path d="M14 12h1"/><path d="M9 16h1"/><path d="M14 16h1"/><path d="M10 21v-3a2 2 0 0 1 4 0v3"/></svg>
         Organisations
@@ -35,7 +42,7 @@
         </button>
         <div class="bo-popover bo-nav-popover" id="patientsPopover">
           <a href="patient-management.html" class="bo-popover-item">Patient Mng.</a>
-          <a href="#" class="bo-popover-item">P.Events</a>
+          <a href="patient-events.html" class="bo-popover-item">P.Events</a>
           <a href="#" class="bo-popover-item">Status Change</a>
         </div>
       </div>
@@ -59,16 +66,16 @@
           </div>
           <a href="manage-users.html" class="bo-popover-item">Manage Users</a>
           <div class="bo-popover-item">Holidays</div>
-          <div class="bo-popover-item">Dashboard Management</div>
+          <a href="dashboard-management.html" class="bo-popover-item">Dashboard Management</a>
           <div class="bo-popover-item">Reports Management</div>
           <div class="bo-popover-item">Terms &amp; Conditions</div>
         </div>
       </div>
-      <a href="#" class="bo-nav-link">
+      <a href="language-resources.html" class="bo-nav-link">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12H21"/><path d="M12 3C14.5 5.7 15.8 8.8 15.8 12C15.8 15.2 14.5 18.3 12 21C9.5 18.3 8.2 15.2 8.2 12C8.2 8.8 9.5 5.7 12 3Z"/></svg>
         Language Res
       </a>
-      <a href="#" class="bo-nav-link">
+      <a href="audit-log.html" class="bo-nav-link">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg>
         Audit Log
       </a>
@@ -115,7 +122,7 @@
       <div class="bo-profile-topbar-actions" id="usersTabActions" hidden>
         <div class="bo-search-pill" style="width:240px;">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8"/><path d="M21 21L16.5 16.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-          <input type="text" id="userSearchInput" placeholder="Search users" />
+          <input type="text" id="userSearchInput" placeholder="Search" />
         </div>
         <button class="bo-btn-primary" id="openAddUserBtn">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
@@ -139,16 +146,39 @@
           <table class="bo-list-table bo-list-table--compact">
             <thead>
               <tr>
-                <th>NAME</th>
+                <th class="sortable">USERNAME <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 19V5M6 11L12 5L18 11"/></svg></th>
+                <th>FIRST NAME</th>
+                <th>LAST NAME</th>
                 <th>EMAIL</th>
+                <th>CELL PHONE</th>
                 <th>ROLE</th>
-                <th>STATUS</th>
-                <th>LAST LOGIN</th>
+                <th>DATE CREATED</th>
+                <th>MFA</th>
+                <th>USER LOCKED</th>
                 <th></th>
               </tr>
             </thead>
             <tbody id="orgUsersRows"></tbody>
           </table>
+        </div>
+
+        <div class="bo-list-footer">
+          <span>Items per page: <b>20</b></span>
+          <span id="orgUserPageRangeLabel">1 &ndash; 20 of 0</span>
+          <div class="bo-pager">
+            <button class="bo-pager-btn" id="orgUserFirstPage" aria-label="First page">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M18 6L12 12L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M11 6L5 12L11 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <button class="bo-pager-btn" id="orgUserPrevPage" aria-label="Previous page">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15 6L9 12L15 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <button class="bo-pager-btn" id="orgUserNextPage" aria-label="Next page">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 6L15 12L9 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <button class="bo-pager-btn" id="orgUserLastPage" aria-label="Last page">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 6L12 12L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M13 6L19 12L13 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -158,6 +188,7 @@
 
   <!-- Row action dropdown (Users table) -->
   <div class="bo-row-menu" id="userRowMenu">
+    <button class="bo-row-menu-item" data-action="lock">Lock User</button>
     <button class="bo-row-menu-item" data-action="edit">Edit User</button>
     <button class="bo-row-menu-item danger" data-action="delete">Delete User</button>
   </div>
@@ -166,7 +197,7 @@
   <div class="bo-drawer-overlay" id="userDrawerOverlay">
     <div class="bo-drawer">
       <div class="bo-drawer-head">
-        <h2 id="userDrawerTitle">Add User</h2>
+        <h2 id="userDrawerTitle">Create user</h2>
         <button type="button" class="bo-drawer-close" id="closeUserDrawerX" aria-label="Close">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6L18 18M6 18L18 6"/></svg>
         </button>
@@ -220,11 +251,13 @@
                     <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
                   </button>
                   <div class="bo-select-menu">
-                    <div class="bo-select-option" data-value="Admin">Admin<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                    <div class="bo-select-option" data-value="Clinician">Clinician<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                    <div class="bo-select-option" data-value="Nurse">Nurse<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    <div class="bo-select-option" data-value="CLINIC DOCTOR">Clinic Doctor<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    <div class="bo-select-option" data-value="CLINIC USER">Clinic User<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    <div class="bo-select-option" data-value="CLINIC MANAGER">Clinic Manager<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    <div class="bo-select-option" data-value="CLINIC SUPERVISOR">Clinic Supervisor<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    <div class="bo-select-option" data-value="SUPERVISOR">Supervisor<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
                   </div>
-                  <input type="hidden" name="role" />
+                  <input type="hidden" name="role" required />
                 </div>
               </div>
               <div class="bo-modal-field">
@@ -279,6 +312,7 @@
 
 <script src="js/dashboard-nav.js"></script>
 <script src="js/orgs-data.js"></script>
+<script src="js/users-data.js"></script>
 <script src="js/org-profile.js"></script>
 </body>
 </html>

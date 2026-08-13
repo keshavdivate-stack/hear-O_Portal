@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>HearO Backoffice | Session Data</title>
+<title>HearO Backoffice | Dashboard Management</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=optional" rel="stylesheet" />
@@ -61,12 +61,12 @@
             <div class="bo-popover bo-nav-popover bo-submenu" id="configSubmenu">
               <a href="allocation.html" class="bo-popover-item">Allocation</a>
               <a href="components.html" class="bo-popover-item">Components</a>
-              <a href="session-data.html" class="bo-popover-item active">Session Data</a>
+              <a href="session-data.html" class="bo-popover-item">Session Data</a>
             </div>
           </div>
           <a href="manage-users.html" class="bo-popover-item">Manage Users</a>
           <div class="bo-popover-item">Holidays</div>
-          <a href="dashboard-management.html" class="bo-popover-item">Dashboard Management</a>
+          <a href="dashboard-management.html" class="bo-popover-item active">Dashboard Management</a>
           <div class="bo-popover-item">Reports Management</div>
           <div class="bo-popover-item">Terms &amp; Conditions</div>
         </div>
@@ -103,109 +103,104 @@
   <!-- PAGE -->
   <main class="bo-page bo-page-list">
 
-    <div class="bo-list-toolbar" style="margin-bottom:18px;">
-      <h1>Session Data:</h1>
-      <div class="bo-tabs bo-seg-toggle" id="sessionDataTabs" style="flex-wrap:wrap;">
-        <button class="bo-tab bo-seg-btn active" data-tab="sentences">Sentences</button>
-        <button class="bo-tab bo-seg-btn" data-tab="questions">Questions</button>
-        <button class="bo-tab bo-seg-btn" data-tab="answers">Answers</button>
-        <button class="bo-tab bo-seg-btn" data-tab="iaErrors">IA Errors</button>
-        <button class="bo-tab bo-seg-btn" data-tab="reminderTimeRange">Reminder Time Range</button>
-      </div>
+    <div class="bo-list-toolbar">
+      <h1>Dashboard Management</h1>
       <span class="bo-list-toolbar-spacer"></span>
-      <div class="bo-filter-field">
-        <select class="bo-filter-select" id="sentenceLangFilter">
-          <option value="">Language</option>
-          <option value="AR">AR</option>
-          <option value="EN">EN</option>
-          <option value="HE">HE</option>
-          <option value="RU">RU</option>
-          <option value="ES">ES</option>
-          <option value="DE">DE</option>
-        </select>
-      </div>
-      <button class="bo-btn-primary" id="sdAddConfigBtn" data-tab="sentences">
+      <button class="bo-btn-primary" id="openAddDashboardBtn">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-        <span id="sdAddConfigBtnLabel">Sentence</span>
+        Add Dashboard
       </button>
     </div>
 
-    <!-- SENTENCES -->
-    <div class="bo-tab-panel active" id="tab-sentences">
-      <div class="bo-table-card">
-        <div class="bo-table-scroll">
-          <table class="bo-list-table bo-list-table--compact">
-            <thead><tr><th>IDENTIFIER</th><th>LANGUAGE</th><th>SENTENCE</th><th></th></tr></thead>
-            <tbody id="rows-sentences"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- QUESTIONS -->
-    <div class="bo-tab-panel" id="tab-questions">
-      <div class="bo-table-card">
-        <div class="bo-table-scroll">
-          <table class="bo-list-table bo-list-table--compact">
-            <thead><tr><th>TYPE</th><th>EN QUESTION</th><th></th></tr></thead>
-            <tbody id="rows-questions"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- ANSWERS -->
-    <div class="bo-tab-panel" id="tab-answers">
-      <div class="bo-table-card">
-        <div class="bo-table-scroll">
-          <table class="bo-list-table bo-list-table--compact">
-            <thead><tr><th>NAME</th><th>OPINIONS</th><th></th></tr></thead>
-            <tbody id="rows-answers"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- IA ERRORS -->
-    <div class="bo-tab-panel" id="tab-iaErrors">
-      <div class="bo-table-card">
-        <div class="bo-table-scroll">
-          <table class="bo-list-table bo-list-table--compact">
-            <thead><tr><th>NAME</th><th>IDENTIFIER</th><th>PRIORITY</th><th>RERECORD ATTEMPTS</th><th>SESSION RERECORD ATTEMPTS</th><th></th></tr></thead>
-            <tbody id="rows-iaErrors"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- REMINDER TIME RANGE -->
-    <div class="bo-tab-panel" id="tab-reminderTimeRange">
-      <div class="bo-table-card">
-        <div class="bo-table-scroll">
-          <table class="bo-list-table bo-list-table--compact">
-            <thead><tr><th>NAME</th><th>START HOUR</th><th>END HOUR</th><th>DEFAULT REMINDER TIME</th><th></th></tr></thead>
-            <tbody id="rows-reminderTimeRange"></tbody>
-          </table>
-        </div>
+    <div class="bo-table-card">
+      <div class="bo-table-scroll">
+        <table class="bo-list-table bo-list-table--plain-head">
+          <thead>
+            <tr>
+              <th>Dashboard Name</th>
+              <th>HMO</th>
+              <th>Patient Tag</th>
+              <th>Type</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="dashboardRows"></tbody>
+        </table>
       </div>
     </div>
 
   </main>
 
-  <!-- Add/Edit drawer (shared by all tabs) -->
-  <div class="bo-drawer-overlay" id="sdDrawerOverlay">
-    <div class="bo-drawer">
-      <div class="bo-drawer-head">
-        <h2 id="sdDrawerTitle">Add/Edit</h2>
-        <button type="button" class="bo-drawer-close" id="sdCloseDrawerX" aria-label="Close">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6L18 18M6 18L18 6"/></svg>
-        </button>
-      </div>
-      <form id="sdDrawerForm" class="bo-drawer-form">
-        <div class="bo-drawer-body" id="sdDrawerBody"></div>
-        <div class="bo-drawer-foot">
-          <button type="button" class="bo-btn-text" id="sdCancelDrawer">Cancel</button>
-          <button type="submit" class="bo-btn-primary" id="sdSaveDrawer" disabled>Save</button>
+  <!-- Add / Edit Dashboard modal -->
+  <div class="bo-center-modal-overlay" id="dashboardModalOverlay">
+    <div class="bo-center-modal">
+      <h2 id="dashboardModalTitle">Add Dashboard</h2>
+
+      <form id="dashboardForm">
+        <div class="bo-modal-field">
+          <label>Name</label>
+          <input type="text" name="name" placeholder="Name" required />
+        </div>
+
+        <div class="bo-modal-field">
+          <label>HMO</label>
+          <div class="bo-msel" data-name="hmo">
+            <button type="button" class="bo-msel-trigger">
+              <span class="bo-msel-value">Select HMO</span>
+              <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="bo-msel-menu">
+              <div class="bo-msel-option" data-value="All"><span class="bo-msel-check"></span>All</div>
+              <div class="bo-msel-option" data-value="MKT"><span class="bo-msel-check"></span>MKT</div>
+              <div class="bo-msel-option" data-value="ATP"><span class="bo-msel-check"></span>ATP</div>
+              <div class="bo-msel-option" data-value="B01"><span class="bo-msel-check"></span>B01</div>
+              <div class="bo-msel-option" data-value="120"><span class="bo-msel-check"></span>120</div>
+              <div class="bo-msel-option" data-value="121"><span class="bo-msel-check"></span>121</div>
+              <div class="bo-msel-option" data-value="122"><span class="bo-msel-check"></span>122</div>
+              <div class="bo-msel-option" data-value="240"><span class="bo-msel-check"></span>240</div>
+              <div class="bo-msel-option" data-value="241"><span class="bo-msel-check"></span>241</div>
+              <div class="bo-msel-option" data-value="242"><span class="bo-msel-check"></span>242</div>
+              <div class="bo-msel-option" data-value="243"><span class="bo-msel-check"></span>243</div>
+              <div class="bo-msel-option" data-value="244"><span class="bo-msel-check"></span>244</div>
+              <div class="bo-msel-option" data-value="ASF"><span class="bo-msel-check"></span>ASF</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bo-modal-field">
+          <label>Tag</label>
+          <div class="bo-msel" data-name="tag">
+            <button type="button" class="bo-msel-trigger">
+              <span class="bo-msel-value">Select tag</span>
+              <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="bo-msel-menu">
+              <div class="bo-msel-option" data-value="All"><span class="bo-msel-check"></span>All</div>
+              <div class="bo-msel-option" data-value="CURRENT"><span class="bo-msel-check"></span>CURRENT</div>
+              <div class="bo-msel-option" data-value="NEW"><span class="bo-msel-check"></span>NEW</div>
+            </div>
+          </div>
+          <span class="bo-field-error" id="tagError" hidden>Patient tags field should not be empty</span>
+        </div>
+
+        <div class="bo-modal-field">
+          <label>Type</label>
+          <div class="bo-select" data-name="type">
+            <button type="button" class="bo-select-trigger">
+              <span class="bo-select-value placeholder">Select type</span>
+              <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="bo-select-menu">
+              <div class="bo-select-option" data-value="STUDY DASHBOARD">STUDY DASHBOARD<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              <div class="bo-select-option" data-value="CLINIC SUMMARY DASHBOARD">CLINIC SUMMARY DASHBOARD<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            </div>
+            <input type="hidden" name="type" required />
+          </div>
+        </div>
+
+        <div class="bo-center-modal-foot">
+          <button type="button" class="bo-btn-text" id="cancelDashboardModal">Cancel</button>
+          <button type="submit" class="bo-btn-primary" id="saveDashboardBtn" disabled>Save</button>
         </div>
       </form>
     </div>
@@ -213,7 +208,6 @@
 
 <script src="js/dashboard-nav.js"></script>
 <script src="js/bo-pagination.js"></script>
-<script src="js/session-data-data.js"></script>
-<script src="js/session-data.js"></script>
+<script src="js/dashboard-management.js"></script>
 </body>
 </html>

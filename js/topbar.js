@@ -24,6 +24,7 @@ document.addEventListener("click", () => closeAllTopbarPopovers());
 wireTopbarToggle("orgSwitchBtn", "orgPopover");
 wireTopbarToggle("notifBtn", "notifPopover");
 wireTopbarToggle("langBtn", "langPopover");
+wireTopbarToggle("moreBtn", "morePopover");
 
 const langPopoverEl = document.getElementById("langPopover");
 if (langPopoverEl) {

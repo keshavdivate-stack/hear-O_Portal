@@ -46,52 +46,57 @@ document.querySelectorAll("#componentsTabs .bo-tab").forEach((tab) => {
 });
 
 /* ---------------- Table rendering ---------------- */
-function renderSimpleTable(tabKey) {
-  const rows = DATA[tabKey];
-  document.getElementById(`rows-${tabKey}`).innerHTML = rows
-    .map(
-      (r, i) => `
+const CONFIG_PAGE_SIZE = 10;
+const configPagers = {};
+
+function makeSimplePager(tabKey) {
+  return boCreatePager(
+    `rows-${tabKey}`,
+    () => DATA[tabKey].map((r, i) => ({ r, i })),
+    (e) => `
       <tr>
-        <td>${esc(r.name)}</td>
-        <td>${esc(r.creationDate)}</td>
+        <td>${esc(e.r.name)}</td>
+        <td>${esc(e.r.creationDate)}</td>
         <td>
           <div class="bo-row-actions">
-            <button class="bo-action-icon" data-tab="${tabKey}" data-idx="${i}" data-act="edit" aria-label="Edit">${editIcon}</button>
-            <button class="bo-action-icon" data-tab="${tabKey}" data-idx="${i}" data-act="delete" aria-label="Delete">${trashIcon}</button>
+            <button class="bo-action-icon" data-tab="${tabKey}" data-idx="${e.i}" data-act="edit" aria-label="Edit">${editIcon}</button>
+            <button class="bo-action-icon" data-tab="${tabKey}" data-idx="${e.i}" data-act="delete" aria-label="Delete">${trashIcon}</button>
           </div>
         </td>
-      </tr>`
-    )
-    .join("");
+      </tr>`,
+    { pageSize: CONFIG_PAGE_SIZE, emptyColspan: 3, emptyText: "No configs yet." }
+  );
 }
 
-function renderMainTable() {
-  document.getElementById("rows-main").innerHTML = mainConfigs
-    .map(
-      (r, i) => `
+["sentences", "questions", "inputAssessment", "generalParams", "reminder", "iaErrors"].forEach((tabKey) => {
+  configPagers[tabKey] = makeSimplePager(tabKey);
+});
+
+configPagers.main = boCreatePager(
+  "rows-main",
+  () => mainConfigs.map((r, i) => ({ r, i })),
+  (e) => `
       <tr>
-        <td>${esc(r.name)}</td>
-        <td>${esc(r.sentencesConfig)}</td>
-        <td>${esc(r.questionsConfig)}</td>
-        <td>${esc(r.inputAssessmentConfig)}</td>
-        <td>${esc(r.generalParamsConfig)}</td>
-        <td>${esc(r.reminderConfig)}</td>
-        <td>${esc(r.iaErrorsConfig)}</td>
-        <td>${esc(r.creationDate)}</td>
+        <td>${esc(e.r.name)}</td>
+        <td>${esc(e.r.sentencesConfig)}</td>
+        <td>${esc(e.r.questionsConfig)}</td>
+        <td>${esc(e.r.inputAssessmentConfig)}</td>
+        <td>${esc(e.r.generalParamsConfig)}</td>
+        <td>${esc(e.r.reminderConfig)}</td>
+        <td>${esc(e.r.iaErrorsConfig)}</td>
+        <td>${esc(e.r.creationDate)}</td>
         <td>
           <div class="bo-row-actions">
-            <button class="bo-action-icon" data-tab="main" data-idx="${i}" data-act="edit" aria-label="Edit">${editIcon}</button>
-            <button class="bo-action-icon" data-tab="main" data-idx="${i}" data-act="delete" aria-label="Delete">${trashIcon}</button>
+            <button class="bo-action-icon" data-tab="main" data-idx="${e.i}" data-act="edit" aria-label="Edit">${editIcon}</button>
+            <button class="bo-action-icon" data-tab="main" data-idx="${e.i}" data-act="delete" aria-label="Delete">${trashIcon}</button>
           </div>
         </td>
-      </tr>`
-    )
-    .join("");
-}
+      </tr>`,
+  { pageSize: CONFIG_PAGE_SIZE, emptyColspan: 9, emptyText: "No main configs yet." }
+);
 
 function renderAllTables() {
-  renderMainTable();
-  ["sentences", "questions", "inputAssessment", "generalParams", "reminder", "iaErrors"].forEach(renderSimpleTable);
+  Object.values(configPagers).forEach((p) => p());
 }
 renderAllTables();
 

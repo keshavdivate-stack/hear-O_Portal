@@ -1,15 +1,14 @@
 /* ---------------- KPI row ---------------- */
 const boStats = [
-  { num: 134, label: "Registered", color: "var(--blue)", icon: `<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>` },
-  { num: 5, label: "Baseline", color: "var(--navy)", icon: `<path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/>` },
-  { num: 118, label: "Active", color: "var(--green)", icon: `<path d="M22 12h-4l-3 9L9 3l-3 9H2"/>` },
-  { num: 3, label: "Priority", color: "var(--red)", icon: `<path d="M12 21C12 21 4 15.5 4 9.8C4 6.6 6.5 4.5 9.2 4.5C10.6 4.5 11.6 5.1 12 5.7C12.4 5.1 13.4 4.5 14.8 4.5C17.5 4.5 20 6.6 20 9.8C20 15.5 12 21 12 21Z"/>` },
-  { num: 5, label: "Unmonitored", color: "var(--cyan)", icon: `<circle cx="12" cy="12" r="9"/><path d="M12 8v4"/><path d="M12 16h.01"/>` },
-  { num: 1, label: "Paused", color: "var(--gray)", icon: `<rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/>` },
-  { num: 2, label: "Discontinued", color: "var(--orange)", icon: `<circle cx="12" cy="12" r="9"/><path d="M15 9l-6 6"/><path d="M9 9l6 6"/>` },
+  { num: 92, label: "Total", color: "var(--navy)", icon: `<path d="M3 3v18h18"/><path d="M18 9l-5 5-4-4-4 4"/>` },
+  { num: 42, label: "Registered", color: "var(--blue)", icon: `<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>` },
+  { num: 6, label: "Baseline", color: "var(--navy)", icon: `<path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/>` },
+  { num: 30, label: "Active", color: "var(--green)", icon: `<path d="M22 12h-4l-3 9L9 3l-3 9H2"/>` },
+  { num: 4, label: "Priority", color: "var(--red)", icon: `<path d="M12 21C12 21 4 15.5 4 9.8C4 6.6 6.5 4.5 9.2 4.5C10.6 4.5 11.6 5.1 12 5.7C12.4 5.1 13.4 4.5 14.8 4.5C17.5 4.5 20 6.6 20 9.8C20 15.5 12 21 12 21Z"/>` },
+  { num: 3, label: "Discontinued", color: "var(--orange)", icon: `<circle cx="12" cy="12" r="9"/><path d="M15 9l-6 6"/><path d="M9 9l6 6"/>` },
+  { num: 5, label: "Insufficient", color: "var(--orange)", icon: `<circle cx="12" cy="12" r="9"/><path d="M12 8v5"/><path d="M12 16h.01"/>` },
+  { num: 2, label: "On Hold", color: "var(--gray)", icon: `<rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/>` },
 ];
-
-document.getElementById("boTotalPatients").textContent = boStats.reduce((s, d) => s + d.num, 0);
 
 document.getElementById("boStatGrid").innerHTML = boStats
   .map(
@@ -28,33 +27,23 @@ document.getElementById("boStatGrid").innerHTML = boStats
 
 /* ---------------- Status Change / Error Message ---------------- */
 const statusChangeData = [
-  { username: "ABC-0044", status: "Priority", date: "14.01.28" },
-  { username: "ABC-0011", status: "Unmonitored", date: "14.01.28" },
-  { username: "ABC-0023", status: "Paused", date: "12.01.28" },
-  { username: "ABC-0012", status: "Priority", date: "12.01.28" },
-  { username: "ABC-0031", status: "Active", date: "11.01.28" },
-  { username: "ABC-0009", status: "Registered", date: "11.01.28" },
-  { username: "ABC-0027", status: "Priority", date: "10.01.28" },
-  { username: "ABC-0018", status: "Baseline", date: "10.01.28" },
-  { username: "ABC-0052", status: "Unmonitored", date: "09.01.28" },
-  { username: "ABC-0006", status: "Paused", date: "08.01.28" },
-  { username: "ABC-0041", status: "Active", date: "08.01.28" },
-  { username: "ABC-0015", status: "Priority", date: "07.01.28" },
+  { username: "MKT-10000", status: "Registered", date: "03.12.25" },
+  { username: "MKT-0222", status: "Priority", date: "18.11.25" },
+  { username: "MKT-7777", status: "Insufficient", date: "28.12.25" },
+  { username: "MKT-0790", status: "Insufficient", date: "28.12.25" },
+  { username: "MKT-0780", status: "Registered", date: "28.12.25" },
+  { username: "MKT-0219", status: "Priority", date: "04.08.26" },
+  { username: "MKT-0311", status: "Insufficient", date: "02.08.26" },
+  { username: "MKT-0044", status: "Registered", date: "01.08.26" },
 ];
 
 const errorMessageData = [
-  { username: "ABC-0044", message: "Low quality", date: "14.01.28" },
-  { username: "ABC-0011", message: "Notification off", date: "14.01.28" },
-  { username: "ABC-0023", message: "Uploading error", date: "12.01.28" },
-  { username: "ABC-0012", message: "Notification off", date: "12.01.28" },
-  { username: "ABC-0031", message: "Low quality", date: "11.01.28" },
-  { username: "ABC-0009", message: "Uploading error", date: "11.01.28" },
-  { username: "ABC-0027", message: "Notification off", date: "10.01.28" },
-  { username: "ABC-0018", message: "Low quality", date: "10.01.28" },
-  { username: "ABC-0052", message: "Device disconnected", date: "09.01.28" },
-  { username: "ABC-0006", message: "Uploading error", date: "08.01.28" },
-  { username: "ABC-0041", message: "Notification off", date: "08.01.28" },
-  { username: "ABC-0015", message: "Low quality", date: "07.01.28" },
+  { username: "MKT-0219", message: "Mobile data disabled", date: "13.08.26" },
+  { username: "MKT-0219", message: "Mobile data disabled", date: "04.08.26" },
+  { username: "MKT-0311", message: "Low quality", date: "04.08.26" },
+  { username: "MKT-7777", message: "Mobile data disabled", date: "03.08.26" },
+  { username: "MKT-0790", message: "Notification off", date: "02.08.26" },
+  { username: "MKT-0044", message: "Mobile data disabled", date: "01.08.26" },
 ];
 
 document.getElementById("statusChangeRows").innerHTML = statusChangeData
@@ -67,8 +56,8 @@ document.getElementById("errorMessageRows").innerHTML = errorMessageData
 
 /* ---------------- Monthly Compliance chart ---------------- */
 const chartMonths = ["Sep", "Oct", "Nov", "Dec", "Jan", "Feb", "Mar", "Apr", "May", "Jun"];
-const complianceSeries = [83, 82, 84, 83, 85, 83, 86, 84, 82, 83];
-const usableSeries = [78, 74, 77, 76, 79, 76, 80, 78, 76, 77];
+const complianceSeries = [58, 60, 62, 59, 61, 63, 65, 62, 60, 61];
+const usableSeries = [52, 55, 57, 54, 56, 58, 60, 57, 55, 56];
 
 function average(series) {
   return Math.round(series.reduce((a, b) => a + b, 0) / series.length);
@@ -103,10 +92,7 @@ function renderChartStats() {
 }
 renderChartStats();
 
-let lastChartMode = "both";
-
-function renderAreaChart(mode) {
-  lastChartMode = mode = mode || lastChartMode;
+function renderAreaChart() {
   const container = document.getElementById("complianceArea");
   const width = container.clientWidth || 640;
   const height = container.clientHeight || 240;
@@ -116,15 +102,15 @@ function renderAreaChart(mode) {
   const padB = 24;
   const plotW = width - padL - padR;
   const plotH = height - padT - padB;
-  const yMin = 60;
-  const yMax = 95;
+  const yMin = 40;
+  const yMax = 75;
   const gridStep = 10;
 
   const xAt = (i) => padL + (plotW * i) / (chartMonths.length - 1);
   const yAt = (v) => padT + plotH - ((v - yMin) / (yMax - yMin)) * plotH;
 
   const gridLines = [];
-  for (let v = 60; v <= yMax; v += gridStep) {
+  for (let v = 40; v <= yMax; v += gridStep) {
     const y = yAt(v);
     gridLines.push(
       `<line x1="${padL}" y1="${y}" x2="${width - padR}" y2="${y}" stroke="#EEF1F4" stroke-width="1"/>` +
@@ -156,10 +142,6 @@ function renderAreaChart(mode) {
       ${badge}`;
   };
 
-  const parts = [];
-  if (mode !== "usable") parts.push(buildArea(complianceSeries, "#1F3C73", "gradNavy"));
-  if (mode !== "compliance") parts.push(buildArea(usableSeries, "#F2994A", "gradOrange"));
-
   document.getElementById("complianceArea").innerHTML = `
     <svg viewBox="0 0 ${width} ${height}" class="bo-area-svg" preserveAspectRatio="none">
       <defs>
@@ -173,11 +155,12 @@ function renderAreaChart(mode) {
         </linearGradient>
       </defs>
       ${gridLines.join("")}
-      ${parts.join("")}
+      ${buildArea(complianceSeries, "#1F3C73", "gradNavy")}
+      ${buildArea(usableSeries, "#F2994A", "gradOrange")}
       ${xLabels}
     </svg>`;
 }
-renderAreaChart("both");
+renderAreaChart();
 
 if (document.fonts && document.fonts.ready) {
   document.fonts.ready.then(() => renderAreaChart());
@@ -195,8 +178,8 @@ const binDefs = [
 ];
 
 const binData = {
-  usable: { "90-100": 25, "80-90": 8, "70-80": 2, "60-70": 9, lt60: 3 },
-  compliance: { "90-100": 30, "80-90": 6, "70-80": 1, "60-70": 7, lt60: 2 },
+  usable: { "90-100": 3, "80-90": 6, "70-80": 9, "60-70": 12, lt60: 21 },
+  compliance: { "90-100": 5, "80-90": 8, "70-80": 11, "60-70": 14, lt60: 24 },
 };
 
 function renderBins(tab) {

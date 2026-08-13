@@ -44,60 +44,125 @@ document.querySelectorAll(".bo-tab").forEach((tab) => {
   });
 });
 
-/* ---------------- Users table ---------------- */
-let userSearchTerm = "";
+/* ---------------- Users table (same data + behavior as Manage Users, scoped to this org) ---------------- */
+const USER_PAGE_SIZE = 20;
+let orgUserCurrentPage = 1;
+let orgUserSortDir = "asc";
+let orgUserSearchTerm = "";
 
-function filteredUsers() {
-  const list = getOrgUsers(org.id);
-  if (!userSearchTerm) return list;
-  const q = userSearchTerm.toLowerCase();
-  return list.filter((u) => u.name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q));
+function orgOwnsUser(u) {
+  return u.allowedOrgs === "All Organizations" || u.allowedOrgs.split(" ").includes(org.name);
 }
 
+function orgUsersList() {
+  return boUsers.filter(orgOwnsUser);
+}
+
+function filteredUsers() {
+  const list = orgUsersList();
+  if (!orgUserSearchTerm) return list;
+  const q = orgUserSearchTerm.toLowerCase();
+  return list.filter(
+    (u) =>
+      u.username.toLowerCase().includes(q) ||
+      u.firstName.toLowerCase().includes(q) ||
+      u.lastName.toLowerCase().includes(q) ||
+      u.email.toLowerCase().includes(q)
+  );
+}
+
+function sortedUsers() {
+  const list = [...filteredUsers()];
+  list.sort((a, b) => (orgUserSortDir === "asc" ? a.username.localeCompare(b.username, undefined, { numeric: true }) : b.username.localeCompare(a.username, undefined, { numeric: true })));
+  return list;
+}
+
+const onOff = (v) => (v ? "On" : "Off");
 const userKebabIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="1.7" fill="currentColor"/><circle cx="12" cy="12" r="1.7" fill="currentColor"/><circle cx="12" cy="19" r="1.7" fill="currentColor"/></svg>`;
 
 function renderUsers() {
-  const list = filteredUsers();
-  document.getElementById("orgUsersRows").innerHTML = list.length
-    ? list
+  const list = sortedUsers();
+  const total = list.length;
+  const totalPages = Math.max(1, Math.ceil(total / USER_PAGE_SIZE));
+  orgUserCurrentPage = Math.min(orgUserCurrentPage, totalPages);
+
+  const start = (orgUserCurrentPage - 1) * USER_PAGE_SIZE;
+  const pageItems = list.slice(start, start + USER_PAGE_SIZE);
+
+  document.getElementById("orgUsersRows").innerHTML = pageItems.length
+    ? pageItems
         .map(
-          (u, i) => `
+          (u) => `
       <tr>
-        <td><span style="font-weight:700;">${u.name}</span></td>
-        <td>${u.email}</td>
+        <td><span class="bo-name-link">${u.username}</span></td>
+        <td>${u.firstName || "—"}</td>
+        <td>${u.lastName || "—"}</td>
+        <td>${u.email || "—"}</td>
+        <td>${u.phone || "—"}</td>
         <td>${u.role}</td>
-        <td><span class="bo-status-pill ${u.status === "Active" ? "bo-status-active" : "bo-status-inactive"}">${u.status}</span></td>
-        <td>${u.lastLogin}</td>
+        <td>${u.dateCreated}</td>
+        <td>${onOff(u.mfa)}</td>
+        <td>${yesNo(u.locked)}</td>
         <td>
           <div class="bo-row-actions">
-            <button class="bo-action-icon row-menu-trigger" data-idx="${i}" aria-label="Row actions">${userKebabIcon}</button>
+            <button class="bo-action-icon row-menu-trigger" data-id="${u.id}" aria-label="Row actions">${userKebabIcon}</button>
           </div>
         </td>
       </tr>`
         )
         .join("")
-    : `<tr><td colspan="6" style="text-align:center; color:var(--gray-text); padding:28px;">No users yet for this organization.</td></tr>`;
+    : `<tr><td colspan="10" style="text-align:center; color:var(--gray-text); padding:28px;">No users yet for this organization.</td></tr>`;
+
+  const rangeEnd = total === 0 ? 0 : Math.min(start + USER_PAGE_SIZE, total);
+  const rangeStart = total === 0 ? 0 : start + 1;
+  document.getElementById("orgUserPageRangeLabel").textContent = `${rangeStart} – ${rangeEnd} of ${total}`;
+
+  document.getElementById("orgUserFirstPage").disabled = orgUserCurrentPage === 1;
+  document.getElementById("orgUserPrevPage").disabled = orgUserCurrentPage === 1;
+  document.getElementById("orgUserNextPage").disabled = orgUserCurrentPage === totalPages;
+  document.getElementById("orgUserLastPage").disabled = orgUserCurrentPage === totalPages;
 }
 
 renderUsers();
 
 document.getElementById("userSearchInput").addEventListener("input", (e) => {
-  userSearchTerm = e.target.value.trim();
+  orgUserSearchTerm = e.target.value.trim();
+  orgUserCurrentPage = 1;
   renderUsers();
 });
 
-/* ---------------- Row action dropdown ---------------- */
+document.querySelector("#tab-users .bo-list-table th.sortable").addEventListener("click", () => {
+  orgUserSortDir = orgUserSortDir === "asc" ? "desc" : "asc";
+  renderUsers();
+});
+
+document.getElementById("orgUserFirstPage").addEventListener("click", () => { orgUserCurrentPage = 1; renderUsers(); });
+document.getElementById("orgUserPrevPage").addEventListener("click", () => { orgUserCurrentPage -= 1; renderUsers(); });
+document.getElementById("orgUserNextPage").addEventListener("click", () => { orgUserCurrentPage += 1; renderUsers(); });
+document.getElementById("orgUserLastPage").addEventListener("click", () => {
+  orgUserCurrentPage = Math.ceil(filteredUsers().length / USER_PAGE_SIZE);
+  renderUsers();
+});
+
+/* ---------------- Row action dropdown (lock / edit / delete) ---------------- */
 const userRowMenu = document.getElementById("userRowMenu");
-let activeUserIdx = null;
+let activeUserId = null;
+
+function refreshUserRowMenuLabel() {
+  const user = boUsers.find((u) => u.id === activeUserId);
+  const lockItem = userRowMenu.querySelector('[data-action="lock"]');
+  if (user && lockItem) lockItem.textContent = user.locked ? "Unlock User" : "Lock User";
+}
 
 document.getElementById("orgUsersRows").addEventListener("click", (e) => {
   const trigger = e.target.closest(".row-menu-trigger");
   if (!trigger) return;
   e.stopPropagation();
-  activeUserIdx = Number(trigger.dataset.idx);
+  activeUserId = Number(trigger.dataset.id);
+  refreshUserRowMenuLabel();
   const rect = trigger.getBoundingClientRect();
   userRowMenu.style.top = `${rect.bottom + 6}px`;
-  userRowMenu.style.left = `${rect.right - 170}px`;
+  userRowMenu.style.left = `${rect.right - 190}px`;
   userRowMenu.classList.add("open");
 });
 
@@ -107,17 +172,20 @@ document.addEventListener("click", (e) => {
 
 userRowMenu.addEventListener("click", (e) => {
   const item = e.target.closest(".bo-row-menu-item");
-  if (!item || activeUserIdx === null) return;
+  if (!item || activeUserId === null) return;
   userRowMenu.classList.remove("open");
-  const list = filteredUsers();
-  const user = list[activeUserIdx];
-  const realIdx = getOrgUsers(org.id).indexOf(user);
 
-  if (item.dataset.action === "edit") {
-    openUserDrawer(user, realIdx);
-  } else if (item.dataset.action === "delete") {
-    getOrgUsers(org.id).splice(realIdx, 1);
+  const user = boUsers.find((u) => u.id === activeUserId);
+  if (!user) return;
+
+  if (item.dataset.action === "lock") {
+    user.locked = !user.locked;
     renderUsers();
+  } else if (item.dataset.action === "delete") {
+    boUsers.splice(boUsers.indexOf(user), 1);
+    renderUsers();
+  } else if (item.dataset.action === "edit") {
+    openUserDrawer(user);
   }
 });
 
@@ -195,17 +263,17 @@ const userDrawerOverlay = document.getElementById("userDrawerOverlay");
 const userForm = document.getElementById("userForm");
 const saveUserBtn = document.getElementById("saveUserBtn");
 const userDrawerTitle = document.getElementById("userDrawerTitle");
-let editingUserIdx = null;
+let editingUserId = null;
 
 function validateUserForm() {
   const roleValue = userForm.querySelector('.bo-select[data-name="role"] input[type=hidden]').value;
   saveUserBtn.disabled = userForm.username.value.trim() === "" || userForm.email.value.trim() === "" || roleValue === "";
 }
 
-function openUserDrawer(user, idx) {
+function openUserDrawer(user) {
   userForm.reset();
-  editingUserIdx = idx === undefined ? null : idx;
-  userDrawerTitle.textContent = editingUserIdx === null ? "Add User" : "Edit User";
+  editingUserId = user ? user.id : null;
+  userDrawerTitle.textContent = "Create user";
 
   const roleSelect = userForm.querySelector('.bo-select[data-name="role"]');
   const mfaMethodSelect = userForm.querySelector('.bo-select[data-name="mfaMethod"]');
@@ -214,15 +282,15 @@ function openUserDrawer(user, idx) {
 
   setBoSelectValue(roleSelect, user ? user.role : "", { silent: true });
   setBoSelectValue(mfaMethodSelect, user ? user.mfaMethod || "" : "", { silent: true });
-  setBoSelectValue(countryCodeSelect, user ? user.countryCode || "+91" : "+91", { silent: true });
+  setBoSelectValue(countryCodeSelect, "+91", { silent: true });
   setBoSelectValue(languageSelect, user ? user.language || "English" : "English", { silent: true });
 
   if (user) {
-    userForm.username.value = user.username || user.name || "";
+    userForm.username.value = user.username || "";
     userForm.firstName.value = user.firstName || "";
     userForm.lastName.value = user.lastName || "";
-    userForm.mobile.value = user.mobile || "";
-    userForm.email.value = user.email;
+    userForm.mobile.value = (user.phone || "").split("-").slice(1).join("-");
+    userForm.email.value = user.email || "";
     userForm.mfa.checked = !!user.mfa;
   }
 
@@ -243,34 +311,33 @@ userForm.addEventListener("submit", (e) => {
 
   const roleSelect = userForm.querySelector('.bo-select[data-name="role"]');
   const mfaMethodSelect = userForm.querySelector('.bo-select[data-name="mfaMethod"]');
-  const countryCodeSelect = userForm.querySelector('.bo-select[data-name="countryCode"]');
+  const countryCode = userForm.querySelector('.bo-select[data-name="countryCode"] input[type=hidden]').value || "+91";
   const languageSelect = userForm.querySelector('.bo-select[data-name="language"]');
 
-  const firstName = userForm.firstName.value.trim();
-  const lastName = userForm.lastName.value.trim();
-  const username = userForm.username.value.trim();
-
   const record = {
-    username,
-    firstName,
-    lastName,
-    name: [firstName, lastName].filter(Boolean).join(" ") || username,
+    username: userForm.username.value.trim(),
+    firstName: userForm.firstName.value.trim(),
+    lastName: userForm.lastName.value.trim(),
     email: userForm.email.value.trim(),
-    mobile: userForm.mobile.value.trim(),
-    countryCode: countryCodeSelect.querySelector('input[type=hidden]').value || "+91",
+    phone: userForm.mobile.value.trim() ? `${countryCode}-${userForm.mobile.value.trim()}` : "",
     role: roleSelect.querySelector('input[type=hidden]').value || "—",
     mfaMethod: mfaMethodSelect.querySelector('input[type=hidden]').value || "",
     mfa: userForm.mfa.checked,
     language: languageSelect.querySelector('input[type=hidden]').value || "English",
-    status: editingUserIdx === null ? "Active" : getOrgUsers(org.id)[editingUserIdx].status,
-    lastLogin: editingUserIdx === null ? "—" : getOrgUsers(org.id)[editingUserIdx].lastLogin,
   };
 
-  const list = getOrgUsers(org.id);
-  if (editingUserIdx === null) {
-    list.push(record);
+  if (editingUserId === null) {
+    boUsers.unshift({
+      ...record,
+      id: boUsers.length ? Math.max(...boUsers.map((u) => u.id)) + 1 : 0,
+      dateCreated: new Date().toLocaleDateString("en-GB"),
+      allowedOrgs: org.name,
+      locked: false,
+    });
+    orgUserCurrentPage = 1;
   } else {
-    list[editingUserIdx] = record;
+    const existing = boUsers.find((u) => u.id === editingUserId);
+    if (existing) Object.assign(existing, record);
   }
 
   closeUserDrawer();
