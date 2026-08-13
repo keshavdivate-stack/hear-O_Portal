@@ -1,0 +1,99 @@
+const heartIcon = `<svg width="14" height="14" viewBox="0 0 24 24" fill="#F16C6C"><path d="M12 21C12 21 4 15.5 4 9.8C4 6.6 6.5 4.5 9.2 4.5C10.6 4.5 11.6 5.1 12 5.7C12.4 5.1 13.4 4.5 14.8 4.5C17.5 4.5 20 6.6 20 9.8C20 15.5 12 21 12 21Z"/></svg>`;
+const flagIcon = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M5 21V4" stroke="#F16C6C" stroke-width="1.8" stroke-linecap="round"/><path d="M5 4H16L13.5 8L16 12H5" stroke="#F16C6C" stroke-width="1.8" stroke-linejoin="round"/></svg>`;
+const infoIconBlue = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="#2AA9E0"/><rect x="11" y="7" width="2" height="7" rx="1" fill="#fff"/><rect x="11" y="15.5" width="2" height="2" rx="1" fill="#fff"/></svg>`;
+const infoIconGray = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="#C9CFD6"/><rect x="11" y="7" width="2" height="7" rx="1" fill="#fff"/><rect x="11" y="15.5" width="2" height="2" rx="1" fill="#fff"/></svg>`;
+const pencilIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 20H21" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M16.5 3.5C17.3 2.7 18.6 2.7 19.4 3.5C20.2 4.3 20.2 5.6 19.4 6.4L7 18.8L3 20L4.2 16L16.5 3.5Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>`;
+const kebabIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="1.7" fill="currentColor"/><circle cx="12" cy="12" r="1.7" fill="currentColor"/><circle cx="12" cy="19" r="1.7" fill="currentColor"/></svg>`;
+
+const patientList = [
+  { name: "Alexander White", username: "ABC-1254", mrn: "857452365", phone: "054-857 15423", account: "Enabled", status: "priority", flag: true, since: "Since: 2d | 01.08.2028", monitoring: "monitored" },
+  { name: "Dan Volex",        username: "ABC-1252", mrn: "854745856", phone: "054-857 15423", account: "Enabled", status: "priority", flag: false, since: "Since: 2d | 01.08.2028", monitoring: "monitored" },
+  { name: "Mike Brown",       username: "ABC-1251", mrn: "854125632", phone: "054-857 15423", account: "Enabled", status: "priority", flag: false, since: "Since: 2d | 01.08.2028", monitoring: "unmonitored", monSince: "Since: 1d | 01.09.2028" },
+  { name: "Ariel Fox",        username: "ABC-1238", mrn: "854123658", phone: "054-857 15423", account: "Enabled", status: "priority", flag: false, since: "Since: 3d | 01.07.2028", monitoring: "monitored" },
+  { name: "Jeff Frank",       username: "ABC-1242", mrn: "854123658", phone: "054-857 15423", account: "Enabled", status: "priority", flag: false, since: "Since: 4d | 01.06.2028", monitoring: "monitored" },
+  { name: "Aric Snow",        username: "ABC-1283", mrn: "854125632", phone: "054-857 15423", account: "Enabled", status: "priority", flag: false, since: "Since: 8d | 01.02.2028", monitoring: "monitored" },
+  { name: "Abe Lol",          username: "ABC-1222", mrn: "854125632", phone: "054-857 15423", account: "Enabled", status: "active", since: "Since: 3d | 01.07.2028", monitoring: "monitored" },
+  { name: "Annie Zaplin",     username: "ABC-1222", mrn: "854125632", phone: "054-857 15423", account: "Enabled", status: "active", since: "Since: 3d | 01.07.2028", monitoring: "monitored" },
+  { name: "Nathan Norash",    username: "ABC-1222", mrn: "854125632", phone: "054-857 15423", account: "Enabled", status: "active", since: "Since: 3d | 01.07.2028", monitoring: "monitored" },
+  { name: "Henry Fisher",     username: "ABC-1220", mrn: "965412589", phone: "054-857 15423", account: "Enabled", status: "registered", since: "Since: 3d | 01.07.2028", monitoring: "none" },
+  { name: "Josh Ericson",     username: "ABC-1222", mrn: "854125632", phone: "054-857 15423", account: "Enabled", status: "baseline", since: "Since: 3d | 01.07.2028", monitoring: "monitored", monInfo: true },
+  { name: "Jack Harris",      username: "ABC-1221", mrn: "854125698", phone: "054-857 15423", account: "Enabled", status: "none", monitoring: "unmonitored", monSince: "Since: 5d | 01.05.2028" },
+];
+
+function statusCell(p) {
+  if (p.status === "priority") {
+    return `
+      <div class="status-cell">
+        <span class="status-line status-priority">${heartIcon} Priority ${p.flag ? flagIcon : `<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#9AA5B1" stroke-width="1.8"/><path d="M12 8V13" stroke="#9AA5B1" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="16" r="1" fill="#9AA5B1"/></svg>`}</span>
+        <span class="status-since">${p.since}</span>
+      </div>`;
+  }
+  if (p.status === "active") {
+    return `
+      <div class="status-cell">
+        <span class="status-line status-active">Active</span>
+        <span class="status-since">${p.since}</span>
+      </div>`;
+  }
+  if (p.status === "registered") {
+    return `
+      <div class="status-cell">
+        <span class="status-line status-muted">Registered</span>
+        <span class="status-since">${p.since}</span>
+      </div>`;
+  }
+  if (p.status === "baseline") {
+    return `
+      <div class="status-cell">
+        <span class="status-line status-muted">Baseline</span>
+        <span class="status-since">${p.since}</span>
+      </div>`;
+  }
+  return `
+    <div class="status-cell">
+      <span class="status-line status-muted">None ${infoIconGray}</span>
+    </div>`;
+}
+
+function monitoringCell(p) {
+  if (p.monitoring === "monitored") {
+    return `
+      <div class="mon-cell">
+        <span class="mon-line mon-monitored">Monitored ${p.monInfo ? infoIconBlue : ""}</span>
+      </div>`;
+  }
+  if (p.monitoring === "unmonitored") {
+    return `
+      <div class="mon-cell">
+        <span class="mon-line mon-unmonitored">${infoIconBlue} Unmonitored</span>
+        <span class="status-since">${p.monSince || ""}</span>
+      </div>`;
+  }
+  return `<div class="mon-cell"><span class="mon-line mon-none">None</span></div>`;
+}
+
+const rows = document.getElementById("patientListRows");
+rows.innerHTML = patientList
+  .map(
+    (p) => `
+    <tr>
+      <td><a class="lt-name ${p.status === "priority" ? "priority" : "active-name"}" href="patient-data.html">${p.name}</a></td>
+      <td>${p.username}</td>
+      <td>${p.mrn}</td>
+      <td>${p.phone}</td>
+      <td>${p.account}</td>
+      <td>${statusCell(p)}</td>
+      <td>${monitoringCell(p)}</td>
+      <td>
+        <div class="action-cell">
+          <button class="action-icon" aria-label="Edit">${pencilIcon}</button>
+          <button class="action-icon kebab" aria-label="More">${kebabIcon}</button>
+        </div>
+      </td>
+    </tr>`
+  )
+  .join("");
+
+document.getElementById("clearFilters").addEventListener("click", () => {
+  document.getElementById("searchInput").value = "";
+});

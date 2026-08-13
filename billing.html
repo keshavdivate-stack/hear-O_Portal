@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>HearO | Billing</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <div class="app">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="logo">
+          <img src="https://web.dev3.cordiomed.com/assets/new-screen-assets/components/Side%20menu%20icon.svg" alt="HearO" class="logo-mark logo-mark-collapsed" />
+          <img src="https://web.dev3.cordiomed.com/assets/icons/logo.svg" alt="HearO" class="logo-mark logo-mark-expanded" />
+        </div>
+      </div>
+
+      <nav class="nav-list">
+        <a href="index.html" class="nav-item">
+          <span class="nav-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="17" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3 9H21" stroke="currentColor" stroke-width="1.8"/><path d="M8 2V6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M16 2V6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M7 13L10 16L14 12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+          <span class="nav-label">Dashboard</span>
+        </a>
+        <a href="patient-list.html" class="nav-item">
+          <span class="nav-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="9" cy="8" r="3.2" stroke="currentColor" stroke-width="1.8"/><path d="M2.5 20C2.5 16.5 5.5 14 9 14C12.5 14 15.5 16.5 15.5 20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="17" cy="8.5" r="2.6" stroke="currentColor" stroke-width="1.6"/><path d="M15.5 20C15.5 17 17.8 15 20.5 15" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          </span>
+          <span class="nav-label">Patient List</span>
+        </a>
+        <a href="registration.html" class="nav-item">
+          <span class="nav-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="10" cy="8" r="3.5" stroke="currentColor" stroke-width="1.8"/><path d="M2.5 20.5C2.5 16.6 5.8 14 10 14C14.2 14 17.5 16.6 17.5 20.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M18 8H22" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M20 6V10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          </span>
+          <span class="nav-label">Registration</span>
+        </a>
+        <a href="billing.html" class="nav-item active">
+          <span class="nav-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><path d="M12 7V17" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M15 9.5C15 8.1 13.7 7 12 7C10.3 7 9 8.1 9 9.5C9 10.9 10.3 11.5 12 12C13.7 12.5 15 13.1 15 14.5C15 15.9 13.7 17 12 17C10.3 17 9 15.9 9 14.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          </span>
+          <span class="nav-label">Billing</span>
+        </a>
+        <a href="#" class="nav-item">
+          <span class="nav-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><path d="M12 7V12L15.5 14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+          <span class="nav-label">Audit Trail</span>
+        </a>
+        <a href="manage-users.html" class="nav-item">
+          <span class="nav-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="9" cy="8" r="3.2" stroke="currentColor" stroke-width="1.8"/><path d="M2.5 20C2.5 16.5 5.5 14 9 14C12.5 14 15.5 16.5 15.5 20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="18" cy="16.5" r="2.4" stroke="currentColor" stroke-width="1.5"/><path d="M18 13.8V14.6M18 18.4V19.2M15.6 16.5H16.4M19.6 16.5H20.4M16.3 14.8L16.85 15.35M19.15 17.65L19.7 18.2M19.7 14.8L19.15 15.35M16.85 17.65L16.3 18.2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+          </span>
+          <span class="nav-label">Manage Users</span>
+        </a>
+      </nav>
+    </aside>
+
+    <!-- MAIN -->
+    <div class="main" id="main">
+
+      <!-- TOPBAR -->
+      <header class="topbar">
+        <h1 class="page-title">Billing</h1>
+        <div class="topbar-actions">
+          <div class="topbar-item">
+            <button class="icon-btn" aria-label="Add" id="orgSwitchBtn">
+              <svg width="19" height="19" viewBox="0 0 24 24" fill="none"><path d="M10 3H14C14.55 3 15 3.45 15 4V9H20C20.55 9 21 9.45 21 10V14C21 14.55 20.55 15 20 15H15V20C15 20.55 14.55 21 14 21H10C9.45 21 9 20.55 9 20V15H4C3.45 15 3 14.55 3 14V10C3 9.45 3.45 9 4 9H9V4C9 3.45 9.45 3 10 3Z" stroke="#6B7684" stroke-width="1.6" stroke-linejoin="round"/></svg>
+            </button>
+            <div class="topbar-popover org-popover" id="orgPopover">
+              <label class="org-radio-item">
+                <input type="radio" name="org" value="b01" checked />
+                <span class="radio-dot"></span>
+                B01
+              </label>
+              <label class="org-radio-item">
+                <input type="radio" name="org" value="101" />
+                <span class="radio-dot"></span>
+                101
+              </label>
+              <label class="org-radio-item">
+                <input type="radio" name="org" value="104" />
+                <span class="radio-dot"></span>
+                104
+              </label>
+              <label class="org-radio-item">
+                <input type="radio" name="org" value="b03" />
+                <span class="radio-dot"></span>
+                B03
+              </label>
+              <label class="org-radio-item">
+                <input type="radio" name="org" value="105" />
+                <span class="radio-dot"></span>
+                105
+              </label>
+            </div>
+          </div>
+          <div class="topbar-item">
+            <button class="icon-btn" aria-label="Language" id="langBtn">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#6B7684" stroke-width="1.8"/><path d="M3 12H21" stroke="#6B7684" stroke-width="1.8"/><path d="M12 3C14.5 5.7 15.8 8.8 15.8 12C15.8 15.2 14.5 18.3 12 21C9.5 18.3 8.2 15.2 8.2 12C8.2 8.8 9.5 5.7 12 3Z" stroke="#6B7684" stroke-width="1.8"/></svg>
+            </button>
+            <div class="topbar-popover org-popover" id="langPopover">
+              <label class="org-radio-item">
+                <input type="radio" name="lang" value="en" checked />
+                <span class="radio-dot"></span>
+                English
+              </label>
+              <label class="org-radio-item">
+                <input type="radio" name="lang" value="es" />
+                <span class="radio-dot"></span>
+                Español
+              </label>
+              <label class="org-radio-item">
+                <input type="radio" name="lang" value="hi" />
+                <span class="radio-dot"></span>
+                हिन्दी
+              </label>
+            </div>
+          </div>
+          <div class="topbar-item">
+            <button class="icon-btn badge" aria-label="Notifications" data-count="2" id="notifBtn">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M18 9.5C18 7.7 17.3 6 16 4.8C14.7 3.6 13 3 11.3 3.1C8.1 3.3 5.6 6.1 5.6 9.4V12.5C5.6 13.1 5.4 13.7 5 14.2L4 15.5C3.4 16.3 4 17.5 5 17.5H19C20 17.5 20.6 16.3 20 15.5L19 14.2C18.6 13.7 18.4 13.1 18.4 12.5" stroke="#6B7684" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M9.5 20.5C10 21.3 10.9 21.8 12 21.8C13.1 21.8 14 21.3 14.5 20.5" stroke="#6B7684" stroke-width="1.6" stroke-linecap="round"/></svg>
+            </button>
+            <div class="topbar-popover notif-popover" id="notifPopover">
+              <h3 class="notif-title">Notifications</h3>
+              <div class="notif-tabs" id="notifTabs">
+                <button class="notif-tab" data-tab="team">Team</button>
+                <button class="notif-tab active" data-tab="foryou">For you</button>
+              </div>
+              <div class="notif-list" id="notifList"></div>
+              <a href="#" class="notif-view-more">View more</a>
+            </div>
+          </div>
+          <button class="icon-btn badge" aria-label="Messages" data-count="1">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 5.5C4 4.4 4.9 3.5 6 3.5H18C19.1 3.5 20 4.4 20 5.5V14.5C20 15.6 19.1 16.5 18 16.5H9L5 20V16.5H6C4.9 16.5 4 15.6 4 14.5V5.5Z" stroke="#6B7684" stroke-width="1.6" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="avatar">EC</div>
+          <button class="icon-btn" aria-label="More">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="1.6" fill="#6B7684"/><circle cx="12" cy="12" r="1.6" fill="#6B7684"/><circle cx="12" cy="19" r="1.6" fill="#6B7684"/></svg>
+          </button>
+        </div>
+      </header>
+
+      <!-- CONTENT -->
+      <div class="list-content">
+
+        <div class="filters-bar">
+          <div class="search-pill">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#9AA5B1" stroke-width="1.8"/><path d="M21 21L16.5 16.5" stroke="#9AA5B1" stroke-width="1.8" stroke-linecap="round"/></svg>
+            <input type="text" id="searchInput" placeholder="Search patient" />
+          </div>
+
+          <button class="filter-btn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M9 12L11 14L15 9" stroke="#6B7684" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="9" stroke="#6B7684" stroke-width="1.5"/></svg>
+            Eligibility Code
+            <svg class="caret" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#6B7684" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+
+          <button class="filter-btn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="14" rx="2" stroke="#6B7684" stroke-width="1.5"/><path d="M8 21H16" stroke="#6B7684" stroke-width="1.5" stroke-linecap="round"/><path d="M12 18V21" stroke="#6B7684" stroke-width="1.5" stroke-linecap="round"/></svg>
+            Billing Status
+            <svg class="caret" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#6B7684" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+
+          <button class="filter-btn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="16" rx="2" stroke="#6B7684" stroke-width="1.6"/><path d="M3 10H21" stroke="#6B7684" stroke-width="1.6"/><path d="M8 3V7" stroke="#6B7684" stroke-width="1.6" stroke-linecap="round"/><path d="M16 3V7" stroke="#6B7684" stroke-width="1.6" stroke-linecap="round"/></svg>
+            Jan. 2026
+          </button>
+
+          <button class="clear-filters" id="clearFilters">Clean all filters</button>
+
+          <button class="export-btn" id="exportReportBtn">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 15V3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M7 8L12 3L17 8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 15V19C4 20.1 4.9 21 6 21H18C19.1 21 20 20.1 20 19V15" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Export Report
+          </button>
+        </div>
+
+        <div class="table-card">
+          <div class="table-scroll">
+            <table class="list-table bill-table">
+              <thead>
+                <tr>
+                  <th class="bill-th-check"><span class="bill-checkbox" id="selectAllBox"></span></th>
+                  <th>Patient Name</th>
+                  <th>ID Number</th>
+                  <th>Enrollment<br />Date</th>
+                  <th>99453<br />Initial Training</th>
+                  <th>99454<br />16 Days Check-ins</th>
+                  <th>99457<br />20 Min Monitoring</th>
+                  <th>99458 - Additional<br />20 Min Monitoring</th>
+                  <th>Time<br />Logged</th>
+                  <th>Billing<br />Status</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="billingRows"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="list-footer">
+          <span id="pageRangeLabel">1-25 of 68</span>
+          <div class="list-pager">
+            <button class="pager-btn" aria-label="Previous page">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15 6L9 12L15 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <button class="pager-btn" aria-label="Next page">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 6L15 12L9 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+<script src="js/topbar.js"></script>
+<script src="js/table-scroll.js"></script>
+<script src="js/billing.js"></script>
+</body>
+</html>

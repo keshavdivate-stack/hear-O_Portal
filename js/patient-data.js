@@ -1,0 +1,743 @@
+/* ---------------- Shared day axis (31 days, gap = 21-23 Dec) ---------------- */
+const chartDays = [
+  { label: "11", month: "Dec", status: "baseline" },
+  { label: "12", month: "Dec", status: "baseline" },
+  { label: "13", month: "Dec", status: "baseline" },
+  { label: "14", month: "Dec", status: "baseline" },
+  { label: "15", month: "Dec", status: "active" },
+  { label: "16", month: "Dec", status: "active" },
+  { label: "17", month: "Dec", status: "active" },
+  { label: "18", month: "Dec", status: "active" },
+  { label: "19", month: "Dec", status: "active" },
+  { label: "20", month: "Dec", status: "active" },
+  { label: "21", month: "Dec", status: "active", gap: true },
+  { label: "22", month: "Dec", status: "active", gap: true },
+  { label: "23", month: "Dec", status: "active", gap: true },
+  { label: "24", month: "Dec", status: "active" },
+  { label: "25", month: "Dec", status: "active" },
+  { label: "26", month: "Dec", status: "active" },
+  { label: "27", month: "Dec", status: "active" },
+  { label: "28", month: "Dec", status: "active" },
+  { label: "29", month: "Dec", status: "active" },
+  { label: "30", month: "Dec", status: "active" },
+  { label: "31", month: "Dec", status: "active" },
+  { label: "01", month: "Jan", status: "active" },
+  { label: "02", month: "Jan", status: "active" },
+  { label: "03", month: "Jan", status: "active" },
+  { label: "04", month: "Jan", status: "active" },
+  { label: "05", month: "Jan", status: "active" },
+  { label: "06", month: "Jan", status: "active" },
+  { label: "07", month: "Jan", status: "priority", heart: true },
+  { label: "08", month: "Jan", status: "priority" },
+  { label: "09", month: "Jan", status: "priority" },
+  { label: "10", month: "Jan", status: "priority", today: true },
+];
+
+const GAP_IDX = chartDays.reduce((acc, d, i) => (d.gap ? [...acc, i] : acc), []);
+
+function buildDayScale(containerId) {
+  document.getElementById(containerId).innerHTML = chartDays
+    .map((d) => `<span>${d.today ? `<span class="today">${d.label}</span>` : d.label}</span>`)
+    .join("");
+}
+
+/* ---------------- Overview chart (status timeline) ---------------- */
+const COL_W = 40;
+const PAD = 30;
+const CHART_W = PAD * 2 + (chartDays.length - 1) * COL_W;
+const CHART_H = 190;
+const Y = { baseline: 150, active: 90, priority: 78 };
+
+function xAt(i) { return PAD + i * COL_W; }
+function yAt(d) { return Y[d.status]; }
+
+function buildOverviewChart() {
+  const pts = chartDays.map((d, i) => ({ x: xAt(i), y: yAt(d), d }));
+
+  const baselineIdx = chartDays.findIndex((d) => d.status !== "baseline");
+  const priorityIdx = chartDays.findIndex((d) => d.status === "priority");
+
+  const baselinePts = pts.slice(0, baselineIdx);
+  const activePts = pts.slice(baselineIdx - 1, priorityIdx);
+  const priorityPts = pts.slice(priorityIdx - 1);
+
+  const toPoly = (arr) => arr.map((p) => `${p.x},${p.y}`).join(" ");
+
+  const hatchX = xAt(GAP_IDX[0]) - COL_W / 2;
+  const hatchW = xAt(GAP_IDX[GAP_IDX.length - 1]) - xAt(GAP_IDX[0]) + COL_W;
+
+  let markers = "";
+  pts.forEach((p) => {
+    if (p.d.gap) return;
+    if (p.d.status === "baseline") {
+      markers += `<rect x="${p.x - 4}" y="${p.y - 4}" width="8" height="8" rx="2" fill="#C9CFD6" />`;
+    } else if (p.d.status === "active") {
+      markers += `<circle cx="${p.x}" cy="${p.y}" r="4.5" fill="#fff" stroke="#3FBE84" stroke-width="2" />`;
+    } else if (p.d.status === "priority") {
+      markers += `<circle cx="${p.x}" cy="${p.y}" r="5.5" fill="#F16C6C" />`;
+    }
+    if (p.d.heart) {
+      markers += `<path transform="translate(${p.x - 9}, ${p.y - 40})" d="M9 16C9 16 1 10.9 1 5.7C1 3 3.1 1.2 5.4 1.2C6.6 1.2 7.5 1.7 9 2.9C10.5 1.7 11.4 1.2 12.6 1.2C14.9 1.2 17 3 17 5.7C17 10.9 9 16 9 16Z" fill="#F16C6C"/>`;
+    }
+  });
+
+  const svg = `
+    <svg class="chart-svg" viewBox="0 0 ${CHART_W} ${CHART_H}" width="${CHART_W}" height="${CHART_H}" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <pattern id="hatch" width="7" height="7" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
+          <line x1="0" y1="0" x2="0" y2="7" stroke="#D8DCE2" stroke-width="3" />
+        </pattern>
+      </defs>
+      <rect x="${hatchX}" y="6" width="${hatchW}" height="${CHART_H - 24}" fill="url(#hatch)" stroke="#C9CFD6" stroke-width="1" stroke-dasharray="4 3" rx="4" />
+      <polyline points="${toPoly(baselinePts)}" fill="none" stroke="#C9CFD6" stroke-width="2.5" />
+      <polyline points="${toPoly(activePts)}" fill="none" stroke="#3FBE84" stroke-width="2.5" />
+      <polyline points="${toPoly(priorityPts)}" fill="none" stroke="#F16C6C" stroke-width="2.5" />
+      ${markers}
+    </svg>`;
+
+  document.getElementById("overviewChartWrap").innerHTML = svg;
+  buildDayScale("chartDayScale");
+}
+
+buildOverviewChart();
+
+/* ---------------- Recordings ---------------- */
+const recordingStatus = [
+  "valid", "valid", "valid", "none", "valid", "valid", "none", "none", "none", "low",
+  "none", "none", "valid",
+  "valid", "valid", "valid", "valid", "none", "valid", "valid", "valid",
+  "valid", "none", "valid", "valid", "valid", "none", "low", "low", "valid", "valid",
+];
+
+function buildRecordings() {
+  const checkIcon = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  document.getElementById("recordingsRow").innerHTML = chartDays
+    .map((d, i) => {
+      const s = recordingStatus[i];
+      let icon = "";
+      let cls = "rec-none";
+      if (s === "valid") { cls = "rec-valid"; icon = checkIcon; }
+      else if (s === "low") { cls = "rec-low"; icon = "!"; }
+      return `
+        <div class="rec-day">
+          <div class="rec-icon ${cls}">${icon}</div>
+          <span class="rec-day-label">${d.label}</span>
+        </div>`;
+    })
+    .join("");
+}
+
+buildRecordings();
+
+/* ---------------- Activity chart (Steps / Distance / Elevation) ---------------- */
+const activityData = chartDays.map((d, i) => {
+  if (d.gap) return null;
+  const seed = (i * 37) % 100;
+  return {
+    steps: 60 + (seed % 60) + (i > 20 ? 30 : 0),
+    distance: 40 + ((seed * 3) % 55) + (i > 20 ? 20 : 0),
+    elevation: 30 + ((seed * 5) % 45),
+  };
+});
+
+function buildActivityChart() {
+  const H = 150;
+  const top = 10;
+  const bottom = top + H;
+
+  const toPts = (key) => {
+    const vals = activityData.filter(Boolean).map((v) => v[key]);
+    const max = Math.max(...vals);
+    const min = Math.min(...vals);
+    return chartDays
+      .map((d, i) => {
+        const v = activityData[i];
+        if (!v) return null;
+        const y = bottom - ((v[key] - min) / (max - min || 1)) * H;
+        return { x: xAt(i), y };
+      })
+      .filter(Boolean);
+  };
+
+  const toPoly = (pts) => pts.map((p) => `${p.x},${p.y.toFixed(1)}`).join(" ");
+  const stepsPts = toPts("steps");
+  const distPts = toPts("distance");
+  const elevPts = toPts("elevation");
+
+  const dots = (pts, color) => pts.map((p) => `<circle cx="${p.x}" cy="${p.y.toFixed(1)}" r="3" fill="${color}" />`).join("");
+
+  const hatchX = xAt(GAP_IDX[0]) - COL_W / 2;
+  const hatchW = xAt(GAP_IDX[GAP_IDX.length - 1]) - xAt(GAP_IDX[0]) + COL_W;
+
+  const svg = `
+    <svg class="chart-svg" viewBox="0 0 ${CHART_W} ${top + H + 20}" width="${CHART_W}" height="${top + H + 20}" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <pattern id="hatchA" width="7" height="7" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
+          <line x1="0" y1="0" x2="0" y2="7" stroke="#D8DCE2" stroke-width="3" />
+        </pattern>
+      </defs>
+      <rect x="${hatchX}" y="2" width="${hatchW}" height="${top + H + 12}" fill="url(#hatchA)" stroke="#C9CFD6" stroke-width="1" stroke-dasharray="4 3" rx="4" />
+      <polyline points="${toPoly(stepsPts)}" fill="none" stroke="#8E97F2" stroke-width="2" />
+      <polyline points="${toPoly(distPts)}" fill="none" stroke="#1CBFA6" stroke-width="2" />
+      <polyline points="${toPoly(elevPts)}" fill="none" stroke="#B23FD8" stroke-width="2" stroke-dasharray="4 3" />
+      ${dots(stepsPts, "#8E97F2")}
+      ${dots(distPts, "#1CBFA6")}
+    </svg>`;
+
+  document.getElementById("activityChartWrap").innerHTML = svg;
+  buildDayScale("activityDayScale");
+}
+
+buildActivityChart();
+
+/* ---------------- Generic axis line chart (Blood Pressure / Weight / Heart Rate / SpO2) ---------------- */
+let lineChartSeq = 0;
+
+function buildAxisLineChart(wrapId, dayScaleId, seriesList, domainMin, domainMax, H) {
+  const span = domainMax - domainMin;
+  const patternId = `hatchLine${lineChartSeq++}`;
+
+  function toPts(vals) {
+    return chartDays
+      .map((d, i) => {
+        const v = vals[i];
+        if (v == null) return null;
+        let y = H - ((v - domainMin) / span) * H;
+        y = Math.min(H - 5, Math.max(5, y));
+        return { x: xAt(i), y };
+      })
+      .filter(Boolean);
+  }
+
+  const hatchX = xAt(GAP_IDX[0]) - COL_W / 2;
+  const hatchW = xAt(GAP_IDX[GAP_IDX.length - 1]) - xAt(GAP_IDX[0]) + COL_W;
+
+  let inner = `<rect x="${hatchX}" y="2" width="${hatchW}" height="${H - 4}" fill="url(#${patternId})" stroke="#C9CFD6" stroke-width="1" stroke-dasharray="4 3" rx="4" />`;
+
+  seriesList.forEach((s) => {
+    const pts = toPts(s.data);
+    const poly = pts.map((p) => `${p.x},${p.y.toFixed(1)}`).join(" ");
+    inner += `<polyline points="${poly}" fill="none" stroke="${s.color}" stroke-width="2.5" />`;
+    inner += pts.map((p) => `<circle cx="${p.x}" cy="${p.y.toFixed(1)}" r="5" fill="${s.color}" />`).join("");
+  });
+
+  const svg = `
+    <svg class="chart-svg" viewBox="0 0 ${CHART_W} ${H}" width="${CHART_W}" height="${H}" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <pattern id="${patternId}" width="7" height="7" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
+          <line x1="0" y1="0" x2="0" y2="7" stroke="#D8DCE2" stroke-width="3" />
+        </pattern>
+      </defs>
+      ${inner}
+    </svg>`;
+
+  document.getElementById(wrapId).innerHTML = svg;
+  buildDayScale(dayScaleId);
+}
+
+function seriesValues(base, jitter) {
+  return chartDays.map((d) => {
+    if (d.gap) return null;
+    return Math.round(base + (Math.random() * jitter - jitter / 2));
+  });
+}
+
+/* -- Blood Pressure -- */
+const systolicData = seriesValues(105, 20);
+const diastolicData = seriesValues(65, 15);
+buildAxisLineChart("bpChartWrap", "bpDayScale", [
+  { data: systolicData, color: "#D9A628" },
+  { data: diastolicData, color: "#F2994A" },
+], 60, 180, 150);
+
+/* -- Heart Rate (Measurement) -- */
+const heartRateMData = seriesValues(112, 25);
+buildAxisLineChart("hrmChartWrap", "hrmDayScale", [{ data: heartRateMData, color: "#1CBFA6" }], 60, 180, 150);
+
+/* -- Blood Saturation (SpO2) -- */
+const spo2Data = seriesValues(98, 2.4);
+buildAxisLineChart("spo2ChartWrap", "spo2DayScale", [{ data: spo2Data, color: "#7C7CE0" }], 96, 100, 150);
+
+/* -- Weight (KG stored, toggled to lbs for display) -- */
+const weightKgData = seriesValues(80, 5).map((v) => (v == null ? null : v + 0.5));
+let weightUnit = "lbs";
+
+function kgToLbs(kg) { return kg * 2.20462; }
+
+function renderWeightChart() {
+  const isLbs = weightUnit === "lbs";
+  const data = weightKgData.map((v) => (v == null ? null : (isLbs ? kgToLbs(v) : v)));
+  const domainMin = isLbs ? 176 : 80;
+  const domainMax = isLbs ? 220 : 100;
+  document.getElementById("weightYAxis").innerHTML = isLbs
+    ? "<span>220</span><span>198</span><span>176</span>"
+    : "<span>100</span><span>90</span><span>80</span>";
+  document.getElementById("weightLegendLabel").textContent = isLbs ? "lbs" : "kg";
+  buildAxisLineChart("weightChartWrap", "weightDayScale", [{ data, color: "#2E5AAC" }], domainMin, domainMax, 150);
+}
+
+renderWeightChart();
+
+document.querySelectorAll("#weightUnitToggle span").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    weightUnit = btn.dataset.unit;
+    document.querySelectorAll("#weightUnitToggle span").forEach((b) => b.classList.remove("active"));
+    btn.classList.add("active");
+    renderWeightChart();
+  });
+});
+
+/* ---------------- Sleep chart ---------------- */
+const sleepData = [
+  { deep: 20, light: 45, rem: 25, awake: 10, mins: 380 },
+  { deep: 18, light: 48, rem: 24, awake: 10, mins: 360 },
+  { deep: 22, light: 44, rem: 22, awake: 12, mins: 375 },
+  { deep: 19, light: 47, rem: 26, awake: 8, mins: 390 },
+  { deep: 21, light: 46, rem: 23, awake: 10, mins: 370 },
+  { deep: 17, light: 49, rem: 25, awake: 9, mins: 365 },
+  { deep: 20, light: 45, rem: 24, awake: 11, mins: 355 },
+  { deep: 23, light: 43, rem: 22, awake: 12, mins: 380 },
+  { deep: 19, light: 46, rem: 25, awake: 10, mins: 370 },
+  { deep: 20, light: 45, rem: 24, awake: 11, mins: 368 },
+  null, null, null,
+  { deep: 21, light: 45, rem: 24, awake: 10, mins: 375 },
+  { deep: 18, light: 47, rem: 25, awake: 10, mins: 360 },
+  { deep: 20, light: 46, rem: 23, awake: 11, mins: 365 },
+  { deep: 22, light: 44, rem: 24, awake: 10, mins: 385 },
+  { deep: 19, light: 45, rem: 26, awake: 10, mins: 370 },
+  { deep: 21, light: 46, rem: 22, awake: 11, mins: 372 },
+  { deep: 24, light: 42, rem: 22, awake: 12, mins: 400 },
+  { deep: 20, light: 45, rem: 25, awake: 10, mins: 368 },
+  { deep: 18, light: 44, rem: 24, awake: 14, mins: 350 },
+  { deep: 22, light: 43, rem: 23, awake: 12, mins: 378 },
+  { deep: 9, light: 45, rem: 35, awake: 11, mins: 476 },
+  { deep: 20, light: 46, rem: 24, awake: 10, mins: 370 },
+  { deep: 19, light: 45, rem: 25, awake: 11, mins: 362 },
+  { deep: 21, light: 44, rem: 23, awake: 12, mins: 358 },
+  { deep: 20, light: 46, rem: 24, awake: 10, mins: 366 },
+  { deep: 20, light: 45, rem: 24, awake: 11, mins: 369 },
+  { deep: 9, light: 45, rem: 35, awake: 11, mins: 476 },
+];
+
+function fmtMins(m) {
+  const h = Math.floor(m / 60);
+  const mm = m % 60;
+  return `${h} hr ${mm} min`;
+}
+
+function buildSleepChart() {
+  const wrap = document.getElementById("sleepChart");
+  wrap.innerHTML = chartDays
+    .map((d, i) => {
+      const s = sleepData[i];
+      if (!s) {
+        return `<div class="sleep-col"><div class="sleep-bars gap"></div><span class="sleep-col-label">${d.label}</span></div>`;
+      }
+      const total = 220;
+      const deepH = (s.deep / 100) * total;
+      const lightH = (s.light / 100) * total;
+      const remH = (s.rem / 100) * total;
+      const awakeH = (s.awake / 100) * total;
+      return `
+        <div class="sleep-col">
+          <div class="sleep-tooltip">
+            <div class="tt-time">12:00AM-12:00AM<br/>${fmtMins(s.mins)}</div>
+            <div class="tt-awake">${s.awake}% Awake</div>
+            <div class="tt-rem">${s.rem}% REM</div>
+            <div class="tt-light">${s.light}% Light</div>
+            <div class="tt-deep">${s.deep}% Deep</div>
+          </div>
+          <div class="sleep-bars">
+            <div class="seg" style="height:${deepH}px; background:#2E5AAC;"></div>
+            <div class="seg" style="height:${lightH}px; background:#3FBE84;"></div>
+            <div class="seg" style="height:${remH}px; background:#8B6BD1;"></div>
+            <div class="seg" style="height:${awakeH}px; background:#F2994A;"></div>
+          </div>
+          <span class="sleep-col-label">${d.label}</span>
+        </div>`;
+    })
+    .join("");
+}
+
+buildSleepChart();
+
+/* ---------------- Generic min/max range-bar chart ---------------- */
+function buildRangeChart(containerId, data, domainMin, domainMax, trackH, color) {
+  const el = document.getElementById(containerId);
+  el.innerHTML = chartDays
+    .map((d, i) => {
+      const v = data[i];
+      if (!v) {
+        return `<div class="range-col"><div class="range-gap-hatch"></div><span class="range-col-label">${d.label}</span></div>`;
+      }
+      const span = domainMax - domainMin;
+      const top = trackH * (1 - (v.max - domainMin) / span);
+      const h = Math.max(10, trackH * ((v.max - v.min) / span));
+      return `
+        <div class="range-col">
+          <div class="range-bar" style="top:${top.toFixed(1)}px; height:${h.toFixed(1)}px; background:${color};"></div>
+          <span class="range-col-label">${d.label}</span>
+        </div>`;
+    })
+    .join("");
+}
+
+function rangeSeries(baseMin, baseMax, jitter) {
+  return chartDays.map((d) => {
+    if (d.gap) return null;
+    const m = Math.random() * jitter - jitter / 2;
+    return { min: Math.round(baseMin + m), max: Math.round(baseMax + m) };
+  });
+}
+
+const heartData = rangeSeries(70, 150, 30);
+const oxygenData = rangeSeries(92, 99, 6);
+const respirationData = rangeSeries(16, 32, 8);
+
+buildRangeChart("heartChart", heartData, 45, 200, 150, "#1CBFA6");
+buildRangeChart("oxygenChart", oxygenData, 80, 100, 150, "#F2994A");
+buildRangeChart("respirationChart", respirationData, 10, 50, 150, "#7C7CE0");
+
+/* ---------------- Clinical: Care Recommendations ---------------- */
+const careRecs = [
+  {
+    active: true,
+    title: "Increase loop diuretic",
+    desc: "Increase Furosemide by 50% for 3 days following a 2.1 kg weight gain and rising respiration rate.",
+    status: "Active",
+    statusClass: "status-active",
+    date: "08/08/2026",
+    from: { initials: "LK", cls: "av-blue", name: "Dr. Lior Klein" },
+    to: { initials: "AE", cls: "av-orange", name: "Ayelet Er, NP" },
+    note: "Patient contacted — dose confirmed",
+  },
+  {
+    active: false,
+    title: "Invite to clinic",
+    desc: "Voice biomarker sustained above baseline for 6 consecutive days. Invite for in-person review.",
+    status: "Completed",
+    statusClass: "status-completed",
+    date: "07/22/2026",
+    from: { initials: "SL", cls: "av-purple", name: "Dr. Shani Levin" },
+    to: { initials: "MP", cls: "av-pink", name: "Max Payne" },
+    note: "Appointment booked 07/28",
+  },
+  {
+    active: false,
+    title: "Review medication adherence",
+    desc: "Three missed ARNI doses in the last 7 days. Review barriers with the patient.",
+    status: "Completed",
+    statusClass: "status-completed",
+    date: "06/30/2026",
+    from: { initials: "LK", cls: "av-blue", name: "Dr. Lior Klein" },
+    to: { initials: "SK", cls: "av-teal", name: "Sandy Kohl" },
+    note: "Reminder schedule adjusted",
+  },
+];
+
+document.getElementById("careRecCount").textContent = careRecs.length;
+document.getElementById("careRecList").innerHTML = careRecs
+  .map(
+    (r) => `
+    <div class="care-rec-item ${r.active ? "active-rec" : ""}">
+      <div class="care-rec-top">
+        <div>
+          <h4 class="care-rec-title">${r.title}</h4>
+          <p class="care-rec-desc">${r.desc}</p>
+        </div>
+        <div class="care-rec-status">
+          <span class="status-chip ${r.statusClass}">${r.status}</span>
+          <span class="status-date">${r.date}</span>
+        </div>
+      </div>
+      <div class="care-rec-handoff">
+        <span class="init-avatar ${r.from.cls}">${r.from.initials}</span>
+        <span class="handoff-person">${r.from.name}</span>
+        <span class="handoff-arrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 12H19M13 6L19 12L13 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <span class="init-avatar ${r.to.cls}">${r.to.initials}</span>
+        <span class="handoff-person">${r.to.name}</span>
+        <span class="handoff-note">&middot; ${r.note}</span>
+        <span class="handoff-spacer"></span>
+        <button class="btn-open">Open</button>
+      </div>
+    </div>`
+  )
+  .join("");
+
+/* ---------------- Clinical: Medications ---------------- */
+function dailyAdherence(missedIdx) {
+  return chartDays.map((d, i) => !missedIdx.includes(i));
+}
+
+const medications = [
+  {
+    hf: true, name: "Furosemide", cls: "Loop diuretic", freq: "Daily", dose: "40 mg", schedule: "Once daily, morning",
+    warning: null, adherence: dailyAdherence([8, 21, 26, 30]), source: "Care rec", srcClass: "src-carerec",
+  },
+  {
+    hf: true, name: "Carvedilol", cls: "Beta blocker", freq: "Twice daily", dose: "6.25 mg", schedule: "Twice daily",
+    warning: null, adherence: dailyAdherence([5, 12, 19, 27]), source: "Clinic", srcClass: "src-clinic",
+  },
+  {
+    hf: true, name: "Sacubitril/Valsartan", cls: "ARNI", freq: "Twice daily", dose: "49/51 mg", schedule: "Twice daily",
+    warning: "Monitor renal function with diuretic", adherence: dailyAdherence([2, 3, 9, 15, 22, 23, 28, 29]), source: "Clinic", srcClass: "src-clinic",
+  },
+  {
+    hf: true, name: "Spironolactone", cls: "MRA", freq: "Daily", dose: "25 mg", schedule: "Once daily",
+    warning: null, adherence: dailyAdherence([]), source: "Care rec", srcClass: "src-carerec",
+  },
+  {
+    hf: false, name: "Ibuprofen", cls: "NSAID (OTC)", freq: "As needed", dose: "200 mg", schedule: "As needed",
+    warning: "NSAIDs may worsen fluid retention in HF", adherence: dailyAdherence([1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29]), source: "Patient", srcClass: "src-patient",
+  },
+  {
+    hf: true, name: "Atorvastatin", cls: "Statin", freq: "Daily", dose: "20 mg", schedule: "Once daily, evening",
+    warning: null, adherence: dailyAdherence([6, 14, 24]), source: "Clinic", srcClass: "src-clinic",
+  },
+];
+
+const adhCheckIcon = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const adhDashIcon = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M6 12H18" stroke="#9AA5B1" stroke-width="2.4" stroke-linecap="round"/></svg>`;
+
+document.getElementById("medCount").textContent = medications.length;
+document.getElementById("medList").innerHTML = medications
+  .map(
+    (m, mi) => `
+    <div class="med-block">
+      <div class="med-block-head">
+        <div>
+          <div class="med-name-row">
+            <span class="med-bar ${m.hf ? "hf" : "other"}"></span>
+            <div class="med-block-name">
+              <span class="med-name">${m.name}</span>
+              <span class="med-freq">${m.freq}</span>
+            </div>
+          </div>
+          <div class="med-block-meta" style="margin-top:6px;">
+            <span class="med-class">${m.cls}</span>
+            <span>${m.dose} &middot; ${m.schedule}</span>
+            ${m.warning ? `<span class="med-warning"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 4L2 20H22L12 4Z" stroke="#C77B22" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 10V14M12 17V17.3" stroke="#C77B22" stroke-width="1.6" stroke-linecap="round"/></svg>${m.warning}</span>` : ""}
+          </div>
+        </div>
+        <div class="med-block-side">
+          <span class="source-badge ${m.srcClass}">${m.source}</span>
+          <button class="btn-edit">Edit</button>
+        </div>
+      </div>
+
+      <div class="med-adherence-row">
+        <button class="chart-arrow med-adh-prev" data-med="${mi}" aria-label="Previous month"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15 6L9 12L15 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <div class="med-adh-scroll" id="medAdh${mi}">
+          ${chartDays
+            .map(
+              (d, i) => `
+              <div class="med-adh-day">
+                <span class="med-adh-icon ${m.adherence[i] ? "med-adh-taken" : "med-adh-missed"}">${m.adherence[i] ? adhCheckIcon : adhDashIcon}</span>
+                <span class="med-adh-day-label">${d.label}</span>
+              </div>`
+            )
+            .join("")}
+        </div>
+        <button class="chart-arrow med-adh-next" data-med="${mi}" aria-label="Next month"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 6L15 12L9 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      </div>
+      <div class="chart-month-row" style="padding:0 40px;"><span>Dec</span><span>Jan</span></div>
+    </div>`
+  )
+  .join("");
+
+document.querySelectorAll(".med-adh-prev, .med-adh-next").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    const row = document.getElementById(`medAdh${btn.dataset.med}`);
+    const dir = btn.classList.contains("med-adh-next") ? 1 : -1;
+    row.scrollBy({ left: dir * 320, behavior: "smooth" });
+  });
+});
+
+/* ---------------- Clinical: Care Plan & Goals ---------------- */
+const goals = [
+  {
+    title: "Keep weight within 2 kg of dry weight",
+    desc: "Dry weight 80.5 kg &middot; current 81.4 kg",
+    badge: "On track", badgeClass: "badge-ontrack", fillClass: "fill-blue", pct: 78,
+    target: "Target: Ongoing",
+  },
+  {
+    title: "Record voice sample 6 days per week",
+    desc: "Averaging 2.5 of 6 days over the last 4 weeks",
+    badge: "At risk", badgeClass: "badge-atrisk", fillClass: "fill-orange", pct: 42,
+    target: "Target: Ongoing",
+  },
+  {
+    title: "Complete cardiac rehab sessions",
+    desc: "6 of 10 sessions attended",
+    badge: "On track", badgeClass: "badge-ontrack", fillClass: "fill-blue", pct: 60,
+    target: "Target: 31 Oct 2026",
+  },
+  {
+    title: "Reduce resting heart rate below 70 bpm",
+    desc: "Resting HR 68 bpm — sustained 30 days",
+    badge: "Achieved", badgeClass: "badge-achieved", fillClass: "fill-green", pct: 100,
+    target: "Target: Achieved",
+  },
+];
+
+document.getElementById("goalCount").textContent = goals.length;
+document.getElementById("goalsList").innerHTML = goals
+  .map(
+    (g) => `
+    <div class="goal-item">
+      <div class="goal-top">
+        <div>
+          <h4 class="goal-title">${g.title}</h4>
+          <p class="goal-desc">${g.desc}</p>
+        </div>
+        <div class="goal-actions">
+          <span class="goal-badge ${g.badgeClass}">${g.badge}</span>
+          <button class="btn-edit">Edit</button>
+        </div>
+      </div>
+      <div class="goal-progress-track"><div class="goal-progress-fill ${g.fillClass}" style="width:${g.pct}%"></div></div>
+      <div class="goal-meta-row">
+        <span>${g.pct}% complete</span>
+        <span>${g.target}</span>
+      </div>
+    </div>`
+  )
+  .join("");
+
+/* ---------------- Records ---------------- */
+const records = [
+  { dir: "sent", name: "Heart Failure Action Plan.pdf", meta: "Sent to patient by Dr. Lior Klein &middot; 08/06/2026 &middot; 412 KB" },
+  { dir: "received", name: "Home BP readings — August.jpg", meta: "Received from Patient &middot; 08/04/2026 &middot; 1.2 MB" },
+  { dir: "sent", name: "Discharge Summary.pdf", meta: "Sent to patient by Ayelet Er, NP &middot; 07/19/2026 &middot; 876 KB" },
+  { dir: "received", name: "Medication list photo.jpg", meta: "Received from Patient &middot; 07/11/2026 &middot; 980 KB" },
+  { dir: "sent", name: "Low-sodium Diet Guide.pdf", meta: "Sent to patient by Sandy Kohl &middot; 06/28/2026 &middot; 1.5 MB" },
+];
+
+const recIconUp = `<svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M12 19V5M6 11L12 5L18 11" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const recIconDown = `<svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M6 13L12 19L18 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+
+function renderRecords(list) {
+  document.getElementById("recordList").innerHTML = list
+    .map(
+      (r) => `
+      <div class="record-item">
+        <span class="record-icon ${r.dir === "sent" ? "sent" : "received"}">${r.dir === "sent" ? recIconUp : recIconDown}</span>
+        <div class="record-info">
+          <div class="record-name">${r.name}</div>
+          <div class="record-meta">${r.meta}</div>
+        </div>
+        <button class="btn-view">View</button>
+      </div>`
+    )
+    .join("");
+}
+
+document.getElementById("recordsCount").textContent = records.length;
+renderRecords(records);
+
+const recDirections = ["All directions", "Sent to patient", "Received from patient"];
+let recDirIdx = 0;
+document.getElementById("recordsDirBtn").addEventListener("click", () => {
+  recDirIdx = (recDirIdx + 1) % recDirections.length;
+  const label = recDirections[recDirIdx];
+  document.getElementById("recordsDirLabel").textContent = label;
+  const filtered = records.filter((r) => {
+    if (label === "Sent to patient") return r.dir === "sent";
+    if (label === "Received from patient") return r.dir === "received";
+    return true;
+  });
+  renderRecords(filtered);
+});
+
+/* ---------------- Clinical: collapsible sections ---------------- */
+document.querySelectorAll(".clinical-card .collapse-btn").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    const body = btn.closest(".clinical-card").querySelector(".clinical-body");
+    const collapsed = body.classList.toggle("collapsed");
+    btn.classList.toggle("collapsed", collapsed);
+  });
+});
+
+/* ---------------- Tabs: Recordings / Health Data / Clinical / Records ---------------- */
+document.querySelectorAll(".data-tab").forEach((tab) => {
+  tab.addEventListener("click", () => {
+    const target = tab.dataset.tab;
+    document.querySelectorAll(".data-tab").forEach((t) => t.classList.remove("open"));
+    document.querySelectorAll(".data-tab-panel").forEach((p) => p.classList.remove("open"));
+    tab.classList.add("open");
+    document.querySelector(`.data-tab-panel[data-panel="${target}"]`).classList.add("open");
+  });
+});
+
+/* ---------------- Sub-tabs: Measurement / Wellness ---------------- */
+document.querySelectorAll(".subtab").forEach((tab) => {
+  tab.addEventListener("click", () => {
+    const target = tab.dataset.subtab;
+    document.querySelectorAll(".subtab").forEach((t) => t.classList.remove("active"));
+    document.querySelectorAll(".subtab-panel").forEach((p) => p.classList.remove("open"));
+    tab.classList.add("active");
+    document.querySelector(`.subtab-panel[data-subpanel="${target}"]`).classList.add("open");
+  });
+});
+
+document.querySelectorAll(".range-toggle span").forEach((r) => {
+  r.addEventListener("click", () => {
+    document.querySelectorAll(".range-toggle span").forEach((s) => s.classList.remove("active"));
+    r.classList.add("active");
+  });
+});
+
+document.querySelectorAll(".history-tabs span").forEach((t) => {
+  t.addEventListener("click", () => {
+    document.querySelectorAll(".history-tabs span").forEach((s) => s.classList.remove("active"));
+    t.classList.add("active");
+  });
+});
+
+/* ---------------- History events ---------------- */
+const history = [
+  { color: "dot-red", label: "Status changed to Priority", date: "01.09.2026" },
+  { color: "dot-green", label: "Status changed to Active", date: "12.24.2025" },
+  { color: "dot-green", label: "Status changed to Active", date: "12.16.2025" },
+  { color: "dot-gray", label: "Status changed to Baseline", date: "12.01.2025" },
+  { color: "dot-darkgray", label: "Status changed to Registered", date: "12.01.2025" },
+];
+
+document.getElementById("historyRows").innerHTML = history
+  .map(
+    (h) => `
+    <tr>
+      <td><span class="event-dot"><span class="dot ${h.color}"></span>${h.label}</span></td>
+      <td>${h.date}</td>
+      <td><a class="add-note-link" href="#"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Add Note</a></td>
+    </tr>`
+  )
+  .join("");
+
+fitTableToRows(".history-table-scroll", 4);
+
+/* ---------------- Chat panel ---------------- */
+const chatMessages = [
+  { type: "out", name: "Emily Colley", time: "11:10 AM", text: "Hello Alex, how do you feel today?", seen: "Seen 01.21.2026, 7:12 AM" },
+  { type: "in", time: "11:11 AM", text: "I feel good" },
+  { type: "sep", label: "Yesterday" },
+  { type: "out", name: "Dr. Alex Sholl", time: "09:08 AM", text: "Hello Alex, how is you breathe today?", seen: "Seen 01.25.2026, 11:22 AM" },
+  { type: "in", time: "11:25 AM", text: "I'm having a little trouble breathing" },
+];
+
+document.getElementById("chatMessages").innerHTML = chatMessages
+  .map((m) => {
+    if (m.type === "sep") return `<div class="chat-day-sep">${m.label}</div>`;
+    return `
+      <div class="chat-msg ${m.type}">
+        <div class="chat-msg-meta">${m.name ? `<b>${m.name}</b> &middot; ` : ""}${m.time}</div>
+        <div class="chat-bubble">${m.text}</div>
+        ${m.seen ? `<div class="chat-seen">${m.seen}</div>` : ""}
+      </div>`;
+  })
+  .join("");
+
+const chatPanel = document.getElementById("chatPanel");
+document.getElementById("chatOpenBtn").addEventListener("click", () => chatPanel.classList.add("open"));
+document.getElementById("chatCloseBtn").addEventListener("click", () => chatPanel.classList.remove("open"));

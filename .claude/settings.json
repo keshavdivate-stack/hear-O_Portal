@@ -1,0 +1,49 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(Test-Path \"c:\\\\React Project\\\\UI Design\"; \\(Get-ChildItem \"c:\\\\React Project\\\\UI Design\" -Force\\).Count)",
+      "Bash(mkdir -p \"/c/React Project/UI Design/css\" \"/c/React Project/UI Design/js\")",
+      "PowerShell(Start-Process \"c:\\\\React Project\\\\UI Design\\\\index.html\")",
+      "PowerShell(Start-Process \"c:\\\\React Project\\\\UI Design\\\\patient-list.html\")",
+      "PowerShell(Start-Process \"c:\\\\React Project\\\\UI Design\\\\patient-data.html\")",
+      "Bash(python3 -c ' *)",
+      "Bash(node -e ' *)",
+      "PowerShell(Start-Process \"c:\\\\React Project\\\\UI Design\\\\manage-users.html\")",
+      "Bash(grep -rl \"Clear all filters\" \"/c/React Project/UI Design\" 2>/dev/null)",
+      "Read(//c/React Project/UI Design/**)",
+      "Bash(grep -n -B1 -A2 'aria-label=\"Language\"' \"/c/React Project/UI Design/index.html\" \"/c/React Project/UI Design/manage-users.html\" \"/c/React Project/UI Design/patient-data.html\" \"/c/React Project/UI Design/patient-list.html\")",
+      "Bash(grep -l \"js/topbar.js\" \"/c/React Project/UI Design\"/*.html)",
+      "Bash(grep -n \"pagination\\\\|of 203\\\\|1-25\\\\|table-card\\\\|table-scroll\" \"/c/React Project/UI Design/patient-list.html\")",
+      "Bash(grep -n \"fitTableToRows\\\\|table-scroll\" \"/c/React Project/UI Design/js/patient-list.js\")",
+      "Read(//c/React Project/UI Design/js/**)",
+      "Bash(grep -n \"table-card\\\\|table-scroll\\\\|list-footer\\\\|list-pager\\\\|pager-btn\" \"/c/React Project/UI Design/css/style.css\")",
+      "Read(//c/React Project/UI Design/css/**)",
+      "Bash(grep -n \"list-content\" \"/c/React Project/UI Design/css/style.css\")",
+      "Bash(grep -n \"list-content\\\\|\\\\.main \\\\{\\\\|justify-content: space-between\\\\|min-height\" \"/c/React Project/UI Design/css/style.css\" | head -40)",
+      "Bash(grep -n \"<script\" \"/c/React Project/UI Design/index.html\")",
+      "Bash(start \"\" \"c:/React Project/UI Design/index.html\")",
+      "Bash(grep -n \"Items per page\\\\|list-footer\\\\|pagination\" \"/c/React Project/UI Design/manage-users.html\")",
+      "Bash(grep -n \"\\\\.list-content\\\\b\\\\|\\\\.list-footer\\\\b\\\\|\\\\.table-card\\\\b\" \"/c/React Project/UI Design/css/style.css\")",
+      "Bash(grep -n \"margin-top: auto\\\\|flex: 1\\\\|flex-grow\\\\|min-height: 100vh\\\\|min-height:100vh\" \"/c/React Project/UI Design/css/style.css\")",
+      "Bash(node -e \"require.resolve\\('playwright'\\)\")",
+      "Bash(npx --yes playwright --version)",
+      "Bash(npx --yes playwright install chromium --with-deps)",
+      "Bash(mkdir -p \"/c/Users/TTPL-L~1/AppData/Local/Temp/claude/c--React-Project-UI-Design/e84d7e9d-6f1b-48f1-a319-a80b834c473e/scratchpad/pw\")",
+      "Read(//c/Users/TTPL-L~1/AppData/Local/Temp/claude/c--React-Project-UI-Design/e84d7e9d-6f1b-48f1-a319-a80b834c473e/scratchpad/**)",
+      "Bash(npm init *)",
+      "Read(//c/Users/TTPL-L~1/AppData/Local/Temp/claude/c--React-Project-UI-Design/e84d7e9d-6f1b-48f1-a319-a80b834c473e/scratchpad/pw/**)",
+      "Bash(npx playwright *)",
+      "Bash(node shot.js)",
+      "Bash(node \"C:\\\\Users\\\\TTPL-L~1\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--React-Project-UI-Design\\\\e84d7e9d-6f1b-48f1-a319-a80b834c473e\\\\scratchpad\\\\pw\\\\shot.js\")",
+      "Bash(ls -la \"/c/Users/TTPL-L~1/AppData/Local/Temp/claude/c--React-Project-UI-Design/e84d7e9d-6f1b-48f1-a319-a80b834c473e/scratchpad/pw\" 2>&1)",
+      "Bash(grep -n \"fitTableToRows\" \"/c/React Project/UI Design/js/patient-list.js\" \"/c/React Project/UI Design/js/manage-users.js\" 2>/dev/null)",
+      "Bash(node \"C:\\\\Users\\\\TTPL-L~1\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--React-Project-UI-Design\\\\e84d7e9d-6f1b-48f1-a319-a80b834c473e\\\\scratchpad\\\\pw\\\\measure.js\")",
+      "Bash(node \"C:\\\\Users\\\\TTPL-L~1\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--React-Project-UI-Design\\\\e84d7e9d-6f1b-48f1-a319-a80b834c473e\\\\scratchpad\\\\pw\\\\rowcheck.js\")",
+      "Bash(ls -la --time-style=full-iso \"/c/Users/TTPL-L~1/AppData/Local/Temp/claude/c--React-Project-UI-Design/e84d7e9d-6f1b-48f1-a319-a80b834c473e/scratchpad/pw/full.png\")",
+      "Bash(ls -la --time-style=full-iso \"/c/React Project/UI Design\"/*.png 2>&1)"
+    ],
+    "additionalDirectories": [
+      "C:\\React Project\\UI Design"
+    ]
+  }
+}
