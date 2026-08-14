@@ -19,52 +19,59 @@ function rmFilteredSchedules(reportType) {
 const rmEditIcon = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 20H21" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M16.5 3.5C17.3 2.7 18.6 2.7 19.4 3.5C20.2 4.3 20.2 5.6 19.4 6.4L7 18.8L3 20L4.2 16L16.5 3.5Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>`;
 const rmTrashIcon = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 7H20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M9 7V4.5C9 4 9.4 3.6 9.9 3.6H14.1C14.6 3.6 15 4 15 4.5V7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 7L6.8 19.2C6.9 19.9 7.5 20.4 8.2 20.4H15.8C16.5 20.4 17.1 19.9 17.2 19.2L18 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 
-function rmRenderGroups() {
-  const wrap = document.getElementById("rmGroups");
-  wrap.innerHTML = RM_REPORT_TYPES.map((t) => {
-    const rows = rmFilteredSchedules(t.key);
-    const hasRows = rows.length > 0;
-    const isOpen = hasRows && rmExpanded.has(t.key);
+function rmRenderGroupRow(t) {
+  const rows = rmFilteredSchedules(t.key);
+  const hasRows = rows.length > 0;
+  const isOpen = hasRows && rmExpanded.has(t.key);
 
-    const bandHtml = `
-      <div class="bo-report-band${hasRows ? "" : " disabled"}" data-type="${t.key}">
-        <span class="bo-report-band-title">${t.label}</span>
-        <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+  const bandRow = `
+    <tr class="bo-report-band${hasRows ? "" : " disabled"}" data-type="${t.key}">
+      <td class="bo-report-band-title" colspan="8">${t.label}</td>
+      <td>
         ${
           hasRows
             ? `<button type="button" class="bo-report-expand${isOpen ? " open" : ""}" aria-label="${isOpen ? "Collapse" : "Expand"} ${t.label}" aria-expanded="${isOpen}">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
               </button>`
-            : "<span></span>"
+            : ""
         }
-      </div>`;
+      </td>
+    </tr>`;
 
-    const rowsHtml = isOpen
-      ? `<div class="bo-report-rows">${rows
-          .map(
-            (r) => `
-        <div class="bo-report-row">
-          <span>${t.label}</span>
-          <span>${r.name}</span>
-          <span>${r.hmo}</span>
-          <span>${r.tag}</span>
-          <span>${r.user}</span>
-          <span>${r.scheduleType}</span>
-          <span>${r.daysOfWeek}</span>
-          <span>${r.reportTime}</span>
-          <div class="bo-row-actions">
-            <button class="bo-action-icon blue" data-id="${r.id}" data-act="edit" aria-label="Edit">${rmEditIcon}</button>
-            <button class="bo-action-icon blue" data-id="${r.id}" data-act="delete" aria-label="Delete">${rmTrashIcon}</button>
-          </div>
-        </div>`
-          )
-          .join("")}</div>`
-      : "";
+  const subRows = isOpen
+    ? rows
+        .map(
+          (r) => `
+    <tr class="bo-report-row">
+      <td>${t.label}</td>
+      <td>${r.name}</td>
+      <td>${r.hmo}</td>
+      <td>${r.tag}</td>
+      <td>${r.user}</td>
+      <td>${r.scheduleType}</td>
+      <td>${r.daysOfWeek}</td>
+      <td>${r.reportTime}</td>
+      <td>
+        <div class="bo-row-actions">
+          <button class="bo-action-icon blue" data-id="${r.id}" data-act="edit" aria-label="Edit">${rmEditIcon}</button>
+          <button class="bo-action-icon blue" data-id="${r.id}" data-act="delete" aria-label="Delete">${rmTrashIcon}</button>
+        </div>
+      </td>
+    </tr>`
+        )
+        .join("")
+    : "";
 
-    return `<div class="bo-report-group">${bandHtml}${rowsHtml}</div>`;
-  }).join("");
+  return bandRow + subRows;
 }
-rmRenderGroups();
+
+const rmGroupsPager = boCreatePager(
+  "rmGroups",
+  () => RM_REPORT_TYPES,
+  rmRenderGroupRow,
+  { pageSize: 20, emptyColspan: 9, emptyText: "No report types configured." }
+);
+rmGroupsPager();
 
 document.getElementById("rmGroups").addEventListener("click", (e) => {
   const band = e.target.closest(".bo-report-band:not(.disabled)");
@@ -72,7 +79,7 @@ document.getElementById("rmGroups").addEventListener("click", (e) => {
     const key = band.dataset.type;
     if (rmExpanded.has(key)) rmExpanded.delete(key);
     else rmExpanded.add(key);
-    rmRenderGroups();
+    rmGroupsPager();
     return;
   }
 
@@ -86,7 +93,7 @@ document.getElementById("rmGroups").addEventListener("click", (e) => {
   } else if (btn.dataset.act === "delete") {
     if (!confirm(`Delete "${rec.name}"?`)) return;
     rmSchedules.splice(rmSchedules.indexOf(rec), 1);
-    rmRenderGroups();
+    rmGroupsPager();
   }
 });
 
@@ -95,7 +102,7 @@ document.getElementById("rmApplyBtn").addEventListener("click", () => {
   rmHmoFilter = document.getElementById("rmHmoFilter").value;
   rmTagFilter = document.getElementById("rmTagFilter").value;
   rmUserFilter = document.getElementById("rmUserFilter").value;
-  rmRenderGroups();
+  rmGroupsPager();
 });
 
 document.getElementById("rmDownloadBtn").addEventListener("click", () => {
@@ -271,7 +278,7 @@ rmCreateForm.addEventListener("submit", (e) => {
 
   rmExpanded.add(typeKey);
   closeCreateDrawer();
-  rmRenderGroups();
+  rmGroupsPager();
 });
 
 document.getElementById("rmCreateBtn").addEventListener("click", () => openCreateDrawer(null));
