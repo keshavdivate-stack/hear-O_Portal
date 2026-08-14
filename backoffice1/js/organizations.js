@@ -211,9 +211,6 @@ const saveAddOrgBtn = document.getElementById("saveAddOrg");
 function openAddOrgModal() {
   addOrgForm.reset();
   addOrgForm.querySelectorAll(".bo-select").forEach(resetBoSelect);
-  setBoSelectValue(addOrgForm.querySelector('.bo-select[data-name="careRec"]'), "Disable", { silent: true });
-  setBoSelectValue(addOrgForm.querySelector('.bo-select[data-name="billingStrategy"]'), "BILLING OFF", { silent: true });
-  setBoSelectValue(addOrgForm.querySelector('.bo-select[data-name="logTimeConfirmation"]'), "ON", { silent: true });
   validateAddOrgForm();
   addOrgOverlay.classList.add("open");
 }

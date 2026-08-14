@@ -284,6 +284,11 @@ a { color: inherit; }
 
 .bo-config-wrap:hover > .bo-submenu { display: block; }
 
+/* No gap between the trigger and the panel — a hover-only menu can't have a dead
+   zone the pointer has to cross, or it closes before the user reaches it. The
+   box itself sits flush (top: 100%); padding-top (not margin/offset) keeps the
+   visual breathing room without opening a gap the pointer could fall through. */
+.bo-hover-dropdown > .bo-popover { top: 100%; padding-top: 14px; }
 .bo-hover-dropdown:hover > .bo-popover { display: block; }
 
 /* ---------------- Page shell ---------------- */

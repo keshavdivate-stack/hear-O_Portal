@@ -187,203 +187,209 @@
       <form id="addOrgForm" class="bo-drawer-form">
         <div class="bo-drawer-body">
 
-          <div class="bo-modal-field">
-            <label>Name<span class="required-star">*</span></label>
-            <input type="text" name="name" placeholder="Name" required />
-          </div>
-
-          <div class="bo-modal-field">
-            <label>Organization Displayed Name</label>
-            <input type="text" name="displayName" placeholder="Organization Displayed Name" />
-          </div>
-
-          <div class="bo-modal-field">
-            <label>Status Change Settings</label>
-            <div class="bo-select" data-name="statusChangeSettings">
-              <button type="button" class="bo-select-trigger">
-                <span class="bo-select-value placeholder">Status Change Settings</span>
-                <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </button>
-              <div class="bo-select-menu">
-                <div class="bo-select-option" data-value="Automatic">Automatic<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                <div class="bo-select-option" data-value="Manual">Manual<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="bo-modal-section">
+            <p class="bo-modal-section-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="18" x="4" y="3" rx="1"/><path d="M9 8h1"/><path d="M14 8h1"/></svg>
+              Basic Info
+            </p>
+            <div class="bo-modal-grid">
+              <div class="bo-modal-field">
+                <label>Name<span class="required-star">*</span></label>
+                <input type="text" name="name" placeholder="Name" required />
               </div>
-              <input type="hidden" name="statusChangeSettings" />
+              <div class="bo-modal-field">
+                <label>Organization Displayed Name</label>
+                <input type="text" name="displayName" placeholder="Displayed name" />
+              </div>
+
+              <div class="bo-modal-field">
+                <label>Default Tag</label>
+                <div class="bo-select" data-name="defaultTag">
+                  <button type="button" class="bo-select-trigger">
+                    <span class="bo-select-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12.6 3H5a2 2 0 0 0-2 2v7.6a2 2 0 0 0 .59 1.41l9 9a2 2 0 0 0 2.82 0l7.6-7.6a2 2 0 0 0 0-2.82l-9-9A2 2 0 0 0 12.6 3Z"/><circle cx="7.5" cy="7.5" r="1.2" fill="currentColor" stroke="none"/></svg></span>
+                    <span class="bo-select-value placeholder">Select tag</span>
+                    <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                  </button>
+                  <div class="bo-select-menu">
+                    <div class="bo-select-option" data-value="CURRENT">CURRENT<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    <div class="bo-select-option" data-value="NEW">NEW<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                  </div>
+                  <input type="hidden" name="defaultTag" />
+                </div>
+              </div>
+
+              <div class="bo-modal-field">
+                <label>Study</label>
+                <div class="bo-select" data-name="study">
+                  <button type="button" class="bo-select-trigger">
+                    <span class="bo-select-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2H15M12 2V8L18 20A2 2 0 0 1 16.2 22H7.8A2 2 0 0 1 6 20L12 8"/></svg></span>
+                    <span class="bo-select-value placeholder">Select study</span>
+                    <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                  </button>
+                  <div class="bo-select-menu">
+                    <div class="bo-select-option" data-value="CHF">CHF<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    <div class="bo-select-option" data-value="Corona">Corona<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                  </div>
+                  <input type="hidden" name="study" />
+                </div>
+              </div>
             </div>
           </div>
 
-          <div class="bo-modal-field">
-            <label>Target Patients Count</label>
-            <input type="number" name="target" placeholder="Target" min="0" />
-          </div>
-
-          <div class="bo-modal-field">
-            <label>Default Tag</label>
-            <div class="bo-select" data-name="defaultTag">
-              <button type="button" class="bo-select-trigger">
-                <span class="bo-select-value placeholder">Default tag</span>
-                <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </button>
-              <div class="bo-select-menu">
-                <div class="bo-select-option" data-value="CURRENT">CURRENT<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                <div class="bo-select-option" data-value="NEW">NEW<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="bo-modal-section">
+            <p class="bo-modal-section-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+              Configuration
+            </p>
+            <div class="bo-modal-grid">
+              <div class="bo-modal-field">
+                <label>Status Change Settings</label>
+                <div class="bo-select" data-name="statusChangeSettings">
+                  <button type="button" class="bo-select-trigger">
+                    <span class="bo-select-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg></span>
+                    <span class="bo-select-value placeholder">Select setting</span>
+                    <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                  </button>
+                  <div class="bo-select-menu">
+                    <div class="bo-select-option" data-value="Automatic">Automatic<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    <div class="bo-select-option" data-value="Manual">Manual<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                  </div>
+                  <input type="hidden" name="statusChangeSettings" />
+                </div>
               </div>
-              <input type="hidden" name="defaultTag" />
+
+              <div class="bo-modal-field">
+                <label>Target Patients Count</label>
+                <input type="number" name="target" placeholder="Target" min="0" />
+              </div>
+
+              <div class="bo-modal-field">
+                <label>Authentication Type</label>
+                <div class="bo-select" data-name="authType">
+                  <button type="button" class="bo-select-trigger">
+                    <span class="bo-select-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 5v6c0 5 3.4 8.7 8 10 4.6-1.3 8-5 8-10V5l-8-3Z"/></svg></span>
+                    <span class="bo-select-value placeholder">Select type</span>
+                    <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                  </button>
+                  <div class="bo-select-menu">
+                    <div class="bo-select-option" data-value="Patient Self Registration">Patient Self Registration<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    <div class="bo-select-option" data-value="Patient Clinic Registration">Patient Clinic Registration<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                  </div>
+                  <input type="hidden" name="authType" />
+                </div>
+              </div>
+
+              <div class="bo-modal-field">
+                <label>Type</label>
+                <div class="bo-select" data-name="type">
+                  <button type="button" class="bo-select-trigger">
+                    <span class="bo-select-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 2 7l10 5 10-5-10-5Z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></span>
+                    <span class="bo-select-value placeholder">Select type</span>
+                    <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                  </button>
+                  <div class="bo-select-menu">
+                    <div class="bo-select-option" data-value="Not HMO">Not HMO<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    <div class="bo-select-option" data-value="HMO">HMO<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                  </div>
+                  <input type="hidden" name="type" />
+                </div>
+              </div>
+
+              <div class="bo-modal-field">
+                <label>Default Language</label>
+                <div class="bo-select" data-name="defaultLanguage">
+                  <button type="button" class="bo-select-trigger">
+                    <span class="bo-select-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12H21"/><path d="M12 3C14.5 5.7 15.8 8.8 15.8 12C15.8 15.2 14.5 18.3 12 21C9.5 18.3 8.2 15.2 8.2 12C8.2 8.8 9.5 5.7 12 3Z"/></svg></span>
+                    <span class="bo-select-value placeholder">Select language</span>
+                    <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                  </button>
+                  <div class="bo-select-menu">
+                    <div class="bo-select-option" data-value="AR">AR<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    <div class="bo-select-option" data-value="EN">EN<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    <div class="bo-select-option" data-value="HE">HE<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    <div class="bo-select-option" data-value="RU">RU<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    <div class="bo-select-option" data-value="ES">ES<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                  </div>
+                  <input type="hidden" name="defaultLanguage" />
+                </div>
+              </div>
+
+              <div class="bo-modal-field">
+                <label>Billing Strategy</label>
+                <div class="bo-select" data-name="billingStrategy">
+                  <button type="button" class="bo-select-trigger">
+                    <span class="bo-select-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7V17"/><path d="M15 9.5C15 8.1 13.7 7 12 7C10.3 7 9 8.1 9 9.5C9 10.9 10.3 11.5 12 12C13.7 12.5 15 13.1 15 14.5C15 15.9 13.7 17 12 17C10.3 17 9 15.9 9 14.5"/></svg></span>
+                    <span class="bo-select-value placeholder">Select strategy</span>
+                    <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                  </button>
+                  <div class="bo-select-menu">
+                    <div class="bo-select-option" data-value="BILLING OFF">Billing Off<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    <div class="bo-select-option" data-value="CPT 99457">CPT 99457<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    <div class="bo-select-option" data-value="CPT 99091">CPT 99091<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                  </div>
+                  <input type="hidden" name="billingStrategy" />
+                </div>
+              </div>
             </div>
           </div>
 
-          <div class="bo-modal-field">
-            <label>Study</label>
-            <div class="bo-select" data-name="study">
-              <button type="button" class="bo-select-trigger">
-                <span class="bo-select-value placeholder">Study</span>
-                <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </button>
-              <div class="bo-select-menu">
-                <div class="bo-select-option" data-value="CHF">CHF<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                <div class="bo-select-option" data-value="Corona">Corona<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="bo-modal-section">
+            <p class="bo-modal-section-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9H21"/><path d="M7 13L10 16L14 12"/></svg>
+              Display Settings
+            </p>
+            <div class="bo-modal-grid">
+              <div class="bo-modal-toggle-field">
+                <label>Display on Dashboard</label>
+                <span class="bo-switch">
+                  <input type="checkbox" name="onDashboard" />
+                  <span class="bo-switch-track"></span>
+                </span>
               </div>
-              <input type="hidden" name="study" />
+              <div class="bo-modal-toggle-field">
+                <label>Display Care Recommendation</label>
+                <span class="bo-switch">
+                  <input type="checkbox" name="careRec" />
+                  <span class="bo-switch-track"></span>
+                </span>
+              </div>
+              <div class="bo-modal-toggle-field">
+                <label>Log Time Confirmation</label>
+                <span class="bo-switch">
+                  <input type="checkbox" name="logTimeConfirmation" checked />
+                  <span class="bo-switch-track"></span>
+                </span>
+              </div>
             </div>
           </div>
 
-          <div class="bo-modal-field">
-            <label>Authentication Type</label>
-            <div class="bo-select" data-name="authType">
-              <button type="button" class="bo-select-trigger">
-                <span class="bo-select-value placeholder">Authentication Type</span>
-                <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </button>
-              <div class="bo-select-menu">
-                <div class="bo-select-option" data-value="Patient Self Registration">Patient Self Registration<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                <div class="bo-select-option" data-value="Patient Clinic Registration">Patient Clinic Registration<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="bo-modal-section">
+            <p class="bo-modal-section-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 6-9 12-9 12S3 16 3 10a9 9 0 0 1 18 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+              Contact &amp; Location
+            </p>
+            <div class="bo-modal-grid">
+              <div class="bo-modal-field">
+                <label>Phone Number 1</label>
+                <input type="text" name="phone1" placeholder="+xxx xx xxx xxxx" />
               </div>
-              <input type="hidden" name="authType" />
-            </div>
-          </div>
-
-          <div class="bo-modal-field">
-            <label>Type</label>
-            <div class="bo-select" data-name="type">
-              <button type="button" class="bo-select-trigger">
-                <span class="bo-select-value placeholder">Type</span>
-                <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </button>
-              <div class="bo-select-menu">
-                <div class="bo-select-option" data-value="Not HMO">Not HMO<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                <div class="bo-select-option" data-value="HMO">HMO<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              <div class="bo-modal-field">
+                <label>Phone Number 2</label>
+                <input type="text" name="phone2" placeholder="+xxx xx xxx xxxx" />
               </div>
-              <input type="hidden" name="type" />
-            </div>
-          </div>
-
-          <div class="bo-modal-field">
-            <label>Display on Dashboard</label>
-            <div class="bo-select" data-name="onDashboard">
-              <button type="button" class="bo-select-trigger">
-                <span class="bo-select-value placeholder">Display on Dashboard</span>
-                <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </button>
-              <div class="bo-select-menu">
-                <div class="bo-select-option" data-value="Hide">Hide<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                <div class="bo-select-option" data-value="Show">Show<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              <div class="bo-modal-field">
+                <label>Location Latitude</label>
+                <input type="text" name="lat" placeholder="Latitude" />
               </div>
-              <input type="hidden" name="onDashboard" />
-            </div>
-          </div>
-
-          <div class="bo-modal-field">
-            <label>Display Care Recommendation</label>
-            <div class="bo-select" data-name="careRec">
-              <button type="button" class="bo-select-trigger">
-                <span class="bo-select-value">Disable</span>
-                <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </button>
-              <div class="bo-select-menu">
-                <div class="bo-select-option selected" data-value="Disable">Disable<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                <div class="bo-select-option" data-value="Enable">Enable<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              <div class="bo-modal-field">
+                <label>Location Longitude</label>
+                <input type="text" name="lng" placeholder="Longitude" />
               </div>
-              <input type="hidden" name="careRec" value="Disable" />
-            </div>
-          </div>
-
-          <div class="bo-modal-field">
-            <label>Phone Number 1</label>
-            <input type="text" name="phone1" placeholder="+xxx xx xxx xxxx" />
-          </div>
-
-          <div class="bo-modal-field">
-            <label>Phone Number 2</label>
-            <input type="text" name="phone2" placeholder="+xxx xx xxx xxxx" />
-          </div>
-
-          <div class="bo-modal-field">
-            <label>Location Latitude</label>
-            <input type="text" name="lat" placeholder="Location Latitude" />
-          </div>
-
-          <div class="bo-modal-field">
-            <label>Location Longitude</label>
-            <input type="text" name="lng" placeholder="Location Longitude" />
-          </div>
-
-          <div class="bo-modal-field">
-            <label>Consent Folder Path</label>
-            <input type="text" name="consentPath" placeholder="Consent Folder Path" />
-          </div>
-
-          <div class="bo-modal-field">
-            <label>Default Language</label>
-            <div class="bo-select" data-name="defaultLanguage">
-              <button type="button" class="bo-select-trigger">
-                <span class="bo-select-value placeholder">Default Language</span>
-                <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </button>
-              <div class="bo-select-menu">
-                <div class="bo-select-option" data-value="AR">AR<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                <div class="bo-select-option" data-value="EN">EN<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                <div class="bo-select-option" data-value="HE">HE<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                <div class="bo-select-option" data-value="RU">RU<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                <div class="bo-select-option" data-value="ES">ES<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              <div class="bo-modal-field full">
+                <label>Consent Folder Path</label>
+                <input type="text" name="consentPath" placeholder="Consent folder path" />
               </div>
-              <input type="hidden" name="defaultLanguage" />
             </div>
-          </div>
-
-          <div class="bo-modal-field">
-            <label>Billing Strategy</label>
-            <div class="bo-select" data-name="billingStrategy">
-              <button type="button" class="bo-select-trigger">
-                <span class="bo-select-value">BILLING OFF</span>
-                <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </button>
-              <div class="bo-select-menu">
-                <div class="bo-select-option selected" data-value="BILLING OFF">BILLING OFF<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                <div class="bo-select-option" data-value="CPT 99457">CPT 99457<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                <div class="bo-select-option" data-value="CPT 99091">CPT 99091<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-              </div>
-              <input type="hidden" name="billingStrategy" value="BILLING OFF" />
-            </div>
-          </div>
-
-          <div class="bo-modal-field">
-            <label>Log Time Confirmation</label>
-            <div class="bo-select" data-name="logTimeConfirmation">
-              <button type="button" class="bo-select-trigger">
-                <span class="bo-select-value">ON</span>
-                <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </button>
-              <div class="bo-select-menu">
-                <div class="bo-select-option selected" data-value="ON">ON<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                <div class="bo-select-option" data-value="OFF">OFF<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-              </div>
-              <input type="hidden" name="logTimeConfirmation" value="ON" />
-            </div>
-          </div>
-
-          <div class="bo-modal-field">
-            <label>Minimum Activity Time Tracking</label>
-            <input type="number" name="minActivityTimeTracking" placeholder="Minimum Activity Time Tracking" min="0" />
           </div>
 
         </div>
