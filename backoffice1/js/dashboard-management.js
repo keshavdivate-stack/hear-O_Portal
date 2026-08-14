@@ -10,7 +10,7 @@ const dashboards = [
   { name: "automation_ZTS", hmo: ["ZTS"], tags: ["NEW", "CURRENT"], type: "STUDY DASHBOARD" },
   { name: "122", hmo: ["122"], tags: ["NEW", "CURRENT"], type: "CLINIC SUMMARY DASHBOARD" },
   { name: "B01", hmo: ["B01"], tags: ["CURRENT", "NEW"], type: "CLINIC SUMMARY DASHBOARD" },
-  { name: "Test Dashboard MKT Study", hmo: ["MKT", "IGO", "TS1", "TSS", "TST"], tags: ["CURRENT", "NEW"], type: "STUDY DASHBOARD" },
+  { name: "MKT Study", hmo: ["MKT", "IGO", "TS1", "TSS", "TST"], tags: ["CURRENT", "NEW"], type: "STUDY DASHBOARD" },
 ];
 
 dashboards.forEach((d, i) => (d.id = i));

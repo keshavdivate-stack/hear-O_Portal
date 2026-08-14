@@ -1,6 +1,6 @@
 /* ---------------- Shared organization list for the MKT Study/Summary dashboards ---------------- */
 const MKT_ORG_LIST = [
-  { id: "all", name: "All Organizations", code: "MKT" },
+  { id: "all", name: "MKT", code: "MKT" },
   { id: "clalit-north", name: "HMO Clalit North", code: "CLN" },
   { id: "assuta-cardio", name: "Assuta Cardio", code: "ASC" },
   { id: "clalit-south", name: "Clalit South", code: "CLS" },
