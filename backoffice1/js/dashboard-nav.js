@@ -14,6 +14,7 @@ function wirePopover(btnId, popoverId) {
 wirePopover("avatarBtn", "avatarPopover");
 wirePopover("settingsNavBtn", "settingsPopover");
 wirePopover("patientsNavBtn", "patientsPopover");
+wirePopover("reportsNavBtn", "reportsPopover");
 document.addEventListener("click", () => {
   document.querySelectorAll(".bo-popover.open").forEach((p) => p.classList.remove("open"));
 });

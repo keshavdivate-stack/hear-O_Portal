@@ -1,10 +1,17 @@
-/* ---------------- System Health Summary ---------------- */
+/* ---------------- KPI row (System Health Summary) ---------------- */
 const ovHealthStats = [
-  { num: 4, label: "Critical Issues", color: "var(--red)", icon: `<path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.73 3h16.9a2 2 0 0 0 1.73-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/>` },
-  { num: 12, label: "Active Alerts", color: "var(--orange)", icon: `<path d="M18 9.5C18 7.7 17.3 6 16 4.8C14.7 3.6 13 3 11.3 3.1C8.1 3.3 5.6 6.1 5.6 9.4V12.5C5.6 13.1 5.4 13.7 5 14.2L4 15.5C3.4 16.3 4 17.5 5 17.5H19C20 17.5 20.6 16.3 20 15.5L19 14.2C18.6 13.7 18.4 13.1 18.4 12.5"/>` },
-  { num: 5, label: "Organizations Impacted", color: "var(--blue)", icon: `<rect width="16" height="18" x="4" y="3" rx="1"/><path d="M9 8h1"/><path d="M14 8h1"/><path d="M9 12h1"/><path d="M14 12h1"/>` },
-  { num: 39, label: "Patients Affected", color: "var(--navy)", icon: `<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>` },
+  { num: Object.keys(orgHealthData).length, label: "Total Organizations", color: "var(--navy)", icon: `<rect width="16" height="18" x="4" y="3" rx="1"/><path d="M9 8h1"/><path d="M14 8h1"/><path d="M9 12h1"/><path d="M14 12h1"/><path d="M9 16h1"/><path d="M14 16h1"/><path d="M10 21v-3a2 2 0 0 1 4 0v3"/>`, delta: 0, deltaDir: "flat" },
+  { num: 3, label: "Critical Issues", color: "var(--red)", icon: `<circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/>`, delta: 2, deltaDir: "up" },
+  { num: 8, label: "Warnings", color: "var(--orange)", icon: `<path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.73 3h16.9a2 2 0 0 0 1.73-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/><path d="M12 9v4"/><path d="M12 17h.01"/>`, delta: 3, deltaDir: "up" },
+  { num: 4, label: "Organizations Affected", color: "var(--blue)", icon: `<rect width="16" height="18" x="4" y="3" rx="1"/><path d="M9 8h1"/><path d="M14 8h1"/><path d="M9 12h1"/><path d="M14 12h1"/>`, delta: 1, deltaDir: "up" },
+  { num: 68, label: "Patients Affected", color: "var(--purple)", icon: `<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>`, delta: 23, deltaDir: "up" },
+  { num: 11, label: "Issues Requiring Action", color: "var(--green)", icon: `<path d="M4 12L9 17L20 6"/>`, delta: 2, deltaDir: "down" },
+  { num: 0, label: "On Hold", color: "var(--gray)", icon: `<rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/>`, delta: 0, deltaDir: "flat" },
 ];
+
+const ovDeltaArrow = { up: `<path d="M12 19V5"/><path d="m5 12 7-7 7 7"/>`, down: `<path d="M12 5v14"/><path d="m5 12 7 7 7-7"/>`, flat: `<path d="M5 12h14"/>` };
+const ovDeltaText = (s) => (s.deltaDir === "flat" ? "No change" : `${s.delta} vs yesterday`);
+const ovDeltaColor = (s) => (s.deltaDir === "flat" ? "var(--gray-text)" : s.deltaDir === "up" ? "var(--red)" : "var(--green)");
 
 document.getElementById("ovHealthGrid").innerHTML = ovHealthStats
   .map(
@@ -21,85 +28,230 @@ document.getElementById("ovHealthGrid").innerHTML = ovHealthStats
   )
   .join("");
 
-/* ---------------- Critical Issues & Alerts ---------------- */
-const ovIssues = [
-  { title: "Recording upload failures", severity: "critical", org: "HMO Clalit North", orgId: "clalit-north", patients: 12, status: "Open", detected: "2h ago" },
-  { title: "Voice engine timeout spike", severity: "critical", org: "Assuta Cardio", orgId: "assuta-cardio", patients: 5, status: "Open", detected: "40m ago" },
-  { title: "App crash on Android 14", severity: "critical", org: "B01 Pilot", orgId: "b01-pilot", patients: 2, status: "Escalated", detected: "6h ago" },
-  { title: "Duplicate patient records", severity: "critical", org: "Maccabi West", orgId: "maccabi-west", patients: 1, status: "Open", detected: "1d ago" },
-  { title: "Compliance drop &gt;20%", severity: "warning", org: "Clalit South", orgId: "clalit-south", patients: 9, status: "Open", detected: "3h ago" },
-  { title: "Sensor disconnect (Bluetooth)", severity: "warning", org: "Maccabi West", orgId: "maccabi-west", patients: 3, status: "Investigating", detected: "1d ago" },
-  { title: "Missed daily readings", severity: "warning", org: "HMO Clalit North", orgId: "clalit-north", patients: 6, status: "Monitoring", detected: "5h ago" },
-  { title: "Device battery critical", severity: "warning", org: "Assuta Cardio", orgId: "assuta-cardio", patients: 1, status: "Open", detected: "20m ago" },
+/* ---------------- System Health Trend (layered area chart) ---------------- */
+const ovTrendLabels = ["12:00 PM", "4:00 PM", "8:00 PM", "12:00 AM", "4:00 AM", "8:00 AM", "12:00 PM"];
+const ovTrendSeries = [
+  { key: "info", label: "Information", color: "#2AA9E0", values: [38, 42, 40, 36, 44, 62, 58] },
+  { key: "warning", label: "Warning", color: "#F2994A", values: [22, 26, 24, 20, 30, 44, 40] },
+  { key: "critical", label: "Critical", color: "#F16C6C", values: [8, 12, 10, 6, 14, 24, 20] },
 ];
 
-const ovStatusPillClass = { Open: "critical", Escalated: "escalated", Investigating: "warning", Monitoring: "info" };
+document.getElementById("ovTrendLegend").innerHTML = ovTrendSeries
+  .slice()
+  .reverse()
+  .map((s) => `<span><span class="dot" style="background:${s.color}"></span>${s.label}</span>`)
+  .join("");
 
-document.getElementById("ovIssueRows").innerHTML = ovIssues
+function renderOvTrendChart() {
+  const container = document.getElementById("ovTrendChart");
+  const width = container.clientWidth || 640;
+  const height = container.clientHeight || 220;
+  const padL = 30;
+  const padR = 10;
+  const padT = 10;
+  const padB = 22;
+  const plotW = width - padL - padR;
+  const plotH = height - padT - padB;
+  const yMax = 90;
+  const gridStep = 20;
+
+  const xAt = (i) => padL + (plotW * i) / (ovTrendLabels.length - 1);
+  const yAt = (v) => padT + plotH - (v / yMax) * plotH;
+
+  const gridLines = [];
+  for (let v = 0; v <= yMax; v += gridStep) {
+    const y = yAt(v);
+    gridLines.push(
+      `<line x1="${padL}" y1="${y}" x2="${width - padR}" y2="${y}" stroke="#EEF1F4" stroke-width="1"/>` +
+        `<text x="${padL - 8}" y="${y + 4}" text-anchor="end" font-size="10" fill="#9AA5B1">${v}</text>`
+    );
+  }
+
+  const xLabels = ovTrendLabels
+    .map((m, i) => `<text x="${xAt(i)}" y="${height - 5}" text-anchor="middle" font-size="9.5" fill="#9AA5B1">${m}</text>`)
+    .join("");
+
+  const buildArea = (series) => {
+    const line = series.values.map((v, i) => `${xAt(i)},${yAt(v)}`).join(" L ");
+    const areaPath = `M ${xAt(0)},${yAt(series.values[0])} L ${line} L ${xAt(series.values.length - 1)},${padT + plotH} L ${xAt(0)},${padT + plotH} Z`;
+    return `
+      <path d="${areaPath}" fill="${series.color}" opacity="0.28"/>
+      <path d="M ${xAt(0)},${yAt(series.values[0])} L ${line}" fill="none" stroke="${series.color}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+      ${series.values.map((v, i) => `<circle cx="${xAt(i)}" cy="${yAt(v)}" r="2.6" fill="${series.color}"/>`).join("")}`;
+  };
+
+  document.getElementById("ovTrendChart").innerHTML = `
+    <svg viewBox="0 0 ${width} ${height}" class="bo-area-svg" preserveAspectRatio="none">
+      ${gridLines.join("")}
+      ${ovTrendSeries.map(buildArea).join("")}
+      ${xLabels}
+    </svg>`;
+}
+renderOvTrendChart();
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(renderOvTrendChart);
+window.addEventListener("load", renderOvTrendChart);
+window.addEventListener("resize", renderOvTrendChart);
+
+const ovTrendFooter = [
+  { num: 21, label: "Critical Issues", color: "var(--red)", delta: 8, dir: "up" },
+  { num: 45, label: "Warnings", color: "var(--orange)", delta: 12, dir: "up" },
+  { num: 102, label: "Informational", color: "var(--blue)", delta: 5, dir: "down" },
+  { num: 68, label: "Resolved", color: "var(--green)", delta: 15, dir: "up" },
+];
+
+document.getElementById("ovTrendFooter").innerHTML = ovTrendFooter
   .map(
-    (i) => `
-    <tr>
-      <td>${i.title}</td>
-      <td><span class="bo-severity-pill ${i.severity}"><span class="dot"></span>${i.severity === "critical" ? "Critical" : "Warning"}</span></td>
-      <td><a class="bo-row-link" href="org-health-dashboard.html?org=${i.orgId}">${i.org}</a></td>
-      <td>${i.patients}</td>
-      <td><span class="bo-severity-pill ${ovStatusPillClass[i.status] || "neutral"}">${i.status}</span></td>
-      <td>${i.detected}</td>
-    </tr>`
+    (f) => `
+    <div class="bo-mini-stat-cell">
+      <span class="num" style="color:${f.color};">${f.num}</span>
+      <span class="lbl">${f.label}</span>
+      <span class="delta ${f.dir}">
+        <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">${ovDeltaArrow[f.dir]}</svg>
+        ${f.delta} vs yesterday
+      </span>
+    </div>`
   )
   .join("");
 
-/* ---------------- Issue Categories ---------------- */
+/* ---------------- Critical Issues (Top 5) ---------------- */
+const ovCritIssues = [
+  { title: "Recording failures", desc: "Recordings not received from devices", severity: "Critical", started: "42 min ago", orgs: 3, patients: 18, color: "var(--red)", category: "Recording", icon: `<path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3Z"/><path d="M19 11a7 7 0 0 1-14 0"/><path d="M12 19v3"/>` },
+  { title: "Upload failures", desc: "Recordings failing to upload to server", severity: "Critical", started: "2 hrs ago", orgs: 2, patients: 7, color: "var(--red)", category: "Upload", icon: `<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5"/><path d="M12 3v12"/>` },
+  { title: "Voice engine errors", desc: "High error rate in voice processing", severity: "High", started: "3 hrs ago", orgs: 1, patients: 5, color: "var(--orange)", category: "Voice Engine", icon: `<path d="M12 2a10 10 0 1 0 10 10"/><path d="M12 6v6l4 2"/>` },
+  { title: "Device connectivity issues", desc: "Devices not connecting or syncing", severity: "High", started: "5 hrs ago", orgs: 2, patients: 9, color: "var(--orange)", category: "Device / System", icon: `<rect x="4" y="2" width="16" height="20" rx="2"/><path d="M12 18h.01"/>` },
+  { title: "Sensor data delays", desc: "Sensor data delayed or missing", severity: "Medium", started: "6 hrs ago", orgs: 1, patients: 4, color: "#F2C94C", category: "Sensors", icon: `<circle cx="12" cy="12" r="9"/><path d="M12 8v4"/><path d="M12 16h.01"/>` },
+];
+
+const ovSeverityPillClass = { Critical: "critical", High: "warning", Medium: "info" };
+
+/* Route each issue to the organization currently most affected by that
+   category, so clicking an issue drops the user straight into the
+   relevant org instead of a generic default. */
+function topOrgForCategory(category) {
+  let bestId = null;
+  let bestCount = -1;
+  Object.entries(orgHealthData).forEach(([id, o]) => {
+    const cat = o.categories.find((c) => c.label === category);
+    if (cat && cat.count > bestCount) {
+      bestCount = cat.count;
+      bestId = id;
+    }
+  });
+  return bestId;
+}
+
+document.getElementById("ovCritIssueList").innerHTML = ovCritIssues
+  .map((i) => {
+    const orgId = topOrgForCategory(i.category);
+    const href = `org-health-dashboard.html?issue=${encodeURIComponent(i.category)}${orgId ? `&org=${orgId}` : ""}`;
+    return `
+    <a class="bo-crit-issue-row" href="${href}">
+      <span class="bo-crit-issue-icon" style="background:${i.color};">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${i.icon}</svg>
+      </span>
+      <span class="bo-crit-issue-body">
+        <span class="bo-crit-issue-title">${i.title}</span>
+        <span class="bo-crit-issue-desc">${i.desc}</span>
+        <span class="bo-crit-issue-meta">Started ${i.started} &middot; ${i.orgs} Organization${i.orgs === 1 ? "" : "s"} &middot; ${i.patients} Patients</span>
+      </span>
+      <span class="bo-crit-issue-right">
+        <span class="bo-severity-pill ${ovSeverityPillClass[i.severity]}">${i.severity}</span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+      </span>
+    </a>`;
+  })
+  .join("");
+
+/* ---------------- Issues by Category (donut) ---------------- */
 const ovCategories = [
-  { label: "Recording", count: 12, color: "var(--red)", icon: `<path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3Z"/><path d="M19 11a7 7 0 0 1-14 0"/><path d="M12 19v3"/>` },
-  { label: "Compliance", count: 9, color: "var(--navy)", icon: `<path d="M12 21C12 21 4 15.5 4 9.8C4 6.6 6.5 4.5 9.2 4.5C10.6 4.5 11.6 5.1 12 5.7C12.4 5.1 13.4 4.5 14.8 4.5C17.5 4.5 20 6.6 20 9.8C20 15.5 12 21 12 21Z"/>` },
-  { label: "Voice Engine", count: 7, color: "var(--blue)", icon: `<path d="M12 2a10 10 0 1 0 10 10"/><path d="M12 6v6l4 2"/>` },
-  { label: "Uploading", count: 6, color: "var(--orange)", icon: `<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5"/><path d="M12 3v12"/>` },
-  { label: "Sensors", count: 4, color: "var(--cyan)", icon: `<circle cx="12" cy="12" r="9"/><path d="M12 8v4"/><path d="M12 16h.01"/>` },
-  { label: "Device / System", count: 3, color: "var(--gray)", icon: `<rect x="4" y="2" width="16" height="20" rx="2"/><path d="M12 18h.01"/>` },
+  { label: "Recording", count: 18, color: "var(--red)" },
+  { label: "Voice Engine", count: 14, color: "var(--orange)" },
+  { label: "Sensors", count: 12, color: "#F2C94C" },
+  { label: "Upload", count: 9, color: "var(--green)" },
+  { label: "Device", count: 8, color: "var(--blue)" },
+  { label: "Compliance", count: 6, color: "var(--purple)" },
+  { label: "Other", count: 12, color: "var(--gray)" },
 ];
 
-document.getElementById("ovCategoryChips").innerHTML = ovCategories
-  .map(
-    (c) => `
-    <button type="button" class="bo-chip-row">
-      <span class="bo-chip-left">
-        <span class="bo-chip-icon" style="background:${c.color};">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${c.icon}</svg>
-        </span>
-        ${c.label}
-      </span>
-      <span class="bo-chip-count">${c.count}</span>
-    </button>`
-  )
-  .join("");
+function renderOvDonut() {
+  const total = ovCategories.reduce((s, c) => s + c.count, 0);
+  let acc = 0;
+  const stops = ovCategories
+    .map((c) => {
+      const from = (acc / total) * 360;
+      acc += c.count;
+      const to = (acc / total) * 360;
+      return `${c.color} ${from}deg ${to}deg`;
+    })
+    .join(", ");
+  document.getElementById("ovDonut").style.background = `conic-gradient(${stops})`;
+  document.getElementById("ovDonutTotal").textContent = total;
 
-/* ---------------- Organizations Affected ---------------- */
-const ovOrgs = [
-  { id: "clalit-north", name: "HMO Clalit North", severity: "critical", patients: 18 },
-  { id: "assuta-cardio", name: "Assuta Cardio", severity: "critical", patients: 6 },
-  { id: "clalit-south", name: "Clalit South", severity: "warning", patients: 9 },
-  { id: "maccabi-west", name: "Maccabi West", severity: "warning", patients: 4 },
-  { id: "b01-pilot", name: "B01 Pilot", severity: "critical", patients: 2 },
-];
+  document.getElementById("ovDonutLegend").innerHTML = ovCategories
+    .map((c) => {
+      const pct = Math.round((c.count / total) * 100);
+      return `
+      <div class="bo-donut-legend-row">
+        <span class="dot" style="background:${c.color};"></span>
+        <span class="name">${c.label}</span>
+        <span class="val">${c.count} (${pct}%)</span>
+      </div>`;
+    })
+    .join("");
+}
+renderOvDonut();
 
-document.getElementById("ovOrgChips").innerHTML = ovOrgs
+/* ---------------- Affected Organizations ---------------- */
+const ovOrgDotColor = { critical: "var(--red)", warning: "var(--orange)", healthy: "var(--green)" };
+const ovOrgIssuesPillClass = { critical: "critical", warning: "warning", healthy: "healthy" };
+
+document.getElementById("ovOrgMiniList").innerHTML = Object.entries(orgHealthData)
+  .sort((a, b) => b[1].openIssues - a[1].openIssues)
+  .slice(0, 5)
   .map(
-    (o) => `
-    <a class="bo-chip-row" href="org-health-dashboard.html?org=${o.id}">
-      <span class="bo-chip-left">
-        <span class="bo-severity-pill ${o.severity}"><span class="dot"></span></span>
-        ${o.name}
-      </span>
-      <span class="bo-chip-count">${o.patients}</span>
+    ([id, o]) => `
+    <a class="bo-org-mini-row" href="org-health-dashboard.html?org=${id}">
+      <span class="dot" style="background:${ovOrgDotColor[o.severity]};"></span>
+      <span class="bo-org-mini-name">${o.name}</span>
+      <span class="bo-severity-pill ${ovOrgIssuesPillClass[o.severity]} bo-org-mini-issues">${o.openIssues} issue${o.openIssues === 1 ? "" : "s"}</span>
+      <span class="bo-org-mini-patients">${o.patients} patients</span>
     </a>`
   )
   .join("");
 
-/* ---------------- Time range toggle (visual only for now) ---------------- */
-document.getElementById("ovTimeToggle").addEventListener("click", (e) => {
-  const btn = e.target.closest(".bo-seg-btn");
-  if (!btn) return;
-  document.querySelectorAll("#ovTimeToggle .bo-seg-btn").forEach((b) => b.classList.remove("active"));
-  btn.classList.add("active");
+/* ---------------- System Health gauge ---------------- */
+function renderOvGauge(score) {
+  const angle = -90 + (score / 100) * 180;
+  document.getElementById("ovGaugeNeedle").style.transform = `translateX(-50%) rotate(${angle}deg)`;
+  document.getElementById("ovGaugeScore").textContent = score;
+  const label = score >= 80 ? "Healthy" : score >= 50 ? "Needs Attention" : "Critical";
+  const color = score >= 80 ? "var(--green)" : score >= 50 ? "var(--orange)" : "var(--red)";
+  const labelEl = document.getElementById("ovGaugeLabel");
+  labelEl.textContent = label;
+  labelEl.style.color = color;
+}
+renderOvGauge(72);
+
+/* ---------------- Header: range dropdown + refresh + footer timestamp ---------------- */
+const ovRangeSelect = document.querySelector('.bo-select[data-name="ovRange"]');
+ovRangeSelect.querySelector(".bo-select-trigger").addEventListener("click", (e) => {
+  e.stopPropagation();
+  ovRangeSelect.classList.toggle("open");
+});
+ovRangeSelect.addEventListener("click", (e) => {
+  const option = e.target.closest(".bo-select-option");
+  if (!option) return;
+  ovRangeSelect.querySelector(".bo-select-value").textContent = option.textContent;
+  ovRangeSelect.classList.remove("open");
+});
+document.addEventListener("click", () => ovRangeSelect.classList.remove("open"));
+
+function stampLastUpdated() {
+  document.getElementById("ovLastUpdated").textContent = "Just now";
+}
+stampLastUpdated();
+
+document.getElementById("ovRefreshBtn").addEventListener("click", () => {
+  renderOvTrendChart();
+  stampLastUpdated();
 });

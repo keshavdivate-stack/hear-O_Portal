@@ -8,6 +8,14 @@ document.getElementById("patientName").textContent = ph.username;
 document.getElementById("patientSub").textContent = `${ph.org} · ${ph.langName}`;
 document.getElementById("patientAvatar").textContent = ph.username.slice(0, 2).toUpperCase();
 
+/* If the patient was opened by drilling down from an organization's
+   health dashboard, "back" should return there (preserving that
+   investigation context) instead of the generic patient list. */
+const phOrgContext = phParams.get("org");
+if (phOrgContext) {
+  document.getElementById("patientBackLink").href = `org-health-dashboard.html?org=${phOrgContext}`;
+}
+
 const phStatusClass = { Active: "healthy", Registered: "info", Priority: "critical", Paused: "neutral" };
 const phSevEl = document.getElementById("patientSeverity");
 phSevEl.classList.add(phStatusClass[ph.status] || "neutral");

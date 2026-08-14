@@ -91,6 +91,17 @@ const orgHealthData = {
       { id: "p-8801", name: "Lior Adler", issue: "App crash on Android 14", severity: "critical", lastRecording: "6h ago", status: "Escalated" },
     ],
   },
+  "maccabi-east": {
+    name: "Maccabi East",
+    severity: "healthy",
+    patients: 68,
+    providers: 10,
+    openIssues: 0,
+    criticalIssues: 0,
+    lastIncident: "—",
+    categories: [],
+    patientsAffected: [],
+  },
 };
 
 const ORG_HEALTH_DEFAULT = "clalit-north";

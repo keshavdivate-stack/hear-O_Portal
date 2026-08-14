@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="css/style.css" />
+<link rel="stylesheet" href="css/style.css?v=4" />
 </head>
 <body>
 
@@ -45,10 +45,25 @@
         </button>
         <div class="bo-popover bo-nav-popover" id="patientsPopover">
           <a href="patient-management.html" class="bo-popover-item">Patient Mng.</a>
-          <a href="patient-events.html" class="bo-popover-item">P.Events</a>
           <a href="status-change.html" class="bo-popover-item">Status Change</a>
         </div>
       </div>
+      <div class="bo-nav-item">
+        <button type="button" class="bo-nav-link" id="reportsNavBtn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>
+          Reports
+          <svg class="bo-nav-caret" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="bo-popover bo-nav-popover" id="reportsPopover">
+          <a href="language-resources.html" class="bo-popover-item">Language Resource</a>
+          <a href="audit-log.html" class="bo-popover-item">Audit Log</a>
+          <a href="patient-events.html" class="bo-popover-item">Patient Event</a>
+        </div>
+      </div>
+      <a href="support.html" class="bo-nav-link">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8.5a2.5 2.5 0 0 1 2.5 2.5c0 1.4-1.1 2-1.9 2.6-.6.4-.6.9-.6 1.4"/><path d="M12 17.5h.01"/></svg>
+        Support
+      </a>
       <div class="bo-nav-item">
         <button type="button" class="bo-nav-link" id="settingsNavBtn">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
@@ -58,7 +73,7 @@
         <div class="bo-popover bo-nav-popover" id="settingsPopover">
           <div class="bo-config-wrap">
             <button type="button" class="bo-popover-item bo-popover-item-sub" id="configSubBtn">
-              <span>Config</span>
+              <span>Application Config</span>
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg>
             </button>
             <div class="bo-popover bo-nav-popover bo-submenu" id="configSubmenu">
@@ -68,23 +83,10 @@
             </div>
           </div>
           <a href="manage-users.html" class="bo-popover-item">Manage Users</a>
-          <a href="dashboard-management.html" class="bo-popover-item">Dashboard Management</a>
           <div class="bo-popover-item">Reports Management</div>
           <div class="bo-popover-item">Terms &amp; Conditions</div>
         </div>
       </div>
-      <a href="language-resources.html" class="bo-nav-link">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12H21"/><path d="M12 3C14.5 5.7 15.8 8.8 15.8 12C15.8 15.2 14.5 18.3 12 21C9.5 18.3 8.2 15.2 8.2 12C8.2 8.8 9.5 5.7 12 3Z"/></svg>
-        Language Res
-      </a>
-      <a href="audit-log.html" class="bo-nav-link">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg>
-        Audit Log
-      </a>
-      <a href="support.html" class="bo-nav-link">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8.5a2.5 2.5 0 0 1 2.5 2.5c0 1.4-1.1 2-1.9 2.6-.6.4-.6.9-.6 1.4"/><path d="M12 17.5h.01"/></svg>
-        Support
-      </a>
     </nav>
 
     <div class="bo-nav-actions">
@@ -103,57 +105,110 @@
   </header>
 
   <!-- PAGE -->
-  <main class="bo-page">
+  <main class="bo-page bo-page-list">
 
-    <div class="bo-list-toolbar">
-      <h1>Overview Dashboard</h1>
-      <span class="bo-list-toolbar-spacer"></span>
-      <div class="bo-seg-toggle" id="ovTimeToggle">
-        <button class="bo-seg-btn" data-range="24h">24h</button>
-        <button class="bo-seg-btn active" data-range="7d">7d</button>
-        <button class="bo-seg-btn" data-range="30d">30d</button>
-        <button class="bo-seg-btn" data-range="4mo">4mo</button>
-        <button class="bo-seg-btn" data-range="1y">1y</button>
+    <div class="bo-ov-head">
+      <div>
+        <h1>Overview</h1>
+        <p class="sub">Real-time system health and operations summary</p>
+      </div>
+      <div class="bo-ov-head-actions">
+        <div class="bo-select" data-name="ovRange">
+          <button type="button" class="bo-select-trigger bo-ov-range-btn">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9H21"/></svg>
+            <span class="bo-select-value">Last 24 hours</span>
+            <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="bo-select-menu">
+            <div class="bo-select-option" data-value="24h">Last 24 hours</div>
+            <div class="bo-select-option" data-value="7d">Last 7 days</div>
+            <div class="bo-select-option" data-value="30d">Last 30 days</div>
+            <div class="bo-select-option" data-value="4mo">Last 4 months</div>
+            <div class="bo-select-option" data-value="1y">Last year</div>
+          </div>
+        </div>
+        <button type="button" class="bo-btn-secondary" id="ovRefreshBtn">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg>
+          Refresh
+        </button>
       </div>
     </div>
 
     <!-- SYSTEM HEALTH SUMMARY (priority 1: what's wrong, how bad, where) -->
-    <div class="bo-health-grid" id="ovHealthGrid"></div>
+    <div class="bo-health-grid bo-health-grid--auto" id="ovHealthGrid"></div>
 
-    <!-- CRITICAL ISSUES -->
-    <section class="bo-card bo-panel" style="margin-bottom:16px; max-height:300px;">
-      <h3 class="bo-panel-title">Critical Issues &amp; Alerts</h3>
-      <div class="bo-table-scroll">
-        <table class="bo-table">
-          <thead>
-            <tr><th>Issue</th><th>Severity</th><th>Organization</th><th>Patients</th><th>Status</th><th>Detected</th></tr>
-          </thead>
-          <tbody id="ovIssueRows"></tbody>
-        </table>
-      </div>
-    </section>
+    <!-- SYSTEM HEALTH TREND + CRITICAL ISSUES (TOP 5) -->
+    <div style="display:flex; align-items:stretch; gap:16px; flex-shrink:0; margin-bottom:20px;">
+      <section class="bo-card bo-panel bo-panel--static" style="flex:1.6 1 0; display:block;">
+        <div class="bo-panel-head">
+          <h3 class="bo-panel-title" style="margin:0; display:flex; align-items:center; gap:6px;">
+            System Health Trend
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--gray-text)" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+          </h3>
+          <div class="bo-legend-row" id="ovTrendLegend" style="margin:0;"></div>
+        </div>
+        <div id="ovTrendChart" class="bo-chart-area" style="height:220px;"></div>
+        <div class="bo-mini-stat-row" id="ovTrendFooter"></div>
+      </section>
 
-    <!-- ALL ORGANIZATIONS / CLINICS (priority 1: where is it happening, drill-down entry point) -->
-    <section class="bo-card bo-panel" style="margin-bottom:16px;">
-      <div class="bo-panel-head">
-        <h3 class="bo-panel-title" style="margin:0;">All Organizations</h3>
-        <a class="bo-row-link" href="organizations.html">Manage organizations &rarr;</a>
-      </div>
-      <div class="bo-table-scroll">
-        <table class="bo-table">
-          <thead>
-            <tr><th>Organization</th><th>Health</th><th>Patients</th><th>Providers</th><th>Open Issues</th><th>Critical</th><th>Last Incident</th><th></th></tr>
-          </thead>
-          <tbody id="ovOrgRows"></tbody>
-        </table>
-      </div>
-    </section>
+      <section class="bo-card bo-panel bo-panel--static" style="flex:1 1 0; display:block;">
+        <div class="bo-panel-head">
+          <h3 class="bo-panel-title" style="margin:0;">Critical Issues (Top 5)</h3>
+          <a class="bo-row-link" href="support.html">View all</a>
+        </div>
+        <div class="bo-crit-issue-list" id="ovCritIssueList"></div>
+      </section>
+    </div>
 
-    <!-- ISSUE CATEGORIES (priority 2: supporting context) -->
-    <section class="bo-card bo-panel">
-      <h3 class="bo-panel-title">Issue Categories</h3>
-      <div class="bo-chip-grid" id="ovCategoryChips"></div>
-    </section>
+    <!-- ISSUES BY CATEGORY + AFFECTED ORGANIZATIONS + SYSTEM HEALTH GAUGE -->
+    <div style="display:flex; align-items:stretch; gap:16px; flex-shrink:0; margin-bottom:20px;">
+      <section class="bo-card bo-panel bo-panel--static" style="flex:1 1 0; display:block;">
+        <h3 class="bo-panel-title">Issues by Category</h3>
+        <div class="bo-donut-row">
+          <div class="bo-donut-wrap">
+            <div class="bo-donut" id="ovDonut"></div>
+            <div class="bo-donut-center">
+              <span class="num" id="ovDonutTotal">&nbsp;</span>
+              <span class="lbl">Total Issues</span>
+            </div>
+          </div>
+          <div class="bo-donut-legend" id="ovDonutLegend"></div>
+        </div>
+        <a class="bo-row-link bo-ov-panel-foot" href="support.html">View full report &rarr;</a>
+      </section>
+
+      <section class="bo-card bo-panel bo-panel--static" style="flex:1 1 0; display:block;">
+        <div class="bo-panel-head">
+          <h3 class="bo-panel-title" style="margin:0;">Affected Organizations</h3>
+          <a class="bo-row-link" href="organizations.html">View all</a>
+        </div>
+        <div class="bo-org-mini-list" id="ovOrgMiniList"></div>
+      </section>
+
+      <section class="bo-card bo-panel bo-panel--static" style="flex:1 1 0; display:flex; flex-direction:column; align-items:center;">
+        <h3 class="bo-panel-title" style="align-self:flex-start;">System Health</h3>
+        <div class="bo-gauge">
+          <div class="bo-gauge-arc"></div>
+          <div class="bo-gauge-needle" id="ovGaugeNeedle"></div>
+          <div class="bo-gauge-readout">
+            <span class="num" id="ovGaugeScore">&nbsp;</span>
+            <span class="lbl" id="ovGaugeLabel">&nbsp;</span>
+          </div>
+        </div>
+        <a class="bo-row-link bo-ov-panel-foot" href="org-health-dashboard.html" style="width:100%;">View health details &rarr;</a>
+      </section>
+    </div>
+
+    <div class="bo-ov-footer">
+      <span class="bo-ov-footer-item">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+        Last updated: <span id="ovLastUpdated">&nbsp;</span>
+      </span>
+      <span class="bo-ov-footer-item">
+        <span class="bo-ov-live-dot"></span>
+        Auto refresh: <b>On</b>
+      </span>
+    </div>
 
   </main>
 

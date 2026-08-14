@@ -45,10 +45,25 @@
         </button>
         <div class="bo-popover bo-nav-popover" id="patientsPopover">
           <a href="patient-management.html" class="bo-popover-item">Patient Mng.</a>
-          <a href="patient-events.html" class="bo-popover-item">P.Events</a>
           <a href="status-change.html" class="bo-popover-item">Status Change</a>
         </div>
       </div>
+      <div class="bo-nav-item">
+        <button type="button" class="bo-nav-link" id="reportsNavBtn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>
+          Reports
+          <svg class="bo-nav-caret" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="bo-popover bo-nav-popover" id="reportsPopover">
+          <a href="language-resources.html" class="bo-popover-item">Language Resource</a>
+          <a href="audit-log.html" class="bo-popover-item">Audit Log</a>
+          <a href="patient-events.html" class="bo-popover-item">Patient Event</a>
+        </div>
+      </div>
+      <a href="support.html" class="bo-nav-link">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8.5a2.5 2.5 0 0 1 2.5 2.5c0 1.4-1.1 2-1.9 2.6-.6.4-.6.9-.6 1.4"/><path d="M12 17.5h.01"/></svg>
+        Support
+      </a>
       <div class="bo-nav-item">
         <button type="button" class="bo-nav-link" id="settingsNavBtn">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
@@ -58,7 +73,7 @@
         <div class="bo-popover bo-nav-popover" id="settingsPopover">
           <div class="bo-config-wrap">
             <button type="button" class="bo-popover-item bo-popover-item-sub" id="configSubBtn">
-              <span>Config</span>
+              <span>Application Config</span>
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg>
             </button>
             <div class="bo-popover bo-nav-popover bo-submenu" id="configSubmenu">
@@ -68,23 +83,10 @@
             </div>
           </div>
           <a href="manage-users.html" class="bo-popover-item">Manage Users</a>
-          <a href="dashboard-management.html" class="bo-popover-item">Dashboard Management</a>
           <div class="bo-popover-item">Reports Management</div>
           <div class="bo-popover-item">Terms &amp; Conditions</div>
         </div>
       </div>
-      <a href="language-resources.html" class="bo-nav-link">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12H21"/><path d="M12 3C14.5 5.7 15.8 8.8 15.8 12C15.8 15.2 14.5 18.3 12 21C9.5 18.3 8.2 15.2 8.2 12C8.2 8.8 9.5 5.7 12 3Z"/></svg>
-        Language Res
-      </a>
-      <a href="audit-log.html" class="bo-nav-link">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg>
-        Audit Log
-      </a>
-      <a href="support.html" class="bo-nav-link">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8.5a2.5 2.5 0 0 1 2.5 2.5c0 1.4-1.1 2-1.9 2.6-.6.4-.6.9-.6 1.4"/><path d="M12 17.5h.01"/></svg>
-        Support
-      </a>
     </nav>
 
     <div class="bo-nav-actions">
@@ -132,6 +134,7 @@
               <th>DISPLAY ON DASHBOARD</th>
               <th>DISPLAY CARE RECOMMENDATION</th>
               <th>AUTH TYPE</th>
+              <th>EHR CONNECTIONS</th>
               <th>PHONE NUMBER 1</th>
               <th>LATITUDE / LONGITUDE</th>
               <th>DOCUMENT PATH</th>
@@ -174,20 +177,47 @@
     <button class="bo-row-menu-item danger" data-action="delete">Delete Organization</button>
   </div>
 
-  <!-- Add Organization drawer -->
-  <div class="bo-drawer-overlay" id="addOrgOverlay">
-    <div class="bo-drawer">
-      <div class="bo-drawer-head">
+  <!-- Add Organization full-screen panel (sits under the top nav, not a separate page) -->
+  <div class="bo-fullscreen-overlay" id="addOrgOverlay">
+    <div class="bo-fullscreen-panel">
+      <div class="bo-fullscreen-head">
         <h2>Add Organization</h2>
         <button type="button" class="bo-drawer-close" id="closeAddOrgX" aria-label="Close">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6L18 18M6 18L18 6"/></svg>
         </button>
       </div>
 
-      <form id="addOrgForm" class="bo-drawer-form">
-        <div class="bo-drawer-body">
+      <div class="bo-stepper" id="addOrgStepper">
+        <button type="button" class="bo-step active" data-step-nav="1">
+          <span class="bo-step-circle">1</span>
+          <span class="bo-step-label">Basic Info</span>
+        </button>
+        <span class="bo-step-line"></span>
+        <button type="button" class="bo-step" data-step-nav="2">
+          <span class="bo-step-circle">2</span>
+          <span class="bo-step-label">Configuration</span>
+        </button>
+        <span class="bo-step-line"></span>
+        <button type="button" class="bo-step" data-step-nav="3">
+          <span class="bo-step-circle">3</span>
+          <span class="bo-step-label">Display Settings</span>
+        </button>
+        <span class="bo-step-line"></span>
+        <button type="button" class="bo-step" data-step-nav="4">
+          <span class="bo-step-circle">4</span>
+          <span class="bo-step-label">Contact &amp; Location</span>
+        </button>
+        <span class="bo-step-line"></span>
+        <button type="button" class="bo-step" data-step-nav="5">
+          <span class="bo-step-circle">5</span>
+          <span class="bo-step-label">EHR Connection Details</span>
+        </button>
+      </div>
 
-          <div class="bo-modal-section">
+      <form id="addOrgForm" class="bo-drawer-form">
+        <div class="bo-fullscreen-body">
+
+          <div class="bo-modal-section" data-step="1">
             <p class="bo-modal-section-title">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="18" x="4" y="3" rx="1"/><path d="M9 8h1"/><path d="M14 8h1"/></svg>
               Basic Info
@@ -236,7 +266,7 @@
             </div>
           </div>
 
-          <div class="bo-modal-section">
+          <div class="bo-modal-section" data-step="2">
             <p class="bo-modal-section-title">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
               Configuration
@@ -333,7 +363,7 @@
             </div>
           </div>
 
-          <div class="bo-modal-section">
+          <div class="bo-modal-section" data-step="3">
             <p class="bo-modal-section-title">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9H21"/><path d="M7 13L10 16L14 12"/></svg>
               Display Settings
@@ -363,7 +393,7 @@
             </div>
           </div>
 
-          <div class="bo-modal-section">
+          <div class="bo-modal-section" data-step="4">
             <p class="bo-modal-section-title">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 6-9 12-9 12S3 16 3 10a9 9 0 0 1 18 0Z"/><circle cx="12" cy="10" r="3"/></svg>
               Contact &amp; Location
@@ -392,11 +422,79 @@
             </div>
           </div>
 
+          <div class="bo-modal-section" data-step="5">
+            <p class="bo-modal-section-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 5v6c0 5 3.4 8.7 8 10 4.6-1.3 8-5 8-10V5l-8-3Z"/><path d="M9 12l2 2 4-4"/></svg>
+              EHR Connection Details
+            </p>
+            <div id="ehrRowsWrap">
+              <div class="bo-ehr-card" data-ehr-row>
+                <div class="bo-ehr-card-head">
+                  <span class="bo-ehr-card-title">EHR Connection 1</span>
+                  <button type="button" class="bo-org-row-remove" aria-label="Remove EHR connection" disabled>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6L18 18M6 18L18 6"/></svg>
+                  </button>
+                </div>
+                <div class="bo-modal-grid">
+                  <div class="bo-modal-field">
+                    <label>EHR Name</label>
+                    <div class="bo-select" data-name="ehr1Name">
+                      <button type="button" class="bo-select-trigger">
+                        <span class="bo-select-value placeholder">Choose</span>
+                        <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                      </button>
+                      <div class="bo-select-menu">
+                        <div class="bo-select-option" data-value="Athena">Athena<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                        <div class="bo-select-option" data-value="ECW">ECW<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                        <div class="bo-select-option" data-value="Epic">Epic<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                      </div>
+                      <input type="hidden" name="ehr1Name" />
+                    </div>
+                  </div>
+                  <div class="bo-modal-field">
+                    <label>Environment</label>
+                    <div class="bo-select" data-name="ehr1Env">
+                      <button type="button" class="bo-select-trigger">
+                        <span class="bo-select-value placeholder">Choose</span>
+                        <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                      </button>
+                      <div class="bo-select-menu">
+                        <div class="bo-select-option" data-value="Sandbox">Sandbox<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                        <div class="bo-select-option" data-value="Production">Production<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                      </div>
+                      <input type="hidden" name="ehr1Env" />
+                    </div>
+                  </div>
+                  <div class="bo-modal-field">
+                    <label>Client Id</label>
+                    <input type="text" name="ehr1ClientId" placeholder="Enter Client ID" />
+                  </div>
+                  <div class="bo-modal-field">
+                    <label>Client Secret</label>
+                    <input type="text" name="ehr1ClientSecret" placeholder="Enter Client Secret" />
+                  </div>
+                  <div class="bo-modal-field full">
+                    <label>Connection Name</label>
+                    <input type="text" name="ehr1ConnName" placeholder="Enter Connection Name" />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <button type="button" class="bo-btn-secondary" id="addEhrRowBtn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+              Add EHR Connection
+            </button>
+          </div>
+
         </div>
 
-        <div class="bo-drawer-foot">
+        <div class="bo-fullscreen-foot">
           <button type="button" class="bo-btn-text" id="cancelAddOrg">Cancel</button>
-          <button type="submit" class="bo-btn-primary" id="saveAddOrg" disabled>Save</button>
+          <div class="bo-fullscreen-foot-actions">
+            <button type="button" class="bo-btn-secondary" id="backAddOrg" hidden>Back</button>
+            <button type="button" class="bo-btn-primary" id="nextAddOrg">Next</button>
+            <button type="submit" class="bo-btn-primary" id="saveAddOrg" hidden>Save</button>
+          </div>
         </div>
       </form>
     </div>

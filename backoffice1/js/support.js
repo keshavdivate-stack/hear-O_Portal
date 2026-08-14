@@ -379,3 +379,34 @@ newTicketForm.addEventListener("submit", (e) => {
   closeNewTicketDrawer();
   refreshTicketTables();
 });
+
+/* ---------------- Deep link: ?ticket=TCK-xxxx&source=patient|clinic ----------------
+   Lets other screens (e.g. Support Dashboard's Critical & Escalated Tickets list)
+   link straight into a specific ticket instead of just the tickets page. */
+(function openTicketFromUrl() {
+  const params = new URLSearchParams(location.search);
+  const ticketNo = params.get("ticket");
+  if (!ticketNo) return;
+
+  const sourceParam = params.get("source");
+  let source = sourceParam === "clinic" ? "clinic" : sourceParam === "patient" ? "patient" : null;
+  let match = null;
+
+  if (source) {
+    match = (source === "patient" ? patientTickets : clinicTickets).find((t) => t.ticketNo === ticketNo);
+  }
+  if (!match) {
+    match = patientTickets.find((t) => t.ticketNo === ticketNo);
+    if (match) source = "patient";
+  }
+  if (!match) {
+    match = clinicTickets.find((t) => t.ticketNo === ticketNo);
+    if (match) source = "clinic";
+  }
+  if (!match) return;
+
+  const tab = document.querySelector(`#supportTabs .bo-tab[data-tab="${source}"]`);
+  if (tab) tab.click();
+
+  openTicketDetail(source, match.id);
+})();

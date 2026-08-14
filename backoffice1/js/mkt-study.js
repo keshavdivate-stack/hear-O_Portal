@@ -1,10 +1,36 @@
-/* ---------------- Ring gauge (Recorded / Did not upload / Left study) ---------------- */
-const ringSegments = [
+/* ---------------- Base data (baseline = "All Organizations") ---------------- */
+const ringSegmentsBase = [
   { label: "Recorded", value: 21, color: "#1F3C73" },
   { label: "Did not upload", value: 11, color: "#F2994A" },
   { label: "Left study", value: 231, color: "#7FD3EE" },
 ];
 
+const screenedMonths = ["Mar", "Apr", "May", "Jun", "Jul", "Aug"];
+const screenedSeriesBase = [252, 253, 253, 262, 263, 263];
+
+const mktBinDataBase = {
+  usable: [
+    { label: "90%-100%", val: 32 },
+    { label: "80%-89%", val: 24 },
+    { label: "70%-79%", val: 18 },
+    { label: "60%-69%", val: 9 },
+  ],
+  compliance: [
+    { label: "90%-100%", val: 28 },
+    { label: "80%-89%", val: 21 },
+    { label: "70%-79%", val: 15 },
+    { label: "60%-69%", val: 12 },
+  ],
+};
+
+const mktStudyHeadBase = { sites: 5, avgDays: 42, needAttention: 11 };
+
+let ringSegments = ringSegmentsBase;
+let screenedSeries = screenedSeriesBase;
+let mktBinData = mktBinDataBase;
+let activeMktBinsTab = "usable";
+
+/* ---------------- Ring gauge (Recorded / Did not upload / Left study) ---------------- */
 function renderRing() {
   const total = ringSegments.reduce((s, seg) => s + seg.value, 0);
   let acc = 0;
@@ -18,13 +44,12 @@ function renderRing() {
     .join(", ");
   document.getElementById("mktRing").style.background = `conic-gradient(${stops})`;
 }
-renderRing();
 
 function renderRingBreakdown() {
   const total = ringSegments.reduce((s, seg) => s + seg.value, 0);
   document.getElementById("mktRingBreakdown").innerHTML = ringSegments
     .map((seg) => {
-      const pct = Math.round((seg.value / total) * 100);
+      const pct = total ? Math.round((seg.value / total) * 100) : 0;
       return `
         <div class="mkt-rb-row">
           <span class="mkt-rb-dot" style="background:${seg.color};"></span>
@@ -35,12 +60,8 @@ function renderRingBreakdown() {
     })
     .join("");
 }
-renderRingBreakdown();
 
 /* ---------------- Screened Over Time chart ---------------- */
-const screenedMonths = ["Mar", "Apr", "May", "Jun", "Jul", "Aug"];
-const screenedSeries = [252, 253, 253, 262, 263, 263];
-
 function renderScreenedChart() {
   const container = document.getElementById("screenedChart");
   const width = container.clientWidth || 320;
@@ -58,7 +79,7 @@ function renderScreenedChart() {
   const yAt = (v) => padT + plotH - ((v - yMin) / (yMax - yMin)) * plotH;
 
   const gridLines = [];
-  const step = Math.ceil((yMax - yMin) / 4 / 2) * 2;
+  const step = Math.max(2, Math.ceil((yMax - yMin) / 4 / 2) * 2);
   for (let v = Math.ceil(yMin / step) * step; v <= yMax; v += step) {
     const y = yAt(v);
     gridLines.push(
@@ -80,27 +101,12 @@ function renderScreenedChart() {
       ${xLabels}
     </svg>`;
 }
-renderScreenedChart();
 window.addEventListener("resize", renderScreenedChart);
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(renderScreenedChart);
 
 /* ---------------- Compliance bins ---------------- */
-const mktBinData = {
-  usable: [
-    { label: "90%-100%", val: 0 },
-    { label: "80%-89%", val: 0 },
-    { label: "70%-79%", val: 0 },
-    { label: "60%-69%", val: 0 },
-  ],
-  compliance: [
-    { label: "90%-100%", val: 0 },
-    { label: "80%-89%", val: 0 },
-    { label: "70%-79%", val: 0 },
-    { label: "60%-69%", val: 0 },
-  ],
-};
-
 function renderMktBins(tab) {
+  activeMktBinsTab = tab;
   document.getElementById("mktBinsList").innerHTML = mktBinData[tab]
     .map(
       (b, i) => `
@@ -112,7 +118,6 @@ function renderMktBins(tab) {
     )
     .join("");
 }
-renderMktBins("usable");
 
 document.getElementById("mktBinsTabs").addEventListener("click", (e) => {
   const btn = e.target.closest("button");
@@ -121,3 +126,29 @@ document.getElementById("mktBinsTabs").addEventListener("click", (e) => {
   btn.classList.add("active");
   renderMktBins(btn.dataset.tab);
 });
+
+/* ---------------- Wire everything to the organization selector ---------------- */
+function renderForOrg(orgId) {
+  const org = MKT_ORG_LIST.find((o) => o.id === orgId) || MKT_ORG_LIST[0];
+  const seed = org.id === "all" ? 0 : mktHash(org.id);
+
+  ringSegments = ringSegmentsBase.map((seg, i) => ({ ...seg, value: mktScale(seg.value, seed + i, 0.4) }));
+  renderRing();
+  renderRingBreakdown();
+
+  screenedSeries = screenedSeriesBase.map((v, i) => mktScale(v, seed + i, 0.2));
+  renderScreenedChart();
+
+  mktBinData = {
+    usable: mktBinDataBase.usable.map((b, i) => ({ ...b, val: Math.min(100, mktScale(b.val, seed + i, 0.4)) })),
+    compliance: mktBinDataBase.compliance.map((b, i) => ({ ...b, val: Math.min(100, mktScale(b.val, seed + i + 4, 0.4)) })),
+  };
+  renderMktBins(activeMktBinsTab);
+
+  document.getElementById("mktSitesEnrolled").textContent = org.id === "all" ? mktStudyHeadBase.sites : 1;
+  document.getElementById("mktAvgDays").textContent = mktScale(mktStudyHeadBase.avgDays, seed + 2, 0.3);
+  document.getElementById("mktNeedAttention").textContent = mktScale(mktStudyHeadBase.needAttention, seed + 5, 0.5);
+}
+
+mktRenderOrgSelect("mktStudyOrgSelect", renderForOrg);
+renderForOrg("all");

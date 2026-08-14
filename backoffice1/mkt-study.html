@@ -45,10 +45,25 @@
         </button>
         <div class="bo-popover bo-nav-popover" id="patientsPopover">
           <a href="patient-management.html" class="bo-popover-item">Patient Mng.</a>
-          <a href="patient-events.html" class="bo-popover-item">P.Events</a>
           <a href="status-change.html" class="bo-popover-item">Status Change</a>
         </div>
       </div>
+      <div class="bo-nav-item">
+        <button type="button" class="bo-nav-link" id="reportsNavBtn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>
+          Reports
+          <svg class="bo-nav-caret" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="bo-popover bo-nav-popover" id="reportsPopover">
+          <a href="language-resources.html" class="bo-popover-item">Language Resource</a>
+          <a href="audit-log.html" class="bo-popover-item">Audit Log</a>
+          <a href="patient-events.html" class="bo-popover-item">Patient Event</a>
+        </div>
+      </div>
+      <a href="support.html" class="bo-nav-link">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8.5a2.5 2.5 0 0 1 2.5 2.5c0 1.4-1.1 2-1.9 2.6-.6.4-.6.9-.6 1.4"/><path d="M12 17.5h.01"/></svg>
+        Support
+      </a>
       <div class="bo-nav-item">
         <button type="button" class="bo-nav-link" id="settingsNavBtn">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
@@ -58,7 +73,7 @@
         <div class="bo-popover bo-nav-popover" id="settingsPopover">
           <div class="bo-config-wrap">
             <button type="button" class="bo-popover-item bo-popover-item-sub" id="configSubBtn">
-              <span>Config</span>
+              <span>Application Config</span>
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg>
             </button>
             <div class="bo-popover bo-nav-popover bo-submenu" id="configSubmenu">
@@ -68,23 +83,10 @@
             </div>
           </div>
           <a href="manage-users.html" class="bo-popover-item">Manage Users</a>
-          <a href="dashboard-management.html" class="bo-popover-item">Dashboard Management</a>
           <div class="bo-popover-item">Reports Management</div>
           <div class="bo-popover-item">Terms &amp; Conditions</div>
         </div>
       </div>
-      <a href="language-resources.html" class="bo-nav-link">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12H21"/><path d="M12 3C14.5 5.7 15.8 8.8 15.8 12C15.8 15.2 14.5 18.3 12 21C9.5 18.3 8.2 15.2 8.2 12C8.2 8.8 9.5 5.7 12 3Z"/></svg>
-        Language Res
-      </a>
-      <a href="audit-log.html" class="bo-nav-link">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg>
-        Audit Log
-      </a>
-      <a href="support.html" class="bo-nav-link">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8.5a2.5 2.5 0 0 1 2.5 2.5c0 1.4-1.1 2-1.9 2.6-.6.4-.6.9-.6 1.4"/><path d="M12 17.5h.01"/></svg>
-        Support
-      </a>
     </nav>
 
     <div class="bo-nav-actions">
@@ -109,25 +111,28 @@
       <div>
         <h1>Test Dashboard MKT Study</h1>
       </div>
-      <div class="mkt-head-stats">
-        <div class="mkt-head-stat">
-          <span class="mkt-head-stat-icon">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="18" x="4" y="3" rx="1"/><path d="M9 8h1"/><path d="M14 8h1"/><path d="M9 12h1"/><path d="M14 12h1"/><path d="M9 16h1"/><path d="M14 16h1"/><path d="M10 21v-3a2 2 0 0 1 4 0v3"/></svg>
-          </span>
-          <span><span class="mkt-head-stat-num">5</span><span class="mkt-head-stat-label">Sites Enrolled</span></span>
+      <div style="display:flex; align-items:center; gap:16px; flex-wrap:wrap;">
+        <div class="mkt-head-stats" id="mktStudyHeadStats">
+          <div class="mkt-head-stat">
+            <span class="mkt-head-stat-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="18" x="4" y="3" rx="1"/><path d="M9 8h1"/><path d="M14 8h1"/><path d="M9 12h1"/><path d="M14 12h1"/><path d="M9 16h1"/><path d="M14 16h1"/><path d="M10 21v-3a2 2 0 0 1 4 0v3"/></svg>
+            </span>
+            <span><span class="mkt-head-stat-num" id="mktSitesEnrolled">5</span><span class="mkt-head-stat-label">Sites Enrolled</span></span>
+          </div>
+          <div class="mkt-head-stat">
+            <span class="mkt-head-stat-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7V12L15.5 14"/></svg>
+            </span>
+            <span><span class="mkt-head-stat-num" id="mktAvgDays">42</span><span class="mkt-head-stat-label">Avg. Days in Study</span></span>
+          </div>
+          <div class="mkt-head-stat alert">
+            <span class="mkt-head-stat-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.9 2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4"/><path d="M12 16h.01"/></svg>
+            </span>
+            <span><span class="mkt-head-stat-num" id="mktNeedAttention">11</span><span class="mkt-head-stat-label">Need Attention</span></span>
+          </div>
         </div>
-        <div class="mkt-head-stat">
-          <span class="mkt-head-stat-icon">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7V12L15.5 14"/></svg>
-          </span>
-          <span><span class="mkt-head-stat-num">42</span><span class="mkt-head-stat-label">Avg. Days in Study</span></span>
-        </div>
-        <div class="mkt-head-stat alert">
-          <span class="mkt-head-stat-icon">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.9 2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4"/><path d="M12 16h.01"/></svg>
-          </span>
-          <span><span class="mkt-head-stat-num">11</span><span class="mkt-head-stat-label">Need Attention</span></span>
-        </div>
+        <select class="bo-select-inline" id="mktStudyOrgSelect"></select>
       </div>
     </div>
 
@@ -240,6 +245,7 @@
   </main>
 
 <script src="js/dashboard-nav.js"></script>
+<script src="js/mkt-orgs.js"></script>
 <script src="js/mkt-study.js"></script>
 </body>
 </html>

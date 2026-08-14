@@ -2,6 +2,7 @@
 const orgHealthParams = new URLSearchParams(location.search);
 const orgHealthId = orgHealthData[orgHealthParams.get("org")] ? orgHealthParams.get("org") : ORG_HEALTH_DEFAULT;
 const orgHealth = orgHealthData[orgHealthId];
+const orgHealthIssueContext = orgHealthParams.get("issue") || "";
 
 document.title = `HearO Backoffice | ${orgHealth.name}`;
 document.getElementById("orgDashName").textContent = orgHealth.name;
@@ -48,7 +49,7 @@ document.getElementById("orgCategoryChips").innerHTML = orgHealth.categories.len
   ? orgHealth.categories
       .map(
         (c) => `
-      <div class="bo-chip-row">
+      <div class="bo-chip-row${c.label === orgHealthIssueContext ? " active" : ""}">
         <span class="bo-chip-left">
           <span class="bo-chip-icon" style="background:${c.color};"></span>
           ${c.label}
@@ -70,19 +71,37 @@ document.getElementById("orgContextList").innerHTML = `
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
   </a>`;
 
-/* ---------------- Affected patients ---------------- */
-document.getElementById("orgPatientRows").innerHTML = orgHealth.patientsAffected.length
-  ? orgHealth.patientsAffected
-      .map(
-        (p) => `
-      <tr>
+/* ---------------- Affected patients ----------------
+   When arriving with an ?issue= context (e.g. clicked from a Critical
+   Issue row on Overview), foreground the patients affected by that
+   category first instead of showing the org's full unordered list —
+   preserves the investigation context per the drill-down flow. */
+const orgPatientsSorted = orgHealthIssueContext
+  ? [...orgHealth.patientsAffected].sort((a, b) => {
+      const aMatch = a.issue.toLowerCase().includes(orgHealthIssueContext.toLowerCase()) ? 0 : 1;
+      const bMatch = b.issue.toLowerCase().includes(orgHealthIssueContext.toLowerCase()) ? 0 : 1;
+      return aMatch - bMatch;
+    })
+  : orgHealth.patientsAffected;
+
+const orgAffectedPatientsTitle = document.querySelector("#orgPatientRows").closest("section").querySelector(".bo-panel-title");
+if (orgHealthIssueContext && orgAffectedPatientsTitle) {
+  orgAffectedPatientsTitle.textContent = `Affected Patients — ${orgHealthIssueContext}`;
+}
+
+document.getElementById("orgPatientRows").innerHTML = orgPatientsSorted.length
+  ? orgPatientsSorted
+      .map((p) => {
+        const matchesContext = orgHealthIssueContext && p.issue.toLowerCase().includes(orgHealthIssueContext.toLowerCase());
+        return `
+      <tr${matchesContext ? ' class="bo-row-highlight"' : ""}>
         <td><a class="bo-row-link" href="patient-health-dashboard.html?patient=${p.id}&org=${orgHealthId}">${p.name}</a></td>
         <td>${p.issue}</td>
         <td><span class="bo-severity-pill ${p.severity}"><span class="dot"></span>${p.severity === "critical" ? "Critical" : "Warning"}</span></td>
         <td>${p.lastRecording}</td>
         <td><span class="bo-severity-pill ${p.status === "Escalated" ? "escalated" : p.status === "Open" ? "critical" : "info"}">${p.status}</span></td>
-      </tr>`
-      )
+      </tr>`;
+      })
       .join("")
   : `<tr><td colspan="5" style="text-align:center; color:var(--gray-text); padding:24px;">No patients currently affected.</td></tr>`;
 
