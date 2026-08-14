@@ -107,20 +107,29 @@
     <div class="bo-list-toolbar">
       <h1>Report Management</h1>
 
-      <div class="bo-filter-field">
-        <select class="bo-filter-select" id="rmTypeFilter">
-          <option value="">Report type</option>
-        </select>
+      <div class="bo-select bo-toolbar-select" data-name="rmType">
+        <button type="button" class="bo-select-trigger">
+          <span class="bo-select-value placeholder">Report type</span>
+          <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="bo-select-menu" id="rmTypeFilterMenu"></div>
+        <input type="hidden" id="rmTypeFilter" />
       </div>
-      <div class="bo-filter-field">
-        <select class="bo-filter-select" id="rmHmoFilter">
-          <option value="">HMO</option>
-        </select>
+      <div class="bo-select bo-toolbar-select" data-name="rmHmo">
+        <button type="button" class="bo-select-trigger">
+          <span class="bo-select-value placeholder">HMO</span>
+          <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="bo-select-menu" id="rmHmoFilterMenu"></div>
+        <input type="hidden" id="rmHmoFilter" />
       </div>
-      <div class="bo-filter-field">
-        <select class="bo-filter-select" id="rmTagFilter">
-          <option value="">Tag</option>
-        </select>
+      <div class="bo-select bo-toolbar-select" data-name="rmTag">
+        <button type="button" class="bo-select-trigger">
+          <span class="bo-select-value placeholder">Tag</span>
+          <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="bo-select-menu" id="rmTagFilterMenu"></div>
+        <input type="hidden" id="rmTagFilter" />
       </div>
       <div class="bo-search-pill" style="width:180px;">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8"/><path d="M21 21L16.5 16.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>

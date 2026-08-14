@@ -1,17 +1,4 @@
 /* ---------------- Report Management ---------------- */
-document.getElementById("rmTypeFilter").insertAdjacentHTML(
-  "beforeend",
-  RM_REPORT_TYPES.map((t) => `<option value="${t.key}">${t.label}</option>`).join("")
-);
-document.getElementById("rmHmoFilter").insertAdjacentHTML(
-  "beforeend",
-  RM_HMOS.map((h) => `<option value="${h}">${h}</option>`).join("")
-);
-document.getElementById("rmTagFilter").insertAdjacentHTML(
-  "beforeend",
-  RM_TAGS.map((t) => `<option value="${t}">${t}</option>`).join("")
-);
-
 let rmTypeFilter = "";
 let rmHmoFilter = "";
 let rmTagFilter = "";
@@ -194,6 +181,14 @@ function rmOptionsHtml(values) {
 const rmTypeOptionsHtml = RM_REPORT_TYPES.map(
   (t) => `<div class="bo-select-option" data-value="${t.key}">${t.label}<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>`
 ).join("");
+
+function rmClearOptionHtml(placeholder) {
+  return `<div class="bo-select-option" data-value="">${placeholder}<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>`;
+}
+
+document.getElementById("rmTypeFilterMenu").innerHTML = rmClearOptionHtml("All report types") + rmTypeOptionsHtml;
+document.getElementById("rmHmoFilterMenu").innerHTML = rmClearOptionHtml("All HMOs") + rmOptionsHtml(RM_HMOS);
+document.getElementById("rmTagFilterMenu").innerHTML = rmClearOptionHtml("All tags") + rmOptionsHtml(RM_TAGS);
 
 document.getElementById("rmCreateTypeMenu").innerHTML = rmTypeOptionsHtml;
 document.getElementById("rmCreateHmoMenu").innerHTML = rmOptionsHtml(RM_HMOS);

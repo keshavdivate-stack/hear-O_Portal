@@ -514,18 +514,6 @@ document.getElementById("patientCancelMessageDrawer").addEventListener("click", 
 document.getElementById("patientCloseMessageDrawerX").addEventListener("click", closePatientMessageDrawer);
 patientMessageDrawerOverlay.addEventListener("click", (e) => { if (e.target === patientMessageDrawerOverlay) closePatientMessageDrawer(); });
 
-/* ---------------- Voice Engine ---------------- */
-document.getElementById("patientVoiceRows").innerHTML = ph.voiceEngine
-  .map(
-    (v) => `
-    <tr>
-      <td>${v.date}</td><td>${v.check}</td>
-      <td><span class="bo-severity-pill ${v.result === "Pass" ? "healthy" : "warning"}">${v.result}</span></td>
-      <td>${v.notes}</td>
-    </tr>`
-  )
-  .join("");
-
 /* ---------------- Tabs ---------------- */
 document.querySelectorAll("#patientTabs .bo-tab").forEach((tab) => {
   tab.addEventListener("click", () => {
