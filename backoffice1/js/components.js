@@ -235,8 +235,8 @@ function bodySentences() {
     const items = state.sentences[l]
       .map(
         (v, i) => `
-        <div style="margin-bottom:4px;">
-          <label style="font-size:12.5px; font-weight:600; color:var(--ink); display:block; margin-bottom:6px;">Sentence ${i + 1}</label>
+        <div class="bo-dyn-list-item" style="margin-bottom:4px;">
+          <label>Sentence ${i + 1}</label>
           <div style="display:flex; align-items:center; gap:8px;">
             <select data-sentence="${l}:${i}" style="flex:1;">
               <option value="">Select sentence</option>

@@ -32,6 +32,28 @@ function wireSubmenu(btnId, subId) {
 }
 wireSubmenu("configSubBtn", "configSubmenu");
 
+/* Shortly after a .bo-drawer opens, drop its transform (see the
+   .bo-drawer-settled CSS comment) so fixed-positioned dropdown menus
+   opened from inside it anchor to the viewport, not the modal box.
+   Uses a timer rather than `transitionend` because the overlay goes
+   display:none -> flex in the same tick as the transform change, so
+   there's no "before" frame for the browser to transition from and
+   that event never fires. */
+document.querySelectorAll(".bo-drawer-overlay").forEach((overlay) => {
+  const drawer = overlay.querySelector(".bo-drawer");
+  if (!drawer) return;
+  let settleTimer = null;
+  const observer = new MutationObserver(() => {
+    clearTimeout(settleTimer);
+    if (overlay.classList.contains("open")) {
+      settleTimer = setTimeout(() => drawer.classList.add("bo-drawer-settled"), 200);
+    } else {
+      drawer.classList.remove("bo-drawer-settled");
+    }
+  });
+  observer.observe(overlay, { attributes: true, attributeFilter: ["class"] });
+});
+
 document.querySelectorAll(".bo-popover-item[data-val]").forEach((item) => {
   item.addEventListener("click", () => {
     const group = item.closest(".bo-popover");

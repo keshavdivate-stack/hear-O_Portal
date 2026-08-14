@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>HearO Backoffice | Non-HMO Patients Events</title>
+<title>HearO Backoffice | Support</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=optional" rel="stylesheet" />
 <link rel="stylesheet" href="css/style.css" />
 </head>
-<body class="bo-page-scroll">
+<body>
 
   <!-- TOP NAV -->
   <header class="bo-nav">
@@ -28,7 +28,7 @@
           <a href="overview-dashboard.html" class="bo-popover-item">Overview Dashboard</a>
           <a href="org-health-dashboard.html" class="bo-popover-item">Organization Dashboard</a>
           <a href="patient-health-dashboard.html" class="bo-popover-item">Patient Dashboard</a>
-          <a href="support.html" class="bo-popover-item">Support Dashboard</a>
+          <a href="support.html" class="bo-popover-item active">Support Dashboard</a>
           <a href="mkt-study.html" class="bo-popover-item">Test Dashboard MKT Study</a>
           <a href="mkt-summary.html" class="bo-popover-item">Test Dashboard MKT Summary</a>
         </div>
@@ -38,14 +38,14 @@
         Organisations
       </a>
       <div class="bo-nav-item">
-        <button type="button" class="bo-nav-link active" id="patientsNavBtn">
+        <button type="button" class="bo-nav-link" id="patientsNavBtn">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
           Patients
           <svg class="bo-nav-caret" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
         </button>
         <div class="bo-popover bo-nav-popover" id="patientsPopover">
           <a href="patient-management.html" class="bo-popover-item">Patient Mng.</a>
-          <a href="patient-events.html" class="bo-popover-item active">P.Events</a>
+          <a href="patient-events.html" class="bo-popover-item">P.Events</a>
           <a href="status-change.html" class="bo-popover-item">Status Change</a>
         </div>
       </div>
@@ -82,7 +82,7 @@
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg>
         Audit Log
       </a>
-      <a href="support.html" class="bo-nav-link">
+      <a href="support.html" class="bo-nav-link active">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8.5a2.5 2.5 0 0 1 2.5 2.5c0 1.4-1.1 2-1.9 2.6-.6.4-.6.9-.6 1.4"/><path d="M12 17.5h.01"/></svg>
         Support
       </a>
@@ -107,194 +107,253 @@
   <main class="bo-page bo-page-list">
 
     <div class="bo-list-toolbar">
-      <h1>Non-HMO Patients Events</h1>
+      <h1>Support Tickets</h1>
+      <div class="bo-tabs bo-seg-toggle" id="supportTabs">
+        <button class="bo-tab bo-seg-btn active" data-tab="patient">Patient Tickets</button>
+        <button class="bo-tab bo-seg-btn" data-tab="clinic">Clinic Tickets</button>
+      </div>
+
+      <div class="bo-filter-field">
+        <select class="bo-filter-select" id="ticketStatusFilter"></select>
+      </div>
+      <div class="bo-filter-field">
+        <select class="bo-filter-select" id="ticketPriorityFilter"></select>
+      </div>
+      <div class="bo-filter-field">
+        <select class="bo-filter-select" id="ticketIssueFilter"></select>
+      </div>
+      <div class="bo-search-pill" style="width:200px;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8"/><path d="M21 21L16.5 16.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <input type="text" id="ticketSearchInput" placeholder="Search ticket, patient or org" />
+      </div>
+
       <span class="bo-list-toolbar-spacer"></span>
-      <label class="bo-switch-field">
-        <span class="bo-switch">
-          <input type="checkbox" id="peHmoToggle" checked />
-          <span class="bo-switch-track"></span>
-        </span>
-        Non-HMO
-      </label>
-      <button class="bo-btn-primary" id="peAddMessageBtn">
+      <button class="bo-btn-primary" id="openNewTicketBtn">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-        Message
-      </button>
-      <button class="bo-btn-primary" id="peAddEventBtn">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-        Event
+        New Ticket
       </button>
     </div>
 
-    <div class="bo-filter-row">
-      <div class="bo-filter-field">
-        <select class="bo-filter-select" id="peSiteFilter">
-          <option value="">Clinical site</option>
-        </select>
+    <!-- PATIENT TICKETS -->
+    <div class="bo-tab-panel active" id="tab-patient">
+      <div class="bo-table-card">
+        <div class="bo-table-scroll">
+          <table class="bo-list-table bo-list-table--compact">
+            <thead>
+              <tr>
+                <th>TICKET ID</th>
+                <th>PATIENT ID</th>
+                <th>ORGANIZATION</th>
+                <th>ISSUE TYPE</th>
+                <th>TIER</th>
+                <th>PRIORITY</th>
+                <th>STATUS</th>
+                <th>CREATED</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="patientTicketRows"></tbody>
+          </table>
+        </div>
       </div>
-      <div class="bo-filter-field">
-        <select class="bo-filter-select" id="peEventTypeFilter">
-          <option value="">Event type</option>
-        </select>
-      </div>
-      <div class="bo-filter-field">
-        <input type="text" id="pePatientFilter" placeholder="Search patient" />
-      </div>
-      <div class="bo-filter-field">
-        <input type="text" id="peAddedByFilter" placeholder="Search added by" />
-      </div>
-      <div class="bo-filter-field">
-        <input type="text" id="peReportedByFilter" placeholder="Search reported by" />
-      </div>
-      <div class="bo-date-field">
-        <input type="text" id="peFromDate" placeholder="From Date" onfocus="(this.type='date')" onblur="if(!this.value)this.type='text'" />
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="17" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3 9H21" stroke="currentColor" stroke-width="1.8"/></svg>
-      </div>
-      <div class="bo-date-field">
-        <input type="text" id="peToDate" placeholder="To Date" onfocus="(this.type='date')" onblur="if(!this.value)this.type='text'" />
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="17" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3 9H21" stroke="currentColor" stroke-width="1.8"/></svg>
-      </div>
-      <button class="bo-btn-secondary" id="peApplyBtn">Apply</button>
     </div>
 
-    <div class="bo-table-card">
-      <div class="bo-table-scroll">
-        <table class="bo-list-table">
-          <thead>
-            <tr>
-              <th>USERNAME</th>
-              <th>EVENT TYPE</th>
-              <th>INFLUENCE COMPLIANCE</th>
-              <th>DESCRIPTION</th>
-              <th>ADDED BY USERNAME</th>
-              <th>REPORTED BY</th>
-              <th>REPORTED VIA</th>
-              <th>REPORTED TIME</th>
-              <th>START DATE</th>
-              <th>END DATE</th>
-              <th>APPROVED</th>
-              <th>STATUS</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody id="peRows"></tbody>
-        </table>
+    <!-- CLINIC TICKETS -->
+    <div class="bo-tab-panel" id="tab-clinic">
+      <div class="bo-table-card">
+        <div class="bo-table-scroll">
+          <table class="bo-list-table bo-list-table--compact">
+            <thead>
+              <tr>
+                <th>TICKET ID</th>
+                <th>ORGANIZATION</th>
+                <th>RAISED BY</th>
+                <th>ISSUE TYPE</th>
+                <th>TIER</th>
+                <th>PRIORITY</th>
+                <th>STATUS</th>
+                <th>CREATED</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="clinicTicketRows"></tbody>
+          </table>
+        </div>
       </div>
     </div>
 
   </main>
 
-  <!-- Add / Update Event drawer -->
-  <div class="bo-drawer-overlay" id="peEventDrawerOverlay">
+  <!-- Ticket detail drawer -->
+  <div class="bo-drawer-overlay" id="ticketDetailOverlay">
     <div class="bo-drawer">
       <div class="bo-drawer-head">
-        <h2>Add/Update Event</h2>
-        <button type="button" class="bo-drawer-close" id="peCloseEventDrawerX" aria-label="Close">
+        <h2 id="ticketDetailTitle">TCK-0000</h2>
+        <button type="button" class="bo-drawer-close" id="closeTicketDetailX" aria-label="Close">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6L18 18M6 18L18 6"/></svg>
         </button>
       </div>
-      <form id="peEventForm" class="bo-drawer-form">
+
+      <form id="ticketDetailForm" class="bo-drawer-form">
         <div class="bo-drawer-body">
+
           <div class="bo-modal-section">
-            <div class="bo-modal-grid">
-              <div class="bo-modal-field full">
-                <label>Patient username:</label>
-                <input type="text" name="username" placeholder="Patient username" required />
+            <p class="bo-modal-section-title">Ticket Info</p>
+            <div class="bo-ticket-summary">
+              <div class="bo-ticket-summary-item">
+                <span class="label">Source</span>
+                <span class="value" id="ticketDetailSource">Patient</span>
               </div>
-              <div class="bo-modal-field full">
-                <button type="button" class="bo-btn-check" id="peCheckExistenceBtn">Check existence</button>
+              <div class="bo-ticket-summary-item">
+                <span class="label" id="ticketDetailWhoLabel">Patient ID</span>
+                <span class="value" id="ticketDetailWho">â€”</span>
               </div>
-              <div class="bo-modal-field full">
-                <label>Influence compliance:</label>
-                <div class="bo-select" data-name="influenceCompliance">
-                  <button type="button" class="bo-select-trigger">
-                    <span class="bo-select-value placeholder">Influence</span>
-                    <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-                  </button>
-                  <div class="bo-select-menu">
-                    <div class="bo-select-option" data-value="Yes">Yes<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                    <div class="bo-select-option" data-value="No">No<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                  </div>
-                  <input type="hidden" name="influenceCompliance" />
-                </div>
+              <div class="bo-ticket-summary-item">
+                <span class="label">Organization</span>
+                <span class="value" id="ticketDetailOrg">â€”</span>
               </div>
-              <div class="bo-modal-field full">
-                <label>Description:</label>
-                <input type="text" name="description" placeholder="Description" />
-              </div>
-              <div class="bo-modal-field full">
-                <label>Reported by:</label>
-                <input type="text" name="reportedBy" placeholder="Reported By" />
-              </div>
-              <div class="bo-modal-field full">
-                <label>Reported via:</label>
-                <div class="bo-select" data-name="reportedVia">
-                  <button type="button" class="bo-select-trigger">
-                    <span class="bo-select-value placeholder">Reported via</span>
-                    <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-                  </button>
-                  <div class="bo-select-menu">
-                    <div class="bo-select-option" data-value="APPLICATION">Application<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                    <div class="bo-select-option" data-value="PHONE">Phone<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                    <div class="bo-select-option" data-value="MANUAL">Manual<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                  </div>
-                  <input type="hidden" name="reportedVia" />
-                </div>
-              </div>
-              <div class="bo-modal-field full">
-                <label>Reported date:</label>
-                <input type="date" name="reportedDate" />
+              <div class="bo-ticket-summary-item">
+                <span class="label">Created</span>
+                <span class="value" id="ticketDetailCreated">â€”</span>
               </div>
             </div>
           </div>
+
+          <div class="bo-modal-section">
+            <p class="bo-modal-section-title">Issue</p>
+            <div class="bo-ticket-summary" style="margin-bottom:10px;">
+              <div class="bo-ticket-summary-item">
+                <span class="label">Issue Type</span>
+                <span class="value" id="ticketDetailIssueType">â€”</span>
+              </div>
+            </div>
+            <div class="bo-ticket-description" id="ticketDetailDescription"></div>
+          </div>
+
+          <div class="bo-modal-section">
+            <p class="bo-modal-section-title">Handling</p>
+            <div class="bo-modal-grid">
+              <div class="bo-modal-field">
+                <label>Tier</label>
+                <div class="bo-select" data-name="tier">
+                  <button type="button" class="bo-select-trigger">
+                    <span class="bo-select-value placeholder">Select tier</span>
+                    <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                  </button>
+                  <div class="bo-select-menu"></div>
+                  <input type="hidden" />
+                </div>
+              </div>
+              <div class="bo-modal-field">
+                <label>Priority</label>
+                <div class="bo-select" data-name="priority">
+                  <button type="button" class="bo-select-trigger">
+                    <span class="bo-select-value placeholder">Select priority</span>
+                    <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                  </button>
+                  <div class="bo-select-menu"></div>
+                  <input type="hidden" />
+                </div>
+              </div>
+              <div class="bo-modal-field full">
+                <label>Status</label>
+                <div class="bo-select" data-name="status">
+                  <button type="button" class="bo-select-trigger">
+                    <span class="bo-select-value placeholder">Select status</span>
+                    <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                  </button>
+                  <div class="bo-select-menu"></div>
+                  <input type="hidden" />
+                </div>
+              </div>
+            </div>
+          </div>
+
         </div>
+
         <div class="bo-drawer-foot">
-          <button type="button" class="bo-btn-text" id="peCancelEventDrawer">Cancel</button>
-          <button type="submit" class="bo-btn-primary" id="peSaveEventBtn" disabled>Save</button>
+          <button type="button" class="bo-btn-text" id="cancelTicketDetail">Cancel</button>
+          <button type="submit" class="bo-btn-primary">Save Changes</button>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- Send message drawer -->
-  <div class="bo-drawer-overlay" id="peMessageDrawerOverlay">
+  <!-- New ticket drawer -->
+  <div class="bo-drawer-overlay" id="newTicketOverlay">
     <div class="bo-drawer">
       <div class="bo-drawer-head">
-        <h2>Send message</h2>
-        <button type="button" class="bo-drawer-close" id="peCloseMessageDrawerX" aria-label="Close">
+        <h2>New Ticket</h2>
+        <button type="button" class="bo-drawer-close" id="closeNewTicketX" aria-label="Close">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6L18 18M6 18L18 6"/></svg>
         </button>
       </div>
-      <form id="peMessageForm" class="bo-drawer-form">
+
+      <form id="newTicketForm" class="bo-drawer-form">
         <div class="bo-drawer-body">
+
           <div class="bo-modal-section">
+            <p class="bo-modal-section-title">Raised By</p>
             <div class="bo-modal-grid">
-              <div class="bo-modal-field full">
-                <label>Send to</label>
-                <div class="bo-radio-group">
-                  <label class="bo-radio-item"><input type="radio" name="sendTo" value="Patient" checked /> Patient</label>
-                  <label class="bo-radio-item"><input type="radio" name="sendTo" value="Organizations" /> Organizations</label>
+              <div class="bo-modal-field">
+                <label>Source</label>
+                <div class="bo-select" data-name="source">
+                  <button type="button" class="bo-select-trigger">
+                    <span class="bo-select-value placeholder">Select source</span>
+                    <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                  </button>
+                  <div class="bo-select-menu"></div>
+                  <input type="hidden" />
                 </div>
               </div>
-              <div class="bo-modal-field full" id="peMsgPatientField">
-                <input type="text" name="patientUsername" placeholder="Patient username" />
+              <div class="bo-modal-field">
+                <label id="newTicketWhoLabel">Patient ID</label>
+                <input type="text" name="who" placeholder="e.g. 120-2001" required />
               </div>
               <div class="bo-modal-field full">
-                <button type="button" class="bo-btn-check" id="peCheckLanguageBtn">Check language</button>
-              </div>
-              <div class="bo-modal-field full">
-                <input type="text" name="language" placeholder="Language -" readonly />
-              </div>
-              <div class="bo-modal-field full">
-                <label>Message:</label>
-                <textarea name="message" placeholder=""></textarea>
+                <label>Organization<span class="required-star">*</span></label>
+                <input type="text" name="organization" placeholder="Organization code, e.g. 120" required />
               </div>
             </div>
           </div>
+
+          <div class="bo-modal-section">
+            <p class="bo-modal-section-title">Issue</p>
+            <div class="bo-modal-grid">
+              <div class="bo-modal-field">
+                <label>Issue Type<span class="required-star">*</span></label>
+                <div class="bo-select" data-name="issueType">
+                  <button type="button" class="bo-select-trigger">
+                    <span class="bo-select-value placeholder">Select issue type</span>
+                    <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                  </button>
+                  <div class="bo-select-menu"></div>
+                  <input type="hidden" />
+                </div>
+              </div>
+              <div class="bo-modal-field">
+                <label>Priority</label>
+                <div class="bo-select" data-name="priority">
+                  <button type="button" class="bo-select-trigger">
+                    <span class="bo-select-value placeholder">Select priority</span>
+                    <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                  </button>
+                  <div class="bo-select-menu"></div>
+                  <input type="hidden" />
+                </div>
+              </div>
+              <div class="bo-modal-field full">
+                <label>Description</label>
+                <input type="text" name="description" placeholder="What's going wrong?" />
+              </div>
+            </div>
+          </div>
+
         </div>
+
         <div class="bo-drawer-foot">
-          <button type="button" class="bo-btn-text" id="peCancelMessageDrawer">Cancel</button>
-          <button type="submit" class="bo-btn-primary" id="peSaveMessageBtn" disabled>Save</button>
+          <button type="button" class="bo-btn-text" id="cancelNewTicket">Cancel</button>
+          <button type="submit" class="bo-btn-primary" id="createTicketBtn" disabled>Create Ticket</button>
         </div>
       </form>
     </div>
@@ -303,7 +362,7 @@
 <script src="js/dashboard-nav.js"></script>
 <script src="js/bo-table-scroll.js"></script>
 <script src="js/bo-pagination.js"></script>
-<script src="js/patient-events-data.js"></script>
-<script src="js/patient-events.js"></script>
+<script src="js/support-data.js"></script>
+<script src="js/support.js"></script>
 </body>
 </html>
