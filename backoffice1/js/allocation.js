@@ -102,7 +102,7 @@ document.getElementById("allocSearchInput").addEventListener("input", (e) => {
 });
 
 /* ---------------- Future patients ---------------- */
-const editIcon = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 20H21" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M16.5 3.5C17.3 2.7 18.6 2.7 19.4 3.5C20.2 4.3 20.2 5.6 19.4 6.4L7 18.8L3 20L4.2 16L16.5 3.5Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>`;
+const allocKebabIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="1.7" fill="currentColor"/><circle cx="12" cy="12" r="1.7" fill="currentColor"/><circle cx="12" cy="19" r="1.7" fill="currentColor"/></svg>`;
 
 const futurePatients = [
   { id: 0, name: "MKT", isHmo: false, dateCreated: "14/08/2019", appConfig: "Main New8 no HQ Sensors Train 4.0 Zaza", lastModified: "09/02/2025 21:20:14" },
@@ -131,7 +131,7 @@ const allocFuturePager = boCreatePager(
       <td>${e.r.lastModified}</td>
       <td>
         <div class="bo-row-actions">
-          <button class="bo-action-icon" data-id="${e.r.id}" aria-label="Edit">${editIcon}</button>
+          <button class="bo-action-icon row-menu-trigger" data-id="${e.r.id}" aria-label="Row actions">${allocKebabIcon}</button>
         </div>
       </td>
     </tr>`,
@@ -144,6 +144,31 @@ document.getElementById("allocFutureRows").addEventListener("change", (e) => {
   if (!box) return;
   const row = futurePatients.find((p) => p.id === Number(box.dataset.id));
   if (row) row.isHmo = box.checked;
+});
+
+/* ---------------- Row action dropdown ---------------- */
+const allocRowMenu = document.getElementById("allocRowMenu");
+let activeAllocRowId = null;
+
+document.getElementById("allocFutureRows").addEventListener("click", (e) => {
+  const trigger = e.target.closest(".row-menu-trigger");
+  if (!trigger) return;
+  e.stopPropagation();
+  activeAllocRowId = Number(trigger.dataset.id);
+  const rect = trigger.getBoundingClientRect();
+  allocRowMenu.style.top = `${rect.bottom + 6}px`;
+  allocRowMenu.style.left = `${rect.right - 190}px`;
+  allocRowMenu.classList.add("open");
+});
+
+document.addEventListener("click", (e) => {
+  if (!allocRowMenu.contains(e.target)) allocRowMenu.classList.remove("open");
+});
+
+allocRowMenu.addEventListener("click", (e) => {
+  const item = e.target.closest(".bo-row-menu-item");
+  if (!item || activeAllocRowId === null) return;
+  allocRowMenu.classList.remove("open");
 });
 
 /* ---------------- Update configs ---------------- */

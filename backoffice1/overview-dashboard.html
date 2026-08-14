@@ -28,7 +28,7 @@
           <a href="overview-dashboard.html" class="bo-popover-item active">Overview Dashboard</a>
           <a href="org-health-dashboard.html" class="bo-popover-item">Organization Dashboard</a>
           <a href="patient-health-dashboard.html" class="bo-popover-item">Patient Dashboard</a>
-          <a href="support.html" class="bo-popover-item">Support Dashboard</a>
+          <a href="support-dashboard.html" class="bo-popover-item">Support Dashboard</a>
           <a href="mkt-study.html" class="bo-popover-item">Test Dashboard MKT Study</a>
           <a href="mkt-summary.html" class="bo-popover-item">Test Dashboard MKT Summary</a>
         </div>
@@ -68,7 +68,6 @@
             </div>
           </div>
           <a href="manage-users.html" class="bo-popover-item">Manage Users</a>
-          <div class="bo-popover-item">Holidays</div>
           <a href="dashboard-management.html" class="bo-popover-item">Dashboard Management</a>
           <div class="bo-popover-item">Reports Management</div>
           <div class="bo-popover-item">Terms &amp; Conditions</div>
@@ -118,39 +117,48 @@
       </div>
     </div>
 
-    <!-- SYSTEM HEALTH SUMMARY -->
+    <!-- SYSTEM HEALTH SUMMARY (priority 1: what's wrong, how bad, where) -->
     <div class="bo-health-grid" id="ovHealthGrid"></div>
 
-    <div class="bo-two-col">
-      <!-- CRITICAL ISSUES -->
-      <section class="bo-card bo-panel bo-panel--fill">
-        <h3 class="bo-panel-title">Critical Issues &amp; Alerts</h3>
-        <div class="bo-table-scroll">
-          <table class="bo-table">
-            <thead>
-              <tr><th>Issue</th><th>Severity</th><th>Organization</th><th>Patients</th><th>Status</th><th>Detected</th></tr>
-            </thead>
-            <tbody id="ovIssueRows"></tbody>
-          </table>
-        </div>
-      </section>
-
-      <div class="bo-panel-col">
-        <section class="bo-card bo-panel">
-          <h3 class="bo-panel-title">Issue Categories</h3>
-          <div class="bo-chip-list" id="ovCategoryChips"></div>
-        </section>
-
-        <section class="bo-card bo-panel bo-panel--fill">
-          <h3 class="bo-panel-title">Organizations Affected</h3>
-          <div class="bo-chip-list" id="ovOrgChips"></div>
-        </section>
+    <!-- CRITICAL ISSUES -->
+    <section class="bo-card bo-panel" style="margin-bottom:16px; max-height:300px;">
+      <h3 class="bo-panel-title">Critical Issues &amp; Alerts</h3>
+      <div class="bo-table-scroll">
+        <table class="bo-table">
+          <thead>
+            <tr><th>Issue</th><th>Severity</th><th>Organization</th><th>Patients</th><th>Status</th><th>Detected</th></tr>
+          </thead>
+          <tbody id="ovIssueRows"></tbody>
+        </table>
       </div>
-    </div>
+    </section>
+
+    <!-- ALL ORGANIZATIONS / CLINICS (priority 1: where is it happening, drill-down entry point) -->
+    <section class="bo-card bo-panel" style="margin-bottom:16px;">
+      <div class="bo-panel-head">
+        <h3 class="bo-panel-title" style="margin:0;">All Organizations</h3>
+        <a class="bo-row-link" href="organizations.html">Manage organizations &rarr;</a>
+      </div>
+      <div class="bo-table-scroll">
+        <table class="bo-table">
+          <thead>
+            <tr><th>Organization</th><th>Health</th><th>Patients</th><th>Providers</th><th>Open Issues</th><th>Critical</th><th>Last Incident</th><th></th></tr>
+          </thead>
+          <tbody id="ovOrgRows"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ISSUE CATEGORIES (priority 2: supporting context) -->
+    <section class="bo-card bo-panel">
+      <h3 class="bo-panel-title">Issue Categories</h3>
+      <div class="bo-chip-grid" id="ovCategoryChips"></div>
+    </section>
 
   </main>
 
 <script src="js/dashboard-nav.js"></script>
+<script src="js/org-health-data.js"></script>
 <script src="js/overview-dashboard.js"></script>
 </body>
 </html>

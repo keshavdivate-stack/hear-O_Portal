@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>HearO Backoffice | Organization Dashboard</title>
+<title>HearO Backoffice | Support Dashboard</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -26,9 +26,9 @@
         </a>
         <div class="bo-popover bo-nav-popover" id="dashboardPopover">
           <a href="overview-dashboard.html" class="bo-popover-item">Overview Dashboard</a>
-          <a href="org-health-dashboard.html" class="bo-popover-item active">Organization Dashboard</a>
+          <a href="org-health-dashboard.html" class="bo-popover-item">Organization Dashboard</a>
           <a href="patient-health-dashboard.html" class="bo-popover-item">Patient Dashboard</a>
-          <a href="support-dashboard.html" class="bo-popover-item">Support Dashboard</a>
+          <a href="support-dashboard.html" class="bo-popover-item active">Support Dashboard</a>
           <a href="mkt-study.html" class="bo-popover-item">Test Dashboard MKT Study</a>
           <a href="mkt-summary.html" class="bo-popover-item">Test Dashboard MKT Summary</a>
         </div>
@@ -106,41 +106,43 @@
   <main class="bo-page">
 
     <div class="bo-list-toolbar">
-      <h1 id="orgDashName">&nbsp;</h1>
-      <span class="bo-severity-pill" id="orgDashSeverity"><span class="dot"></span></span>
+      <h1>Support Dashboard</h1>
       <span class="bo-list-toolbar-spacer"></span>
-      <select class="bo-select-inline" id="orgDashSwitcher"></select>
-      <div class="bo-seg-toggle" id="orgTimeToggle">
+      <div class="bo-seg-toggle" id="supDashTimeToggle">
         <button class="bo-seg-btn" data-range="24h">24h</button>
         <button class="bo-seg-btn active" data-range="7d">7d</button>
         <button class="bo-seg-btn" data-range="30d">30d</button>
       </div>
+      <a href="support.html" class="bo-btn-primary">
+        View All Tickets
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+      </a>
     </div>
 
-    <div class="bo-health-grid" id="orgHealthGrid"></div>
+    <div class="bo-health-grid" id="supDashHealthGrid"></div>
 
     <div class="bo-two-col">
       <section class="bo-card bo-panel bo-panel--fill">
-        <h3 class="bo-panel-title">Affected Patients</h3>
+        <h3 class="bo-panel-title">Critical &amp; Escalated Tickets</h3>
         <div class="bo-table-scroll">
           <table class="bo-table">
             <thead>
-              <tr><th>Patient</th><th>Issue Type</th><th>Severity</th><th>Last Recording</th><th>Status</th></tr>
+              <tr><th>Ticket</th><th>Raised By</th><th>Organization</th><th>Issue Type</th><th>Tier</th><th>Priority</th><th>Status</th><th>Created</th></tr>
             </thead>
-            <tbody id="orgPatientRows"></tbody>
+            <tbody id="supDashCriticalRows"></tbody>
           </table>
         </div>
       </section>
 
       <div class="bo-panel-col">
         <section class="bo-card bo-panel">
-          <h3 class="bo-panel-title">Issue Breakdown</h3>
-          <div class="bo-chip-list" id="orgCategoryChips"></div>
+          <h3 class="bo-panel-title">Tickets by Priority</h3>
+          <div class="bo-chip-list" id="supDashPriorityChips"></div>
         </section>
 
-        <section class="bo-card bo-panel">
-          <h3 class="bo-panel-title">Organization Context</h3>
-          <div class="bo-chip-list" id="orgContextList"></div>
+        <section class="bo-card bo-panel bo-panel--fill">
+          <h3 class="bo-panel-title">Tickets by Issue Type</h3>
+          <div class="bo-chip-list" id="supDashIssueChips"></div>
         </section>
       </div>
     </div>
@@ -148,7 +150,7 @@
   </main>
 
 <script src="js/dashboard-nav.js"></script>
-<script src="js/org-health-data.js"></script>
-<script src="js/org-health-dashboard.js"></script>
+<script src="js/support-data.js"></script>
+<script src="js/support-dashboard.js"></script>
 </body>
 </html>

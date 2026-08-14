@@ -20,7 +20,6 @@ function sortedOrgs() {
 
 /* ---------------- Render ---------------- */
 const orgCheck = (id, field, on) => `<input type="checkbox" class="bo-cell-checkbox" data-id="${id}" data-field="${field}" ${on ? "checked" : ""} />`;
-const sendIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M21 3L10.5 13.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M21 3L14.5 21L10.5 13.5L3 9.5L21 3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>`;
 const orgKebabIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="1.7" fill="currentColor"/><circle cx="12" cy="12" r="1.7" fill="currentColor"/><circle cx="12" cy="19" r="1.7" fill="currentColor"/></svg>`;
 
 function renderOrgs() {
@@ -52,7 +51,6 @@ function renderOrgs() {
         <td>${o.lng}</td>
         <td>
           <div class="bo-row-actions">
-            <button class="bo-action-icon send" data-id="${o.id}" aria-label="Send">${sendIcon}</button>
             <button class="bo-action-icon row-menu-trigger" data-id="${o.id}" aria-label="Row actions">${orgKebabIcon}</button>
           </div>
         </td>

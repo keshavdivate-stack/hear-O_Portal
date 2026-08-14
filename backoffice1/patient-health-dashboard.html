@@ -28,7 +28,7 @@
           <a href="overview-dashboard.html" class="bo-popover-item">Overview Dashboard</a>
           <a href="org-health-dashboard.html" class="bo-popover-item">Organization Dashboard</a>
           <a href="patient-health-dashboard.html" class="bo-popover-item active">Patient Dashboard</a>
-          <a href="support.html" class="bo-popover-item">Support Dashboard</a>
+          <a href="support-dashboard.html" class="bo-popover-item">Support Dashboard</a>
           <a href="mkt-study.html" class="bo-popover-item">Test Dashboard MKT Study</a>
           <a href="mkt-summary.html" class="bo-popover-item">Test Dashboard MKT Summary</a>
         </div>
@@ -68,7 +68,6 @@
             </div>
           </div>
           <a href="manage-users.html" class="bo-popover-item">Manage Users</a>
-          <div class="bo-popover-item">Holidays</div>
           <a href="dashboard-management.html" class="bo-popover-item">Dashboard Management</a>
           <div class="bo-popover-item">Reports Management</div>
           <div class="bo-popover-item">Terms &amp; Conditions</div>
@@ -107,6 +106,9 @@
   <main class="bo-page">
 
     <div class="bo-entity-header">
+      <a href="patient-management.html" class="bo-back-arrow" id="patientBackLink" aria-label="Back to Patient Management">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </a>
       <span class="bo-entity-avatar" id="patientAvatar">?</span>
       <div>
         <h1 class="bo-entity-name" id="patientName">&nbsp;</h1>
@@ -114,59 +116,186 @@
       </div>
       <span class="bo-severity-pill" id="patientSeverity" style="margin-left:4px;"><span class="dot"></span></span>
       <span class="bo-list-toolbar-spacer"></span>
-      <a class="bo-row-link" href="org-health-dashboard.html" id="patientOrgLink">View organization &rarr;</a>
-    </div>
-
-    <div class="bo-health-grid" id="patientHealthGrid"></div>
-
-    <div class="bo-list-toolbar" style="margin-bottom:10px;">
       <div class="bo-tabs bo-seg-toggle" id="patientTabs">
-        <button class="bo-tab bo-seg-btn active" data-tab="recordings">Recordings</button>
-        <button class="bo-tab bo-seg-btn" data-tab="encounters">Encounters</button>
-        <button class="bo-tab bo-seg-btn" data-tab="readings">Readings</button>
-        <button class="bo-tab bo-seg-btn" data-tab="issues">Issues</button>
+        <button class="bo-tab bo-seg-btn active" data-tab="summary">Summary</button>
+        <button class="bo-tab bo-seg-btn" data-tab="sessions">Sessions</button>
+        <button class="bo-tab bo-seg-btn" data-tab="compliance">Compliance</button>
+        <button class="bo-tab bo-seg-btn" data-tab="events">Events</button>
+        <button class="bo-tab bo-seg-btn" data-tab="voice">Voice Engine</button>
       </div>
     </div>
 
-    <div class="bo-tab-panel active" id="tab-recordings">
+    <!-- SUMMARY -->
+    <div class="bo-tab-panel active" id="tab-summary">
+      <div class="bo-health-grid bo-health-grid--5" id="patientStatusGrid"></div>
+
+      <div class="bo-two-col" style="grid-template-columns: 280px 1fr 300px;">
+        <div class="bo-panel-col">
+          <section class="bo-card bo-panel">
+            <h3 class="bo-panel-title">Registration Data</h3>
+            <div class="bo-kv-grid" id="patientRegistrationList"></div>
+          </section>
+          <section class="bo-card bo-panel bo-panel--fill">
+            <h3 class="bo-panel-title">Usage Data</h3>
+            <div class="bo-kv-grid" id="patientUsageList"></div>
+          </section>
+        </div>
+
+        <div class="bo-panel-col">
+          <section class="bo-card bo-panel bo-panel-chart" style="height:230px; flex-shrink:0;">
+            <div class="bo-panel-head">
+              <h3 class="bo-panel-title" style="margin:0;">Monthly Compliance %</h3>
+              <div class="bo-legend-row" style="margin:0;">
+                <span><span class="dot" style="background:var(--navy)"></span>Compliance</span>
+                <span><span class="dot" style="background:var(--orange)"></span>Usable Compliance</span>
+              </div>
+            </div>
+            <div id="patientComplianceArea" class="bo-chart-area"></div>
+          </section>
+
+          <section class="bo-card bo-panel bo-panel--fill">
+            <h3 class="bo-panel-title">Compliance Info</h3>
+            <div class="bo-kv-grid bo-kv-grid--3col" id="patientComplianceInfoList"></div>
+          </section>
+        </div>
+
+        <section class="bo-card bo-panel" style="justify-content:center;">
+          <div class="bo-cal-head">
+            <span class="bo-cal-title" id="patientCalTitle">&nbsp;</span>
+            <button type="button" class="bo-cal-pick-btn" id="patientCalTodayBtn">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="17" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3 9H21" stroke="currentColor" stroke-width="1.8"/></svg>
+              Pick a date
+            </button>
+          </div>
+          <div class="bo-cal-grid" id="patientCalDow">
+            <span class="bo-cal-dow">Sun</span><span class="bo-cal-dow">Mon</span><span class="bo-cal-dow">Tue</span>
+            <span class="bo-cal-dow">Wed</span><span class="bo-cal-dow">Thu</span><span class="bo-cal-dow">Fri</span><span class="bo-cal-dow">Sat</span>
+          </div>
+          <div class="bo-cal-grid" id="patientCalGrid"></div>
+          <div class="bo-cal-nav">
+            <button type="button" class="bo-cal-nav-btn" id="patientCalPrev">Previous</button>
+            <button type="button" class="bo-cal-nav-btn" id="patientCalToday">Today</button>
+            <button type="button" class="bo-cal-nav-btn primary" id="patientCalNext">Next</button>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <!-- SESSIONS -->
+    <div class="bo-tab-panel" id="tab-sessions">
+      <div class="bo-filter-row" style="align-items:flex-end;">
+        <div class="bo-filter-block">
+          <label>From Date:</label>
+          <div class="bo-date-field bo-date-field-lg">
+            <input type="text" id="patientSessionsFromDate" placeholder="From Date" onfocus="(this.type='date')" onblur="if(!this.value)this.type='text'" />
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="17" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3 9H21" stroke="currentColor" stroke-width="1.8"/></svg>
+          </div>
+        </div>
+        <div class="bo-filter-block">
+          <label>To Date:</label>
+          <div class="bo-date-field bo-date-field-lg">
+            <input type="text" id="patientSessionsToDate" placeholder="To Date" onfocus="(this.type='date')" onblur="if(!this.value)this.type='text'" />
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="17" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3 9H21" stroke="currentColor" stroke-width="1.8"/></svg>
+          </div>
+        </div>
+      </div>
       <div class="bo-table-card">
         <div class="bo-table-scroll">
           <table class="bo-list-table bo-list-table--compact">
-            <thead><tr><th>DATE</th><th>TIME</th><th>DURATION</th><th>QUALITY</th><th>UPLOAD STATUS</th></tr></thead>
-            <tbody id="patientRecordingRows"></tbody>
+            <thead><tr><th>DATE</th><th>START TIME</th><th>END TIME</th><th>ERRORS</th><th>V.ENGINE NOTE</th><th>OS</th><th>MOBILE MODEL</th><th>APP VERSION</th></tr></thead>
+            <tbody id="patientSessionRows"></tbody>
           </table>
         </div>
       </div>
     </div>
 
-    <div class="bo-tab-panel" id="tab-encounters">
+    <!-- COMPLIANCE -->
+    <div class="bo-tab-panel" id="tab-compliance">
+      <div class="bo-filter-row" style="align-items:flex-end; justify-content:space-between;">
+        <div style="display:flex; gap:16px; flex-wrap:wrap;">
+          <div class="bo-filter-block">
+            <label>From Date:</label>
+            <div class="bo-date-field bo-date-field-lg">
+              <input type="text" id="patientComplianceFromDate" placeholder="From Date" onfocus="(this.type='date')" onblur="if(!this.value)this.type='text'" />
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="17" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3 9H21" stroke="currentColor" stroke-width="1.8"/></svg>
+            </div>
+          </div>
+          <div class="bo-filter-block">
+            <label>To Date:</label>
+            <div class="bo-date-field bo-date-field-lg">
+              <input type="text" id="patientComplianceToDate" placeholder="To Date" onfocus="(this.type='date')" onblur="if(!this.value)this.type='text'" />
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="17" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3 9H21" stroke="currentColor" stroke-width="1.8"/></svg>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:12px;">
+          <span class="bo-mini-title" id="patientComplianceRangeLabel" style="margin:0;">&nbsp;</span>
+          <button type="button" class="bo-btn-icon-square" id="patientCompliancePdfBtn" title="Export PDF">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="bo-two-col" style="grid-template-columns: 1fr 1fr 1fr; margin-top:6px;">
+        <section class="bo-card bo-panel">
+          <h3 class="bo-panel-title">Errors Histogram</h3>
+          <div class="bo-legend-row" style="margin:2px 0 0;"><span><span class="dot" style="background:#F2A0C0"></span>Errors Distribution</span></div>
+          <div class="bo-histogram" id="patientErrorsHistogram"></div>
+        </section>
+        <section class="bo-card bo-panel">
+          <h3 class="bo-panel-title">Non Recorded Days Histogram</h3>
+          <div class="bo-legend-row" style="margin:2px 0 0;"><span><span class="dot" style="background:#F2A0C0"></span>Histogram of non-recorded days per week-day</span></div>
+          <div class="bo-histogram" id="patientNonRecordedHistogram"></div>
+        </section>
+        <section class="bo-card bo-panel">
+          <h3 class="bo-panel-title">Recorded Hours Histogram</h3>
+          <div class="bo-legend-row" style="margin:2px 0 0;"><span><span class="dot" style="background:#F2A0C0"></span>Upload Hours Distribution</span></div>
+          <div class="bo-histogram" id="patientRecordedHoursHistogram"></div>
+        </section>
+      </div>
+
+      <section class="bo-card bo-panel" style="margin-top:16px; max-width:460px;">
+        <h3 class="bo-panel-title">Records Info</h3>
+        <div class="bo-kv-grid" id="patientRecordsInfoList"></div>
+      </section>
+    </div>
+
+    <!-- EVENTS -->
+    <div class="bo-tab-panel" id="tab-events">
+      <div class="bo-list-toolbar" style="padding:0 0 14px;">
+        <span class="bo-list-toolbar-spacer"></span>
+        <button type="button" class="bo-btn-primary" id="patientAddMessageBtn">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          Message
+        </button>
+        <button type="button" class="bo-btn-primary" id="patientAddEventBtn">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          Event
+        </button>
+      </div>
       <div class="bo-table-card">
         <div class="bo-table-scroll">
-          <table class="bo-list-table bo-list-table--compact">
-            <thead><tr><th>DATE</th><th>TYPE</th><th>PROVIDER</th><th>NOTES</th></tr></thead>
-            <tbody id="patientEncounterRows"></tbody>
+          <table class="bo-list-table">
+            <thead>
+              <tr>
+                <th>EVENT TYPE</th><th>INFLUENCE COMPLIANCE</th><th>DESCRIPTION</th>
+                <th>ADDED BY USERNAME</th><th>REPORTED BY</th><th>REPORTED VIA</th><th>REPORTED TIME</th>
+                <th>START DATE</th><th>END DATE</th><th>APPROVED</th><th>STATUS</th><th></th>
+              </tr>
+            </thead>
+            <tbody id="patientEventRows"></tbody>
           </table>
         </div>
       </div>
     </div>
 
-    <div class="bo-tab-panel" id="tab-readings">
+    <!-- VOICE ENGINE -->
+    <div class="bo-tab-panel" id="tab-voice">
       <div class="bo-table-card">
         <div class="bo-table-scroll">
           <table class="bo-list-table bo-list-table--compact">
-            <thead><tr><th>DATE</th><th>METRIC</th><th>VALUE</th><th>STATUS</th></tr></thead>
-            <tbody id="patientReadingRows"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <div class="bo-tab-panel" id="tab-issues">
-      <div class="bo-table-card">
-        <div class="bo-table-scroll">
-          <table class="bo-list-table bo-list-table--compact">
-            <thead><tr><th>ISSUE</th><th>SEVERITY</th><th>STATUS</th><th>DETECTED</th></tr></thead>
-            <tbody id="patientIssueRows"></tbody>
+            <thead><tr><th>DATE</th><th>CHECK</th><th>RESULT</th><th>NOTES</th></tr></thead>
+            <tbody id="patientVoiceRows"></tbody>
           </table>
         </div>
       </div>
@@ -174,8 +303,125 @@
 
   </main>
 
+  <!-- Add / Update Event modal -->
+  <div class="bo-drawer-overlay" id="patientEventDrawerOverlay">
+    <div class="bo-drawer" style="width:480px;">
+      <div class="bo-drawer-head">
+        <h2>Add/Update Event</h2>
+        <button type="button" class="bo-drawer-close" id="patientCloseEventDrawerX" aria-label="Close">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6L18 18M6 18L18 6"/></svg>
+        </button>
+      </div>
+      <form id="patientEventForm" class="bo-drawer-form">
+        <div class="bo-drawer-body">
+          <div class="bo-modal-section">
+            <div class="bo-modal-grid">
+              <div class="bo-modal-field full">
+                <label>Patient username:</label>
+                <input type="text" name="username" id="patientEventUsername" readonly />
+              </div>
+              <div class="bo-modal-field full">
+                <label>Influence compliance:</label>
+                <div class="bo-select" data-name="influenceCompliance">
+                  <button type="button" class="bo-select-trigger">
+                    <span class="bo-select-value placeholder">Influence</span>
+                    <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                  </button>
+                  <div class="bo-select-menu">
+                    <div class="bo-select-option" data-value="Yes">Yes<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    <div class="bo-select-option" data-value="No">No<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                  </div>
+                  <input type="hidden" name="influenceCompliance" />
+                </div>
+              </div>
+              <div class="bo-modal-field full">
+                <label>Description:</label>
+                <input type="text" name="description" placeholder="Description" />
+              </div>
+              <div class="bo-modal-field full">
+                <label>Reported by:</label>
+                <input type="text" name="reportedBy" placeholder="Reported By" />
+              </div>
+              <div class="bo-modal-field full">
+                <label>Reported via:</label>
+                <div class="bo-select" data-name="reportedVia">
+                  <button type="button" class="bo-select-trigger">
+                    <span class="bo-select-value placeholder">Reported via</span>
+                    <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                  </button>
+                  <div class="bo-select-menu">
+                    <div class="bo-select-option" data-value="APPLICATION">Application<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    <div class="bo-select-option" data-value="PHONE">Phone<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    <div class="bo-select-option" data-value="MANUAL">Manual<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                  </div>
+                  <input type="hidden" name="reportedVia" />
+                </div>
+              </div>
+              <div class="bo-modal-field">
+                <label>Reported date:</label>
+                <input type="date" name="reportedDate" />
+              </div>
+              <div class="bo-modal-field">
+                <label>Start date:</label>
+                <input type="date" name="startDate" />
+              </div>
+              <div class="bo-modal-field">
+                <label>End date:</label>
+                <input type="date" name="endDate" />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="bo-drawer-foot">
+          <button type="button" class="bo-btn-text" id="patientCancelEventDrawer">Cancel</button>
+          <button type="submit" class="bo-btn-primary" id="patientSaveEventBtn">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Send message modal -->
+  <div class="bo-drawer-overlay" id="patientMessageDrawerOverlay">
+    <div class="bo-drawer" style="width:420px;">
+      <div class="bo-drawer-head">
+        <h2>Send message</h2>
+        <button type="button" class="bo-drawer-close" id="patientCloseMessageDrawerX" aria-label="Close">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6L18 18M6 18L18 6"/></svg>
+        </button>
+      </div>
+      <form id="patientMessageForm" class="bo-drawer-form">
+        <div class="bo-drawer-body">
+          <div class="bo-modal-section">
+            <div class="bo-modal-grid">
+              <div class="bo-modal-field full">
+                <label>Send to</label>
+                <input type="text" id="patientMessageSendTo" readonly />
+              </div>
+              <div class="bo-modal-field full">
+                <button type="button" class="bo-btn-check" id="patientCheckLanguageBtn">Check language</button>
+              </div>
+              <div class="bo-modal-field full">
+                <input type="text" name="language" id="patientMessageLanguage" placeholder="Language -" readonly />
+              </div>
+              <div class="bo-modal-field full">
+                <label>Message:</label>
+                <textarea name="message" placeholder=""></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="bo-drawer-foot">
+          <button type="button" class="bo-btn-text" id="patientCancelMessageDrawer">Cancel</button>
+          <button type="submit" class="bo-btn-primary" id="patientSaveMessageBtn" disabled>Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
 <script src="js/dashboard-nav.js"></script>
-<script src="js/org-health-data.js"></script>
+<script src="js/bo-pagination.js"></script>
+<script src="js/patients-directory.js"></script>
+<script src="js/patient-events-data.js"></script>
 <script src="js/patient-health-data.js"></script>
 <script src="js/patient-health-dashboard.js"></script>
 </body>

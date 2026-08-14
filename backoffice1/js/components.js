@@ -19,8 +19,7 @@ const TAB_META = {
   iaErrors: { title: "Create/Edit IA Errors Config", addLabel: "IA Error" },
 };
 
-const editIcon = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 20H21" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M16.5 3.5C17.3 2.7 18.6 2.7 19.4 3.5C20.2 4.3 20.2 5.6 19.4 6.4L7 18.8L3 20L4.2 16L16.5 3.5Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>`;
-const trashIcon = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 7H20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M9 7V4.5C9 4 9.4 3.6 9.9 3.6H14.1C14.6 3.6 15 4 15 4.5V7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 7L6.8 19.2C6.9 19.9 7.5 20.4 8.2 20.4H15.8C16.5 20.4 17.1 19.9 17.2 19.2L18 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const compKebabIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="1.7" fill="currentColor"/><circle cx="12" cy="12" r="1.7" fill="currentColor"/><circle cx="12" cy="19" r="1.7" fill="currentColor"/></svg>`;
 
 function esc(v) { return String(v == null ? "" : v).replace(/"/g, "&quot;"); }
 
@@ -59,8 +58,7 @@ function makeSimplePager(tabKey) {
         <td>${esc(e.r.creationDate)}</td>
         <td>
           <div class="bo-row-actions">
-            <button class="bo-action-icon" data-tab="${tabKey}" data-idx="${e.i}" data-act="edit" aria-label="Edit">${editIcon}</button>
-            <button class="bo-action-icon" data-tab="${tabKey}" data-idx="${e.i}" data-act="delete" aria-label="Delete">${trashIcon}</button>
+            <button class="bo-action-icon row-menu-trigger" data-tab="${tabKey}" data-idx="${e.i}" aria-label="Row actions">${compKebabIcon}</button>
           </div>
         </td>
       </tr>`,
@@ -87,8 +85,7 @@ configPagers.main = boCreatePager(
         <td>${esc(e.r.creationDate)}</td>
         <td>
           <div class="bo-row-actions">
-            <button class="bo-action-icon" data-tab="main" data-idx="${e.i}" data-act="edit" aria-label="Edit">${editIcon}</button>
-            <button class="bo-action-icon" data-tab="main" data-idx="${e.i}" data-act="delete" aria-label="Delete">${trashIcon}</button>
+            <button class="bo-action-icon row-menu-trigger" data-tab="main" data-idx="${e.i}" aria-label="Row actions">${compKebabIcon}</button>
           </div>
         </td>
       </tr>`,
@@ -100,19 +97,40 @@ function renderAllTables() {
 }
 renderAllTables();
 
+/* ---------------- Row action dropdown (edit / delete) ---------------- */
+const compRowMenu = document.getElementById("compRowMenu");
+let activeCompTab = null;
+let activeCompIdx = null;
+
 document.querySelectorAll(".bo-list-table").forEach((table) => {
   table.addEventListener("click", (e) => {
-    const btn = e.target.closest(".bo-action-icon");
-    if (!btn) return;
-    const tabKey = btn.dataset.tab;
-    const idx = Number(btn.dataset.idx);
-    if (btn.dataset.act === "edit") openDrawer(tabKey, idx);
-    if (btn.dataset.act === "delete") {
-      if (!confirm(`Delete "${DATA[tabKey][idx].name}"?`)) return;
-      DATA[tabKey].splice(idx, 1);
-      renderAllTables();
-    }
+    const trigger = e.target.closest(".row-menu-trigger");
+    if (!trigger) return;
+    e.stopPropagation();
+    activeCompTab = trigger.dataset.tab;
+    activeCompIdx = Number(trigger.dataset.idx);
+    const rect = trigger.getBoundingClientRect();
+    compRowMenu.style.top = `${rect.bottom + 6}px`;
+    compRowMenu.style.left = `${rect.right - 190}px`;
+    compRowMenu.classList.add("open");
   });
+});
+
+document.addEventListener("click", (e) => {
+  if (!compRowMenu.contains(e.target)) compRowMenu.classList.remove("open");
+});
+
+compRowMenu.addEventListener("click", (e) => {
+  const item = e.target.closest(".bo-row-menu-item");
+  if (!item || activeCompTab === null || activeCompIdx === null) return;
+  compRowMenu.classList.remove("open");
+
+  if (item.dataset.action === "edit") openDrawer(activeCompTab, activeCompIdx);
+  if (item.dataset.action === "delete") {
+    if (!confirm(`Delete "${DATA[activeCompTab][activeCompIdx].name}"?`)) return;
+    DATA[activeCompTab].splice(activeCompIdx, 1);
+    renderAllTables();
+  }
 });
 
 document.querySelectorAll(".bo-add-config-btn").forEach((btn) => {

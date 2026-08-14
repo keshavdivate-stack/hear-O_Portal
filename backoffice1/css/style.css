@@ -538,7 +538,7 @@ a { color: inherit; }
 
 /* Compliance chart */
 .bo-panel-chart { min-width: 0; flex: 1; min-height: 0; }
-#complianceArea { flex: 1; min-height: 0; }
+#complianceArea, .bo-chart-area { flex: 1; min-height: 0; }
 .bo-area-svg { width: 100%; height: 100%; display: block; }
 
 .bo-legend-row {
@@ -880,7 +880,8 @@ a { color: inherit; }
 
 .bo-list-table tbody td.mono { color: var(--gray-text); }
 
-.bo-name-link { color: var(--blue); font-weight: 700; }
+.bo-name-link { color: var(--blue); font-weight: 700; text-decoration: none; }
+.bo-name-link:hover { text-decoration: underline; }
 
 .bo-cell-checkbox {
   appearance: none;
@@ -2493,9 +2494,166 @@ a.bo-health-card:hover { border-color: var(--field-border); }
   cursor: pointer;
 }
 
+.bo-kv-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.bo-kv-cell {
+  background: var(--bg);
+  border-radius: 10px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.bo-kv-cell .k {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--gray-text);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.bo-kv-cell .v { font-size: 14px; font-weight: 700; color: var(--ink); overflow-wrap: break-word; }
+.bo-kv-cell .v small { color: var(--gray-text); font-weight: 600; font-size: 11.5px; }
+
+.bo-kv-grid--3col { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+.bo-kv-grid--sm { gap: 6px; }
+.bo-kv-grid--sm .bo-kv-cell { padding: 6px 9px; gap: 1px; }
+.bo-kv-grid--sm .bo-kv-cell .k { font-size: 9.5px; }
+.bo-kv-grid--sm .bo-kv-cell .v { font-size: 12.5px; }
+
+.bo-panel--sm { padding: 10px 14px 12px; }
+.bo-panel--sm .bo-panel-title { margin-bottom: 8px; }
+
+.bo-filter-block { display: flex; flex-direction: column; gap: 8px; }
+.bo-filter-block > label { font-size: 13px; font-weight: 700; color: var(--ink); }
+.bo-date-field.bo-date-field-lg { min-width: 300px; padding: 12px 14px; }
+
+.bo-btn-icon-square {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  border: none;
+  background: var(--green);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.bo-btn-icon-square:hover { opacity: 0.9; }
+
+.bo-histogram {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  height: 170px;
+  padding: 8px 4px 0;
+  border-top: 1px solid var(--gray-border);
+  background-image: repeating-linear-gradient(to top, var(--gray-border) 0, var(--gray-border) 1px, transparent 1px, transparent 20%);
+}
+
+.bo-histogram-bar-wrap {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  height: 100%;
+  gap: 6px;
+}
+
+.bo-histogram-bar { width: 60%; background: #F2A0C0; border-radius: 3px 3px 0 0; min-height: 2px; }
+.bo-histogram-label { font-size: 10px; color: var(--gray-text); font-weight: 700; }
+
+/* Calendar widget (patient dashboard) */
+.bo-cal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.bo-cal-title { font-size: 15px; font-weight: 800; color: var(--ink); }
+
+.bo-cal-pick-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--field-border);
+  background: #fff;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--gray-text);
+  cursor: pointer;
+}
+
+.bo-cal-pick-btn:hover { border-color: var(--blue); color: var(--blue); }
+
+.bo-cal-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px 2px; }
+
+.bo-cal-dow {
+  text-align: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--gray-text);
+  padding-bottom: 6px;
+}
+
+.bo-cal-day {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 37px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.bo-cal-day:hover { background: var(--bg); }
+.bo-cal-day.weekend { color: #E0577A; }
+.bo-cal-day.muted { color: #C7CDD4; }
+.bo-cal-day.muted.weekend { color: #F0C3D0; }
+.bo-cal-day.today { box-shadow: inset 0 0 0 1.5px var(--blue); }
+.bo-cal-day.selected { background: var(--green-light); color: var(--green); }
+
+.bo-cal-nav { display: flex; gap: 8px; margin-top: 10px; }
+
+.bo-cal-nav-btn {
+  flex: 1;
+  padding: 8px 0;
+  border-radius: 8px;
+  border: 1px solid var(--field-border);
+  background: #fff;
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--blue);
+  cursor: pointer;
+}
+
+.bo-cal-nav-btn:hover { border-color: var(--blue); }
+.bo-cal-nav-btn.primary { background: var(--gray-text); border-color: var(--gray-text); color: #fff; }
+.bo-cal-nav-btn.primary:hover { opacity: 0.9; }
+
+.bo-health-grid--5 { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+
 @media (max-width: 1100px) {
   .bo-health-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .bo-health-grid--5 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .bo-two-col { grid-template-columns: 1fr; }
+  .bo-kv-grid { grid-template-columns: 1fr; }
 }
 
 /* ==========================================================

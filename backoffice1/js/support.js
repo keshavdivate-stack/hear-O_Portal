@@ -25,7 +25,7 @@ const statusPill = (s) => `<span class="bo-pill ${statusPillClass[s] || ""}">${s
 const priorityPill = (p) => `<span class="bo-pill ${priorityPillClass[p] || ""}">${p}</span>`;
 const tierPill = (t) => `<span class="bo-pill bo-pill-tier">${t}</span>`;
 
-const viewIcon = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M1 12C1 12 5 4.5 12 4.5C19 4.5 23 12 23 12C23 12 19 19.5 12 19.5C5 19.5 1 12 1 12Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/></svg>`;
+const ticketKebabIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="1.7" fill="currentColor"/><circle cx="12" cy="12" r="1.7" fill="currentColor"/><circle cx="12" cy="19" r="1.7" fill="currentColor"/></svg>`;
 
 /* ---------------- Filter state (shared by both tabs) ---------------- */
 let ticketStatusValue = "";
@@ -66,7 +66,7 @@ const patientPager = boCreatePager(
       <td>${t.createdDate}</td>
       <td>
         <div class="bo-row-actions">
-          <button class="bo-action-icon ticket-view-btn" data-source="patient" data-id="${t.id}" aria-label="View ticket">${viewIcon}</button>
+          <button class="bo-action-icon row-menu-trigger" data-source="patient" data-id="${t.id}" aria-label="Row actions">${ticketKebabIcon}</button>
         </div>
       </td>
     </tr>`,
@@ -94,7 +94,7 @@ const clinicPager = boCreatePager(
       <td>${t.createdDate}</td>
       <td>
         <div class="bo-row-actions">
-          <button class="bo-action-icon ticket-view-btn" data-source="clinic" data-id="${t.id}" aria-label="View ticket">${viewIcon}</button>
+          <button class="bo-action-icon row-menu-trigger" data-source="clinic" data-id="${t.id}" aria-label="Row actions">${ticketKebabIcon}</button>
         </div>
       </td>
     </tr>`,
@@ -252,14 +252,36 @@ function closeTicketDetail() {
   activeTicket = null;
 }
 
-document.querySelectorAll(".ticket-view-btn").forEach(() => {}); // rows are re-rendered; delegate instead
-document.getElementById("patientTicketRows").addEventListener("click", (e) => {
-  const btn = e.target.closest(".ticket-view-btn");
-  if (btn) openTicketDetail(btn.dataset.source, Number(btn.dataset.id));
+/* ---------------- Row action dropdown (view ticket) ---------------- */
+const ticketRowMenu = document.getElementById("ticketRowMenu");
+let activeTicketSource = null;
+let activeTicketId = null;
+
+function wireTicketRowMenu(rowsId) {
+  document.getElementById(rowsId).addEventListener("click", (e) => {
+    const trigger = e.target.closest(".row-menu-trigger");
+    if (!trigger) return;
+    e.stopPropagation();
+    activeTicketSource = trigger.dataset.source;
+    activeTicketId = Number(trigger.dataset.id);
+    const rect = trigger.getBoundingClientRect();
+    ticketRowMenu.style.top = `${rect.bottom + 6}px`;
+    ticketRowMenu.style.left = `${rect.right - 190}px`;
+    ticketRowMenu.classList.add("open");
+  });
+}
+wireTicketRowMenu("patientTicketRows");
+wireTicketRowMenu("clinicTicketRows");
+
+document.addEventListener("click", (e) => {
+  if (!ticketRowMenu.contains(e.target)) ticketRowMenu.classList.remove("open");
 });
-document.getElementById("clinicTicketRows").addEventListener("click", (e) => {
-  const btn = e.target.closest(".ticket-view-btn");
-  if (btn) openTicketDetail(btn.dataset.source, Number(btn.dataset.id));
+
+ticketRowMenu.addEventListener("click", (e) => {
+  const item = e.target.closest(".bo-row-menu-item");
+  if (!item || activeTicketId === null) return;
+  ticketRowMenu.classList.remove("open");
+  if (item.dataset.action === "view") openTicketDetail(activeTicketSource, activeTicketId);
 });
 
 document.getElementById("closeTicketDetailX").addEventListener("click", closeTicketDetail);

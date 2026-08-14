@@ -15,16 +15,14 @@ const SD_TAB_META = {
   reminderTimeRange: { title: "Add/Edit Reminder Time Range", addLabel: "Reminder Time Range" },
 };
 
-const sdEditIcon = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 20H21" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M16.5 3.5C17.3 2.7 18.6 2.7 19.4 3.5C20.2 4.3 20.2 5.6 19.4 6.4L7 18.8L3 20L4.2 16L16.5 3.5Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>`;
-const sdTrashIcon = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 7H20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M9 7V4.5C9 4 9.4 3.6 9.9 3.6H14.1C14.6 3.6 15 4 15 4.5V7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 7L6.8 19.2C6.9 19.9 7.5 20.4 8.2 20.4H15.8C16.5 20.4 17.1 19.9 17.2 19.2L18 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const sdKebabIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="1.7" fill="currentColor"/><circle cx="12" cy="12" r="1.7" fill="currentColor"/><circle cx="12" cy="19" r="1.7" fill="currentColor"/></svg>`;
 
 function sdEsc(v) { return String(v == null ? "" : v).replace(/"/g, "&quot;"); }
 
 function sdActions(tabKey, idx) {
   return `
     <div class="bo-row-actions">
-      <button class="bo-action-icon" data-tab="${tabKey}" data-idx="${idx}" data-act="edit" aria-label="Edit">${sdEditIcon}</button>
-      <button class="bo-action-icon" data-tab="${tabKey}" data-idx="${idx}" data-act="delete" aria-label="Delete">${sdTrashIcon}</button>
+      <button class="bo-action-icon row-menu-trigger" data-tab="${tabKey}" data-idx="${idx}" aria-label="Row actions">${sdKebabIcon}</button>
     </div>`;
 }
 
@@ -139,19 +137,40 @@ document.getElementById("sentenceLangFilter").addEventListener("change", (e) => 
   sdSentencesPager();
 });
 
+/* ---------------- Row action dropdown (edit / delete) ---------------- */
+const sdRowMenu = document.getElementById("sdRowMenu");
+let activeSdTab = null;
+let activeSdIdx = null;
+
 document.querySelectorAll(".bo-list-table").forEach((table) => {
   table.addEventListener("click", (e) => {
-    const btn = e.target.closest(".bo-action-icon");
-    if (!btn) return;
-    const tabKey = btn.dataset.tab;
-    const idx = Number(btn.dataset.idx);
-    if (btn.dataset.act === "edit") sdOpenDrawer(tabKey, idx);
-    if (btn.dataset.act === "delete") {
-      if (!confirm("Delete this entry?")) return;
-      SD_DATA[tabKey].splice(idx, 1);
-      sdRenderAllTables();
-    }
+    const trigger = e.target.closest(".row-menu-trigger");
+    if (!trigger) return;
+    e.stopPropagation();
+    activeSdTab = trigger.dataset.tab;
+    activeSdIdx = Number(trigger.dataset.idx);
+    const rect = trigger.getBoundingClientRect();
+    sdRowMenu.style.top = `${rect.bottom + 6}px`;
+    sdRowMenu.style.left = `${rect.right - 190}px`;
+    sdRowMenu.classList.add("open");
   });
+});
+
+document.addEventListener("click", (e) => {
+  if (!sdRowMenu.contains(e.target)) sdRowMenu.classList.remove("open");
+});
+
+sdRowMenu.addEventListener("click", (e) => {
+  const item = e.target.closest(".bo-row-menu-item");
+  if (!item || activeSdTab === null || activeSdIdx === null) return;
+  sdRowMenu.classList.remove("open");
+
+  if (item.dataset.action === "edit") sdOpenDrawer(activeSdTab, activeSdIdx);
+  if (item.dataset.action === "delete") {
+    if (!confirm("Delete this entry?")) return;
+    SD_DATA[activeSdTab].splice(activeSdIdx, 1);
+    sdRenderAllTables();
+  }
 });
 
 /* ---------------- Drawer state ---------------- */

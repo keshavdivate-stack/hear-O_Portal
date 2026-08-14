@@ -38,8 +38,7 @@ function peFiltered() {
   });
 }
 
-const peEditIcon = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 20H21" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M16.5 3.5C17.3 2.7 18.6 2.7 19.4 3.5C20.2 4.3 20.2 5.6 19.4 6.4L7 18.8L3 20L4.2 16L16.5 3.5Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>`;
-const peTrashIcon = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 7H20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M9 7V4.5C9 4 9.4 3.6 9.9 3.6H14.1C14.6 3.6 15 4 15 4.5V7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 7L6.8 19.2C6.9 19.9 7.5 20.4 8.2 20.4H15.8C16.5 20.4 17.1 19.9 17.2 19.2L18 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const peKebabIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="1.7" fill="currentColor"/><circle cx="12" cy="12" r="1.7" fill="currentColor"/><circle cx="12" cy="19" r="1.7" fill="currentColor"/></svg>`;
 
 function peEsc(v) { return String(v == null ? "" : v).replace(/"/g, "&quot;"); }
 
@@ -62,8 +61,7 @@ const pePager = boCreatePager(
       <td>${peEsc(e.r.status)}</td>
       <td>
         <div class="bo-row-actions">
-          <button class="bo-action-icon" data-id="${e.r.id}" data-act="edit" aria-label="Edit">${peEditIcon}</button>
-          <button class="bo-action-icon" data-id="${e.r.id}" data-act="delete" aria-label="Delete">${peTrashIcon}</button>
+          <button class="bo-action-icon row-menu-trigger" data-id="${e.r.id}" aria-label="Row actions">${peKebabIcon}</button>
         </div>
       </td>
     </tr>`,
@@ -82,15 +80,36 @@ document.getElementById("peRows").addEventListener("change", (e) => {
   if (rec) rec[box.dataset.field] = box.checked;
 });
 
+/* ---------------- Row action dropdown (edit / delete) ---------------- */
+const peRowMenu = document.getElementById("peRowMenu");
+let activePeRowId = null;
+
 document.getElementById("peRows").addEventListener("click", (e) => {
-  const btn = e.target.closest(".bo-action-icon");
-  if (!btn) return;
-  const rec = peEvents.find((r) => r.id === Number(btn.dataset.id));
+  const trigger = e.target.closest(".row-menu-trigger");
+  if (!trigger) return;
+  e.stopPropagation();
+  activePeRowId = Number(trigger.dataset.id);
+  const rect = trigger.getBoundingClientRect();
+  peRowMenu.style.top = `${rect.bottom + 6}px`;
+  peRowMenu.style.left = `${rect.right - 190}px`;
+  peRowMenu.classList.add("open");
+});
+
+document.addEventListener("click", (e) => {
+  if (!peRowMenu.contains(e.target)) peRowMenu.classList.remove("open");
+});
+
+peRowMenu.addEventListener("click", (e) => {
+  const item = e.target.closest(".bo-row-menu-item");
+  if (!item || activePeRowId === null) return;
+  peRowMenu.classList.remove("open");
+
+  const rec = peEvents.find((r) => r.id === activePeRowId);
   if (!rec) return;
 
-  if (btn.dataset.act === "edit") {
+  if (item.dataset.action === "edit") {
     openEventDrawer(rec);
-  } else if (btn.dataset.act === "delete") {
+  } else if (item.dataset.action === "delete") {
     if (!confirm(`Delete this event for "${rec.username}"?`)) return;
     peEvents.splice(peEvents.indexOf(rec), 1);
     pePager();
