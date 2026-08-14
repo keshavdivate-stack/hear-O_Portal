@@ -5,6 +5,7 @@ document.querySelectorAll("#allocTabs .bo-tab").forEach((tab) => {
     document.querySelectorAll(".bo-tab-panel").forEach((p) => p.classList.remove("active"));
     tab.classList.add("active");
     document.getElementById(`tab-${tab.dataset.tab}`).classList.add("active");
+    document.getElementById("allocFilters").hidden = tab.dataset.tab !== "current";
   });
 });
 
@@ -78,16 +79,19 @@ allocCurrentPager();
 
 document.getElementById("allocSiteFilter").addEventListener("change", (e) => {
   allocSiteFilterValue = e.target.value;
+  e.target.classList.toggle("has-value", e.target.value !== "");
   allocCurrentPager.resetPage();
   allocCurrentPager();
 });
 document.getElementById("allocConfigFilter").addEventListener("change", (e) => {
   allocConfigFilterValue = e.target.value;
+  e.target.classList.toggle("has-value", e.target.value !== "");
   allocCurrentPager.resetPage();
   allocCurrentPager();
 });
 document.getElementById("allocLangFilter").addEventListener("change", (e) => {
   allocLangFilterValue = e.target.value;
+  e.target.classList.toggle("has-value", e.target.value !== "");
   allocCurrentPager.resetPage();
   allocCurrentPager();
 });

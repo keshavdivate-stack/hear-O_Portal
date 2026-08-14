@@ -669,15 +669,16 @@ body {
 .list-table tbody tr:hover td { background: #FAFBFC; }
 
 /* Sticky first/last columns so long tables keep name + actions visible while
-   scrolling horizontally through the columns in between. */
+   scrolling horizontally through the columns in between. The depth-cue
+   shadow only paints once js/table-scroll.js detects real overflow and
+   flags the wrapper with .has-h-scroll — otherwise a table that already
+   fits the viewport shows a shadow with nothing to scroll to. */
 .list-table th:first-child,
 .list-table td:first-child {
   position: sticky;
   left: 0;
   z-index: 3;
   background: #fff;
-  box-shadow: 4px 0 8px -2px rgba(20, 30, 50, 0.15);
-  clip-path: inset(0 -8px 0 0);
 }
 
 .list-table th:last-child,
@@ -686,6 +687,16 @@ body {
   right: 0;
   z-index: 3;
   background: #fff;
+}
+
+.table-scroll.has-h-scroll .list-table th:first-child,
+.table-scroll.has-h-scroll .list-table td:first-child {
+  box-shadow: 4px 0 8px -2px rgba(20, 30, 50, 0.15);
+  clip-path: inset(0 -8px 0 0);
+}
+
+.table-scroll.has-h-scroll .list-table th:last-child,
+.table-scroll.has-h-scroll .list-table td:last-child {
   box-shadow: -4px 0 8px -2px rgba(20, 30, 50, 0.15);
   clip-path: inset(0 0 0 -8px);
 }

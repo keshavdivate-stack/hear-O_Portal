@@ -748,6 +748,15 @@ a { color: inherit; }
 
 .bo-list-toolbar-spacer { flex: 1; }
 
+.bo-list-toolbar-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.bo-list-toolbar-group[hidden] { display: none; }
+
 .bo-btn-primary {
   display: inline-flex;
   align-items: center;
@@ -822,15 +831,16 @@ a { color: inherit; }
 .bo-list-table tbody tr:hover td { background: var(--bg); }
 
 /* Sticky first/last columns so long tables keep name + actions visible while
-   scrolling horizontally through the columns in between. */
+   scrolling horizontally through the columns in between. The depth-cue
+   shadow only paints once js/table-scroll.js detects real overflow and
+   flags the wrapper with .has-h-scroll — otherwise a table that already
+   fits the viewport shows a shadow with nothing to scroll to. */
 .bo-list-table th:first-child,
 .bo-list-table td:first-child {
   position: sticky;
   left: 0;
   z-index: 3;
   background: #fff;
-  box-shadow: 4px 0 8px -2px rgba(20, 30, 50, 0.15);
-  clip-path: inset(0 -8px 0 0);
 }
 
 .bo-list-table th:last-child,
@@ -839,6 +849,16 @@ a { color: inherit; }
   right: 0;
   z-index: 3;
   background: #fff;
+}
+
+.bo-table-scroll.has-h-scroll .bo-list-table th:first-child,
+.bo-table-scroll.has-h-scroll .bo-list-table td:first-child {
+  box-shadow: 4px 0 8px -2px rgba(20, 30, 50, 0.15);
+  clip-path: inset(0 -8px 0 0);
+}
+
+.bo-table-scroll.has-h-scroll .bo-list-table th:last-child,
+.bo-table-scroll.has-h-scroll .bo-list-table td:last-child {
   box-shadow: -4px 0 8px -2px rgba(20, 30, 50, 0.15);
   clip-path: inset(0 0 0 -8px);
 }
@@ -1053,6 +1073,42 @@ a { color: inherit; }
 
 .bo-filter-select:focus { outline: none; }
 
+.bo-filter-field input[type="text"] {
+  width: 100%;
+  border: none;
+  outline: none;
+  font-size: 13.5px;
+  font-weight: 600;
+  font-family: inherit;
+  background: transparent;
+  color: var(--ink);
+}
+
+.bo-filter-field input[type="text"]::placeholder { color: var(--gray-text); font-weight: 700; }
+
+/* Full-width filter row: fields grow evenly to fill the row (no dead space on the right) */
+.bo-filter-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.bo-filter-row .bo-filter-field,
+.bo-filter-row .bo-date-field {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.bo-filter-row .bo-btn-primary,
+.bo-filter-row .bo-btn-secondary { flex-shrink: 0; white-space: nowrap; }
+
+@media (max-width: 1100px) {
+  .bo-filter-row { flex-wrap: wrap; }
+  .bo-filter-row .bo-filter-field,
+  .bo-filter-row .bo-date-field { flex: 1 1 150px; }
+}
+
 /* Date field — matches .bo-filter-field, with a trailing calendar glyph */
 .bo-date-field {
   display: flex;
@@ -1254,6 +1310,24 @@ a { color: inherit; }
 }
 
 .bo-btn-primary:disabled:hover { background: #AEB4BC; }
+
+.bo-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #fff;
+  color: var(--blue);
+  border: 1.5px solid var(--blue);
+  border-radius: 10px;
+  padding: 10px 20px;
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  white-space: nowrap;
+}
+
+.bo-btn-secondary:hover { background: var(--blue-light); }
 
 .bo-btn-text {
   background: none;
@@ -1689,9 +1763,6 @@ a { color: inherit; }
 }
 
 .bo-alloc-field { display: flex; flex-direction: column; gap: 8px; flex: 1 1 190px; min-width: 160px; max-width: 240px; }
-
-/* Tighter variant for filter rows with many fields (e.g. Audit Log) that need to stay on one line */
-.bo-alloc-grid--tight .bo-alloc-field { flex: 1 1 130px; min-width: 110px; max-width: 170px; }
 
 .bo-alloc-field label { font-size: 13.5px; font-weight: 700; color: var(--ink); }
 

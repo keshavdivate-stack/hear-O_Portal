@@ -109,6 +109,30 @@
         <button class="bo-tab bo-seg-btn active" data-tab="current">Current Patients</button>
         <button class="bo-tab bo-seg-btn" data-tab="future">Future Patients</button>
       </div>
+
+      <div class="bo-list-toolbar-group" id="allocFilters">
+        <div class="bo-filter-field">
+          <select class="bo-filter-select" id="allocSiteFilter">
+            <option value="">Clinical site</option>
+          </select>
+        </div>
+        <div class="bo-filter-field">
+          <select class="bo-filter-select" id="allocConfigFilter">
+            <option value="">App config</option>
+          </select>
+        </div>
+        <div class="bo-filter-field">
+          <select class="bo-filter-select" id="allocLangFilter">
+            <option value="">Patient language</option>
+          </select>
+        </div>
+        <div class="bo-search-pill" style="width:200px;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8"/><path d="M21 21L16.5 16.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          <input type="text" id="allocSearchInput" placeholder="Search patient" />
+        </div>
+        <button class="bo-btn-primary" id="allocUpdateBtn">Update the list's configs</button>
+      </div>
+
       <span class="bo-list-toolbar-spacer"></span>
       <label class="bo-switch-field">
         <span class="bo-switch">
@@ -121,32 +145,6 @@
 
     <!-- CURRENT PATIENTS TAB -->
     <div class="bo-tab-panel active" id="tab-current">
-      <div class="bo-alloc-grid">
-        <div class="bo-alloc-field">
-          <label for="allocSiteFilter">Select clinical site:</label>
-          <select id="allocSiteFilter">
-            <option value="">All</option>
-          </select>
-        </div>
-        <div class="bo-alloc-field">
-          <label for="allocConfigFilter">Select app config:</label>
-          <select id="allocConfigFilter">
-            <option value=""></option>
-          </select>
-        </div>
-        <div class="bo-alloc-field">
-          <label for="allocLangFilter">Select patient language:</label>
-          <select id="allocLangFilter">
-            <option value="">All</option>
-          </select>
-        </div>
-        <div class="bo-alloc-field">
-          <label for="allocSearchInput">Search patient:</label>
-          <input type="text" id="allocSearchInput" placeholder="Patient username" />
-        </div>
-        <button class="bo-btn-primary" id="allocUpdateBtn">Update the list's configs</button>
-      </div>
-
       <div class="bo-table-card">
         <div class="bo-table-scroll">
           <table class="bo-list-table bo-list-table--compact">
@@ -190,6 +188,7 @@
   </main>
 
 <script src="js/dashboard-nav.js"></script>
+<script src="js/bo-table-scroll.js"></script>
 <script src="js/bo-pagination.js"></script>
 <script src="js/allocation.js"></script>
 </body>

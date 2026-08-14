@@ -60,6 +60,10 @@ const alPager = boCreatePager(
 );
 alPager();
 
+document.querySelectorAll(".bo-filter-select").forEach((select) => {
+  select.addEventListener("change", () => select.classList.toggle("has-value", select.value !== ""));
+});
+
 document.getElementById("alApplyBtn").addEventListener("click", () => {
   alActionFilter = document.getElementById("alActionFilter").value;
   alDescriptionFilter = document.getElementById("alDescriptionFilter").value;

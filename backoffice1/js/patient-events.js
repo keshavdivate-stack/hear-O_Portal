@@ -15,13 +15,11 @@ let peEventTypeFilter = "";
 let pePatientFilter = "";
 let peAddedByFilter = "";
 let peReportedByFilter = "";
-let peDisapprovedOnly = false;
 
 function peFiltered() {
   return peEvents.filter((r) => {
     if (peSiteFilter && !r.username.startsWith(peSiteFilter)) return false;
     if (peEventTypeFilter && r.eventType !== peEventTypeFilter) return false;
-    if (peDisapprovedOnly && r.approved) return false;
 
     if (pePatientFilter) {
       const names = pePatientFilter.split(",").map((s) => s.trim().toLowerCase()).filter(Boolean);
@@ -73,6 +71,10 @@ const pePager = boCreatePager(
 );
 pePager();
 
+document.querySelectorAll(".bo-filter-select").forEach((select) => {
+  select.addEventListener("change", () => select.classList.toggle("has-value", select.value !== ""));
+});
+
 document.getElementById("peRows").addEventListener("change", (e) => {
   const box = e.target.closest(".bo-cell-checkbox");
   if (!box) return;
@@ -101,12 +103,6 @@ document.getElementById("peApplyBtn").addEventListener("click", () => {
   pePatientFilter = document.getElementById("pePatientFilter").value;
   peAddedByFilter = document.getElementById("peAddedByFilter").value;
   peReportedByFilter = document.getElementById("peReportedByFilter").value;
-  pePager.resetPage();
-  pePager();
-});
-
-document.getElementById("peDisapprovedOnly").addEventListener("change", (e) => {
-  peDisapprovedOnly = e.target.checked;
   pePager.resetPage();
   pePager();
 });

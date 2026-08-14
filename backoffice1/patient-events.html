@@ -113,53 +113,6 @@
         </span>
         Non-HMO
       </label>
-    </div>
-
-    <p class="bo-lr-section-title">Filters:</p>
-
-    <div class="bo-alloc-grid">
-      <div class="bo-alloc-field">
-        <label for="peSiteFilter">Clinical site:</label>
-        <select id="peSiteFilter">
-          <option value="">All</option>
-        </select>
-      </div>
-      <div class="bo-alloc-field">
-        <label for="peEventTypeFilter">Select event type:</label>
-        <select id="peEventTypeFilter">
-          <option value="">All</option>
-        </select>
-      </div>
-      <div class="bo-alloc-field">
-        <label for="pePatientFilter">Search patient:</label>
-        <input type="text" id="pePatientFilter" placeholder="Split by ," />
-      </div>
-      <div class="bo-alloc-field">
-        <label for="peAddedByFilter">Search added by:</label>
-        <input type="text" id="peAddedByFilter" placeholder="Split by ," />
-      </div>
-      <div class="bo-alloc-field">
-        <label for="peReportedByFilter">Search reported by:</label>
-        <input type="text" id="peReportedByFilter" placeholder="Split by ," />
-      </div>
-      <div class="bo-alloc-field">
-        <label for="peFromDate">From Date:</label>
-        <input type="date" id="peFromDate" />
-      </div>
-      <div class="bo-alloc-field">
-        <label for="peToDate">To Date:</label>
-        <input type="date" id="peToDate" />
-      </div>
-      <button class="bo-btn-primary" id="peApplyBtn">Apply</button>
-    </div>
-
-    <label class="bo-lr-editmode" style="margin-bottom:16px;">
-      <input type="checkbox" id="peDisapprovedOnly" />
-      Disapproved events
-    </label>
-
-    <div class="bo-list-toolbar" style="margin-bottom:10px;">
-      <span class="bo-list-toolbar-spacer"></span>
       <button class="bo-btn-primary" id="peAddMessageBtn">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
         Message
@@ -168,6 +121,37 @@
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
         Event
       </button>
+    </div>
+
+    <div class="bo-filter-row">
+      <div class="bo-filter-field">
+        <select class="bo-filter-select" id="peSiteFilter">
+          <option value="">Clinical site</option>
+        </select>
+      </div>
+      <div class="bo-filter-field">
+        <select class="bo-filter-select" id="peEventTypeFilter">
+          <option value="">Event type</option>
+        </select>
+      </div>
+      <div class="bo-filter-field">
+        <input type="text" id="pePatientFilter" placeholder="Search patient" />
+      </div>
+      <div class="bo-filter-field">
+        <input type="text" id="peAddedByFilter" placeholder="Search added by" />
+      </div>
+      <div class="bo-filter-field">
+        <input type="text" id="peReportedByFilter" placeholder="Search reported by" />
+      </div>
+      <div class="bo-date-field">
+        <input type="text" id="peFromDate" placeholder="From Date" onfocus="(this.type='date')" onblur="if(!this.value)this.type='text'" />
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="17" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3 9H21" stroke="currentColor" stroke-width="1.8"/></svg>
+      </div>
+      <div class="bo-date-field">
+        <input type="text" id="peToDate" placeholder="To Date" onfocus="(this.type='date')" onblur="if(!this.value)this.type='text'" />
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="17" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3 9H21" stroke="currentColor" stroke-width="1.8"/></svg>
+      </div>
+      <button class="bo-btn-secondary" id="peApplyBtn">Apply</button>
     </div>
 
     <div class="bo-table-card">
@@ -314,6 +298,7 @@
   </div>
 
 <script src="js/dashboard-nav.js"></script>
+<script src="js/bo-table-scroll.js"></script>
 <script src="js/bo-pagination.js"></script>
 <script src="js/patient-events-data.js"></script>
 <script src="js/patient-events.js"></script>
