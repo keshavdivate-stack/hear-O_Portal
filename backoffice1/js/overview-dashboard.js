@@ -1,5 +1,8 @@
+/* ---------------- Organization scope (All Organizations vs single org) ---------------- */
+let ovSelectedOrgId = "all";
+
 /* ---------------- KPI row (System Health Summary) ---------------- */
-const ovHealthStats = [
+const ovAllOrgsHealthStats = [
   { num: Object.keys(orgHealthData).length, label: "Total Organizations", color: "var(--navy)", icon: `<rect width="16" height="18" x="4" y="3" rx="1"/><path d="M9 8h1"/><path d="M14 8h1"/><path d="M9 12h1"/><path d="M14 12h1"/><path d="M9 16h1"/><path d="M14 16h1"/><path d="M10 21v-3a2 2 0 0 1 4 0v3"/>`, delta: 0, deltaDir: "flat" },
   { num: 3, label: "Critical Issues", color: "var(--red)", icon: `<circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/>`, delta: 2, deltaDir: "up" },
   { num: 8, label: "Warnings", color: "var(--orange)", icon: `<path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.73 3h16.9a2 2 0 0 0 1.73-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/><path d="M12 9v4"/><path d="M12 17h.01"/>`, delta: 3, deltaDir: "up" },
@@ -13,9 +16,25 @@ const ovDeltaArrow = { up: `<path d="M12 19V5"/><path d="m5 12 7-7 7 7"/>`, down
 const ovDeltaText = (s) => (s.deltaDir === "flat" ? "No change" : `${s.delta} vs yesterday`);
 const ovDeltaColor = (s) => (s.deltaDir === "flat" ? "var(--gray-text)" : s.deltaDir === "up" ? "var(--red)" : "var(--green)");
 
-document.getElementById("ovHealthGrid").innerHTML = ovHealthStats
-  .map(
-    (s) => `
+function ovHealthStatsFor(orgId) {
+  if (orgId === "all") return ovAllOrgsHealthStats;
+  const o = orgHealthData[orgId];
+  const warnings = Math.max(o.openIssues - o.criticalIssues, 0);
+  return [
+    { num: 1, label: "Organization", color: "var(--navy)", icon: `<rect width="16" height="18" x="4" y="3" rx="1"/><path d="M9 8h1"/><path d="M14 8h1"/><path d="M9 12h1"/><path d="M14 12h1"/><path d="M9 16h1"/><path d="M14 16h1"/><path d="M10 21v-3a2 2 0 0 1 4 0v3"/>`, delta: 0, deltaDir: "flat" },
+    { num: o.criticalIssues, label: "Critical Issues", color: "var(--red)", icon: `<circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/>`, delta: 0, deltaDir: "flat" },
+    { num: warnings, label: "Warnings", color: "var(--orange)", icon: `<path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.73 3h16.9a2 2 0 0 0 1.73-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/><path d="M12 9v4"/><path d="M12 17h.01"/>`, delta: 0, deltaDir: "flat" },
+    { num: o.providers, label: "Providers", color: "var(--blue)", icon: `<rect width="16" height="18" x="4" y="3" rx="1"/><path d="M9 8h1"/><path d="M14 8h1"/><path d="M9 12h1"/><path d="M14 12h1"/>`, delta: 0, deltaDir: "flat" },
+    { num: o.patientsAffected.length, label: "Patients Affected", color: "var(--purple)", icon: `<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>`, delta: 0, deltaDir: "flat" },
+    { num: o.openIssues, label: "Issues Requiring Action", color: "var(--green)", icon: `<path d="M4 12L9 17L20 6"/>`, delta: 0, deltaDir: "flat" },
+    { num: 0, label: "On Hold", color: "var(--gray)", icon: `<rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/>`, delta: 0, deltaDir: "flat" },
+  ];
+}
+
+function renderOvHealthGrid(orgId) {
+  document.getElementById("ovHealthGrid").innerHTML = ovHealthStatsFor(orgId)
+    .map(
+      (s) => `
     <div class="bo-health-card">
       <span class="bo-health-icon" style="background:${s.color};">
         <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${s.icon}</svg>
@@ -25,8 +44,9 @@ document.getElementById("ovHealthGrid").innerHTML = ovHealthStats
         <span class="bo-health-label">${s.label}</span>
       </span>
     </div>`
-  )
-  .join("");
+    )
+    .join("");
+}
 
 /* ---------------- System Health Trend (layered area chart) ---------------- */
 const ovTrendLabels = ["12:00 PM", "4:00 PM", "8:00 PM", "12:00 AM", "4:00 AM", "8:00 AM", "12:00 PM"];
@@ -140,11 +160,26 @@ function topOrgForCategory(category) {
   return bestId;
 }
 
-document.getElementById("ovCritIssueList").innerHTML = ovCritIssues
-  .map((i) => {
-    const orgId = topOrgForCategory(i.category);
-    const href = `org-health-dashboard.html?issue=${encodeURIComponent(i.category)}${orgId ? `&org=${orgId}` : ""}`;
-    return `
+function renderOvCritIssues(orgId) {
+  const listEl = document.getElementById("ovCritIssueList");
+  const issues =
+    orgId === "all"
+      ? ovCritIssues
+      : ovCritIssues.filter((i) => {
+          const cat = orgHealthData[orgId].categories.find((c) => c.label === i.category);
+          return cat && cat.count > 0;
+        });
+
+  if (!issues.length) {
+    listEl.innerHTML = `<div class="bo-empty-state" style="padding:24px 4px; color:var(--gray-text); font-size:13px;">No critical issues for this organization.</div>`;
+    return;
+  }
+
+  listEl.innerHTML = issues
+    .map((i) => {
+      const targetOrgId = orgId === "all" ? topOrgForCategory(i.category) : orgId;
+      const href = `org-health-dashboard.html?issue=${encodeURIComponent(i.category)}${targetOrgId ? `&org=${targetOrgId}` : ""}`;
+      return `
     <a class="bo-crit-issue-row" href="${href}">
       <span class="bo-crit-issue-icon" style="background:${i.color};">
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${i.icon}</svg>
@@ -159,8 +194,9 @@ document.getElementById("ovCritIssueList").innerHTML = ovCritIssues
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
       </span>
     </a>`;
-  })
-  .join("");
+    })
+    .join("");
+}
 
 /* ---------------- Issues by Category (donut) ---------------- */
 const ovCategories = [
@@ -173,10 +209,19 @@ const ovCategories = [
   { label: "Other", count: 12, color: "var(--gray)" },
 ];
 
-function renderOvDonut() {
-  const total = ovCategories.reduce((s, c) => s + c.count, 0);
+function renderOvDonut(orgId) {
+  const categories = orgId === "all" ? ovCategories : orgHealthData[orgId].categories.filter((c) => c.count > 0);
+  const total = categories.reduce((s, c) => s + c.count, 0);
+
+  if (!total) {
+    document.getElementById("ovDonut").style.background = "var(--bg)";
+    document.getElementById("ovDonutTotal").textContent = "0";
+    document.getElementById("ovDonutLegend").innerHTML = `<div class="bo-empty-state" style="color:var(--gray-text); font-size:13px;">No open issues.</div>`;
+    return;
+  }
+
   let acc = 0;
-  const stops = ovCategories
+  const stops = categories
     .map((c) => {
       const from = (acc / total) * 360;
       acc += c.count;
@@ -187,7 +232,7 @@ function renderOvDonut() {
   document.getElementById("ovDonut").style.background = `conic-gradient(${stops})`;
   document.getElementById("ovDonutTotal").textContent = total;
 
-  document.getElementById("ovDonutLegend").innerHTML = ovCategories
+  document.getElementById("ovDonutLegend").innerHTML = categories
     .map((c) => {
       const pct = Math.round((c.count / total) * 100);
       return `
@@ -199,28 +244,50 @@ function renderOvDonut() {
     })
     .join("");
 }
-renderOvDonut();
 
 /* ---------------- Affected Organizations ---------------- */
 const ovOrgDotColor = { critical: "var(--red)", warning: "var(--orange)", healthy: "var(--green)" };
 const ovOrgIssuesPillClass = { critical: "critical", warning: "warning", healthy: "healthy" };
 
-document.getElementById("ovOrgMiniList").innerHTML = Object.entries(orgHealthData)
-  .sort((a, b) => b[1].openIssues - a[1].openIssues)
-  .slice(0, 5)
-  .map(
-    ([id, o]) => `
+function renderOvOrgList(orgId) {
+  const panelTitle = document.getElementById("ovOrgListTitle");
+  const listEl = document.getElementById("ovOrgMiniList");
+
+  if (orgId === "all") {
+    if (panelTitle) panelTitle.textContent = "Affected Organizations";
+    listEl.innerHTML = Object.entries(orgHealthData)
+      .sort((a, b) => b[1].openIssues - a[1].openIssues)
+      .slice(0, 5)
+      .map(
+        ([id, o]) => `
     <a class="bo-org-mini-row" href="org-health-dashboard.html?org=${id}">
       <span class="dot" style="background:${ovOrgDotColor[o.severity]};"></span>
       <span class="bo-org-mini-name">${o.name}</span>
       <span class="bo-severity-pill ${ovOrgIssuesPillClass[o.severity]} bo-org-mini-issues">${o.openIssues} issue${o.openIssues === 1 ? "" : "s"}</span>
       <span class="bo-org-mini-patients">${o.patients} patients</span>
     </a>`
-  )
-  .join("");
+      )
+      .join("");
+    return;
+  }
+
+  const o = orgHealthData[orgId];
+  if (panelTitle) panelTitle.textContent = "Organization";
+  listEl.innerHTML = `
+    <a class="bo-org-mini-row" href="org-health-dashboard.html?org=${orgId}">
+      <span class="dot" style="background:${ovOrgDotColor[o.severity]};"></span>
+      <span class="bo-org-mini-name">${o.name}</span>
+      <span class="bo-severity-pill ${ovOrgIssuesPillClass[o.severity]} bo-org-mini-issues">${o.openIssues} issue${o.openIssues === 1 ? "" : "s"}</span>
+      <span class="bo-org-mini-patients">${o.patients} patients</span>
+    </a>
+    <div style="font-size:12px; color:var(--gray-text); padding:6px 4px 2px;">${o.providers} providers &middot; Last incident ${o.lastIncident}</div>`;
+}
 
 /* ---------------- System Health gauge ---------------- */
-function renderOvGauge(score) {
+const ovSeverityGaugeScore = { critical: 38, warning: 64, healthy: 91 };
+
+function renderOvGauge(orgId) {
+  const score = orgId === "all" ? 72 : ovSeverityGaugeScore[orgHealthData[orgId].severity];
   const angle = -90 + (score / 100) * 180;
   document.getElementById("ovGaugeNeedle").style.transform = `translateX(-50%) rotate(${angle}deg)`;
   document.getElementById("ovGaugeScore").textContent = score;
@@ -230,7 +297,40 @@ function renderOvGauge(score) {
   labelEl.textContent = label;
   labelEl.style.color = color;
 }
-renderOvGauge(72);
+
+/* ---------------- Render orchestration (re-run per organization scope) ---------------- */
+function renderOvForOrg(orgId) {
+  ovSelectedOrgId = orgId;
+  renderOvHealthGrid(orgId);
+  renderOvCritIssues(orgId);
+  renderOvDonut(orgId);
+  renderOvOrgList(orgId);
+  renderOvGauge(orgId);
+}
+
+/* ---------------- Header: organization dropdown ---------------- */
+const ovOrgSelect = document.querySelector('.bo-select[data-name="ovOrg"]');
+const ovOrgMenu = document.getElementById("ovOrgMenu");
+ovOrgMenu.innerHTML += Object.entries(orgHealthData)
+  .sort((a, b) => a[1].name.localeCompare(b[1].name))
+  .map(([id, o]) => `<div class="bo-select-option" data-value="${id}">${o.name}</div>`)
+  .join("");
+
+ovOrgSelect.querySelector(".bo-select-trigger").addEventListener("click", (e) => {
+  e.stopPropagation();
+  ovOrgSelect.classList.toggle("open");
+});
+ovOrgSelect.addEventListener("click", (e) => {
+  const option = e.target.closest(".bo-select-option");
+  if (!option) return;
+  ovOrgSelect.querySelector(".bo-select-value").textContent = option.textContent;
+  ovOrgSelect.querySelectorAll(".bo-select-option").forEach((el) => el.classList.remove("selected"));
+  option.classList.add("selected");
+  ovOrgSelect.classList.remove("open");
+  renderOvForOrg(option.dataset.value);
+});
+
+renderOvForOrg(ovSelectedOrgId);
 
 /* ---------------- Header: range dropdown + refresh + footer timestamp ---------------- */
 const ovRangeSelect = document.querySelector('.bo-select[data-name="ovRange"]');
@@ -244,7 +344,10 @@ ovRangeSelect.addEventListener("click", (e) => {
   ovRangeSelect.querySelector(".bo-select-value").textContent = option.textContent;
   ovRangeSelect.classList.remove("open");
 });
-document.addEventListener("click", () => ovRangeSelect.classList.remove("open"));
+document.addEventListener("click", () => {
+  ovRangeSelect.classList.remove("open");
+  ovOrgSelect.classList.remove("open");
+});
 
 function stampLastUpdated() {
   document.getElementById("ovLastUpdated").textContent = "Just now";
@@ -253,5 +356,6 @@ stampLastUpdated();
 
 document.getElementById("ovRefreshBtn").addEventListener("click", () => {
   renderOvTrendChart();
+  renderOvForOrg(ovSelectedOrgId);
   stampLastUpdated();
 });

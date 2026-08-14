@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>HearO Backoffice | MKT Study</title>
+<title>HearO Backoffice | Study</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -18,19 +18,16 @@
     </div>
 
     <nav class="bo-nav-links">
-      <div class="bo-nav-item bo-hover-dropdown">
-        <a href="index.html" class="bo-nav-link active">
+      <div class="bo-nav-item">
+        <button type="button" class="bo-nav-link active" id="dashboardNavBtn">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="m9 16 2 2 4-4"/></svg>
           Dashboard
           <svg class="bo-nav-caret" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-        </a>
+        </button>
         <div class="bo-popover bo-nav-popover" id="dashboardPopover">
           <a href="overview-dashboard.html" class="bo-popover-item">Overview Dashboard</a>
-          <a href="org-health-dashboard.html" class="bo-popover-item">Organization Dashboard</a>
-          <a href="patient-health-dashboard.html" class="bo-popover-item">Patient Dashboard</a>
-          <a href="support-dashboard.html" class="bo-popover-item">Support Dashboard</a>
-          <a href="mkt-study.html" class="bo-popover-item active">MKT Study</a>
-          <a href="mkt-summary.html" class="bo-popover-item">MKT Summary</a>
+          <a href="mkt-study.html" class="bo-popover-item active">Study</a>
+          <a href="mkt-summary.html" class="bo-popover-item">Summary</a>
         </div>
       </div>
       <a href="organizations.html" class="bo-nav-link">
@@ -103,7 +100,7 @@
 
     <div class="bo-page-head">
       <div>
-        <h1>MKT Study</h1>
+        <h1>Study<span class="mkt-page-scope" id="mktStudyScope"></span></h1>
       </div>
       <div style="display:flex; align-items:center; gap:16px; flex-wrap:wrap;">
         <div class="mkt-head-stats" id="mktStudyHeadStats">
@@ -126,38 +123,12 @@
             <span><span class="mkt-head-stat-num" id="mktNeedAttention">11</span><span class="mkt-head-stat-label">Need Attention</span></span>
           </div>
         </div>
-        <select class="bo-select-inline" id="mktStudyOrgSelect"></select>
+        <div class="mkt-org-ms" id="mktStudyOrgSelect"></div>
       </div>
     </div>
 
-    <div class="mkt-hero-row">
-      <section class="bo-card mkt-hero-card">
-        <div class="mkt-hero">
-          <div class="mkt-hero-label">
-            <h2>MKT</h2>
-            <div class="mkt-compliance">
-              <p class="mkt-compliance-title">Compliance</p>
-              <div class="mkt-compliance-row">
-                <span class="mkt-compliance-val">0%</span>
-                <span class="mkt-compliance-none">None</span>
-              </div>
-              <div class="mkt-compliance-tabs">
-                <span class="active">To Date</span>
-                <span>Today</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="mkt-gauge-wrap">
-            <span class="mkt-tick mkt-tick-top">11</span>
-            <div class="mkt-ring" id="mktRing"></div>
-            <div class="mkt-gauge-center"><span id="mktGaugeMain">263</span><b id="mktGaugeSub">/0</b></div>
-            <span class="mkt-tick mkt-tick-bottom">1</span>
-          </div>
-
-          <div class="mkt-ring-breakdown" id="mktRingBreakdown"></div>
-        </div>
-      </section>
+    <div class="mkt-hero-row" id="mktHeroRow">
+      <div class="mkt-hero-cards" id="mktHeroCards"></div>
 
       <section class="bo-card mkt-card mkt-card-bins mkt-hero-bins">
         <div class="mkt-bins-tabs" id="mktBinsTabs">

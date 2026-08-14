@@ -1503,6 +1503,7 @@ a { color: inherit; }
 .bo-select-trigger:hover { border-color: #C9CFD6; }
 .bo-select.open .bo-select-trigger { border-color: var(--blue); }
 
+.bo-select-value { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .bo-select-value.placeholder { color: #AEB4BC; }
 
 .bo-select-icon {
@@ -2169,11 +2170,55 @@ a { color: inherit; }
   margin-bottom: 20px;
 }
 
+/* Multi-org selection: stack the hero cards (as a wrapping grid, so nested-flex
+   intrinsic-width quirks can't blow out the row) above the bins card instead of
+   fighting it for horizontal space. */
+.mkt-hero-row--multi {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.mkt-hero-cards {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: 20px;
+}
+
+.mkt-hero-row--multi .mkt-hero-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
 .mkt-hero-card {
   display: inline-flex;
   padding: 0;
   max-width: 100%;
   flex-shrink: 0;
+}
+
+.mkt-hero-row--multi .mkt-hero-card { display: flex; min-width: 0; }
+
+.mkt-hero-card--compact .mkt-hero {
+  gap: 24px;
+  padding: 26px 22px;
+  flex-wrap: wrap;
+}
+
+.mkt-hero-card--compact .mkt-hero-label h2 { font-size: 18px; margin-bottom: 14px; }
+.mkt-hero-card--compact .mkt-gauge-wrap { width: 160px; height: 160px; }
+.mkt-hero-card--compact .mkt-tick-top { top: -22px; }
+.mkt-hero-card--compact .mkt-tick-bottom { bottom: -22px; }
+.mkt-hero-card--compact .mkt-gauge-center { font-size: 19px; }
+.mkt-hero-card--compact .mkt-gauge-center b { font-size: 12px; }
+.mkt-hero-card--compact .mkt-ring-breakdown { padding: 4px 0 4px 20px; gap: 10px; }
+.mkt-hero-card--compact .mkt-rb-row { grid-template-columns: 10px 110px 30px auto; }
+
+.mkt-page-scope {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--gray-text);
+  margin-left: 4px;
 }
 
 .mkt-hero-bins {
@@ -2707,6 +2752,76 @@ a.bo-health-card:hover { border-color: var(--field-border); }
   cursor: pointer;
 }
 
+.mkt-org-ms { position: relative; }
+
+.mkt-org-ms-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #fff;
+  border: 1px solid var(--field-border);
+  border-radius: 10px;
+  padding: 9px 14px;
+  font-size: 14px;
+  font-weight: 700;
+  font-family: inherit;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.mkt-org-ms-label {
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mkt-org-ms-panel {
+  display: none;
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 210px;
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 20px 44px rgba(20, 30, 50, 0.18);
+  padding: 8px;
+  z-index: 200;
+}
+
+.mkt-org-ms.open .mkt-org-ms-panel { display: block; }
+
+.mkt-org-ms-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 10px;
+  border-radius: 9px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.mkt-org-ms-item:hover { background: var(--bg); }
+.mkt-org-ms-item.checked { background: var(--blue); color: #fff; }
+.mkt-org-ms-item.checked:hover { background: var(--blue); }
+
+.mkt-org-ms-check {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  border: 1.5px solid var(--field-border);
+  background: #fff;
+  color: var(--blue);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.mkt-org-ms-item.checked .mkt-org-ms-check { border-color: #fff; }
+
 .bo-kv-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -2933,7 +3048,8 @@ a.bo-org-card:hover { border-color: var(--field-border); box-shadow: 0 4px 16px 
 .bo-ov-head .sub { font-size: 13px; color: var(--gray-text); margin: 0; }
 .bo-ov-head-actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
 .bo-ov-head-actions .bo-select { width: 190px; }
-.bo-ov-range-btn { justify-content: flex-start; gap: 8px; font-weight: 600; }
+.bo-ov-head-actions .bo-select[data-name="ovOrg"] { width: 220px; }
+.bo-ov-range-btn, .bo-ov-org-btn { justify-content: flex-start; gap: 8px; font-weight: 600; }
 .bo-ov-range-btn svg:first-child { color: var(--gray-text); flex-shrink: 0; }
 
 .bo-health-grid--auto { grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); }
