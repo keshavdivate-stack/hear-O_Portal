@@ -69,13 +69,15 @@ function renderStats(org, seed) {
 }
 
 /* ---------------- Status Change / Error Message ---------------- */
-function renderTables(org) {
+function renderTables(orgs) {
+  const codeFor = (i) => orgs[i % orgs.length].code;
+
   document.getElementById("statusChangeRows").innerHTML = statusChangeBase
-    .map((r) => `<tr><td>${org.code}-${r.username}</td><td><span class="bo-status-pill ${r.status.toLowerCase()}">${r.status}</span></td><td>${r.date}</td></tr>`)
+    .map((r, i) => `<tr><td>${codeFor(i)}-${r.username}</td><td><span class="bo-status-pill ${r.status.toLowerCase()}">${r.status}</span></td><td>${r.date}</td></tr>`)
     .join("");
 
   document.getElementById("errorMessageRows").innerHTML = errorMessageBase
-    .map((r) => `<tr><td>${org.code}-${r.username}</td><td>${r.message}</td><td>${r.date}</td></tr>`)
+    .map((r, i) => `<tr><td>${codeFor(i)}-${r.username}</td><td>${r.message}</td><td>${r.date}</td></tr>`)
     .join("");
 }
 
@@ -214,12 +216,13 @@ function renderDnr(seed) {
 }
 
 /* ---------------- Wire everything to the organization selector ---------------- */
-function renderForOrg(orgId) {
-  const org = MKT_ORG_LIST.find((o) => o.id === orgId) || MKT_ORG_LIST[0];
-  const seed = org.id === "all" ? 0 : mktHash(org.id);
+function renderForOrg(orgIds) {
+  const isAll = orgIds.length === 1 && orgIds[0] === "all";
+  const orgs = isAll ? [MKT_ORG_LIST[0]] : orgIds.map((id) => MKT_ORG_LIST.find((o) => o.id === id));
+  const seed = isAll ? 0 : mktHash(orgIds.slice().sort().join(","));
 
-  renderStats(org, seed);
-  renderTables(org);
+  renderStats(orgs[0], seed);
+  renderTables(orgs);
 
   complianceSeries = complianceSeriesBase.map((v, i) => mktScale(v, seed + i, 0.25));
   usableSeries = usableSeriesBase.map((v, i) => mktScale(v, seed + i + 7, 0.25));
@@ -236,7 +239,6 @@ function renderForOrg(orgId) {
 }
 
 mktRenderOrgSelect("mktSummaryOrgSelect", renderForOrg);
-renderForOrg("all");
 
 if (document.fonts && document.fonts.ready) {
   document.fonts.ready.then(() => renderAreaChart());

@@ -25,16 +25,18 @@ const mktBinDataBase = {
 
 const mktStudyHeadBase = { sites: 5, avgDays: 42, needAttention: 11 };
 
-let ringSegments = ringSegmentsBase;
 let screenedSeries = screenedSeriesBase;
 let mktBinData = mktBinDataBase;
 let activeMktBinsTab = "usable";
 
-/* ---------------- Ring gauge (Recorded / Did not upload / Left study) ---------------- */
-function renderRing() {
-  const total = ringSegments.reduce((s, seg) => s + seg.value, 0);
+/* ---------------- Ring gauge (Recorded / Did not upload / Left study) ----------------
+   Each selected organization gets its own hero card + ring, built from its own
+   seeded data, so picking multiple orgs shows their charts side by side rather
+   than blending them into a single average. */
+function heroCardHtml(title, ring) {
+  const total = ring.reduce((s, seg) => s + seg.value, 0);
   let acc = 0;
-  const stops = ringSegments
+  const stops = ring
     .map((seg) => {
       const from = (acc / total) * 360;
       acc += seg.value;
@@ -42,12 +44,7 @@ function renderRing() {
       return `${seg.color} ${from}deg ${to}deg`;
     })
     .join(", ");
-  document.getElementById("mktRing").style.background = `conic-gradient(${stops})`;
-}
-
-function renderRingBreakdown() {
-  const total = ringSegments.reduce((s, seg) => s + seg.value, 0);
-  document.getElementById("mktRingBreakdown").innerHTML = ringSegments
+  const breakdown = ring
     .map((seg) => {
       const pct = total ? Math.round((seg.value / total) * 100) : 0;
       return `
@@ -59,6 +56,56 @@ function renderRingBreakdown() {
         </div>`;
     })
     .join("");
+  const topTick = Math.max(...ring.map((seg) => seg.value));
+
+  return `
+    <section class="bo-card mkt-hero-card">
+      <div class="mkt-hero">
+        <div class="mkt-hero-label">
+          <h2>${title}</h2>
+          <div class="mkt-compliance">
+            <p class="mkt-compliance-title">Compliance</p>
+            <div class="mkt-compliance-row">
+              <span class="mkt-compliance-val">0%</span>
+              <span class="mkt-compliance-none">None</span>
+            </div>
+            <div class="mkt-compliance-tabs">
+              <span class="active">To Date</span>
+              <span>Today</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="mkt-gauge-wrap">
+          <span class="mkt-tick mkt-tick-top">${topTick}</span>
+          <div class="mkt-ring" style="background:conic-gradient(${stops})"></div>
+          <div class="mkt-gauge-center"><span>${total}</span><b>/0</b></div>
+          <span class="mkt-tick mkt-tick-bottom">1</span>
+        </div>
+
+        <div class="mkt-ring-breakdown">${breakdown}</div>
+      </div>
+    </section>`;
+}
+
+function ringFor(seed) {
+  return ringSegmentsBase.map((seg, i) => ({ ...seg, value: mktScale(seg.value, seed + i, 0.4) }));
+}
+
+function renderHeroCards(orgIds) {
+  const isAll = orgIds.length === 1 && orgIds[0] === "all";
+  const orgs = isAll ? [MKT_ORG_LIST[0]] : orgIds.map((id) => MKT_ORG_LIST.find((o) => o.id === id));
+  const multi = orgs.length > 1;
+
+  document.getElementById("mktHeroRow").classList.toggle("mkt-hero-row--multi", multi);
+  document.getElementById("mktHeroCards").innerHTML = orgs
+    .map((org) => heroCardHtml(org.name, ringFor(org.id === "all" ? 0 : mktHash(org.id))))
+    .join("");
+}
+
+function scopeLabel(orgIds) {
+  if (orgIds.length === 1 && orgIds[0] === "all") return "";
+  return mktOrgsLabel(orgIds);
 }
 
 /* ---------------- Screened Over Time chart ---------------- */
@@ -128,13 +175,14 @@ document.getElementById("mktBinsTabs").addEventListener("click", (e) => {
 });
 
 /* ---------------- Wire everything to the organization selector ---------------- */
-function renderForOrg(orgId) {
-  const org = MKT_ORG_LIST.find((o) => o.id === orgId) || MKT_ORG_LIST[0];
-  const seed = org.id === "all" ? 0 : mktHash(org.id);
+function renderForOrg(orgIds) {
+  const isAll = orgIds.length === 1 && orgIds[0] === "all";
+  const seed = isAll ? 0 : mktHash(orgIds.slice().sort().join(","));
 
-  ringSegments = ringSegmentsBase.map((seg, i) => ({ ...seg, value: mktScale(seg.value, seed + i, 0.4) }));
-  renderRing();
-  renderRingBreakdown();
+  const scope = scopeLabel(orgIds);
+  document.getElementById("mktStudyScope").textContent = scope ? ` — ${scope}` : "";
+
+  renderHeroCards(orgIds);
 
   screenedSeries = screenedSeriesBase.map((v, i) => mktScale(v, seed + i, 0.2));
   renderScreenedChart();
@@ -145,10 +193,9 @@ function renderForOrg(orgId) {
   };
   renderMktBins(activeMktBinsTab);
 
-  document.getElementById("mktSitesEnrolled").textContent = org.id === "all" ? mktStudyHeadBase.sites : 1;
+  document.getElementById("mktSitesEnrolled").textContent = isAll ? mktStudyHeadBase.sites : orgIds.length;
   document.getElementById("mktAvgDays").textContent = mktScale(mktStudyHeadBase.avgDays, seed + 2, 0.3);
   document.getElementById("mktNeedAttention").textContent = mktScale(mktStudyHeadBase.needAttention, seed + 5, 0.5);
 }
 
 mktRenderOrgSelect("mktStudyOrgSelect", renderForOrg);
-renderForOrg("all");
