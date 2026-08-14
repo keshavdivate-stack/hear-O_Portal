@@ -43,7 +43,13 @@ function rmRenderGroups() {
       <div class="bo-report-band${hasRows ? "" : " disabled"}" data-type="${t.key}">
         <span class="bo-report-band-title">${t.label}</span>
         <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
-        ${hasRows ? `<span class="bo-report-expand">${isOpen ? "Close" : "Expand"}</span>` : "<span></span>"}
+        ${
+          hasRows
+            ? `<button type="button" class="bo-report-expand${isOpen ? " open" : ""}" aria-label="${isOpen ? "Collapse" : "Expand"} ${t.label}" aria-expanded="${isOpen}">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>`
+            : "<span></span>"
+        }
       </div>`;
 
     const rowsHtml = isOpen

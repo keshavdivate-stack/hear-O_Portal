@@ -3226,10 +3226,22 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue); }
 .bo-report-expand {
   grid-column: 9;
   justify-self: end;
-  color: var(--blue);
-  font-weight: 700;
-  font-size: 13px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: var(--gray-text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
 }
+
+.bo-report-band:hover .bo-report-expand { background: var(--gray-border); color: var(--ink); }
+
+.bo-report-expand svg { transition: transform 150ms ease; }
+.bo-report-expand.open svg { transform: rotate(180deg); }
 
 .bo-report-rows { background: #fff; }
 
