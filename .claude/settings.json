@@ -40,7 +40,10 @@
       "Bash(node \"C:\\\\Users\\\\TTPL-L~1\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--React-Project-UI-Design\\\\e84d7e9d-6f1b-48f1-a319-a80b834c473e\\\\scratchpad\\\\pw\\\\measure.js\")",
       "Bash(node \"C:\\\\Users\\\\TTPL-L~1\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--React-Project-UI-Design\\\\e84d7e9d-6f1b-48f1-a319-a80b834c473e\\\\scratchpad\\\\pw\\\\rowcheck.js\")",
       "Bash(ls -la --time-style=full-iso \"/c/Users/TTPL-L~1/AppData/Local/Temp/claude/c--React-Project-UI-Design/e84d7e9d-6f1b-48f1-a319-a80b834c473e/scratchpad/pw/full.png\")",
-      "Bash(ls -la --time-style=full-iso \"/c/React Project/UI Design\"/*.png 2>&1)"
+      "Bash(ls -la --time-style=full-iso \"/c/React Project/UI Design\"/*.png 2>&1)",
+      "Read(//tmp/docxext/**)",
+      "Bash(sed -e 's/<\\\\/w:p>/\\\\n/g' document.xml)",
+      "Bash(sed '/^[[:space:]]*$/d')"
     ],
     "additionalDirectories": [
       "C:\\React Project\\UI Design"
