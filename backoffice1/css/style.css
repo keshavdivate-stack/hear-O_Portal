@@ -2159,8 +2159,13 @@ a { color: inherit; }
   margin-bottom: 20px;
 }
 
-.mkt-hero-row--multi { flex-wrap: wrap; }
-.mkt-hero-row--multi .mkt-hero-bins { flex: 1 1 320px; }
+/* Multi-org selection: stack the hero cards (as a wrapping grid, so nested-flex
+   intrinsic-width quirks can't blow out the row) above the bins card instead of
+   fighting it for horizontal space. */
+.mkt-hero-row--multi {
+  flex-direction: column;
+  align-items: stretch;
+}
 
 .mkt-hero-cards {
   display: flex;
@@ -2169,12 +2174,34 @@ a { color: inherit; }
   gap: 20px;
 }
 
+.mkt-hero-row--multi .mkt-hero-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
 .mkt-hero-card {
   display: inline-flex;
   padding: 0;
   max-width: 100%;
   flex-shrink: 0;
 }
+
+.mkt-hero-row--multi .mkt-hero-card { display: flex; min-width: 0; }
+
+.mkt-hero-card--compact .mkt-hero {
+  gap: 24px;
+  padding: 26px 22px;
+  flex-wrap: wrap;
+}
+
+.mkt-hero-card--compact .mkt-hero-label h2 { font-size: 18px; margin-bottom: 14px; }
+.mkt-hero-card--compact .mkt-gauge-wrap { width: 160px; height: 160px; }
+.mkt-hero-card--compact .mkt-tick-top { top: -22px; }
+.mkt-hero-card--compact .mkt-tick-bottom { bottom: -22px; }
+.mkt-hero-card--compact .mkt-gauge-center { font-size: 19px; }
+.mkt-hero-card--compact .mkt-gauge-center b { font-size: 12px; }
+.mkt-hero-card--compact .mkt-ring-breakdown { padding: 4px 0 4px 20px; gap: 10px; }
+.mkt-hero-card--compact .mkt-rb-row { grid-template-columns: 10px 110px 30px auto; }
 
 .mkt-page-scope {
   font-size: 15px;

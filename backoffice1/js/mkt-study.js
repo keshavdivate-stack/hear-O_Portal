@@ -33,7 +33,7 @@ let activeMktBinsTab = "usable";
    Each selected organization gets its own hero card + ring, built from its own
    seeded data, so picking multiple orgs shows their charts side by side rather
    than blending them into a single average. */
-function heroCardHtml(title, ring) {
+function heroCardHtml(title, ring, compact) {
   const total = ring.reduce((s, seg) => s + seg.value, 0);
   let acc = 0;
   const stops = ring
@@ -59,7 +59,7 @@ function heroCardHtml(title, ring) {
   const topTick = Math.max(...ring.map((seg) => seg.value));
 
   return `
-    <section class="bo-card mkt-hero-card">
+    <section class="bo-card mkt-hero-card${compact ? " mkt-hero-card--compact" : ""}">
       <div class="mkt-hero">
         <div class="mkt-hero-label">
           <h2>${title}</h2>
@@ -99,7 +99,7 @@ function renderHeroCards(orgIds) {
 
   document.getElementById("mktHeroRow").classList.toggle("mkt-hero-row--multi", multi);
   document.getElementById("mktHeroCards").innerHTML = orgs
-    .map((org) => heroCardHtml(org.name, ringFor(org.id === "all" ? 0 : mktHash(org.id))))
+    .map((org) => heroCardHtml(org.name, ringFor(org.id === "all" ? 0 : mktHash(org.id)), multi))
     .join("");
 }
 
