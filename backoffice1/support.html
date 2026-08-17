@@ -107,15 +107,22 @@
     <div class="bo-list-toolbar">
       <h1>Support Tickets</h1>
       <div class="bo-tabs bo-seg-toggle" id="supportTabs">
-        <button class="bo-tab bo-seg-btn active" data-tab="patient">Patient Tickets</button>
-        <button class="bo-tab bo-seg-btn" data-tab="clinic">Clinic Tickets</button>
+        <button class="bo-tab bo-seg-btn active" data-tab="tickets">Tickets</button>
+        <button class="bo-tab bo-seg-btn" data-tab="rules">Rules</button>
       </div>
       <span class="bo-list-toolbar-spacer"></span>
-      <button class="bo-btn-primary" id="openNewTicketBtn">
+      <button class="bo-btn-primary" id="openNewTicketBtn" data-tab-btn="tickets">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
         New Ticket
       </button>
+      <button class="bo-btn-primary" id="openNewRuleBtn" data-tab-btn="rules" hidden>
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        New Rule
+      </button>
     </div>
+
+    <!-- TICKETS -->
+    <div class="bo-tab-panel active" id="tab-tickets">
 
     <div class="bo-filter-row">
       <div class="bo-select bo-toolbar-select" data-name="ticketStatus">
@@ -156,15 +163,14 @@
       </div>
     </div>
 
-    <!-- PATIENT TICKETS -->
-    <div class="bo-tab-panel active" id="tab-patient">
       <div class="bo-table-card">
         <div class="bo-table-scroll">
           <table class="bo-list-table bo-list-table--compact">
             <thead>
               <tr>
                 <th>TICKET ID</th>
-                <th>PATIENT ID</th>
+                <th>TYPE</th>
+                <th>PATIENT / RAISED BY</th>
                 <th>ORGANIZATION</th>
                 <th>ISSUE TYPE</th>
                 <th>ORIGIN</th>
@@ -176,39 +182,123 @@
                 <th></th>
               </tr>
             </thead>
-            <tbody id="patientTicketRows"></tbody>
+            <tbody id="ticketRows"></tbody>
           </table>
         </div>
       </div>
     </div>
 
-    <!-- CLINIC TICKETS -->
-    <div class="bo-tab-panel" id="tab-clinic">
+    <!-- RULES -->
+    <div class="bo-tab-panel" id="tab-rules">
       <div class="bo-table-card">
         <div class="bo-table-scroll">
           <table class="bo-list-table bo-list-table--compact">
             <thead>
               <tr>
-                <th>TICKET ID</th>
-                <th>ORGANIZATION</th>
-                <th>RAISED BY</th>
-                <th>ISSUE TYPE</th>
-                <th>ORIGIN</th>
-                <th>TIER</th>
+                <th>RULE</th>
+                <th>CONDITION / THRESHOLD</th>
                 <th>SEVERITY</th>
-                <th>STATUS</th>
-                <th>ASSIGNED TO</th>
-                <th>CREATED</th>
+                <th>ROUTED TIER</th>
+                <th>SLA (RESPONSE / RESOLVE)</th>
+                <th>CHANNELS</th>
+                <th>AUTO-CREATE TICKET</th>
+                <th>APPLIES TO</th>
                 <th></th>
               </tr>
             </thead>
-            <tbody id="clinicTicketRows"></tbody>
+            <tbody id="ruleRows"></tbody>
           </table>
         </div>
       </div>
     </div>
 
   </main>
+
+  <!-- Rule row action dropdown -->
+  <div class="bo-row-menu" id="ruleRowMenu">
+    <button class="bo-row-menu-item" data-action="edit">Edit Rule</button>
+  </div>
+
+  <!-- Edit Rule drawer -->
+  <div class="bo-drawer-overlay" id="ruleDrawerOverlay">
+    <div class="bo-drawer">
+      <div class="bo-drawer-head">
+        <h2 id="ruleDrawerTitle">Edit Rule</h2>
+        <button type="button" class="bo-drawer-close" id="closeRuleDrawerX" aria-label="Close">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M6 6L18 18M6 18L18 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+      <form id="ruleDrawerForm" class="bo-drawer-form">
+      <div class="bo-drawer-body">
+        <div class="bo-modal-field">
+          <label>Condition / threshold:</label>
+          <input type="text" id="ruleConditionInput" placeholder="e.g. No sensor data for &ge; 3 consecutive days" />
+        </div>
+
+        <div class="bo-modal-field">
+          <label>Severity:</label>
+          <div class="bo-select" data-name="ruleSeverity">
+            <button type="button" class="bo-select-trigger">
+              <span class="bo-select-value placeholder">Severity</span>
+              <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="bo-select-menu"></div>
+            <input type="hidden" />
+          </div>
+        </div>
+
+        <div class="bo-modal-field">
+          <label>Routed tier:</label>
+          <div class="bo-select" data-name="ruleTier">
+            <button type="button" class="bo-select-trigger">
+              <span class="bo-select-value placeholder">Tier</span>
+              <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="bo-select-menu"></div>
+            <input type="hidden" />
+          </div>
+        </div>
+
+        <div class="bo-modal-field" style="display:flex; gap:12px;">
+          <div style="flex:1;">
+            <label>SLA response:</label>
+            <input type="text" id="ruleSlaResponseInput" placeholder="e.g. 2h" />
+          </div>
+          <div style="flex:1;">
+            <label>SLA resolve:</label>
+            <input type="text" id="ruleSlaResolveInput" placeholder="e.g. 24h" />
+          </div>
+        </div>
+
+        <div class="bo-modal-field">
+          <label>Channels:</label>
+          <div class="bo-checkbox-row">
+            <label class="bo-checkbox-item"><input type="checkbox" name="ruleChannel" value="Notification" /> Notification</label>
+            <label class="bo-checkbox-item"><input type="checkbox" name="ruleChannel" value="Email" /> Email</label>
+            <label class="bo-checkbox-item"><input type="checkbox" name="ruleChannel" value="SMS" /> SMS</label>
+          </div>
+        </div>
+
+        <div class="bo-modal-field">
+          <label>Applies to:</label>
+          <input type="text" id="ruleAppliesToInput" placeholder="e.g. All organisations" />
+        </div>
+
+        <div class="bo-switch-field">
+          <label class="bo-switch">
+            <input type="checkbox" id="ruleAutoCreateInput" />
+            <span class="bo-switch-track"></span>
+          </label>
+          <span>Auto-create ticket</span>
+        </div>
+      </div>
+      <div class="bo-drawer-foot">
+        <button type="button" class="bo-btn-text" id="cancelRuleDrawer">Cancel</button>
+        <button type="submit" class="bo-btn-primary" id="saveRuleDrawer">Save</button>
+      </div>
+      </form>
+    </div>
+  </div>
 
   <!-- Row action dropdown -->
   <div class="bo-row-menu" id="ticketRowMenu">

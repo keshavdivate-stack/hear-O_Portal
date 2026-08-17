@@ -3,6 +3,7 @@ document.querySelectorAll("#supportTabs .bo-tab").forEach((tab) => {
   tab.addEventListener("click", () => {
     document.querySelectorAll("#supportTabs .bo-tab").forEach((t) => t.classList.remove("active"));
     document.querySelectorAll(".bo-tab-panel").forEach((p) => p.classList.remove("active"));
+    document.querySelectorAll("[data-tab-btn]").forEach((b) => { b.hidden = b.dataset.tabBtn !== tab.dataset.tab; });
     tab.classList.add("active");
     document.getElementById(`tab-${tab.dataset.tab}`).classList.add("active");
   });
@@ -25,11 +26,21 @@ document.getElementById("ticketOriginFilterMenu").innerHTML = buildFilterSelectO
 const statusPillClass = { "Open": "bo-pill-status-open", "In Progress": "bo-pill-status-inprogress", "Escalated": "bo-pill-status-escalated", "Resolved": "bo-pill-status-resolved" };
 const severityPillClass = { "Low": "bo-pill-severity-low", "Medium": "bo-pill-severity-medium", "High": "bo-pill-severity-high", "Critical": "bo-pill-severity-critical" };
 const originPillClass = { "System Generated": "bo-pill-origin-system", "User Raised": "bo-pill-origin-user" };
+const typePillClass = { "Patient": "bo-pill-type-patient", "Clinic": "bo-pill-type-clinic" };
 
 const statusPill = (s) => `<span class="bo-pill ${statusPillClass[s] || ""}">${s}</span>`;
 const severityPill = (p) => `<span class="bo-pill ${severityPillClass[p] || ""}">${p}</span>`;
 const tierPill = (t) => `<span class="bo-pill bo-pill-tier">${t}</span>`;
 const originPill = (o) => `<span class="bo-pill ${originPillClass[o] || ""}">${o}</span>`;
+const typePill = (s) => `<span class="bo-pill ${typePillClass[s] || ""}">${s}</span>`;
+
+/* ---------------- Combine patient + clinic tickets into one list ----------------
+   Tags each ticket in place (rather than spreading into copies) so edits made
+   through the detail drawer stay in sync between this merged view and the
+   underlying patientTickets/clinicTickets arrays. */
+patientTickets.forEach((t) => { t.source = "patient"; t.type = "Patient"; t.who = t.patientId; });
+clinicTickets.forEach((t) => { t.source = "clinic"; t.type = "Clinic"; t.who = t.raisedBy; });
+const allTickets = [...patientTickets, ...clinicTickets];
 
 const ticketKebabIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="1.7" fill="currentColor"/><circle cx="12" cy="12" r="1.7" fill="currentColor"/><circle cx="12" cy="19" r="1.7" fill="currentColor"/></svg>`;
 
@@ -86,20 +97,21 @@ function matchesFilters(t, extraSearchable) {
   return true;
 }
 
-/* ---------------- Patient tickets table ---------------- */
+/* ---------------- Tickets table ---------------- */
 const PAGE_SIZE = 8;
 
-function filteredPatientTickets() {
-  return patientTickets.filter((t) => matchesFilters(t, t.patientId));
+function filteredTickets() {
+  return allTickets.filter((t) => matchesFilters(t, t.who));
 }
 
-const patientPager = boCreatePager(
-  "patientTicketRows",
-  () => filteredPatientTickets(),
+const ticketPager = boCreatePager(
+  "ticketRows",
+  () => filteredTickets(),
   (t) => `
-    <tr data-source="patient" data-id="${t.id}">
+    <tr data-source="${t.source}" data-id="${t.id}">
       <td class="bo-ticket-id">${t.ticketNo}</td>
-      <td>${t.patientId}</td>
+      <td>${typePill(t.type)}</td>
+      <td>${t.who}</td>
       <td>${t.organization}</td>
       <td>${t.issueType}</td>
       <td>${originPill(t.origin)}</td>
@@ -110,49 +122,17 @@ const patientPager = boCreatePager(
       <td>${t.createdDate}</td>
       <td>
         <div class="bo-row-actions">
-          <button class="bo-action-icon row-menu-trigger" data-source="patient" data-id="${t.id}" aria-label="Row actions">${ticketKebabIcon}</button>
+          <button class="bo-action-icon row-menu-trigger" data-source="${t.source}" data-id="${t.id}" aria-label="Row actions">${ticketKebabIcon}</button>
         </div>
       </td>
     </tr>`,
-  { pageSize: PAGE_SIZE, emptyColspan: 11, emptyText: "No patient tickets match these filters." }
+  { pageSize: PAGE_SIZE, emptyColspan: 12, emptyText: "No tickets match these filters." }
 );
-patientPager();
-
-/* ---------------- Clinic tickets table ---------------- */
-function filteredClinicTickets() {
-  return clinicTickets.filter((t) => matchesFilters(t, t.raisedBy));
-}
-
-const clinicPager = boCreatePager(
-  "clinicTicketRows",
-  () => filteredClinicTickets(),
-  (t) => `
-    <tr data-source="clinic" data-id="${t.id}">
-      <td class="bo-ticket-id">${t.ticketNo}</td>
-      <td>${t.organization}</td>
-      <td>${t.raisedBy}</td>
-      <td>${t.issueType}</td>
-      <td>${originPill(t.origin)}</td>
-      <td>${tierPill(t.tier)}</td>
-      <td>${severityPill(t.severity)}</td>
-      <td>${statusPill(t.status)}</td>
-      <td>${t.assignedTo || "&mdash;"}</td>
-      <td>${t.createdDate}</td>
-      <td>
-        <div class="bo-row-actions">
-          <button class="bo-action-icon row-menu-trigger" data-source="clinic" data-id="${t.id}" aria-label="Row actions">${ticketKebabIcon}</button>
-        </div>
-      </td>
-    </tr>`,
-  { pageSize: PAGE_SIZE, emptyColspan: 11, emptyText: "No clinic tickets match these filters." }
-);
-clinicPager();
+ticketPager();
 
 function refreshTicketTables() {
-  patientPager.resetPage();
-  clinicPager.resetPage();
-  patientPager();
-  clinicPager();
+  ticketPager.resetPage();
+  ticketPager();
 }
 
 document.getElementById("ticketStatusFilter").addEventListener("change", (e) => {
@@ -318,8 +298,7 @@ function wireTicketRowMenu(rowsId) {
     ticketRowMenu.classList.add("open");
   });
 }
-wireTicketRowMenu("patientTicketRows");
-wireTicketRowMenu("clinicTicketRows");
+wireTicketRowMenu("ticketRows");
 
 document.addEventListener("click", (e) => {
   if (!ticketRowMenu.contains(e.target)) ticketRowMenu.classList.remove("open");
@@ -396,7 +375,7 @@ newTicketForm.addEventListener("submit", (e) => {
 
   if (sourceValue === "Clinic") {
     const nextId = clinicTickets.length ? Math.max(...clinicTickets.map((t) => t.id)) + 1 : 0;
-    clinicTickets.unshift({
+    const newTicket = {
       id: nextId,
       ticketNo: `TCK-${3000 + nextId}`,
       raisedBy: newTicketForm.who.value.trim(),
@@ -408,10 +387,15 @@ newTicketForm.addEventListener("submit", (e) => {
       status: "Open",
       createdDate,
       description: newTicketForm.description.value.trim(),
-    });
+      source: "clinic",
+      type: "Clinic",
+      who: newTicketForm.who.value.trim(),
+    };
+    clinicTickets.unshift(newTicket);
+    allTickets.unshift(newTicket);
   } else {
     const nextId = patientTickets.length ? Math.max(...patientTickets.map((t) => t.id)) + 1 : 0;
-    patientTickets.unshift({
+    const newTicket = {
       id: nextId,
       ticketNo: `TCK-${3000 + nextId}`,
       patientId: newTicketForm.who.value.trim(),
@@ -423,7 +407,12 @@ newTicketForm.addEventListener("submit", (e) => {
       status: "Open",
       createdDate,
       description: newTicketForm.description.value.trim(),
-    });
+      source: "patient",
+      type: "Patient",
+      who: newTicketForm.who.value.trim(),
+    };
+    patientTickets.unshift(newTicket);
+    allTickets.unshift(newTicket);
   }
 
   closeNewTicketDrawer();
@@ -455,8 +444,113 @@ newTicketForm.addEventListener("submit", (e) => {
   }
   if (!match) return;
 
-  const tab = document.querySelector(`#supportTabs .bo-tab[data-tab="${source}"]`);
-  if (tab) tab.click();
-
   openTicketDetail(source, match.id);
 })();
+
+/* ---------------- Rules table ---------------- */
+const channelPillClass = { "Notification": "bo-pill-channel-notification", "Email": "bo-pill-channel-email", "SMS": "bo-pill-channel-sms" };
+const channelPills = (channels) => channels.map((c) => `<span class="bo-pill ${channelPillClass[c] || ""}">${c}</span>`).join(" ");
+
+function renderRules() {
+  document.getElementById("ruleRows").innerHTML = alertRules
+    .map(
+      (r) => `
+      <tr>
+        <td><b>${r.name}</b></td>
+        <td>${r.condition}</td>
+        <td>${severityPill(r.severity)}</td>
+        <td>${tierPill(r.tier)}</td>
+        <td>${r.slaResponse} / ${r.slaResolve}</td>
+        <td>${channelPills(r.channels)}</td>
+        <td>${r.autoCreateTicket ? '<span class="bo-pill bo-pill-status-open">On</span>' : '<span class="bo-pill bo-pill-severity-low">Off</span>'}</td>
+        <td>${r.appliesTo}</td>
+        <td>
+          <div class="bo-row-actions">
+            <button class="bo-action-icon row-menu-trigger" data-id="${r.id}" aria-label="Row actions">${ticketKebabIcon}</button>
+          </div>
+        </td>
+      </tr>`
+    )
+    .join("");
+}
+renderRules();
+
+document.querySelector('#ruleDrawerOverlay .bo-select[data-name="ruleSeverity"] .bo-select-menu').innerHTML = buildSelectOptions(SEVERITIES);
+document.querySelector('#ruleDrawerOverlay .bo-select[data-name="ruleTier"] .bo-select-menu').innerHTML = buildSelectOptions(TIERS);
+
+const ruleRowMenu = document.getElementById("ruleRowMenu");
+let activeRuleId = null;
+
+document.getElementById("ruleRows").addEventListener("click", (e) => {
+  const trigger = e.target.closest(".row-menu-trigger");
+  if (!trigger) return;
+  e.stopPropagation();
+  activeRuleId = Number(trigger.dataset.id);
+  const rect = trigger.getBoundingClientRect();
+  ruleRowMenu.style.top = `${rect.bottom + 6}px`;
+  ruleRowMenu.style.left = `${rect.right - 190}px`;
+  ruleRowMenu.classList.add("open");
+});
+
+document.addEventListener("click", (e) => {
+  if (!ruleRowMenu.contains(e.target)) ruleRowMenu.classList.remove("open");
+});
+
+const ruleDrawerOverlay = document.getElementById("ruleDrawerOverlay");
+const ruleDrawerForm = document.getElementById("ruleDrawerForm");
+let editingRule = null;
+
+function openRuleDrawer(rule) {
+  editingRule = rule;
+  document.getElementById("ruleDrawerTitle").textContent = `Edit Rule — ${rule.name}`;
+  document.getElementById("ruleConditionInput").value = rule.condition;
+  document.getElementById("ruleSlaResponseInput").value = rule.slaResponse;
+  document.getElementById("ruleSlaResolveInput").value = rule.slaResolve;
+  document.getElementById("ruleAppliesToInput").value = rule.appliesTo;
+  document.getElementById("ruleAutoCreateInput").checked = rule.autoCreateTicket;
+
+  setBoSelectValue(ruleDrawerOverlay.querySelector('.bo-select[data-name="ruleSeverity"]'), rule.severity, { silent: true });
+  setBoSelectValue(ruleDrawerOverlay.querySelector('.bo-select[data-name="ruleTier"]'), rule.tier, { silent: true });
+
+  ruleDrawerForm.querySelectorAll('input[name="ruleChannel"]').forEach((box) => {
+    box.checked = rule.channels.includes(box.value);
+  });
+
+  ruleDrawerOverlay.classList.add("open");
+}
+
+function closeRuleDrawer() {
+  ruleDrawerOverlay.classList.remove("open");
+  editingRule = null;
+}
+
+ruleRowMenu.addEventListener("click", (e) => {
+  const item = e.target.closest(".bo-row-menu-item");
+  if (!item || activeRuleId === null) return;
+  ruleRowMenu.classList.remove("open");
+  if (item.dataset.action === "edit") {
+    const rule = alertRules.find((r) => r.id === activeRuleId);
+    if (rule) openRuleDrawer(rule);
+  }
+});
+
+document.getElementById("closeRuleDrawerX").addEventListener("click", closeRuleDrawer);
+document.getElementById("cancelRuleDrawer").addEventListener("click", closeRuleDrawer);
+ruleDrawerOverlay.addEventListener("click", (e) => { if (e.target === ruleDrawerOverlay) closeRuleDrawer(); });
+
+ruleDrawerForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  if (!editingRule) return;
+
+  editingRule.condition = document.getElementById("ruleConditionInput").value.trim();
+  editingRule.slaResponse = document.getElementById("ruleSlaResponseInput").value.trim();
+  editingRule.slaResolve = document.getElementById("ruleSlaResolveInput").value.trim();
+  editingRule.appliesTo = document.getElementById("ruleAppliesToInput").value.trim();
+  editingRule.autoCreateTicket = document.getElementById("ruleAutoCreateInput").checked;
+  editingRule.severity = ruleDrawerOverlay.querySelector('.bo-select[data-name="ruleSeverity"] input[type=hidden]').value || editingRule.severity;
+  editingRule.tier = ruleDrawerOverlay.querySelector('.bo-select[data-name="ruleTier"] input[type=hidden]').value || editingRule.tier;
+  editingRule.channels = Array.from(ruleDrawerForm.querySelectorAll('input[name="ruleChannel"]:checked')).map((b) => b.value);
+
+  closeRuleDrawer();
+  renderRules();
+});

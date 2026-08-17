@@ -85,3 +85,17 @@ topUpTickets(patientTickets, "patient", "Resolved", 39, 177);
 topUpTickets(clinicTickets, "clinic", "Escalated", 37, 0);
 topUpTickets(clinicTickets, "clinic", "In Progress", 81, 37);
 topUpTickets(clinicTickets, "clinic", "Resolved", 26, 118);
+
+/* ---------------- Alert rules (Rules tab) ---------------- */
+const RULE_CHANNELS = ["Notification", "Email", "SMS"];
+
+const alertRules = [
+  { id: 0, name: "Missing sensor data", condition: "No sensor data for ≥ 3 consecutive days", severity: "High", tier: "Tier 2", slaResponse: "2h", slaResolve: "24h", channels: ["Notification", "Email"], autoCreateTicket: true, appliesTo: "All Commercial orgs" },
+  { id: 1, name: "Recording failure", condition: "≥ 3 failed sessions in 24h for one patient", severity: "Medium", tier: "Tier 1", slaResponse: "8h", slaResolve: "3d", channels: ["Notification"], autoCreateTicket: false, appliesTo: "All organisations" },
+  { id: 2, name: "Compliance drop", condition: "Patient compliance < 60% over 14 days", severity: "High", tier: "Tier 1", slaResponse: "2h", slaResolve: "24h", channels: ["Notification", "Email"], autoCreateTicket: true, appliesTo: "All Commercial orgs" },
+  { id: 3, name: "Health permission off", condition: "HealthKit / Health Connect permission revoked", severity: "Medium", tier: "Tier 1", slaResponse: "8h", slaResolve: "3d", channels: ["Notification"], autoCreateTicket: false, appliesTo: "All organisations" },
+  { id: 4, name: "Voice engine degradation", condition: "ASR error rate > 10% over 2h", severity: "Critical", tier: "Tier 2", slaResponse: "30m", slaResolve: "4h", channels: ["Notification", "Email", "SMS"], autoCreateTicket: true, appliesTo: "System-wide" },
+  { id: 5, name: "Sync failure", condition: "Upload queue stalled > 12h", severity: "High", tier: "Tier 2", slaResponse: "2h", slaResolve: "24h", channels: ["Notification", "Email"], autoCreateTicket: true, appliesTo: "System-wide" },
+  { id: 6, name: "EHR connection failure", condition: "FHIR / HL7 endpoint unreachable > 30 min", severity: "Critical", tier: "Tier 3", slaResponse: "30m", slaResolve: "4h", channels: ["Notification", "Email", "SMS"], autoCreateTicket: true, appliesTo: "Per organisation" },
+  { id: 7, name: "System downtime", condition: "Availability below SLO beyond allowed limit", severity: "Critical", tier: "Tier 3", slaResponse: "15m", slaResolve: "2h", channels: ["Notification", "Email", "SMS"], autoCreateTicket: true, appliesTo: "System-wide" },
+];
