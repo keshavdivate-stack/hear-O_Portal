@@ -34,12 +34,20 @@
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="18" x="4" y="3" rx="1"/><path d="M9 8h1"/><path d="M14 8h1"/><path d="M9 12h1"/><path d="M14 12h1"/><path d="M9 16h1"/><path d="M14 16h1"/><path d="M10 21v-3a2 2 0 0 1 4 0v3"/></svg>
         Organisations
       </a>
-      <a href="patient-management.html" class="bo-nav-link">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-        Patients
-      </a>
       <div class="bo-nav-item">
-        <button type="button" class="bo-nav-link active" id="reportsNavBtn">
+        <button type="button" class="bo-nav-link active" id="patientsNavBtn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          Patients
+          <svg class="bo-nav-caret" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="bo-popover bo-nav-popover" id="patientsPopover">
+          <a href="patient-management.html" class="bo-popover-item">Patient Management</a>
+          <a href="patient-events.html" class="bo-popover-item">Patient Event</a>
+          <a href="status-change.html" class="bo-popover-item active">Status Change</a>
+        </div>
+      </div>
+      <div class="bo-nav-item">
+        <button type="button" class="bo-nav-link" id="reportsNavBtn">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>
           Reports
           <svg class="bo-nav-caret" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
@@ -48,8 +56,6 @@
           <a href="report-management.html" class="bo-popover-item">Report Management</a>
           <a href="language-resources.html" class="bo-popover-item">Language Resource</a>
           <a href="audit-log.html" class="bo-popover-item">Audit Log</a>
-          <a href="patient-events.html" class="bo-popover-item">Patient Event</a>
-          <a href="status-change.html" class="bo-popover-item active">Status Change</a>
         </div>
       </div>
       <a href="support.html" class="bo-nav-link">
@@ -102,7 +108,7 @@
       <h1>Status Change</h1>
     </div>
 
-    <div class="bo-list-toolbar">
+    <div class="bo-filter-row">
       <div class="bo-filter-field">
         <select class="bo-filter-select" id="scSiteFilter">
           <option value="">Clinical site</option>
@@ -111,11 +117,11 @@
 
       <div class="bo-filter-field">
         <select class="bo-filter-select" id="scStatusToFilter">
-          <option value="">Status Change To</option>
+          <option value="">Changed To</option>
         </select>
       </div>
 
-      <div class="bo-search-pill" style="width:220px;">
+      <div class="bo-search-pill">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8"/><path d="M21 21L16.5 16.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
         <input type="text" id="scSearchInput" placeholder="Search patient" />
       </div>
@@ -139,10 +145,11 @@
           <thead>
             <tr>
               <th>USERNAME</th>
-              <th>PREVIOUS STATUS</th>
-              <th>NEW STATUS</th>
-              <th>STATUS START DATE</th>
-              <th>DAYS IN THE STATUS</th>
+              <th>TYPE</th>
+              <th>PREVIOUS</th>
+              <th>CHANGED TO</th>
+              <th>SINCE</th>
+              <th>NO. OF DAYS</th>
               <th>CHANGED BY</th>
             </tr>
           </thead>

@@ -9,13 +9,16 @@ document.querySelectorAll("#supportTabs .bo-tab").forEach((tab) => {
 });
 
 /* ---------------- Filter option lists ---------------- */
-function fillOptions(selectId, values, placeholder) {
-  const select = document.getElementById(selectId);
-  select.innerHTML = `<option value="">${placeholder}</option>` + values.map((v) => `<option value="${v}">${v}</option>`).join("");
+function buildFilterSelectOptions(values, clearLabel) {
+  const clearOption = `
+      <div class="bo-select-option" data-value="">${clearLabel}
+        <svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>`;
+  return clearOption + buildSelectOptions(values);
 }
-fillOptions("ticketStatusFilter", STATUSES, "Status");
-fillOptions("ticketPriorityFilter", PRIORITIES, "Priority");
-fillOptions("ticketIssueFilter", ISSUE_TYPES, "Issue type");
+document.getElementById("ticketStatusFilterMenu").innerHTML = buildFilterSelectOptions(STATUSES, "All statuses");
+document.getElementById("ticketPriorityFilterMenu").innerHTML = buildFilterSelectOptions(PRIORITIES, "All priorities");
+document.getElementById("ticketIssueFilterMenu").innerHTML = buildFilterSelectOptions(ISSUE_TYPES, "All issue types");
 
 /* ---------------- Badges ---------------- */
 const statusPillClass = { "Open": "bo-pill-status-open", "In Progress": "bo-pill-status-inprogress", "Escalated": "bo-pill-status-escalated", "Resolved": "bo-pill-status-resolved" };
@@ -139,17 +142,14 @@ function refreshTicketTables() {
 
 document.getElementById("ticketStatusFilter").addEventListener("change", (e) => {
   ticketStatusValue = e.target.value;
-  e.target.classList.toggle("has-value", e.target.value !== "");
   refreshTicketTables();
 });
 document.getElementById("ticketPriorityFilter").addEventListener("change", (e) => {
   ticketPriorityValue = e.target.value;
-  e.target.classList.toggle("has-value", e.target.value !== "");
   refreshTicketTables();
 });
 document.getElementById("ticketIssueFilter").addEventListener("change", (e) => {
   ticketIssueValue = e.target.value;
-  e.target.classList.toggle("has-value", e.target.value !== "");
   refreshTicketTables();
 });
 document.getElementById("ticketSearchInput").addEventListener("input", (e) => {
