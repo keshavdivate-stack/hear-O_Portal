@@ -44,6 +44,7 @@ let ticketSearchTerm = "";
   const params = new URLSearchParams(location.search);
   const issueType = params.get("issueType");
   const status = params.get("status");
+  const priority = params.get("priority");
   const q = params.get("q");
 
   if (issueType && ISSUE_TYPES.includes(issueType)) {
@@ -53,6 +54,10 @@ let ticketSearchTerm = "";
   if (status && STATUSES.includes(status)) {
     ticketStatusValue = status;
     setBoSelectValue(document.querySelector('.bo-select[data-name="ticketStatus"]'), status, { silent: true });
+  }
+  if (priority && PRIORITIES.includes(priority)) {
+    ticketPriorityValue = priority;
+    setBoSelectValue(document.querySelector('.bo-select[data-name="ticketPriority"]'), priority, { silent: true });
   }
   if (q) {
     ticketSearchTerm = q.trim().toLowerCase();
