@@ -36,9 +36,10 @@ function boCreatePager(tbodyId, getItems, renderRow, opts) {
     var start = (page - 1) * pageSize;
     var pageItems = items.slice(start, start + pageSize);
 
-    tbody.innerHTML = pageItems.length
-      ? pageItems.map(renderRow).join("")
-      : '<tr><td colspan="' + emptyColspan + '" style="text-align:center; color:var(--gray-text); padding:28px;">' + emptyText + '</td></tr>';
+    var emptyHtml = opts.emptyHtml ||
+      '<tr><td colspan="' + emptyColspan + '" style="text-align:center; color:var(--gray-text); padding:28px;">' + emptyText + '</td></tr>';
+
+    tbody.innerHTML = pageItems.length ? pageItems.map(renderRow).join("") : emptyHtml;
 
     var rangeStart = total === 0 ? 0 : start + 1;
     var rangeEnd = total === 0 ? 0 : Math.min(start + pageSize, total);

@@ -2354,6 +2354,7 @@ body {
 }
 
 .form-field input,
+.form-field textarea,
 .select-input {
   width: 100%;
   padding: 11px 14px;
@@ -2367,6 +2368,23 @@ body {
   -webkit-appearance: none;
 }
 
+.form-field textarea {
+  font-family: inherit;
+  resize: vertical;
+  min-height: 72px;
+}
+
+.checkbox-field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #23272E;
+  font-weight: 600;
+}
+
+.checkbox-field input { width: auto; }
+
 .select-input {
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6'><path d='M0 0l5 6 5-6z' fill='%236B7684'/></svg>");
   background-repeat: no-repeat;
@@ -2374,6 +2392,7 @@ body {
 }
 
 .form-field input:focus,
+.form-field textarea:focus,
 .select-input:focus { border-color: var(--blue); }
 
 .form-field input::placeholder { color: #AEB4BC; }

@@ -1,136 +1,54 @@
-/* ---------------- Report Management ---------------- */
-let rmTypeFilter = "";
-let rmHmoFilter = "";
-let rmTagFilter = "";
-let rmUserFilter = "";
-const rmExpanded = new Set();
+/* ==========================================================
+   Report Management — redesigned per the UX/UI revamp brief.
 
-function rmFilteredSchedules(reportType) {
-  return rmSchedules.filter((s) => {
-    if (s.reportType !== reportType) return false;
-    if (rmTypeFilter && s.reportType !== rmTypeFilter) return false;
-    if (rmHmoFilter && s.hmo !== rmHmoFilter) return false;
-    if (rmTagFilter && !s.tag.includes(rmTagFilter)) return false;
-    if (rmUserFilter && !s.user.toLowerCase().includes(rmUserFilter.toLowerCase())) return false;
-    return true;
+   Design notes (why the structure is what it is):
+   - Report, Schedule, and Delivery are kept as three separate concepts.
+     A Report (e.g. "Missed Recordings") is just content. A Schedule is an
+     automated delivery config for a report — it's the thing an admin
+     actually manages day to day (editable, pausable, deletable, has its
+     own recipients/next-run). A Delivery is a record that a report was
+     actually generated and sent, whether by schedule or by Send Report.
+   - Scheduled Reports is a flat table: ONE ROW = ONE SCHEDULE. No
+     accordion — status and next run must be visible without expanding
+     anything, so schedules that belong to the same report are just
+     separate rows that happen to share a Report label.
+   - Report History is a separate tab/table from Scheduled Reports so
+     "what's configured to run" and "what actually got sent" are never
+     mixed together.
+   - Clicking a schedule row opens a read-only details drawer (not an
+     inline expansion) with Edit/Pause/Delete actions; the row's kebab
+     menu offers the same actions for users who don't want to open the
+     drawer first.
+   - "Create New" -> "+ Schedule Report" and "Manual" -> "Send Report",
+     because the old labels didn't say what the action actually does.
+   - Schedule Report and Send Report are both single-screen drawers (no
+     wizard), keeping to the same fields the old system had. Send Report
+     carries an explicit "this is immediate, not a schedule" note, since
+     it's meant to feel lighter-weight than creating a recurring delivery.
+   ========================================================== */
+
+const rmKebabIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="1.7" fill="currentColor"/><circle cx="12" cy="12" r="1.7" fill="currentColor"/><circle cx="12" cy="19" r="1.7" fill="currentColor"/></svg>`;
+const rmPeopleIcon = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`;
+
+const rmStatusPillClass = { Active: "bo-pill-active", Paused: "bo-pill-paused" };
+const rmDeliveryPillClass = { Delivered: "bo-pill-delivered", Failed: "bo-pill-failed", "Partially Delivered": "bo-pill-partial", Processing: "bo-pill-processing" };
+const rmStatusPill = (s) => `<span class="bo-pill ${rmStatusPillClass[s] || ""}">${s}</span>`;
+const rmDeliveryPill = (s) => `<span class="bo-pill ${rmDeliveryPillClass[s] || ""}">${s}</span>`;
+const rmRecipientsChip = (count) => `<span class="bo-recipients-chip">${rmPeopleIcon}${count} ${count === 1 ? "person" : "people"}</span>`;
+
+function rmEsc(v) { return String(v == null ? "" : v).replace(/"/g, "&quot;"); }
+
+/* ---------------- Tabs ---------------- */
+document.querySelectorAll("#rmTabs .bo-tab").forEach((tab) => {
+  tab.addEventListener("click", () => {
+    document.querySelectorAll("#rmTabs .bo-tab").forEach((t) => t.classList.remove("active"));
+    document.querySelectorAll(".bo-tab-panel").forEach((p) => p.classList.remove("active"));
+    tab.classList.add("active");
+    document.getElementById(`tab-${tab.dataset.tab}`).classList.add("active");
   });
-}
-
-const rmEditIcon = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 20H21" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M16.5 3.5C17.3 2.7 18.6 2.7 19.4 3.5C20.2 4.3 20.2 5.6 19.4 6.4L7 18.8L3 20L4.2 16L16.5 3.5Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>`;
-const rmTrashIcon = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 7H20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M9 7V4.5C9 4 9.4 3.6 9.9 3.6H14.1C14.6 3.6 15 4 15 4.5V7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 7L6.8 19.2C6.9 19.9 7.5 20.4 8.2 20.4H15.8C16.5 20.4 17.1 19.9 17.2 19.2L18 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
-
-function rmRenderGroupRow(t) {
-  const rows = rmFilteredSchedules(t.key);
-  const hasRows = rows.length > 0;
-  const isOpen = hasRows && rmExpanded.has(t.key);
-
-  const bandRow = `
-    <tr class="bo-report-band${hasRows ? "" : " empty"}" data-type="${t.key}">
-      <td colspan="8">
-        <span class="bo-report-band-title">
-          ${t.label}
-          ${hasRows ? `<span class="bo-report-count">${rows.length}</span>` : ""}
-        </span>
-      </td>
-      <td>
-        ${
-          hasRows
-            ? `<button type="button" class="bo-report-expand${isOpen ? " open" : ""}" aria-label="${isOpen ? "Collapse" : "Expand"} ${t.label}" aria-expanded="${isOpen}">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </button>`
-            : `<button type="button" class="bo-report-add" data-add-type="${t.key}" aria-label="Add a ${t.label} schedule">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
-                Add schedule
-              </button>`
-        }
-      </td>
-    </tr>`;
-
-  const subRows = isOpen
-    ? rows
-        .map(
-          (r) => `
-    <tr class="bo-report-row">
-      <td>${t.label}</td>
-      <td>${r.name}</td>
-      <td>${r.hmo}</td>
-      <td>${r.tag}</td>
-      <td>${r.user}</td>
-      <td>${r.scheduleType}</td>
-      <td>${r.daysOfWeek}</td>
-      <td>${r.reportTime}</td>
-      <td>
-        <div class="bo-row-actions">
-          <button class="bo-action-icon blue" data-id="${r.id}" data-act="edit" aria-label="Edit">${rmEditIcon}</button>
-          <button class="bo-action-icon blue" data-id="${r.id}" data-act="delete" aria-label="Delete">${rmTrashIcon}</button>
-        </div>
-      </td>
-    </tr>`
-        )
-        .join("")
-    : "";
-
-  return bandRow + subRows;
-}
-
-const rmGroupsPager = boCreatePager(
-  "rmGroups",
-  () => RM_REPORT_TYPES,
-  rmRenderGroupRow,
-  { pageSize: 20, emptyColspan: 9, emptyText: "No report types configured." }
-);
-rmGroupsPager();
-
-document.getElementById("rmGroups").addEventListener("click", (e) => {
-  const addBtn = e.target.closest(".bo-report-add");
-  if (addBtn) {
-    e.stopPropagation();
-    openCreateDrawer(null, addBtn.dataset.addType);
-    return;
-  }
-
-  const band = e.target.closest(".bo-report-band");
-  if (band) {
-    const key = band.dataset.type;
-    if (band.classList.contains("empty")) {
-      openCreateDrawer(null, key);
-    } else if (rmExpanded.has(key)) {
-      rmExpanded.delete(key);
-      rmGroupsPager();
-    } else {
-      rmExpanded.add(key);
-      rmGroupsPager();
-    }
-    return;
-  }
-
-  const btn = e.target.closest(".bo-action-icon");
-  if (!btn) return;
-  const rec = rmSchedules.find((s) => s.id === Number(btn.dataset.id));
-  if (!rec) return;
-
-  if (btn.dataset.act === "edit") {
-    openCreateDrawer(rec);
-  } else if (btn.dataset.act === "delete") {
-    if (!confirm(`Delete "${rec.name}"?`)) return;
-    rmSchedules.splice(rmSchedules.indexOf(rec), 1);
-    rmGroupsPager();
-  }
 });
 
-document.getElementById("rmApplyBtn").addEventListener("click", () => {
-  rmTypeFilter = document.getElementById("rmTypeFilter").value;
-  rmHmoFilter = document.getElementById("rmHmoFilter").value;
-  rmTagFilter = document.getElementById("rmTagFilter").value;
-  rmUserFilter = document.getElementById("rmUserFilter").value;
-  rmGroupsPager();
-});
-
-document.getElementById("rmDownloadBtn").addEventListener("click", () => {
-  alert("Downloading report list...");
-});
-
-/* ---------------- Custom selects (shared across both drawers) ---------------- */
+/* ---------------- Shared bo-select machinery ---------------- */
 function setBoSelectValue(select, value, { silent = false } = {}) {
   const hiddenInput = select.querySelector("input[type=hidden]");
   const trigger = select.querySelector(".bo-select-value");
@@ -151,11 +69,15 @@ function setBoSelectValue(select, value, { silent = false } = {}) {
   if (!silent) hiddenInput.dispatchEvent(new Event("change", { bubbles: true }));
 }
 
+function resetBoSelect(select) {
+  setBoSelectValue(select, "", { silent: true });
+}
+
 function positionBoSelectMenu(select) {
   const trigger = select.querySelector(".bo-select-trigger");
   const menu = select.querySelector(".bo-select-menu");
   const rect = trigger.getBoundingClientRect();
-  const menuHeight = Math.min(menu.scrollHeight, 220) + 12;
+  const menuHeight = Math.min(menu.scrollHeight, 240) + 12;
   const spaceBelow = window.innerHeight - rect.bottom;
   const openUpward = spaceBelow < menuHeight && rect.top > menuHeight;
 
@@ -198,148 +120,635 @@ document.addEventListener("click", closeAllBoSelects);
 document.addEventListener("scroll", closeAllBoSelects, true);
 window.addEventListener("resize", closeAllBoSelects);
 
-function rmOptionsHtml(values) {
+function buildSelectOptions(values) {
   return values
     .map(
-      (v) => `<div class="bo-select-option" data-value="${v}">${v}<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>`
+      (v) => `
+      <div class="bo-select-option" data-value="${rmEsc(v)}">${rmEsc(v)}
+        <svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>`
     )
     .join("");
 }
 
-const rmTypeOptionsHtml = RM_REPORT_TYPES.map(
-  (t) => `<div class="bo-select-option" data-value="${t.key}">${t.label}<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>`
-).join("");
-
-function rmClearOptionHtml(placeholder) {
-  return `<div class="bo-select-option" data-value="">${placeholder}<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>`;
+function buildFilterSelectOptions(values, clearLabel) {
+  const clearOption = `
+      <div class="bo-select-option" data-value="">${clearLabel}
+        <svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>`;
+  return clearOption + buildSelectOptions(values);
 }
 
-document.getElementById("rmTypeFilterMenu").innerHTML = rmClearOptionHtml("All report types") + rmTypeOptionsHtml;
-document.getElementById("rmHmoFilterMenu").innerHTML = rmClearOptionHtml("All HMOs") + rmOptionsHtml(RM_HMOS);
-document.getElementById("rmTagFilterMenu").innerHTML = rmClearOptionHtml("All tags") + rmOptionsHtml(RM_TAGS);
+/* ---------------- Scheduled Reports ---------------- */
+let rmScheduleSearch = "";
+let rmScheduleTypeFilter = "";
+let rmScheduleOrgFilter = "";
+let rmScheduleStatusFilter = "";
+let rmScheduleFrequencyFilter = "";
 
-document.getElementById("rmCreateTypeMenu").innerHTML = rmTypeOptionsHtml;
-document.getElementById("rmCreateHmoMenu").innerHTML = rmOptionsHtml(RM_HMOS);
-document.getElementById("rmCreateTagMenu").innerHTML = rmOptionsHtml(RM_TAGS);
-document.getElementById("rmCreateUserMenu").innerHTML = rmOptionsHtml(RM_USERS);
-document.getElementById("rmManualTypeMenu").innerHTML = rmTypeOptionsHtml;
-document.getElementById("rmManualHmoMenu").innerHTML = rmOptionsHtml(RM_HMOS);
-document.getElementById("rmManualTagMenu").innerHTML = rmOptionsHtml(RM_TAGS);
+document.getElementById("rmReportTypeFilterMenu").innerHTML = buildFilterSelectOptions(RM_REPORTS.map((r) => r.label), "All report types");
+document.getElementById("rmOrgFilterMenu").innerHTML = buildFilterSelectOptions(RM_ORGS, "All organisations");
+document.getElementById("rmStatusFilterMenu").innerHTML = buildFilterSelectOptions(RM_STATUSES, "All statuses");
+document.getElementById("rmFrequencyFilterMenu").innerHTML = buildFilterSelectOptions(RM_FREQUENCIES, "All frequencies");
 
-/* ---------------- Create New Report drawer (also used for editing an existing schedule) ---------------- */
-const rmCreateOverlay = document.getElementById("rmCreateDrawerOverlay");
-const rmCreateForm = document.getElementById("rmCreateForm");
-const rmSaveCreateBtn = document.getElementById("rmSaveCreateBtn");
-const rmCreateTypeSelect = rmCreateForm.querySelector('.bo-select[data-name="reportType"]');
-const rmCreateHmoSelect = rmCreateForm.querySelector('.bo-select[data-name="hmo"]');
-const rmCreateTagSelect = rmCreateForm.querySelector('.bo-select[data-name="tag"]');
-const rmCreateUserSelect = rmCreateForm.querySelector('.bo-select[data-name="user"]');
-const rmCreateScheduleSelect = rmCreateForm.querySelector('.bo-select[data-name="scheduleType"]');
-let editingScheduleId = null;
-
-function validateCreateForm() {
-  const typeOk = rmCreateTypeSelect.querySelector("input[type=hidden]").value !== "";
-  rmSaveCreateBtn.disabled = !(rmCreateForm.name.value.trim() !== "" && typeOk);
+function rmFilteredSchedules() {
+  return rmSchedules.filter((s) => {
+    if (rmScheduleTypeFilter && rmReportLabel(s.reportKey) !== rmScheduleTypeFilter) return false;
+    if (rmScheduleOrgFilter && s.org !== rmScheduleOrgFilter) return false;
+    if (rmScheduleStatusFilter && s.status !== rmScheduleStatusFilter) return false;
+    if (rmScheduleFrequencyFilter && s.frequency !== rmScheduleFrequencyFilter) return false;
+    if (rmScheduleSearch) {
+      const haystack = `${rmReportLabel(s.reportKey)} ${s.name} ${s.org}`.toLowerCase();
+      if (!haystack.includes(rmScheduleSearch)) return false;
+    }
+    return true;
+  });
 }
 
-function openCreateDrawer(record, presetType) {
-  rmCreateForm.reset();
-  editingScheduleId = record ? record.id : null;
-  document.querySelector("#rmCreateDrawerOverlay .bo-drawer-head h2").textContent = record ? "Edit Report" : "Create New Report";
-
-  setBoSelectValue(rmCreateTypeSelect, record ? record.reportType : presetType || "", { silent: true });
-  setBoSelectValue(rmCreateHmoSelect, record ? record.hmo : "", { silent: true });
-  setBoSelectValue(rmCreateTagSelect, record ? (record.tag || "").split(";")[0].trim() : "", { silent: true });
-  setBoSelectValue(rmCreateUserSelect, record ? record.user : "", { silent: true });
-  setBoSelectValue(rmCreateScheduleSelect, record ? record.scheduleType : "", { silent: true });
-
-  if (record) {
-    rmCreateForm.name.value = record.name;
-    const [hh, mm] = record.reportTime.replace("(GMT)", "").split(":");
-    rmCreateForm.hh.value = hh || "0";
-    rmCreateForm.mm.value = mm || "0";
-  }
-
-  validateCreateForm();
-  rmCreateOverlay.classList.add("open");
+function rmRenderScheduleRow(s) {
+  return `
+    <tr data-id="${s.id}">
+      <td>
+        <div class="bo-cell-primary">${rmEsc(rmReportLabel(s.reportKey))}</div>
+        <div class="bo-cell-secondary">${rmEsc(s.name)}</div>
+      </td>
+      <td>${rmEsc(s.org)}</td>
+      <td>${rmRecipientsChip(s.recipients.length)}</td>
+      <td>
+        <div class="bo-cell-primary">${s.frequency}</div>
+        <div class="bo-cell-secondary">${s.time} ${s.timezone}</div>
+      </td>
+      <td>${s.nextRun}</td>
+      <td>${rmStatusPill(s.status)}</td>
+      <td>
+        <div class="bo-row-actions">
+          <button class="bo-action-icon row-menu-trigger" data-id="${s.id}" aria-label="Row actions">${rmKebabIcon}</button>
+        </div>
+      </td>
+    </tr>`;
 }
 
-function closeCreateDrawer() {
-  rmCreateOverlay.classList.remove("open");
+const rmScheduleEmptyHtml = `
+  <tr><td colspan="7">
+    <div class="bo-empty-state">
+      <svg class="bo-empty-state-icon" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9H21"/><path d="M8 2v4"/><path d="M16 2v4"/></svg>
+      <p class="bo-empty-state-title" id="rmScheduleEmptyTitle">No scheduled reports yet</p>
+      <p class="bo-empty-state-sub" id="rmScheduleEmptySub">Set up an automated delivery so reports reach the right people on time.</p>
+    </div>
+  </td></tr>`;
+
+const rmSchedulePager = boCreatePager("rmScheduleRows", () => rmFilteredSchedules(), rmRenderScheduleRow, { pageSize: 8, emptyHtml: rmScheduleEmptyHtml });
+
+function rmScheduleFiltersActive() {
+  return !!(rmScheduleSearch || rmScheduleTypeFilter || rmScheduleOrgFilter || rmScheduleStatusFilter || rmScheduleFrequencyFilter);
 }
 
-rmCreateForm.addEventListener("input", validateCreateForm);
-rmCreateForm.addEventListener("change", validateCreateForm);
-
-rmCreateForm.addEventListener("submit", (e) => {
-  e.preventDefault();
-  if (rmSaveCreateBtn.disabled) return;
-
-  const typeKey = rmCreateTypeSelect.querySelector("input[type=hidden]").value;
-  const hh = String(rmCreateForm.hh.value || "0").padStart(2, "0");
-  const mm = String(rmCreateForm.mm.value || "0").padStart(2, "0");
-
-  const record = {
-    reportType: typeKey,
-    name: rmCreateForm.name.value.trim(),
-    hmo: rmCreateHmoSelect.querySelector("input[type=hidden]").value,
-    tag: rmCreateTagSelect.querySelector("input[type=hidden]").value,
-    user: rmCreateUserSelect.querySelector("input[type=hidden]").value,
-    scheduleType: rmCreateScheduleSelect.querySelector("input[type=hidden]").value || "DAILY",
-    daysOfWeek: "all days",
-    reportTime: `${hh}:${mm}(GMT)`,
-  };
-
-  if (editingScheduleId === null) {
-    rmSchedules.unshift({ ...record, id: rmSchedules.length ? Math.max(...rmSchedules.map((s) => s.id)) + 1 : 0 });
+function rmRefreshScheduleEmptyState() {
+  const titleEl = document.getElementById("rmScheduleEmptyTitle");
+  const subEl = document.getElementById("rmScheduleEmptySub");
+  if (!titleEl) return;
+  if (rmScheduleFiltersActive()) {
+    titleEl.textContent = "No reports match your filters";
+    subEl.innerHTML = 'Try a different search, or <button type="button" class="bo-btn-text" id="rmClearScheduleFiltersInline" style="padding:0; font-size:inherit;">clear filters</button>.';
+    document.getElementById("rmClearScheduleFiltersInline").addEventListener("click", rmClearScheduleFilters);
   } else {
-    const existing = rmSchedules.find((s) => s.id === editingScheduleId);
-    if (existing) Object.assign(existing, record);
+    titleEl.textContent = "No scheduled reports yet";
+    subEl.textContent = "Set up an automated delivery so reports reach the right people on time.";
+  }
+}
+
+function rmRenderSchedules() {
+  rmSchedulePager();
+  rmRefreshScheduleEmptyState();
+}
+rmRenderSchedules();
+
+document.getElementById("rmSearchInput").addEventListener("input", (e) => {
+  rmScheduleSearch = e.target.value.trim().toLowerCase();
+  rmSchedulePager.resetPage();
+  rmRenderSchedules();
+});
+document.getElementById("rmReportTypeFilter").addEventListener("change", (e) => { rmScheduleTypeFilter = e.target.value; rmSchedulePager.resetPage(); rmRenderSchedules(); });
+document.getElementById("rmOrgFilter").addEventListener("change", (e) => { rmScheduleOrgFilter = e.target.value; rmSchedulePager.resetPage(); rmRenderSchedules(); });
+document.getElementById("rmStatusFilter").addEventListener("change", (e) => { rmScheduleStatusFilter = e.target.value; rmSchedulePager.resetPage(); rmRenderSchedules(); });
+document.getElementById("rmFrequencyFilter").addEventListener("change", (e) => { rmScheduleFrequencyFilter = e.target.value; rmSchedulePager.resetPage(); rmRenderSchedules(); });
+
+function rmClearScheduleFilters() {
+  rmScheduleSearch = "";
+  rmScheduleTypeFilter = "";
+  rmScheduleOrgFilter = "";
+  rmScheduleStatusFilter = "";
+  rmScheduleFrequencyFilter = "";
+  document.getElementById("rmSearchInput").value = "";
+  document.querySelectorAll('#tab-scheduled .bo-select').forEach(resetBoSelect);
+  rmSchedulePager.resetPage();
+  rmRenderSchedules();
+}
+document.getElementById("rmClearScheduleFiltersBtn").addEventListener("click", rmClearScheduleFilters);
+
+/* ---------------- Report History ---------------- */
+let rmHistReportFilter = "";
+let rmHistOrgFilter = "";
+let rmHistStatusFilter = "";
+
+document.getElementById("rmHistReportFilterMenu").innerHTML = buildFilterSelectOptions(RM_REPORTS.map((r) => r.label), "All reports");
+document.getElementById("rmHistOrgFilterMenu").innerHTML = buildFilterSelectOptions(RM_ORGS, "All organisations");
+document.getElementById("rmHistStatusFilterMenu").innerHTML = buildFilterSelectOptions(RM_DELIVERY_STATUSES, "All delivery statuses");
+
+function rmFilteredHistory() {
+  return rmHistory.filter((h) => {
+    if (rmHistReportFilter && rmReportLabel(h.reportKey) !== rmHistReportFilter) return false;
+    if (rmHistOrgFilter && h.org !== rmHistOrgFilter) return false;
+    if (rmHistStatusFilter && h.status !== rmHistStatusFilter) return false;
+    return true;
+  });
+}
+
+function rmRenderHistoryRow(h) {
+  return `
+    <tr data-id="${h.id}">
+      <td>${rmEsc(rmReportLabel(h.reportKey))}</td>
+      <td>${rmEsc(h.org)}</td>
+      <td>${h.sentOn}</td>
+      <td>${rmRecipientsChip(h.recipients)}</td>
+      <td>${rmDeliveryPill(h.status)}</td>
+      <td>
+        <div class="bo-row-actions">
+          <button class="bo-action-icon row-menu-trigger" data-id="${h.id}" aria-label="Row actions">${rmKebabIcon}</button>
+        </div>
+      </td>
+    </tr>`;
+}
+
+const rmHistoryEmptyHtml = `
+  <tr><td colspan="6">
+    <div class="bo-empty-state">
+      <svg class="bo-empty-state-icon" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+      <p class="bo-empty-state-title" id="rmHistoryEmptyTitle">No deliveries yet</p>
+      <p class="bo-empty-state-sub" id="rmHistoryEmptySub">Reports that are sent — scheduled or manual — will show up here.</p>
+    </div>
+  </td></tr>`;
+
+const rmHistoryPager = boCreatePager("rmHistoryRows", () => rmFilteredHistory(), rmRenderHistoryRow, { pageSize: 8, emptyHtml: rmHistoryEmptyHtml });
+
+function rmHistoryFiltersActive() {
+  return !!(rmHistReportFilter || rmHistOrgFilter || rmHistStatusFilter);
+}
+
+function rmRefreshHistoryEmptyState() {
+  const titleEl = document.getElementById("rmHistoryEmptyTitle");
+  const subEl = document.getElementById("rmHistoryEmptySub");
+  if (!titleEl) return;
+  if (rmHistoryFiltersActive()) {
+    titleEl.textContent = "No reports match your filters";
+    subEl.innerHTML = 'Try different filters, or <button type="button" class="bo-btn-text" id="rmClearHistoryFiltersInline" style="padding:0; font-size:inherit;">clear filters</button>.';
+    document.getElementById("rmClearHistoryFiltersInline").addEventListener("click", rmClearHistoryFilters);
+  } else {
+    titleEl.textContent = "No deliveries yet";
+    subEl.textContent = "Reports that are sent — scheduled or manual — will show up here.";
+  }
+}
+
+function rmRenderHistory() {
+  rmHistoryPager();
+  rmRefreshHistoryEmptyState();
+}
+rmRenderHistory();
+
+document.getElementById("rmHistReportFilter").addEventListener("change", (e) => { rmHistReportFilter = e.target.value; rmHistoryPager.resetPage(); rmRenderHistory(); });
+document.getElementById("rmHistOrgFilter").addEventListener("change", (e) => { rmHistOrgFilter = e.target.value; rmHistoryPager.resetPage(); rmRenderHistory(); });
+document.getElementById("rmHistStatusFilter").addEventListener("change", (e) => { rmHistStatusFilter = e.target.value; rmHistoryPager.resetPage(); rmRenderHistory(); });
+
+function rmClearHistoryFilters() {
+  rmHistReportFilter = "";
+  rmHistOrgFilter = "";
+  rmHistStatusFilter = "";
+  document.querySelectorAll('#tab-history .bo-select').forEach(resetBoSelect);
+  rmHistoryPager.resetPage();
+  rmRenderHistory();
+}
+document.getElementById("rmClearHistoryFiltersBtn").addEventListener("click", rmClearHistoryFilters);
+
+const rmHistoryRowMenu = document.getElementById("rmHistoryRowMenu");
+let activeHistoryId = null;
+
+document.getElementById("rmHistoryRows").addEventListener("click", (e) => {
+  const trigger = e.target.closest(".row-menu-trigger");
+  const row = e.target.closest("tr[data-id]");
+  if (!row) return;
+  const id = Number(row.dataset.id);
+
+  if (trigger) {
+    e.stopPropagation();
+    activeHistoryId = id;
+    const rect = trigger.getBoundingClientRect();
+    rmHistoryRowMenu.style.top = `${rect.bottom + 6}px`;
+    rmHistoryRowMenu.style.left = `${rect.right - 200}px`;
+    rmHistoryRowMenu.classList.add("open");
+    return;
   }
 
-  rmExpanded.add(typeKey);
-  closeCreateDrawer();
-  rmGroupsPager();
+  openHistoryDetails(id);
 });
 
-document.getElementById("rmCreateBtn").addEventListener("click", () => openCreateDrawer(null));
-document.getElementById("rmCancelCreate").addEventListener("click", closeCreateDrawer);
-document.getElementById("rmCloseCreateX").addEventListener("click", closeCreateDrawer);
-rmCreateOverlay.addEventListener("click", (e) => { if (e.target === rmCreateOverlay) closeCreateDrawer(); });
+document.addEventListener("click", (e) => {
+  if (!rmHistoryRowMenu.contains(e.target)) rmHistoryRowMenu.classList.remove("open");
+});
 
-/* ---------------- Manual Report drawer (sends immediately, no schedule is created) ---------------- */
-const rmManualOverlay = document.getElementById("rmManualDrawerOverlay");
-const rmManualForm = document.getElementById("rmManualForm");
-const rmSendManualBtn = document.getElementById("rmSendManualBtn");
-const rmManualTypeSelect = rmManualForm.querySelector('.bo-select[data-name="reportType"]');
+rmHistoryRowMenu.addEventListener("click", (e) => {
+  const item = e.target.closest(".bo-row-menu-item");
+  if (!item || activeHistoryId === null) return;
+  rmHistoryRowMenu.classList.remove("open");
+  if (item.dataset.action === "view") openHistoryDetails(activeHistoryId);
+});
 
-function validateManualForm() {
-  const typeOk = rmManualTypeSelect.querySelector("input[type=hidden]").value !== "";
-  rmSendManualBtn.disabled = !(typeOk && rmManualForm.email.value.trim() !== "");
+/* ---------------- History delivery details drawer ---------------- */
+const rmHistDetailsOverlay = document.getElementById("rmHistDetailsDrawerOverlay");
+
+function openHistoryDetails(id) {
+  const h = rmHistory.find((x) => x.id === id);
+  if (!h) return;
+  document.getElementById("rmHistDetailReport").textContent = rmReportLabel(h.reportKey);
+  document.getElementById("rmHistDetailOrg").textContent = h.org;
+  document.getElementById("rmHistDetailSentOn").textContent = h.sentOn;
+  document.getElementById("rmHistDetailStatus").innerHTML = rmDeliveryPill(h.status);
+
+  const failureSection = document.getElementById("rmHistDetailFailureSection");
+  if (h.failureReason) {
+    failureSection.hidden = false;
+    document.getElementById("rmHistDetailFailureReason").textContent = h.failureReason;
+  } else {
+    failureSection.hidden = true;
+  }
+
+  rmHistDetailsOverlay.classList.add("open");
 }
 
-function openManualDrawer() {
-  rmManualForm.reset();
-  rmManualForm.querySelectorAll(".bo-select").forEach((s) => setBoSelectValue(s, "", { silent: true }));
-  validateManualForm();
-  rmManualOverlay.classList.add("open");
+function closeHistoryDetails() { rmHistDetailsOverlay.classList.remove("open"); }
+document.getElementById("rmCloseHistDetailsX").addEventListener("click", closeHistoryDetails);
+document.getElementById("rmCloseHistDetailsBtn").addEventListener("click", closeHistoryDetails);
+rmHistDetailsOverlay.addEventListener("click", (e) => { if (e.target === rmHistDetailsOverlay) closeHistoryDetails(); });
+
+/* ---------------- Schedule row menu + details drawer ---------------- */
+const rmScheduleRowMenu = document.getElementById("rmScheduleRowMenu");
+let activeScheduleId = null;
+
+document.getElementById("rmScheduleRows").addEventListener("click", (e) => {
+  const trigger = e.target.closest(".row-menu-trigger");
+  const row = e.target.closest("tr[data-id]");
+  if (!row) return;
+  const id = Number(row.dataset.id);
+
+  if (trigger) {
+    e.stopPropagation();
+    activeScheduleId = id;
+    refreshScheduleRowMenuLabel();
+    const rect = trigger.getBoundingClientRect();
+    rmScheduleRowMenu.style.top = `${rect.bottom + 6}px`;
+    rmScheduleRowMenu.style.left = `${rect.right - 190}px`;
+    rmScheduleRowMenu.classList.add("open");
+    return;
+  }
+
+  openScheduleDetails(id);
+});
+
+function refreshScheduleRowMenuLabel() {
+  const s = rmSchedules.find((x) => x.id === activeScheduleId);
+  const toggleItem = rmScheduleRowMenu.querySelector('[data-action="toggle"]');
+  if (s && toggleItem) toggleItem.textContent = s.status === "Active" ? "Pause Schedule" : "Resume Schedule";
 }
 
-function closeManualDrawer() {
-  rmManualOverlay.classList.remove("open");
+document.addEventListener("click", (e) => {
+  if (!rmScheduleRowMenu.contains(e.target)) rmScheduleRowMenu.classList.remove("open");
+});
+
+function rmToggleScheduleStatus(id) {
+  const s = rmSchedules.find((x) => x.id === id);
+  if (!s) return;
+  s.status = s.status === "Active" ? "Paused" : "Active";
+  s.nextRun = s.status === "Active" ? "Pending next cycle" : "—";
+  rmRenderSchedules();
 }
 
-rmManualForm.addEventListener("input", validateManualForm);
-rmManualForm.addEventListener("change", validateManualForm);
+function rmDeleteSchedule(id) {
+  const s = rmSchedules.find((x) => x.id === id);
+  if (!s) return;
+  if (!confirm(`Delete "${s.name}"? This does not delete the underlying report — only this schedule.`)) return;
+  rmSchedules.splice(rmSchedules.indexOf(s), 1);
+  rmRenderSchedules();
+}
 
-rmManualForm.addEventListener("submit", (e) => {
+rmScheduleRowMenu.addEventListener("click", (e) => {
+  const item = e.target.closest(".bo-row-menu-item");
+  if (!item || activeScheduleId === null) return;
+  rmScheduleRowMenu.classList.remove("open");
+  const id = activeScheduleId;
+
+  if (item.dataset.action === "view") openScheduleDetails(id);
+  else if (item.dataset.action === "edit") openWizardForEdit(id);
+  else if (item.dataset.action === "toggle") rmToggleScheduleStatus(id);
+  else if (item.dataset.action === "delete") rmDeleteSchedule(id);
+});
+
+const rmDetailsOverlay = document.getElementById("rmDetailsDrawerOverlay");
+let rmDetailsScheduleId = null;
+
+function openScheduleDetails(id) {
+  const s = rmSchedules.find((x) => x.id === id);
+  if (!s) return;
+  rmDetailsScheduleId = id;
+
+  document.getElementById("rmDetailReport").textContent = rmReportLabel(s.reportKey);
+  document.getElementById("rmDetailName").textContent = s.name;
+  document.getElementById("rmDetailOrg").textContent = s.org;
+  document.getElementById("rmDetailTags").textContent = s.tags.join(", ") || "—";
+  document.getElementById("rmDetailFrequency").textContent = s.frequency;
+  document.getElementById("rmDetailTime").textContent = `${s.time} ${s.timezone}`;
+  document.getElementById("rmDetailStatus").innerHTML = rmStatusPill(s.status);
+  document.getElementById("rmDetailRecipients").textContent = s.recipients.join(", ");
+  document.getElementById("rmDetailLastSent").textContent = s.lastSent;
+  document.getElementById("rmDetailLastDeliveryStatus").innerHTML = rmDeliveryPill(s.lastDeliveryStatus);
+  document.getElementById("rmDetailNextRun").textContent = s.nextRun;
+
+  document.getElementById("rmDetailToggleBtn").textContent = s.status === "Active" ? "Pause Schedule" : "Resume Schedule";
+
+  rmDetailsOverlay.classList.add("open");
+}
+
+function closeScheduleDetails() { rmDetailsOverlay.classList.remove("open"); rmDetailsScheduleId = null; }
+document.getElementById("rmCloseDetailsX").addEventListener("click", closeScheduleDetails);
+rmDetailsOverlay.addEventListener("click", (e) => { if (e.target === rmDetailsOverlay) closeScheduleDetails(); });
+
+document.getElementById("rmDetailToggleBtn").addEventListener("click", () => {
+  if (rmDetailsScheduleId === null) return;
+  rmToggleScheduleStatus(rmDetailsScheduleId);
+  openScheduleDetails(rmDetailsScheduleId);
+});
+
+document.getElementById("rmDetailDeleteBtn").addEventListener("click", () => {
+  if (rmDetailsScheduleId === null) return;
+  const id = rmDetailsScheduleId;
+  closeScheduleDetails();
+  rmDeleteSchedule(id);
+});
+
+document.getElementById("rmDetailEditBtn").addEventListener("click", () => {
+  if (rmDetailsScheduleId === null) return;
+  const id = rmDetailsScheduleId;
+  closeScheduleDetails();
+  openWizardForEdit(id);
+});
+
+/* ---------------- Schedule Report (also used for Edit Schedule) ---------------- */
+const rmWizardOverlay = document.getElementById("rmScheduleWizardOverlay");
+const rmWizardForm = document.getElementById("rmWizardForm");
+const rmWizardSaveBtn = document.getElementById("rmWizardSave");
+let rmWizardEditingId = null;
+let rmWizardSelectedTags = new Set();
+let rmWizardSelectedRecipients = new Set();
+let rmWizardRecipientSearch = "";
+
+document.getElementById("rmWizardReportMenu").innerHTML = RM_REPORTS.map(
+  (r) => `<div class="bo-select-option" data-value="${r.key}">${r.label}<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>`
+).join("");
+document.getElementById("rmWizardOrgMenu").innerHTML = buildSelectOptions(RM_ORGS);
+document.getElementById("rmWizardFrequencyMenu").innerHTML = buildSelectOptions(RM_FREQUENCIES);
+
+function renderWizardTags() {
+  document.getElementById("rmWizardTags").innerHTML = RM_TAGS.map(
+    (t) => `<label class="bo-checkbox-item"><input type="checkbox" data-wiz-tag="${t}" ${rmWizardSelectedTags.has(t) ? "checked" : ""} /> ${t}</label>`
+  ).join("");
+}
+
+function renderWizardRecipients() {
+  const names = RM_DIRECTORY.filter((name) => name.toLowerCase().includes(rmWizardRecipientSearch));
+  document.getElementById("rmWizardRecipients").innerHTML = names.length
+    ? names.map(
+        (name) => `<label class="bo-recipient-item"><input type="checkbox" data-wiz-recipient="${name}" ${rmWizardSelectedRecipients.has(name) ? "checked" : ""} /> ${name}</label>`
+      ).join("")
+    : `<p class="bo-empty-state-sub" style="padding:8px 4px; margin:0;">No recipients match "${rmEsc(rmWizardRecipientSearch)}".</p>`;
+}
+
+document.getElementById("rmWizardRecipientSearch").addEventListener("input", (e) => {
+  rmWizardRecipientSearch = e.target.value.trim().toLowerCase();
+  renderWizardRecipients();
+});
+
+document.getElementById("rmWizardTags").addEventListener("change", (e) => {
+  const box = e.target.closest("[data-wiz-tag]");
+  if (!box) return;
+  if (box.checked) rmWizardSelectedTags.add(box.dataset.wizTag);
+  else rmWizardSelectedTags.delete(box.dataset.wizTag);
+});
+
+document.getElementById("rmWizardRecipients").addEventListener("change", (e) => {
+  const box = e.target.closest("[data-wiz-recipient]");
+  if (!box) return;
+  if (box.checked) rmWizardSelectedRecipients.add(box.dataset.wizRecipient);
+  else rmWizardSelectedRecipients.delete(box.dataset.wizRecipient);
+  validateWizardForm();
+});
+
+function computeNextRun(frequency) {
+  if (frequency === "Daily") return "Tomorrow";
+  if (frequency === "Weekly") return "Next week";
+  if (frequency === "Monthly") return "Next month";
+  return "—";
+}
+
+function validateWizardForm() {
+  const reportOk = !!rmWizardForm.reportKey.value;
+  const configOk = rmWizardForm.name.value.trim() !== "" && !!rmWizardForm.org.value;
+  const scheduleOk = !!rmWizardForm.frequency.value;
+  const recipientsOk = rmWizardSelectedRecipients.size > 0;
+  rmWizardSaveBtn.disabled = !(reportOk && configOk && scheduleOk && recipientsOk);
+}
+
+rmWizardForm.addEventListener("input", validateWizardForm);
+rmWizardForm.addEventListener("change", validateWizardForm);
+
+function openWizardForCreate() {
+  rmWizardEditingId = null;
+  rmWizardSelectedTags = new Set();
+  rmWizardSelectedRecipients = new Set();
+  rmWizardRecipientSearch = "";
+  document.getElementById("rmWizardTitle").textContent = "Schedule Report";
+  rmWizardSaveBtn.textContent = "Schedule Report";
+  rmWizardForm.reset();
+  rmWizardForm.querySelectorAll(".bo-select").forEach(resetBoSelect);
+  document.getElementById("rmWizardRecipientSearch").value = "";
+  renderWizardTags();
+  renderWizardRecipients();
+  validateWizardForm();
+  rmWizardOverlay.classList.add("open");
+}
+
+function openWizardForEdit(id) {
+  const s = rmSchedules.find((x) => x.id === id);
+  if (!s) return;
+  rmWizardEditingId = id;
+  rmWizardSelectedTags = new Set(s.tags);
+  rmWizardSelectedRecipients = new Set(s.recipients);
+  rmWizardRecipientSearch = "";
+
+  document.getElementById("rmWizardTitle").textContent = `Edit Schedule — ${s.name}`;
+  rmWizardSaveBtn.textContent = "Save Changes";
+  rmWizardForm.reset();
+  document.getElementById("rmWizardRecipientSearch").value = "";
+
+  setBoSelectValue(rmWizardForm.querySelector('.bo-select[data-name="wizReport"]'), s.reportKey, { silent: true });
+  setBoSelectValue(rmWizardForm.querySelector('.bo-select[data-name="wizOrg"]'), s.org, { silent: true });
+  setBoSelectValue(rmWizardForm.querySelector('.bo-select[data-name="wizFrequency"]'), s.frequency, { silent: true });
+  rmWizardForm.name.value = s.name;
+  const [hh, mm] = s.time.replace(/\s*[AP]M/i, "").split(":");
+  rmWizardForm.hh.value = hh || "9";
+  rmWizardForm.mm.value = mm || "0";
+
+  renderWizardTags();
+  renderWizardRecipients();
+  validateWizardForm();
+  rmWizardOverlay.classList.add("open");
+}
+
+function closeWizard() { rmWizardOverlay.classList.remove("open"); }
+
+document.getElementById("rmScheduleReportBtn").addEventListener("click", openWizardForCreate);
+document.getElementById("rmCancelWizard").addEventListener("click", closeWizard);
+document.getElementById("rmCloseWizardX").addEventListener("click", closeWizard);
+rmWizardOverlay.addEventListener("click", (e) => { if (e.target === rmWizardOverlay) closeWizard(); });
+
+rmWizardForm.addEventListener("submit", (e) => {
   e.preventDefault();
-  if (rmSendManualBtn.disabled) return;
-  closeManualDrawer();
-  alert("Report sent.");
+  if (rmWizardSaveBtn.disabled) return;
+
+  const reportKey = rmWizardForm.reportKey.value;
+  const org = rmWizardForm.org.value;
+  const frequency = rmWizardForm.frequency.value;
+  const timezone = "GMT";
+  const hh = String(rmWizardForm.hh.value || "0").padStart(2, "0");
+  const mm = String(rmWizardForm.mm.value || "0").padStart(2, "0");
+  const time = `${hh}:${mm}`;
+  const tags = Array.from(rmWizardSelectedTags);
+  const recipients = Array.from(rmWizardSelectedRecipients);
+  const nextRun = `${computeNextRun(frequency)}, ${time} ${timezone}`;
+
+  if (rmWizardEditingId === null) {
+    const nextId = rmSchedules.length ? Math.max(...rmSchedules.map((s) => s.id)) + 1 : 0;
+    rmSchedules.unshift({
+      id: nextId,
+      reportKey,
+      name: rmWizardForm.name.value.trim(),
+      org,
+      tags,
+      frequency,
+      time,
+      timezone,
+      recipients,
+      status: "Active",
+      lastSent: "—",
+      lastDeliveryStatus: "Processing",
+      nextRun,
+    });
+  } else {
+    const s = rmSchedules.find((x) => x.id === rmWizardEditingId);
+    if (s) Object.assign(s, { reportKey, name: rmWizardForm.name.value.trim(), org, tags, frequency, time, timezone, recipients, nextRun });
+  }
+
+  closeWizard();
+  rmRenderSchedules();
 });
 
-document.getElementById("rmManualBtn").addEventListener("click", openManualDrawer);
-document.getElementById("rmCancelManual").addEventListener("click", closeManualDrawer);
-document.getElementById("rmCloseManualX").addEventListener("click", closeManualDrawer);
-rmManualOverlay.addEventListener("click", (e) => { if (e.target === rmManualOverlay) closeManualDrawer(); });
+/* ---------------- Send Report — immediate, one-time delivery ---------------- */
+const rmSendOverlay = document.getElementById("rmSendReportOverlay");
+const rmSendForm = document.getElementById("rmSendForm");
+const rmSendBtn = document.getElementById("rmSendBtn");
+let rmSendSelectedTags = new Set();
+let rmSendSelectedRecipients = new Set();
+let rmSendRecipientSearch = "";
+
+document.getElementById("rmSendReportMenu").innerHTML = RM_REPORTS.map(
+  (r) => `<div class="bo-select-option" data-value="${r.key}">${r.label}<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>`
+).join("");
+document.getElementById("rmSendOrgMenu").innerHTML = buildSelectOptions(RM_ORGS);
+
+function renderSendTags() {
+  document.getElementById("rmSendTags").innerHTML = RM_TAGS.map(
+    (t) => `<label class="bo-checkbox-item"><input type="checkbox" data-send-tag="${t}" ${rmSendSelectedTags.has(t) ? "checked" : ""} /> ${t}</label>`
+  ).join("");
+}
+
+function renderSendRecipients() {
+  const names = RM_DIRECTORY.filter((name) => name.toLowerCase().includes(rmSendRecipientSearch));
+  document.getElementById("rmSendRecipients").innerHTML = names.length
+    ? names.map(
+        (name) => `<label class="bo-recipient-item"><input type="checkbox" data-send-recipient="${name}" ${rmSendSelectedRecipients.has(name) ? "checked" : ""} /> ${name}</label>`
+      ).join("")
+    : `<p class="bo-empty-state-sub" style="padding:8px 4px; margin:0;">No recipients match "${rmEsc(rmSendRecipientSearch)}".</p>`;
+}
+
+document.getElementById("rmSendRecipientSearch").addEventListener("input", (e) => {
+  rmSendRecipientSearch = e.target.value.trim().toLowerCase();
+  renderSendRecipients();
+});
+
+document.getElementById("rmSendTags").addEventListener("change", (e) => {
+  const box = e.target.closest("[data-send-tag]");
+  if (!box) return;
+  if (box.checked) rmSendSelectedTags.add(box.dataset.sendTag);
+  else rmSendSelectedTags.delete(box.dataset.sendTag);
+});
+
+document.getElementById("rmSendRecipients").addEventListener("change", (e) => {
+  const box = e.target.closest("[data-send-recipient]");
+  if (!box) return;
+  if (box.checked) rmSendSelectedRecipients.add(box.dataset.sendRecipient);
+  else rmSendSelectedRecipients.delete(box.dataset.sendRecipient);
+  validateSendForm();
+});
+
+function validateSendForm() {
+  const ok = !!rmSendForm.reportKey.value && !!rmSendForm.org.value && rmSendSelectedRecipients.size > 0;
+  rmSendBtn.disabled = !ok;
+}
+rmSendForm.addEventListener("input", validateSendForm);
+rmSendForm.addEventListener("change", validateSendForm);
+
+function openSendReport() {
+  rmSendSelectedTags = new Set();
+  rmSendSelectedRecipients = new Set();
+  rmSendRecipientSearch = "";
+  rmSendForm.reset();
+  rmSendForm.querySelectorAll(".bo-select").forEach(resetBoSelect);
+  document.getElementById("rmSendRecipientSearch").value = "";
+  renderSendTags();
+  renderSendRecipients();
+  validateSendForm();
+  rmSendOverlay.classList.add("open");
+}
+function closeSendReport() { rmSendOverlay.classList.remove("open"); }
+
+document.getElementById("rmSendReportBtn").addEventListener("click", openSendReport);
+document.getElementById("rmCancelSend").addEventListener("click", closeSendReport);
+document.getElementById("rmCloseSendX").addEventListener("click", closeSendReport);
+rmSendOverlay.addEventListener("click", (e) => { if (e.target === rmSendOverlay) closeSendReport(); });
+
+rmSendForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  if (rmSendBtn.disabled) return;
+
+  const reportKey = rmSendForm.reportKey.value;
+  const org = rmSendForm.org.value;
+  const recipients = Array.from(rmSendSelectedRecipients);
+  const now = new Date();
+  const sentOn = `Today, ${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+
+  const nextId = rmHistory.length ? Math.max(...rmHistory.map((h) => h.id)) + 1 : 0;
+  rmHistory.unshift({ id: nextId, reportKey, org, sentOn, recipients: recipients.length, status: "Processing" });
+
+  closeSendReport();
+  rmRenderHistory();
+
+  const tab = document.querySelector('#rmTabs .bo-tab[data-tab="history"]');
+  if (tab) tab.click();
+});
