@@ -150,7 +150,7 @@ function renderPatientComplianceChart() {
   const container = document.getElementById("patientComplianceArea");
   const width = container.clientWidth || 640;
   const height = container.clientHeight || 220;
-  const padL = 32;
+  const padL = 34;
   const padR = 14;
   const padT = 12;
   const padB = 22;
@@ -158,6 +158,7 @@ function renderPatientComplianceChart() {
   const plotH = height - padT - padB;
   const yMin = 40;
   const yMax = 100;
+  const gridStep = 20;
 
   const months = ph.monthlyCompliance.map((m) => m.month);
   const complianceSeries = ph.monthlyCompliance.map((m) => m.compliance);
@@ -165,6 +166,15 @@ function renderPatientComplianceChart() {
 
   const xAt = (i) => padL + (plotW * i) / (months.length - 1);
   const yAt = (v) => padT + plotH - ((v - yMin) / (yMax - yMin)) * plotH;
+
+  const gridLines = [];
+  for (let v = yMin; v <= yMax; v += gridStep) {
+    const y = yAt(v);
+    gridLines.push(
+      `<line x1="${padL}" y1="${y}" x2="${width - padR}" y2="${y}" stroke="#EEF1F4" stroke-width="1"/>` +
+        `<text x="${padL - 8}" y="${y + 4}" text-anchor="end" font-size="10.5" fill="#9AA5B1">${v}</text>`
+    );
+  }
 
   const xLabels = months
     .map((m, i) => `<text x="${xAt(i)}" y="${height - 6}" text-anchor="middle" font-size="10.5" fill="#9AA5B1">${m}</text>`)
@@ -178,6 +188,7 @@ function renderPatientComplianceChart() {
 
   container.innerHTML = `
     <svg viewBox="0 0 ${width} ${height}" class="bo-area-svg" preserveAspectRatio="none">
+      ${gridLines.join("")}
       ${buildLine(complianceSeries, "#1F3C73")}
       ${buildLine(usableSeries, "#F2994A")}
       ${xLabels}
@@ -216,8 +227,6 @@ function renderHistogram(containerId, buckets) {
 renderHistogram("patientErrorsHistogram", ph.histograms.errors);
 renderHistogram("patientNonRecordedHistogram", ph.histograms.nonRecordedByWeekday);
 renderHistogram("patientRecordedHoursHistogram", ph.histograms.recordedHours);
-
-document.getElementById("patientComplianceRangeLabel").textContent = `${ph.complianceInfo.firstSignIn} – ${ph.complianceInfo.lastSession}`;
 
 document.getElementById("patientRecordsInfoList").innerHTML = [
   boKv("Total recordings", ph.recordsInfo.totalRecordings),
@@ -501,12 +510,15 @@ document.getElementById("patientCloseMessageDrawerX").addEventListener("click", 
 patientMessageDrawerOverlay.addEventListener("click", (e) => { if (e.target === patientMessageDrawerOverlay) closePatientMessageDrawer(); });
 
 /* ---------------- Tabs ---------------- */
+const eventsTabActions = document.getElementById("eventsTabActions");
+
 document.querySelectorAll("#patientTabs .bo-tab").forEach((tab) => {
   tab.addEventListener("click", () => {
     document.querySelectorAll("#patientTabs .bo-tab").forEach((t) => t.classList.remove("active"));
     document.querySelectorAll(".bo-tab-panel").forEach((p) => p.classList.remove("active"));
     tab.classList.add("active");
     document.getElementById(`tab-${tab.dataset.tab}`).classList.add("active");
+    eventsTabActions.hidden = tab.dataset.tab !== "events";
     if (tab.dataset.tab === "summary") renderPatientComplianceChart();
   });
 });

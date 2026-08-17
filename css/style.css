@@ -803,7 +803,6 @@ body {
   display: flex;
   flex-direction: column;
   gap: 22px;
-  max-width: 1400px;
 }
 
 /* -- Patient header card -- */
@@ -1033,7 +1032,7 @@ body {
   display: inline-block;
 }
 
-.chart-wrap { overflow-x: auto; padding-top: 10px; }
+.chart-wrap { overflow-x: auto; padding-top: 10px; flex: 1; min-width: 0; }
 
 .chart-svg { display: block; min-width: 100%; }
 
@@ -1209,6 +1208,7 @@ body {
   gap: 4px;
   height: 260px;
   min-width: 900px;
+  flex: 1;
   position: relative;
   border-top: 1px dashed var(--gray-border);
   padding-top: 4px;

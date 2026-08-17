@@ -120,11 +120,21 @@
         <button class="bo-tab bo-seg-btn" data-tab="compliance">Compliance</button>
         <button class="bo-tab bo-seg-btn" data-tab="events">Events</button>
       </div>
+      <div class="bo-profile-topbar-actions" id="eventsTabActions" hidden>
+        <button type="button" class="bo-btn-primary" id="patientAddMessageBtn">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          Message
+        </button>
+        <button type="button" class="bo-btn-primary" id="patientAddEventBtn">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          Event
+        </button>
+      </div>
     </div>
 
     <!-- SUMMARY -->
     <div class="bo-tab-panel active" id="tab-summary">
-      <div class="bo-two-col" style="grid-template-columns: 260px 1fr 460px;">
+      <div class="bo-two-col" style="grid-template-columns: 300px 1fr 460px;">
         <div class="bo-panel-col">
           <section class="bo-card bo-panel bo-panel--fill">
             <h3 class="bo-panel-title">Registration Data</h3>
@@ -133,10 +143,6 @@
           <section class="bo-card bo-panel bo-panel--fill">
             <h3 class="bo-panel-title">Usage Data</h3>
             <div class="bo-kv-grid bo-kv-grid--scroll" id="patientUsageList"></div>
-          </section>
-          <section class="bo-card bo-panel bo-panel--fill">
-            <h3 class="bo-panel-title">Status overview</h3>
-            <div class="bo-status-overview-list" id="patientStatusOverviewList"></div>
           </section>
         </div>
 
@@ -158,25 +164,32 @@
           </section>
         </div>
 
-        <section class="bo-card bo-panel">
-          <div class="bo-cal-head">
-            <span class="bo-cal-title" id="patientCalTitle">&nbsp;</span>
-            <button type="button" class="bo-cal-pick-btn" id="patientCalTodayBtn">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="17" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3 9H21" stroke="currentColor" stroke-width="1.8"/></svg>
-              Pick a date
-            </button>
-          </div>
-          <div class="bo-cal-grid" id="patientCalDow">
-            <span class="bo-cal-dow">Sun</span><span class="bo-cal-dow">Mon</span><span class="bo-cal-dow">Tue</span>
-            <span class="bo-cal-dow">Wed</span><span class="bo-cal-dow">Thu</span><span class="bo-cal-dow">Fri</span><span class="bo-cal-dow">Sat</span>
-          </div>
-          <div class="bo-cal-grid" id="patientCalGrid"></div>
-          <div class="bo-cal-nav">
-            <button type="button" class="bo-cal-nav-btn" id="patientCalPrev">Previous</button>
-            <button type="button" class="bo-cal-nav-btn" id="patientCalToday">Today</button>
-            <button type="button" class="bo-cal-nav-btn primary" id="patientCalNext">Next</button>
-          </div>
-        </section>
+        <div class="bo-panel-col">
+          <section class="bo-card bo-panel">
+            <div class="bo-cal-head">
+              <span class="bo-cal-title" id="patientCalTitle">&nbsp;</span>
+              <button type="button" class="bo-cal-pick-btn" id="patientCalTodayBtn">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="17" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3 9H21" stroke="currentColor" stroke-width="1.8"/></svg>
+                Pick a date
+              </button>
+            </div>
+            <div class="bo-cal-grid" id="patientCalDow">
+              <span class="bo-cal-dow">Sun</span><span class="bo-cal-dow">Mon</span><span class="bo-cal-dow">Tue</span>
+              <span class="bo-cal-dow">Wed</span><span class="bo-cal-dow">Thu</span><span class="bo-cal-dow">Fri</span><span class="bo-cal-dow">Sat</span>
+            </div>
+            <div class="bo-cal-grid" id="patientCalGrid"></div>
+            <div class="bo-cal-nav">
+              <button type="button" class="bo-cal-nav-btn" id="patientCalPrev">Previous</button>
+              <button type="button" class="bo-cal-nav-btn" id="patientCalToday">Today</button>
+              <button type="button" class="bo-cal-nav-btn primary" id="patientCalNext">Next</button>
+            </div>
+          </section>
+
+          <section class="bo-card bo-panel bo-panel--fill">
+            <h3 class="bo-panel-title">Status overview</h3>
+            <div class="bo-status-overview-list" id="patientStatusOverviewList"></div>
+          </section>
+        </div>
       </div>
     </div>
 
@@ -228,7 +241,6 @@
           </div>
         </div>
         <div style="display:flex; align-items:center; gap:12px;">
-          <span class="bo-mini-title" id="patientComplianceRangeLabel" style="margin:0;">&nbsp;</span>
           <button type="button" class="bo-btn-icon-square" id="patientCompliancePdfBtn" title="Export PDF">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
           </button>
@@ -261,17 +273,6 @@
 
     <!-- EVENTS -->
     <div class="bo-tab-panel" id="tab-events">
-      <div class="bo-list-toolbar" style="padding:0 0 14px;">
-        <span class="bo-list-toolbar-spacer"></span>
-        <button type="button" class="bo-btn-primary" id="patientAddMessageBtn">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-          Message
-        </button>
-        <button type="button" class="bo-btn-primary" id="patientAddEventBtn">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-          Event
-        </button>
-      </div>
       <div class="bo-table-card">
         <div class="bo-table-scroll">
           <table class="bo-list-table">
@@ -406,6 +407,7 @@
   </div>
 
 <script src="js/dashboard-nav.js"></script>
+<script src="js/bo-table-scroll.js"></script>
 <script src="js/bo-pagination.js"></script>
 <script src="js/patients-directory.js"></script>
 <script src="js/patient-events-data.js"></script>

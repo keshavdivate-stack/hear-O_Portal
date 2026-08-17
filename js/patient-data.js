@@ -42,16 +42,26 @@ function buildDayScale(containerId) {
 }
 
 /* ---------------- Overview chart (status timeline) ---------------- */
-const COL_W = 40;
+const FALLBACK_COL_W = 40;
 const PAD = 30;
-const CHART_W = PAD * 2 + (chartDays.length - 1) * COL_W;
 const CHART_H = 190;
 const Y = { baseline: 150, active: 90, priority: 78 };
+
+let COL_W = FALLBACK_COL_W;
+let CHART_W = PAD * 2 + (chartDays.length - 1) * COL_W;
 
 function xAt(i) { return PAD + i * COL_W; }
 function yAt(d) { return Y[d.status]; }
 
 function buildOverviewChart() {
+  const wrapEl = document.getElementById("overviewChartWrap");
+  const available = wrapEl.clientWidth || 0;
+  /* Always match the container exactly (no fixed-width floor) so the chart
+     never overflows and gets clipped by the wrap's horizontal scroll, and
+     never falls short of the container leaving dead space on the right. */
+  CHART_W = Math.max(400, available);
+  COL_W = (CHART_W - PAD * 2) / (chartDays.length - 1);
+
   const pts = chartDays.map((d, i) => ({ x: xAt(i), y: yAt(d), d }));
 
   const baselineIdx = chartDays.findIndex((d) => d.status !== "baseline");
@@ -100,6 +110,12 @@ function buildOverviewChart() {
 }
 
 buildOverviewChart();
+
+let overviewResizeTimer = null;
+window.addEventListener("resize", () => {
+  clearTimeout(overviewResizeTimer);
+  overviewResizeTimer = setTimeout(buildOverviewChart, 150);
+});
 
 /* ---------------- Recordings ---------------- */
 const recordingStatus = [

@@ -25,15 +25,23 @@ function rmRenderGroupRow(t) {
   const isOpen = hasRows && rmExpanded.has(t.key);
 
   const bandRow = `
-    <tr class="bo-report-band${hasRows ? "" : " disabled"}" data-type="${t.key}">
-      <td class="bo-report-band-title" colspan="8">${t.label}</td>
+    <tr class="bo-report-band${hasRows ? "" : " empty"}" data-type="${t.key}">
+      <td colspan="8">
+        <span class="bo-report-band-title">
+          ${t.label}
+          ${hasRows ? `<span class="bo-report-count">${rows.length}</span>` : ""}
+        </span>
+      </td>
       <td>
         ${
           hasRows
             ? `<button type="button" class="bo-report-expand${isOpen ? " open" : ""}" aria-label="${isOpen ? "Collapse" : "Expand"} ${t.label}" aria-expanded="${isOpen}">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
               </button>`
-            : ""
+            : `<button type="button" class="bo-report-add" data-add-type="${t.key}" aria-label="Add a ${t.label} schedule">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
+                Add schedule
+              </button>`
         }
       </td>
     </tr>`;
@@ -74,12 +82,25 @@ const rmGroupsPager = boCreatePager(
 rmGroupsPager();
 
 document.getElementById("rmGroups").addEventListener("click", (e) => {
-  const band = e.target.closest(".bo-report-band:not(.disabled)");
+  const addBtn = e.target.closest(".bo-report-add");
+  if (addBtn) {
+    e.stopPropagation();
+    openCreateDrawer(null, addBtn.dataset.addType);
+    return;
+  }
+
+  const band = e.target.closest(".bo-report-band");
   if (band) {
     const key = band.dataset.type;
-    if (rmExpanded.has(key)) rmExpanded.delete(key);
-    else rmExpanded.add(key);
-    rmGroupsPager();
+    if (band.classList.contains("empty")) {
+      openCreateDrawer(null, key);
+    } else if (rmExpanded.has(key)) {
+      rmExpanded.delete(key);
+      rmGroupsPager();
+    } else {
+      rmExpanded.add(key);
+      rmGroupsPager();
+    }
     return;
   }
 
@@ -221,12 +242,12 @@ function validateCreateForm() {
   rmSaveCreateBtn.disabled = !(rmCreateForm.name.value.trim() !== "" && typeOk);
 }
 
-function openCreateDrawer(record) {
+function openCreateDrawer(record, presetType) {
   rmCreateForm.reset();
   editingScheduleId = record ? record.id : null;
   document.querySelector("#rmCreateDrawerOverlay .bo-drawer-head h2").textContent = record ? "Edit Report" : "Create New Report";
 
-  setBoSelectValue(rmCreateTypeSelect, record ? record.reportType : "", { silent: true });
+  setBoSelectValue(rmCreateTypeSelect, record ? record.reportType : presetType || "", { silent: true });
   setBoSelectValue(rmCreateHmoSelect, record ? record.hmo : "", { silent: true });
   setBoSelectValue(rmCreateTagSelect, record ? (record.tag || "").split(";")[0].trim() : "", { silent: true });
   setBoSelectValue(rmCreateUserSelect, record ? record.user : "", { silent: true });

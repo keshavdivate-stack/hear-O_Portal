@@ -420,7 +420,7 @@ function relabelEhrConnRows() {
   fields.forEach((field, i) => {
     field.querySelector(".bo-ehr-card-title").textContent = `EHR Connection ${i + 1}`;
     const removeBtn = field.querySelector(".bo-org-row-remove");
-    removeBtn.disabled = fields.length === 1;
+    removeBtn.hidden = fields.length === 1;
   });
   addEhrConnRowBtn.disabled = fields.length >= EHR_MAX;
   addEhrConnRowBtn.style.display = fields.length >= EHR_MAX ? "none" : "";
@@ -432,7 +432,7 @@ function addEhrConnRow(presetName) {
   const n = ehrConnRowCount;
 
   const card = document.createElement("div");
-  card.className = "bo-ehr-card";
+  card.className = "bo-ehr-card bo-ehr-card--plain";
   card.setAttribute("data-ehr-row", "");
   card.innerHTML = `
     <div class="bo-ehr-card-head">
@@ -457,7 +457,7 @@ function addEhrConnRow(presetName) {
         <label>Client Id</label>
         <input type="text" name="ehrConn${n}ClientId" placeholder="Enter Client ID" />
       </div>
-      <div class="bo-modal-field">
+      <div class="bo-modal-field full">
         <label>Client Secret</label>
         <input type="text" name="ehrConn${n}ClientSecret" placeholder="Enter Client Secret" />
       </div>
