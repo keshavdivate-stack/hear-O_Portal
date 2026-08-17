@@ -72,11 +72,11 @@ document.getElementById("supDashSeverityChips").innerHTML = SEVERITIES.map((sev)
     </div>`;
 }).join("");
 
-/* ---------------- Tickets by Area ----------------
-   Grouped by area rather than the full ~20-item Issue Type list -- a compact
+/* ---------------- Tickets by Category ----------------
+   Grouped by category rather than the full ~20-item Issue Type list -- a compact
    6-row rollup fits this panel, while the granular issue type breakdown is
    available by filtering the ticket list itself (js/support.js). */
-const supDashAreaColors = {
+const supDashCategoryColors = {
   Compliance: "var(--purple)",
   "Voice Engine": "var(--orange)",
   Sensors: "var(--yellow)",
@@ -85,13 +85,13 @@ const supDashAreaColors = {
   "System Schedule Engine": "var(--gray)",
 };
 
-document.getElementById("supDashIssueChips").innerHTML = AREAS.map((area) => {
-  const count = supDashTickets.filter((t) => ISSUE_TYPE_AREA[t.issueType] === area).length;
+document.getElementById("supDashIssueChips").innerHTML = CATEGORIES.map((category) => {
+  const count = supDashTickets.filter((t) => ISSUE_TYPE_CATEGORY[t.issueType] === category).length;
   return `
     <div class="bo-chip-row">
       <span class="bo-chip-left">
-        <span class="bo-chip-icon" style="background:${supDashAreaColors[area] || "var(--gray)"};"></span>
-        ${area}
+        <span class="bo-chip-icon" style="background:${supDashCategoryColors[category] || "var(--gray)"};"></span>
+        ${category}
       </span>
       <span class="bo-chip-count">${count}</span>
     </div>`;
