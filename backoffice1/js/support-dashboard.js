@@ -72,24 +72,26 @@ document.getElementById("supDashSeverityChips").innerHTML = SEVERITIES.map((sev)
     </div>`;
 }).join("");
 
-/* ---------------- Tickets by Issue Type ---------------- */
-const supDashIssueColors = {
-  "Recording Problem": "var(--red)",
-  "Voice Engine Issue": "var(--orange)",
-  "Sensor Issue": "#F2C94C",
-  "Uploading Problem": "var(--green)",
-  "Device/System Issue": "var(--blue)",
-  "Compliance Issue": "var(--purple)",
-  "Other Software Issue": "var(--gray)",
+/* ---------------- Tickets by Area ----------------
+   Grouped by area rather than the full ~20-item Issue Type list -- a compact
+   6-row rollup fits this panel, while the granular issue type breakdown is
+   available by filtering the ticket list itself (js/support.js). */
+const supDashAreaColors = {
+  Compliance: "var(--purple)",
+  "Voice Engine": "var(--orange)",
+  Sensors: "var(--yellow)",
+  "Patient (Mobile/Web)": "var(--blue)",
+  "Clinic Users (Security)": "var(--navy)",
+  "System Schedule Engine": "var(--gray)",
 };
 
-document.getElementById("supDashIssueChips").innerHTML = ISSUE_TYPES.map((issue) => {
-  const count = supDashTickets.filter((t) => t.issueType === issue).length;
+document.getElementById("supDashIssueChips").innerHTML = AREAS.map((area) => {
+  const count = supDashTickets.filter((t) => ISSUE_TYPE_AREA[t.issueType] === area).length;
   return `
     <div class="bo-chip-row">
       <span class="bo-chip-left">
-        <span class="bo-chip-icon" style="background:${supDashIssueColors[issue] || "var(--gray)"};"></span>
-        ${issue}
+        <span class="bo-chip-icon" style="background:${supDashAreaColors[area] || "var(--gray)"};"></span>
+        ${area}
       </span>
       <span class="bo-chip-count">${count}</span>
     </div>`;
