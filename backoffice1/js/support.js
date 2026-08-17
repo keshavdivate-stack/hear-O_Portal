@@ -202,9 +202,18 @@ document.getElementById("ticketSearchInput").addEventListener("input", (e) => {
 function setBoSelectValue(select, value, { silent = false } = {}) {
   const hiddenInput = select.querySelector("input[type=hidden]");
   const trigger = select.querySelector(".bo-select-value");
-  const option = select.querySelector(`.bo-select-option[data-value="${CSS.escape(value)}"]`);
+  const options = Array.from(select.querySelectorAll(".bo-select-option"));
+  /* Compare dataset.value directly rather than building a
+     [data-value="..."] CSS selector -- many values here (statuses like "In
+     Progress", tiers like "Tier 1", categories like "Patient (Mobile/Web)",
+     issue types with colons/slashes) contain characters CSS.escape would
+     encode, which never matches the plain, unescaped attribute actually
+     rendered in the DOM. That silently left the dropdown showing its
+     placeholder instead of the selected value, even though the underlying
+     filter was applied correctly. */
+  const option = options.find((o) => o.dataset.value === value);
 
-  select.querySelectorAll(".bo-select-option").forEach((o) => o.classList.remove("selected"));
+  options.forEach((o) => o.classList.remove("selected"));
 
   if (option) {
     option.classList.add("selected");
