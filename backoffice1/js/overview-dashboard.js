@@ -11,8 +11,6 @@ const ovAllOrgsHealthStats = [
   { num: Object.keys(orgHealthData).length, label: "Total Organizations", color: "var(--navy)", icon: `<rect width="16" height="18" x="4" y="3" rx="1"/><path d="M9 8h1"/><path d="M14 8h1"/><path d="M9 12h1"/><path d="M14 12h1"/><path d="M9 16h1"/><path d="M14 16h1"/><path d="M10 21v-3a2 2 0 0 1 4 0v3"/>`, delta: 0, deltaDir: "flat" },
   { num: ovAffectedOrgCount, label: "Organizations Affected", color: "var(--blue)", icon: `<rect width="16" height="18" x="4" y="3" rx="1"/><path d="M9 8h1"/><path d="M14 8h1"/><path d="M9 12h1"/><path d="M14 12h1"/>`, delta: 1, deltaDir: "up" },
   { num: 68, label: "Patients Affected", color: "var(--purple)", icon: `<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>`, delta: 23, deltaDir: "up" },
-  { num: 3, label: "Critical Issues", color: "var(--red)", icon: `<circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/>`, delta: 2, deltaDir: "up" },
-  { num: 8, label: "Warnings", color: "var(--orange)", icon: `<path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.73 3h16.9a2 2 0 0 0 1.73-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/><path d="M12 9v4"/><path d="M12 17h.01"/>`, delta: 3, deltaDir: "up" },
   { num: 11, label: "Issues Requiring Action", color: "var(--green)", icon: `<path d="M4 12L9 17L20 6"/>`, delta: 2, deltaDir: "down" },
 ];
 
@@ -23,13 +21,10 @@ const ovDeltaColor = (s) => (s.deltaDir === "flat" ? "var(--gray-text)" : s.delt
 function ovHealthStatsFor(orgId) {
   if (orgId === "all") return ovAllOrgsHealthStats;
   const o = orgHealthData[orgId];
-  const warnings = Math.max(o.openIssues - o.criticalIssues, 0);
   return [
     { num: 1, label: "Organization", color: "var(--navy)", icon: `<rect width="16" height="18" x="4" y="3" rx="1"/><path d="M9 8h1"/><path d="M14 8h1"/><path d="M9 12h1"/><path d="M14 12h1"/><path d="M9 16h1"/><path d="M14 16h1"/><path d="M10 21v-3a2 2 0 0 1 4 0v3"/>`, delta: 0, deltaDir: "flat" },
     { num: o.providers, label: "Providers", color: "var(--blue)", icon: `<rect width="16" height="18" x="4" y="3" rx="1"/><path d="M9 8h1"/><path d="M14 8h1"/><path d="M9 12h1"/><path d="M14 12h1"/>`, delta: 0, deltaDir: "flat" },
     { num: o.patientsAffected.length, label: "Patients Affected", color: "var(--purple)", icon: `<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>`, delta: 0, deltaDir: "flat" },
-    { num: o.criticalIssues, label: "Critical Issues", color: "var(--red)", icon: `<circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/>`, delta: 0, deltaDir: "flat" },
-    { num: warnings, label: "Warnings", color: "var(--orange)", icon: `<path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.73 3h16.9a2 2 0 0 0 1.73-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/><path d="M12 9v4"/><path d="M12 17h.01"/>`, delta: 0, deltaDir: "flat" },
     { num: o.openIssues, label: "Issues Requiring Action", color: "var(--green)", icon: `<path d="M4 12L9 17L20 6"/>`, delta: 0, deltaDir: "flat" },
   ];
 }
