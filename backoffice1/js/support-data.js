@@ -5,9 +5,8 @@
    catch-all ("Other / Manual Report") for tickets that don't correspond to
    any automated alarm (hardware failures, UI/translation bugs, etc. -- the
    doc only specifies system-health monitoring, not every possible
-   complaint). "Clinic Users (Security)" is kept as a selectable category
-   since the doc lists it under "Areas to check", but it has no named
-   alarms defined yet, so no ISSUE_TYPES entry maps to it. */
+   complaint), and "Suspicious Clinic Login" so every category -- including
+   Clinic Users (Security) -- has at least one demonstrable ticket. */
 const CATEGORIES = ["Compliance", "Voice Engine", "Sensors", "Patient (Mobile/Web)", "Clinic Users (Security)", "System Schedule Engine"];
 const SCOPES = ["Global", "Organization", "Patient"];
 
@@ -35,6 +34,7 @@ const ISSUE_TYPES = [
   "Missing Run: Billing Calc",
   "Missing Run: Insufficient Recalculate",
   "Missing Run: Is Valid Engine",
+  "Suspicious Clinic Login",
 ];
 
 const ISSUE_TYPE_CATEGORY = {
@@ -61,6 +61,7 @@ const ISSUE_TYPE_CATEGORY = {
   "Missing Run: Billing Calc": "System Schedule Engine",
   "Missing Run: Insufficient Recalculate": "System Schedule Engine",
   "Missing Run: Is Valid Engine": "System Schedule Engine",
+  "Suspicious Clinic Login": "Clinic Users (Security)",
 };
 
 /* Default scope per the doc's "Scope" column -- used to assign a scope to
@@ -91,6 +92,7 @@ const ISSUE_TYPE_SCOPE = {
   "Missing Run: Billing Calc": "Global",
   "Missing Run: Insufficient Recalculate": "Global",
   "Missing Run: Is Valid Engine": "Global",
+  "Suspicious Clinic Login": "Organization",
 };
 
 const TIERS = ["Tier 1", "Tier 2", "Tier 3"];
@@ -154,6 +156,7 @@ const SUPPORT_ISSUE_DESCRIPTIONS = {
   "Missing Run: Billing Calc": "The Billing Calc job did not run yesterday.",
   "Missing Run: Insufficient Recalculate": "The Insufficient Recalculate job did not run yesterday.",
   "Missing Run: Is Valid Engine": "The Is Valid Engine did not run.",
+  "Suspicious Clinic Login": "Clinic user login flagged for unusual location or repeated failed attempts.",
 };
 const SUPPORT_STATUS_SEVERITIES = {
   Escalated: ["Critical", "Critical", "High", "Medium"],
