@@ -105,48 +105,6 @@
     <div class="bo-list-toolbar">
       <h1>Report Management</h1>
       <span class="bo-list-toolbar-spacer"></span>
-      <div class="bo-search-pill" style="width:220px; flex-shrink:0;">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8"/><path d="M21 21L16.5 16.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-        <input type="text" id="rmUserFilter" placeholder="User name" />
-      </div>
-      <div class="bo-filter-wrap">
-        <button type="button" class="bo-filter-trigger" data-filter-target="rmFilterPopover" aria-label="Filters">
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M4 5H20L14 12.5V19L10 21V12.5L4 5Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
-        </button>
-        <div class="bo-filter-popover" id="rmFilterPopover">
-          <div class="bo-filter-popover-head">
-            <span class="bo-filter-popover-title">Filters</span>
-            <button type="button" class="bo-filter-popover-clear">Clear all</button>
-          </div>
-          <div class="bo-filter-popover-body">
-            <div class="bo-select" data-name="rmType">
-              <button type="button" class="bo-select-trigger">
-                <span class="bo-select-value placeholder">Report type</span>
-                <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </button>
-              <div class="bo-select-menu" id="rmTypeFilterMenu"></div>
-              <input type="hidden" id="rmTypeFilter" />
-            </div>
-            <div class="bo-select" data-name="rmHmo">
-              <button type="button" class="bo-select-trigger">
-                <span class="bo-select-value placeholder">HMO</span>
-                <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </button>
-              <div class="bo-select-menu" id="rmHmoFilterMenu"></div>
-              <input type="hidden" id="rmHmoFilter" />
-            </div>
-            <div class="bo-select" data-name="rmTag">
-              <button type="button" class="bo-select-trigger">
-                <span class="bo-select-value placeholder">Tag</span>
-                <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </button>
-              <div class="bo-select-menu" id="rmTagFilterMenu"></div>
-              <input type="hidden" id="rmTagFilter" />
-            </div>
-            <button class="bo-btn-secondary" id="rmApplyBtn" style="width:100%;">Apply</button>
-          </div>
-        </div>
-      </div>
       <button class="bo-btn-primary bo-btn-icon-only" id="rmDownloadBtn" aria-label="Download">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg>
       </button>
@@ -155,6 +113,38 @@
         Create New
       </button>
       <button class="bo-btn-primary" id="rmManualBtn">Manual</button>
+    </div>
+
+    <div class="bo-filter-row">
+      <div class="bo-select" data-name="rmType">
+        <button type="button" class="bo-select-trigger">
+          <span class="bo-select-value placeholder">Report type</span>
+          <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="bo-select-menu" id="rmTypeFilterMenu"></div>
+        <input type="hidden" id="rmTypeFilter" />
+      </div>
+      <div class="bo-select" data-name="rmHmo">
+        <button type="button" class="bo-select-trigger">
+          <span class="bo-select-value placeholder">HMO</span>
+          <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="bo-select-menu" id="rmHmoFilterMenu"></div>
+        <input type="hidden" id="rmHmoFilter" />
+      </div>
+      <div class="bo-select" data-name="rmTag">
+        <button type="button" class="bo-select-trigger">
+          <span class="bo-select-value placeholder">Tag</span>
+          <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="bo-select-menu" id="rmTagFilterMenu"></div>
+        <input type="hidden" id="rmTagFilter" />
+      </div>
+      <div class="bo-search-pill">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8"/><path d="M21 21L16.5 16.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <input type="text" id="rmUserFilter" placeholder="User name" />
+      </div>
+      <button class="bo-btn-secondary" id="rmApplyBtn">Apply</button>
     </div>
 
     <div class="bo-table-card">
@@ -357,6 +347,5 @@
 <script src="js/bo-pagination.js"></script>
 <script src="js/report-management-data.js"></script>
 <script src="js/report-management.js"></script>
-<script src="js/bo-filter-popover.js"></script>
 </body>
 </html>

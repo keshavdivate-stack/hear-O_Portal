@@ -111,71 +111,6 @@
         <button class="bo-tab bo-seg-btn" data-tab="rules">Rules</button>
       </div>
       <span class="bo-list-toolbar-spacer"></span>
-      <div class="bo-filter-wrap" data-tab-btn="tickets">
-        <button type="button" class="bo-filter-trigger" data-filter-target="ticketFilterPopover" aria-label="Filters">
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M4 5H20L14 12.5V19L10 21V12.5L4 5Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
-        </button>
-        <div class="bo-filter-popover" id="ticketFilterPopover">
-          <div class="bo-filter-popover-head">
-            <span class="bo-filter-popover-title">Filters</span>
-            <button type="button" class="bo-filter-popover-clear">Clear all</button>
-          </div>
-          <div class="bo-filter-popover-body">
-            <div class="bo-select bo-toolbar-select" data-name="ticketStatus">
-              <button type="button" class="bo-select-trigger">
-                <span class="bo-select-value placeholder">Status</span>
-                <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </button>
-              <div class="bo-select-menu" id="ticketStatusFilterMenu"></div>
-              <input type="hidden" id="ticketStatusFilter" />
-            </div>
-            <div class="bo-select bo-toolbar-select" data-name="ticketType">
-              <button type="button" class="bo-select-trigger">
-                <span class="bo-select-value placeholder">Type</span>
-                <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </button>
-              <div class="bo-select-menu" id="ticketTypeFilterMenu"></div>
-              <input type="hidden" id="ticketTypeFilter" />
-            </div>
-            <div class="bo-select bo-toolbar-select" data-name="ticketSeverity">
-              <button type="button" class="bo-select-trigger">
-                <span class="bo-select-value placeholder">Severity</span>
-                <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </button>
-              <div class="bo-select-menu" id="ticketSeverityFilterMenu"></div>
-              <input type="hidden" id="ticketSeverityFilter" />
-            </div>
-            <div class="bo-select bo-toolbar-select" data-name="ticketCategory">
-              <button type="button" class="bo-select-trigger">
-                <span class="bo-select-value placeholder">Category</span>
-                <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </button>
-              <div class="bo-select-menu" id="ticketCategoryFilterMenu"></div>
-              <input type="hidden" id="ticketCategoryFilter" />
-            </div>
-            <div class="bo-select bo-toolbar-select" data-name="ticketIssue">
-              <button type="button" class="bo-select-trigger">
-                <span class="bo-select-value placeholder">Issue type</span>
-                <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </button>
-              <div class="bo-select-menu" id="ticketIssueFilterMenu"></div>
-              <input type="hidden" id="ticketIssueFilter" />
-            </div>
-            <div class="bo-select bo-toolbar-select" data-name="ticketOrigin">
-              <button type="button" class="bo-select-trigger">
-                <span class="bo-select-value placeholder">Origin</span>
-                <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </button>
-              <div class="bo-select-menu" id="ticketOriginFilterMenu"></div>
-              <input type="hidden" id="ticketOriginFilter" />
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="bo-search-pill" data-tab-btn="tickets" style="width:260px; flex-shrink:0;">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8"/><path d="M21 21L16.5 16.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-        <input type="text" id="ticketSearchInput" placeholder="Search ticket, patient or org" />
-      </div>
       <button class="bo-btn-primary" id="openNewTicketBtn" data-tab-btn="tickets">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
         New Ticket
@@ -188,6 +123,61 @@
 
     <!-- TICKETS -->
     <div class="bo-tab-panel active" id="tab-tickets">
+
+    <div class="bo-filter-row">
+      <div class="bo-select bo-toolbar-select" data-name="ticketStatus">
+        <button type="button" class="bo-select-trigger">
+          <span class="bo-select-value placeholder">Status</span>
+          <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="bo-select-menu" id="ticketStatusFilterMenu"></div>
+        <input type="hidden" id="ticketStatusFilter" />
+      </div>
+      <div class="bo-select bo-toolbar-select" data-name="ticketType">
+        <button type="button" class="bo-select-trigger">
+          <span class="bo-select-value placeholder">Type</span>
+          <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="bo-select-menu" id="ticketTypeFilterMenu"></div>
+        <input type="hidden" id="ticketTypeFilter" />
+      </div>
+      <div class="bo-select bo-toolbar-select" data-name="ticketSeverity">
+        <button type="button" class="bo-select-trigger">
+          <span class="bo-select-value placeholder">Severity</span>
+          <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="bo-select-menu" id="ticketSeverityFilterMenu"></div>
+        <input type="hidden" id="ticketSeverityFilter" />
+      </div>
+      <div class="bo-select bo-toolbar-select" data-name="ticketCategory">
+        <button type="button" class="bo-select-trigger">
+          <span class="bo-select-value placeholder">Category</span>
+          <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="bo-select-menu" id="ticketCategoryFilterMenu"></div>
+        <input type="hidden" id="ticketCategoryFilter" />
+      </div>
+      <div class="bo-select bo-toolbar-select" data-name="ticketIssue">
+        <button type="button" class="bo-select-trigger">
+          <span class="bo-select-value placeholder">Issue type</span>
+          <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="bo-select-menu" id="ticketIssueFilterMenu"></div>
+        <input type="hidden" id="ticketIssueFilter" />
+      </div>
+      <div class="bo-select bo-toolbar-select" data-name="ticketOrigin">
+        <button type="button" class="bo-select-trigger">
+          <span class="bo-select-value placeholder">Origin</span>
+          <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="bo-select-menu" id="ticketOriginFilterMenu"></div>
+        <input type="hidden" id="ticketOriginFilter" />
+      </div>
+      <div class="bo-search-pill">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8"/><path d="M21 21L16.5 16.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <input type="text" id="ticketSearchInput" placeholder="Search ticket, patient or org" />
+      </div>
+    </div>
 
       <div class="bo-table-card">
         <div class="bo-table-scroll">
@@ -524,6 +514,5 @@
 <script src="js/bo-pagination.js"></script>
 <script src="js/support-data.js"></script>
 <script src="js/support.js"></script>
-<script src="js/bo-filter-popover.js"></script>
 </body>
 </html>

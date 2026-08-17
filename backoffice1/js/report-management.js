@@ -118,16 +118,13 @@ document.getElementById("rmGroups").addEventListener("click", (e) => {
   }
 });
 
-function rmApplyFilters() {
+document.getElementById("rmApplyBtn").addEventListener("click", () => {
   rmTypeFilter = document.getElementById("rmTypeFilter").value;
   rmHmoFilter = document.getElementById("rmHmoFilter").value;
   rmTagFilter = document.getElementById("rmTagFilter").value;
   rmUserFilter = document.getElementById("rmUserFilter").value;
   rmGroupsPager();
-}
-
-document.getElementById("rmApplyBtn").addEventListener("click", rmApplyFilters);
-document.getElementById("rmUserFilter").addEventListener("input", rmApplyFilters);
+});
 
 document.getElementById("rmDownloadBtn").addEventListener("click", () => {
   alert("Downloading report list...");

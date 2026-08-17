@@ -112,8 +112,6 @@ document.getElementById("scStatusToFilter").addEventListener("change", (e) => {
 
 document.getElementById("scSearchInput").addEventListener("input", (e) => {
   scSearchTerm = e.target.value.trim().toLowerCase();
-  scCurrentPage = 1;
-  renderStatusChanges();
 });
 
 document.getElementById("scFromDate").addEventListener("change", (e) => { scFromDate = e.target.value; });
