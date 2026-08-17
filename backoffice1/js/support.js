@@ -370,6 +370,54 @@ function closeTicketDetail() {
   activeTicket = null;
 }
 
+/* ---------------- Notifications bell ---------------- */
+/* Surfaces the tickets that most need attention -- still open and either
+   Critical severity or already Escalated -- so the bell mirrors what "Open
+   Issues Requiring Action" on the Overview dashboard is counting, rather
+   than duplicating the full ticket list. */
+const notifSeverityColor = { Critical: "var(--red)", High: "var(--orange)", Medium: "var(--yellow)", Low: "var(--blue)" };
+
+function supportNotifications() {
+  return allTickets
+    .filter((t) => t.status !== "Resolved" && (t.severity === "Critical" || t.status === "Escalated"))
+    .sort((a, b) => parseTicketDate(b.createdDate) - parseTicketDate(a.createdDate))
+    .slice(0, 8);
+}
+
+function renderNotifications() {
+  const notifications = supportNotifications();
+  const notifBtn = document.getElementById("notifBtn");
+  notifBtn.dataset.count = notifications.length;
+  notifBtn.classList.toggle("badge", notifications.length > 0);
+
+  const list = document.getElementById("notifList");
+  if (!notifications.length) {
+    list.innerHTML = `<div class="bo-notif-empty">No urgent tickets right now.</div>`;
+    return;
+  }
+
+  list.innerHTML = notifications
+    .map(
+      (t) => `
+      <div class="bo-notif-item" data-source="${t.source}" data-id="${t.id}">
+        <span class="bo-notif-dot" style="background:${notifSeverityColor[t.severity] || "var(--gray-text)"};"></span>
+        <span>
+          <span class="text">${t.ticketNo} — ${t.issueType}</span>
+          <span class="meta">${t.organization} · ${t.status} · ${t.createdDate}</span>
+        </span>
+      </div>`
+    )
+    .join("");
+}
+renderNotifications();
+
+document.getElementById("notifList").addEventListener("click", (e) => {
+  const item = e.target.closest(".bo-notif-item");
+  if (!item) return;
+  document.getElementById("notifPopover").classList.remove("open");
+  openTicketDetail(item.dataset.source, Number(item.dataset.id));
+});
+
 /* ---------------- Row action dropdown (view ticket) ---------------- */
 const ticketRowMenu = document.getElementById("ticketRowMenu");
 let activeTicketSource = null;
@@ -447,6 +495,7 @@ document.getElementById("ticketDetailForm").addEventListener("submit", (e) => {
 
   closeTicketDetail();
   refreshTicketTables();
+  renderNotifications();
 });
 
 /* ---------------- New ticket drawer ---------------- */
@@ -546,6 +595,7 @@ newTicketForm.addEventListener("submit", (e) => {
 
   closeNewTicketDrawer();
   refreshTicketTables();
+  renderNotifications();
 });
 
 /* ---------------- Deep link: ?ticket=TCK-xxxx&source=patient|clinic ----------------
