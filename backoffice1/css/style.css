@@ -1358,6 +1358,12 @@ body.bo-page-scroll .bo-page { overflow-y: auto; overflow-x: hidden; }
 .bo-modal-field { display: flex; flex-direction: column; gap: 6px; }
 .bo-modal-field.full { grid-column: 1 / -1; }
 
+.bo-modal-switch-row {
+  padding-top: 16px;
+  margin-top: 2px;
+  border-top: 1px solid var(--gray-border);
+}
+
 .bo-modal-field label {
   font-size: 12.5px;
   font-weight: 600;
@@ -1443,6 +1449,7 @@ body.bo-page-scroll .bo-page { overflow-y: auto; overflow-x: hidden; }
 }
 
 .bo-btn-text:hover { text-decoration: underline; }
+.bo-btn-text.danger { color: var(--red); }
 
 .bo-modal-field select {
   width: 100%;
@@ -3565,87 +3572,103 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue); }
    ========================================================== */
 .bo-btn-icon-only { padding: 11px; }
 
-/* Report Management reuses the standard .bo-list-table; these rules only
-   cover the group-band row (report type, expandable) and its indented
-   child rows (schedules for that type). Every band is a real interactive
-   target — including report types with no schedules yet, which act as a
-   quick "create the first one" entry point instead of a dead, disabled row. */
-.bo-report-band { cursor: pointer; transition: background 120ms ease; }
-.bo-report-band:hover td { background: var(--bg); }
+/* Scheduled Reports / Report History table: one row = one schedule (or one
+   delivery record) — no accordion. Report + Schedule name stack in one
+   cell so the table stays scannable without a dedicated "Name" column. */
+.bo-cell-primary { font-size: 13.5px; font-weight: 700; color: var(--ink); }
+.bo-cell-secondary { font-size: 12px; color: var(--gray-text); margin-top: 2px; }
 
-.bo-report-band-title {
-  display: inline-flex;
-  align-items: center;
-  gap: 9px;
-  font-weight: 700;
-  font-size: 13.5px;
-  color: var(--ink);
-}
-
-.bo-report-band.empty .bo-report-band-title { color: var(--gray-text); font-weight: 600; }
-
-.bo-report-count {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 20px;
-  height: 20px;
-  padding: 0 6px;
-  border-radius: 999px;
-  background: var(--blue-light);
-  color: var(--blue);
-  font-size: 11px;
-  font-weight: 700;
-}
-
-.bo-report-expand {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  border: none;
-  background: transparent;
-  color: var(--gray-text);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  float: right;
-}
-
-.bo-report-band:hover .bo-report-expand { background: var(--gray-border); color: var(--ink); }
-
-.bo-report-expand svg { transition: transform 150ms ease; }
-.bo-report-expand.open svg { transform: rotate(180deg); }
-
-.bo-report-add {
-  float: right;
+.bo-recipients-chip {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 6px 12px;
-  border-radius: 999px;
-  border: 1px dashed var(--field-border);
+  font-size: 13px;
+  color: var(--ink);
+}
+
+.bo-recipients-chip svg { color: var(--gray-text); flex-shrink: 0; }
+
+/* Status / delivery-result pills — same visual language as the Support
+   module's pills (color + text, never color alone). */
+.bo-pill-active { background: var(--green-light); color: var(--green); }
+.bo-pill-paused { background: var(--bg); color: var(--gray-text); }
+.bo-pill-delivered { background: var(--green-light); color: var(--green); }
+.bo-pill-failed { background: var(--red-light); color: var(--red); }
+.bo-pill-partial { background: var(--orange-light); color: var(--orange); }
+.bo-pill-processing { background: var(--blue-light); color: var(--blue); }
+
+/* Empty state (no schedules yet / no rows match the current filters) */
+.bo-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 56px 24px;
+  text-align: center;
+}
+
+.bo-empty-state-icon { color: var(--gray); }
+.bo-empty-state-title { font-size: 15px; font-weight: 700; color: var(--ink); }
+.bo-empty-state-sub { font-size: 13px; color: var(--gray-text); max-width: 360px; margin: 0; }
+
+/* Recipient picker — used in both the Schedule Report drawer and Send Report */
+.bo-recipient-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--gray-border);
+  border-radius: 8px;
+  padding: 8px 10px;
+  margin-bottom: 8px;
+  color: var(--gray-text);
+}
+
+.bo-recipient-search svg { flex-shrink: 0; }
+
+.bo-recipient-search input {
+  border: none;
+  outline: none;
+  width: 100%;
+  font-size: 13px;
+  color: var(--ink);
   background: transparent;
-  color: var(--blue);
-  font-family: inherit;
-  font-size: 12px;
-  font-weight: 700;
-  cursor: pointer;
-  opacity: 0.55;
-  transition: opacity 120ms ease, border-color 120ms ease, background 120ms ease;
 }
 
-.bo-report-band.empty:hover .bo-report-add,
-.bo-report-band.empty:focus-within .bo-report-add,
-.bo-report-add:hover {
-  opacity: 1;
+.bo-recipient-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 220px;
+  overflow-y: auto;
+  border: 1px solid var(--gray-border);
+  border-radius: 10px;
+  padding: 8px 10px;
 }
 
-.bo-report-add:hover { background: var(--blue-light); border-color: var(--blue); border-style: solid; }
+.bo-recipient-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13.5px;
+  color: var(--ink);
+  padding: 7px 4px;
+}
 
-.bo-report-row td { background: var(--blue-light); }
+.bo-recipient-item input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--blue); cursor: pointer; }
 
-.bo-report-row td:first-child,
-.bo-report-row td:last-child {
+/* Send Report — explains this is an immediate, one-time send (not a schedule) */
+.bo-send-note {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
   background: var(--blue-light);
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-bottom: 18px;
+  font-size: 13px;
+  color: var(--navy);
+  line-height: 1.5;
 }
+
+.bo-send-note svg { flex-shrink: 0; margin-top: 1px; color: var(--blue); }
