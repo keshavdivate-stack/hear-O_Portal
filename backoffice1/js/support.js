@@ -90,6 +90,7 @@ const patientPager = boCreatePager(
       <td>${tierPill(t.tier)}</td>
       <td>${priorityPill(t.priority)}</td>
       <td>${statusPill(t.status)}</td>
+      <td>${t.assignedTo || "&mdash;"}</td>
       <td>${t.createdDate}</td>
       <td>
         <div class="bo-row-actions">
@@ -97,7 +98,7 @@ const patientPager = boCreatePager(
         </div>
       </td>
     </tr>`,
-  { pageSize: PAGE_SIZE, emptyColspan: 9, emptyText: "No patient tickets match these filters." }
+  { pageSize: PAGE_SIZE, emptyColspan: 10, emptyText: "No patient tickets match these filters." }
 );
 patientPager();
 
@@ -118,6 +119,7 @@ const clinicPager = boCreatePager(
       <td>${tierPill(t.tier)}</td>
       <td>${priorityPill(t.priority)}</td>
       <td>${statusPill(t.status)}</td>
+      <td>${t.assignedTo || "&mdash;"}</td>
       <td>${t.createdDate}</td>
       <td>
         <div class="bo-row-actions">
@@ -125,7 +127,7 @@ const clinicPager = boCreatePager(
         </div>
       </td>
     </tr>`,
-  { pageSize: PAGE_SIZE, emptyColspan: 9, emptyText: "No clinic tickets match these filters." }
+  { pageSize: PAGE_SIZE, emptyColspan: 10, emptyText: "No clinic tickets match these filters." }
 );
 clinicPager();
 
