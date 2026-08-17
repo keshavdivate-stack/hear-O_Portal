@@ -75,9 +75,12 @@ document.getElementById("supDashPriorityChips").innerHTML = PRIORITIES.map((p) =
 /* ---------------- Tickets by Issue Type ---------------- */
 const supDashIssueColors = {
   "Recording Problem": "var(--red)",
-  "Uploading Problem": "var(--orange)",
-  "Device/System Issue": "var(--gray)",
-  "Other Software Issue": "var(--blue)",
+  "Voice Engine Issue": "var(--orange)",
+  "Sensor Issue": "#F2C94C",
+  "Uploading Problem": "var(--green)",
+  "Device/System Issue": "var(--blue)",
+  "Compliance Issue": "var(--purple)",
+  "Other Software Issue": "var(--gray)",
 };
 
 document.getElementById("supDashIssueChips").innerHTML = ISSUE_TYPES.map((issue) => {

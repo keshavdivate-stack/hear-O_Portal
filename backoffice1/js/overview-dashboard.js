@@ -276,20 +276,17 @@ const ovCategories = [
   { label: "Other", count: 12, color: "var(--gray)" },
 ];
 
-/* Maps a dashboard issue category to the closest matching Support ticket
-   "Issue Type" so a legend row can drill into the actual ticket list. Several
-   dashboard categories (Voice Engine, Sensors, Compliance) don't have a
-   dedicated ticket issue type yet, so they fall back to "Other Software
-   Issue" -- worth revisiting once/if those get their own ticket category. */
+/* Maps a dashboard issue category to its matching Support ticket "Issue Type"
+   so a legend row can drill into only that category's tickets. */
 const ovCategoryToIssueType = {
   Recording: "Recording Problem",
   Upload: "Uploading Problem",
   "Device / System": "Device/System Issue",
   Device: "Device/System Issue",
-  "Voice Engine": "Other Software Issue",
-  Sensors: "Other Software Issue",
-  Compliance: "Other Software Issue",
-  Other: "",
+  "Voice Engine": "Voice Engine Issue",
+  Sensors: "Sensor Issue",
+  Compliance: "Compliance Issue",
+  Other: "Other Software Issue",
 };
 
 function ovCategoryDrilldownHref(label, orgId) {

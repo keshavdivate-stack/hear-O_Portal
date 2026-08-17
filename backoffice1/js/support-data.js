@@ -1,5 +1,5 @@
 /* ---------------- Reference lists ---------------- */
-const ISSUE_TYPES = ["Recording Problem", "Uploading Problem", "Device/System Issue", "Other Software Issue"];
+const ISSUE_TYPES = ["Recording Problem", "Uploading Problem", "Device/System Issue", "Voice Engine Issue", "Sensor Issue", "Compliance Issue", "Other Software Issue"];
 const TIERS = ["Tier 1", "Tier 2", "Tier 3", "Tier 4"];
 const PRIORITIES = ["Warning", "Critical"];
 const STATUSES = ["Open", "In Progress", "Escalated", "Resolved"];
@@ -39,6 +39,9 @@ const SUPPORT_ISSUE_DESCRIPTIONS = {
   "Recording Problem": "Recording did not complete or save as expected.",
   "Uploading Problem": "Upload stalled and required a retry.",
   "Device/System Issue": "Device stopped responding or syncing correctly.",
+  "Voice Engine Issue": "Voice processing failed or returned an error.",
+  "Sensor Issue": "Sensor data was delayed, missing, or disconnected.",
+  "Compliance Issue": "Compliance tracking or reporting looked incorrect.",
   "Other Software Issue": "Unexpected app behavior reported by the user.",
 };
 const SUPPORT_STATUS_PRIORITIES = {
