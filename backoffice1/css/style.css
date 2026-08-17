@@ -866,6 +866,9 @@ body.bo-page-scroll .bo-page { overflow-y: auto; overflow-x: hidden; }
 .bo-list-table tbody tr:last-child td { border-bottom: none; }
 .bo-list-table tbody tr:hover td { background: var(--bg); }
 
+/* Ticket rows open the detail drawer on click */
+#ticketRows tr[data-id] { cursor: pointer; }
+
 /* Sticky first/last columns so long tables keep name + actions visible while
    scrolling horizontally through the columns in between. The depth-cue
    shadow only paints once js/table-scroll.js detects real overflow and
@@ -3463,6 +3466,50 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue); }
   color: var(--ink);
   line-height: 1.5;
 }
+
+/* Ticket detail drawer: activity/history timeline */
+.bo-ticket-history {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.bo-ticket-history-item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 0 0 16px 20px;
+}
+
+.bo-ticket-history-item::before {
+  content: "";
+  position: absolute;
+  left: 3px;
+  top: 4px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--blue);
+}
+
+.bo-ticket-history-item::after {
+  content: "";
+  position: absolute;
+  left: 6px;
+  top: 12px;
+  bottom: 0;
+  width: 1px;
+  background: var(--gray-border);
+}
+
+.bo-ticket-history-item:last-child::after { display: none; }
+.bo-ticket-history-item:last-child { padding-bottom: 0; }
+
+.bo-ticket-history-item .text { font-size: 13px; font-weight: 600; color: var(--ink); }
+.bo-ticket-history-item .meta { font-size: 11.5px; color: var(--gray-text); }
 
 /* ==========================================================
    REPORT MANAGEMENT PAGE

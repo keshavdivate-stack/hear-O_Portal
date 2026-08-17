@@ -405,7 +405,7 @@
                   <input type="hidden" />
                 </div>
               </div>
-              <div class="bo-modal-field full">
+              <div class="bo-modal-field">
                 <label>Status</label>
                 <div class="bo-select" data-name="status">
                   <button type="button" class="bo-select-trigger">
@@ -416,7 +416,23 @@
                   <input type="hidden" />
                 </div>
               </div>
+              <div class="bo-modal-field">
+                <label>Assigned To</label>
+                <div class="bo-select" data-name="assignedTo">
+                  <button type="button" class="bo-select-trigger">
+                    <span class="bo-select-value placeholder">Unassigned</span>
+                    <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                  </button>
+                  <div class="bo-select-menu"></div>
+                  <input type="hidden" />
+                </div>
+              </div>
             </div>
+          </div>
+
+          <div class="bo-modal-section">
+            <p class="bo-modal-section-title">History</p>
+            <div class="bo-ticket-history" id="ticketDetailHistory"></div>
           </div>
 
         </div>
@@ -483,7 +499,14 @@
               </div>
               <div class="bo-modal-field">
                 <label>Category</label>
-                <input type="text" id="newTicketCategoryDisplay" placeholder="Category —" readonly />
+                <div class="bo-select" data-name="category">
+                  <button type="button" class="bo-select-trigger">
+                    <span class="bo-select-value placeholder">Select category</span>
+                    <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                  </button>
+                  <div class="bo-select-menu"></div>
+                  <input type="hidden" />
+                </div>
               </div>
               <div class="bo-modal-field">
                 <label>Severity</label>
