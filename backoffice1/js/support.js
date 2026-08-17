@@ -22,7 +22,6 @@ document.getElementById("ticketSeverityFilterMenu").innerHTML = buildFilterSelec
 document.getElementById("ticketCategoryFilterMenu").innerHTML = buildFilterSelectOptions(CATEGORIES, "All categories");
 document.getElementById("ticketIssueFilterMenu").innerHTML = buildFilterSelectOptions(ISSUE_TYPES, "All issue types");
 document.getElementById("ticketOriginFilterMenu").innerHTML = buildFilterSelectOptions(ORIGINS, "All origins");
-document.getElementById("ticketScopeFilterMenu").innerHTML = buildFilterSelectOptions(SCOPES, "All scopes");
 document.getElementById("ticketTypeFilterMenu").innerHTML = buildFilterSelectOptions(TICKET_TYPES, "All types");
 
 /* ---------------- Badges ---------------- */
@@ -57,11 +56,10 @@ let ticketSeverityValue = "";
 let ticketCategoryValue = "";
 let ticketIssueValue = "";
 let ticketOriginValue = "";
-let ticketScopeValue = "";
 let ticketTypeValue = "";
 let ticketSearchTerm = "";
 
-/* Deep link: ?issueType=<Issue Type>&category=<Category>&scope=<Scope>&type=<Type>&q=<search text>
+/* Deep link: ?issueType=<Issue Type>&category=<Category>&type=<Type>&q=<search text>
    Lets other screens (e.g. the Overview dashboard's Issues by Category and
    Critical Issues panels) land here with the relevant filter/search already
    applied, instead of dropping the user on an unfiltered list. */
@@ -72,7 +70,6 @@ let ticketSearchTerm = "";
   const severity = params.get("severity");
   const category = params.get("category");
   const origin = params.get("origin");
-  const scope = params.get("scope");
   const type = params.get("type");
   const q = params.get("q");
 
@@ -96,10 +93,6 @@ let ticketSearchTerm = "";
     ticketOriginValue = origin;
     setBoSelectValue(document.querySelector('.bo-select[data-name="ticketOrigin"]'), origin, { silent: true });
   }
-  if (scope && SCOPES.includes(scope)) {
-    ticketScopeValue = scope;
-    setBoSelectValue(document.querySelector('.bo-select[data-name="ticketScope"]'), scope, { silent: true });
-  }
   if (type && TICKET_TYPES.includes(type)) {
     ticketTypeValue = type;
     setBoSelectValue(document.querySelector('.bo-select[data-name="ticketType"]'), type, { silent: true });
@@ -116,7 +109,6 @@ function matchesFilters(t, extraSearchable) {
   if (ticketCategoryValue && ISSUE_TYPE_CATEGORY[t.issueType] !== ticketCategoryValue) return false;
   if (ticketIssueValue && t.issueType !== ticketIssueValue) return false;
   if (ticketOriginValue && t.origin !== ticketOriginValue) return false;
-  if (ticketScopeValue && t.scope !== ticketScopeValue) return false;
   if (ticketTypeValue && t.type !== ticketTypeValue) return false;
   if (ticketSearchTerm) {
     const haystack = `${t.ticketNo} ${t.organization} ${extraSearchable}`.toLowerCase();
@@ -195,10 +187,6 @@ document.getElementById("ticketIssueFilter").addEventListener("change", (e) => {
 });
 document.getElementById("ticketOriginFilter").addEventListener("change", (e) => {
   ticketOriginValue = e.target.value;
-  refreshTicketTables();
-});
-document.getElementById("ticketScopeFilter").addEventListener("change", (e) => {
-  ticketScopeValue = e.target.value;
   refreshTicketTables();
 });
 document.getElementById("ticketTypeFilter").addEventListener("change", (e) => {
