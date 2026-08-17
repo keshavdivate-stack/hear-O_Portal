@@ -185,13 +185,13 @@
             <thead>
               <tr>
                 <th>TICKET ID</th>
+                <th>ORGANIZATION</th>
                 <th>TYPE</th>
                 <th>PATIENT / RAISED BY</th>
-                <th>ORGANIZATION</th>
-                <th>ISSUE TYPE</th>
                 <th>CATEGORY</th>
+                <th>ISSUE TYPE</th>
                 <th>ORIGIN</th>
-                <th>TIER</th>
+                <th>LEVEL</th>
                 <th>SEVERITY</th>
                 <th>STATUS</th>
                 <th>ASSIGNED TO</th>
@@ -215,7 +215,7 @@
                 <th>RULE</th>
                 <th>CONDITION / THRESHOLD</th>
                 <th>SEVERITY</th>
-                <th>ROUTED TIER</th>
+                <th>ROUTED LEVEL</th>
                 <th>SLA (RESPONSE / RESOLVE)</th>
                 <th>CHANNELS</th>
                 <th>AUTO-CREATE TICKET</th>
@@ -247,66 +247,69 @@
       </div>
       <form id="ruleDrawerForm" class="bo-drawer-form">
       <div class="bo-drawer-body">
-        <div class="bo-modal-field">
-          <label>Condition / threshold:</label>
-          <input type="text" id="ruleConditionInput" placeholder="e.g. No sensor data for &ge; 3 consecutive days" />
-        </div>
-
-        <div class="bo-modal-field">
-          <label>Severity:</label>
-          <div class="bo-select" data-name="ruleSeverity">
-            <button type="button" class="bo-select-trigger">
-              <span class="bo-select-value placeholder">Severity</span>
-              <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-            </button>
-            <div class="bo-select-menu"></div>
-            <input type="hidden" />
+        <div class="bo-modal-grid">
+          <div class="bo-modal-field full">
+            <label>Condition / threshold:</label>
+            <input type="text" id="ruleConditionInput" placeholder="e.g. No sensor data for &ge; 3 consecutive days" />
           </div>
-        </div>
 
-        <div class="bo-modal-field">
-          <label>Routed tier:</label>
-          <div class="bo-select" data-name="ruleTier">
-            <button type="button" class="bo-select-trigger">
-              <span class="bo-select-value placeholder">Tier</span>
-              <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-            </button>
-            <div class="bo-select-menu"></div>
-            <input type="hidden" />
+          <div class="bo-modal-field">
+            <label>Severity:</label>
+            <div class="bo-select" data-name="ruleSeverity">
+              <button type="button" class="bo-select-trigger">
+                <span class="bo-select-value placeholder">Severity</span>
+                <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="bo-select-menu"></div>
+              <input type="hidden" />
+            </div>
           </div>
-        </div>
 
-        <div class="bo-modal-field" style="display:flex; gap:12px;">
-          <div style="flex:1;">
+          <div class="bo-modal-field">
+            <label>Routed tier:</label>
+            <div class="bo-select" data-name="ruleTier">
+              <button type="button" class="bo-select-trigger">
+                <span class="bo-select-value placeholder">Level</span>
+                <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="bo-select-menu"></div>
+              <input type="hidden" />
+            </div>
+          </div>
+
+          <div class="bo-modal-field">
             <label>SLA response:</label>
             <input type="text" id="ruleSlaResponseInput" placeholder="e.g. 2h" />
           </div>
-          <div style="flex:1;">
+
+          <div class="bo-modal-field">
             <label>SLA resolve:</label>
             <input type="text" id="ruleSlaResolveInput" placeholder="e.g. 24h" />
           </div>
-        </div>
 
-        <div class="bo-modal-field">
-          <label>Channels:</label>
-          <div class="bo-checkbox-row">
-            <label class="bo-checkbox-item"><input type="checkbox" name="ruleChannel" value="Notification" /> Notification</label>
-            <label class="bo-checkbox-item"><input type="checkbox" name="ruleChannel" value="Email" /> Email</label>
-            <label class="bo-checkbox-item"><input type="checkbox" name="ruleChannel" value="SMS" /> SMS</label>
+          <div class="bo-modal-field full">
+            <label>Channels:</label>
+            <div class="bo-checkbox-row">
+              <label class="bo-checkbox-item"><input type="checkbox" name="ruleChannel" value="Notification" /> Notification</label>
+              <label class="bo-checkbox-item"><input type="checkbox" name="ruleChannel" value="Email" /> Email</label>
+              <label class="bo-checkbox-item"><input type="checkbox" name="ruleChannel" value="SMS" /> SMS</label>
+            </div>
+          </div>
+
+          <div class="bo-modal-field full">
+            <label>Applies to:</label>
+            <input type="text" id="ruleAppliesToInput" placeholder="e.g. All organisations" />
           </div>
         </div>
 
-        <div class="bo-modal-field">
-          <label>Applies to:</label>
-          <input type="text" id="ruleAppliesToInput" placeholder="e.g. All organisations" />
-        </div>
-
-        <div class="bo-switch-field">
-          <label class="bo-switch">
-            <input type="checkbox" id="ruleAutoCreateInput" />
-            <span class="bo-switch-track"></span>
-          </label>
-          <span>Auto-create ticket</span>
+        <div class="bo-modal-switch-row">
+          <div class="bo-switch-field">
+            <label class="bo-switch">
+              <input type="checkbox" id="ruleAutoCreateInput" />
+              <span class="bo-switch-track"></span>
+            </label>
+            <span>Auto-create ticket</span>
+          </div>
         </div>
       </div>
       <div class="bo-drawer-foot">
@@ -343,12 +346,12 @@
                 <span class="value" id="ticketDetailSource">Patient</span>
               </div>
               <div class="bo-ticket-summary-item">
-                <span class="label" id="ticketDetailWhoLabel">Patient ID</span>
-                <span class="value" id="ticketDetailWho">â€”</span>
-              </div>
-              <div class="bo-ticket-summary-item">
                 <span class="label">Organization</span>
                 <span class="value" id="ticketDetailOrg">â€”</span>
+              </div>
+              <div class="bo-ticket-summary-item">
+                <span class="label" id="ticketDetailWhoLabel">Patient ID</span>
+                <span class="value" id="ticketDetailWho">â€”</span>
               </div>
               <div class="bo-ticket-summary-item">
                 <span class="label">Origin</span>
@@ -369,12 +372,12 @@
             <p class="bo-modal-section-title">Issue</p>
             <div class="bo-ticket-summary" style="margin-bottom:10px;">
               <div class="bo-ticket-summary-item">
-                <span class="label">Issue Type</span>
-                <span class="value" id="ticketDetailIssueType">â€”</span>
-              </div>
-              <div class="bo-ticket-summary-item">
                 <span class="label">Category</span>
                 <span class="value" id="ticketDetailCategory">â€”</span>
+              </div>
+              <div class="bo-ticket-summary-item">
+                <span class="label">Issue Type</span>
+                <span class="value" id="ticketDetailIssueType">â€”</span>
               </div>
             </div>
             <div class="bo-ticket-description" id="ticketDetailDescription"></div>
@@ -384,10 +387,10 @@
             <p class="bo-modal-section-title">Handling</p>
             <div class="bo-modal-grid">
               <div class="bo-modal-field">
-                <label>Tier</label>
+                <label>Level</label>
                 <div class="bo-select" data-name="tier">
                   <button type="button" class="bo-select-trigger">
-                    <span class="bo-select-value placeholder">Select tier</span>
+                    <span class="bo-select-value placeholder">Select level</span>
                     <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
                   </button>
                   <div class="bo-select-menu"></div>
@@ -457,12 +460,12 @@
                 </div>
               </div>
               <div class="bo-modal-field">
-                <label id="newTicketWhoLabel">Patient ID</label>
-                <input type="text" name="who" placeholder="e.g. 120-2001" required />
-              </div>
-              <div class="bo-modal-field full">
                 <label>Organization<span class="required-star">*</span></label>
                 <input type="text" name="organization" placeholder="Organization code, e.g. 120" required />
+              </div>
+              <div class="bo-modal-field full">
+                <label id="newTicketWhoLabel">Patient ID</label>
+                <input type="text" name="who" placeholder="e.g. 120-2001" required />
               </div>
             </div>
           </div>
@@ -470,6 +473,10 @@
           <div class="bo-modal-section">
             <p class="bo-modal-section-title">Issue</p>
             <div class="bo-modal-grid">
+              <div class="bo-modal-field">
+                <label>Category</label>
+                <input type="text" id="newTicketCategoryDisplay" placeholder="Category —" readonly />
+              </div>
               <div class="bo-modal-field">
                 <label>Issue Type<span class="required-star">*</span></label>
                 <div class="bo-select" data-name="issueType">
@@ -480,10 +487,6 @@
                   <div class="bo-select-menu"></div>
                   <input type="hidden" />
                 </div>
-              </div>
-              <div class="bo-modal-field">
-                <label>Category</label>
-                <input type="text" id="newTicketCategoryDisplay" placeholder="Category —" readonly />
               </div>
               <div class="bo-modal-field">
                 <label>Severity</label>
@@ -497,10 +500,10 @@
                 </div>
               </div>
               <div class="bo-modal-field">
-                <label>Tier</label>
+                <label>Level</label>
                 <div class="bo-select" data-name="tier">
                   <button type="button" class="bo-select-trigger">
-                    <span class="bo-select-value placeholder">Select tier</span>
+                    <span class="bo-select-value placeholder">Select level</span>
                     <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
                   </button>
                   <div class="bo-select-menu"></div>

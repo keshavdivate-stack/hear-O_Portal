@@ -524,7 +524,7 @@
                     Medications <span class="count-pill" id="medCount"></span>
                   </h3>
                   <div class="clinical-head-actions">
-                    <a href="#" class="clinical-add-link">
+                    <a href="#" class="clinical-add-link" id="openAddMedBtn">
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
                       Add medication
                     </a>
@@ -552,7 +552,7 @@
                     Care Recommendations <span class="count-pill" id="careRecCount"></span>
                   </h3>
                   <div class="clinical-head-actions">
-                    <a href="#" class="clinical-add-link">
+                    <a href="#" class="clinical-add-link" id="openAddRecBtn">
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
                       New recommendation
                     </a>
@@ -574,7 +574,7 @@
                     Care Plan &amp; Goals <span class="count-pill" id="goalCount"></span>
                   </h3>
                   <div class="clinical-head-actions">
-                    <a href="#" class="clinical-add-link">
+                    <a href="#" class="clinical-add-link" id="openAddGoalBtn">
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
                       Set care goal
                     </a>
@@ -665,6 +665,104 @@
       </button>
     </div>
   </aside>
+
+  <!-- Add Medication modal -->
+  <div class="modal-overlay" id="addMedOverlay">
+    <div class="modal">
+      <h2>Add Medication</h2>
+      <form id="addMedForm">
+        <div class="form-field">
+          <label>Medication name<span class="required-star">*</span></label>
+          <input type="text" name="name" placeholder="e.g. Furosemide" required />
+        </div>
+        <div class="form-field">
+          <label>Class<span class="required-star">*</span></label>
+          <input type="text" name="cls" placeholder="e.g. Loop diuretic" required />
+        </div>
+        <div class="form-field">
+          <label>Dose<span class="required-star">*</span></label>
+          <input type="text" name="dose" placeholder="e.g. 40 mg" required />
+        </div>
+        <div class="form-field">
+          <label>Frequency</label>
+          <select class="select-input" name="freq">
+            <option>Once daily</option>
+            <option>Twice daily</option>
+            <option>Weekly</option>
+            <option>As needed</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label class="checkbox-field"><input type="checkbox" name="hf" checked /> HF medication</label>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-text" id="cancelAddMed">Cancel</button>
+          <button type="submit" class="btn-save">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- New Recommendation modal -->
+  <div class="modal-overlay" id="addRecOverlay">
+    <div class="modal">
+      <h2>New Recommendation</h2>
+      <form id="addRecForm">
+        <div class="form-field">
+          <label>Title<span class="required-star">*</span></label>
+          <input type="text" name="title" placeholder="e.g. Increase loop diuretic" required />
+        </div>
+        <div class="form-field">
+          <label>Description<span class="required-star">*</span></label>
+          <textarea name="desc" placeholder="Describe the recommendation" required></textarea>
+        </div>
+        <div class="form-field">
+          <label>Status</label>
+          <select class="select-input" name="status">
+            <option>Active</option>
+            <option>Completed</option>
+          </select>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-text" id="cancelAddRec">Cancel</button>
+          <button type="submit" class="btn-save">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Set Care Goal modal -->
+  <div class="modal-overlay" id="addGoalOverlay">
+    <div class="modal">
+      <h2>Set Care Goal</h2>
+      <form id="addGoalForm">
+        <div class="form-field">
+          <label>Goal<span class="required-star">*</span></label>
+          <input type="text" name="title" placeholder="e.g. Keep weight within 2 kg of dry weight" required />
+        </div>
+        <div class="form-field">
+          <label>Description<span class="required-star">*</span></label>
+          <input type="text" name="desc" placeholder="e.g. Dry weight 80.5 kg" required />
+        </div>
+        <div class="form-field">
+          <label>Target</label>
+          <input type="text" name="target" placeholder="e.g. Target: 31 Oct 2026" />
+        </div>
+        <div class="form-field">
+          <label>Status</label>
+          <select class="select-input" name="badge">
+            <option>On track</option>
+            <option>At risk</option>
+            <option>Achieved</option>
+          </select>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-text" id="cancelAddGoal">Cancel</button>
+          <button type="submit" class="btn-save">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
 
 <script src="js/topbar.js"></script>
 <script src="js/table-scroll.js"></script>

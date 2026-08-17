@@ -143,11 +143,11 @@ const ticketPager = boCreatePager(
   (t) => `
     <tr data-source="${t.source}" data-id="${t.id}">
       <td class="bo-ticket-id">${t.ticketNo}</td>
+      <td>${t.organization}</td>
       <td>${typePill(t.type)}</td>
       <td>${t.who}</td>
-      <td>${t.organization}</td>
-      <td>${t.issueType}</td>
       <td>${categoryPill(t.issueType)}</td>
+      <td>${t.issueType}</td>
       <td>${originPill(t.origin)}</td>
       <td>${tierPill(t.tier)}</td>
       <td>${severityPill(t.severity)}</td>
@@ -205,7 +205,7 @@ function setBoSelectValue(select, value, { silent = false } = {}) {
   const options = Array.from(select.querySelectorAll(".bo-select-option"));
   /* Compare dataset.value directly rather than building a
      [data-value="..."] CSS selector -- many values here (statuses like "In
-     Progress", tiers like "Tier 1", categories like "Patient (Mobile/Web)",
+     Progress", levels like "Level 1", categories like "Patient (Mobile/Web)",
      issue types with colons/slashes) contain characters CSS.escape would
      encode, which never matches the plain, unescaped attribute actually
      rendered in the DOM. That silently left the dropdown showing its
@@ -432,7 +432,7 @@ newTicketForm.addEventListener("submit", (e) => {
   const sourceValue = newTicketOverlay.querySelector('.bo-select[data-name="source"] input[type=hidden]').value || "Patient";
   const issueType = newTicketOverlay.querySelector('.bo-select[data-name="issueType"] input[type=hidden]').value;
   const severity = newTicketOverlay.querySelector('.bo-select[data-name="severity"] input[type=hidden]').value || "Medium";
-  const tier = newTicketOverlay.querySelector('.bo-select[data-name="tier"] input[type=hidden]').value || "Tier 1";
+  const tier = newTicketOverlay.querySelector('.bo-select[data-name="tier"] input[type=hidden]').value || "Level 1";
   const now = new Date();
   const createdDate = `${String(now.getDate()).padStart(2, "0")}/${String(now.getMonth() + 1).padStart(2, "0")}/${now.getFullYear()} ${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
 

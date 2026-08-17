@@ -451,34 +451,37 @@ const careRecs = [
   },
 ];
 
-document.getElementById("careRecCount").textContent = careRecs.length;
-document.getElementById("careRecList").innerHTML = careRecs
-  .map(
-    (r) => `
-    <div class="care-rec-item ${r.active ? "active-rec" : ""}">
-      <div class="care-rec-top">
-        <div>
-          <h4 class="care-rec-title">${r.title}</h4>
-          <p class="care-rec-desc">${r.desc}</p>
+function renderCareRecs() {
+  document.getElementById("careRecCount").textContent = careRecs.length;
+  document.getElementById("careRecList").innerHTML = careRecs
+    .map(
+      (r) => `
+      <div class="care-rec-item ${r.active ? "active-rec" : ""}">
+        <div class="care-rec-top">
+          <div>
+            <h4 class="care-rec-title">${r.title}</h4>
+            <p class="care-rec-desc">${r.desc}</p>
+          </div>
+          <div class="care-rec-status">
+            <span class="status-chip ${r.statusClass}">${r.status}</span>
+            <span class="status-date">${r.date}</span>
+          </div>
         </div>
-        <div class="care-rec-status">
-          <span class="status-chip ${r.statusClass}">${r.status}</span>
-          <span class="status-date">${r.date}</span>
+        <div class="care-rec-handoff">
+          <span class="init-avatar ${r.from.cls}">${r.from.initials}</span>
+          <span class="handoff-person">${r.from.name}</span>
+          <span class="handoff-arrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 12H19M13 6L19 12L13 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <span class="init-avatar ${r.to.cls}">${r.to.initials}</span>
+          <span class="handoff-person">${r.to.name}</span>
+          <span class="handoff-note">&middot; ${r.note}</span>
+          <span class="handoff-spacer"></span>
+          <button class="btn-open">Open</button>
         </div>
-      </div>
-      <div class="care-rec-handoff">
-        <span class="init-avatar ${r.from.cls}">${r.from.initials}</span>
-        <span class="handoff-person">${r.from.name}</span>
-        <span class="handoff-arrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 12H19M13 6L19 12L13 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-        <span class="init-avatar ${r.to.cls}">${r.to.initials}</span>
-        <span class="handoff-person">${r.to.name}</span>
-        <span class="handoff-note">&middot; ${r.note}</span>
-        <span class="handoff-spacer"></span>
-        <button class="btn-open">Open</button>
-      </div>
-    </div>`
-  )
-  .join("");
+      </div>`
+    )
+    .join("");
+}
+renderCareRecs();
 
 /* ---------------- Clinical: Medications ---------------- */
 function dailyAdherence(missedIdx) {
@@ -515,59 +518,62 @@ const medications = [
 const adhCheckIcon = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 const adhDashIcon = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M6 12H18" stroke="#9AA5B1" stroke-width="2.4" stroke-linecap="round"/></svg>`;
 
-document.getElementById("medCount").textContent = medications.length;
-document.getElementById("medList").innerHTML = medications
-  .map(
-    (m, mi) => `
-    <div class="med-block">
-      <div class="med-block-head">
-        <div>
-          <div class="med-name-row">
-            <span class="med-bar ${m.hf ? "hf" : "other"}"></span>
-            <div class="med-block-name">
-              <span class="med-name">${m.name}</span>
-              <span class="med-freq">${m.freq}</span>
+function renderMeds() {
+  document.getElementById("medCount").textContent = medications.length;
+  document.getElementById("medList").innerHTML = medications
+    .map(
+      (m, mi) => `
+      <div class="med-block">
+        <div class="med-block-head">
+          <div>
+            <div class="med-name-row">
+              <span class="med-bar ${m.hf ? "hf" : "other"}"></span>
+              <div class="med-block-name">
+                <span class="med-name">${m.name}</span>
+                <span class="med-freq">${m.freq}</span>
+              </div>
+            </div>
+            <div class="med-block-meta" style="margin-top:6px;">
+              <span class="med-class">${m.cls}</span>
+              <span>${m.dose} &middot; ${m.schedule}</span>
+              ${m.warning ? `<span class="med-warning"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 4L2 20H22L12 4Z" stroke="#C77B22" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 10V14M12 17V17.3" stroke="#C77B22" stroke-width="1.6" stroke-linecap="round"/></svg>${m.warning}</span>` : ""}
             </div>
           </div>
-          <div class="med-block-meta" style="margin-top:6px;">
-            <span class="med-class">${m.cls}</span>
-            <span>${m.dose} &middot; ${m.schedule}</span>
-            ${m.warning ? `<span class="med-warning"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 4L2 20H22L12 4Z" stroke="#C77B22" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 10V14M12 17V17.3" stroke="#C77B22" stroke-width="1.6" stroke-linecap="round"/></svg>${m.warning}</span>` : ""}
+          <div class="med-block-side">
+            <span class="source-badge ${m.srcClass}">${m.source}</span>
+            <button class="btn-edit">Edit</button>
           </div>
         </div>
-        <div class="med-block-side">
-          <span class="source-badge ${m.srcClass}">${m.source}</span>
-          <button class="btn-edit">Edit</button>
-        </div>
-      </div>
 
-      <div class="med-adherence-row">
-        <button class="chart-arrow med-adh-prev" data-med="${mi}" aria-label="Previous month"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15 6L9 12L15 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-        <div class="med-adh-scroll" id="medAdh${mi}">
-          ${chartDays
-            .map(
-              (d, i) => `
-              <div class="med-adh-day">
-                <span class="med-adh-icon ${m.adherence[i] ? "med-adh-taken" : "med-adh-missed"}">${m.adherence[i] ? adhCheckIcon : adhDashIcon}</span>
-                <span class="med-adh-day-label">${d.label}</span>
-              </div>`
-            )
-            .join("")}
+        <div class="med-adherence-row">
+          <button class="chart-arrow med-adh-prev" data-med="${mi}" aria-label="Previous month"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15 6L9 12L15 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+          <div class="med-adh-scroll" id="medAdh${mi}">
+            ${chartDays
+              .map(
+                (d, i) => `
+                <div class="med-adh-day">
+                  <span class="med-adh-icon ${m.adherence[i] ? "med-adh-taken" : "med-adh-missed"}">${m.adherence[i] ? adhCheckIcon : adhDashIcon}</span>
+                  <span class="med-adh-day-label">${d.label}</span>
+                </div>`
+              )
+              .join("")}
+          </div>
+          <button class="chart-arrow med-adh-next" data-med="${mi}" aria-label="Next month"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 6L15 12L9 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
         </div>
-        <button class="chart-arrow med-adh-next" data-med="${mi}" aria-label="Next month"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 6L15 12L9 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-      </div>
-      <div class="chart-month-row" style="padding:0 40px;"><span>Dec</span><span>Jan</span></div>
-    </div>`
-  )
-  .join("");
+        <div class="chart-month-row" style="padding:0 40px;"><span>Dec</span><span>Jan</span></div>
+      </div>`
+    )
+    .join("");
 
-document.querySelectorAll(".med-adh-prev, .med-adh-next").forEach((btn) => {
-  btn.addEventListener("click", () => {
-    const row = document.getElementById(`medAdh${btn.dataset.med}`);
-    const dir = btn.classList.contains("med-adh-next") ? 1 : -1;
-    row.scrollBy({ left: dir * 320, behavior: "smooth" });
+  document.querySelectorAll(".med-adh-prev, .med-adh-next").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const row = document.getElementById(`medAdh${btn.dataset.med}`);
+      const dir = btn.classList.contains("med-adh-next") ? 1 : -1;
+      row.scrollBy({ left: dir * 320, behavior: "smooth" });
+    });
   });
-});
+}
+renderMeds();
 
 /* ---------------- Clinical: Care Plan & Goals ---------------- */
 const goals = [
@@ -597,29 +603,32 @@ const goals = [
   },
 ];
 
-document.getElementById("goalCount").textContent = goals.length;
-document.getElementById("goalsList").innerHTML = goals
-  .map(
-    (g) => `
-    <div class="goal-item">
-      <div class="goal-top">
-        <div>
-          <h4 class="goal-title">${g.title}</h4>
-          <p class="goal-desc">${g.desc}</p>
+function renderGoals() {
+  document.getElementById("goalCount").textContent = goals.length;
+  document.getElementById("goalsList").innerHTML = goals
+    .map(
+      (g) => `
+      <div class="goal-item">
+        <div class="goal-top">
+          <div>
+            <h4 class="goal-title">${g.title}</h4>
+            <p class="goal-desc">${g.desc}</p>
+          </div>
+          <div class="goal-actions">
+            <span class="goal-badge ${g.badgeClass}">${g.badge}</span>
+            <button class="btn-edit">Edit</button>
+          </div>
         </div>
-        <div class="goal-actions">
-          <span class="goal-badge ${g.badgeClass}">${g.badge}</span>
-          <button class="btn-edit">Edit</button>
+        <div class="goal-progress-track"><div class="goal-progress-fill ${g.fillClass}" style="width:${g.pct}%"></div></div>
+        <div class="goal-meta-row">
+          <span>${g.pct}% complete</span>
+          <span>${g.target}</span>
         </div>
-      </div>
-      <div class="goal-progress-track"><div class="goal-progress-fill ${g.fillClass}" style="width:${g.pct}%"></div></div>
-      <div class="goal-meta-row">
-        <span>${g.pct}% complete</span>
-        <span>${g.target}</span>
-      </div>
-    </div>`
-  )
-  .join("");
+      </div>`
+    )
+    .join("");
+}
+renderGoals();
 
 /* ---------------- Records ---------------- */
 const records = [
@@ -757,3 +766,79 @@ document.getElementById("chatMessages").innerHTML = chatMessages
 const chatPanel = document.getElementById("chatPanel");
 document.getElementById("chatOpenBtn").addEventListener("click", () => chatPanel.classList.add("open"));
 document.getElementById("chatCloseBtn").addEventListener("click", () => chatPanel.classList.remove("open"));
+
+/* ---------------- Clinical: Add Medication / Recommendation / Care Goal modals ---------------- */
+function wireAddModal(overlayId, formId, cancelId, openBtnId, onSubmit) {
+  const overlay = document.getElementById(overlayId);
+  const form = document.getElementById(formId);
+
+  function open() {
+    form.reset();
+    overlay.classList.add("open");
+  }
+  function close() {
+    overlay.classList.remove("open");
+  }
+
+  document.getElementById(openBtnId).addEventListener("click", (e) => {
+    e.preventDefault();
+    open();
+  });
+  document.getElementById(cancelId).addEventListener("click", close);
+  overlay.addEventListener("click", (e) => { if (e.target === overlay) close(); });
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    onSubmit(new FormData(form));
+    close();
+  });
+}
+
+wireAddModal("addMedOverlay", "addMedForm", "cancelAddMed", "openAddMedBtn", (fd) => {
+  medications.unshift({
+    hf: fd.get("hf") === "on",
+    name: fd.get("name"),
+    cls: fd.get("cls"),
+    freq: fd.get("freq"),
+    dose: fd.get("dose"),
+    schedule: fd.get("freq"),
+    warning: null,
+    adherence: dailyAdherence([]),
+    source: "Clinic",
+    srcClass: "src-clinic",
+  });
+  renderMeds();
+});
+
+const REC_STATUS_CLASS = { Active: "status-active", Completed: "status-completed" };
+wireAddModal("addRecOverlay", "addRecForm", "cancelAddRec", "openAddRecBtn", (fd) => {
+  const status = fd.get("status");
+  careRecs.unshift({
+    active: status === "Active",
+    title: fd.get("title"),
+    desc: fd.get("desc"),
+    status,
+    statusClass: REC_STATUS_CLASS[status],
+    date: "01/10/2026",
+    from: { initials: "EC", cls: "av-blue", name: "Emily Carter" },
+    to: { initials: "EC", cls: "av-blue", name: "Emily Carter" },
+    note: "Just added",
+  });
+  renderCareRecs();
+});
+
+const GOAL_BADGE_CLASS = { "On track": "badge-ontrack", "At risk": "badge-atrisk", Achieved: "badge-achieved" };
+const GOAL_FILL_CLASS = { "On track": "fill-blue", "At risk": "fill-orange", Achieved: "fill-green" };
+const GOAL_PCT = { "On track": 50, "At risk": 25, Achieved: 100 };
+wireAddModal("addGoalOverlay", "addGoalForm", "cancelAddGoal", "openAddGoalBtn", (fd) => {
+  const badge = fd.get("badge");
+  goals.unshift({
+    title: fd.get("title"),
+    desc: fd.get("desc"),
+    badge,
+    badgeClass: GOAL_BADGE_CLASS[badge],
+    fillClass: GOAL_FILL_CLASS[badge],
+    pct: GOAL_PCT[badge],
+    target: fd.get("target") || "Target: Ongoing",
+  });
+  renderGoals();
+});
