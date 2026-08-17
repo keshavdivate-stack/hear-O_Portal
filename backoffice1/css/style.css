@@ -286,6 +286,8 @@ a { color: inherit; }
   padding: 10px;
   border-radius: 9px;
   cursor: pointer;
+  text-decoration: none;
+  color: inherit;
 }
 
 .bo-notif-item:hover { background: var(--bg); }
