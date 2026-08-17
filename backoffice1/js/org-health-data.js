@@ -9,10 +9,10 @@ const orgHealthData = {
     criticalIssues: 4,
     lastIncident: "2h ago",
     categories: [
-      { label: "Patient (Mobile/Web)", count: 6, color: "var(--blue)" },
-      { label: "Compliance", count: 3, color: "var(--purple)" },
-      { label: "Voice Engine", count: 0, color: "var(--orange)" },
-      { label: "Sensors", count: 0, color: "var(--yellow)" },
+      { label: "Recording", count: 6, color: "var(--red)" },
+      { label: "Compliance", count: 3, color: "var(--navy)" },
+      { label: "Voice Engine", count: 0, color: "var(--blue)" },
+      { label: "Sensors", count: 0, color: "var(--cyan)" },
     ],
     patientsAffected: [
       { id: "p-4471", name: "David Cohen", issue: "Recording upload failure", severity: "critical", lastRecording: "2h ago", status: "Open" },
@@ -32,8 +32,9 @@ const orgHealthData = {
     criticalIssues: 2,
     lastIncident: "20m ago",
     categories: [
-      { label: "Voice Engine", count: 4, color: "var(--orange)" },
-      { label: "Patient (Mobile/Web)", count: 1, color: "var(--blue)" },
+      { label: "Voice Engine", count: 4, color: "var(--blue)" },
+      { label: "Device / System", count: 1, color: "var(--gray)" },
+      { label: "Recording", count: 0, color: "var(--red)" },
     ],
     patientsAffected: [
       { id: "p-2231", name: "Itai Ben-David", issue: "Voice engine timeout", severity: "critical", lastRecording: "40m ago", status: "Open" },
@@ -50,8 +51,8 @@ const orgHealthData = {
     criticalIssues: 0,
     lastIncident: "3h ago",
     categories: [
-      { label: "Compliance", count: 9, color: "var(--purple)" },
-      { label: "Sensors", count: 0, color: "var(--yellow)" },
+      { label: "Compliance", count: 9, color: "var(--navy)" },
+      { label: "Sensors", count: 0, color: "var(--cyan)" },
     ],
     patientsAffected: [
       { id: "p-1187", name: "Tamar Ohana", issue: "Compliance drop", severity: "warning", lastRecording: "3h ago", status: "Open" },
@@ -67,8 +68,8 @@ const orgHealthData = {
     criticalIssues: 1,
     lastIncident: "1d ago",
     categories: [
-      { label: "Sensors", count: 3, color: "var(--yellow)" },
-      { label: "Patient (Mobile/Web)", count: 1, color: "var(--blue)" },
+      { label: "Sensors", count: 3, color: "var(--cyan)" },
+      { label: "Device / System", count: 1, color: "var(--gray)" },
     ],
     patientsAffected: [
       { id: "p-3390", name: "Roni Segal", issue: "Sensor disconnect (Bluetooth)", severity: "warning", lastRecording: "1d ago", status: "Investigating" },
@@ -84,7 +85,7 @@ const orgHealthData = {
     criticalIssues: 1,
     lastIncident: "6h ago",
     categories: [
-      { label: "Patient (Mobile/Web)", count: 2, color: "var(--blue)" },
+      { label: "Device / System", count: 2, color: "var(--gray)" },
     ],
     patientsAffected: [
       { id: "p-8801", name: "Lior Adler", issue: "App crash on Android 14", severity: "critical", lastRecording: "6h ago", status: "Escalated" },

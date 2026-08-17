@@ -141,14 +141,6 @@
         <div class="bo-select-menu" id="ticketSeverityFilterMenu"></div>
         <input type="hidden" id="ticketSeverityFilter" />
       </div>
-      <div class="bo-select bo-toolbar-select" data-name="ticketArea">
-        <button type="button" class="bo-select-trigger">
-          <span class="bo-select-value placeholder">Area</span>
-          <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-        </button>
-        <div class="bo-select-menu" id="ticketAreaFilterMenu"></div>
-        <input type="hidden" id="ticketAreaFilter" />
-      </div>
       <div class="bo-select bo-toolbar-select" data-name="ticketIssue">
         <button type="button" class="bo-select-trigger">
           <span class="bo-select-value placeholder">Issue type</span>
@@ -164,14 +156,6 @@
         </button>
         <div class="bo-select-menu" id="ticketOriginFilterMenu"></div>
         <input type="hidden" id="ticketOriginFilter" />
-      </div>
-      <div class="bo-select bo-toolbar-select" data-name="ticketScope">
-        <button type="button" class="bo-select-trigger">
-          <span class="bo-select-value placeholder">Scope</span>
-          <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-        </button>
-        <div class="bo-select-menu" id="ticketScopeFilterMenu"></div>
-        <input type="hidden" id="ticketScopeFilter" />
       </div>
       <div class="bo-search-pill">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8"/><path d="M21 21L16.5 16.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
@@ -189,7 +173,6 @@
                 <th>PATIENT / RAISED BY</th>
                 <th>ORGANIZATION</th>
                 <th>ISSUE TYPE</th>
-                <th>AREA</th>
                 <th>ORIGIN</th>
                 <th>TIER</th>
                 <th>SEVERITY</th>
@@ -355,10 +338,6 @@
                 <span class="value" id="ticketDetailOrigin">â€”</span>
               </div>
               <div class="bo-ticket-summary-item">
-                <span class="label">Scope</span>
-                <span class="value" id="ticketDetailScope">â€”</span>
-              </div>
-              <div class="bo-ticket-summary-item">
                 <span class="label">Created</span>
                 <span class="value" id="ticketDetailCreated">â€”</span>
               </div>
@@ -371,10 +350,6 @@
               <div class="bo-ticket-summary-item">
                 <span class="label">Issue Type</span>
                 <span class="value" id="ticketDetailIssueType">â€”</span>
-              </div>
-              <div class="bo-ticket-summary-item">
-                <span class="label">Area</span>
-                <span class="value" id="ticketDetailArea">â€”</span>
               </div>
             </div>
             <div class="bo-ticket-description" id="ticketDetailDescription"></div>

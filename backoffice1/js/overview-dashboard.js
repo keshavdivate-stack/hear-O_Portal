@@ -223,18 +223,15 @@ function renderOvTrendFooter() {
 renderOvTrendFooter();
 
 /* ---------------- Critical Issues (Top 5) ---------------- */
-/* Titles are named alarms from the "System Health Check" spec; "category"
-   is the alarm's area (see js/support-data.js ISSUE_TYPE_AREA) and doubles
-   as the routing key into org-health-dashboard.html and the org-level
-   category lists in js/org-health-data.js. Severity uses the same 4-level
-   scale as everywhere else issues/tickets appear (Critical/High/Medium/Low),
-   with colors matching the ticket severity pills: red/orange/yellow/blue. */
+/* Severity uses the same 4-level scale as everywhere else issues/tickets
+   appear (Critical/High/Medium/Low), with colors matching the ticket
+   severity pills: red/orange/yellow/blue. */
 const ovCritIssues = [
-  { title: "Total Compliance Drop", desc: "Active-patient compliance fell more than 60% versus yesterday", severity: "Critical", started: "42 min ago", orgs: 3, patients: 18, color: "var(--red)", category: "Compliance", icon: `<path d="M3 3v18h18"/><path d="M18 9l-5 5-4-4-4 4"/>` },
-  { title: "Missing Run: Billing Calc", desc: "The Billing Calc job did not run yesterday", severity: "Critical", started: "2 hrs ago", orgs: 2, patients: 7, color: "var(--red)", category: "System Schedule Engine", icon: `<rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9H21"/><path d="M8 2v4"/><path d="M16 2v4"/>` },
-  { title: "Missing ASR Results", desc: "Recordings are missing ASR results", severity: "High", started: "3 hrs ago", orgs: 1, patients: 5, color: "var(--orange)", category: "Voice Engine", icon: `<path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3Z"/><path d="M19 11a7 7 0 0 1-14 0"/><path d="M12 19v3"/>` },
-  { title: "Sensors Not Uploaded", desc: "Patients signed in but sensor data was not uploaded", severity: "Medium", started: "5 hrs ago", orgs: 2, patients: 9, color: "var(--yellow)", category: "Sensors", icon: `<circle cx="12" cy="12" r="9"/><path d="M12 8v4"/><path d="M12 16h.01"/>` },
-  { title: "Stuck In Registered", desc: "Patients have been stuck in Registered status longer than expected", severity: "Low", started: "6 hrs ago", orgs: 1, patients: 4, color: "var(--blue)", category: "Patient (Mobile/Web)", icon: `<circle cx="12" cy="12" r="9"/><path d="M12 7v5l4 2"/>` },
+  { title: "Recording failures", desc: "Recordings not received from devices", severity: "Critical", started: "42 min ago", orgs: 3, patients: 18, color: "var(--red)", category: "Recording", icon: `<path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3Z"/><path d="M19 11a7 7 0 0 1-14 0"/><path d="M12 19v3"/>` },
+  { title: "Upload failures", desc: "Recordings failing to upload to server", severity: "Critical", started: "2 hrs ago", orgs: 2, patients: 7, color: "var(--red)", category: "Upload", icon: `<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5"/><path d="M12 3v12"/>` },
+  { title: "Voice engine errors", desc: "High error rate in voice processing", severity: "High", started: "3 hrs ago", orgs: 1, patients: 5, color: "var(--orange)", category: "Voice Engine", icon: `<path d="M12 2a10 10 0 1 0 10 10"/><path d="M12 6v6l4 2"/>` },
+  { title: "Device connectivity issues", desc: "Devices not connecting or syncing", severity: "Medium", started: "5 hrs ago", orgs: 2, patients: 9, color: "var(--yellow)", category: "Device / System", icon: `<rect x="4" y="2" width="16" height="20" rx="2"/><path d="M12 18h.01"/>` },
+  { title: "Sensor data delays", desc: "Sensor data delayed or missing", severity: "Low", started: "6 hrs ago", orgs: 1, patients: 4, color: "var(--blue)", category: "Sensors", icon: `<circle cx="12" cy="12" r="9"/><path d="M12 8v4"/><path d="M12 16h.01"/>` },
 ];
 
 const ovSeverityPillClass = { Critical: "critical", High: "high", Medium: "medium", Low: "low" };
@@ -299,28 +296,37 @@ function renderOvCritIssues(orgId) {
     .join("");
 }
 
-/* ---------------- Issues by Category (donut) ----------------
-   Categories are the 6 areas from the "System Health Check" spec (same set
-   as AREAS in js/support-data.js and the per-org categories in
-   js/org-health-data.js). "Clinic Users (Security)" has no named alarms
-   defined in that spec yet, so it's shown at 0 -- listed for visibility
-   rather than hidden, since it's still one of the areas to check. */
+/* ---------------- Issues by Category (donut) ---------------- */
 const ovCategories = [
-  { label: "Compliance", count: 14, color: "var(--purple)" },
-  { label: "Voice Engine", count: 11, color: "var(--orange)" },
-  { label: "Sensors", count: 9, color: "var(--yellow)" },
-  { label: "Patient (Mobile/Web)", count: 22, color: "var(--blue)" },
-  { label: "Clinic Users (Security)", count: 0, color: "var(--navy)" },
-  { label: "System Schedule Engine", count: 6, color: "var(--gray)" },
+  { label: "Recording", count: 18, color: "var(--red)" },
+  { label: "Voice Engine", count: 14, color: "var(--orange)" },
+  { label: "Sensors", count: 12, color: "#F2C94C" },
+  { label: "Upload", count: 9, color: "var(--green)" },
+  { label: "Device", count: 8, color: "var(--blue)" },
+  { label: "Compliance", count: 6, color: "var(--purple)" },
+  { label: "Other", count: 12, color: "var(--gray)" },
 ];
 
-/* Category label doubles as the Support ticket Area filter value, so the
-   drill-down just passes it straight through as ?area=. */
+/* Maps a dashboard issue category to its matching Support ticket "Issue Type"
+   so a legend row can drill into only that category's tickets. */
+const ovCategoryToIssueType = {
+  Recording: "Recording Problem",
+  Upload: "Uploading Problem",
+  "Device / System": "Device/System Issue",
+  Device: "Device/System Issue",
+  "Voice Engine": "Voice Engine Issue",
+  Sensors: "Sensor Issue",
+  Compliance: "Compliance Issue",
+  Other: "Other Software Issue",
+};
+
 function ovCategoryDrilldownHref(label, orgId) {
   const params = new URLSearchParams();
-  params.set("area", label);
+  const issueType = ovCategoryToIssueType[label];
+  if (issueType) params.set("issueType", issueType);
   if (orgId && orgId !== "all") params.set("q", orgHealthData[orgId].name);
-  return `support.html?${params.toString()}`;
+  const qs = params.toString();
+  return `support.html${qs ? `?${qs}` : ""}`;
 }
 
 function renderOvDonut(orgId) {

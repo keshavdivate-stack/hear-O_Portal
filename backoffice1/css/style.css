@@ -3411,8 +3411,6 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue); }
 .bo-pill-origin-system { background: var(--navy-light); color: var(--navy); }
 .bo-pill-origin-user { background: var(--blue-light); color: var(--blue); }
 
-.bo-pill-tag { background: var(--bg); color: var(--gray-text); }
-
 .bo-pill-tier { background: var(--navy-light); color: var(--navy); }
 
 .bo-pill-type-patient { background: var(--cyan-light); color: #1B8FA8; }
