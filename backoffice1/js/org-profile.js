@@ -31,6 +31,7 @@ document.getElementById("orgProfileGrid").innerHTML = profileFields
 /* ---------------- Tabs ---------------- */
 const editOrgBtn = document.getElementById("editOrgBtn");
 const usersTabActions = document.getElementById("usersTabActions");
+const patientsTabActions = document.getElementById("patientsTabActions");
 
 document.querySelectorAll(".bo-tab").forEach((tab) => {
   tab.addEventListener("click", () => {
@@ -39,8 +40,10 @@ document.querySelectorAll(".bo-tab").forEach((tab) => {
     tab.classList.add("active");
     document.getElementById(`tab-${tab.dataset.tab}`).classList.add("active");
     const onUsersTab = tab.dataset.tab === "users";
-    editOrgBtn.hidden = onUsersTab;
+    const onPatientsTab = tab.dataset.tab === "patients";
+    editOrgBtn.hidden = onUsersTab || onPatientsTab;
     usersTabActions.hidden = !onUsersTab;
+    patientsTabActions.hidden = !onPatientsTab;
   });
 });
 
@@ -348,3 +351,123 @@ document.getElementById("openAddUserBtn").addEventListener("click", () => openUs
 document.getElementById("cancelUserDrawer").addEventListener("click", closeUserDrawer);
 document.getElementById("closeUserDrawerX").addEventListener("click", closeUserDrawer);
 userDrawerOverlay.addEventListener("click", (e) => { if (e.target === userDrawerOverlay) closeUserDrawer(); });
+
+/* ---------------- Patients table (same data + behavior as Patient Management, scoped to this org) ---------------- */
+const ORG_PATIENT_PAGE_SIZE = 20;
+let orgPatientCurrentPage = 1;
+let orgPatientSortDir = "asc";
+let orgPatientSearchTerm = "";
+
+function orgOwnsPatient(p) {
+  return p.username.split("-")[0] === org.name;
+}
+
+function orgPatientsList() {
+  return patients.filter(orgOwnsPatient);
+}
+
+function filteredOrgPatients() {
+  const list = orgPatientsList();
+  if (!orgPatientSearchTerm) return list;
+  return list.filter((p) => p.username.toLowerCase().includes(orgPatientSearchTerm));
+}
+
+function sortedOrgPatients() {
+  const list = [...filteredOrgPatients()];
+  list.sort((a, b) => (orgPatientSortDir === "asc" ? a.username.localeCompare(b.username, undefined, { numeric: true }) : b.username.localeCompare(a.username, undefined, { numeric: true })));
+  return list;
+}
+
+const orgPatientPct = (v) => (v === null || v === undefined ? "—" : `${v}%`);
+const orgPatientKebabIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="1.7" fill="currentColor"/><circle cx="12" cy="12" r="1.7" fill="currentColor"/><circle cx="12" cy="19" r="1.7" fill="currentColor"/></svg>`;
+
+function orgPatientStatusClass(status) {
+  return status.toLowerCase();
+}
+
+function renderOrgPatients() {
+  const list = sortedOrgPatients();
+  const total = list.length;
+  const totalPages = Math.max(1, Math.ceil(total / ORG_PATIENT_PAGE_SIZE));
+  orgPatientCurrentPage = Math.min(orgPatientCurrentPage, totalPages);
+
+  const start = (orgPatientCurrentPage - 1) * ORG_PATIENT_PAGE_SIZE;
+  const pageItems = list.slice(start, start + ORG_PATIENT_PAGE_SIZE);
+
+  document.getElementById("orgPatientRows").innerHTML = pageItems.length
+    ? pageItems
+        .map(
+          (p) => `
+      <tr>
+        <td><a class="bo-name-link" href="patient-health-dashboard.html?patient=${p.username}">${p.username}</a></td>
+        <td>${p.lang}</td>
+        <td>${p.tag}</td>
+        <td><span class="bo-status-pill ${orgPatientStatusClass(p.status)}">${p.status}</span></td>
+        <td>${p.statusStart}</td>
+        <td>${p.lastSession}</td>
+        <td>${orgPatientPct(p.usableCompliance)}</td>
+        <td>${orgPatientPct(p.compliance)}</td>
+        <td>
+          <div class="bo-row-actions">
+            <button class="bo-action-icon row-menu-trigger" data-id="${p.id}" aria-label="Row actions">${orgPatientKebabIcon}</button>
+          </div>
+        </td>
+      </tr>`
+        )
+        .join("")
+    : `<tr><td colspan="9" style="text-align:center; color:var(--gray-text); padding:28px;">No patients yet for this organization.</td></tr>`;
+
+  const rangeEnd = total === 0 ? 0 : Math.min(start + ORG_PATIENT_PAGE_SIZE, total);
+  const rangeStart = total === 0 ? 0 : start + 1;
+  document.getElementById("orgPatientPageRangeLabel").textContent = `${rangeStart} – ${rangeEnd} of ${total}`;
+
+  document.getElementById("orgPatientFirstPage").disabled = orgPatientCurrentPage === 1;
+  document.getElementById("orgPatientPrevPage").disabled = orgPatientCurrentPage === 1;
+  document.getElementById("orgPatientNextPage").disabled = orgPatientCurrentPage === totalPages;
+  document.getElementById("orgPatientLastPage").disabled = orgPatientCurrentPage === totalPages;
+}
+
+renderOrgPatients();
+
+document.getElementById("orgPatientSearchInput").addEventListener("input", (e) => {
+  orgPatientSearchTerm = e.target.value.trim().toLowerCase();
+  orgPatientCurrentPage = 1;
+  renderOrgPatients();
+});
+
+document.querySelector("#tab-patients .bo-list-table th.sortable").addEventListener("click", () => {
+  orgPatientSortDir = orgPatientSortDir === "asc" ? "desc" : "asc";
+  renderOrgPatients();
+});
+
+document.getElementById("orgPatientFirstPage").addEventListener("click", () => { orgPatientCurrentPage = 1; renderOrgPatients(); });
+document.getElementById("orgPatientPrevPage").addEventListener("click", () => { orgPatientCurrentPage -= 1; renderOrgPatients(); });
+document.getElementById("orgPatientNextPage").addEventListener("click", () => { orgPatientCurrentPage += 1; renderOrgPatients(); });
+document.getElementById("orgPatientLastPage").addEventListener("click", () => {
+  orgPatientCurrentPage = Math.ceil(filteredOrgPatients().length / ORG_PATIENT_PAGE_SIZE);
+  renderOrgPatients();
+});
+
+const orgPatientRowMenu = document.getElementById("orgPatientRowMenu");
+let activeOrgPatientId = null;
+
+document.getElementById("orgPatientRows").addEventListener("click", (e) => {
+  const trigger = e.target.closest(".row-menu-trigger");
+  if (!trigger) return;
+  e.stopPropagation();
+  activeOrgPatientId = Number(trigger.dataset.id);
+  const rect = trigger.getBoundingClientRect();
+  orgPatientRowMenu.style.top = `${rect.bottom + 6}px`;
+  orgPatientRowMenu.style.left = `${rect.right - 190}px`;
+  orgPatientRowMenu.classList.add("open");
+});
+
+document.addEventListener("click", (e) => {
+  if (!orgPatientRowMenu.contains(e.target)) orgPatientRowMenu.classList.remove("open");
+});
+
+orgPatientRowMenu.addEventListener("click", (e) => {
+  const item = e.target.closest(".bo-row-menu-item");
+  if (!item) return;
+  orgPatientRowMenu.classList.remove("open");
+});

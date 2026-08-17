@@ -454,17 +454,6 @@ function addEhrConnRow(presetName) {
         </div>
       </div>
       <div class="bo-modal-field">
-        <label>Environment</label>
-        <div class="bo-select" data-name="ehrConn${n}Env">
-          <button type="button" class="bo-select-trigger">
-            <span class="bo-select-value placeholder">Choose</span>
-            <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-          </button>
-          <div class="bo-select-menu">${EHR_ENV_OPTIONS_HTML}</div>
-          <input type="hidden" name="ehrConn${n}Env" />
-        </div>
-      </div>
-      <div class="bo-modal-field">
         <label>Client Id</label>
         <input type="text" name="ehrConn${n}ClientId" placeholder="Enter Client ID" />
       </div>

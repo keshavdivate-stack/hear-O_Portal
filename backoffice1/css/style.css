@@ -2905,6 +2905,44 @@ a.bo-health-card:hover { border-color: var(--field-border); }
 .bo-kv-grid--3col { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 
 .bo-kv-grid--sm { gap: 6px; }
+
+.bo-kv-grid--scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  align-content: flex-start;
+}
+
+.bo-status-overview-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.bo-status-overview-row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #F0F2F5;
+}
+
+.bo-status-overview-row:last-child { padding-bottom: 0; border-bottom: none; }
+
+.bo-status-overview-row .label {
+  font-size: 13.5px;
+  color: var(--ink);
+}
+
+.bo-status-overview-row .label strong { font-weight: 700; }
+
+.bo-status-overview-row .since {
+  font-size: 12px;
+  color: var(--gray-text);
+}
 .bo-kv-grid--sm .bo-kv-cell { padding: 6px 9px; gap: 1px; }
 .bo-kv-grid--sm .bo-kv-cell .k { font-size: 9.5px; }
 .bo-kv-grid--sm .bo-kv-cell .v { font-size: 12.5px; }

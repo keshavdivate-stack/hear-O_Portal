@@ -6,7 +6,6 @@ const ph = buildPatientProfile(phUsername);
 document.title = `HearO Backoffice | ${ph.username}`;
 document.getElementById("patientName").textContent = ph.username;
 document.getElementById("patientSub").textContent = `${ph.org} · ${ph.langName}`;
-document.getElementById("patientAvatar").textContent = ph.username.slice(0, 2).toUpperCase();
 
 /* If the patient was opened by drilling down from an organization's
    health dashboard, "back" should return there (preserving that
@@ -21,32 +20,17 @@ const phSevEl = document.getElementById("patientSeverity");
 phSevEl.classList.add(phStatusClass[ph.status] || "neutral");
 phSevEl.innerHTML = `<span class="dot"></span>${ph.status}`;
 
-/* ---------------- Status / KPI strip ---------------- */
-const phStatGridIcons = {
-  status: `<circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/>`,
-  account: `<rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>`,
-  monitoring: `<path d="M22 12h-4l-3 9L9 3l-3 9H2"/>`,
-  usable: `<path d="M12 2v4"/><path d="M12 18v4"/><circle cx="12" cy="12" r="6"/>`,
-  compliance: `<path d="M3 3v18h18"/><path d="M7 15l4-6 4 3 5-8"/>`,
-};
-
-document.getElementById("patientStatusGrid").innerHTML = [
-  { num: ph.status, label: "Patient Status", color: ph.status === "Active" ? "var(--green)" : ph.status === "Priority" ? "var(--red)" : ph.status === "Paused" ? "var(--gray-text)" : "var(--blue)", icon: phStatGridIcons.status },
-  { num: ph.statusOverview.account, label: `Account · since ${ph.statusOverview.accountSince}`, color: "var(--navy)", icon: phStatGridIcons.account },
-  { num: ph.statusOverview.monitoring, label: `Monitoring · since ${ph.statusOverview.monitoringSince}`, color: "var(--orange)", icon: phStatGridIcons.monitoring },
-  { num: `${ph.usableCompliance}%`, label: "Usable Compliance", color: "var(--blue)", icon: phStatGridIcons.usable },
-  { num: `${ph.complianceInfo.totalCompliance}%`, label: "Total Compliance", color: "var(--green)", icon: phStatGridIcons.compliance },
+/* ---------------- Status overview (was a KPI strip, now a compact list) ---------------- */
+document.getElementById("patientStatusOverviewList").innerHTML = [
+  { label: "Account", value: ph.statusOverview.account, since: ph.statusOverview.accountSince },
+  { label: "Status", value: ph.status, since: ph.statusOverview.statusSince || ph.statusOverview.accountSince },
+  { label: "Monitoring", value: ph.statusOverview.monitoring, since: ph.statusOverview.monitoringSince },
 ]
   .map(
     (s) => `
-    <div class="bo-health-card">
-      <span class="bo-health-icon" style="background:${s.color};">
-        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${s.icon}</svg>
-      </span>
-      <span>
-        <span class="bo-health-num">${s.num}</span>
-        <span class="bo-health-label">${s.label}</span>
-      </span>
+    <div class="bo-status-overview-row">
+      <span class="label">${s.label}: <strong>${s.value}</strong></span>
+      <span class="since">Since: ${s.since}</span>
     </div>`
   )
   .join("");
@@ -84,6 +68,8 @@ document.getElementById("patientComplianceInfoList").innerHTML = [
   boKv("Total Recorded Days", ph.complianceInfo.totalRecordedDays),
   boKv("Un-recorded Days", ph.complianceInfo.unrecordedDays),
   boKv("Non-valid ASR Days", ph.complianceInfo.nonValidAsrDays),
+  boKv("Total Compliance", `${ph.complianceInfo.totalCompliance}%`),
+  boKv("Usable Compliance", `${ph.usableCompliance}%`),
 ].join("");
 
 /* ---------------- Calendar widget ---------------- */
