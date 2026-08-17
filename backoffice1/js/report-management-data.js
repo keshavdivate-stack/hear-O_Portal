@@ -20,7 +20,7 @@ const RM_REPORTS = [
 ];
 
 const RM_ORGS = ["120", "121", "122", "104", "B01", "B03", "105"];
-const RM_TAGS = ["CURRENT", "NEW", "ARCHIVED"];
+const RM_TAGS = ["CURRENT", "NEW"];
 const RM_FREQUENCIES = ["Daily", "Weekly", "Monthly"];
 const RM_STATUSES = ["Active", "Paused"];
 const RM_DELIVERY_STATUSES = ["Delivered", "Failed", "Partially Delivered", "Processing"];
