@@ -14,6 +14,8 @@
   --navy-light: #EAEEF7;
   --orange: #F2994A;
   --orange-light: #FEF3E8;
+  --yellow: #D9A404;
+  --yellow-light: #FDF6E0;
   --cyan: #7FD3EE;
   --cyan-light: #EAF9FD;
   --purple: #9B7FE8;
@@ -540,7 +542,27 @@ a { color: inherit; }
 
 /* Compliance chart */
 .bo-panel-chart { min-width: 0; flex: 1; min-height: 0; }
-#complianceArea, .bo-chart-area { flex: 1; min-height: 0; }
+#complianceArea, .bo-chart-area { flex: 1; min-height: 0; position: relative; }
+
+.bo-trend-dot { cursor: pointer; transition: r 0.1s ease; }
+
+.bo-trend-tooltip {
+  position: absolute;
+  display: none;
+  transform: translate(-50%, -100%);
+  margin-top: -10px;
+  background: var(--ink);
+  color: #fff;
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 6px 10px;
+  border-radius: 8px;
+  white-space: nowrap;
+  pointer-events: none;
+  box-shadow: 0 4px 12px rgba(20, 30, 50, 0.18);
+  z-index: 5;
+}
+.bo-trend-tooltip .dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 5px; vertical-align: middle; }
 .bo-area-svg { width: 100%; height: 100%; display: block; }
 
 .bo-legend-row {
@@ -2722,6 +2744,9 @@ a.bo-health-card:hover { border-color: var(--field-border); }
 
 .bo-severity-pill .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
 .bo-severity-pill.critical { background: var(--red-light); color: var(--red); }
+.bo-severity-pill.high { background: var(--orange-light); color: var(--orange); }
+.bo-severity-pill.medium { background: var(--yellow-light); color: var(--yellow); }
+.bo-severity-pill.low { background: var(--bg); color: var(--gray-text); }
 .bo-severity-pill.warning { background: var(--orange-light); color: var(--orange); }
 .bo-severity-pill.healthy { background: var(--green-light); color: var(--green); }
 .bo-severity-pill.escalated { background: var(--navy-light); color: var(--navy); }
@@ -3161,7 +3186,7 @@ a.bo-org-card:hover { border-color: var(--field-border); box-shadow: 0 4px 16px 
 
 .bo-mini-stat-row {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 10px;
   margin-top: 14px;
   padding-top: 14px;
@@ -3358,8 +3383,13 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue); }
 .bo-pill-status-escalated { background: var(--red-light); color: var(--red); }
 .bo-pill-status-resolved { background: var(--green-light); color: var(--green); }
 
-.bo-pill-priority-critical { background: var(--red-light); color: var(--red); }
-.bo-pill-priority-warning { background: var(--orange-light); color: var(--orange); }
+.bo-pill-severity-critical { background: var(--red-light); color: var(--red); }
+.bo-pill-severity-high { background: var(--orange-light); color: var(--orange); }
+.bo-pill-severity-medium { background: var(--yellow-light); color: var(--yellow); }
+.bo-pill-severity-low { background: var(--bg); color: var(--gray-text); }
+
+.bo-pill-origin-system { background: var(--navy-light); color: var(--navy); }
+.bo-pill-origin-user { background: var(--blue-light); color: var(--blue); }
 
 .bo-pill-tier { background: var(--navy-light); color: var(--navy); }
 

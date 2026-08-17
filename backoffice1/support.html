@@ -110,7 +110,14 @@
         <button class="bo-tab bo-seg-btn active" data-tab="patient">Patient Tickets</button>
         <button class="bo-tab bo-seg-btn" data-tab="clinic">Clinic Tickets</button>
       </div>
+      <span class="bo-list-toolbar-spacer"></span>
+      <button class="bo-btn-primary" id="openNewTicketBtn">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        New Ticket
+      </button>
+    </div>
 
+    <div class="bo-filter-row">
       <div class="bo-select bo-toolbar-select" data-name="ticketStatus">
         <button type="button" class="bo-select-trigger">
           <span class="bo-select-value placeholder">Status</span>
@@ -119,13 +126,13 @@
         <div class="bo-select-menu" id="ticketStatusFilterMenu"></div>
         <input type="hidden" id="ticketStatusFilter" />
       </div>
-      <div class="bo-select bo-toolbar-select" data-name="ticketPriority">
+      <div class="bo-select bo-toolbar-select" data-name="ticketSeverity">
         <button type="button" class="bo-select-trigger">
-          <span class="bo-select-value placeholder">Priority</span>
+          <span class="bo-select-value placeholder">Severity</span>
           <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
         </button>
-        <div class="bo-select-menu" id="ticketPriorityFilterMenu"></div>
-        <input type="hidden" id="ticketPriorityFilter" />
+        <div class="bo-select-menu" id="ticketSeverityFilterMenu"></div>
+        <input type="hidden" id="ticketSeverityFilter" />
       </div>
       <div class="bo-select bo-toolbar-select" data-name="ticketIssue">
         <button type="button" class="bo-select-trigger">
@@ -135,16 +142,18 @@
         <div class="bo-select-menu" id="ticketIssueFilterMenu"></div>
         <input type="hidden" id="ticketIssueFilter" />
       </div>
-      <div class="bo-search-pill" style="width:260px; flex-shrink:0;">
+      <div class="bo-select bo-toolbar-select" data-name="ticketOrigin">
+        <button type="button" class="bo-select-trigger">
+          <span class="bo-select-value placeholder">Origin</span>
+          <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="bo-select-menu" id="ticketOriginFilterMenu"></div>
+        <input type="hidden" id="ticketOriginFilter" />
+      </div>
+      <div class="bo-search-pill">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8"/><path d="M21 21L16.5 16.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
         <input type="text" id="ticketSearchInput" placeholder="Search ticket, patient or org" />
       </div>
-
-      <span class="bo-list-toolbar-spacer"></span>
-      <button class="bo-btn-primary" id="openNewTicketBtn">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-        New Ticket
-      </button>
     </div>
 
     <!-- PATIENT TICKETS -->
@@ -158,8 +167,9 @@
                 <th>PATIENT ID</th>
                 <th>ORGANIZATION</th>
                 <th>ISSUE TYPE</th>
+                <th>ORIGIN</th>
                 <th>TIER</th>
-                <th>PRIORITY</th>
+                <th>SEVERITY</th>
                 <th>STATUS</th>
                 <th>ASSIGNED TO</th>
                 <th>CREATED</th>
@@ -183,8 +193,9 @@
                 <th>ORGANIZATION</th>
                 <th>RAISED BY</th>
                 <th>ISSUE TYPE</th>
+                <th>ORIGIN</th>
                 <th>TIER</th>
-                <th>PRIORITY</th>
+                <th>SEVERITY</th>
                 <th>STATUS</th>
                 <th>ASSIGNED TO</th>
                 <th>CREATED</th>
@@ -233,6 +244,10 @@
                 <span class="value" id="ticketDetailOrg">â€”</span>
               </div>
               <div class="bo-ticket-summary-item">
+                <span class="label">Origin</span>
+                <span class="value" id="ticketDetailOrigin">â€”</span>
+              </div>
+              <div class="bo-ticket-summary-item">
                 <span class="label">Created</span>
                 <span class="value" id="ticketDetailCreated">â€”</span>
               </div>
@@ -265,10 +280,10 @@
                 </div>
               </div>
               <div class="bo-modal-field">
-                <label>Priority</label>
-                <div class="bo-select" data-name="priority">
+                <label>Severity</label>
+                <div class="bo-select" data-name="severity">
                   <button type="button" class="bo-select-trigger">
-                    <span class="bo-select-value placeholder">Select priority</span>
+                    <span class="bo-select-value placeholder">Select severity</span>
                     <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
                   </button>
                   <div class="bo-select-menu"></div>
@@ -352,10 +367,10 @@
                 </div>
               </div>
               <div class="bo-modal-field">
-                <label>Priority</label>
-                <div class="bo-select" data-name="priority">
+                <label>Severity</label>
+                <div class="bo-select" data-name="severity">
                   <button type="button" class="bo-select-trigger">
-                    <span class="bo-select-value placeholder">Select priority</span>
+                    <span class="bo-select-value placeholder">Select severity</span>
                     <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
                   </button>
                   <div class="bo-select-menu"></div>

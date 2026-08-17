@@ -50,39 +50,44 @@ function renderOvHealthGrid(orgId) {
 /* The trend chart now redraws for whichever range is chosen in the page's
    "Last 24 hours" selector at the top, instead of always showing a fixed
    24-hour window regardless of that control -- so the two stay in sync. */
-/* Chart is scoped to severity only (Critical / Warning) -- "Information" was
-   dropped because it wasn't defined anywhere on the dashboard and had no
-   corresponding summary card, so it gave no actionable signal. */
+/* Chart plots the same 4-level severity used for issues/tickets everywhere
+   else on the app (Critical/High/Medium/Low) -- "Information" stays dropped
+   since it was never defined anywhere on the dashboard. Series are drawn
+   low-to-high so Critical renders on top, the level that matters most. */
 const ovTrendSeriesMeta = [
-  { key: "warning", label: "Warning", color: "var(--orange)" },
+  { key: "low", label: "Low", color: "var(--blue)" },
+  { key: "medium", label: "Medium", color: "var(--yellow)" },
+  { key: "high", label: "High", color: "var(--orange)" },
   { key: "critical", label: "Critical", color: "var(--red)" },
 ];
 
 const ovTrendDatasets = {
   "24h": {
     labels: ["12:00 PM", "4:00 PM", "8:00 PM", "12:00 AM", "4:00 AM", "8:00 AM", "12:00 PM"],
-    series: { warning: [22, 26, 24, 20, 30, 44, 40], critical: [8, 12, 10, 6, 14, 24, 20] },
+    series: { low: [4, 5, 5, 4, 6, 9, 8], medium: [7, 8, 7, 6, 9, 13, 12], high: [11, 13, 12, 10, 15, 22, 20], critical: [8, 12, 10, 6, 14, 24, 20] },
     resolved: 68,
   },
   "7d": {
     labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-    series: { warning: [34, 38, 30, 36, 44, 26, 20], critical: [14, 18, 12, 16, 22, 10, 8] },
+    series: { low: [7, 8, 6, 7, 9, 5, 4], medium: [10, 11, 9, 11, 13, 8, 6], high: [17, 19, 15, 18, 22, 13, 10], critical: [14, 18, 12, 16, 22, 10, 8] },
     resolved: 210,
   },
   "30d": {
     labels: ["Week 1", "Week 2", "Week 3", "Week 4", "Week 5"],
-    series: { warning: [32, 40, 30, 42, 38], critical: [12, 16, 10, 20, 18] },
+    series: { low: [6, 8, 6, 8, 8], medium: [10, 12, 9, 13, 11], high: [16, 20, 15, 21, 19], critical: [12, 16, 10, 20, 18] },
     resolved: 640,
   },
   "4mo": {
     labels: ["May", "Jun", "Jul", "Aug"],
-    series: { warning: [38, 34, 44, 40], critical: [16, 14, 20, 18] },
+    series: { low: [8, 7, 9, 8], medium: [11, 10, 13, 12], high: [19, 17, 22, 20], critical: [16, 14, 20, 18] },
     resolved: 1840,
   },
   "1y": {
     labels: ["Sep", "Oct", "Nov", "Dec", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug"],
     series: {
-      warning: [26, 28, 32, 30, 34, 28, 36, 40, 38, 34, 44, 40],
+      low: [5, 6, 6, 6, 7, 6, 7, 8, 8, 7, 9, 8],
+      medium: [8, 8, 10, 9, 10, 8, 11, 12, 11, 10, 13, 12],
+      high: [13, 14, 16, 15, 17, 14, 18, 20, 19, 17, 22, 20],
       critical: [10, 12, 14, 12, 16, 12, 18, 20, 18, 16, 20, 18],
     },
     resolved: 5400,
@@ -111,8 +116,8 @@ function renderOvTrendChart() {
   const padB = 22;
   const plotW = width - padL - padR;
   const plotH = height - padT - padB;
-  const yMax = 60;
-  const gridStep = 20;
+  const yMax = 30;
+  const gridStep = 10;
 
   const xAt = (i) => padL + (plotW * i) / (labels.length - 1);
   const yAt = (v) => padT + plotH - (v / yMax) * plotH;
@@ -132,11 +137,14 @@ function renderOvTrendChart() {
 
   const buildArea = (s) => {
     const line = s.values.map((v, i) => `${xAt(i)},${yAt(v)}`).join(" L ");
-    const areaPath = `M ${xAt(0)},${yAt(s.values[0])} L ${line} L ${xAt(s.values.length - 1)},${padT + plotH} L ${xAt(0)},${padT + plotH} Z`;
     return `
-      <path d="${areaPath}" fill="${s.color}" opacity="0.28"/>
       <path d="M ${xAt(0)},${yAt(s.values[0])} L ${line}" fill="none" stroke="${s.color}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
-      ${s.values.map((v, i) => `<circle cx="${xAt(i)}" cy="${yAt(v)}" r="2.6" fill="${s.color}"/>`).join("")}`;
+      ${s.values
+        .map(
+          (v, i) =>
+            `<circle class="bo-trend-dot" cx="${xAt(i)}" cy="${yAt(v)}" r="2.6" fill="${s.color}" data-label="${s.label}" data-value="${v}" data-x="${labels[i]}" data-color="${s.color}"/>`
+        )
+        .join("")}`;
   };
 
   document.getElementById("ovTrendChart").innerHTML = `
@@ -144,7 +152,33 @@ function renderOvTrendChart() {
       ${gridLines.join("")}
       ${series.map(buildArea).join("")}
       ${xLabels}
-    </svg>`;
+    </svg>
+    <div class="bo-trend-tooltip" id="ovTrendTooltip"></div>`;
+
+  wireOvTrendTooltips();
+}
+
+/* Hover a dot to see its exact severity/value/time -- the area fills were
+   removed since overlapping semi-transparent fills across 4 series made the
+   chart harder to read than the lines alone. */
+function wireOvTrendTooltips() {
+  const container = document.getElementById("ovTrendChart");
+  const tooltip = document.getElementById("ovTrendTooltip");
+
+  container.querySelectorAll(".bo-trend-dot").forEach((dot) => {
+    dot.addEventListener("mouseenter", () => {
+      const { label, value, x, color } = dot.dataset;
+      tooltip.innerHTML = `<span class="dot" style="background:${color};"></span>${label}: <b>${value}</b> &middot; ${x}`;
+      tooltip.style.left = `${dot.getAttribute("cx")}px`;
+      tooltip.style.top = `${dot.getAttribute("cy")}px`;
+      tooltip.style.display = "block";
+      dot.setAttribute("r", "4.5");
+    });
+    dot.addEventListener("mouseleave", () => {
+      tooltip.style.display = "none";
+      dot.setAttribute("r", "2.6");
+    });
+  });
 }
 renderOvTrendChart();
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(renderOvTrendChart);
@@ -161,8 +195,10 @@ function renderOvTrendFooter() {
   const isSingleDay = ovTrendRangeKey === "24h";
 
   const footer = [
-    { num: sum(dataset.series.critical), label: "Critical Issues", color: "var(--red)", delta: 8, dir: "up", param: "priority=Critical" },
-    { num: sum(dataset.series.warning), label: "Warnings", color: "var(--orange)", delta: 12, dir: "up", param: "priority=Warning" },
+    { num: sum(dataset.series.critical), label: "Critical", color: "var(--red)", delta: 8, dir: "up", param: "severity=Critical" },
+    { num: sum(dataset.series.high), label: "High", color: "var(--orange)", delta: 6, dir: "up", param: "severity=High" },
+    { num: sum(dataset.series.medium), label: "Medium", color: "var(--yellow)", delta: 3, dir: "down", param: "severity=Medium" },
+    { num: sum(dataset.series.low), label: "Low", color: "var(--blue)", delta: 2, dir: "down", param: "severity=Low" },
     { num: dataset.resolved, label: "Resolved", color: "var(--green)", delta: 15, dir: "up", param: "status=Resolved" },
   ];
 
@@ -187,18 +223,18 @@ function renderOvTrendFooter() {
 renderOvTrendFooter();
 
 /* ---------------- Critical Issues (Top 5) ---------------- */
-/* Severity is Critical / Warning only, matching the top summary cards --
-   "High"/"Medium" were dropped so this section can't imply a third severity
-   tier that doesn't exist anywhere else on the dashboard. */
+/* Severity uses the same 4-level scale as everywhere else issues/tickets
+   appear (Critical/High/Medium/Low), with colors matching the ticket
+   severity pills: red/orange/yellow/blue. */
 const ovCritIssues = [
   { title: "Recording failures", desc: "Recordings not received from devices", severity: "Critical", started: "42 min ago", orgs: 3, patients: 18, color: "var(--red)", category: "Recording", icon: `<path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3Z"/><path d="M19 11a7 7 0 0 1-14 0"/><path d="M12 19v3"/>` },
   { title: "Upload failures", desc: "Recordings failing to upload to server", severity: "Critical", started: "2 hrs ago", orgs: 2, patients: 7, color: "var(--red)", category: "Upload", icon: `<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5"/><path d="M12 3v12"/>` },
-  { title: "Voice engine errors", desc: "High error rate in voice processing", severity: "Warning", started: "3 hrs ago", orgs: 1, patients: 5, color: "var(--orange)", category: "Voice Engine", icon: `<path d="M12 2a10 10 0 1 0 10 10"/><path d="M12 6v6l4 2"/>` },
-  { title: "Device connectivity issues", desc: "Devices not connecting or syncing", severity: "Warning", started: "5 hrs ago", orgs: 2, patients: 9, color: "var(--orange)", category: "Device / System", icon: `<rect x="4" y="2" width="16" height="20" rx="2"/><path d="M12 18h.01"/>` },
-  { title: "Sensor data delays", desc: "Sensor data delayed or missing", severity: "Warning", started: "6 hrs ago", orgs: 1, patients: 4, color: "var(--orange)", category: "Sensors", icon: `<circle cx="12" cy="12" r="9"/><path d="M12 8v4"/><path d="M12 16h.01"/>` },
+  { title: "Voice engine errors", desc: "High error rate in voice processing", severity: "High", started: "3 hrs ago", orgs: 1, patients: 5, color: "var(--orange)", category: "Voice Engine", icon: `<path d="M12 2a10 10 0 1 0 10 10"/><path d="M12 6v6l4 2"/>` },
+  { title: "Device connectivity issues", desc: "Devices not connecting or syncing", severity: "Medium", started: "5 hrs ago", orgs: 2, patients: 9, color: "var(--yellow)", category: "Device / System", icon: `<rect x="4" y="2" width="16" height="20" rx="2"/><path d="M12 18h.01"/>` },
+  { title: "Sensor data delays", desc: "Sensor data delayed or missing", severity: "Low", started: "6 hrs ago", orgs: 1, patients: 4, color: "var(--blue)", category: "Sensors", icon: `<circle cx="12" cy="12" r="9"/><path d="M12 8v4"/><path d="M12 16h.01"/>` },
 ];
 
-const ovSeverityPillClass = { Critical: "critical", Warning: "warning" };
+const ovSeverityPillClass = { Critical: "critical", High: "high", Medium: "medium", Low: "low" };
 
 /* Route each issue to the organization currently most affected by that
    category, so clicking an issue drops the user straight into the
