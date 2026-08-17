@@ -24,3 +24,55 @@ const clinicTickets = [
   { id: 3, ticketNo: "TCK-2006", raisedBy: "Omer Peretz", organization: "104", issueType: "Recording Problem", tier: "Tier 1", priority: "Low", status: "Resolved", createdDate: "24/07/2026 09:55", description: "Clinic reported one patient's recordings sound sped up; traced to a bad microphone on that device." },
   { id: 4, ticketNo: "TCK-2001", raisedBy: "Noa Ben-David", organization: "105", issueType: "Device/System Issue", tier: "Tier 2", priority: "High", status: "Open", createdDate: "20/07/2026 17:02", description: "Clinic tablet used for onboarding new patients won't connect to the org Wi-Fi after firmware update." },
 ];
+
+/* ---------------- Bulk synthetic tickets ----------------
+   Tops up the hand-authored samples above so filtering this list by status yields
+   the same totals the Overview dashboard's System Health footer promises (94
+   Escalated / 206 In Progress / 68 Resolved) -- those footer cards deep-link
+   straight into this filtered view via support.html?status=<Status>. */
+const SUPPORT_ORG_CODES = ["120", "121", "104", "B03", "105", "122", "B01", "ATP"];
+const SUPPORT_CLINIC_STAFF = ["Rachel Cohen", "David Levi", "Miriam Katz", "Omer Peretz", "Noa Ben-David", "Yossi Mizrahi", "Tamar Azoulay", "Eitan Shapiro"];
+const SUPPORT_ISSUE_DESCRIPTIONS = {
+  "Recording Problem": "Recording did not complete or save as expected.",
+  "Uploading Problem": "Upload stalled and required a retry.",
+  "Device/System Issue": "Device stopped responding or syncing correctly.",
+  "Other Software Issue": "Unexpected app behavior reported by the user.",
+};
+const SUPPORT_STATUS_PRIORITIES = {
+  Escalated: ["Urgent", "Urgent", "High"],
+  "In Progress": ["Medium", "High"],
+  Resolved: ["Low", "Medium", "High"],
+};
+
+function topUpTickets(array, kind, status, count, ticketSeqStart) {
+  let nextId = array.length ? Math.max(...array.map((t) => t.id)) + 1 : 0;
+  const prefix = kind === "patient" ? "TCK-1" : "TCK-2";
+  for (let i = 0; i < count; i++) {
+    const n = ticketSeqStart + i;
+    const org = SUPPORT_ORG_CODES[n % SUPPORT_ORG_CODES.length];
+    const issueType = ISSUE_TYPES[n % ISSUE_TYPES.length];
+    const priorities = SUPPORT_STATUS_PRIORITIES[status];
+    const ticket = {
+      id: nextId + i,
+      ticketNo: `${prefix}${100 + n}`,
+      organization: org,
+      issueType,
+      tier: TIERS[n % TIERS.length],
+      priority: priorities[n % priorities.length],
+      status,
+      createdDate: `${String(1 + (n % 27)).padStart(2, "0")}/${String(1 + (n % 12)).padStart(2, "0")}/2026 ${String(8 + (n % 11)).padStart(2, "0")}:${String((n * 7) % 60).padStart(2, "0")}`,
+      description: SUPPORT_ISSUE_DESCRIPTIONS[issueType],
+    };
+    if (kind === "patient") ticket.patientId = `${org}-${5000 + n}`;
+    else ticket.raisedBy = SUPPORT_CLINIC_STAFF[n % SUPPORT_CLINIC_STAFF.length];
+    array.push(ticket);
+  }
+}
+
+topUpTickets(patientTickets, "patient", "Escalated", 55, 0);
+topUpTickets(patientTickets, "patient", "In Progress", 122, 55);
+topUpTickets(patientTickets, "patient", "Resolved", 39, 177);
+
+topUpTickets(clinicTickets, "clinic", "Escalated", 37, 0);
+topUpTickets(clinicTickets, "clinic", "In Progress", 81, 37);
+topUpTickets(clinicTickets, "clinic", "Resolved", 26, 118);

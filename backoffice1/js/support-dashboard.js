@@ -41,7 +41,8 @@ document.getElementById("supDashHealthGrid").innerHTML = supDashStats
 /* ---------------- Critical & Escalated Tickets ---------------- */
 const supDashCritical = supDashTickets
   .filter((t) => t.priority === "Urgent" || t.status === "Escalated")
-  .sort((a, b) => (a.createdDate < b.createdDate ? 1 : -1));
+  .sort((a, b) => (a.createdDate < b.createdDate ? 1 : -1))
+  .slice(0, 10);
 
 document.getElementById("supDashCriticalRows").innerHTML = supDashCritical.length
   ? supDashCritical
