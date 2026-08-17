@@ -724,17 +724,6 @@ body.bo-page-scroll .bo-page { overflow-y: auto; overflow-x: hidden; }
   flex-shrink: 0;
 }
 
-/* Keep every control on a single row instead of wrapping to a second
-   line — the row scrolls horizontally if it ever runs out of room. */
-.bo-list-toolbar--nowrap {
-  flex-wrap: nowrap;
-  overflow-x: auto;
-  overflow-y: hidden;
-  padding-bottom: 2px;
-}
-
-.bo-list-toolbar--nowrap > * { flex-shrink: 0; }
-
 .bo-list-toolbar h1 {
   font-size: 20px;
   font-weight: 800;
@@ -769,6 +758,8 @@ body.bo-page-scroll .bo-page { overflow-y: auto; overflow-x: hidden; }
 
 .bo-list-toolbar-spacer { flex: 1; }
 
+/* Compact fixed-width custom select sitting inline in a toolbar (as
+   opposed to .bo-filter-row, where selects stretch to fill the row). */
 .bo-list-toolbar .bo-toolbar-select { width: 170px; flex-shrink: 0; }
 
 .bo-list-toolbar-group {
@@ -1119,8 +1110,11 @@ body.bo-page-scroll .bo-page { overflow-y: auto; overflow-x: hidden; }
 }
 
 .bo-filter-row .bo-filter-field,
-.bo-filter-row .bo-date-field {
+.bo-filter-row .bo-date-field,
+.bo-filter-row .bo-select,
+.bo-filter-row .bo-search-pill {
   flex: 1 1 0;
+  width: auto;
   min-width: 0;
 }
 
@@ -1130,7 +1124,9 @@ body.bo-page-scroll .bo-page { overflow-y: auto; overflow-x: hidden; }
 @media (max-width: 1100px) {
   .bo-filter-row { flex-wrap: wrap; }
   .bo-filter-row .bo-filter-field,
-  .bo-filter-row .bo-date-field { flex: 1 1 150px; }
+  .bo-filter-row .bo-date-field,
+  .bo-filter-row .bo-select,
+  .bo-filter-row .bo-search-pill { flex: 1 1 150px; }
 }
 
 /* Date field — matches .bo-filter-field, with a trailing calendar glyph */
@@ -2076,10 +2072,23 @@ body.bo-page-scroll .bo-page { overflow-y: auto; overflow-x: hidden; }
 .bo-status-active { background: var(--green-light); color: var(--green); }
 .bo-status-inactive { background: var(--red-light); color: var(--red); }
 
+/* Status Change table badges (Previous / Changed to) */
+.bo-sc-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+}
+.bo-sc-badge.active { background: var(--green-light); color: var(--green); }
+.bo-sc-badge.priority { background: var(--red-light); color: var(--red); }
+.bo-sc-badge.registered { background: var(--blue-light); color: var(--blue); }
+.bo-sc-badge.baseline { background: var(--bg); color: var(--gray-text); }
+
 /* EHR Connections cell (Organizations table) */
 .bo-ehr-tags {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 6px;
 }
 
@@ -3386,3 +3395,8 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue); }
 .bo-report-expand.open svg { transform: rotate(180deg); }
 
 .bo-report-row td { background: var(--blue-light); }
+
+.bo-report-row td:first-child,
+.bo-report-row td:last-child {
+  background: var(--blue-light);
+}
