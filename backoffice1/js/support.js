@@ -40,12 +40,19 @@ let ticketSearchTerm = "";
 (function applyIncomingTicketFilters() {
   const params = new URLSearchParams(location.search);
   const issueType = params.get("issueType");
+  const status = params.get("status");
   const q = params.get("q");
 
   if (issueType && ISSUE_TYPES.includes(issueType)) {
     ticketIssueValue = issueType;
     const select = document.getElementById("ticketIssueFilter");
     select.value = issueType;
+    select.classList.add("has-value");
+  }
+  if (status && STATUSES.includes(status)) {
+    ticketStatusValue = status;
+    const select = document.getElementById("ticketStatusFilter");
+    select.value = status;
     select.classList.add("has-value");
   }
   if (q) {

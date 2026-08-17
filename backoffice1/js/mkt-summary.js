@@ -1,13 +1,15 @@
-/* ---------------- Base data (baseline = "All Organizations") ---------------- */
+/* ---------------- Base data (baseline = "All Organizations") ----------------
+   Patient status set mirrors the one used across the rest of the app
+   (see js/dashboard.js): Registered, Baseline, Active, Priority,
+   Unmonitored, Paused, Discontinued. */
 const boStatsBase = [
-  { key: "total", num: 92, label: "Total", color: "var(--navy)", icon: `<path d="M3 3v18h18"/><path d="M18 9l-5 5-4-4-4 4"/>` },
-  { key: "registered", num: 42, label: "Registered", color: "var(--blue)", icon: `<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>` },
-  { key: "baseline", num: 6, label: "Baseline", color: "var(--navy)", icon: `<path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/>` },
-  { key: "active", num: 30, label: "Active", color: "var(--green)", icon: `<path d="M22 12h-4l-3 9L9 3l-3 9H2"/>` },
-  { key: "priority", num: 4, label: "Priority", color: "var(--red)", icon: `<path d="M12 21C12 21 4 15.5 4 9.8C4 6.6 6.5 4.5 9.2 4.5C10.6 4.5 11.6 5.1 12 5.7C12.4 5.1 13.4 4.5 14.8 4.5C17.5 4.5 20 6.6 20 9.8C20 15.5 12 21 12 21Z"/>` },
-  { key: "discontinued", num: 3, label: "Discontinued", color: "var(--orange)", icon: `<circle cx="12" cy="12" r="9"/><path d="M15 9l-6 6"/><path d="M9 9l6 6"/>` },
-  { key: "insufficient", num: 5, label: "Insufficient", color: "var(--orange)", icon: `<circle cx="12" cy="12" r="9"/><path d="M12 8v5"/><path d="M12 16h.01"/>` },
-  { key: "onhold", num: 2, label: "On Hold", color: "var(--gray)", icon: `<rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/>` },
+  { key: "registered", num: 134, label: "Registered", color: "var(--blue)", icon: `<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>` },
+  { key: "baseline", num: 5, label: "Baseline", color: "var(--navy)", icon: `<path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/>` },
+  { key: "active", num: 120, label: "Active", color: "var(--green)", icon: `<path d="M22 12h-4l-3 9L9 3l-3 9H2"/>` },
+  { key: "priority", num: 3, label: "Priority", color: "var(--red)", icon: `<path d="M12 21C12 21 4 15.5 4 9.8C4 6.6 6.5 4.5 9.2 4.5C10.6 4.5 11.6 5.1 12 5.7C12.4 5.1 13.4 4.5 14.8 4.5C17.5 4.5 20 6.6 20 9.8C20 15.5 12 21 12 21Z"/>` },
+  { key: "unmonitored", num: 5, label: "Unmonitored", color: "var(--cyan)", icon: `<circle cx="12" cy="12" r="9"/><path d="M12 8v4"/><path d="M12 16h.01"/>` },
+  { key: "paused", num: 1, label: "Paused", color: "var(--gray)", icon: `<rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/>` },
+  { key: "discontinued", num: 2, label: "Discontinued", color: "var(--orange)", icon: `<circle cx="12" cy="12" r="9"/><path d="M15 9l-6 6"/><path d="M9 9l6 6"/>` },
 ];
 
 const statusChangeBase = [

@@ -166,15 +166,15 @@ function renderOvTrendFooter() {
   const isSingleDay = ovTrendRangeKey === "24h";
 
   const footer = [
-    { num: sum(dataset.series.critical), label: "Critical Issues", color: "var(--red)", delta: 8, dir: "up" },
-    { num: sum(dataset.series.warning), label: "Warnings", color: "var(--orange)", delta: 12, dir: "up" },
-    { num: dataset.resolved, label: "Resolved", color: "var(--green)", delta: 15, dir: "up" },
+    { num: sum(dataset.series.critical), label: "Critical Issues", color: "var(--red)", delta: 8, dir: "up", status: "Escalated" },
+    { num: sum(dataset.series.warning), label: "Warnings", color: "var(--orange)", delta: 12, dir: "up", status: "In Progress" },
+    { num: dataset.resolved, label: "Resolved", color: "var(--green)", delta: 15, dir: "up", status: "Resolved" },
   ];
 
   document.getElementById("ovTrendFooter").innerHTML = footer
     .map(
       (f) => `
-    <a class="bo-mini-stat-cell" href="support.html">
+    <a class="bo-mini-stat-cell" href="support.html?status=${encodeURIComponent(f.status)}">
       <span class="num" style="color:${f.color};">${f.num}</span>
       <span class="lbl">${f.label}</span>
       ${
