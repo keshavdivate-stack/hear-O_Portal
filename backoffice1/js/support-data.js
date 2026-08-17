@@ -159,6 +159,7 @@ const SUPPORT_ISSUE_DESCRIPTIONS = {
   "Suspicious Clinic Login": "Clinic user login flagged for unusual location or repeated failed attempts.",
 };
 const SUPPORT_STATUS_SEVERITIES = {
+  Open: ["Low", "Medium", "High", "Critical"],
   Escalated: ["Critical", "Critical", "High", "Medium"],
   "In Progress": ["Medium", "High", "Low", "Critical"],
   Resolved: ["Low", "Medium", "High", "Critical"],
@@ -195,10 +196,17 @@ function topUpTickets(array, kind, status, count, ticketSeqStart) {
 topUpTickets(patientTickets, "patient", "Escalated", 55, 0);
 topUpTickets(patientTickets, "patient", "In Progress", 122, 55);
 topUpTickets(patientTickets, "patient", "Resolved", 39, 177);
+/* Open only had a handful of hand-authored tickets, which didn't span every
+   tier/category/severity/origin -- combining Status=Open with another
+   filter (e.g. Tier 3, or a category besides the couple those tickets
+   happened to use) could return zero results. Top it up like every other
+   status so every filter combination has something to show. */
+topUpTickets(patientTickets, "patient", "Open", 46, 216);
 
 topUpTickets(clinicTickets, "clinic", "Escalated", 37, 0);
 topUpTickets(clinicTickets, "clinic", "In Progress", 81, 37);
 topUpTickets(clinicTickets, "clinic", "Resolved", 26, 118);
+topUpTickets(clinicTickets, "clinic", "Open", 32, 144);
 
 /* ---------------- Alert rules (Rules tab) ---------------- */
 const RULE_CHANNELS = ["Notification", "Email", "SMS"];
