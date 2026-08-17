@@ -19,8 +19,10 @@ function buildFilterSelectOptions(values, clearLabel) {
 }
 document.getElementById("ticketStatusFilterMenu").innerHTML = buildFilterSelectOptions(STATUSES, "All statuses");
 document.getElementById("ticketSeverityFilterMenu").innerHTML = buildFilterSelectOptions(SEVERITIES, "All severities");
+document.getElementById("ticketAreaFilterMenu").innerHTML = buildFilterSelectOptions(AREAS, "All areas");
 document.getElementById("ticketIssueFilterMenu").innerHTML = buildFilterSelectOptions(ISSUE_TYPES, "All issue types");
 document.getElementById("ticketOriginFilterMenu").innerHTML = buildFilterSelectOptions(ORIGINS, "All origins");
+document.getElementById("ticketScopeFilterMenu").innerHTML = buildFilterSelectOptions(SCOPES, "All scopes");
 
 /* ---------------- Badges ---------------- */
 const statusPillClass = { "Open": "bo-pill-status-open", "In Progress": "bo-pill-status-inprogress", "Escalated": "bo-pill-status-escalated", "Resolved": "bo-pill-status-resolved" };
@@ -33,6 +35,10 @@ const severityPill = (p) => `<span class="bo-pill ${severityPillClass[p] || ""}"
 const tierPill = (t) => `<span class="bo-pill bo-pill-tier">${t}</span>`;
 const originPill = (o) => `<span class="bo-pill ${originPillClass[o] || ""}">${o}</span>`;
 const typePill = (s) => `<span class="bo-pill ${typePillClass[s] || ""}">${s}</span>`;
+/* Area is a classification/routing field, not an urgency indicator --
+   rendered as a neutral tag so it doesn't visually compete with the
+   severity/status color coding in the same row. */
+const areaPill = (issueType) => `<span class="bo-pill bo-pill-tag">${ISSUE_TYPE_AREA[issueType] || "—"}</span>`;
 
 /* ---------------- Combine patient + clinic tickets into one list ----------------
    Tags each ticket in place (rather than spreading into copies) so edits made
@@ -47,11 +53,13 @@ const ticketKebabIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="n
 /* ---------------- Filter state (shared by both tabs) ---------------- */
 let ticketStatusValue = "";
 let ticketSeverityValue = "";
+let ticketAreaValue = "";
 let ticketIssueValue = "";
 let ticketOriginValue = "";
+let ticketScopeValue = "";
 let ticketSearchTerm = "";
 
-/* Deep link: ?issueType=<Issue Type>&q=<search text>
+/* Deep link: ?issueType=<Issue Type>&area=<Area>&scope=<Scope>&q=<search text>
    Lets other screens (e.g. the Overview dashboard's Issues by Category and
    Critical Issues panels) land here with the relevant filter/search already
    applied, instead of dropping the user on an unfiltered list. */
@@ -60,7 +68,9 @@ let ticketSearchTerm = "";
   const issueType = params.get("issueType");
   const status = params.get("status");
   const severity = params.get("severity");
+  const area = params.get("area");
   const origin = params.get("origin");
+  const scope = params.get("scope");
   const q = params.get("q");
 
   if (issueType && ISSUE_TYPES.includes(issueType)) {
@@ -75,9 +85,17 @@ let ticketSearchTerm = "";
     ticketSeverityValue = severity;
     setBoSelectValue(document.querySelector('.bo-select[data-name="ticketSeverity"]'), severity, { silent: true });
   }
+  if (area && AREAS.includes(area)) {
+    ticketAreaValue = area;
+    setBoSelectValue(document.querySelector('.bo-select[data-name="ticketArea"]'), area, { silent: true });
+  }
   if (origin && ORIGINS.includes(origin)) {
     ticketOriginValue = origin;
     setBoSelectValue(document.querySelector('.bo-select[data-name="ticketOrigin"]'), origin, { silent: true });
+  }
+  if (scope && SCOPES.includes(scope)) {
+    ticketScopeValue = scope;
+    setBoSelectValue(document.querySelector('.bo-select[data-name="ticketScope"]'), scope, { silent: true });
   }
   if (q) {
     ticketSearchTerm = q.trim().toLowerCase();
@@ -88,8 +106,10 @@ let ticketSearchTerm = "";
 function matchesFilters(t, extraSearchable) {
   if (ticketStatusValue && t.status !== ticketStatusValue) return false;
   if (ticketSeverityValue && t.severity !== ticketSeverityValue) return false;
+  if (ticketAreaValue && ISSUE_TYPE_AREA[t.issueType] !== ticketAreaValue) return false;
   if (ticketIssueValue && t.issueType !== ticketIssueValue) return false;
   if (ticketOriginValue && t.origin !== ticketOriginValue) return false;
+  if (ticketScopeValue && t.scope !== ticketScopeValue) return false;
   if (ticketSearchTerm) {
     const haystack = `${t.ticketNo} ${t.organization} ${extraSearchable}`.toLowerCase();
     if (!haystack.includes(ticketSearchTerm)) return false;
@@ -114,6 +134,7 @@ const ticketPager = boCreatePager(
       <td>${t.who}</td>
       <td>${t.organization}</td>
       <td>${t.issueType}</td>
+      <td>${areaPill(t.issueType)}</td>
       <td>${originPill(t.origin)}</td>
       <td>${tierPill(t.tier)}</td>
       <td>${severityPill(t.severity)}</td>
@@ -126,7 +147,7 @@ const ticketPager = boCreatePager(
         </div>
       </td>
     </tr>`,
-  { pageSize: PAGE_SIZE, emptyColspan: 12, emptyText: "No tickets match these filters." }
+  { pageSize: PAGE_SIZE, emptyColspan: 13, emptyText: "No tickets match these filters." }
 );
 ticketPager();
 
@@ -143,12 +164,20 @@ document.getElementById("ticketSeverityFilter").addEventListener("change", (e) =
   ticketSeverityValue = e.target.value;
   refreshTicketTables();
 });
+document.getElementById("ticketAreaFilter").addEventListener("change", (e) => {
+  ticketAreaValue = e.target.value;
+  refreshTicketTables();
+});
 document.getElementById("ticketIssueFilter").addEventListener("change", (e) => {
   ticketIssueValue = e.target.value;
   refreshTicketTables();
 });
 document.getElementById("ticketOriginFilter").addEventListener("change", (e) => {
   ticketOriginValue = e.target.value;
+  refreshTicketTables();
+});
+document.getElementById("ticketScopeFilter").addEventListener("change", (e) => {
+  ticketScopeValue = e.target.value;
   refreshTicketTables();
 });
 document.getElementById("ticketSearchInput").addEventListener("input", (e) => {
@@ -263,8 +292,10 @@ function openTicketDetail(source, id) {
   document.getElementById("ticketDetailWho").textContent = source === "patient" ? ticket.patientId : ticket.raisedBy;
   document.getElementById("ticketDetailOrg").textContent = ticket.organization;
   document.getElementById("ticketDetailOrigin").textContent = ticket.origin;
+  document.getElementById("ticketDetailScope").textContent = ticket.scope;
   document.getElementById("ticketDetailCreated").textContent = ticket.createdDate;
   document.getElementById("ticketDetailIssueType").textContent = ticket.issueType;
+  document.getElementById("ticketDetailArea").textContent = ISSUE_TYPE_AREA[ticket.issueType] || "—";
   document.getElementById("ticketDetailDescription").textContent = ticket.description;
 
   const drawer = ticketDetailOverlay.querySelector(".bo-drawer");
@@ -381,6 +412,7 @@ newTicketForm.addEventListener("submit", (e) => {
       raisedBy: newTicketForm.who.value.trim(),
       organization: newTicketForm.organization.value.trim(),
       issueType,
+      scope: ISSUE_TYPE_SCOPE[issueType] || "Patient",
       tier: "Tier 1",
       severity,
       origin: "User Raised",
@@ -401,6 +433,7 @@ newTicketForm.addEventListener("submit", (e) => {
       patientId: newTicketForm.who.value.trim(),
       organization: newTicketForm.organization.value.trim(),
       issueType,
+      scope: ISSUE_TYPE_SCOPE[issueType] || "Patient",
       tier: "Tier 1",
       severity,
       origin: "User Raised",
