@@ -110,11 +110,17 @@ document.getElementById("orgsRows").addEventListener("change", (e) => {
 const orgRowMenu = document.getElementById("orgRowMenu");
 let activeOrgRowId = null;
 
+const orgRowMenuEhrBtn = document.getElementById("orgRowMenuEhrBtn");
+
 document.getElementById("orgsRows").addEventListener("click", (e) => {
   const trigger = e.target.closest(".row-menu-trigger");
   if (!trigger) return;
   e.stopPropagation();
   activeOrgRowId = Number(trigger.dataset.id);
+
+  const org = orgs.find((o) => o.id === activeOrgRowId);
+  orgRowMenuEhrBtn.hidden = !org || (org.ehr || []).length >= EHR_MAX;
+
   const rect = trigger.getBoundingClientRect();
   orgRowMenu.style.top = `${rect.bottom + 6}px`;
   orgRowMenu.style.left = `${rect.right - 190}px`;
@@ -129,6 +135,7 @@ orgRowMenu.addEventListener("click", (e) => {
   const item = e.target.closest(".bo-row-menu-item");
   if (!item) return;
   orgRowMenu.classList.remove("open");
+  if (item.dataset.action === "ehr") openEhrConnDrawer(activeOrgRowId);
 });
 
 /* ---------------- Custom selects (used inside the Add Organization drawer) ---------------- */
@@ -393,3 +400,134 @@ document.getElementById("openAddOrgBtn").addEventListener("click", openAddOrgMod
 document.getElementById("cancelAddOrg").addEventListener("click", closeAddOrgModal);
 document.getElementById("closeAddOrgX").addEventListener("click", closeAddOrgModal);
 addOrgOverlay.addEventListener("click", (e) => { if (e.target === addOrgOverlay) closeAddOrgModal(); });
+
+/* ---------------- EHR Connection drawer (row-menu action) ----------------
+   Shows only the "EHR Connection Details" fields directly, no stepper.
+   Prefilled with the organization's existing EHR connections; capped at EHR_MAX. */
+const ehrConnDrawerOverlay = document.getElementById("ehrConnDrawerOverlay");
+const ehrConnForm = document.getElementById("ehrConnForm");
+const ehrConnRowsWrap = document.getElementById("ehrConnRowsWrap");
+const addEhrConnRowBtn = document.getElementById("addEhrConnRowBtn");
+let ehrConnOrgId = null;
+let ehrConnRowCount = 0;
+
+function ehrConnRowFields() {
+  return Array.from(ehrConnRowsWrap.querySelectorAll("[data-ehr-row]"));
+}
+
+function relabelEhrConnRows() {
+  const fields = ehrConnRowFields();
+  fields.forEach((field, i) => {
+    field.querySelector(".bo-ehr-card-title").textContent = `EHR Connection ${i + 1}`;
+    const removeBtn = field.querySelector(".bo-org-row-remove");
+    removeBtn.disabled = fields.length === 1;
+  });
+  addEhrConnRowBtn.disabled = fields.length >= EHR_MAX;
+  addEhrConnRowBtn.style.display = fields.length >= EHR_MAX ? "none" : "";
+}
+
+function addEhrConnRow(presetName) {
+  if (ehrConnRowFields().length >= EHR_MAX) return;
+  ehrConnRowCount += 1;
+  const n = ehrConnRowCount;
+
+  const card = document.createElement("div");
+  card.className = "bo-ehr-card";
+  card.setAttribute("data-ehr-row", "");
+  card.innerHTML = `
+    <div class="bo-ehr-card-head">
+      <span class="bo-ehr-card-title">EHR Connection</span>
+      <button type="button" class="bo-org-row-remove" aria-label="Remove EHR connection">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6L18 18M6 18L18 6"/></svg>
+      </button>
+    </div>
+    <div class="bo-modal-grid">
+      <div class="bo-modal-field">
+        <label>EHR Name</label>
+        <div class="bo-select" data-name="ehrConn${n}Name">
+          <button type="button" class="bo-select-trigger">
+            <span class="bo-select-value placeholder">Choose</span>
+            <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="bo-select-menu">${EHR_OPTIONS_HTML}</div>
+          <input type="hidden" name="ehrConn${n}Name" />
+        </div>
+      </div>
+      <div class="bo-modal-field">
+        <label>Environment</label>
+        <div class="bo-select" data-name="ehrConn${n}Env">
+          <button type="button" class="bo-select-trigger">
+            <span class="bo-select-value placeholder">Choose</span>
+            <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="bo-select-menu">${EHR_ENV_OPTIONS_HTML}</div>
+          <input type="hidden" name="ehrConn${n}Env" />
+        </div>
+      </div>
+      <div class="bo-modal-field">
+        <label>Client Id</label>
+        <input type="text" name="ehrConn${n}ClientId" placeholder="Enter Client ID" />
+      </div>
+      <div class="bo-modal-field">
+        <label>Client Secret</label>
+        <input type="text" name="ehrConn${n}ClientSecret" placeholder="Enter Client Secret" />
+      </div>
+      <div class="bo-modal-field full">
+        <label>Connection Name</label>
+        <input type="text" name="ehrConn${n}ConnName" placeholder="Enter Connection Name" />
+      </div>
+    </div>
+  `;
+
+  ehrConnRowsWrap.appendChild(card);
+  initBoSelects(card);
+
+  if (presetName) {
+    setBoSelectValue(card.querySelector(`.bo-select[data-name="ehrConn${n}Name"]`), presetName, { silent: true });
+  }
+
+  card.querySelector(".bo-org-row-remove").addEventListener("click", () => {
+    card.remove();
+    relabelEhrConnRows();
+  });
+
+  relabelEhrConnRows();
+}
+
+addEhrConnRowBtn.addEventListener("click", () => addEhrConnRow());
+
+function openEhrConnDrawer(orgId) {
+  const org = orgs.find((o) => o.id === orgId);
+  if (!org) return;
+  ehrConnOrgId = orgId;
+
+  ehrConnRowsWrap.innerHTML = "";
+  ehrConnRowCount = 0;
+
+  const existing = org.ehr && org.ehr.length ? org.ehr : [""];
+  existing.forEach((name) => addEhrConnRow(name));
+
+  ehrConnDrawerOverlay.classList.add("open");
+}
+
+function closeEhrConnDrawer() {
+  ehrConnDrawerOverlay.classList.remove("open");
+}
+
+ehrConnForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  const org = orgs.find((o) => o.id === ehrConnOrgId);
+  if (!org) { closeEhrConnDrawer(); return; }
+
+  const names = ehrConnRowFields()
+    .map((field) => field.querySelector('input[type=hidden][name^="ehrConn"][name$="Name"]').value)
+    .filter(Boolean);
+
+  org.ehr = [...new Set(names)].slice(0, EHR_MAX);
+  closeEhrConnDrawer();
+  renderOrgs();
+});
+
+document.getElementById("cancelEhrConn").addEventListener("click", closeEhrConnDrawer);
+document.getElementById("closeEhrConnX").addEventListener("click", closeEhrConnDrawer);
+ehrConnDrawerOverlay.addEventListener("click", (e) => { if (e.target === ehrConnDrawerOverlay) closeEhrConnDrawer(); });

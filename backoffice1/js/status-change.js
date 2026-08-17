@@ -1,18 +1,13 @@
 /* ---------------- Data ---------------- */
 /* start dates stored ISO (YYYY-MM-DD) so From/To date filters compare correctly */
 const statusChanges = [
-  { username: "MKT-10000", prev: "", next: "Registered", start: "2025-12-03", days: 254, by: "System" },
-  { username: "MKT-0222", prev: "Insufficient data", next: "Priority", start: "2025-11-18", days: 269, by: "System" },
-  { username: "MKT-7777", prev: "Baseline", next: "Insufficient data", start: "2021-12-28", days: 1690, by: "System" },
-  { username: "MKT-0790", prev: "Baseline", next: "Insufficient data", start: "2021-12-28", days: 1690, by: "System" },
-  { username: "MKT-0780", prev: "Baseline", next: "Insufficient data", start: "2021-12-28", days: 1690, by: "System" },
-  { username: "MKT-0770", prev: "Baseline", next: "Insufficient data", start: "2021-12-28", days: 1690, by: "System" },
-  { username: "MKT-0760", prev: "Insufficient data", next: "Insufficient data", start: "2021-12-28", days: 1690, by: "System" },
-  { username: "MKT-0740", prev: "Baseline", next: "Insufficient data", start: "2021-12-28", days: 1690, by: "System" },
-  { username: "MKT-0510", prev: "Active", next: "Priority", start: "2024-03-14", days: 512, by: "System" },
-  { username: "MKT-0480", prev: "Priority", next: "Active", start: "2024-02-02", days: 553, by: "Dr. Levi" },
-  { username: "MKT-0322", prev: "Registered", next: "Baseline", start: "2024-01-19", days: 567, by: "System" },
-  { username: "MKT-0210", prev: "Active", next: "Paused", start: "2023-12-05", days: 613, by: "Dr. Levi" },
+  { username: "ABC-1252", type: "Status", prev: "Active", next: "Priority", start: "2026-07-04", days: 3, by: "System" },
+  { username: "ABC-1254", type: "Monitoring", prev: "Monitored", next: "Unmonitored", start: "2026-06-30", days: 7, by: "ayelet_clinic" },
+  { username: "ABC-1254", type: "Account", prev: "Enabled", next: "Paused", start: "2026-06-30", days: 7, by: "ayelet_clinic" },
+  { username: "ABC-1238", type: "Monitoring", prev: "Monitored", next: "Unmonitored", start: "2026-06-25", days: 6, by: "System" },
+  { username: "ABC-1242", type: "Status", prev: "Registered", next: "Baseline", start: "2026-06-24", days: 2, by: "System" },
+  { username: "ABC-1283", type: "Account", prev: "Enabled", next: "Discontinued", start: "2026-06-24", days: 13, by: "ayelet_clinic" },
+  { username: "ABC-1283", type: "Status", prev: "Priority", next: "Active", start: "2026-06-23", days: 2, by: "System" },
 ];
 
 const formatDate = (iso) => iso.split("-").reverse().join("/");
@@ -57,6 +52,13 @@ function scStatusClass(status) {
   return status.toLowerCase().replace(/\s+/g, "-").replace("insufficient-data", "insufficient");
 }
 
+function scCell(type, value) {
+  if (!value) return "";
+  return type === "Status"
+    ? `<span class="bo-sc-badge ${scStatusClass(value)}">${value}</span>`
+    : value;
+}
+
 function renderStatusChanges() {
   const list = scFilteredRows();
   const total = list.length;
@@ -71,8 +73,9 @@ function renderStatusChanges() {
       (s) => `
       <tr>
         <td><span class="bo-name-link">${s.username}</span></td>
-        <td>${s.prev ? `<span class="bo-status-pill ${scStatusClass(s.prev)}">${s.prev}</span>` : ""}</td>
-        <td><span class="bo-status-pill ${scStatusClass(s.next)}">${s.next}</span></td>
+        <td>${s.type}</td>
+        <td>${scCell(s.type, s.prev)}</td>
+        <td>${scCell(s.type, s.next)}</td>
         <td>${formatDate(s.start)}</td>
         <td>${s.days}</td>
         <td>${s.by}</td>
