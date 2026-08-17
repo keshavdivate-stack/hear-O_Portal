@@ -28,7 +28,7 @@ document.getElementById("ticketTypeFilterMenu").innerHTML = buildFilterSelectOpt
 /* ---------------- Badges ---------------- */
 const statusPillClass = { "Open": "bo-pill-status-open", "In Progress": "bo-pill-status-inprogress", "Escalated": "bo-pill-status-escalated", "Resolved": "bo-pill-status-resolved" };
 const severityPillClass = { "Low": "bo-pill-severity-low", "Medium": "bo-pill-severity-medium", "High": "bo-pill-severity-high", "Critical": "bo-pill-severity-critical" };
-const originPillClass = { "System Generated": "bo-pill-origin-system", "Patient App": "bo-pill-origin-patient", "Clinic Portal": "bo-pill-origin-clinic", "Support Agent": "bo-pill-origin-agent" };
+const originPillClass = { "System Generated": "bo-pill-origin-system", "User Created": "bo-pill-origin-user" };
 const typePillClass = { "Patient": "bo-pill-type-patient", "Clinic": "bo-pill-type-clinic" };
 
 const statusPill = (s) => `<span class="bo-pill ${statusPillClass[s] || ""}">${s}</span>`;
@@ -440,7 +440,7 @@ newTicketForm.addEventListener("submit", (e) => {
       scope: ISSUE_TYPE_SCOPE[issueType] || "Patient",
       tier: "Tier 1",
       severity,
-      origin: "Support Agent",
+      origin: "User Created",
       status: "Open",
       createdDate,
       description: newTicketForm.description.value.trim(),
@@ -461,7 +461,7 @@ newTicketForm.addEventListener("submit", (e) => {
       scope: ISSUE_TYPE_SCOPE[issueType] || "Patient",
       tier: "Tier 1",
       severity,
-      origin: "Support Agent",
+      origin: "User Created",
       status: "Open",
       createdDate,
       description: newTicketForm.description.value.trim(),

@@ -3409,9 +3409,7 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue); }
 .bo-pill-severity-low { background: var(--bg); color: var(--gray-text); }
 
 .bo-pill-origin-system { background: var(--navy-light); color: var(--navy); }
-.bo-pill-origin-patient { background: var(--cyan-light); color: #1B8FA8; }
-.bo-pill-origin-clinic { background: var(--purple-light); color: var(--purple); }
-.bo-pill-origin-agent { background: var(--blue-light); color: var(--blue); }
+.bo-pill-origin-user { background: var(--blue-light); color: var(--blue); }
 
 .bo-pill-tag { background: var(--bg); color: var(--gray-text); }
 
