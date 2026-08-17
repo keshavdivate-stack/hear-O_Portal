@@ -88,6 +88,15 @@
 
     <div class="bo-nav-actions">
       <div class="bo-nav-item">
+        <button class="bo-icon-btn badge" id="notifBtn" data-count="0" aria-label="Notifications" title="Notifications">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 4.6 1.2 6.9 2.1 8.1.3.4 0 .9-.5.9H4.4c-.5 0-.8-.5-.5-.9C4.8 14.9 6 12.6 6 8Z"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+        </button>
+        <div class="bo-popover bo-notif-popover" id="notifPopover" style="right:0;">
+          <div class="bo-notif-head">Notifications</div>
+          <div class="bo-notif-list" id="notifList"></div>
+        </div>
+      </div>
+      <div class="bo-nav-item">
         <button class="bo-user-btn" id="avatarBtn" title="emily.carter@cordio-med.com">
           <span class="bo-avatar">E</span>
           <span class="bo-user-name">Emily Carter</span>
@@ -150,6 +159,8 @@
   </main>
 
 <script src="js/dashboard-nav.js"></script>
+<script src="js/support-data.js"></script>
+<script src="js/notifications.js"></script>
 <script src="js/bo-table-scroll.js"></script>
 <script src="js/org-health-data.js"></script>
 <script src="js/org-health-dashboard.js"></script>

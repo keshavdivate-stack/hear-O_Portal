@@ -12,6 +12,7 @@ function wirePopover(btnId, popoverId) {
   pop.addEventListener("click", (e) => e.stopPropagation());
 }
 wirePopover("avatarBtn", "avatarPopover");
+wirePopover("notifBtn", "notifPopover");
 wirePopover("dashboardNavBtn", "dashboardPopover");
 wirePopover("settingsNavBtn", "settingsPopover");
 wirePopover("reportsNavBtn", "reportsPopover");

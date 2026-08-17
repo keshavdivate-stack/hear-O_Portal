@@ -88,6 +88,15 @@
 
     <div class="bo-nav-actions">
       <div class="bo-nav-item">
+        <button class="bo-icon-btn badge" id="notifBtn" data-count="0" aria-label="Notifications" title="Notifications">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 4.6 1.2 6.9 2.1 8.1.3.4 0 .9-.5.9H4.4c-.5 0-.8-.5-.5-.9C4.8 14.9 6 12.6 6 8Z"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+        </button>
+        <div class="bo-popover bo-notif-popover" id="notifPopover" style="right:0;">
+          <div class="bo-notif-head">Notifications</div>
+          <div class="bo-notif-list" id="notifList"></div>
+        </div>
+      </div>
+      <div class="bo-nav-item">
         <button class="bo-user-btn" id="avatarBtn" title="emily.carter@cordio-med.com">
           <span class="bo-avatar">E</span>
           <span class="bo-user-name">Emily Carter</span>
@@ -408,7 +417,7 @@
                   <input type="hidden" />
                 </div>
               </div>
-              <div class="bo-modal-field full">
+              <div class="bo-modal-field">
                 <label>Status</label>
                 <div class="bo-select" data-name="status">
                   <button type="button" class="bo-select-trigger">
@@ -419,7 +428,23 @@
                   <input type="hidden" />
                 </div>
               </div>
+              <div class="bo-modal-field">
+                <label>Assigned To</label>
+                <div class="bo-select" data-name="assignedTo">
+                  <button type="button" class="bo-select-trigger">
+                    <span class="bo-select-value placeholder">Unassigned</span>
+                    <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                  </button>
+                  <div class="bo-select-menu"></div>
+                  <input type="hidden" />
+                </div>
+              </div>
             </div>
+          </div>
+
+          <div class="bo-modal-section">
+            <p class="bo-modal-section-title">History</p>
+            <div class="bo-ticket-history" id="ticketDetailHistory"></div>
           </div>
 
         </div>
@@ -475,7 +500,14 @@
             <div class="bo-modal-grid">
               <div class="bo-modal-field">
                 <label>Category</label>
-                <input type="text" id="newTicketCategoryDisplay" placeholder="Category —" readonly />
+                <div class="bo-select" data-name="category">
+                  <button type="button" class="bo-select-trigger">
+                    <span class="bo-select-value placeholder">Select category</span>
+                    <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                  </button>
+                  <div class="bo-select-menu"></div>
+                  <input type="hidden" />
+                </div>
               </div>
               <div class="bo-modal-field">
                 <label>Issue Type<span class="required-star">*</span></label>
@@ -531,6 +563,7 @@
 <script src="js/bo-table-scroll.js"></script>
 <script src="js/bo-pagination.js"></script>
 <script src="js/support-data.js"></script>
+<script src="js/notifications.js"></script>
 <script src="js/support.js"></script>
 </body>
 </html>
