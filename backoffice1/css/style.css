@@ -3306,10 +3306,8 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue); }
 .bo-pill-status-escalated { background: var(--red-light); color: var(--red); }
 .bo-pill-status-resolved { background: var(--green-light); color: var(--green); }
 
-.bo-pill-priority-low { background: var(--gray-border); color: var(--gray-text); }
-.bo-pill-priority-medium { background: var(--cyan-light); color: #0E7490; }
-.bo-pill-priority-high { background: var(--orange-light); color: var(--orange); }
-.bo-pill-priority-urgent { background: var(--red-light); color: var(--red); }
+.bo-pill-priority-critical { background: var(--red-light); color: var(--red); }
+.bo-pill-priority-warning { background: var(--orange-light); color: var(--orange); }
 
 .bo-pill-tier { background: var(--navy-light); color: var(--navy); }
 

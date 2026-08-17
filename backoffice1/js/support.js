@@ -22,7 +22,7 @@ document.getElementById("ticketIssueFilterMenu").innerHTML = buildFilterSelectOp
 
 /* ---------------- Badges ---------------- */
 const statusPillClass = { "Open": "bo-pill-status-open", "In Progress": "bo-pill-status-inprogress", "Escalated": "bo-pill-status-escalated", "Resolved": "bo-pill-status-resolved" };
-const priorityPillClass = { "Low": "bo-pill-priority-low", "Medium": "bo-pill-priority-medium", "High": "bo-pill-priority-high", "Urgent": "bo-pill-priority-urgent" };
+const priorityPillClass = { "Warning": "bo-pill-priority-warning", "Critical": "bo-pill-priority-critical" };
 
 const statusPill = (s) => `<span class="bo-pill ${statusPillClass[s] || ""}">${s}</span>`;
 const priorityPill = (p) => `<span class="bo-pill ${priorityPillClass[p] || ""}">${p}</span>`;
@@ -368,7 +368,7 @@ newTicketForm.addEventListener("submit", (e) => {
 
   const sourceValue = newTicketOverlay.querySelector('.bo-select[data-name="source"] input[type=hidden]').value || "Patient";
   const issueType = newTicketOverlay.querySelector('.bo-select[data-name="issueType"] input[type=hidden]').value;
-  const priority = newTicketOverlay.querySelector('.bo-select[data-name="priority"] input[type=hidden]').value || "Medium";
+  const priority = newTicketOverlay.querySelector('.bo-select[data-name="priority"] input[type=hidden]').value || "Warning";
   const now = new Date();
   const createdDate = `${String(now.getDate()).padStart(2, "0")}/${String(now.getMonth() + 1).padStart(2, "0")}/${now.getFullYear()} ${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
 
