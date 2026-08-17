@@ -48,15 +48,11 @@ let ticketSearchTerm = "";
 
   if (issueType && ISSUE_TYPES.includes(issueType)) {
     ticketIssueValue = issueType;
-    const select = document.getElementById("ticketIssueFilter");
-    select.value = issueType;
-    select.classList.add("has-value");
+    setBoSelectValue(document.querySelector('.bo-select[data-name="ticketIssue"]'), issueType, { silent: true });
   }
   if (status && STATUSES.includes(status)) {
     ticketStatusValue = status;
-    const select = document.getElementById("ticketStatusFilter");
-    select.value = status;
-    select.classList.add("has-value");
+    setBoSelectValue(document.querySelector('.bo-select[data-name="ticketStatus"]'), status, { silent: true });
   }
   if (q) {
     ticketSearchTerm = q.trim().toLowerCase();
