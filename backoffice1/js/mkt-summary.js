@@ -13,11 +13,10 @@ const boStatsBase = [
 ];
 
 const statusChangeBase = [
-  { username: "10000", status: "Registered", date: "03.12.25" },
-  { username: "0222", status: "Priority", date: "18.11.25" },
-  { username: "7777", status: "Insufficient", date: "28.12.25" },
-  { username: "0790", status: "Insufficient", date: "28.12.25" },
-  { username: "0780", status: "Registered", date: "28.12.25" },
+  { username: "0044", status: "Priority", date: "14.01.28" },
+  { username: "0011", status: "Unmonitored", date: "14.01.28" },
+  { username: "0023", status: "Paused", date: "12.01.28" },
+  { username: "0012", status: "Priority", date: "12.01.28" },
 ];
 
 const errorMessageBase = [
