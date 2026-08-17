@@ -108,7 +108,6 @@
       <a href="patient-management.html" class="bo-back-arrow" id="patientBackLink" aria-label="Back to Patient Management">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
       </a>
-      <span class="bo-entity-avatar" id="patientAvatar">?</span>
       <div>
         <h1 class="bo-entity-name" id="patientName">&nbsp;</h1>
         <p class="bo-entity-sub" id="patientSub">&nbsp;</p>
@@ -125,17 +124,19 @@
 
     <!-- SUMMARY -->
     <div class="bo-tab-panel active" id="tab-summary">
-      <div class="bo-health-grid bo-health-grid--5" id="patientStatusGrid"></div>
-
       <div class="bo-two-col" style="grid-template-columns: 260px 1fr 460px;">
         <div class="bo-panel-col">
-          <section class="bo-card bo-panel">
+          <section class="bo-card bo-panel bo-panel--fill">
             <h3 class="bo-panel-title">Registration Data</h3>
-            <div class="bo-kv-grid" id="patientRegistrationList"></div>
+            <div class="bo-kv-grid bo-kv-grid--scroll" id="patientRegistrationList"></div>
           </section>
           <section class="bo-card bo-panel bo-panel--fill">
             <h3 class="bo-panel-title">Usage Data</h3>
-            <div class="bo-kv-grid" id="patientUsageList"></div>
+            <div class="bo-kv-grid bo-kv-grid--scroll" id="patientUsageList"></div>
+          </section>
+          <section class="bo-card bo-panel bo-panel--fill">
+            <h3 class="bo-panel-title">Status overview</h3>
+            <div class="bo-status-overview-list" id="patientStatusOverviewList"></div>
           </section>
         </div>
 
