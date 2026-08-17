@@ -1397,8 +1397,6 @@ body.bo-page-scroll .bo-page { overflow-y: auto; overflow-x: hidden; }
 
 #newRuleDrawerOverlay .bo-switch-field { font-weight: 400; }
 
-.bo-switch-caption { font-size: 13px; font-weight: 500; color: var(--gray-text); }
-
 .bo-modal-toggle-field {
   display: flex;
   align-items: center;
