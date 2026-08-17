@@ -154,14 +154,14 @@
 
       <section class="bo-card bo-panel bo-panel--static" style="flex:1 1 0; display:block;">
         <div class="bo-panel-head">
-          <h3 class="bo-panel-title" style="margin:0;">Critical Issues (Top 5)</h3>
-          <a class="bo-row-link" href="support.html">View all</a>
+          <h3 class="bo-panel-title" style="margin:0;">Issues (Top 5)</h3>
+          <a class="bo-row-link" href="support.html" id="ovCritViewAllLink">View all</a>
         </div>
         <div class="bo-crit-issue-list" id="ovCritIssueList"></div>
       </section>
     </div>
 
-    <!-- ISSUES BY CATEGORY + AFFECTED ORGANIZATIONS + SYSTEM HEALTH GAUGE -->
+    <!-- ISSUES BY CATEGORY + AFFECTED ORGANIZATIONS -->
     <div style="display:flex; align-items:stretch; gap:16px; flex-shrink:0; margin-bottom:20px;">
       <section class="bo-card bo-panel bo-panel--static" style="flex:1 1 0; display:block;">
         <h3 class="bo-panel-title">Issues by Category</h3>
@@ -184,19 +184,6 @@
           <a class="bo-row-link" href="organizations.html">View all</a>
         </div>
         <div class="bo-org-mini-list" id="ovOrgMiniList"></div>
-      </section>
-
-      <section class="bo-card bo-panel bo-panel--static" style="flex:1 1 0; display:flex; flex-direction:column; align-items:center;">
-        <h3 class="bo-panel-title" style="align-self:flex-start;">System Health</h3>
-        <div class="bo-gauge">
-          <div class="bo-gauge-arc"></div>
-          <div class="bo-gauge-needle" id="ovGaugeNeedle"></div>
-          <div class="bo-gauge-readout">
-            <span class="num" id="ovGaugeScore">&nbsp;</span>
-            <span class="lbl" id="ovGaugeLabel">&nbsp;</span>
-          </div>
-        </div>
-        <a class="bo-row-link bo-ov-panel-foot" href="org-health-dashboard.html" style="width:100%;">View health details &rarr;</a>
       </section>
     </div>
 

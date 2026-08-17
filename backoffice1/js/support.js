@@ -33,6 +33,27 @@ let ticketPriorityValue = "";
 let ticketIssueValue = "";
 let ticketSearchTerm = "";
 
+/* Deep link: ?issueType=<Issue Type>&q=<search text>
+   Lets other screens (e.g. the Overview dashboard's Issues by Category and
+   Critical Issues panels) land here with the relevant filter/search already
+   applied, instead of dropping the user on an unfiltered list. */
+(function applyIncomingTicketFilters() {
+  const params = new URLSearchParams(location.search);
+  const issueType = params.get("issueType");
+  const q = params.get("q");
+
+  if (issueType && ISSUE_TYPES.includes(issueType)) {
+    ticketIssueValue = issueType;
+    const select = document.getElementById("ticketIssueFilter");
+    select.value = issueType;
+    select.classList.add("has-value");
+  }
+  if (q) {
+    ticketSearchTerm = q.trim().toLowerCase();
+    document.getElementById("ticketSearchInput").value = q;
+  }
+})();
+
 function matchesFilters(t, extraSearchable) {
   if (ticketStatusValue && t.status !== ticketStatusValue) return false;
   if (ticketPriorityValue && t.priority !== ticketPriorityValue) return false;
