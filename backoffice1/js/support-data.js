@@ -1,14 +1,14 @@
 /* ---------------- Reference lists ---------------- */
-/* Areas + named alarms sourced from the "System Health Check (Alarm -
+/* Categories + named alarms sourced from the "System Health Check (Alarm -
    Error / Warning)" spec. ISSUE_TYPES covers every named alarm the doc
-   defines, grouped by area via ISSUE_TYPE_AREA, plus one manual catch-all
-   ("Other / Manual Report") for tickets that don't correspond to any
-   automated alarm (hardware failures, UI/translation bugs, etc. -- the doc
-   only specifies system-health monitoring, not every possible complaint).
-   "Clinic Users (Security)" is kept as a selectable area since the doc
-   lists it under "Areas to check", but it has no named alarms defined yet,
-   so no ISSUE_TYPES entry maps to it. */
-const AREAS = ["Compliance", "Voice Engine", "Sensors", "Patient (Mobile/Web)", "Clinic Users (Security)", "System Schedule Engine"];
+   defines, grouped by category via ISSUE_TYPE_CATEGORY, plus one manual
+   catch-all ("Other / Manual Report") for tickets that don't correspond to
+   any automated alarm (hardware failures, UI/translation bugs, etc. -- the
+   doc only specifies system-health monitoring, not every possible
+   complaint). "Clinic Users (Security)" is kept as a selectable category
+   since the doc lists it under "Areas to check", but it has no named
+   alarms defined yet, so no ISSUE_TYPES entry maps to it. */
+const CATEGORIES = ["Compliance", "Voice Engine", "Sensors", "Patient (Mobile/Web)", "Clinic Users (Security)", "System Schedule Engine"];
 const SCOPES = ["Global", "Organization", "Patient"];
 
 const ISSUE_TYPES = [
@@ -37,7 +37,7 @@ const ISSUE_TYPES = [
   "Missing Run: Is Valid Engine",
 ];
 
-const ISSUE_TYPE_AREA = {
+const ISSUE_TYPE_CATEGORY = {
   "Total Compliance Drop": "Compliance",
   "Total Usable Compliance Drop": "Compliance",
   "Organization Compliance Drop": "Compliance",
@@ -93,24 +93,29 @@ const ISSUE_TYPE_SCOPE = {
   "Missing Run: Is Valid Engine": "Global",
 };
 
-const TIERS = ["Tier 1", "Tier 2", "Tier 3", "Tier 4"];
+const TIERS = ["Tier 1", "Tier 2", "Tier 3"];
 const SEVERITIES = ["Low", "Medium", "High", "Critical"];
 const STATUSES = ["Open", "In Progress", "Escalated", "Resolved"];
-const ORIGINS = ["System Generated", "User Raised"];
+/* The four ways a ticket enters the system: an automated alarm from the
+   monitoring engine, a patient self-reporting from the mobile/web app, a
+   clinic user self-reporting from the clinic portal, or a support agent
+   creating one manually from this backoffice (the "New Ticket" button). */
+const ORIGINS = ["System Generated", "Patient App", "Clinic Portal", "Support Agent"];
+const TICKET_TYPES = ["Patient", "Clinic"];
 
 /* ---------------- Support agents (ticket owners) ---------------- */
 const SUPPORT_AGENTS = ["Sarah Cohen", "Daniel Avraham", "Maya Gold", "Tomer Regev", "Liat Peretz"];
 
 /* ---------------- Sample tickets raised by patients ---------------- */
 const patientTickets = [
-  { id: 0, ticketNo: "TCK-1042", patientId: "120-2001", organization: "120", issueType: "Missing ASR Results", scope: "Patient", tier: "Tier 1", severity: "Critical", status: "Open", origin: "User Raised", assignedTo: "Sarah Cohen", createdDate: "02/08/2026 09:14", description: "Patient's recordings aren't producing ASR results -- the app freezes a few seconds into every attempt and no audio file is saved." },
-  { id: 1, ticketNo: "TCK-1041", patientId: "121-2002", organization: "121", issueType: "Signed In Not Uploaded", scope: "Patient", tier: "Tier 2", severity: "High", status: "In Progress", origin: "User Raised", assignedTo: "Daniel Avraham", createdDate: "01/08/2026 16:40", description: "Patient signs in and records, but the file never uploads; a spinning icon never resolves on Wi-Fi or cellular." },
-  { id: 2, ticketNo: "TCK-1038", patientId: "104-3001", organization: "104", issueType: "Other / Manual Report", scope: "Patient", tier: "Tier 3", severity: "Critical", status: "Escalated", origin: "User Raised", assignedTo: "Maya Gold", createdDate: "30/07/2026 11:02", description: "Patient's tablet will not power on after the last app update; suspected bricked device, needs replacement unit." },
-  { id: 3, ticketNo: "TCK-1035", patientId: "B03-4002", organization: "B03", issueType: "Other / Manual Report", scope: "Patient", tier: "Tier 1", severity: "Low", status: "Resolved", origin: "User Raised", assignedTo: "Tomer Regev", createdDate: "28/07/2026 08:55", description: "Notification reminders were appearing in Hebrew instead of the patient's selected language, English." },
+  { id: 0, ticketNo: "TCK-1042", patientId: "120-2001", organization: "120", issueType: "Missing ASR Results", scope: "Patient", tier: "Tier 1", severity: "Critical", status: "Open", origin: "Patient App", assignedTo: "Sarah Cohen", createdDate: "02/08/2026 09:14", description: "Patient's recordings aren't producing ASR results -- the app freezes a few seconds into every attempt and no audio file is saved." },
+  { id: 1, ticketNo: "TCK-1041", patientId: "121-2002", organization: "121", issueType: "Signed In Not Uploaded", scope: "Patient", tier: "Tier 2", severity: "High", status: "In Progress", origin: "Patient App", assignedTo: "Daniel Avraham", createdDate: "01/08/2026 16:40", description: "Patient signs in and records, but the file never uploads; a spinning icon never resolves on Wi-Fi or cellular." },
+  { id: 2, ticketNo: "TCK-1038", patientId: "104-3001", organization: "104", issueType: "Other / Manual Report", scope: "Patient", tier: "Tier 3", severity: "Critical", status: "Escalated", origin: "Support Agent", assignedTo: "Maya Gold", createdDate: "30/07/2026 11:02", description: "Patient's tablet will not power on after the last app update; suspected bricked device, needs replacement unit." },
+  { id: 3, ticketNo: "TCK-1035", patientId: "B03-4002", organization: "B03", issueType: "Other / Manual Report", scope: "Patient", tier: "Tier 1", severity: "Low", status: "Resolved", origin: "Patient App", assignedTo: "Tomer Regev", createdDate: "28/07/2026 08:55", description: "Notification reminders were appearing in Hebrew instead of the patient's selected language, English." },
   { id: 4, ticketNo: "TCK-1031", patientId: "105-5001", organization: "105", issueType: "Missing ASR Derived Features", scope: "Patient", tier: "Tier 2", severity: "Medium", status: "Open", origin: "System Generated", assignedTo: "Liat Peretz", createdDate: "26/07/2026 14:20", description: "Background noise cancellation seems disabled; breath/distortion features are missing from recordings since Tuesday." },
   { id: 5, ticketNo: "TCK-1027", patientId: "122-2001", organization: "122", issueType: "Signed In Not Uploaded", scope: "Patient", tier: "Tier 1", severity: "Low", status: "Resolved", origin: "System Generated", assignedTo: "Sarah Cohen", createdDate: "22/07/2026 10:10", description: "Single recording stuck in upload queue for 3 days; cleared after patient reinstalled the app." },
   { id: 6, ticketNo: "TCK-1019", patientId: "B01-6004", organization: "B01", issueType: "Other / Manual Report", scope: "Patient", tier: "Tier 2", severity: "High", status: "In Progress", origin: "System Generated", assignedTo: "Daniel Avraham", createdDate: "18/07/2026 13:47", description: "App crashes immediately on launch on patient's older Android device; logs point to a memory issue." },
-  { id: 7, ticketNo: "TCK-1012", patientId: "ATP-7002", organization: "ATP", issueType: "Other / Manual Report", scope: "Patient", tier: "Tier 1", severity: "Low", status: "Open", origin: "User Raised", assignedTo: "Maya Gold", createdDate: "14/07/2026 09:30", description: "Patient can't find the 'measurements' tab after the latest release; menu appears reordered." },
+  { id: 7, ticketNo: "TCK-1012", patientId: "ATP-7002", organization: "ATP", issueType: "Other / Manual Report", scope: "Patient", tier: "Tier 1", severity: "Low", status: "Open", origin: "Patient App", assignedTo: "Maya Gold", createdDate: "14/07/2026 09:30", description: "Patient can't find the 'measurements' tab after the latest release; menu appears reordered." },
 ];
 
 /* ---------------- Sample tickets raised by clinics ---------------- */
@@ -118,8 +123,8 @@ const clinicTickets = [
   { id: 0, ticketNo: "TCK-2018", raisedBy: "Rachel Cohen", organization: "120", issueType: "Sensors Not Uploaded", scope: "Organization", tier: "Tier 3", severity: "Critical", status: "Escalated", origin: "System Generated", assignedTo: "Tomer Regev", createdDate: "02/08/2026 08:05", description: "Clinic-wide: patient devices provisioned this week are not syncing sensor data with the dashboard at all." },
   { id: 1, ticketNo: "TCK-2015", raisedBy: "David Levi", organization: "121", issueType: "Organization Compliance Drop", scope: "Organization", tier: "Tier 2", severity: "Medium", status: "In Progress", origin: "System Generated", assignedTo: "Liat Peretz", createdDate: "31/07/2026 15:18", description: "Compliance chart on the clinic dashboard is showing data one day behind for the whole site." },
   { id: 2, ticketNo: "TCK-2011", raisedBy: "Miriam Katz", organization: "B01", issueType: "Signed In Not Uploaded", scope: "Organization", tier: "Tier 1", severity: "Critical", status: "Open", origin: "System Generated", assignedTo: "Sarah Cohen", createdDate: "29/07/2026 12:44", description: "Several patient recordings uploaded overnight are missing from the clinic's session list." },
-  { id: 3, ticketNo: "TCK-2006", raisedBy: "Omer Peretz", organization: "104", issueType: "Other / Manual Report", scope: "Patient", tier: "Tier 1", severity: "Low", status: "Resolved", origin: "User Raised", assignedTo: "Daniel Avraham", createdDate: "24/07/2026 09:55", description: "Clinic reported one patient's recordings sound sped up; traced to a bad microphone on that device." },
-  { id: 4, ticketNo: "TCK-2001", raisedBy: "Noa Ben-David", organization: "105", issueType: "Other / Manual Report", scope: "Organization", tier: "Tier 2", severity: "High", status: "Open", origin: "User Raised", assignedTo: "Maya Gold", createdDate: "20/07/2026 17:02", description: "Clinic tablet used for onboarding new patients won't connect to the org Wi-Fi after firmware update." },
+  { id: 3, ticketNo: "TCK-2006", raisedBy: "Omer Peretz", organization: "104", issueType: "Other / Manual Report", scope: "Patient", tier: "Tier 1", severity: "Low", status: "Resolved", origin: "Clinic Portal", assignedTo: "Daniel Avraham", createdDate: "24/07/2026 09:55", description: "Clinic reported one patient's recordings sound sped up; traced to a bad microphone on that device." },
+  { id: 4, ticketNo: "TCK-2001", raisedBy: "Noa Ben-David", organization: "105", issueType: "Other / Manual Report", scope: "Organization", tier: "Tier 2", severity: "High", status: "Open", origin: "Clinic Portal", assignedTo: "Maya Gold", createdDate: "20/07/2026 17:02", description: "Clinic tablet used for onboarding new patients won't connect to the org Wi-Fi after firmware update." },
 ];
 
 /* ---------------- Bulk synthetic tickets ----------------
@@ -176,7 +181,7 @@ function topUpTickets(array, kind, status, count, ticketSeqStart) {
       scope: ISSUE_TYPE_SCOPE[issueType],
       tier: TIERS[n % TIERS.length],
       severity: severities[n % severities.length],
-      origin: n % 3 === 0 ? "System Generated" : "User Raised",
+      origin: n % 7 === 0 ? "Support Agent" : n % 3 === 0 ? "System Generated" : kind === "patient" ? "Patient App" : "Clinic Portal",
       status,
       assignedTo: SUPPORT_AGENTS[n % SUPPORT_AGENTS.length],
       createdDate: `${String(1 + (n % 27)).padStart(2, "0")}/${String(1 + (n % 12)).padStart(2, "0")}/2026 ${String(8 + (n % 11)).padStart(2, "0")}:${String((n * 7) % 60).padStart(2, "0")}`,

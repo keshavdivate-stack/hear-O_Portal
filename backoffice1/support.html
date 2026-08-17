@@ -133,6 +133,14 @@
         <div class="bo-select-menu" id="ticketStatusFilterMenu"></div>
         <input type="hidden" id="ticketStatusFilter" />
       </div>
+      <div class="bo-select bo-toolbar-select" data-name="ticketType">
+        <button type="button" class="bo-select-trigger">
+          <span class="bo-select-value placeholder">Type</span>
+          <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="bo-select-menu" id="ticketTypeFilterMenu"></div>
+        <input type="hidden" id="ticketTypeFilter" />
+      </div>
       <div class="bo-select bo-toolbar-select" data-name="ticketSeverity">
         <button type="button" class="bo-select-trigger">
           <span class="bo-select-value placeholder">Severity</span>
@@ -141,13 +149,13 @@
         <div class="bo-select-menu" id="ticketSeverityFilterMenu"></div>
         <input type="hidden" id="ticketSeverityFilter" />
       </div>
-      <div class="bo-select bo-toolbar-select" data-name="ticketArea">
+      <div class="bo-select bo-toolbar-select" data-name="ticketCategory">
         <button type="button" class="bo-select-trigger">
-          <span class="bo-select-value placeholder">Area</span>
+          <span class="bo-select-value placeholder">Category</span>
           <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
         </button>
-        <div class="bo-select-menu" id="ticketAreaFilterMenu"></div>
-        <input type="hidden" id="ticketAreaFilter" />
+        <div class="bo-select-menu" id="ticketCategoryFilterMenu"></div>
+        <input type="hidden" id="ticketCategoryFilter" />
       </div>
       <div class="bo-select bo-toolbar-select" data-name="ticketIssue">
         <button type="button" class="bo-select-trigger">
@@ -189,7 +197,7 @@
                 <th>PATIENT / RAISED BY</th>
                 <th>ORGANIZATION</th>
                 <th>ISSUE TYPE</th>
-                <th>AREA</th>
+                <th>CATEGORY</th>
                 <th>ORIGIN</th>
                 <th>TIER</th>
                 <th>SEVERITY</th>
@@ -373,8 +381,8 @@
                 <span class="value" id="ticketDetailIssueType">â€”</span>
               </div>
               <div class="bo-ticket-summary-item">
-                <span class="label">Area</span>
-                <span class="value" id="ticketDetailArea">â€”</span>
+                <span class="label">Category</span>
+                <span class="value" id="ticketDetailCategory">â€”</span>
               </div>
             </div>
             <div class="bo-ticket-description" id="ticketDetailDescription"></div>
