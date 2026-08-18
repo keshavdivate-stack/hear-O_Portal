@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HearO - Medication History</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="phone-frame">
+    <div class="status-bar">
+      <span class="status-time">9:27</span>
+      <div class="status-icons">
+        <svg width="18" height="12" viewBox="0 0 18 12" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="0" y="8" width="3" height="4" rx="0.5" fill="black"/><rect x="4.5" y="6" width="3" height="6" rx="0.5" fill="black"/><rect x="9" y="3" width="3" height="9" rx="0.5" fill="black"/><rect x="13.5" y="0" width="3" height="12" rx="0.5" fill="black"/></svg>
+        <svg width="16" height="12" viewBox="0 0 16 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 10.5C8.6 10.5 9.1 10 9.1 9.4C9.1 8.8 8.6 8.3 8 8.3C7.4 8.3 6.9 8.8 6.9 9.4C6.9 10 7.4 10.5 8 10.5Z" fill="black"/><path d="M8 6.5C9 6.5 9.9 6.9 10.6 7.6L11.6 6.6C10.6 5.6 9.4 5 8 5C6.6 5 5.4 5.6 4.4 6.6L5.4 7.6C6.1 6.9 7 6.5 8 6.5Z" fill="black"/><path d="M8 2.5C10.1 2.5 12 3.3 13.5 4.8L14.5 3.8C12.7 2 10.5 1 8 1C5.5 1 3.3 2 1.5 3.8L2.5 4.8C4 3.3 5.9 2.5 8 2.5Z" fill="black"/></svg>
+        <svg width="25" height="12" viewBox="0 0 25 12" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="0.5" y="0.5" width="20" height="11" rx="2.5" stroke="black"/><rect x="2" y="2" width="17" height="8" rx="1.5" fill="black"/><rect x="22" y="4" width="2" height="4" rx="1" fill="black"/></svg>
+      </div>
+    </div>
+
+    <div class="bp-header">
+      <button type="button" class="back-btn" onclick="window.location.href='medication.html'">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M12.5 4L6.5 10L12.5 16" stroke="#2b2b2b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <h1 id="histTitle">Medication History</h1>
+    </div>
+
+    <div class="med-hist-body">
+      <div class="med-hist-month-nav">
+        <button type="button" class="med-hist-month-btn" id="prevMonthBtn" aria-label="Previous month">
+          <svg width="9" height="15" viewBox="0 0 9 15" fill="none"><path d="M7.5 1.5L1.5 7.5L7.5 13.5" stroke="#2b2b2b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <span class="med-hist-month-label" id="monthLabel"></span>
+        <button type="button" class="med-hist-month-btn" id="nextMonthBtn" aria-label="Next month">
+          <svg width="9" height="15" viewBox="0 0 9 15" fill="none"><path d="M1.5 1.5L7.5 7.5L1.5 13.5" stroke="#2b2b2b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+
+      <div class="med-hist-legend">
+        <span class="med-hist-legend-item"><span class="med-hist-legend-dot taken"></span>Taken</span>
+        <span class="med-hist-legend-item"><span class="med-hist-legend-dot missed"></span>Missed</span>
+      </div>
+
+      <div id="historyList"></div>
+    </div>
+  </div>
+
+<script>
+  // Each medication's scheduled dose time(s). "Missed" days are a fixed demo
+  // pattern per medication rather than random, so the history stays the same
+  // on every visit.
+  const MED_INFO = {
+    furosemide: { name: "Furosemide", times: ["8:00 AM"], missedDays: { "2026-7": [5, 14, 23], "2026-8": [3, 12] } },
+    carvedilol: { name: "Carvedilol", times: ["8:00 AM", "8:00 PM"], missedDays: { "2026-7": [8, 20], "2026-8": [9] } },
+    spironolactone: { name: "Spironolactone", times: ["8:00 AM"], missedDays: { "2026-7": [11], "2026-8": [] } },
+    atorvastatin: { name: "Atorvastatin", times: ["9:00 PM"], missedDays: { "2026-7": [3, 17, 29], "2026-8": [6, 15] } },
+    lisinopril: { name: "Lisinopril", times: ["8:00 AM"], missedDays: { "2026-7": [2, 9, 16, 23, 30], "2026-8": [] } },
+    ibuprofen: { name: "Ibuprofen", times: ["As needed"], missedDays: { "2026-7": [], "2026-8": [] } }
+  };
+
+  const TODAY = { year: 2026, month: 8, day: 18 };
+  const AVAILABLE_MONTHS = [
+    { year: 2026, month: 7 },
+    { year: 2026, month: 8 }
+  ];
+
+  const params = new URLSearchParams(window.location.search);
+  const medKey = params.get("med");
+  const med = MED_INFO[medKey] || MED_INFO.furosemide;
+
+  document.getElementById("histTitle").textContent = `${med.name} History`;
+
+  let monthIndex = AVAILABLE_MONTHS.length - 1;
+
+  const monthLabelEl = document.getElementById("monthLabel");
+  const historyListEl = document.getElementById("historyList");
+  const prevBtn = document.getElementById("prevMonthBtn");
+  const nextBtn = document.getElementById("nextMonthBtn");
+
+  const MONTH_NAMES = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+  function renderMonth() {
+    const { year, month } = AVAILABLE_MONTHS[monthIndex];
+    monthLabelEl.textContent = `${MONTH_NAMES[month - 1]} ${year}`;
+    prevBtn.disabled = monthIndex === 0;
+    nextBtn.disabled = monthIndex === AVAILABLE_MONTHS.length - 1;
+
+    const missedDays = med.missedDays[`${year}-${month}`] || [];
+    const daysInMonth = new Date(year, month, 0).getDate();
+    const isCurrentMonth = year === TODAY.year && month === TODAY.month;
+    const lastDay = isCurrentMonth ? TODAY.day : daysInMonth;
+
+    historyListEl.innerHTML = "";
+    if (lastDay < 1) {
+      historyListEl.innerHTML = '<p class="list-empty">No history yet for this month.</p>';
+      return;
+    }
+
+    for (let day = lastDay; day >= 1; day--) {
+      const dateObj = new Date(year, month - 1, day);
+      const weekday = dateObj.toLocaleDateString("en-US", { weekday: "short" });
+      const monthShort = dateObj.toLocaleDateString("en-US", { month: "short" });
+      const status = missedDays.includes(day) ? "missed" : "taken";
+      const statusLabel = status === "taken" ? "Taken" : "Missed";
+
+      const card = document.createElement("div");
+      card.className = "med-hist-day-card";
+
+      const doseLines = med.times
+        .map((time) => `
+          <div class="med-hist-dose-line">
+            <span class="med-hist-time">${time}</span>
+            <span class="med-hist-status-pill ${status}">${statusLabel}</span>
+          </div>
+        `)
+        .join("");
+
+      card.innerHTML = `
+        <div class="med-hist-date">${weekday}, ${monthShort} ${day}</div>
+        ${doseLines}
+      `;
+      historyListEl.appendChild(card);
+    }
+  }
+
+  prevBtn.addEventListener("click", () => {
+    if (monthIndex > 0) {
+      monthIndex--;
+      renderMonth();
+    }
+  });
+
+  nextBtn.addEventListener("click", () => {
+    if (monthIndex < AVAILABLE_MONTHS.length - 1) {
+      monthIndex++;
+      renderMonth();
+    }
+  });
+
+  renderMonth();
+</script>
+</body>
+</html>

@@ -563,39 +563,45 @@ function dailyAdherence(missedIdx) {
 const medications = [
   {
     hf: true, name: "Furosemide", cls: "Loop diuretic", freq: "Daily", dose: "40 mg", schedule: "Once daily, morning",
-    warning: null, adherence: dailyAdherence([8, 21, 26, 30]), source: "Care rec", srcClass: "src-carerec", ehr: "Epic", status: "active",
-    medicationCode: "40054452", codeSystem: "RxNorm", ehrStatus: "Active", identifier: "MED-10293", dosageForm: "Tablet",
-    ingredient: "Furosemide", manufacturer: "Sandoz Inc.", amount: "40 mg", batch: "L2394A", expiry: "2027-03-15",
+    warning: null, adherence: dailyAdherence([8, 21, 26, 30]), source: "Care rec", srcClass: "src-carerec", status: "active",
+    ehrStatus: "Active", doseForm: "Tablet", manufacturer: "Sandoz Inc.", ingredient: "Furosemide", amount: "40 mg",
+    effectiveDateTime: "2025-12-11T08:00", route: "Oral", sig: "Take one tablet by mouth once daily in the morning",
+    statusReason: "Not applicable", lotNumber: "L2394A", expiryDate: "2027-03-15",
   },
   {
     hf: true, name: "Carvedilol", cls: "Beta blocker", freq: "Twice daily", dose: "6.25 mg", schedule: "Twice daily",
-    warning: null, adherence: dailyAdherence([5, 12, 19, 27]), source: "Clinic", srcClass: "src-clinic", ehr: "Epic", status: "active",
-    medicationCode: "20352", codeSystem: "RxNorm", ehrStatus: "Active", identifier: "MED-10344", dosageForm: "Tablet",
-    ingredient: "Carvedilol", manufacturer: "Teva Pharmaceuticals", amount: "6.25 mg", batch: "C8821B", expiry: "2026-11-02",
+    warning: null, adherence: dailyAdherence([5, 12, 19, 27]), source: "Clinic", srcClass: "src-clinic", status: "active",
+    ehrStatus: "Active", doseForm: "Tablet", manufacturer: "Teva Pharmaceuticals", ingredient: "Carvedilol", amount: "6.25 mg",
+    effectiveDateTime: "2025-12-11T08:00", route: "Oral", sig: "Take one tablet by mouth twice daily with food",
+    statusReason: "Not applicable", lotNumber: "C8821B", expiryDate: "2026-11-02",
   },
   {
     hf: true, name: "Sacubitril/Valsartan", cls: "ARNI", freq: "Twice daily", dose: "49/51 mg", schedule: "Twice daily",
-    warning: "Monitor renal function with diuretic", adherence: dailyAdherence([2, 3, 9, 15, 22, 23, 28, 29]), source: "Clinic", srcClass: "src-clinic", ehr: "Athena", status: "active",
-    medicationCode: "1656339", codeSystem: "RxNorm", ehrStatus: "Active", identifier: "MED-10412", dosageForm: "Tablet",
-    ingredient: "Sacubitril / Valsartan", manufacturer: "Novartis", amount: "49/51 mg", batch: "S5510C", expiry: "2027-01-20",
+    warning: "Monitor renal function with diuretic", adherence: dailyAdherence([2, 3, 9, 15, 22, 23, 28, 29]), source: "Clinic", srcClass: "src-clinic", status: "active",
+    ehrStatus: "Active", doseForm: "Tablet", manufacturer: "Novartis", ingredient: "Sacubitril / Valsartan", amount: "49/51 mg",
+    effectiveDateTime: "2025-12-11T08:00", route: "Oral", sig: "Take one tablet by mouth twice daily",
+    statusReason: "Dose adjustment", lotNumber: "S5510C", expiryDate: "2027-01-20",
   },
   {
     hf: true, name: "Spironolactone", cls: "MRA", freq: "Daily", dose: "25 mg", schedule: "Once daily",
-    warning: null, adherence: dailyAdherence([]), source: "Care rec", srcClass: "src-carerec", ehr: "Athena", status: "active",
-    medicationCode: "9997", codeSystem: "RxNorm", ehrStatus: "Active", identifier: "MED-10467", dosageForm: "Tablet",
-    ingredient: "Spironolactone", manufacturer: "Pfizer", amount: "25 mg", batch: "P1187D", expiry: "2026-09-30",
+    warning: null, adherence: dailyAdherence([]), source: "Care rec", srcClass: "src-carerec", status: "active",
+    ehrStatus: "Active", doseForm: "Tablet", manufacturer: "Pfizer", ingredient: "Spironolactone", amount: "25 mg",
+    effectiveDateTime: "2025-12-11T08:00", route: "Oral", sig: "Take one tablet by mouth once daily",
+    statusReason: "Not applicable", lotNumber: "P1187D", expiryDate: "2026-09-30",
   },
   {
     hf: false, name: "Ibuprofen", cls: "NSAID (OTC)", freq: "As needed", dose: "200 mg", schedule: "As needed",
-    warning: "NSAIDs may worsen fluid retention in HF", adherence: dailyAdherence([1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29]), source: "Patient", srcClass: "src-patient", ehr: null, status: "past",
-    medicationCode: "5640", codeSystem: "NDC", ehrStatus: "Inactive", identifier: "MED-09981", dosageForm: "Tablet",
-    ingredient: "Ibuprofen", manufacturer: "Generic OTC", amount: "200 mg", batch: "—", expiry: "2025-12-01",
+    warning: "NSAIDs may worsen fluid retention in HF", adherence: dailyAdherence([1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29]), source: "Patient", srcClass: "src-patient", status: "past",
+    ehrStatus: "Inactive", doseForm: "Tablet", manufacturer: "Other", ingredient: "Ibuprofen", amount: "200 mg",
+    effectiveDateTime: "2025-11-02T09:00", route: "Oral", sig: "Take as needed for pain, not to exceed 3 tablets per day",
+    statusReason: "Adverse reaction", lotNumber: "—", expiryDate: "2025-12-01",
   },
   {
     hf: true, name: "Atorvastatin", cls: "Statin", freq: "Daily", dose: "20 mg", schedule: "Once daily, evening",
-    warning: null, adherence: dailyAdherence([6, 14, 24]), source: "Clinic", srcClass: "src-clinic", ehr: "ECW", status: "active",
-    medicationCode: "83367", codeSystem: "RxNorm", ehrStatus: "Active", identifier: "MED-10559", dosageForm: "Tablet",
-    ingredient: "Atorvastatin", manufacturer: "Mylan", amount: "20 mg", batch: "M4402E", expiry: "2027-05-08",
+    warning: null, adherence: dailyAdherence([6, 14, 24]), source: "Clinic", srcClass: "src-clinic", status: "active",
+    ehrStatus: "Active", doseForm: "Tablet", manufacturer: "Mylan", ingredient: "Atorvastatin", amount: "20 mg",
+    effectiveDateTime: "2025-12-11T20:00", route: "Oral", sig: "Take one tablet by mouth once daily in the evening",
+    statusReason: "Not applicable", lotNumber: "M4402E", expiryDate: "2027-05-08",
   },
 ];
 
@@ -617,20 +623,36 @@ function medInfoRow(label, value) {
   return `<div class="med-info-row"><span class="med-info-label">${label}</span><span class="med-info-value">${value || "—"}</span></div>`;
 }
 
+function medInfoDateTime(v) {
+  if (!v) return null;
+  const d = new Date(v);
+  if (Number.isNaN(d.getTime())) return v;
+  return d.toLocaleString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit" });
+}
+
+function medInfoDate(v) {
+  if (!v) return null;
+  const d = new Date(`${v}T00:00`);
+  if (Number.isNaN(d.getTime())) return v;
+  return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+}
+
 function medInfoPopover(m, mi) {
   return `
     <div class="med-info-popover" id="medInfoPop${mi}">
-      <p class="med-info-title">${m.name} &middot; EHR mapping</p>
-      ${medInfoRow("Medication Code", m.medicationCode)}
-      ${medInfoRow("Code System", m.codeSystem)}
+      <p class="med-info-title">${m.name} &middot; Medication details</p>
       ${medInfoRow("Status", m.ehrStatus)}
-      ${medInfoRow("Identifier", m.identifier)}
-      ${medInfoRow("Dosage Form", m.dosageForm)}
-      ${medInfoRow("Ingredient", m.ingredient)}
+      ${medInfoRow("Dose Form", m.doseForm)}
       ${medInfoRow("Manufacturer", m.manufacturer)}
+      ${medInfoRow("Ingredient", m.ingredient)}
       ${medInfoRow("Amount", m.amount)}
-      ${medInfoRow("Batch / Lot", m.batch)}
-      ${medInfoRow("Expiry", m.expiry)}
+      ${medInfoRow("Effective Date &amp; Time", medInfoDateTime(m.effectiveDateTime))}
+      ${medInfoRow("Dose", m.dose)}
+      ${medInfoRow("Route", m.route)}
+      ${medInfoRow("Sig / Directions", m.sig)}
+      ${medInfoRow("Status Reason", m.statusReason)}
+      ${medInfoRow("Lot Number", m.lotNumber)}
+      ${medInfoRow("Expiry Date", medInfoDate(m.expiryDate))}
     </div>`;
 }
 
@@ -729,51 +751,6 @@ document.getElementById("medStatusFilter").addEventListener("change", (e) => {
   renderMeds();
 });
 
-/* ---------------- Records ---------------- */
-const records = [
-  { dir: "sent", name: "Heart Failure Action Plan.pdf", meta: "Sent to patient by Dr. Lior Klein &middot; 08/06/2026 &middot; 412 KB" },
-  { dir: "received", name: "Home BP readings — August.jpg", meta: "Received from Patient &middot; 08/04/2026 &middot; 1.2 MB" },
-  { dir: "sent", name: "Discharge Summary.pdf", meta: "Sent to patient by Ayelet Er, NP &middot; 07/19/2026 &middot; 876 KB" },
-  { dir: "received", name: "Medication list photo.jpg", meta: "Received from Patient &middot; 07/11/2026 &middot; 980 KB" },
-  { dir: "sent", name: "Low-sodium Diet Guide.pdf", meta: "Sent to patient by Sandy Kohl &middot; 06/28/2026 &middot; 1.5 MB" },
-];
-
-const recIconUp = `<svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M12 19V5M6 11L12 5L18 11" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
-const recIconDown = `<svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M6 13L12 19L18 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
-
-function renderRecords(list) {
-  document.getElementById("recordList").innerHTML = list
-    .map(
-      (r) => `
-      <div class="record-item">
-        <span class="record-icon ${r.dir === "sent" ? "sent" : "received"}">${r.dir === "sent" ? recIconUp : recIconDown}</span>
-        <div class="record-info">
-          <div class="record-name">${r.name}</div>
-          <div class="record-meta">${r.meta}</div>
-        </div>
-        <button class="btn-view">View</button>
-      </div>`
-    )
-    .join("");
-}
-
-document.getElementById("recordsCount").textContent = records.length;
-renderRecords(records);
-
-const recDirections = ["All directions", "Sent to patient", "Received from patient"];
-let recDirIdx = 0;
-document.getElementById("recordsDirBtn").addEventListener("click", () => {
-  recDirIdx = (recDirIdx + 1) % recDirections.length;
-  const label = recDirections[recDirIdx];
-  document.getElementById("recordsDirLabel").textContent = label;
-  const filtered = records.filter((r) => {
-    if (label === "Sent to patient") return r.dir === "sent";
-    if (label === "Received from patient") return r.dir === "received";
-    return true;
-  });
-  renderRecords(filtered);
-});
-
 /* ---------------- Clinical: collapsible sections ---------------- */
 document.querySelectorAll(".clinical-card .collapse-btn").forEach((btn) => {
   btn.addEventListener("click", () => {
@@ -783,7 +760,7 @@ document.querySelectorAll(".clinical-card .collapse-btn").forEach((btn) => {
   });
 });
 
-/* ---------------- Tabs: Recordings / Health Data / Clinical / Records ---------------- */
+/* ---------------- Tabs: Recordings / Health Data / Clinical ---------------- */
 document.querySelectorAll(".data-tab").forEach((tab) => {
   tab.addEventListener("click", () => {
     const target = tab.dataset.tab;
@@ -913,28 +890,28 @@ function wireAddModal(overlayId, formId, cancelId, openBtnId, onSubmit) {
 
 wireAddModal("addMedOverlay", "addMedForm", "cancelAddMed", "openAddMedBtn", (fd) => {
   const ehrStatus = fd.get("status");
+  const dose = fd.get("dose");
   medications.unshift({
     hf: false,
     name: fd.get("name"),
-    cls: fd.get("dosageForm") || "",
+    cls: fd.get("doseForm") || "",
     freq: "",
-    dose: "",
-    schedule: "",
+    dose: dose || "",
+    schedule: fd.get("sig") || "",
     warning: null,
     adherence: dailyAdherence([]),
     source: "Clinic",
     srcClass: "src-clinic",
-    ehr: null,
     status: ehrStatus === "Active" ? "active" : "past",
-    medicationCode: fd.get("medicationCode"),
-    codeSystem: fd.get("codeSystem"),
     ehrStatus,
-    identifier: fd.get("identifier"),
-    dosageForm: fd.get("dosageForm"),
-    ingredient: fd.get("name"),
-    manufacturer: fd.get("manufacturer"),
-    batch: null,
-    expiry: null,
+    doseForm: fd.get("doseForm"),
+    amount: fd.get("amount"),
+    effectiveDateTime: fd.get("effectiveDateTime"),
+    route: fd.get("route"),
+    sig: fd.get("sig"),
+    statusReason: fd.get("statusReason"),
+    lotNumber: fd.get("lotNumber"),
+    expiryDate: fd.get("expiryDate"),
   });
   renderMeds();
 });

@@ -296,10 +296,6 @@
                 Clinical
                 <svg class="chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
               </button>
-              <button class="data-tab" data-tab="records">
-                Records
-                <svg class="chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </button>
             </div>
             <div class="range-toggle">
               <span data-range="week">Week</span>
@@ -574,29 +570,6 @@
 
             </div>
           </div>
-
-          <!-- Records panel -->
-          <div class="data-tab-panel" data-panel="records">
-            <div class="clinical-head-row">
-              <h3 class="clinical-title">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M7 3H14L18 7V19C18 20.1 17.1 21 16 21H7C5.9 21 5 20.1 5 19V5C5 3.9 5.9 3 7 3Z" stroke="#23272E" stroke-width="1.7" stroke-linejoin="round"/><path d="M14 3V7H18" stroke="#23272E" stroke-width="1.7" stroke-linejoin="round"/></svg>
-                Records <span class="count-pill" id="recordsCount"></span>
-              </h3>
-              <a href="#" class="clinical-add-link">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M3 11L21 3L13 21L11 13L3 11Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
-                Send document
-              </a>
-            </div>
-
-            <div class="records-filter">
-              <button class="filter-dropdown" id="recordsDirBtn">
-                <span id="recordsDirLabel">All directions</span>
-                <svg class="caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#6B7684" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </button>
-            </div>
-
-            <div class="record-list" id="recordList"></div>
-          </div>
         </div>
 
         <!-- History Events -->
@@ -652,63 +625,90 @@
 
   <!-- Add Medication modal -->
   <div class="modal-overlay" id="addMedOverlay">
-    <div class="modal">
+    <div class="modal modal-wide">
       <h2>Add Medication</h2>
       <form id="addMedForm">
-        <div class="form-field">
-          <label>Medication Name<span class="required-star">*</span></label>
-          <input type="text" name="name" placeholder="Search medication..." required />
-        </div>
-        <div class="form-field">
-          <label>Medication Code<span class="required-star">*</span></label>
-          <div class="med-code-field">
-            <select class="select-input med-code-system" name="codeSystem" required>
-              <option value="RxNorm">RxNorm</option>
-              <option value="NDC">NDC</option>
-              <option value="SNOMED">SNOMED</option>
-            </select>
-            <input type="text" name="medicationCode" placeholder="Code" required />
+        <div class="form-grid">
+          <div class="form-field">
+            <label>Medication<span class="required-star">*</span></label>
+            <input type="text" name="name" placeholder="Search medication..." required />
           </div>
-        </div>
-        <div class="form-field">
-          <label>Dosage Form</label>
-          <select class="select-input" name="dosageForm">
-            <option value="" disabled selected>Select dosage form</option>
-            <option value="Tablet">Tablet</option>
-            <option value="Capsule">Capsule</option>
-            <option value="Liquid">Liquid</option>
-            <option value="Injection">Injection</option>
-            <option value="Topical">Topical</option>
-            <option value="Inhaler">Inhaler</option>
-            <option value="Patch">Patch</option>
-            <option value="Suppository">Suppository</option>
-            <option value="Other">Other</option>
-          </select>
-        </div>
-        <div class="form-field">
-          <label>Status<span class="required-star">*</span></label>
-          <select class="select-input" name="status" required>
-            <option value="Active">Active</option>
-            <option value="Inactive">Inactive</option>
-          </select>
-        </div>
-        <div class="form-field">
-          <label>Identifier</label>
-          <input type="text" name="identifier" placeholder="Enter identifier" />
-        </div>
-        <div class="form-field">
-          <label>Manufacturer</label>
-          <select class="select-input" name="manufacturer">
-            <option value="" disabled selected>Select manufacturer</option>
-            <option value="Pfizer">Pfizer</option>
-            <option value="Novartis">Novartis</option>
-            <option value="Teva Pharmaceuticals">Teva Pharmaceuticals</option>
-            <option value="Sandoz Inc.">Sandoz Inc.</option>
-            <option value="Mylan">Mylan</option>
-            <option value="GlaxoSmithKline">GlaxoSmithKline</option>
-            <option value="AstraZeneca">AstraZeneca</option>
-            <option value="Other">Other</option>
-          </select>
+          <div class="form-field">
+            <label>Status<span class="required-star">*</span></label>
+            <select class="select-input" name="status" required>
+              <option value="" disabled selected>Select status</option>
+              <option value="Active">Active</option>
+              <option value="Inactive">Inactive</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label>Dose Form</label>
+            <select class="select-input" name="doseForm">
+              <option value="" disabled selected>Select dose form</option>
+              <option value="Tablet">Tablet</option>
+              <option value="Capsule">Capsule</option>
+              <option value="Liquid">Liquid</option>
+              <option value="Injection">Injection</option>
+              <option value="Topical">Topical</option>
+              <option value="Inhaler">Inhaler</option>
+              <option value="Patch">Patch</option>
+              <option value="Suppository">Suppository</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label>Amount</label>
+            <input type="text" name="amount" placeholder="e.g. 40 mg" />
+          </div>
+          <div class="form-field">
+            <label>Effective Date &amp; Time</label>
+            <input type="datetime-local" name="effectiveDateTime" />
+          </div>
+          <div class="form-field">
+            <label>Dose</label>
+            <input type="text" name="dose" placeholder="e.g. 1 tablet" />
+          </div>
+          <div class="form-field">
+            <label>Route</label>
+            <select class="select-input" name="route">
+              <option value="" disabled selected>Select route</option>
+              <option value="Oral">Oral</option>
+              <option value="Intravenous">Intravenous</option>
+              <option value="Subcutaneous">Subcutaneous</option>
+              <option value="Intramuscular">Intramuscular</option>
+              <option value="Topical">Topical</option>
+              <option value="Inhalation">Inhalation</option>
+              <option value="Sublingual">Sublingual</option>
+              <option value="Rectal">Rectal</option>
+              <option value="Ophthalmic">Ophthalmic</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label>Sig / Directions</label>
+            <input type="text" name="sig" placeholder="e.g. Take one tablet by mouth daily" />
+          </div>
+          <div class="form-field">
+            <label>Status Reason</label>
+            <select class="select-input" name="statusReason">
+              <option value="" disabled selected>Select reason</option>
+              <option value="Not applicable">Not applicable</option>
+              <option value="Dose adjustment">Dose adjustment</option>
+              <option value="Adverse reaction">Adverse reaction</option>
+              <option value="Ineffective">Ineffective</option>
+              <option value="Duplicate therapy">Duplicate therapy</option>
+              <option value="Patient request">Patient request</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label>Lot Number</label>
+            <input type="text" name="lotNumber" placeholder="e.g. L2394A" />
+          </div>
+          <div class="form-field">
+            <label>Expiry Date</label>
+            <input type="date" name="expiryDate" />
+          </div>
         </div>
         <div class="modal-actions">
           <button type="button" class="btn-text" id="cancelAddMed">Cancel</button>

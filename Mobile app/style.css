@@ -10,7 +10,7 @@ html, body {
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family: "Assistant", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   background: #eef0f3;
   display: flex;
   align-items: center;
@@ -1555,83 +1555,35 @@ input[type="password"]:focus {
   font-weight: 500;
 }
 
-.issue-category-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: #eef4ff;
-  color: #2f6fed;
-  font-size: 13px;
-  font-weight: 600;
-  padding: 6px 12px;
-  border-radius: 20px;
-  margin-bottom: 16px;
-}
-
-.issue-group-card {
-  border: 1.5px solid #e4e6ea;
-  border-radius: 14px;
-  overflow: hidden;
-  margin-bottom: 8px;
-}
-
-.issue-row {
+.issue-category-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 14px;
   width: 100%;
   padding: 16px 18px;
-  border: none;
-  border-bottom: 1px solid #eceef1;
+  border: 1.5px solid #d9dce1;
+  border-radius: 14px;
   background: #fff;
+  margin-bottom: 12px;
   cursor: pointer;
   font-family: inherit;
   text-align: left;
-}
-
-.issue-row:last-child { border-bottom: none; }
-
-.issue-row .issue-row-label {
-  font-size: 16px;
-  font-weight: 500;
-  color: #1c1c1c;
-}
-
-.issue-row .check-indicator {
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  border: 2px solid #c9cdd3;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   transition: border-color 0.12s ease, background-color 0.12s ease;
 }
 
-.issue-row .check-indicator svg {
-  opacity: 0;
-  transform: scale(0.5);
-  transition: opacity 0.12s ease, transform 0.12s ease;
-}
-
-.issue-row.selected { background: #f5f9ff; }
-
-.issue-row.selected .issue-row-label {
-  color: #2f6fed;
-  font-weight: 600;
-}
-
-.issue-row.selected .check-indicator {
+.issue-category-row:active {
   border-color: #2f6fed;
-  background: #2f6fed;
+  background: #f5f9ff;
 }
 
-.issue-row.selected .check-indicator svg {
-  opacity: 1;
-  transform: scale(1);
+.issue-category-row .issue-category-row-label {
+  font-size: 17px;
+  color: #1c1c1c;
+  font-weight: 500;
 }
+
+.issue-category-row .issue-category-row-chevron { flex-shrink: 0; }
 
 .issue-details-label {
   font-size: 16px;
@@ -1707,6 +1659,315 @@ input[type="password"]:focus {
   font-size: 16px;
   padding: 60px 20px;
 }
+
+/* ===== Medication screen (larger type for readability) ===== */
+.med-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 18px 24px 24px;
+}
+
+.med-hint {
+  font-size: 15px;
+  color: #7a7f87;
+  margin: 0 0 14px;
+}
+
+.med-card {
+  cursor: pointer;
+  padding: 20px;
+  border: 1.5px solid #eceef1;
+  border-radius: 16px;
+  margin-bottom: 14px;
+}
+
+.med-card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.med-card-chevron { flex-shrink: 0; margin-top: 6px; }
+
+.med-name {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1c1c1c;
+}
+
+.med-dose {
+  font-size: 16px;
+  font-weight: 500;
+  color: #7a7f87;
+  margin-left: 6px;
+}
+
+.med-dose-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-top: 16px;
+}
+
+.med-dose-row-divider {
+  padding-top: 16px;
+  border-top: 1px solid #f0f1f3;
+}
+
+.med-dose-time {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 17px;
+  font-weight: 600;
+  color: #1c1c1c;
+  flex-shrink: 0;
+}
+
+.med-dose-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.med-action-btn {
+  padding: 10px 16px;
+  min-width: 84px;
+  border-radius: 12px;
+  border: 1.5px solid #d9dce1;
+  background: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  color: #55606b;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.med-action-taken.active { background: #2f9e73; border-color: #2f9e73; color: #fff; }
+.med-action-missed.active { background: #e0562a; border-color: #e0562a; color: #fff; }
+
+.med-detail {
+  font-size: 17px;
+  color: #444;
+  margin-top: 6px;
+}
+
+.med-detail-missing {
+  font-size: 16px;
+  color: #8a8f97;
+  font-style: italic;
+  margin-top: 6px;
+}
+
+.med-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.med-tag {
+  font-size: 14px;
+  font-weight: 700;
+  padding: 7px 14px;
+  border-radius: 12px;
+}
+
+.med-tag-clinic { background: #e9f1ff; color: #2f6fed; }
+.med-tag-ehr { background: #eef1f4; color: #55606b; }
+
+.med-updated {
+  font-size: 14px;
+  color: #9aa0a8;
+}
+
+/* ---- Active / Past tabs ---- */
+.med-tabs {
+  display: flex;
+  background: #f0f1f3;
+  border-radius: 14px;
+  padding: 4px;
+  margin-bottom: 18px;
+}
+
+.med-tab-btn {
+  flex: 1;
+  border: none;
+  background: transparent;
+  padding: 12px 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: #7a7f87;
+  border-radius: 11px;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.med-tab-btn.active {
+  background: #fff;
+  color: #1c1c1c;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+/* ---- Recently-updated alert ---- */
+.med-alert-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: #fff4e5;
+  border: 1.5px solid #f3cf8e;
+  border-radius: 14px;
+  padding: 16px 18px;
+  margin-bottom: 16px;
+  font-size: 16px;
+  line-height: 1.45;
+  color: #7a4a12;
+}
+
+.med-alert-banner svg { flex-shrink: 0; margin-top: 2px; }
+
+.med-card-updated {
+  border-color: #f3cf8e;
+  background: #fffaf1;
+}
+
+.med-updated-flag {
+  font-size: 13px;
+  font-weight: 700;
+  color: #b3781a;
+  background: #fff1d6;
+  padding: 6px 12px;
+  border-radius: 10px;
+}
+
+.med-card-past .med-name { color: #4a4f57; }
+
+.med-tag-past {
+  font-size: 14px;
+  font-weight: 700;
+  padding: 7px 14px;
+  border-radius: 12px;
+  background: #eceef1;
+  color: #6b7280;
+}
+
+.med-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: #f5f7fa;
+  border-radius: 14px;
+  padding: 16px 18px;
+  font-size: 16px;
+  line-height: 1.45;
+  color: #444;
+  margin-top: 4px;
+}
+
+.med-note svg { flex-shrink: 0; margin-top: 2px; }
+
+/* ===== Medication History screen ===== */
+.med-hist-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 18px 24px 24px;
+}
+
+.med-hist-month-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.med-hist-month-label {
+  font-size: 19px;
+  font-weight: 700;
+  color: #1c1c1c;
+}
+
+.med-hist-month-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1.5px solid #d9dce1;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.med-hist-month-btn:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.med-hist-legend {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 18px;
+}
+
+.med-hist-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #55606b;
+}
+
+.med-hist-legend-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.med-hist-legend-dot.taken { background: #2f9e73; }
+.med-hist-legend-dot.missed { background: #e0562a; }
+
+.med-hist-day-card {
+  padding: 16px 18px;
+  border: 1.5px solid #eceef1;
+  border-radius: 14px;
+  margin-bottom: 12px;
+}
+
+.med-hist-date {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1c1c1c;
+  margin-bottom: 10px;
+}
+
+.med-hist-dose-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.med-hist-dose-line + .med-hist-dose-line { margin-top: 8px; }
+
+.med-hist-time {
+  font-size: 16px;
+  color: #444;
+}
+
+.med-hist-status-pill {
+  font-size: 14px;
+  font-weight: 700;
+  padding: 6px 13px;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+.med-hist-status-pill.taken { background: #e4efe9; color: #2f9e73; }
+.med-hist-status-pill.missed { background: #fdeeea; color: #e0562a; }
 
 .fab-add-btn {
   position: absolute;

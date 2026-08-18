@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>HearO - Raise an Issue</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -22,20 +25,18 @@
       <button type="button" class="back-btn" id="issueBackBtn">
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M12.5 4L6.5 10L12.5 16" stroke="#2b2b2b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
-      <h1>Raise an Issue</h1>
+      <h1 id="issueHeaderTitle">Select a Category</h1>
     </div>
 
     <!-- STEP 1: Category selection -->
     <div class="issue-body" id="categoryStep">
-      <p class="issue-label">What can we help you with?</p>
       <div id="categoryList"></div>
     </div>
 
     <!-- STEP 2: Specific issue selection + details -->
     <div class="issue-body" id="issueStep" style="display:none">
       <p class="issue-label">What seems to be the problem?</p>
-      <div class="issue-category-chip" id="issueCategoryChip"></div>
-      <div class="issue-group-card" id="issueList"></div>
+      <div id="issueList"></div>
 
       <div id="detailsSection" style="display:none">
         <p class="issue-details-label">Add details (optional)</p>
@@ -150,69 +151,73 @@
   const issueStep = document.getElementById("issueStep");
   const categoryListEl = document.getElementById("categoryList");
   const issueListEl = document.getElementById("issueList");
-  const issueCategoryChip = document.getElementById("issueCategoryChip");
   const detailsSection = document.getElementById("detailsSection");
   const issueBackBtn = document.getElementById("issueBackBtn");
   const submitBtn = document.getElementById("submitBtn");
+  const issueHeaderTitle = document.getElementById("issueHeaderTitle");
 
   let selectedCategory = null;
   let selectedIssue = null;
 
-  function makeCategoryOption(label, value) {
+  // Step 1 rows navigate to a sub-list rather than finalize a value, so they
+  // use a chevron (like a settings/menu row) instead of a radio circle.
+  function makeCategoryRow(cat) {
+    const row = document.createElement("button");
+    row.type = "button";
+    row.className = "issue-category-row";
+    row.dataset.value = cat.id;
+    row.innerHTML =
+      '<span class="issue-category-row-label"></span>' +
+      '<svg class="issue-category-row-chevron" width="9" height="15" viewBox="0 0 9 15" fill="none"><path d="M1.5 1.5L7.5 7.5L1.5 13.5" stroke="#9aa0a8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    row.querySelector(".issue-category-row-label").textContent = cat.label;
+    return row;
+  }
+
+  // Step 2 rows finalize a single value, so they keep the original
+  // bordered-card radio-button interaction.
+  function makeIssueOption(label) {
     const btn = document.createElement("button");
     btn.type = "button";
     btn.className = "issue-option";
-    btn.dataset.value = value;
+    btn.dataset.value = label;
     btn.innerHTML = '<span class="radio-circle"></span><span></span>';
     btn.querySelector("span:last-child").textContent = label;
     return btn;
   }
 
-  function makeIssueRow(label) {
-    const row = document.createElement("button");
-    row.type = "button";
-    row.className = "issue-row";
-    row.dataset.value = label;
-    row.innerHTML =
-      '<span class="issue-row-label"></span>' +
-      '<span class="check-indicator"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M4 12.5L9.5 18L20 6" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>';
-    row.querySelector(".issue-row-label").textContent = label;
-    return row;
-  }
-
   function renderCategories() {
     categoryListEl.innerHTML = "";
     ISSUE_CATEGORIES.forEach((cat) => {
-      const opt = makeCategoryOption(cat.label, cat.id);
-      opt.addEventListener("click", () => selectCategory(cat));
-      categoryListEl.appendChild(opt);
+      const row = makeCategoryRow(cat);
+      row.addEventListener("click", () => selectCategory(cat));
+      categoryListEl.appendChild(row);
     });
   }
 
   function selectCategory(cat) {
     selectedCategory = cat;
     selectedIssue = null;
-    issueCategoryChip.textContent = cat.label;
     renderIssues(cat);
     categoryStep.style.display = "none";
     issueStep.style.display = "block";
     detailsSection.style.display = "none";
     submitBtn.classList.remove("enabled");
+    issueHeaderTitle.textContent = "Select an Issue";
   }
 
   function renderIssues(cat) {
     issueListEl.innerHTML = "";
     const options = [...cat.issues, SOMETHING_ELSE];
     options.forEach((label) => {
-      const row = makeIssueRow(label);
-      row.addEventListener("click", () => selectIssue(row, label));
-      issueListEl.appendChild(row);
+      const opt = makeIssueOption(label);
+      opt.addEventListener("click", () => selectIssue(opt, label));
+      issueListEl.appendChild(opt);
     });
   }
 
-  function selectIssue(rowEl, label) {
-    issueListEl.querySelectorAll(".issue-row").forEach((o) => o.classList.remove("selected"));
-    rowEl.classList.add("selected");
+  function selectIssue(optEl, label) {
+    issueListEl.querySelectorAll(".issue-option").forEach((o) => o.classList.remove("selected"));
+    optEl.classList.add("selected");
     selectedIssue = label;
     detailsSection.style.display = "block";
     submitBtn.classList.add("enabled");
@@ -225,6 +230,7 @@
       categoryStep.style.display = "block";
       selectedCategory = null;
       selectedIssue = null;
+      issueHeaderTitle.textContent = "Select a Category";
     } else {
       window.location.href = "contact-us.html";
     }
