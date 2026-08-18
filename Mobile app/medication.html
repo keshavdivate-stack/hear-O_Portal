@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HearO - My Medication</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="phone-frame">
+    <div class="status-bar">
+      <span class="status-time">9:27</span>
+      <div class="status-icons">
+        <svg width="18" height="12" viewBox="0 0 18 12" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="0" y="8" width="3" height="4" rx="0.5" fill="black"/><rect x="4.5" y="6" width="3" height="6" rx="0.5" fill="black"/><rect x="9" y="3" width="3" height="9" rx="0.5" fill="black"/><rect x="13.5" y="0" width="3" height="12" rx="0.5" fill="black"/></svg>
+        <svg width="16" height="12" viewBox="0 0 16 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 10.5C8.6 10.5 9.1 10 9.1 9.4C9.1 8.8 8.6 8.3 8 8.3C7.4 8.3 6.9 8.8 6.9 9.4C6.9 10 7.4 10.5 8 10.5Z" fill="black"/><path d="M8 6.5C9 6.5 9.9 6.9 10.6 7.6L11.6 6.6C10.6 5.6 9.4 5 8 5C6.6 5 5.4 5.6 4.4 6.6L5.4 7.6C6.1 6.9 7 6.5 8 6.5Z" fill="black"/><path d="M8 2.5C10.1 2.5 12 3.3 13.5 4.8L14.5 3.8C12.7 2 10.5 1 8 1C5.5 1 3.3 2 1.5 3.8L2.5 4.8C4 3.3 5.9 2.5 8 2.5Z" fill="black"/></svg>
+        <svg width="25" height="12" viewBox="0 0 25 12" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="0.5" y="0.5" width="20" height="11" rx="2.5" stroke="black"/><rect x="2" y="2" width="17" height="8" rx="1.5" fill="black"/><rect x="22" y="4" width="2" height="4" rx="1" fill="black"/></svg>
+      </div>
+    </div>
+
+    <div class="bp-header">
+      <button type="button" class="back-btn" onclick="window.location.href='home.html'">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M12.5 4L6.5 10L12.5 16" stroke="#2b2b2b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <h1>My Medication</h1>
+    </div>
+
+    <div class="med-body">
+
+      <div class="med-tabs">
+        <button type="button" class="med-tab-btn active" id="activeTabBtn">Active</button>
+        <button type="button" class="med-tab-btn" id="pastTabBtn">Past</button>
+      </div>
+
+      <!-- ACTIVE MEDICATION -->
+      <div id="activeMeds">
+
+        <div class="med-alert-banner">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#b3781a" stroke-width="1.8"><path d="M12 9V13" stroke-linecap="round"/><circle cx="12" cy="16.5" r="1" fill="#b3781a" stroke="none"/><path d="M10.3 3.9L2.6 17.5C2.1 18.4 2.8 19.5 3.8 19.5H19.2C20.2 19.5 20.9 18.4 20.4 17.5L12.7 3.9C12.2 3 10.8 3 10.3 3.9Z" stroke-linejoin="round"/></svg>
+          <span><strong>Furosemide was updated</strong> on Jun 12 &mdash; dose changed from 20 mg to 40 mg.</span>
+        </div>
+
+        <p class="med-hint">Tap a medication name to see its history. Use the buttons to log today.</p>
+
+        <!-- Added / updated by the clinic portal -->
+        <div class="med-card med-card-updated" data-med="furosemide">
+          <div class="med-card-head">
+            <div class="med-name">Furosemide <span class="med-dose">40 mg</span></div>
+            <svg class="med-card-chevron" width="9" height="15" viewBox="0 0 9 15" fill="none"><path d="M1.5 1.5L7.5 7.5L1.5 13.5" stroke="#9aa0a8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="med-meta">
+            <span class="med-tag med-tag-clinic">Care team</span>
+            <span class="med-updated-flag">Updated</span>
+          </div>
+
+          <div class="med-dose-row">
+            <div class="med-dose-time">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1c1c1c" stroke-width="1.7"><circle cx="12" cy="12" r="9"/><path d="M12 7V12L15.5 14" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              8:00 AM
+            </div>
+            <div class="med-dose-actions">
+              <button type="button" class="med-action-btn med-action-taken" data-action="taken">Taken</button>
+              <button type="button" class="med-action-btn med-action-missed" data-action="missed">Missed</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="med-card" data-med="carvedilol">
+          <div class="med-card-head">
+            <div class="med-name">Carvedilol <span class="med-dose">12.5 mg</span></div>
+            <svg class="med-card-chevron" width="9" height="15" viewBox="0 0 9 15" fill="none"><path d="M1.5 1.5L7.5 7.5L1.5 13.5" stroke="#9aa0a8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+
+          <div class="med-dose-row">
+            <div class="med-dose-time">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1c1c1c" stroke-width="1.7"><circle cx="12" cy="12" r="9"/><path d="M12 7V12L15.5 14" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              8:00 AM
+            </div>
+            <div class="med-dose-actions">
+              <button type="button" class="med-action-btn med-action-taken" data-action="taken">Taken</button>
+              <button type="button" class="med-action-btn med-action-missed" data-action="missed">Missed</button>
+            </div>
+          </div>
+
+          <div class="med-dose-row med-dose-row-divider">
+            <div class="med-dose-time">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1c1c1c" stroke-width="1.7"><circle cx="12" cy="12" r="9"/><path d="M12 7V12L15.5 14" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              8:00 PM
+            </div>
+            <div class="med-dose-actions">
+              <button type="button" class="med-action-btn med-action-taken" data-action="taken">Taken</button>
+              <button type="button" class="med-action-btn med-action-missed" data-action="missed">Missed</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="med-card" data-med="spironolactone">
+          <div class="med-card-head">
+            <div class="med-name">Spironolactone <span class="med-dose">25 mg</span></div>
+            <svg class="med-card-chevron" width="9" height="15" viewBox="0 0 9 15" fill="none"><path d="M1.5 1.5L7.5 7.5L1.5 13.5" stroke="#9aa0a8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+
+          <div class="med-dose-row">
+            <div class="med-dose-time">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1c1c1c" stroke-width="1.7"><circle cx="12" cy="12" r="9"/><path d="M12 7V12L15.5 14" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              8:00 AM
+            </div>
+            <div class="med-dose-actions">
+              <button type="button" class="med-action-btn med-action-taken" data-action="taken">Taken</button>
+              <button type="button" class="med-action-btn med-action-missed" data-action="missed">Missed</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- From the patient's health record: dosage details not always available -->
+        <div class="med-card" data-med="atorvastatin">
+          <div class="med-card-head">
+            <div class="med-name">Atorvastatin</div>
+            <svg class="med-card-chevron" width="9" height="15" viewBox="0 0 9 15" fill="none"><path d="M1.5 1.5L7.5 7.5L1.5 13.5" stroke="#9aa0a8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="med-meta">
+            <span class="med-tag med-tag-ehr">From your health record</span>
+          </div>
+
+          <div class="med-dose-row">
+            <div class="med-dose-time">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1c1c1c" stroke-width="1.7"><circle cx="12" cy="12" r="9"/><path d="M12 7V12L15.5 14" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              9:00 PM
+            </div>
+            <div class="med-dose-actions">
+              <button type="button" class="med-action-btn med-action-taken" data-action="taken">Taken</button>
+              <button type="button" class="med-action-btn med-action-missed" data-action="missed">Missed</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="med-note">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#444" stroke-width="1.7"><circle cx="12" cy="12" r="9"/><path d="M12 8V13" stroke-linecap="round"/><circle cx="12" cy="16" r="1" fill="#444" stroke="none"/></svg>
+          <span>Only your care team can add or change your medication list. If something here looks wrong, please let them know.</span>
+        </div>
+      </div>
+
+      <!-- PAST MEDICATION -->
+      <div id="pastMeds" style="display:none">
+
+        <div class="med-card med-card-past" data-med="lisinopril">
+          <div class="med-card-head">
+            <div class="med-name">Lisinopril <span class="med-dose">10 mg</span></div>
+            <svg class="med-card-chevron" width="9" height="15" viewBox="0 0 9 15" fill="none"><path d="M1.5 1.5L7.5 7.5L1.5 13.5" stroke="#9aa0a8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="med-meta">
+            <span class="med-tag-past">Discontinued</span>
+          </div>
+          <div class="med-updated" style="margin-top:8px;">Discontinued Feb 20</div>
+        </div>
+
+        <div class="med-card med-card-past" data-med="ibuprofen">
+          <div class="med-card-head">
+            <div class="med-name">Ibuprofen <span class="med-dose">200 mg</span></div>
+            <svg class="med-card-chevron" width="9" height="15" viewBox="0 0 9 15" fill="none"><path d="M1.5 1.5L7.5 7.5L1.5 13.5" stroke="#9aa0a8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="med-meta">
+            <span class="med-tag-past">Discontinued</span>
+          </div>
+          <div class="med-updated" style="margin-top:8px;">Discontinued Mar 10</div>
+        </div>
+
+        <div class="med-note">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#444" stroke-width="1.7"><circle cx="12" cy="12" r="9"/><path d="M12 8V13" stroke-linecap="round"/><circle cx="12" cy="16" r="1" fill="#444" stroke="none"/></svg>
+          <span>These medications are no longer active. Contact your care team with any questions.</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+<script>
+  const activeTabBtn = document.getElementById("activeTabBtn");
+  const pastTabBtn = document.getElementById("pastTabBtn");
+  const activeMeds = document.getElementById("activeMeds");
+  const pastMeds = document.getElementById("pastMeds");
+
+  activeTabBtn.addEventListener("click", () => {
+    activeTabBtn.classList.add("active");
+    pastTabBtn.classList.remove("active");
+    activeMeds.style.display = "block";
+    pastMeds.style.display = "none";
+  });
+
+  pastTabBtn.addEventListener("click", () => {
+    pastTabBtn.classList.add("active");
+    activeTabBtn.classList.remove("active");
+    pastMeds.style.display = "block";
+    activeMeds.style.display = "none";
+  });
+
+  // Tapping a card (outside the Taken/Missed buttons) opens its history.
+  document.querySelectorAll(".med-card").forEach((card) => {
+    card.addEventListener("click", () => {
+      window.location.href = `medication-history.html?med=${card.dataset.med}`;
+    });
+  });
+
+  // Taken/Missed is a single-select per dose row; tapping the active button again clears it.
+  document.querySelectorAll(".med-action-btn").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const wasActive = btn.classList.contains("active");
+      btn.closest(".med-dose-actions").querySelectorAll(".med-action-btn").forEach((b) => b.classList.remove("active"));
+      if (!wasActive) btn.classList.add("active");
+    });
+  });
+</script>
+</body>
+</html>
