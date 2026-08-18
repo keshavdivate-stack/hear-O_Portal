@@ -302,9 +302,8 @@
               </button>
             </div>
             <div class="range-toggle">
-              <span>Week</span>
-              <span class="active">Month</span>
-              <span>3 Month</span>
+              <span data-range="week">Week</span>
+              <span class="active" data-range="month">Month</span>
             </div>
           </div>
 
@@ -315,7 +314,7 @@
               <div class="rec-scroll" id="recordingsRow"></div>
               <button class="chart-arrow" aria-label="Later"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 6L15 12L9 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
             </div>
-            <div class="chart-month-row"><span>Dec</span><span>Jan</span></div>
+            <div class="chart-month-row" id="recMonthRow"><span>Dec</span><span>Jan</span></div>
             <div class="rec-legend">
               <span><span class="dot rec-none"></span> Did not record</span>
               <span><span class="dot rec-valid"><svg width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span> Valid recording</span>
@@ -349,7 +348,7 @@
                       <div class="chart-wrap" id="bpChartWrap" style="flex:1;"></div>
                     </div>
                     <div class="chart-day-scale" id="bpDayScale"></div>
-                    <div class="chart-month-row"><span>Dec</span><span>Jan</span></div>
+                    <div class="chart-month-row" id="bpMonthRow"><span>Dec</span><span>Jan</span></div>
                   </div>
                   <div class="sleep-legend" style="margin-top:14px;">
                     <span class="legend-chip"><span class="swatch" style="background:#D9A628;"></span> Systolic (mmHG)</span>
@@ -371,7 +370,7 @@
                       <div class="chart-wrap" id="weightChartWrap" style="flex:1;"></div>
                     </div>
                     <div class="chart-day-scale" id="weightDayScale"></div>
-                    <div class="chart-month-row"><span>Dec</span><span>Jan</span></div>
+                    <div class="chart-month-row" id="weightMonthRow"><span>Dec</span><span>Jan</span></div>
                   </div>
                   <div class="sleep-legend" style="margin-top:14px;">
                     <span class="legend-chip"><span class="swatch" style="background:#2E5AAC;"></span> <span id="weightLegendLabel">lbs</span></span>
@@ -388,7 +387,7 @@
                       <div class="chart-wrap" id="hrmChartWrap" style="flex:1;"></div>
                     </div>
                     <div class="chart-day-scale" id="hrmDayScale"></div>
-                    <div class="chart-month-row"><span>Dec</span><span>Jan</span></div>
+                    <div class="chart-month-row" id="hrmMonthRow"><span>Dec</span><span>Jan</span></div>
                   </div>
                   <div class="sleep-legend" style="margin-top:14px;">
                     <span class="legend-chip"><span class="swatch" style="background:#1CBFA6;"></span> bpm</span>
@@ -405,7 +404,7 @@
                       <div class="chart-wrap" id="spo2ChartWrap" style="flex:1;"></div>
                     </div>
                     <div class="chart-day-scale" id="spo2DayScale"></div>
-                    <div class="chart-month-row"><span>Dec</span><span>Jan</span></div>
+                    <div class="chart-month-row" id="spo2MonthRow"><span>Dec</span><span>Jan</span></div>
                   </div>
                   <div class="sleep-legend" style="margin-top:14px;">
                     <span class="legend-chip"><span class="swatch" style="background:#7C7CE0;"></span> SpO&#8322;</span>
@@ -429,7 +428,7 @@
                   </div>
                   <div class="chart-wrap" id="activityChartWrap"></div>
                   <div class="chart-day-scale" id="activityDayScale"></div>
-                  <div class="chart-month-row"><span>Dec</span><span>Jan</span></div>
+                  <div class="chart-month-row" id="activityMonthRow"><span>Dec</span><span>Jan</span></div>
                   <div class="sleep-legend" style="margin-top:12px;">
                     <span class="legend-chip"><span class="swatch" style="background:#8E97F2;"></span> Steps</span>
                     <span class="legend-chip"><span class="swatch" style="background:#1CBFA6;"></span> Distance</span>
@@ -447,7 +446,7 @@
                       <div class="sleep-y-axis-static"><span>10 AM</span><span>4 AM</span><span>22 PM</span></div>
                       <div class="sleep-chart" id="sleepChart"></div>
                     </div>
-                    <div class="month-row"><span>Dec</span><span>Jan</span></div>
+                    <div class="month-row" id="sleepMonthRow"><span>Dec</span><span>Jan</span></div>
                   </div>
                   <div class="sleep-legend" style="margin-top:30px;">
                     <span class="legend-chip"><span class="swatch swatch-deep"></span> Deep</span>
@@ -467,7 +466,7 @@
                       <div class="range-y-axis"><span>200</span><span>100</span><span>45</span></div>
                       <div class="range-chart" id="heartChart"></div>
                     </div>
-                    <div class="month-row"><span>Dec</span><span>Jan</span></div>
+                    <div class="month-row" id="heartMonthRow"><span>Dec</span><span>Jan</span></div>
                   </div>
                   <div class="sleep-legend" style="margin-top:30px;">
                     <span class="legend-chip"><span class="swatch" style="background:#1CBFA6;"></span> BPM</span>
@@ -484,7 +483,7 @@
                       <div class="range-y-axis"><span>100</span><span>90</span><span>80</span></div>
                       <div class="range-chart" id="oxygenChart"></div>
                     </div>
-                    <div class="month-row"><span>Dec</span><span>Jan</span></div>
+                    <div class="month-row" id="oxygenMonthRow"><span>Dec</span><span>Jan</span></div>
                   </div>
                   <div class="sleep-legend" style="margin-top:30px;">
                     <span class="legend-chip"><span class="swatch" style="background:#F2994A;"></span> %</span>
@@ -501,7 +500,7 @@
                       <div class="range-y-axis"><span>50</span><span>30</span><span>10</span></div>
                       <div class="range-chart" id="respirationChart"></div>
                     </div>
-                    <div class="month-row"><span>Dec</span><span>Jan</span></div>
+                    <div class="month-row" id="respirationMonthRow"><span>Dec</span><span>Jan</span></div>
                   </div>
                   <div class="sleep-legend" style="margin-top:30px;">
                     <span class="legend-chip"><span class="swatch" style="background:#7C7CE0;"></span> Breaths/min</span>

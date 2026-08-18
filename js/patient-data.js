@@ -33,12 +33,38 @@ const chartDays = [
   { label: "10", month: "Jan", status: "priority", today: true },
 ];
 
-const GAP_IDX = chartDays.reduce((acc, d, i) => (d.gap ? [...acc, i] : acc), []);
+function gapIndicesOf(days) {
+  return days.reduce((acc, d, i) => (d.gap ? [...acc, i] : acc), []);
+}
 
-function buildDayScale(containerId) {
-  document.getElementById(containerId).innerHTML = chartDays
+const GAP_IDX = gapIndicesOf(chartDays);
+
+function buildDayScale(containerId, days = chartDays) {
+  document.getElementById(containerId).innerHTML = days
     .map((d) => `<span>${d.today ? `<span class="today">${d.label}</span>` : d.label}</span>`)
     .join("");
+}
+
+/* ---------------- Week / Month range toggle (Recordings / Health Data / Clinical) ---------------- */
+let rangeMode = "month";
+
+function visibleDays() {
+  return rangeMode === "week" ? chartDays.slice(-7) : chartDays;
+}
+
+function sliceForRange(arr) {
+  return rangeMode === "week" ? arr.slice(-7) : arr;
+}
+
+function monthRowHtml(days) {
+  const months = [];
+  days.forEach((d) => { if (!months.includes(d.month)) months.push(d.month); });
+  return months.map((m) => `<span>${m}</span>`).join("");
+}
+
+function setMonthRow(id, days) {
+  const el = document.getElementById(id);
+  if (el) el.innerHTML = monthRowHtml(days);
 }
 
 /* ---------------- Overview chart (status timeline) ---------------- */
@@ -126,10 +152,12 @@ const recordingStatus = [
 ];
 
 function buildRecordings() {
+  const days = visibleDays();
+  const status = sliceForRange(recordingStatus);
   const checkIcon = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
-  document.getElementById("recordingsRow").innerHTML = chartDays
+  document.getElementById("recordingsRow").innerHTML = days
     .map((d, i) => {
-      const s = recordingStatus[i];
+      const s = status[i];
       let icon = "";
       let cls = "rec-none";
       if (s === "valid") { cls = "rec-valid"; icon = checkIcon; }
@@ -141,6 +169,7 @@ function buildRecordings() {
         </div>`;
     })
     .join("");
+  setMonthRow("recMonthRow", days);
 }
 
 buildRecordings();
@@ -157,20 +186,27 @@ const activityData = chartDays.map((d, i) => {
 });
 
 function buildActivityChart() {
+  const days = visibleDays();
+  const data = sliceForRange(activityData);
   const H = 150;
   const top = 10;
   const bottom = top + H;
 
+  const wrapEl = document.getElementById("activityChartWrap");
+  const width = Math.max(400, wrapEl.clientWidth || 0);
+  const colW = (width - PAD * 2) / Math.max(1, days.length - 1);
+  const xAtLocal = (i) => PAD + i * colW;
+
   const toPts = (key) => {
-    const vals = activityData.filter(Boolean).map((v) => v[key]);
+    const vals = data.filter(Boolean).map((v) => v[key]);
     const max = Math.max(...vals);
     const min = Math.min(...vals);
-    return chartDays
+    return days
       .map((d, i) => {
-        const v = activityData[i];
+        const v = data[i];
         if (!v) return null;
         const y = bottom - ((v[key] - min) / (max - min || 1)) * H;
-        return { x: xAt(i), y };
+        return { x: xAtLocal(i), y };
       })
       .filter(Boolean);
   };
@@ -182,17 +218,22 @@ function buildActivityChart() {
 
   const dots = (pts, color) => pts.map((p) => `<circle cx="${p.x}" cy="${p.y.toFixed(1)}" r="3" fill="${color}" />`).join("");
 
-  const hatchX = xAt(GAP_IDX[0]) - COL_W / 2;
-  const hatchW = xAt(GAP_IDX[GAP_IDX.length - 1]) - xAt(GAP_IDX[0]) + COL_W;
+  const gapIdx = gapIndicesOf(days);
+  let hatchRect = "";
+  if (gapIdx.length) {
+    const hatchX = xAtLocal(gapIdx[0]) - colW / 2;
+    const hatchW = xAtLocal(gapIdx[gapIdx.length - 1]) - xAtLocal(gapIdx[0]) + colW;
+    hatchRect = `<rect x="${hatchX}" y="2" width="${hatchW}" height="${top + H + 12}" fill="url(#hatchA)" stroke="#C9CFD6" stroke-width="1" stroke-dasharray="4 3" rx="4" />`;
+  }
 
   const svg = `
-    <svg class="chart-svg" viewBox="0 0 ${CHART_W} ${top + H + 20}" width="${CHART_W}" height="${top + H + 20}" xmlns="http://www.w3.org/2000/svg">
+    <svg class="chart-svg" viewBox="0 0 ${width} ${top + H + 20}" width="${width}" height="${top + H + 20}" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <pattern id="hatchA" width="7" height="7" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
           <line x1="0" y1="0" x2="0" y2="7" stroke="#D8DCE2" stroke-width="3" />
         </pattern>
       </defs>
-      <rect x="${hatchX}" y="2" width="${hatchW}" height="${top + H + 12}" fill="url(#hatchA)" stroke="#C9CFD6" stroke-width="1" stroke-dasharray="4 3" rx="4" />
+      ${hatchRect}
       <polyline points="${toPoly(stepsPts)}" fill="none" stroke="#8E97F2" stroke-width="2" />
       <polyline points="${toPoly(distPts)}" fill="none" stroke="#1CBFA6" stroke-width="2" />
       <polyline points="${toPoly(elevPts)}" fill="none" stroke="#B23FD8" stroke-width="2" stroke-dasharray="4 3" />
@@ -201,7 +242,8 @@ function buildActivityChart() {
     </svg>`;
 
   document.getElementById("activityChartWrap").innerHTML = svg;
-  buildDayScale("activityDayScale");
+  buildDayScale("activityDayScale", days);
+  setMonthRow("activityMonthRow", days);
 }
 
 buildActivityChart();
@@ -209,36 +251,46 @@ buildActivityChart();
 /* ---------------- Generic axis line chart (Blood Pressure / Weight / Heart Rate / SpO2) ---------------- */
 let lineChartSeq = 0;
 
-function buildAxisLineChart(wrapId, dayScaleId, seriesList, domainMin, domainMax, H) {
+function buildAxisLineChart(wrapId, dayScaleId, seriesList, domainMin, domainMax, H, monthRowId) {
+  const days = visibleDays();
   const span = domainMax - domainMin;
   const patternId = `hatchLine${lineChartSeq++}`;
 
+  const wrapEl = document.getElementById(wrapId);
+  const width = Math.max(400, wrapEl.clientWidth || 0);
+  const colW = (width - PAD * 2) / Math.max(1, days.length - 1);
+  const xAtLocal = (i) => PAD + i * colW;
+
   function toPts(vals) {
-    return chartDays
+    return days
       .map((d, i) => {
         const v = vals[i];
         if (v == null) return null;
         let y = H - ((v - domainMin) / span) * H;
         y = Math.min(H - 5, Math.max(5, y));
-        return { x: xAt(i), y };
+        return { x: xAtLocal(i), y };
       })
       .filter(Boolean);
   }
 
-  const hatchX = xAt(GAP_IDX[0]) - COL_W / 2;
-  const hatchW = xAt(GAP_IDX[GAP_IDX.length - 1]) - xAt(GAP_IDX[0]) + COL_W;
-
-  let inner = `<rect x="${hatchX}" y="2" width="${hatchW}" height="${H - 4}" fill="url(#${patternId})" stroke="#C9CFD6" stroke-width="1" stroke-dasharray="4 3" rx="4" />`;
+  const gapIdx = gapIndicesOf(days);
+  let inner = "";
+  if (gapIdx.length) {
+    const hatchX = xAtLocal(gapIdx[0]) - colW / 2;
+    const hatchW = xAtLocal(gapIdx[gapIdx.length - 1]) - xAtLocal(gapIdx[0]) + colW;
+    inner = `<rect x="${hatchX}" y="2" width="${hatchW}" height="${H - 4}" fill="url(#${patternId})" stroke="#C9CFD6" stroke-width="1" stroke-dasharray="4 3" rx="4" />`;
+  }
 
   seriesList.forEach((s) => {
-    const pts = toPts(s.data);
+    const vals = sliceForRange(s.data);
+    const pts = toPts(vals);
     const poly = pts.map((p) => `${p.x},${p.y.toFixed(1)}`).join(" ");
     inner += `<polyline points="${poly}" fill="none" stroke="${s.color}" stroke-width="2.5" />`;
     inner += pts.map((p) => `<circle cx="${p.x}" cy="${p.y.toFixed(1)}" r="5" fill="${s.color}" />`).join("");
   });
 
   const svg = `
-    <svg class="chart-svg" viewBox="0 0 ${CHART_W} ${H}" width="${CHART_W}" height="${H}" xmlns="http://www.w3.org/2000/svg">
+    <svg class="chart-svg" viewBox="0 0 ${width} ${H}" width="${width}" height="${H}" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <pattern id="${patternId}" width="7" height="7" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
           <line x1="0" y1="0" x2="0" y2="7" stroke="#D8DCE2" stroke-width="3" />
@@ -248,7 +300,8 @@ function buildAxisLineChart(wrapId, dayScaleId, seriesList, domainMin, domainMax
     </svg>`;
 
   document.getElementById(wrapId).innerHTML = svg;
-  buildDayScale(dayScaleId);
+  buildDayScale(dayScaleId, days);
+  if (monthRowId) setMonthRow(monthRowId, days);
 }
 
 function seriesValues(base, jitter) {
@@ -261,18 +314,27 @@ function seriesValues(base, jitter) {
 /* -- Blood Pressure -- */
 const systolicData = seriesValues(105, 20);
 const diastolicData = seriesValues(65, 15);
-buildAxisLineChart("bpChartWrap", "bpDayScale", [
-  { data: systolicData, color: "#D9A628" },
-  { data: diastolicData, color: "#F2994A" },
-], 60, 180, 150);
+function buildBpChart() {
+  buildAxisLineChart("bpChartWrap", "bpDayScale", [
+    { data: systolicData, color: "#D9A628" },
+    { data: diastolicData, color: "#F2994A" },
+  ], 60, 180, 150, "bpMonthRow");
+}
+buildBpChart();
 
 /* -- Heart Rate (Measurement) -- */
 const heartRateMData = seriesValues(112, 25);
-buildAxisLineChart("hrmChartWrap", "hrmDayScale", [{ data: heartRateMData, color: "#1CBFA6" }], 60, 180, 150);
+function buildHrmChart() {
+  buildAxisLineChart("hrmChartWrap", "hrmDayScale", [{ data: heartRateMData, color: "#1CBFA6" }], 60, 180, 150, "hrmMonthRow");
+}
+buildHrmChart();
 
 /* -- Blood Saturation (SpO2) -- */
 const spo2Data = seriesValues(98, 2.4);
-buildAxisLineChart("spo2ChartWrap", "spo2DayScale", [{ data: spo2Data, color: "#7C7CE0" }], 96, 100, 150);
+function buildSpo2Chart() {
+  buildAxisLineChart("spo2ChartWrap", "spo2DayScale", [{ data: spo2Data, color: "#7C7CE0" }], 96, 100, 150, "spo2MonthRow");
+}
+buildSpo2Chart();
 
 /* -- Weight (KG stored, toggled to lbs for display) -- */
 const weightKgData = seriesValues(80, 5).map((v) => (v == null ? null : v + 0.5));
@@ -289,7 +351,7 @@ function renderWeightChart() {
     ? "<span>220</span><span>198</span><span>176</span>"
     : "<span>100</span><span>90</span><span>80</span>";
   document.getElementById("weightLegendLabel").textContent = isLbs ? "lbs" : "kg";
-  buildAxisLineChart("weightChartWrap", "weightDayScale", [{ data, color: "#2E5AAC" }], domainMin, domainMax, 150);
+  buildAxisLineChart("weightChartWrap", "weightDayScale", [{ data, color: "#2E5AAC" }], domainMin, domainMax, 150, "weightMonthRow");
 }
 
 renderWeightChart();
@@ -342,10 +404,12 @@ function fmtMins(m) {
 }
 
 function buildSleepChart() {
+  const days = visibleDays();
+  const data = sliceForRange(sleepData);
   const wrap = document.getElementById("sleepChart");
-  wrap.innerHTML = chartDays
+  wrap.innerHTML = days
     .map((d, i) => {
-      const s = sleepData[i];
+      const s = data[i];
       if (!s) {
         return `<div class="sleep-col"><div class="sleep-bars gap"></div><span class="sleep-col-label">${d.label}</span></div>`;
       }
@@ -373,16 +437,19 @@ function buildSleepChart() {
         </div>`;
     })
     .join("");
+  setMonthRow("sleepMonthRow", days);
 }
 
 buildSleepChart();
 
 /* ---------------- Generic min/max range-bar chart ---------------- */
-function buildRangeChart(containerId, data, domainMin, domainMax, trackH, color) {
+function buildRangeChart(containerId, data, domainMin, domainMax, trackH, color, monthRowId) {
+  const days = visibleDays();
+  const windowedData = sliceForRange(data);
   const el = document.getElementById(containerId);
-  el.innerHTML = chartDays
+  el.innerHTML = days
     .map((d, i) => {
-      const v = data[i];
+      const v = windowedData[i];
       if (!v) {
         return `<div class="range-col"><div class="range-gap-hatch"></div><span class="range-col-label">${d.label}</span></div>`;
       }
@@ -396,6 +463,7 @@ function buildRangeChart(containerId, data, domainMin, domainMax, trackH, color)
         </div>`;
     })
     .join("");
+  if (monthRowId) setMonthRow(monthRowId, days);
 }
 
 function rangeSeries(baseMin, baseMax, jitter) {
@@ -410,9 +478,13 @@ const heartData = rangeSeries(70, 150, 30);
 const oxygenData = rangeSeries(92, 99, 6);
 const respirationData = rangeSeries(16, 32, 8);
 
-buildRangeChart("heartChart", heartData, 45, 200, 150, "#1CBFA6");
-buildRangeChart("oxygenChart", oxygenData, 80, 100, 150, "#F2994A");
-buildRangeChart("respirationChart", respirationData, 10, 50, 150, "#7C7CE0");
+function buildHeartChart() { buildRangeChart("heartChart", heartData, 45, 200, 150, "#1CBFA6", "heartMonthRow"); }
+function buildOxygenChart() { buildRangeChart("oxygenChart", oxygenData, 80, 100, 150, "#F2994A", "oxygenMonthRow"); }
+function buildRespirationChart() { buildRangeChart("respirationChart", respirationData, 10, 50, 150, "#7C7CE0", "respirationMonthRow"); }
+
+buildHeartChart();
+buildOxygenChart();
+buildRespirationChart();
 
 /* ---------------- Clinical: Care Recommendations ---------------- */
 const careRecs = [
@@ -595,19 +667,23 @@ function renderMeds() {
         <div class="med-adherence-row">
           <button class="chart-arrow med-adh-prev" data-med="${mi}" aria-label="Previous month"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15 6L9 12L15 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
           <div class="med-adh-scroll" id="medAdh${mi}">
-            ${chartDays
-              .map(
-                (d, i) => `
+            ${(() => {
+              const days = visibleDays();
+              const adh = sliceForRange(m.adherence);
+              return days
+                .map(
+                  (d, i) => `
                 <div class="med-adh-day">
-                  <span class="med-adh-icon ${m.adherence[i] ? "med-adh-taken" : "med-adh-missed"}">${m.adherence[i] ? adhCheckIcon : adhDashIcon}</span>
+                  <span class="med-adh-icon ${adh[i] ? "med-adh-taken" : "med-adh-missed"}">${adh[i] ? adhCheckIcon : adhDashIcon}</span>
                   <span class="med-adh-day-label">${d.label}</span>
                 </div>`
-              )
-              .join("")}
+                )
+                .join("");
+            })()}
           </div>
           <button class="chart-arrow med-adh-next" data-med="${mi}" aria-label="Next month"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 6L15 12L9 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
         </div>
-        <div class="chart-month-row" style="padding:0 40px;"><span>Dec</span><span>Jan</span></div>
+        <div class="chart-month-row" style="padding:0 40px;">${monthRowHtml(visibleDays())}</div>
       </div>`
     )
     .join("") || `<p class="empty-state-text">No medications match the selected filters.</p>`;
@@ -715,6 +791,8 @@ document.querySelectorAll(".data-tab").forEach((tab) => {
     document.querySelectorAll(".data-tab-panel").forEach((p) => p.classList.remove("open"));
     tab.classList.add("open");
     document.querySelector(`.data-tab-panel[data-panel="${target}"]`).classList.add("open");
+    /* charts inside a hidden panel measure 0 width when built, so re-run once it's visible */
+    if (target === "health-data") rebuildRangedCharts();
   });
 });
 
@@ -726,13 +804,30 @@ document.querySelectorAll(".subtab").forEach((tab) => {
     document.querySelectorAll(".subtab-panel").forEach((p) => p.classList.remove("open"));
     tab.classList.add("active");
     document.querySelector(`.subtab-panel[data-subpanel="${target}"]`).classList.add("open");
+    rebuildRangedCharts();
   });
 });
+
+function rebuildRangedCharts() {
+  buildRecordings();
+  buildActivityChart();
+  buildBpChart();
+  buildHrmChart();
+  buildSpo2Chart();
+  renderWeightChart();
+  buildSleepChart();
+  buildHeartChart();
+  buildOxygenChart();
+  buildRespirationChart();
+  renderMeds();
+}
 
 document.querySelectorAll(".range-toggle span").forEach((r) => {
   r.addEventListener("click", () => {
     document.querySelectorAll(".range-toggle span").forEach((s) => s.classList.remove("active"));
     r.classList.add("active");
+    rangeMode = r.dataset.range || "month";
+    rebuildRangedCharts();
   });
 });
 
