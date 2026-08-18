@@ -35,12 +35,6 @@
           </span>
           <span class="nav-label">Patient List</span>
         </a>
-        <a href="registration.html" class="nav-item">
-          <span class="nav-icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="10" cy="8" r="3.5" stroke="currentColor" stroke-width="1.8"/><path d="M2.5 20.5C2.5 16.6 5.8 14 10 14C14.2 14 17.5 16.6 17.5 20.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M18 8H22" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M20 6V10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-          </span>
-          <span class="nav-label">Registration</span>
-        </a>
         <a href="billing.html" class="nav-item active">
           <span class="nav-icon">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><path d="M12 7V17" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M15 9.5C15 8.1 13.7 7 12 7C10.3 7 9 8.1 9 9.5C9 10.9 10.3 11.5 12 12C13.7 12.5 15 13.1 15 14.5C15 15.9 13.7 17 12 17C10.3 17 9 15.9 9 14.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
@@ -183,9 +177,12 @@
 
           <button class="clear-filters" id="clearFilters">Clean all filters</button>
 
-          <button class="export-btn" id="exportReportBtn">
+          <button class="btn-secondary icon-only" id="exportReportBtn" style="margin-left:auto;" aria-label="Export Report" title="Export Report">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 15V3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M7 8L12 3L17 8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 15V19C4 20.1 4.9 21 6 21H18C19.1 21 20 20.1 20 19V15" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            Export Report
+          </button>
+          <button class="export-btn" id="scheduleBillingReportBtn">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9H21"/><path d="M8 2V6"/><path d="M16 2V6"/><path d="M7 13L10 16L14 12"/></svg>
+            Schedule Billing Report
           </button>
         </div>
 
@@ -225,6 +222,120 @@
         </div>
 
       </div>
+    </div>
+  </div>
+
+  <!-- Schedule Billing Report modal -->
+  <div class="modal-overlay" id="scheduleBillingReportOverlay">
+    <div class="modal modal-wide">
+      <h2>Schedule Billing Report</h2>
+      <form id="scheduleBillingReportForm">
+        <div class="form-grid">
+          <div class="form-field">
+            <label>Report type<span class="required-star">*</span></label>
+            <div class="custom-select" data-name="reportType">
+              <button type="button" class="custom-select-trigger">
+                <span class="custom-select-value placeholder">Report type</span>
+                <svg class="custom-select-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="custom-select-menu">
+                <div class="custom-select-option" data-value="CPT Code Summary">CPT Code Summary (99453/99454/99457/99458)<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Billing Status Report">Billing Status Report<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Time Logged Summary">Time Logged Summary<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Full Billing Export">Full Billing Export<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              </div>
+              <input type="hidden" name="reportType" required />
+            </div>
+          </div>
+          <div class="form-field">
+            <label>Report period<span class="required-star">*</span></label>
+            <div class="custom-select" data-name="reportPeriod">
+              <button type="button" class="custom-select-trigger">
+                <span class="custom-select-value placeholder">Report period</span>
+                <svg class="custom-select-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="custom-select-menu">
+                <div class="custom-select-option" data-value="This month">This month<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Last month">Last month<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Last 3 months">Last 3 months<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Custom range">Custom range<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              </div>
+              <input type="hidden" name="reportPeriod" required />
+            </div>
+          </div>
+          <div class="form-field">
+            <label>Schedule frequency<span class="required-star">*</span></label>
+            <div class="custom-select" data-name="scheduleFrequency">
+              <button type="button" class="custom-select-trigger">
+                <span class="custom-select-value placeholder">Schedule frequency</span>
+                <svg class="custom-select-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="custom-select-menu">
+                <div class="custom-select-option" data-value="One-time">One-time<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Weekly">Weekly<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Monthly">Monthly<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Quarterly">Quarterly<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              </div>
+              <input type="hidden" name="scheduleFrequency" required />
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label>Start date</label>
+            <div class="reg-date-field">
+              <input type="text" name="startDate" placeholder="Start date" onfocus="(this.type='date')" onblur="if(!this.value) this.type='text'" />
+              <svg class="reg-date-icon" width="17" height="17" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="17" rx="2" stroke="#6B7684" stroke-width="1.8"/><path d="M3 9H21" stroke="#6B7684" stroke-width="1.8"/><path d="M8 2V6" stroke="#6B7684" stroke-width="1.8" stroke-linecap="round"/><path d="M16 2V6" stroke="#6B7684" stroke-width="1.8" stroke-linecap="round"/></svg>
+            </div>
+          </div>
+          <div class="form-field">
+            <label>Time</label>
+            <div class="time-pair">
+              <input type="number" min="0" max="23" name="hh" value="0" />
+              <span>:</span>
+              <input type="number" min="0" max="59" name="mm" value="0" />
+            </div>
+          </div>
+          <div class="form-field">
+            <label>Delivery method</label>
+            <div class="custom-select" data-name="deliveryMethod">
+              <button type="button" class="custom-select-trigger">
+                <span class="custom-select-value placeholder">Delivery method</span>
+                <svg class="custom-select-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="custom-select-menu">
+                <div class="custom-select-option" data-value="Email">Email<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Download link">Download link<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              </div>
+              <input type="hidden" name="deliveryMethod" />
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label>File format</label>
+            <div class="custom-select" data-name="fileFormat">
+              <button type="button" class="custom-select-trigger">
+                <span class="custom-select-value placeholder">File format</span>
+                <svg class="custom-select-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="custom-select-menu">
+                <div class="custom-select-option" data-value="CSV">CSV<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="PDF">PDF<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="XLSX">XLSX<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              </div>
+              <input type="hidden" name="fileFormat" />
+            </div>
+          </div>
+          <div class="form-field">
+            <label>Recipients</label>
+            <input type="email" name="recipients" placeholder="Enter email" />
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn-text" id="cancelScheduleBillingReport">Cancel</button>
+          <button type="submit" class="btn-save" id="saveScheduleBillingReport" disabled>Schedule Report</button>
+        </div>
+      </form>
     </div>
   </div>
 

@@ -38,23 +38,27 @@
       <!-- ACTIVE MEDICATION -->
       <div id="activeMeds">
 
-        <div class="med-alert-banner">
+        <div class="med-alert-banner" id="medAlertBanner">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#b3781a" stroke-width="1.8"><path d="M12 9V13" stroke-linecap="round"/><circle cx="12" cy="16.5" r="1" fill="#b3781a" stroke="none"/><path d="M10.3 3.9L2.6 17.5C2.1 18.4 2.8 19.5 3.8 19.5H19.2C20.2 19.5 20.9 18.4 20.4 17.5L12.7 3.9C12.2 3 10.8 3 10.3 3.9Z" stroke-linejoin="round"/></svg>
-          <span><strong>Furosemide was updated</strong> on Jun 12 &mdash; dose changed from 20 mg to 40 mg.</span>
+          <span><strong>Furosemide was updated</strong> on Jun 12 &mdash; dose changed from 20 mg to 40 mg. Please acknowledge the change below.</span>
         </div>
 
         <p class="med-hint">Tap a medication name to see its history. Use the buttons to log today.</p>
 
         <!-- Added / updated by the clinic portal -->
-        <div class="med-card med-card-updated" data-med="furosemide">
+        <div class="med-card med-card-updated" data-med="furosemide" id="furosemideCard">
           <div class="med-card-head">
             <div class="med-name">Furosemide <span class="med-dose">40 mg</span></div>
             <svg class="med-card-chevron" width="9" height="15" viewBox="0 0 9 15" fill="none"><path d="M1.5 1.5L7.5 7.5L1.5 13.5" stroke="#9aa0a8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </div>
           <div class="med-meta">
-            <span class="med-tag med-tag-clinic">Care team</span>
-            <span class="med-updated-flag">Updated</span>
+            <span class="med-updated-flag">Updated &mdash; 20 mg &rarr; 40 mg</span>
           </div>
+
+          <button type="button" class="med-acknowledge-btn" id="acknowledgeBtn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12L9 17L20 6"/></svg>
+            Acknowledge new dose
+          </button>
 
           <div class="med-dose-row">
             <div class="med-dose-time">
@@ -62,8 +66,8 @@
               8:00 AM
             </div>
             <div class="med-dose-actions">
-              <button type="button" class="med-action-btn med-action-taken" data-action="taken">Taken</button>
-              <button type="button" class="med-action-btn med-action-missed" data-action="missed">Missed</button>
+              <button type="button" class="med-action-btn med-action-taken" data-action="taken" disabled>Taken</button>
+              <button type="button" class="med-action-btn med-action-missed" data-action="missed" disabled>Missed</button>
             </div>
           </div>
         </div>
@@ -208,11 +212,35 @@
   document.querySelectorAll(".med-action-btn").forEach((btn) => {
     btn.addEventListener("click", (e) => {
       e.stopPropagation();
+      if (btn.disabled) return;
       const wasActive = btn.classList.contains("active");
       btn.closest(".med-dose-actions").querySelectorAll(".med-action-btn").forEach((b) => b.classList.remove("active"));
       if (!wasActive) btn.classList.add("active");
     });
   });
+
+  // Acknowledging an updated medication unlocks Taken/Missed logging for it
+  // and clears the "Updated" state — both on the card and the banner above.
+  const acknowledgeBtn = document.getElementById("acknowledgeBtn");
+  if (acknowledgeBtn) {
+    acknowledgeBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const card = document.getElementById("furosemideCard");
+
+      card.classList.remove("med-card-updated");
+      card.classList.add("med-card-acknowledged");
+
+      const meta = card.querySelector(".med-meta");
+      if (meta) meta.remove();
+
+      card.querySelectorAll(".med-action-btn").forEach((btn) => { btn.disabled = false; });
+
+      acknowledgeBtn.remove();
+
+      const banner = document.getElementById("medAlertBanner");
+      if (banner) banner.remove();
+    });
+  }
 </script>
 </body>
 </html>

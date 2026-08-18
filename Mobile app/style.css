@@ -1747,6 +1747,12 @@ input[type="password"]:focus {
 .med-action-taken.active { background: #2f9e73; border-color: #2f9e73; color: #fff; }
 .med-action-missed.active { background: #e0562a; border-color: #e0562a; color: #fff; }
 
+.med-action-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: #f4f5f6;
+}
+
 .med-detail {
   font-size: 17px;
   color: #444;
@@ -1840,6 +1846,31 @@ input[type="password"]:focus {
   background: #fff1d6;
   padding: 6px 12px;
   border-radius: 10px;
+}
+
+.med-acknowledge-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  margin-top: 14px;
+  padding: 12px 16px;
+  border: 1.5px solid #b3781a;
+  border-radius: 12px;
+  background: #b3781a;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.med-acknowledge-btn:active { background: #96650f; border-color: #96650f; }
+
+.med-card-acknowledged {
+  border-color: #d9dce1;
+  background: #fff;
 }
 
 .med-card-past .med-name { color: #4a4f57; }
