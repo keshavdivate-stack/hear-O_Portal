@@ -242,11 +242,11 @@ renderOvTrendFooter();
    three disconnected numbers. Org/patient counts and "started" times are
    read from the real per-org records rather than invented separately. */
 const ovCritIssues = [
-  { title: "Recording capture failures", desc: "Recordings not received from devices", severity: "Critical", started: "2 hrs ago", orgs: 1, patients: 3, color: "var(--red)", category: "Recording Failure", icon: `<path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3Z"/><path d="M19 11a7 7 0 0 1-14 0"/><path d="M12 19v3"/>` },
+  { title: "Compliance drops", desc: "Active-patient compliance falling below threshold", severity: "Critical", started: "2 hrs ago", orgs: 1, patients: 3, color: "var(--red)", category: "Compliance", icon: `<path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/><path d="M12 2v3"/><path d="M12 19v3"/><path d="M4.2 4.2l2.1 2.1"/><path d="M17.7 17.7l2.1 2.1"/>` },
   { title: "Voice engine errors", desc: "High error rate in voice processing", severity: "Critical", started: "20 min ago", orgs: 1, patients: 2, color: "var(--red)", category: "Voice Engine", icon: `<path d="M12 2a10 10 0 1 0 10 10"/><path d="M12 6v6l4 2"/>` },
-  { title: "Sync delays", desc: "Recordings and compliance data falling behind", severity: "High", started: "3 hrs ago", orgs: 2, patients: 3, color: "var(--orange)", category: "Sync", icon: `<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5"/><path d="M12 3v12"/>` },
-  { title: "App / OS compatibility issues", desc: "Devices running unsupported app or OS versions", severity: "Medium", started: "6 hrs ago", orgs: 3, patients: 3, color: "var(--yellow)", category: "App Version / OS", icon: `<rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 21h8"/><path d="M12 17h.01"/>` },
-  { title: "Sensor data delays", desc: "Sensor data delayed or missing", severity: "Low", started: "1 day ago", orgs: 1, patients: 1, color: "var(--blue)", category: "Sensor / SDK", icon: `<circle cx="12" cy="12" r="9"/><path d="M12 8v4"/><path d="M12 16h.01"/>` },
+  { title: "Missing run: Billing Calc", desc: "The Billing Calc job did not run yesterday", severity: "High", started: "3 hrs ago", orgs: 2, patients: 3, color: "var(--orange)", category: "System Schedule Engine", icon: `<rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9H21"/><path d="M8 2v4"/><path d="M16 2v4"/>` },
+  { title: "Sensor data delays", desc: "Sensor data delayed or missing", severity: "Medium", started: "6 hrs ago", orgs: 3, patients: 3, color: "var(--yellow)", category: "Sensors", icon: `<circle cx="12" cy="12" r="9"/><path d="M12 8v4"/><path d="M12 16h.01"/>` },
+  { title: "Patients stuck in Registered", desc: "Patients have been stuck in Registered status longer than expected", severity: "Low", started: "1 day ago", orgs: 1, patients: 1, color: "var(--blue)", category: "Patient (Mobile/Web)", icon: `<circle cx="12" cy="12" r="9"/><path d="M12 7v5l4 2"/>` },
 ];
 
 const ovSeverityPillClass = { Critical: "critical", High: "high", Medium: "medium", Low: "low" };
@@ -320,26 +320,29 @@ function renderOvCritIssues(orgId) {
    (supDashCategoryColors) and js/org-health-data.js so a category reads as
    the same color everywhere it appears. */
 const OV_CATEGORY_COLORS = {
+  Compliance: "var(--purple)",
   "Voice Engine": "var(--orange)",
-  "Sensor / SDK": "var(--yellow)",
-  Sync: "var(--blue)",
-  "App Version / OS": "var(--cyan)",
-  "Recording Failure": "var(--red)",
-  "Login / Auth / OTP": "var(--navy)",
-  Billing: "var(--purple)",
-  "Data / EHR Integration": "var(--green)",
-  Other: "var(--gray)",
+  Sensors: "var(--yellow)",
+  "Patient (Mobile/Web)": "var(--blue)",
+  "Clinic Users (Security)": "var(--navy)",
+  "System Schedule Engine": "var(--gray)",
 };
 
+/* Seeded from every category name up front (not just whatever happens to
+   appear in orgHealthData) so a category with no open issues right now --
+   e.g. Clinic Users (Security), which has no named alarms defined yet --
+   still shows up in the donut/legend at 0 instead of silently vanishing. */
 const ovCategories = (() => {
   const totals = {};
+  Object.keys(OV_CATEGORY_COLORS).forEach((label) => {
+    totals[label] = 0;
+  });
   Object.values(orgHealthData).forEach((o) => {
     o.categories.forEach((c) => {
       totals[c.label] = (totals[c.label] || 0) + c.count;
     });
   });
   return Object.entries(totals)
-    .filter(([, count]) => count > 0)
     .sort((a, b) => b[1] - a[1])
     .map(([label, count]) => ({ label, count, color: OV_CATEGORY_COLORS[label] || "var(--gray)" }));
 })();

@@ -1,11 +1,15 @@
 /* ---------------- Reference lists ---------------- */
-/* Categories are the support-facing groupings shown in the Category filter
-   and the Overview/Support dashboards' category breakdowns -- deliberately
-   generic (not tied to any one backend alarm spec) so every ticket, however
-   it was raised, lands in a category a support agent recognizes at a
-   glance. ISSUE_TYPES are the finer-grained tags a ticket actually carries;
-   ISSUE_TYPE_CATEGORY maps each one to its category. */
-const CATEGORIES = ["Voice Engine", "Sensor / SDK", "Sync", "App Version / OS", "Recording Failure", "Login / Auth / OTP", "Billing", "Data / EHR Integration", "Other"];
+/* Categories + named alarms sourced from the "System Health Check (Alarm -
+   Error / Warning)" spec. ISSUE_TYPES covers every named alarm the doc
+   defines, grouped by category via ISSUE_TYPE_CATEGORY, plus one manual
+   catch-all ("Other / Manual Report") for tickets that don't correspond to
+   any automated alarm (hardware failures, UI/translation bugs, etc. -- the
+   doc only specifies system-health monitoring, not every possible
+   complaint), and "Suspicious Clinic Login" so every category -- including
+   Clinic Users (Security) -- has at least one demonstrable ticket (the doc
+   lists that area but defines no alarms under it). Per the doc, monitoring
+   only applies to commercial and study organizations. */
+const CATEGORIES = ["Compliance", "Voice Engine", "Sensors", "Patient (Mobile/Web)", "Clinic Users (Security)", "System Schedule Engine"];
 const SCOPES = ["Global", "Organization", "Patient"];
 
 const ISSUE_TYPES = [
@@ -20,9 +24,10 @@ const ISSUE_TYPES = [
   "Missing Track Feature Extraction",
   "Sensors Not Uploaded",
   "Sensor Metrics Below Threshold",
-  "Unsupported App Version",
-  "Recording Capture Failure",
-  "EHR Sync Failure",
+  "Measurements Not Entered",
+  "Medication Not Logged",
+  "Clinical Questions Not Answered",
+  "Language Changed In App",
   "Stuck In Baseline",
   "Stuck In Registered",
   "Stuck In Priority",
@@ -39,33 +44,34 @@ const ISSUE_TYPES = [
 ];
 
 const ISSUE_TYPE_CATEGORY = {
-  "Total Compliance Drop": "Sync",
-  "Total Usable Compliance Drop": "Sync",
-  "Organization Compliance Drop": "Sync",
-  "Organization Usable Compliance Drop": "Sync",
-  "Signed In Not Uploaded": "Sync",
+  "Total Compliance Drop": "Compliance",
+  "Total Usable Compliance Drop": "Compliance",
+  "Organization Compliance Drop": "Compliance",
+  "Organization Usable Compliance Drop": "Compliance",
+  "Signed In Not Uploaded": "Compliance",
   "Missing Smart Merger Results": "Voice Engine",
   "Missing ASR Results": "Voice Engine",
   "Missing ASR Derived Features": "Voice Engine",
   "Missing Track Feature Extraction": "Voice Engine",
-  "Sensors Not Uploaded": "Sensor / SDK",
-  "Sensor Metrics Below Threshold": "Sensor / SDK",
-  "Unsupported App Version": "App Version / OS",
-  "Recording Capture Failure": "Recording Failure",
-  "EHR Sync Failure": "Data / EHR Integration",
-  "Suspicious Clinic Login": "Login / Auth / OTP",
-  "Missing Run: Billing Calc": "Billing",
-  "Stuck In Baseline": "Other",
-  "Stuck In Registered": "Other",
-  "Stuck In Priority": "Other",
-  "Missing Priority Status": "Other",
-  "Paused Too Long": "Other",
-  "Unmonitored Too Long": "Other",
-  "Other / Manual Report": "Other",
-  "Missing Run: Baseline Completed Engine": "Other",
-  "Missing Run: Start Date Engine": "Other",
-  "Missing Run: Insufficient Recalculate": "Other",
-  "Missing Run: Is Valid Engine": "Other",
+  "Sensors Not Uploaded": "Sensors",
+  "Sensor Metrics Below Threshold": "Sensors",
+  "Measurements Not Entered": "Sensors",
+  "Medication Not Logged": "Patient (Mobile/Web)",
+  "Clinical Questions Not Answered": "Patient (Mobile/Web)",
+  "Language Changed In App": "Patient (Mobile/Web)",
+  "Stuck In Baseline": "Patient (Mobile/Web)",
+  "Stuck In Registered": "Patient (Mobile/Web)",
+  "Stuck In Priority": "Patient (Mobile/Web)",
+  "Missing Priority Status": "Patient (Mobile/Web)",
+  "Paused Too Long": "Patient (Mobile/Web)",
+  "Unmonitored Too Long": "Patient (Mobile/Web)",
+  "Other / Manual Report": "Patient (Mobile/Web)",
+  "Missing Run: Baseline Completed Engine": "System Schedule Engine",
+  "Missing Run: Start Date Engine": "System Schedule Engine",
+  "Missing Run: Billing Calc": "System Schedule Engine",
+  "Missing Run: Insufficient Recalculate": "System Schedule Engine",
+  "Missing Run: Is Valid Engine": "System Schedule Engine",
+  "Suspicious Clinic Login": "Clinic Users (Security)",
 };
 
 /* Default scope per the doc's "Scope" column -- used to assign a scope to
@@ -84,9 +90,10 @@ const ISSUE_TYPE_SCOPE = {
   "Missing Track Feature Extraction": "Patient",
   "Sensors Not Uploaded": "Global",
   "Sensor Metrics Below Threshold": "Patient",
-  "Unsupported App Version": "Patient",
-  "Recording Capture Failure": "Patient",
-  "EHR Sync Failure": "Organization",
+  "Measurements Not Entered": "Patient",
+  "Medication Not Logged": "Patient",
+  "Clinical Questions Not Answered": "Patient",
+  "Language Changed In App": "Patient",
   "Stuck In Baseline": "Patient",
   "Stuck In Registered": "Patient",
   "Stuck In Priority": "Patient",
@@ -151,9 +158,10 @@ const SUPPORT_ISSUE_DESCRIPTIONS = {
   "Missing Track Feature Extraction": "Active patient is missing feature-extraction output for one or more tracks.",
   "Sensors Not Uploaded": "Patient signed in but sensor data was not uploaded.",
   "Sensor Metrics Below Threshold": "Patient's uploaded sensor metrics are below the expected threshold.",
-  "Unsupported App Version": "Patient is running an app version or OS that's no longer supported.",
-  "Recording Capture Failure": "Recording did not start or save correctly on the device.",
-  "EHR Sync Failure": "Patient or session data failed to sync with the organization's EHR system.",
+  "Measurements Not Entered": "Patient has not entered measurements in more than the allowed number of days.",
+  "Medication Not Logged": "Patient has not logged medication taken in more than the allowed number of days.",
+  "Clinical Questions Not Answered": "Patient has not answered clinical questions in the app.",
+  "Language Changed In App": "Patient changed their language setting in the app.",
   "Stuck In Baseline": "Patient has been stuck in the baseline period longer than expected.",
   "Stuck In Registered": "Patient has been stuck in Registered status longer than expected.",
   "Stuck In Priority": "Patient has been stuck in Priority status longer than expected.",
