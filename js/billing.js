@@ -73,13 +73,35 @@ rowsEl.innerHTML = billingList
   )
   .join("");
 
+const exportReportBtn = document.getElementById("exportReportBtn");
+const exportFormatPopover = document.getElementById("exportFormatPopover");
+
+function updateExportBtnState() {
+  const anySelected = document.querySelectorAll(".row-check.checked").length > 0;
+  exportReportBtn.disabled = !anySelected;
+  exportReportBtn.title = anySelected ? "Export Report" : "Select at least one row to export";
+  if (!anySelected) exportFormatPopover.classList.remove("open");
+}
+
 document.querySelectorAll(".bill-checkbox").forEach((box) => {
-  box.addEventListener("click", () => box.classList.toggle("checked"));
+  box.addEventListener("click", () => {
+    box.classList.toggle("checked");
+    updateExportBtnState();
+  });
 });
 
 document.getElementById("selectAllBox").addEventListener("click", function () {
   const checked = this.classList.contains("checked");
   document.querySelectorAll(".row-check").forEach((box) => box.classList.toggle("checked", checked));
+  updateExportBtnState();
+});
+
+wireTopbarToggle("exportReportBtn", "exportFormatPopover");
+
+exportFormatPopover.querySelectorAll(".more-menu-item").forEach((item) => {
+  item.addEventListener("click", () => {
+    exportFormatPopover.classList.remove("open");
+  });
 });
 
 document.getElementById("clearFilters").addEventListener("click", () => {

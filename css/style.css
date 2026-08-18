@@ -783,11 +783,15 @@ body {
   border-radius: 16px;
   overflow: hidden;
   box-shadow: 0 2px 6px rgba(20, 30, 50, 0.03);
+  max-height: calc(100vh - 240px);
+  display: flex;
+  flex-direction: column;
 }
 
 .table-scroll {
-  overflow-x: auto;
-  overflow-y: visible;
+  overflow: auto;
+  flex: 1;
+  min-height: 0;
 }
 
 .list-table {
@@ -2846,12 +2850,18 @@ body {
 .more-menu-item {
   display: flex;
   align-items: center;
+  width: 100%;
   gap: 10px;
   padding: 10px 10px;
+  border: none;
   border-radius: 8px;
+  background: none;
+  font-family: inherit;
   font-size: 14.5px;
   color: #23272E;
   text-decoration: none;
+  text-align: left;
+  cursor: pointer;
 }
 
 .more-menu-item:hover { background: var(--bg); }
@@ -3473,6 +3483,21 @@ body {
 .btn-secondary:hover { background: var(--blue-light); }
 
 .btn-secondary.icon-only { padding: 10px; }
+
+.btn-secondary:disabled {
+  opacity: 1;
+  background: #fff;
+  border-color: var(--gray-border);
+  color: #C1C7CF;
+  cursor: not-allowed;
+}
+
+.btn-secondary:disabled:hover { background: #fff; }
+
+.export-menu-wrap {
+  position: relative;
+  margin-left: auto;
+}
 
 #scheduleBillingReportBtn { margin-left: 0; }
 
