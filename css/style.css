@@ -2158,8 +2158,8 @@ body {
 .med-filter-select {
   appearance: none;
   -webkit-appearance: none;
-  background: var(--blue-light);
-  border: none;
+  background: #fff;
+  border: 1px solid var(--gray-border);
   border-radius: 10px;
   padding: 10px 34px 10px 16px;
   font-size: 13.5px;
@@ -2170,7 +2170,7 @@ body {
   outline: none;
 }
 
-.med-filter-select:hover { background: #DCEEF8; }
+.med-filter-select:hover { background: var(--bg); }
 
 .med-filter-caret { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); pointer-events: none; }
 
@@ -2309,11 +2309,6 @@ body {
 }
 
 .med-block:last-child { margin-bottom: 0; }
-
-.med-block-hf {
-  border-color: #F2994A;
-  background: #FDF3E7;
-}
 
 .med-hf-badge {
   display: inline-flex;
@@ -3477,7 +3472,7 @@ body {
 
 .btn-secondary:hover { background: var(--blue-light); }
 
-.btn-secondary.icon-only { padding: 10px; }
+.btn-secondary.icon-only { padding: 10px; margin-right: 12px; }
 
 .bill-checkbox {
   display: inline-block;

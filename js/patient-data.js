@@ -665,7 +665,7 @@ function renderMeds() {
   document.getElementById("medList").innerHTML = list
     .map(
       (m, mi) => `
-      <div class="med-block ${m.hf ? "med-block-hf" : ""}">
+      <div class="med-block">
         <div class="med-block-head">
           <div>
             <div class="med-name-row">
