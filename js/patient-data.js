@@ -294,13 +294,16 @@ function renderWeightChart() {
 
 renderWeightChart();
 
-document.querySelectorAll("#weightUnitToggle span").forEach((btn) => {
-  btn.addEventListener("click", () => {
-    weightUnit = btn.dataset.unit;
-    document.querySelectorAll("#weightUnitToggle span").forEach((b) => b.classList.remove("active"));
-    btn.classList.add("active");
-    renderWeightChart();
+function setWeightUnit(unit) {
+  weightUnit = unit;
+  document.querySelectorAll(".weight-unit-toggle span").forEach((b) => {
+    b.classList.toggle("active", b.dataset.unit === unit);
   });
+  renderWeightChart();
+}
+
+document.querySelectorAll("#weightUnitToggle span").forEach((btn) => {
+  btn.addEventListener("click", () => setWeightUnit(btn.dataset.unit));
 });
 
 /* ---------------- Sleep chart ---------------- */
@@ -497,21 +500,21 @@ const medications = [
     statusReason: "Not applicable", lotNumber: "L2394A", expiryDate: "2027-03-15",
   },
   {
-    hf: true, name: "Carvedilol", cls: "Beta blocker", freq: "Twice daily", dose: "6.25 mg", schedule: "Twice daily",
+    hf: false, name: "Carvedilol", cls: "Beta blocker", freq: "Twice daily", dose: "6.25 mg", schedule: "Twice daily",
     warning: null, adherence: dailyAdherence([5, 12, 19, 27]), source: "Clinic", srcClass: "src-clinic", status: "active",
     ehrStatus: "Active", doseForm: "Tablet", manufacturer: "Teva Pharmaceuticals", ingredient: "Carvedilol", amount: "6.25 mg",
     effectiveDateTime: "2025-12-11T08:00", route: "Oral", sig: "Take one tablet by mouth twice daily with food",
     statusReason: "Not applicable", lotNumber: "C8821B", expiryDate: "2026-11-02",
   },
   {
-    hf: true, name: "Sacubitril/Valsartan", cls: "ARNI", freq: "Twice daily", dose: "49/51 mg", schedule: "Twice daily",
+    hf: false, name: "Sacubitril/Valsartan", cls: "ARNI", freq: "Twice daily", dose: "49/51 mg", schedule: "Twice daily",
     warning: "Monitor renal function with diuretic", adherence: dailyAdherence([2, 3, 9, 15, 22, 23, 28, 29]), source: "Clinic", srcClass: "src-clinic", status: "active",
     ehrStatus: "Active", doseForm: "Tablet", manufacturer: "Novartis", ingredient: "Sacubitril / Valsartan", amount: "49/51 mg",
     effectiveDateTime: "2025-12-11T08:00", route: "Oral", sig: "Take one tablet by mouth twice daily",
     statusReason: "Dose adjustment", lotNumber: "S5510C", expiryDate: "2027-01-20",
   },
   {
-    hf: true, name: "Spironolactone", cls: "MRA", freq: "Daily", dose: "25 mg", schedule: "Once daily",
+    hf: false, name: "Spironolactone", cls: "MRA", freq: "Daily", dose: "25 mg", schedule: "Once daily",
     warning: null, adherence: dailyAdherence([]), source: "Care rec", srcClass: "src-carerec", status: "active",
     ehrStatus: "Active", doseForm: "Tablet", manufacturer: "Pfizer", ingredient: "Spironolactone", amount: "25 mg",
     effectiveDateTime: "2025-12-11T08:00", route: "Oral", sig: "Take one tablet by mouth once daily",
@@ -525,7 +528,7 @@ const medications = [
     statusReason: "Adverse reaction", lotNumber: "—", expiryDate: "2025-12-01",
   },
   {
-    hf: true, name: "Atorvastatin", cls: "Statin", freq: "Daily", dose: "20 mg", schedule: "Once daily, evening",
+    hf: false, name: "Atorvastatin", cls: "Statin", freq: "Daily", dose: "20 mg", schedule: "Once daily, evening",
     warning: null, adherence: dailyAdherence([6, 14, 24]), source: "Clinic", srcClass: "src-clinic", status: "active",
     ehrStatus: "Active", doseForm: "Tablet", manufacturer: "Mylan", ingredient: "Atorvastatin", amount: "20 mg",
     effectiveDateTime: "2025-12-11T20:00", route: "Oral", sig: "Take one tablet by mouth once daily in the evening",
@@ -590,7 +593,7 @@ function renderMeds() {
   document.getElementById("medList").innerHTML = list
     .map(
       (m, mi) => `
-      <div class="med-block">
+      <div class="med-block ${m.hf ? "med-block-hf" : ""}">
         <div class="med-block-head">
           <div>
             <div class="med-name-row">
@@ -603,6 +606,7 @@ function renderMeds() {
               ${medInfoPopover(m, mi)}
             </div>
             <div class="med-block-meta" style="margin-top:6px;">
+              ${m.hf ? `<span class="med-hf-badge">Heart Failure medication</span>` : ""}
               <span class="med-class">${m.cls}</span>
               <span>${m.dose} &middot; ${m.schedule}</span>
               ${m.warning ? `<span class="med-warning"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 4L2 20H22L12 4Z" stroke="#C77B22" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 10V14M12 17V17.3" stroke="#C77B22" stroke-width="1.6" stroke-linecap="round"/></svg>${m.warning}</span>` : ""}
@@ -675,15 +679,6 @@ document.getElementById("medStatusFilter").addEventListener("change", (e) => {
   renderMeds();
 });
 
-/* ---------------- Clinical: collapsible sections ---------------- */
-document.querySelectorAll(".clinical-card .collapse-btn").forEach((btn) => {
-  btn.addEventListener("click", () => {
-    const body = btn.closest(".clinical-card").querySelector(".clinical-body");
-    const collapsed = body.classList.toggle("collapsed");
-    btn.classList.toggle("collapsed", collapsed);
-  });
-});
-
 /* ---------------- Tabs: Recordings / Health Data / Clinical ---------------- */
 document.querySelectorAll(".data-tab").forEach((tab) => {
   tab.addEventListener("click", () => {
@@ -695,14 +690,24 @@ document.querySelectorAll(".data-tab").forEach((tab) => {
   });
 });
 
-/* ---------------- Sub-tabs: Measurement / Wellness ---------------- */
+/* ---------------- Sub-tabs (Measurement/Wellness, Medication/Care Recommendations) ----------------
+   Scoped to the closest .data-tab-panel so two independent subtab groups on the
+   same page (Health Data, Clinical) don't clear each other's active panel. */
 document.querySelectorAll(".subtab").forEach((tab) => {
   tab.addEventListener("click", () => {
+    const scope = tab.closest(".data-tab-panel");
     const target = tab.dataset.subtab;
-    document.querySelectorAll(".subtab").forEach((t) => t.classList.remove("active"));
-    document.querySelectorAll(".subtab-panel").forEach((p) => p.classList.remove("open"));
+    scope.querySelectorAll(".subtab").forEach((t) => t.classList.remove("active"));
+    scope.querySelectorAll(".subtab-panel").forEach((p) => p.classList.remove("open"));
     tab.classList.add("active");
-    document.querySelector(`.subtab-panel[data-subpanel="${target}"]`).classList.add("open");
+    scope.querySelector(`.subtab-panel[data-subpanel="${target}"]`).classList.add("open");
+
+    const medActions = document.getElementById("medSubtabActions");
+    const careRecActions = document.getElementById("careRecSubtabActions");
+    if (medActions && careRecActions) {
+      medActions.style.display = target === "medication" ? "flex" : "none";
+      careRecActions.style.display = target === "care-rec" ? "flex" : "none";
+    }
   });
 });
 
@@ -852,3 +857,75 @@ wireAddModal("careRecOverlay", "careRecForm", "cancelCareRec", "openCareRecBtn",
   });
   renderCareRecs();
 });
+
+/* ---------------- Add Measurement modal ---------------- */
+function mReqField(name, label, placeholder, step) {
+  return `
+    <div class="form-field full">
+      <label>${label}<span class="required-star">*</span></label>
+      <input type="number" ${step ? `step="${step}"` : ""} name="${name}" placeholder="${placeholder}" required />
+    </div>`;
+}
+
+const MEASUREMENT_FIELD_SETS = {
+  bloodPressure: () => `
+    <div class="form-field">
+      <label>Systolic (mmHG)<span class="required-star">*</span></label>
+      <input type="number" name="systolic" placeholder="e.g. 120" required />
+    </div>
+    <div class="form-field">
+      <label>Diastolic (mmHG)<span class="required-star">*</span></label>
+      <input type="number" name="diastolic" placeholder="e.g. 80" required />
+    </div>`,
+  weight: () => `
+    <div class="form-field">
+      <label>Weight<span class="required-star">*</span></label>
+      <input type="number" step="0.1" name="weightValue" placeholder="e.g. 165" required />
+    </div>
+    <div class="form-field">
+      <label>Unit</label>
+      <div class="unit-toggle weight-unit-toggle" id="measurementWeightUnitToggle">
+        <span data-unit="kg" class="${weightUnit === "kg" ? "active" : ""}">KG</span>
+        <span data-unit="lbs" class="${weightUnit === "lbs" ? "active" : ""}">lbs</span>
+      </div>
+      <input type="hidden" name="weightUnit" value="${weightUnit}" />
+    </div>`,
+  heartRate: () => mReqField("heartRateValue", "Heart Rate (bpm)", "e.g. 72"),
+  bloodOxygen: () => mReqField("bloodOxygenValue", "Blood Oxygen (%)", "e.g. 98"),
+  respirationRate: () => mReqField("respirationValue", "Respiration Rate (breaths/min)", "e.g. 16"),
+  temperature: () => mReqField("temperatureValue", "Temperature (°F)", "e.g. 98.6", "0.1"),
+  bloodGlucose: () => mReqField("bloodGlucoseValue", "Blood Glucose (mg/dL)", "e.g. 95"),
+  height: () => mReqField("heightValue", "Height (in)", "e.g. 68"),
+  bmi: () => mReqField("bmiValue", "BMI", "e.g. 24.5", "0.1"),
+};
+
+const measurementTypeSelect = document.getElementById("measurementTypeSelect");
+const measurementValueFields = document.getElementById("measurementValueFields");
+const saveAddMeasurementBtn = document.getElementById("saveAddMeasurement");
+
+function renderMeasurementFields() {
+  const type = measurementTypeSelect.value;
+  measurementValueFields.innerHTML = type ? MEASUREMENT_FIELD_SETS[type]() : "";
+
+  const hiddenWeightInput = measurementValueFields.querySelector('input[name="weightUnit"]');
+  if (hiddenWeightInput) {
+    measurementValueFields.querySelectorAll("#measurementWeightUnitToggle span").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        setWeightUnit(btn.dataset.unit);
+        measurementValueFields.querySelectorAll("#measurementWeightUnitToggle span").forEach((b) => b.classList.toggle("active", b === btn));
+        hiddenWeightInput.value = btn.dataset.unit;
+      });
+    });
+  }
+
+  saveAddMeasurementBtn.disabled = !type;
+  saveAddMeasurementBtn.classList.toggle("enabled", !!type);
+}
+
+measurementTypeSelect.addEventListener("change", renderMeasurementFields);
+
+wireAddModal("addMeasurementOverlay", "addMeasurementForm", "cancelAddMeasurement", "openAddMeasurementBtn", (fd) => {
+  alert(`Measurement added: ${measurementTypeSelect.options[measurementTypeSelect.selectedIndex].text}`);
+});
+
+document.getElementById("openAddMeasurementBtn").addEventListener("click", renderMeasurementFields);

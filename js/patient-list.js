@@ -72,6 +72,8 @@ function monitoringCell(p) {
   return `<div class="mon-cell"><span class="mon-line mon-none">None</span></div>`;
 }
 
+patientList.forEach((p, i) => (p.id = i));
+
 const rows = document.getElementById("patientListRows");
 rows.innerHTML = patientList
   .map(
@@ -86,8 +88,8 @@ rows.innerHTML = patientList
       <td>${monitoringCell(p)}</td>
       <td>
         <div class="action-cell">
-          <button class="action-icon" aria-label="Edit">${pencilIcon}</button>
-          <button class="action-icon kebab" aria-label="More">${kebabIcon}</button>
+          <button class="action-icon" aria-label="Edit" data-id="${p.id}" data-act="edit">${pencilIcon}</button>
+          <button class="action-icon kebab row-menu-trigger" aria-label="More" data-id="${p.id}">${kebabIcon}</button>
         </div>
       </td>
     </tr>`
@@ -97,3 +99,435 @@ rows.innerHTML = patientList
 document.getElementById("clearFilters").addEventListener("click", () => {
   document.getElementById("searchInput").value = "";
 });
+
+/* ---------------- Custom dropdowns (same pattern as Registration) ---------------- */
+function setCustomSelectValue(select, value, { silent = false } = {}) {
+  const hiddenInput = select.querySelector("input[type=hidden]");
+  const trigger = select.querySelector(".custom-select-value");
+  const option = select.querySelector(`.custom-select-option[data-value="${CSS.escape(value)}"]`);
+
+  select.querySelectorAll(".custom-select-option").forEach((o) => o.classList.remove("selected"));
+
+  if (option) {
+    option.classList.add("selected");
+    trigger.textContent = option.textContent.trim();
+    trigger.classList.remove("placeholder");
+  } else {
+    trigger.textContent = trigger.dataset.placeholder || trigger.textContent;
+    trigger.classList.add("placeholder");
+  }
+
+  hiddenInput.value = value || "";
+  if (!silent) hiddenInput.dispatchEvent(new Event("change", { bubbles: true }));
+}
+
+function positionCustomSelectMenu(select) {
+  const trigger = select.querySelector(".custom-select-trigger");
+  const menu = select.querySelector(".custom-select-menu");
+  const rect = trigger.getBoundingClientRect();
+  const menuHeight = Math.min(menu.scrollHeight, 220) + 12;
+  const spaceBelow = window.innerHeight - rect.bottom;
+  const openUpward = spaceBelow < menuHeight && rect.top > menuHeight;
+
+  menu.style.position = "fixed";
+  menu.style.left = `${rect.left}px`;
+  menu.style.width = `${rect.width}px`;
+  menu.style.top = openUpward ? "auto" : `${rect.bottom + 6}px`;
+  menu.style.bottom = openUpward ? `${window.innerHeight - rect.top + 6}px` : "auto";
+}
+
+function wireCustomSelect(select) {
+  const trigger = select.querySelector(".custom-select-trigger");
+  const valueEl = select.querySelector(".custom-select-value");
+  const hiddenInput = select.querySelector("input[type=hidden]");
+
+  valueEl.dataset.placeholder = valueEl.textContent.trim();
+  hiddenInput.dataset.default = hiddenInput.value;
+
+  trigger.addEventListener("click", (e) => {
+    e.stopPropagation();
+    const willOpen = !select.classList.contains("open");
+    document.querySelectorAll(".custom-select.open").forEach((s) => s.classList.remove("open"));
+    if (willOpen) positionCustomSelectMenu(select);
+    select.classList.toggle("open", willOpen);
+  });
+
+  select.addEventListener("click", (e) => {
+    const option = e.target.closest(".custom-select-option");
+    if (!option) return;
+    setCustomSelectValue(select, option.dataset.value);
+    select.classList.remove("open");
+  });
+}
+
+function initCustomSelects(root = document) {
+  root.querySelectorAll(".custom-select").forEach(wireCustomSelect);
+}
+
+document.addEventListener("click", closeAllCustomSelects);
+document.addEventListener("scroll", closeAllCustomSelects, true);
+window.addEventListener("resize", closeAllCustomSelects);
+
+function closeAllCustomSelects() {
+  document.querySelectorAll(".custom-select.open").forEach((s) => s.classList.remove("open"));
+}
+
+initCustomSelects();
+
+function resetCustomSelectsIn(root) {
+  root.querySelectorAll(".custom-select").forEach((select) => {
+    const hiddenInput = select.querySelector("input[type=hidden]");
+    setCustomSelectValue(select, hiddenInput.dataset.default || "", { silent: true });
+  });
+}
+
+/* ---------------- Add Patient menu ---------------- */
+wireTopbarToggle("openAddPatientBtn", "addPatientMenu");
+
+const addPatientMenuEl = document.getElementById("addPatientMenu");
+
+document.getElementById("openRegisterManualBtn").addEventListener("click", () => {
+  addPatientMenuEl.classList.remove("open");
+  openRegisterManualModal();
+});
+
+document.getElementById("openImportPatientBtn").addEventListener("click", () => {
+  addPatientMenuEl.classList.remove("open");
+  openImportPatientModal();
+});
+
+/* ---------------- Register Manually modal ---------------- */
+const registerManualOverlay = document.getElementById("registerManualOverlay");
+const registerManualForm = document.getElementById("registerManualForm");
+const registerManualFormWrap = document.getElementById("registerManualFormWrap");
+const registerManualSuccessWrap = document.getElementById("registerManualSuccessWrap");
+const saveRegisterManual = document.getElementById("saveRegisterManual");
+const registerManualRequired = ["firstName", "lastName", "mrn", "email", "emailLanguage"];
+
+function validateRegisterManualForm() {
+  const valid = registerManualRequired.every((name) => registerManualForm[name].value.trim() !== "");
+  saveRegisterManual.disabled = !valid;
+  saveRegisterManual.classList.toggle("enabled", valid);
+}
+
+registerManualForm.addEventListener("input", validateRegisterManualForm);
+registerManualForm.addEventListener("change", validateRegisterManualForm);
+
+const addInitialVitalsModalBtn = document.getElementById("addInitialVitalsModal");
+addInitialVitalsModalBtn.addEventListener("click", () => {
+  if (document.getElementById("vitalsGridModal")) return;
+
+  const vitalsGrid = document.createElement("div");
+  vitalsGrid.id = "vitalsGridModal";
+  vitalsGrid.className = "form-grid";
+  vitalsGrid.style.marginBottom = "18px";
+  vitalsGrid.innerHTML = `
+    <div class="form-field">
+      <label>Weight (kg)</label>
+      <input type="number" name="weight" placeholder="Weight" />
+    </div>
+    <div class="form-field">
+      <label>Heart rate (bpm)</label>
+      <input type="number" name="heartRate" placeholder="Heart rate" />
+    </div>
+    <div class="form-field">
+      <label>Blood pressure</label>
+      <input type="text" name="bloodPressure" placeholder="e.g. 120/80" />
+    </div>`;
+
+  addInitialVitalsModalBtn.insertAdjacentElement("afterend", vitalsGrid);
+  addInitialVitalsModalBtn.style.display = "none";
+});
+
+function openRegisterManualModal() {
+  registerManualForm.reset();
+  resetCustomSelectsIn(registerManualForm);
+  validateRegisterManualForm();
+  document.getElementById("vitalsGridModal")?.remove();
+  addInitialVitalsModalBtn.style.display = "";
+  registerManualFormWrap.style.display = "block";
+  registerManualSuccessWrap.style.display = "none";
+  registerManualOverlay.classList.add("open");
+}
+
+function closeRegisterManualModal() {
+  registerManualOverlay.classList.remove("open");
+}
+
+document.getElementById("cancelRegisterManual").addEventListener("click", closeRegisterManualModal);
+registerManualOverlay.addEventListener("click", (e) => { if (e.target === registerManualOverlay) closeRegisterManualModal(); });
+
+registerManualForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  if (saveRegisterManual.disabled) return;
+  registerManualFormWrap.style.display = "none";
+  registerManualSuccessWrap.style.display = "block";
+});
+
+document.getElementById("closeRegisterManualSuccess").addEventListener("click", closeRegisterManualModal);
+
+/* ---------------- Import Patient modal ---------------- */
+const importPatientOverlay = document.getElementById("importPatientOverlay");
+const importPatientFormWrap = document.getElementById("importPatientFormWrap");
+const importPatientSuccessWrap = document.getElementById("importPatientSuccessWrap");
+const importSearchBtn = document.getElementById("importSearchBtn");
+const importResultsEmpty = document.getElementById("importResultsEmpty");
+const importResultsWrap = document.getElementById("importResultsWrap");
+const importResultsList = document.getElementById("importResultsList");
+const importSelectAll = document.getElementById("importSelectAll");
+const importSelectedCount = document.getElementById("importSelectedCount");
+const importPatientBtn = document.getElementById("importPatientBtn");
+
+const IMPORT_EHR_RESULTS = [
+  { name: "Sarah White", firstName: "Sarah", lastName: "White", mrn: "ECW-88213", dob: "04/12/1958" },
+  { name: "Ben Carter", firstName: "Ben", lastName: "Carter", mrn: "ECW-40217", dob: "11/02/1946" },
+  { name: "John Doe", firstName: "John", lastName: "Doe", mrn: "ECW-40165", dob: "01/06/1957" },
+];
+
+function matchingImportResults() {
+  const mrn = document.getElementById("importMrn").value.trim().toLowerCase();
+  const firstName = document.getElementById("importFirstName").value.trim().toLowerCase();
+  const lastName = document.getElementById("importLastName").value.trim().toLowerCase();
+  const dobRaw = document.getElementById("importDob").value.trim();
+  const dob = dobRaw ? new Date(dobRaw).toLocaleDateString("en-US", { month: "2-digit", day: "2-digit", year: "numeric" }) : "";
+
+  if (!mrn && !firstName && !lastName && !dob) return IMPORT_EHR_RESULTS;
+
+  return IMPORT_EHR_RESULTS.filter((patient) => {
+    if (mrn && !patient.mrn.toLowerCase().includes(mrn)) return false;
+    if (firstName && !patient.firstName.toLowerCase().includes(firstName)) return false;
+    if (lastName && !patient.lastName.toLowerCase().includes(lastName)) return false;
+    if (dob && patient.dob !== dob) return false;
+    return true;
+  });
+}
+
+function updateImportSelection() {
+  const rowChecks = importResultsList.querySelectorAll(".bill-checkbox");
+  const checkedCount = importResultsList.querySelectorAll(".bill-checkbox.checked").length;
+
+  importSelectedCount.textContent = `${checkedCount} selected`;
+  importSelectAll.classList.toggle("checked", rowChecks.length > 0 && checkedCount === rowChecks.length);
+
+  importPatientBtn.disabled = checkedCount === 0;
+  importPatientBtn.classList.toggle("enabled", checkedCount > 0);
+}
+
+function resetImportPatientForm() {
+  document.getElementById("importFirstName").value = "";
+  document.getElementById("importLastName").value = "";
+  document.getElementById("importMrn").value = "";
+  document.getElementById("importDob").value = "";
+  resetCustomSelectsIn(importPatientFormWrap);
+  importResultsList.innerHTML = "";
+  importResultsWrap.style.display = "none";
+  importResultsEmpty.style.display = "block";
+  importPatientBtn.disabled = true;
+  importPatientBtn.classList.remove("enabled");
+}
+
+function openImportPatientModal() {
+  resetImportPatientForm();
+  importPatientFormWrap.style.display = "block";
+  importPatientSuccessWrap.style.display = "none";
+  importPatientOverlay.classList.add("open");
+}
+
+function closeImportPatientModal() {
+  importPatientOverlay.classList.remove("open");
+}
+
+document.getElementById("cancelImportPatient").addEventListener("click", closeImportPatientModal);
+importPatientOverlay.addEventListener("click", (e) => { if (e.target === importPatientOverlay) closeImportPatientModal(); });
+
+importSearchBtn.addEventListener("click", () => {
+  importResultsList.innerHTML = "";
+  const matches = matchingImportResults();
+
+  if (matches.length === 0) {
+    importResultsWrap.style.display = "none";
+    importResultsEmpty.textContent = "No matching patient found in the connected EHR.";
+    importResultsEmpty.style.display = "flex";
+    updateImportSelection();
+    return;
+  }
+
+  matches.forEach((patient) => {
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td><span class="bill-checkbox"></span></td>
+      <td><span class="lt-name active-name">${patient.name}</span></td>
+      <td>${patient.mrn}</td>
+      <td>${patient.dob}</td>`;
+    row.addEventListener("click", () => {
+      row.querySelector(".bill-checkbox").classList.toggle("checked");
+      updateImportSelection();
+    });
+    importResultsList.appendChild(row);
+  });
+
+  importResultsEmpty.style.display = "none";
+  importResultsWrap.style.display = "block";
+  updateImportSelection();
+});
+
+importSelectAll.addEventListener("click", () => {
+  const willCheck = !importSelectAll.classList.contains("checked");
+  importResultsList.querySelectorAll(".bill-checkbox").forEach((box) => box.classList.toggle("checked", willCheck));
+  updateImportSelection();
+});
+
+importPatientBtn.addEventListener("click", () => {
+  if (importPatientBtn.disabled) return;
+  importPatientFormWrap.style.display = "none";
+  importPatientSuccessWrap.style.display = "block";
+});
+
+document.getElementById("closeImportPatientSuccess").addEventListener("click", closeImportPatientModal);
+
+/* ---------------- Row action dropdown (Edit / Update account / Reset password) ---------------- */
+const patientRowMenu = document.getElementById("patientRowMenu");
+let activeRowPatientId = null;
+
+function openRowMenuFor(id, trigger) {
+  activeRowPatientId = id;
+  const rect = trigger.getBoundingClientRect();
+  patientRowMenu.style.top = `${rect.bottom + 6}px`;
+  patientRowMenu.style.left = `${rect.right - 190}px`;
+  patientRowMenu.classList.add("open");
+}
+
+rows.addEventListener("click", (e) => {
+  const editBtn = e.target.closest('.action-icon[data-act="edit"]');
+  if (editBtn) {
+    const patient = patientList.find((p) => p.id === Number(editBtn.dataset.id));
+    if (patient) openEditPatientModal(patient);
+    return;
+  }
+
+  const trigger = e.target.closest(".row-menu-trigger");
+  if (!trigger) return;
+  e.stopPropagation();
+  openRowMenuFor(Number(trigger.dataset.id), trigger);
+});
+
+document.addEventListener("click", (e) => {
+  if (!patientRowMenu.contains(e.target)) patientRowMenu.classList.remove("open");
+});
+
+patientRowMenu.addEventListener("click", (e) => {
+  const item = e.target.closest(".row-menu-item");
+  if (!item || activeRowPatientId === null) return;
+  patientRowMenu.classList.remove("open");
+
+  const patient = patientList.find((p) => p.id === activeRowPatientId);
+  if (!patient) return;
+
+  if (item.dataset.action === "edit") openEditPatientModal(patient);
+  else if (item.dataset.action === "account") openUpdateAccountModal(patient);
+  else if (item.dataset.action === "reset") openResetPasswordModal(patient);
+});
+
+/* ---------------- Edit Patient modal ---------------- */
+const editPatientOverlay = document.getElementById("editPatientOverlay");
+const editPatientForm = document.getElementById("editPatientForm");
+const saveEditPatient = document.getElementById("saveEditPatient");
+const editPatientRequired = ["firstName", "lastName", "mrn", "email"];
+
+function validateEditPatientForm() {
+  const valid = editPatientRequired.every((name) => editPatientForm[name].value.trim() !== "");
+  saveEditPatient.disabled = !valid;
+  saveEditPatient.classList.toggle("enabled", valid);
+}
+
+editPatientForm.addEventListener("input", validateEditPatientForm);
+editPatientForm.addEventListener("change", validateEditPatientForm);
+
+function openEditPatientModal(patient) {
+  editPatientForm.reset();
+  resetCustomSelectsIn(editPatientForm);
+
+  const [firstName, ...rest] = patient.name.split(" ");
+  editPatientForm.firstName.value = firstName || "";
+  editPatientForm.lastName.value = rest.join(" ");
+  editPatientForm.mrn.value = patient.mrn || "";
+  editPatientForm.mobile.value = (patient.phone || "").replace(/^\d+-/, "");
+
+  validateEditPatientForm();
+  editPatientOverlay.classList.add("open");
+}
+
+function closeEditPatientModal() {
+  editPatientOverlay.classList.remove("open");
+}
+
+document.getElementById("cancelEditPatient").addEventListener("click", closeEditPatientModal);
+editPatientOverlay.addEventListener("click", (e) => { if (e.target === editPatientOverlay) closeEditPatientModal(); });
+
+editPatientForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  if (saveEditPatient.disabled) return;
+  closeEditPatientModal();
+});
+
+/* ---------------- Update Account modal ---------------- */
+const updateAccountOverlay = document.getElementById("updateAccountOverlay");
+const updateAccountSubtitle = document.getElementById("updateAccountSubtitle");
+const discontinueReasonField = document.getElementById("discontinueReasonField");
+const discontinueReason = document.getElementById("discontinueReason");
+const saveUpdateAccount = document.getElementById("saveUpdateAccount");
+const accountActionRadios = document.querySelectorAll('input[name="accountAction"]');
+
+function validateUpdateAccountForm() {
+  const selected = document.querySelector('input[name="accountAction"]:checked');
+  const valid = !!selected && (selected.value !== "Discontinued" || discontinueReason.value.trim() !== "");
+  saveUpdateAccount.disabled = !valid;
+  saveUpdateAccount.classList.toggle("enabled", valid);
+}
+
+accountActionRadios.forEach((radio) => {
+  radio.addEventListener("change", () => {
+    if (radio.checked) discontinueReasonField.style.display = radio.value === "Discontinued" ? "block" : "none";
+    validateUpdateAccountForm();
+  });
+});
+
+discontinueReason.addEventListener("input", validateUpdateAccountForm);
+
+function openUpdateAccountModal(patient) {
+  updateAccountSubtitle.textContent = `${patient.name} (${patient.username})`;
+  accountActionRadios.forEach((radio) => (radio.checked = false));
+  discontinueReasonField.style.display = "none";
+  discontinueReason.value = "";
+  validateUpdateAccountForm();
+  updateAccountOverlay.classList.add("open");
+}
+
+function closeUpdateAccountModal() {
+  updateAccountOverlay.classList.remove("open");
+}
+
+document.getElementById("cancelUpdateAccount").addEventListener("click", closeUpdateAccountModal);
+updateAccountOverlay.addEventListener("click", (e) => { if (e.target === updateAccountOverlay) closeUpdateAccountModal(); });
+
+saveUpdateAccount.addEventListener("click", () => {
+  if (saveUpdateAccount.disabled) return;
+  closeUpdateAccountModal();
+});
+
+/* ---------------- Reset Password modal ---------------- */
+const resetPasswordOverlay = document.getElementById("resetPasswordOverlay");
+const resetPasswordName = document.getElementById("resetPasswordName");
+
+function openResetPasswordModal(patient) {
+  resetPasswordName.textContent = patient.name;
+  resetPasswordOverlay.classList.add("open");
+}
+
+function closeResetPasswordModal() {
+  resetPasswordOverlay.classList.remove("open");
+}
+
+document.getElementById("cancelResetPassword").addEventListener("click", closeResetPasswordModal);
+resetPasswordOverlay.addEventListener("click", (e) => { if (e.target === resetPasswordOverlay) closeResetPasswordModal(); });
+document.getElementById("confirmResetPassword").addEventListener("click", closeResetPasswordModal);
