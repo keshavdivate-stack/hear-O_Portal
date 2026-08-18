@@ -619,6 +619,160 @@ body {
 
 .clear-filters:hover { color: #23272E; }
 
+.date-filter-btn,
+.checkbox-filter { position: relative; }
+
+.date-filter-btn .caret,
+.checkbox-filter .caret { transition: transform 150ms ease; }
+
+.date-filter-btn.open .caret,
+.checkbox-filter.open .caret { transform: rotate(180deg); }
+
+.calendar-popover,
+.checkbox-filter-menu {
+  display: none;
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 14px 34px rgba(20, 30, 50, 0.18);
+  z-index: 30;
+}
+
+.date-filter-btn.open .calendar-popover,
+.checkbox-filter.open .checkbox-filter-menu { display: block; }
+
+/* -- Calendar popover -- */
+.calendar-popover { width: 276px; padding: 14px; }
+
+.calendar-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.calendar-month-label {
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.3px;
+  color: #23272E;
+}
+
+.calendar-nav {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.calendar-nav-btn {
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #6B7684;
+}
+
+.calendar-nav-btn:hover { background: var(--gray-border); }
+
+.calendar-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: #9AA5B1;
+  margin-bottom: 2px;
+}
+
+.calendar-weekdays span { line-height: 22px; }
+
+.calendar-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-auto-rows: 30px;
+}
+
+.calendar-day {
+  width: 30px;
+  height: 30px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: #23272E;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.calendar-day:hover { background: var(--bg); }
+.calendar-day.muted { visibility: hidden; cursor: default; }
+.calendar-day.selected { background: var(--blue-light); color: var(--blue); }
+.calendar-day.today:not(.selected) { box-shadow: inset 0 0 0 1.5px var(--blue); }
+.calendar-day.disabled { color: #D5DAE0; cursor: not-allowed; }
+.calendar-day.disabled:hover { background: none; }
+
+.calendar-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 6px;
+  padding-top: 8px;
+  border-top: 1px solid var(--gray-border);
+}
+
+.calendar-footer-btn {
+  background: none;
+  border: none;
+  color: var(--blue);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 6px;
+}
+
+.calendar-footer-btn:hover { background: var(--blue-light); }
+.calendar-footer-btn[data-action="clear"] { color: var(--gray-text); }
+.calendar-footer-btn[data-action="clear"]:hover { background: var(--bg); }
+
+/* -- Checkbox filter menu (Action Type / Made By) -- */
+.checkbox-filter-menu {
+  width: 260px;
+  max-height: 280px;
+  overflow-y: auto;
+  padding: 8px;
+}
+
+.checkbox-filter-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 8px;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #23272E;
+  cursor: pointer;
+}
+
+.checkbox-filter-option:hover { background: var(--bg); }
+
+.checkbox-filter-option input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--blue);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
 .table-card {
   background: #fff;
   border: 1px solid var(--gray-border);
