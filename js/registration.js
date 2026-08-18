@@ -87,10 +87,28 @@ form.addEventListener("input", validateForm);
 form.addEventListener("change", validateForm);
 validateForm();
 
+const regFormWrap = document.getElementById("regFormWrap");
+const regSuccessPanel = document.getElementById("regSuccessPanel");
+const registerAnotherBtn = document.getElementById("registerAnotherBtn");
+
 form.addEventListener("submit", (e) => {
   e.preventDefault();
   if (submitBtn.disabled) return;
-  submitBtn.textContent = "Patient Registered";
+  regFormWrap.style.display = "none";
+  regSuccessPanel.style.display = "block";
+});
+
+registerAnotherBtn.addEventListener("click", () => {
+  form.reset();
+  document.getElementById("vitalsGrid")?.remove();
+  addVitalsBtn.style.display = "";
+  form.querySelectorAll(".custom-select").forEach((select) => {
+    const hiddenInput = select.querySelector("input[type=hidden]");
+    setCustomSelectValue(select, hiddenInput.dataset.default || "", { silent: true });
+  });
+  validateForm();
+  regSuccessPanel.style.display = "none";
+  regFormWrap.style.display = "";
 });
 
 /* ---------------- Add initial vitals ---------------- */
@@ -117,5 +135,84 @@ addVitalsBtn.addEventListener("click", () => {
 
   addVitalsBtn.insertAdjacentElement("afterend", vitalsGrid);
   addVitalsBtn.style.display = "none";
+});
+
+/* ---------------- Manual Entry / Import from EHR toggle ---------------- */
+const manualModeBtn = document.getElementById("manualModeBtn");
+const ehrModeBtn = document.getElementById("ehrModeBtn");
+const ehrImportPanel = document.getElementById("ehrImportPanel");
+
+manualModeBtn.addEventListener("click", () => {
+  manualModeBtn.classList.add("active");
+  ehrModeBtn.classList.remove("active");
+  form.style.display = "block";
+  ehrImportPanel.style.display = "none";
+});
+
+ehrModeBtn.addEventListener("click", () => {
+  ehrModeBtn.classList.add("active");
+  manualModeBtn.classList.remove("active");
+  form.style.display = "none";
+  ehrImportPanel.style.display = "block";
+});
+
+/* ---------------- Import from EHR: search + select + import ---------------- */
+const EHR_RESULTS = [
+  { name: "Sarah White", mrn: "ECW-88213", dob: "04/12/1958" },
+  { name: "Ben Carter", mrn: "ECW-40217", dob: "11/02/1946" },
+  { name: "John Doe", mrn: "ECW-40165", dob: "01/06/1957" }
+];
+
+const ehrSearchBtn = document.getElementById("ehrSearchBtn");
+const ehrResultsEmpty = document.getElementById("ehrResultsEmpty");
+const ehrResultsWrap = document.getElementById("ehrResultsWrap");
+const ehrResultsList = document.getElementById("ehrResultsList");
+const ehrSelectAll = document.getElementById("ehrSelectAll");
+const ehrSelectedCount = document.getElementById("ehrSelectedCount");
+const ehrImportBtn = document.getElementById("ehrImportBtn");
+
+function updateEhrSelection() {
+  const rowChecks = ehrResultsList.querySelectorAll(".bill-checkbox");
+  const checkedCount = ehrResultsList.querySelectorAll(".bill-checkbox.checked").length;
+
+  ehrSelectedCount.textContent = `${checkedCount} selected`;
+  ehrSelectAll.classList.toggle("checked", rowChecks.length > 0 && checkedCount === rowChecks.length);
+
+  ehrImportBtn.disabled = checkedCount === 0;
+  ehrImportBtn.classList.toggle("enabled", checkedCount > 0);
+}
+
+ehrSearchBtn.addEventListener("click", () => {
+  ehrResultsList.innerHTML = "";
+  EHR_RESULTS.forEach((patient) => {
+    const row = document.createElement("label");
+    row.className = "ehr-result-row";
+    row.innerHTML = `
+      <span class="bill-checkbox"></span>
+      <span class="ehr-result-info">
+        <span class="lt-name active-name">${patient.name}</span>
+        <span class="status-since">MRN ${patient.mrn} &middot; DOB ${patient.dob}</span>
+      </span>`;
+    row.addEventListener("click", () => {
+      row.querySelector(".bill-checkbox").classList.toggle("checked");
+      updateEhrSelection();
+    });
+    ehrResultsList.appendChild(row);
+  });
+
+  ehrResultsEmpty.style.display = "none";
+  ehrResultsWrap.style.display = "block";
+  updateEhrSelection();
+});
+
+ehrSelectAll.addEventListener("click", () => {
+  const willCheck = !ehrSelectAll.classList.contains("checked");
+  ehrResultsList.querySelectorAll(".bill-checkbox").forEach((box) => box.classList.toggle("checked", willCheck));
+  updateEhrSelection();
+});
+
+ehrImportBtn.addEventListener("click", () => {
+  if (ehrImportBtn.disabled) return;
+  ehrImportBtn.textContent = "Patient Imported";
 });
 

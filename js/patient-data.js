@@ -675,51 +675,6 @@ document.getElementById("medStatusFilter").addEventListener("change", (e) => {
   renderMeds();
 });
 
-/* ---------------- Records ---------------- */
-const records = [
-  { dir: "sent", name: "Heart Failure Action Plan.pdf", meta: "Sent to patient by Dr. Lior Klein &middot; 08/06/2026 &middot; 412 KB" },
-  { dir: "received", name: "Home BP readings — August.jpg", meta: "Received from Patient &middot; 08/04/2026 &middot; 1.2 MB" },
-  { dir: "sent", name: "Discharge Summary.pdf", meta: "Sent to patient by Ayelet Er, NP &middot; 07/19/2026 &middot; 876 KB" },
-  { dir: "received", name: "Medication list photo.jpg", meta: "Received from Patient &middot; 07/11/2026 &middot; 980 KB" },
-  { dir: "sent", name: "Low-sodium Diet Guide.pdf", meta: "Sent to patient by Sandy Kohl &middot; 06/28/2026 &middot; 1.5 MB" },
-];
-
-const recIconUp = `<svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M12 19V5M6 11L12 5L18 11" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
-const recIconDown = `<svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M6 13L12 19L18 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
-
-function renderRecords(list) {
-  document.getElementById("recordList").innerHTML = list
-    .map(
-      (r) => `
-      <div class="record-item">
-        <span class="record-icon ${r.dir === "sent" ? "sent" : "received"}">${r.dir === "sent" ? recIconUp : recIconDown}</span>
-        <div class="record-info">
-          <div class="record-name">${r.name}</div>
-          <div class="record-meta">${r.meta}</div>
-        </div>
-        <button class="btn-view">View</button>
-      </div>`
-    )
-    .join("");
-}
-
-document.getElementById("recordsCount").textContent = records.length;
-renderRecords(records);
-
-const recDirections = ["All directions", "Sent to patient", "Received from patient"];
-let recDirIdx = 0;
-document.getElementById("recordsDirBtn").addEventListener("click", () => {
-  recDirIdx = (recDirIdx + 1) % recDirections.length;
-  const label = recDirections[recDirIdx];
-  document.getElementById("recordsDirLabel").textContent = label;
-  const filtered = records.filter((r) => {
-    if (label === "Sent to patient") return r.dir === "sent";
-    if (label === "Received from patient") return r.dir === "received";
-    return true;
-  });
-  renderRecords(filtered);
-});
-
 /* ---------------- Clinical: collapsible sections ---------------- */
 document.querySelectorAll(".clinical-card .collapse-btn").forEach((btn) => {
   btn.addEventListener("click", () => {
@@ -729,7 +684,7 @@ document.querySelectorAll(".clinical-card .collapse-btn").forEach((btn) => {
   });
 });
 
-/* ---------------- Tabs: Recordings / Health Data / Clinical / Records ---------------- */
+/* ---------------- Tabs: Recordings / Health Data / Clinical ---------------- */
 document.querySelectorAll(".data-tab").forEach((tab) => {
   tab.addEventListener("click", () => {
     const target = tab.dataset.tab;
