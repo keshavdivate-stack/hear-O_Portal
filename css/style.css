@@ -1816,6 +1816,12 @@ body {
   margin-bottom: 16px;
 }
 
+.clinical-title-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .clinical-title {
   display: flex;
   align-items: center;

@@ -488,8 +488,6 @@ function dailyAdherence(missedIdx) {
   return chartDays.map((d, i) => !missedIdx.includes(i));
 }
 
-const EHR_BADGE_CLASS = { Epic: "ehr-epic", Athena: "ehr-athena", ECW: "ehr-ecw" };
-
 const medications = [
   {
     hf: true, name: "Furosemide", cls: "Loop diuretic", freq: "Daily", dose: "40 mg", schedule: "Once daily, morning",
@@ -533,12 +531,10 @@ const adhCheckIcon = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none
 const adhDashIcon = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M6 12H18" stroke="#9AA5B1" stroke-width="2.4" stroke-linecap="round"/></svg>`;
 
 let medStatusFilter = "all";
-let medEhrFilter = "all";
 
 function filteredMeds() {
   return medications.filter((m) => {
     if (medStatusFilter !== "all" && m.status !== medStatusFilter) return false;
-    if (medEhrFilter !== "all" && m.ehr !== medEhrFilter) return false;
     return true;
   });
 }
@@ -591,7 +587,6 @@ function renderMeds() {
             </div>
           </div>
           <div class="med-block-side">
-            <span class="ehr-badge ${m.ehr ? EHR_BADGE_CLASS[m.ehr] : "ehr-manual"}">${m.ehr || "Manual entry"}</span>
             <span class="source-badge ${m.srcClass}">${m.source}</span>
             <button class="btn-edit">Edit</button>
           </div>
@@ -655,11 +650,6 @@ renderMeds();
 
 document.getElementById("medStatusFilter").addEventListener("change", (e) => {
   medStatusFilter = e.target.value;
-  renderMeds();
-});
-
-document.getElementById("medEhrFilter").addEventListener("change", (e) => {
-  medEhrFilter = e.target.value;
   renderMeds();
 });
 
