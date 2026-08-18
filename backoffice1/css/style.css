@@ -1117,6 +1117,7 @@ body.bo-page-scroll .bo-page { overflow-y: auto; overflow-x: hidden; }
   background: #C9CFD6;
   border-radius: 999px;
   transition: background var(--transition);
+  pointer-events: none;
 }
 
 .bo-switch-track::after {
