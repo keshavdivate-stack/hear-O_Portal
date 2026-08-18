@@ -488,39 +488,88 @@ function dailyAdherence(missedIdx) {
   return chartDays.map((d, i) => !missedIdx.includes(i));
 }
 
+const EHR_BADGE_CLASS = { Epic: "ehr-epic", Athena: "ehr-athena", ECW: "ehr-ecw" };
+
 const medications = [
   {
     hf: true, name: "Furosemide", cls: "Loop diuretic", freq: "Daily", dose: "40 mg", schedule: "Once daily, morning",
-    warning: null, adherence: dailyAdherence([8, 21, 26, 30]), source: "Care rec", srcClass: "src-carerec",
+    warning: null, adherence: dailyAdherence([8, 21, 26, 30]), source: "Care rec", srcClass: "src-carerec", ehr: "Epic", status: "active",
+    medicationCode: "40054452", codeSystem: "RxNorm", ehrStatus: "Active", identifier: "MED-10293", dosageForm: "Tablet",
+    ingredient: "Furosemide", manufacturer: "Sandoz Inc.", amount: "40 mg", batch: "L2394A", expiry: "2027-03-15",
   },
   {
     hf: true, name: "Carvedilol", cls: "Beta blocker", freq: "Twice daily", dose: "6.25 mg", schedule: "Twice daily",
-    warning: null, adherence: dailyAdherence([5, 12, 19, 27]), source: "Clinic", srcClass: "src-clinic",
+    warning: null, adherence: dailyAdherence([5, 12, 19, 27]), source: "Clinic", srcClass: "src-clinic", ehr: "Epic", status: "active",
+    medicationCode: "20352", codeSystem: "RxNorm", ehrStatus: "Active", identifier: "MED-10344", dosageForm: "Tablet",
+    ingredient: "Carvedilol", manufacturer: "Teva Pharmaceuticals", amount: "6.25 mg", batch: "C8821B", expiry: "2026-11-02",
   },
   {
     hf: true, name: "Sacubitril/Valsartan", cls: "ARNI", freq: "Twice daily", dose: "49/51 mg", schedule: "Twice daily",
-    warning: "Monitor renal function with diuretic", adherence: dailyAdherence([2, 3, 9, 15, 22, 23, 28, 29]), source: "Clinic", srcClass: "src-clinic",
+    warning: "Monitor renal function with diuretic", adherence: dailyAdherence([2, 3, 9, 15, 22, 23, 28, 29]), source: "Clinic", srcClass: "src-clinic", ehr: "Athena", status: "active",
+    medicationCode: "1656339", codeSystem: "RxNorm", ehrStatus: "Active", identifier: "MED-10412", dosageForm: "Tablet",
+    ingredient: "Sacubitril / Valsartan", manufacturer: "Novartis", amount: "49/51 mg", batch: "S5510C", expiry: "2027-01-20",
   },
   {
     hf: true, name: "Spironolactone", cls: "MRA", freq: "Daily", dose: "25 mg", schedule: "Once daily",
-    warning: null, adherence: dailyAdherence([]), source: "Care rec", srcClass: "src-carerec",
+    warning: null, adherence: dailyAdherence([]), source: "Care rec", srcClass: "src-carerec", ehr: "Athena", status: "active",
+    medicationCode: "9997", codeSystem: "RxNorm", ehrStatus: "Active", identifier: "MED-10467", dosageForm: "Tablet",
+    ingredient: "Spironolactone", manufacturer: "Pfizer", amount: "25 mg", batch: "P1187D", expiry: "2026-09-30",
   },
   {
     hf: false, name: "Ibuprofen", cls: "NSAID (OTC)", freq: "As needed", dose: "200 mg", schedule: "As needed",
-    warning: "NSAIDs may worsen fluid retention in HF", adherence: dailyAdherence([1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29]), source: "Patient", srcClass: "src-patient",
+    warning: "NSAIDs may worsen fluid retention in HF", adherence: dailyAdherence([1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29]), source: "Patient", srcClass: "src-patient", ehr: null, status: "past",
+    medicationCode: "5640", codeSystem: "NDC", ehrStatus: "Inactive", identifier: "MED-09981", dosageForm: "Tablet",
+    ingredient: "Ibuprofen", manufacturer: "Generic OTC", amount: "200 mg", batch: "—", expiry: "2025-12-01",
   },
   {
     hf: true, name: "Atorvastatin", cls: "Statin", freq: "Daily", dose: "20 mg", schedule: "Once daily, evening",
-    warning: null, adherence: dailyAdherence([6, 14, 24]), source: "Clinic", srcClass: "src-clinic",
+    warning: null, adherence: dailyAdherence([6, 14, 24]), source: "Clinic", srcClass: "src-clinic", ehr: "ECW", status: "active",
+    medicationCode: "83367", codeSystem: "RxNorm", ehrStatus: "Active", identifier: "MED-10559", dosageForm: "Tablet",
+    ingredient: "Atorvastatin", manufacturer: "Mylan", amount: "20 mg", batch: "M4402E", expiry: "2027-05-08",
   },
 ];
 
 const adhCheckIcon = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 const adhDashIcon = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M6 12H18" stroke="#9AA5B1" stroke-width="2.4" stroke-linecap="round"/></svg>`;
 
+let medStatusFilter = "all";
+let medEhrFilter = "all";
+
+function filteredMeds() {
+  return medications.filter((m) => {
+    if (medStatusFilter !== "all" && m.status !== medStatusFilter) return false;
+    if (medEhrFilter !== "all" && m.ehr !== medEhrFilter) return false;
+    return true;
+  });
+}
+
+const medInfoIcon = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.7"/><rect x="11.2" y="10.3" width="1.6" height="6" rx="0.8" fill="currentColor"/><rect x="11.2" y="7" width="1.6" height="1.7" rx="0.8" fill="currentColor"/></svg>`;
+
+function medInfoRow(label, value) {
+  return `<div class="med-info-row"><span class="med-info-label">${label}</span><span class="med-info-value">${value || "—"}</span></div>`;
+}
+
+function medInfoPopover(m, mi) {
+  return `
+    <div class="med-info-popover" id="medInfoPop${mi}">
+      <p class="med-info-title">${m.name} &middot; EHR mapping</p>
+      ${medInfoRow("Medication Code", m.medicationCode)}
+      ${medInfoRow("Code System", m.codeSystem)}
+      ${medInfoRow("Status", m.ehrStatus)}
+      ${medInfoRow("Identifier", m.identifier)}
+      ${medInfoRow("Dosage Form", m.dosageForm)}
+      ${medInfoRow("Ingredient", m.ingredient)}
+      ${medInfoRow("Manufacturer", m.manufacturer)}
+      ${medInfoRow("Amount", m.amount)}
+      ${medInfoRow("Batch / Lot", m.batch)}
+      ${medInfoRow("Expiry", m.expiry)}
+    </div>`;
+}
+
 function renderMeds() {
+  const list = filteredMeds();
   document.getElementById("medCount").textContent = medications.length;
-  document.getElementById("medList").innerHTML = medications
+  document.getElementById("medList").innerHTML = list
     .map(
       (m, mi) => `
       <div class="med-block">
@@ -532,6 +581,8 @@ function renderMeds() {
                 <span class="med-name">${m.name}</span>
                 <span class="med-freq">${m.freq}</span>
               </div>
+              <button type="button" class="med-info-btn" data-med="${mi}" aria-label="View ${m.name} EHR mapping details">${medInfoIcon}</button>
+              ${medInfoPopover(m, mi)}
             </div>
             <div class="med-block-meta" style="margin-top:6px;">
               <span class="med-class">${m.cls}</span>
@@ -540,6 +591,7 @@ function renderMeds() {
             </div>
           </div>
           <div class="med-block-side">
+            <span class="ehr-badge ${m.ehr ? EHR_BADGE_CLASS[m.ehr] : "ehr-manual"}">${m.ehr || "Manual entry"}</span>
             <span class="source-badge ${m.srcClass}">${m.source}</span>
             <button class="btn-edit">Edit</button>
           </div>
@@ -563,7 +615,7 @@ function renderMeds() {
         <div class="chart-month-row" style="padding:0 40px;"><span>Dec</span><span>Jan</span></div>
       </div>`
     )
-    .join("");
+    .join("") || `<p class="empty-state-text">No medications match the selected filters.</p>`;
 
   document.querySelectorAll(".med-adh-prev, .med-adh-next").forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -572,63 +624,44 @@ function renderMeds() {
       row.scrollBy({ left: dir * 320, behavior: "smooth" });
     });
   });
+
+  document.querySelectorAll(".med-info-btn").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const pop = document.getElementById(`medInfoPop${btn.dataset.med}`);
+      const willOpen = !pop.classList.contains("open");
+      closeAllMedInfoPopovers();
+      if (willOpen) {
+        pop.classList.add("open");
+        btn.classList.add("active");
+      }
+    });
+  });
+
+  document.querySelectorAll(".med-info-popover").forEach((pop) => {
+    pop.addEventListener("click", (e) => e.stopPropagation());
+  });
 }
+
+function closeAllMedInfoPopovers() {
+  document.querySelectorAll(".med-info-popover.open").forEach((p) => p.classList.remove("open"));
+  document.querySelectorAll(".med-info-btn.active").forEach((b) => b.classList.remove("active"));
+}
+
+document.addEventListener("click", closeAllMedInfoPopovers);
+document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeAllMedInfoPopovers(); });
+
 renderMeds();
 
-/* ---------------- Clinical: Care Plan & Goals ---------------- */
-const goals = [
-  {
-    title: "Keep weight within 2 kg of dry weight",
-    desc: "Dry weight 80.5 kg &middot; current 81.4 kg",
-    badge: "On track", badgeClass: "badge-ontrack", fillClass: "fill-blue", pct: 78,
-    target: "Target: Ongoing",
-  },
-  {
-    title: "Record voice sample 6 days per week",
-    desc: "Averaging 2.5 of 6 days over the last 4 weeks",
-    badge: "At risk", badgeClass: "badge-atrisk", fillClass: "fill-orange", pct: 42,
-    target: "Target: Ongoing",
-  },
-  {
-    title: "Complete cardiac rehab sessions",
-    desc: "6 of 10 sessions attended",
-    badge: "On track", badgeClass: "badge-ontrack", fillClass: "fill-blue", pct: 60,
-    target: "Target: 31 Oct 2026",
-  },
-  {
-    title: "Reduce resting heart rate below 70 bpm",
-    desc: "Resting HR 68 bpm — sustained 30 days",
-    badge: "Achieved", badgeClass: "badge-achieved", fillClass: "fill-green", pct: 100,
-    target: "Target: Achieved",
-  },
-];
+document.getElementById("medStatusFilter").addEventListener("change", (e) => {
+  medStatusFilter = e.target.value;
+  renderMeds();
+});
 
-function renderGoals() {
-  document.getElementById("goalCount").textContent = goals.length;
-  document.getElementById("goalsList").innerHTML = goals
-    .map(
-      (g) => `
-      <div class="goal-item">
-        <div class="goal-top">
-          <div>
-            <h4 class="goal-title">${g.title}</h4>
-            <p class="goal-desc">${g.desc}</p>
-          </div>
-          <div class="goal-actions">
-            <span class="goal-badge ${g.badgeClass}">${g.badge}</span>
-            <button class="btn-edit">Edit</button>
-          </div>
-        </div>
-        <div class="goal-progress-track"><div class="goal-progress-fill ${g.fillClass}" style="width:${g.pct}%"></div></div>
-        <div class="goal-meta-row">
-          <span>${g.pct}% complete</span>
-          <span>${g.target}</span>
-        </div>
-      </div>`
-    )
-    .join("");
-}
-renderGoals();
+document.getElementById("medEhrFilter").addEventListener("change", (e) => {
+  medEhrFilter = e.target.value;
+  renderMeds();
+});
 
 /* ---------------- Records ---------------- */
 const records = [
@@ -767,7 +800,7 @@ const chatPanel = document.getElementById("chatPanel");
 document.getElementById("chatOpenBtn").addEventListener("click", () => chatPanel.classList.add("open"));
 document.getElementById("chatCloseBtn").addEventListener("click", () => chatPanel.classList.remove("open"));
 
-/* ---------------- Clinical: Add Medication / Recommendation / Care Goal modals ---------------- */
+/* ---------------- Clinical: Add Medication / Recommendation modals ---------------- */
 function wireAddModal(overlayId, formId, cancelId, openBtnId, onSubmit) {
   const overlay = document.getElementById(overlayId);
   const form = document.getElementById(formId);
@@ -794,17 +827,29 @@ function wireAddModal(overlayId, formId, cancelId, openBtnId, onSubmit) {
 }
 
 wireAddModal("addMedOverlay", "addMedForm", "cancelAddMed", "openAddMedBtn", (fd) => {
+  const ehrStatus = fd.get("status");
   medications.unshift({
-    hf: fd.get("hf") === "on",
+    hf: false,
     name: fd.get("name"),
-    cls: fd.get("cls"),
-    freq: fd.get("freq"),
-    dose: fd.get("dose"),
-    schedule: fd.get("freq"),
+    cls: fd.get("dosageForm") || "",
+    freq: "",
+    dose: "",
+    schedule: "",
     warning: null,
     adherence: dailyAdherence([]),
     source: "Clinic",
     srcClass: "src-clinic",
+    ehr: null,
+    status: ehrStatus === "Active" ? "active" : "past",
+    medicationCode: fd.get("medicationCode"),
+    codeSystem: fd.get("codeSystem"),
+    ehrStatus,
+    identifier: fd.get("identifier"),
+    dosageForm: fd.get("dosageForm"),
+    ingredient: fd.get("name"),
+    manufacturer: fd.get("manufacturer"),
+    batch: null,
+    expiry: null,
   });
   renderMeds();
 });
@@ -824,21 +869,4 @@ wireAddModal("addRecOverlay", "addRecForm", "cancelAddRec", "openAddRecBtn", (fd
     note: "Just added",
   });
   renderCareRecs();
-});
-
-const GOAL_BADGE_CLASS = { "On track": "badge-ontrack", "At risk": "badge-atrisk", Achieved: "badge-achieved" };
-const GOAL_FILL_CLASS = { "On track": "fill-blue", "At risk": "fill-orange", Achieved: "fill-green" };
-const GOAL_PCT = { "On track": 50, "At risk": 25, Achieved: 100 };
-wireAddModal("addGoalOverlay", "addGoalForm", "cancelAddGoal", "openAddGoalBtn", (fd) => {
-  const badge = fd.get("badge");
-  goals.unshift({
-    title: fd.get("title"),
-    desc: fd.get("desc"),
-    badge,
-    badgeClass: GOAL_BADGE_CLASS[badge],
-    fillClass: GOAL_FILL_CLASS[badge],
-    pct: GOAL_PCT[badge],
-    target: fd.get("target") || "Target: Ongoing",
-  });
-  renderGoals();
 });

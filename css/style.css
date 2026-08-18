@@ -1968,6 +1968,31 @@ body {
 .pill-dot { width: 8px; height: 8px; border-radius: 2px; background: var(--red); display: inline-block; }
 .pill-pending { background: #FDF3E7; color: #C77B22; }
 
+.med-filters-row { display: flex; gap: 10px; margin-bottom: 18px; flex-wrap: wrap; }
+
+.med-filter-select-wrap { position: relative; display: inline-flex; }
+
+.med-filter-select {
+  appearance: none;
+  -webkit-appearance: none;
+  background: var(--blue-light);
+  border: none;
+  border-radius: 10px;
+  padding: 10px 34px 10px 16px;
+  font-size: 13.5px;
+  font-weight: 600;
+  font-family: inherit;
+  color: #23272E;
+  cursor: pointer;
+  outline: none;
+}
+
+.med-filter-select:hover { background: #DCEEF8; }
+
+.med-filter-caret { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); pointer-events: none; }
+
+.empty-state-text { padding: 24px 0; text-align: center; color: #7E8993; font-size: 13.5px; }
+
 .med-table { width: 100%; border-collapse: collapse; min-width: 900px; }
 
 .med-table thead th {
@@ -1988,7 +2013,65 @@ body {
 
 .med-table tbody tr:last-child td { border-bottom: none; }
 
-.med-name-row { display: flex; align-items: stretch; gap: 10px; }
+.med-name-row { display: flex; align-items: stretch; gap: 10px; position: relative; }
+
+.med-info-btn {
+  align-self: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: none;
+  background: var(--blue-light);
+  color: var(--blue);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background-color 0.12s ease, box-shadow 0.12s ease;
+}
+
+.med-info-btn svg { width: 16px; height: 16px; }
+
+.med-info-btn:hover,
+.med-info-btn.active { background: #DCEEF8; box-shadow: 0 0 0 3px var(--blue-light); }
+
+.med-info-popover {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 8px;
+  width: 300px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 16px 40px rgba(20, 30, 50, 0.18);
+  padding: 14px 16px;
+  z-index: 40;
+}
+
+.med-info-popover.open { display: block; }
+
+.med-info-title {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #23272E;
+  margin: 0 0 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--gray-border);
+}
+
+.med-info-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 5px 0;
+  font-size: 12.5px;
+}
+
+.med-info-label { color: #7E8993; font-weight: 600; white-space: nowrap; }
+.med-info-value { color: #23272E; font-weight: 600; text-align: right; }
 .med-bar { width: 3px; border-radius: 2px; flex-shrink: 0; }
 .med-bar.hf { background: var(--red); }
 .med-bar.other { background: transparent; }
@@ -2020,6 +2103,13 @@ body {
 .src-carerec { background: var(--blue-light); color: var(--blue); }
 .src-clinic { background: #EEF0F3; color: #57626D; }
 .src-patient { background: #FDF0DE; color: #C77B22; }
+
+.ehr-badge { display: inline-flex; align-items: center; gap: 5px; padding: 5px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; white-space: nowrap; border: 1px solid transparent; }
+.ehr-badge::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.ehr-epic { background: #F0EAFB; color: #7C4FD1; }
+.ehr-athena { background: #E7F7F0; color: #22916A; }
+.ehr-ecw { background: #FDEDED; color: #E0555E; }
+.ehr-manual { background: #F1F2F4; color: #7E8993; }
 
 /* -- Medications: per-drug scrollable adherence timeline -- */
 .med-list { display: flex; flex-direction: column; }
@@ -2398,6 +2488,10 @@ body {
 .form-field input::placeholder { color: #AEB4BC; }
 
 .phone-field { display: flex; gap: 8px; }
+
+.med-code-field { display: flex; gap: 8px; }
+.med-code-field .med-code-system { width: 110px; flex-shrink: 0; }
+.med-code-field input[type="text"] { flex: 1; }
 
 .country-code {
   width: 76px;
@@ -2785,6 +2879,13 @@ body {
   margin-bottom: 22px;
 }
 
+.reg-section-label {
+  font-size: 14px;
+  font-weight: 700;
+  color: #23272E;
+  margin: 0 0 14px;
+}
+
 .reg-field label {
   display: block;
   font-size: 13.5px;
@@ -2845,7 +2946,7 @@ body {
 }
 
 .reg-add-vitals {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   gap: 8px;
   background: none;
@@ -2855,8 +2956,10 @@ body {
   font-weight: 600;
   cursor: pointer;
   padding: 0;
-  margin-bottom: 40px;
+  margin-bottom: 16px;
 }
+
+.reg-add-vitals:last-of-type { margin-bottom: 40px; }
 
 .reg-add-vitals:hover { text-decoration: underline; }
 

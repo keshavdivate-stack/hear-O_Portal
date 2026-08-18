@@ -237,6 +237,64 @@
               </div>
             </div>
 
+            <p class="reg-section-label">Emergency Contact</p>
+            <div class="reg-grid">
+              <div class="reg-field">
+                <label>Relationship</label>
+                <div class="custom-select reg-select" data-name="ecRelationship">
+                  <button type="button" class="custom-select-trigger">
+                    <span class="custom-select-value placeholder">Select...</span>
+                    <svg class="custom-select-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                  </button>
+                  <div class="custom-select-menu">
+                    <div class="custom-select-option" data-value="Spouse">Spouse<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    <div class="custom-select-option" data-value="Parent">Parent<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    <div class="custom-select-option" data-value="Child">Child<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    <div class="custom-select-option" data-value="Sibling">Sibling<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    <div class="custom-select-option" data-value="Friend">Friend<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    <div class="custom-select-option" data-value="Other">Other<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                  </div>
+                  <input type="hidden" name="ecRelationship" />
+                </div>
+              </div>
+              <div class="reg-field">
+                <label>First name</label>
+                <input type="text" name="ecFirstName" placeholder="First name" />
+              </div>
+              <div class="reg-field">
+                <label>Last name</label>
+                <input type="text" name="ecLastName" placeholder="Last name" />
+              </div>
+              <div class="reg-field">
+                <label>Email</label>
+                <input type="email" name="ecEmail" placeholder="you@email.com" />
+              </div>
+              <div class="reg-field">
+                <label>Phone</label>
+                <input type="tel" name="ecPhone" placeholder="(904) 555-0123" />
+              </div>
+            </div>
+
+            <p class="reg-section-label">Add Care Team</p>
+            <div class="reg-grid">
+              <div class="reg-field">
+                <label>Provider</label>
+                <div class="custom-select reg-select" data-name="careTeamProvider">
+                  <button type="button" class="custom-select-trigger">
+                    <span class="custom-select-value placeholder">Select provider</span>
+                    <svg class="custom-select-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                  </button>
+                  <div class="custom-select-menu">
+                    <div class="custom-select-option" data-value="Dr. Sarah Mitchell">Dr. Sarah Mitchell<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    <div class="custom-select-option" data-value="Dr. James Carter">Dr. James Carter<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    <div class="custom-select-option" data-value="Dr. Emily Chen">Dr. Emily Chen<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    <div class="custom-select-option" data-value="Dr. Michael Reyes">Dr. Michael Reyes<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                  </div>
+                  <input type="hidden" name="careTeamProvider" />
+                </div>
+              </div>
+            </div>
+
             <div class="reg-note">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#23272E" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 8V13" stroke-linecap="round"/><circle cx="12" cy="16" r="1" fill="#23272E" stroke="none"/></svg>
               Please advise patient to inform clinic of any HF worsening during baseline

@@ -34,30 +34,32 @@ function positionCustomSelectMenu(select) {
   menu.style.bottom = openUpward ? `${window.innerHeight - rect.top + 6}px` : "auto";
 }
 
-function initCustomSelects() {
-  document.querySelectorAll(".custom-select").forEach((select) => {
-    const trigger = select.querySelector(".custom-select-trigger");
-    const valueEl = select.querySelector(".custom-select-value");
-    const hiddenInput = select.querySelector("input[type=hidden]");
+function wireCustomSelect(select) {
+  const trigger = select.querySelector(".custom-select-trigger");
+  const valueEl = select.querySelector(".custom-select-value");
+  const hiddenInput = select.querySelector("input[type=hidden]");
 
-    valueEl.dataset.placeholder = valueEl.textContent.trim();
-    hiddenInput.dataset.default = hiddenInput.value;
+  valueEl.dataset.placeholder = valueEl.textContent.trim();
+  hiddenInput.dataset.default = hiddenInput.value;
 
-    trigger.addEventListener("click", (e) => {
-      e.stopPropagation();
-      const willOpen = !select.classList.contains("open");
-      document.querySelectorAll(".custom-select.open").forEach((s) => s.classList.remove("open"));
-      if (willOpen) positionCustomSelectMenu(select);
-      select.classList.toggle("open", willOpen);
-    });
-
-    select.addEventListener("click", (e) => {
-      const option = e.target.closest(".custom-select-option");
-      if (!option) return;
-      setCustomSelectValue(select, option.dataset.value);
-      select.classList.remove("open");
-    });
+  trigger.addEventListener("click", (e) => {
+    e.stopPropagation();
+    const willOpen = !select.classList.contains("open");
+    document.querySelectorAll(".custom-select.open").forEach((s) => s.classList.remove("open"));
+    if (willOpen) positionCustomSelectMenu(select);
+    select.classList.toggle("open", willOpen);
   });
+
+  select.addEventListener("click", (e) => {
+    const option = e.target.closest(".custom-select-option");
+    if (!option) return;
+    setCustomSelectValue(select, option.dataset.value);
+    select.classList.remove("open");
+  });
+}
+
+function initCustomSelects(root = document) {
+  root.querySelectorAll(".custom-select").forEach(wireCustomSelect);
 
   document.addEventListener("click", closeAllCustomSelects);
   document.addEventListener("scroll", closeAllCustomSelects, true);
@@ -116,3 +118,4 @@ addVitalsBtn.addEventListener("click", () => {
   addVitalsBtn.insertAdjacentElement("afterend", vitalsGrid);
   addVitalsBtn.style.display = "none";
 });
+

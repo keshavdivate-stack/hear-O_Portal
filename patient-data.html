@@ -524,6 +524,23 @@
                     Medications <span class="count-pill" id="medCount"></span>
                   </h3>
                   <div class="clinical-head-actions">
+                    <div class="med-filter-select-wrap">
+                      <select class="med-filter-select" id="medStatusFilter">
+                        <option value="all">All medication</option>
+                        <option value="active">Active medication</option>
+                        <option value="past">Past medication</option>
+                      </select>
+                      <svg class="med-filter-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#6B7684" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                    </div>
+                    <div class="med-filter-select-wrap">
+                      <select class="med-filter-select" id="medEhrFilter">
+                        <option value="all">All EHR</option>
+                        <option value="Epic">Epic</option>
+                        <option value="Athena">Athena</option>
+                        <option value="ECW">ECW</option>
+                      </select>
+                      <svg class="med-filter-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#6B7684" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                    </div>
                     <a href="#" class="clinical-add-link" id="openAddMedBtn">
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
                       Add medication
@@ -563,28 +580,6 @@
                 </div>
                 <div class="clinical-body">
                   <div class="care-rec-list" id="careRecList"></div>
-                </div>
-              </div>
-
-              <!-- Care Plan & Goals -->
-              <div class="clinical-card">
-                <div class="clinical-head-row">
-                  <h3 class="clinical-title">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#23272E" stroke-width="1.7"/><circle cx="12" cy="12" r="5" stroke="#23272E" stroke-width="1.7"/><circle cx="12" cy="12" r="1.4" fill="#23272E"/></svg>
-                    Care Plan &amp; Goals <span class="count-pill" id="goalCount"></span>
-                  </h3>
-                  <div class="clinical-head-actions">
-                    <a href="#" class="clinical-add-link" id="openAddGoalBtn">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-                      Set care goal
-                    </a>
-                    <button class="collapse-btn" aria-label="Collapse Care Plan & Goals">
-                      <svg class="collapse-icon" width="16" height="16" viewBox="0 0 24 24" fill="none"><polyline points="6 9 12 15 18 9" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                    </button>
-                  </div>
-                </div>
-                <div class="clinical-body">
-                  <div class="goals-list" id="goalsList"></div>
                 </div>
               </div>
 
@@ -672,32 +667,64 @@
       <h2>Add Medication</h2>
       <form id="addMedForm">
         <div class="form-field">
-          <label>Medication name<span class="required-star">*</span></label>
-          <input type="text" name="name" placeholder="e.g. Furosemide" required />
+          <label>Medication Name<span class="required-star">*</span></label>
+          <input type="text" name="name" placeholder="Search medication..." required />
         </div>
         <div class="form-field">
-          <label>Class<span class="required-star">*</span></label>
-          <input type="text" name="cls" placeholder="e.g. Loop diuretic" required />
+          <label>Medication Code<span class="required-star">*</span></label>
+          <div class="med-code-field">
+            <select class="select-input med-code-system" name="codeSystem" required>
+              <option value="RxNorm">RxNorm</option>
+              <option value="NDC">NDC</option>
+              <option value="SNOMED">SNOMED</option>
+            </select>
+            <input type="text" name="medicationCode" placeholder="Code" required />
+          </div>
         </div>
         <div class="form-field">
-          <label>Dose<span class="required-star">*</span></label>
-          <input type="text" name="dose" placeholder="e.g. 40 mg" required />
-        </div>
-        <div class="form-field">
-          <label>Frequency</label>
-          <select class="select-input" name="freq">
-            <option>Once daily</option>
-            <option>Twice daily</option>
-            <option>Weekly</option>
-            <option>As needed</option>
+          <label>Dosage Form</label>
+          <select class="select-input" name="dosageForm">
+            <option value="" disabled selected>Select dosage form</option>
+            <option value="Tablet">Tablet</option>
+            <option value="Capsule">Capsule</option>
+            <option value="Liquid">Liquid</option>
+            <option value="Injection">Injection</option>
+            <option value="Topical">Topical</option>
+            <option value="Inhaler">Inhaler</option>
+            <option value="Patch">Patch</option>
+            <option value="Suppository">Suppository</option>
+            <option value="Other">Other</option>
           </select>
         </div>
         <div class="form-field">
-          <label class="checkbox-field"><input type="checkbox" name="hf" checked /> HF medication</label>
+          <label>Status<span class="required-star">*</span></label>
+          <select class="select-input" name="status" required>
+            <option value="Active">Active</option>
+            <option value="Inactive">Inactive</option>
+            <option value="Entered in Error">Entered in Error</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label>Identifier</label>
+          <input type="text" name="identifier" placeholder="Enter identifier" />
+        </div>
+        <div class="form-field">
+          <label>Manufacturer</label>
+          <select class="select-input" name="manufacturer">
+            <option value="" disabled selected>Select manufacturer</option>
+            <option value="Pfizer">Pfizer</option>
+            <option value="Novartis">Novartis</option>
+            <option value="Teva Pharmaceuticals">Teva Pharmaceuticals</option>
+            <option value="Sandoz Inc.">Sandoz Inc.</option>
+            <option value="Mylan">Mylan</option>
+            <option value="GlaxoSmithKline">GlaxoSmithKline</option>
+            <option value="AstraZeneca">AstraZeneca</option>
+            <option value="Other">Other</option>
+          </select>
         </div>
         <div class="modal-actions">
           <button type="button" class="btn-text" id="cancelAddMed">Cancel</button>
-          <button type="submit" class="btn-save">Save</button>
+          <button type="submit" class="btn-save">Add Medication</button>
         </div>
       </form>
     </div>
@@ -725,39 +752,6 @@
         </div>
         <div class="modal-actions">
           <button type="button" class="btn-text" id="cancelAddRec">Cancel</button>
-          <button type="submit" class="btn-save">Save</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- Set Care Goal modal -->
-  <div class="modal-overlay" id="addGoalOverlay">
-    <div class="modal">
-      <h2>Set Care Goal</h2>
-      <form id="addGoalForm">
-        <div class="form-field">
-          <label>Goal<span class="required-star">*</span></label>
-          <input type="text" name="title" placeholder="e.g. Keep weight within 2 kg of dry weight" required />
-        </div>
-        <div class="form-field">
-          <label>Description<span class="required-star">*</span></label>
-          <input type="text" name="desc" placeholder="e.g. Dry weight 80.5 kg" required />
-        </div>
-        <div class="form-field">
-          <label>Target</label>
-          <input type="text" name="target" placeholder="e.g. Target: 31 Oct 2026" />
-        </div>
-        <div class="form-field">
-          <label>Status</label>
-          <select class="select-input" name="badge">
-            <option>On track</option>
-            <option>At risk</option>
-            <option>Achieved</option>
-          </select>
-        </div>
-        <div class="modal-actions">
-          <button type="button" class="btn-text" id="cancelAddGoal">Cancel</button>
           <button type="submit" class="btn-save">Save</button>
         </div>
       </form>
