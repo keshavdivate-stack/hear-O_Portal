@@ -2759,15 +2759,15 @@ body {
    REGISTRATION PAGE
    ============================================================ */
 .reg-content {
-  padding: 4px 32px 40px;
-  display: flex;
-  justify-content: center;
+  padding: 4px 32px 12px;
 }
 
 .reg-card {
   width: 100%;
-  max-width: 980px;
-  padding: 24px 0 0;
+  min-height: calc(100vh - 92px);
+  background: #fff;
+  border-radius: 16px;
+  padding: 22px 28px 28px;
 }
 
 .reg-title {
