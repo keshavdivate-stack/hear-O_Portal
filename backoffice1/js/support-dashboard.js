@@ -77,15 +77,12 @@ document.getElementById("supDashSeverityChips").innerHTML = SEVERITIES.map((sev)
    6-row rollup fits this panel, while the granular issue type breakdown is
    available by filtering the ticket list itself (js/support.js). */
 const supDashCategoryColors = {
+  Compliance: "var(--purple)",
   "Voice Engine": "var(--orange)",
-  "Sensor / SDK": "var(--yellow)",
-  Sync: "var(--blue)",
-  "App Version / OS": "var(--cyan)",
-  "Recording Failure": "var(--red)",
-  "Login / Auth / OTP": "var(--navy)",
-  Billing: "var(--purple)",
-  "Data / EHR Integration": "var(--green)",
-  Other: "var(--gray)",
+  Sensors: "var(--yellow)",
+  "Patient (Mobile/Web)": "var(--blue)",
+  "Clinic Users (Security)": "var(--navy)",
+  "System Schedule Engine": "var(--gray)",
 };
 
 document.getElementById("supDashIssueChips").innerHTML = CATEGORIES.map((category) => {
