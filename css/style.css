@@ -3472,7 +3472,9 @@ body {
 
 .btn-secondary:hover { background: var(--blue-light); }
 
-.btn-secondary.icon-only { padding: 10px; margin-right: 12px; }
+.btn-secondary.icon-only { padding: 10px; }
+
+#scheduleBillingReportBtn { margin-left: 0; }
 
 .bill-checkbox {
   display: inline-block;
