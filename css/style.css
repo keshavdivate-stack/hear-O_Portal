@@ -3548,13 +3548,10 @@ body {
 .ehr-visual-desc { font-size: 14px; color: rgba(255,255,255,0.72); line-height: 1.6; max-width: 360px; margin: 0 auto; }
 
 .ehr-brand-lockup { display: flex; align-items: center; gap: 10px; margin-bottom: 36px; }
-.ehr-brand-mark {
-  width: 38px; height: 38px; border-radius: 10px;
-  background: var(--blue-light); color: var(--blue);
-  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-}
-.ehr-brand-name { font-size: 14px; font-weight: 800; letter-spacing: 0.3px; color: #23272E; }
 .ehr-brand-sub { font-size: 11px; color: var(--gray-text); }
+
+.ehr-brand-lockup-logo { flex-direction: column; align-items: flex-start; gap: 6px; }
+.ehr-brand-logo { height: 26px; width: auto; display: block; }
 
 .ehr-res-note { font-size: 11px; color: var(--gray-text); margin-top: 20px; text-align: center; }
 
