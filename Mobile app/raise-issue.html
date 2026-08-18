@@ -19,41 +19,31 @@
     </div>
 
     <div class="bp-header">
-      <button type="button" class="back-btn" onclick="window.location.href='contact-us.html'">
+      <button type="button" class="back-btn" id="issueBackBtn">
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M12.5 4L6.5 10L12.5 16" stroke="#2b2b2b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
       <h1>Raise an Issue</h1>
     </div>
 
-    <div class="issue-body">
-      <p class="issue-label">What's the problem?</p>
+    <!-- STEP 1: Category selection -->
+    <div class="issue-body" id="categoryStep">
+      <p class="issue-label">What can we help you with?</p>
+      <div id="categoryList"></div>
+    </div>
 
-      <button type="button" class="issue-option" data-value="App not working">
-        <span class="radio-circle"></span>
-        <span>App is not working</span>
-      </button>
-      <button type="button" class="issue-option" data-value="Recording problem">
-        <span class="radio-circle"></span>
-        <span>Trouble recording or uploading</span>
-      </button>
-      <button type="button" class="issue-option" data-value="Login or account issue">
-        <span class="radio-circle"></span>
-        <span>Login or account issue</span>
-      </button>
-      <button type="button" class="issue-option" data-value="Device problem">
-        <span class="radio-circle"></span>
-        <span>Device problem</span>
-      </button>
-      <button type="button" class="issue-option" data-value="Something else">
-        <span class="radio-circle"></span>
-        <span>Something else</span>
-      </button>
+    <!-- STEP 2: Specific issue selection + details -->
+    <div class="issue-body" id="issueStep" style="display:none">
+      <p class="issue-label">What seems to be the problem?</p>
+      <div class="issue-category-chip" id="issueCategoryChip"></div>
+      <div class="issue-group-card" id="issueList"></div>
 
-      <p class="issue-details-label">Add details (optional)</p>
-      <textarea class="issue-textarea" id="issueDetails" placeholder="Tell us a bit more..."></textarea>
+      <div id="detailsSection" style="display:none">
+        <p class="issue-details-label">Add details (optional)</p>
+        <textarea class="issue-textarea" id="issueDetails" placeholder="Tell us a bit more..."></textarea>
 
-      <div class="issue-submit-wrap">
-        <button type="button" class="bp-save-btn" id="submitBtn" onclick="handleSubmit()">Submit Issue</button>
+        <div class="issue-submit-wrap">
+          <button type="button" class="bp-save-btn" id="submitBtn" onclick="handleSubmit()">Submit Issue</button>
+        </div>
       </div>
     </div>
 
@@ -71,17 +61,173 @@
   </div>
 
 <script>
-  let selectedIssue = null;
-  const options = document.querySelectorAll(".issue-option");
+  // Category -> the 4 category-specific issues. "Something else" is appended to every category.
+  const ISSUE_CATEGORIES = [
+    {
+      id: "app-not-working",
+      label: "App is not working",
+      issues: [
+        "App is not opening",
+        "App is not working as expected",
+        "App is not loading properly",
+        "App configuration seems incorrect"
+      ]
+    },
+    {
+      id: "recording-uploading",
+      label: "Recording or uploading",
+      issues: [
+        "Trouble recording",
+        "Recording stopped unexpectedly",
+        "Recording was not uploaded",
+        "Recording/upload is not working"
+      ]
+    },
+    {
+      id: "recording-results",
+      label: "Recording results",
+      issues: [
+        "Recording results are missing",
+        "Recording results are incomplete",
+        "Breath results are missing",
+        "Recording analysis is not showing"
+      ]
+    },
+    {
+      id: "sensors-measurements",
+      label: "Sensors or measurements",
+      issues: [
+        "Sensors are not uploading",
+        "Measurements are missing",
+        "I can't enter my measurements",
+        "Sensor/measurement data is not updating"
+      ]
+    },
+    {
+      id: "medication",
+      label: "Medication",
+      issues: [
+        "I can't enter my medication",
+        "My medication entry is missing",
+        "My medication information is incorrect",
+        "Medication tracking is not working"
+      ]
+    },
+    {
+      id: "clinical-questions",
+      label: "Clinical questions",
+      issues: [
+        "I can't answer the clinical questions",
+        "Clinical questions are not showing",
+        "My answers are not being saved",
+        "Clinical questions are not working correctly"
+      ]
+    },
+    {
+      id: "language",
+      label: "Language",
+      issues: [
+        "I can't change the language",
+        "The wrong language is showing",
+        "Some content is in the wrong language",
+        "Language is not working correctly"
+      ]
+    },
+    {
+      id: "progress-stuck",
+      label: "My progress is stuck",
+      issues: [
+        "I'm stuck in the current step",
+        "My progress is not updating",
+        "My status is not changing",
+        "I can't move to the next step"
+      ]
+    }
+  ];
+  const SOMETHING_ELSE = "Something else";
+
+  const categoryStep = document.getElementById("categoryStep");
+  const issueStep = document.getElementById("issueStep");
+  const categoryListEl = document.getElementById("categoryList");
+  const issueListEl = document.getElementById("issueList");
+  const issueCategoryChip = document.getElementById("issueCategoryChip");
+  const detailsSection = document.getElementById("detailsSection");
+  const issueBackBtn = document.getElementById("issueBackBtn");
   const submitBtn = document.getElementById("submitBtn");
 
-  options.forEach((opt) => {
-    opt.addEventListener("click", () => {
-      options.forEach((o) => o.classList.remove("selected"));
-      opt.classList.add("selected");
-      selectedIssue = opt.dataset.value;
-      submitBtn.classList.toggle("enabled", !!selectedIssue);
+  let selectedCategory = null;
+  let selectedIssue = null;
+
+  function makeCategoryOption(label, value) {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "issue-option";
+    btn.dataset.value = value;
+    btn.innerHTML = '<span class="radio-circle"></span><span></span>';
+    btn.querySelector("span:last-child").textContent = label;
+    return btn;
+  }
+
+  function makeIssueRow(label) {
+    const row = document.createElement("button");
+    row.type = "button";
+    row.className = "issue-row";
+    row.dataset.value = label;
+    row.innerHTML =
+      '<span class="issue-row-label"></span>' +
+      '<span class="check-indicator"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M4 12.5L9.5 18L20 6" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>';
+    row.querySelector(".issue-row-label").textContent = label;
+    return row;
+  }
+
+  function renderCategories() {
+    categoryListEl.innerHTML = "";
+    ISSUE_CATEGORIES.forEach((cat) => {
+      const opt = makeCategoryOption(cat.label, cat.id);
+      opt.addEventListener("click", () => selectCategory(cat));
+      categoryListEl.appendChild(opt);
     });
+  }
+
+  function selectCategory(cat) {
+    selectedCategory = cat;
+    selectedIssue = null;
+    issueCategoryChip.textContent = cat.label;
+    renderIssues(cat);
+    categoryStep.style.display = "none";
+    issueStep.style.display = "block";
+    detailsSection.style.display = "none";
+    submitBtn.classList.remove("enabled");
+  }
+
+  function renderIssues(cat) {
+    issueListEl.innerHTML = "";
+    const options = [...cat.issues, SOMETHING_ELSE];
+    options.forEach((label) => {
+      const row = makeIssueRow(label);
+      row.addEventListener("click", () => selectIssue(row, label));
+      issueListEl.appendChild(row);
+    });
+  }
+
+  function selectIssue(rowEl, label) {
+    issueListEl.querySelectorAll(".issue-row").forEach((o) => o.classList.remove("selected"));
+    rowEl.classList.add("selected");
+    selectedIssue = label;
+    detailsSection.style.display = "block";
+    submitBtn.classList.add("enabled");
+  }
+
+  issueBackBtn.addEventListener("click", () => {
+    if (issueStep.style.display !== "none") {
+      // Back from Step 2 -> Step 1
+      issueStep.style.display = "none";
+      categoryStep.style.display = "block";
+      selectedCategory = null;
+      selectedIssue = null;
+    } else {
+      window.location.href = "contact-us.html";
+    }
   });
 
   function handleSubmit() {
@@ -92,6 +238,8 @@
   document.getElementById("modalOkBtn").addEventListener("click", () => {
     window.location.href = "contact-us.html";
   });
+
+  renderCategories();
 </script>
 </body>
 </html>
