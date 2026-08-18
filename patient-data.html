@@ -183,7 +183,7 @@
                 Priority
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M5 21V4" stroke="#F16C6C" stroke-width="1.8" stroke-linecap="round"/><path d="M5 4H16L13.5 8L16 12H5" stroke="#F16C6C" stroke-width="1.8" stroke-linejoin="round"/></svg>
               </span>
-              <button class="btn-care">Care Recommendation</button>
+              <button class="btn-care" id="openCareRecBtn">Care Recommendation</button>
             </div>
           </div>
 
@@ -746,6 +746,40 @@
       </form>
     </div>
   </div>
+
+  <!-- Care Recommendation modal -->
+  <div class="modal-overlay" id="careRecOverlay">
+    <div class="modal">
+      <h2>Care Recommendation</h2>
+      <form id="careRecForm">
+        <div class="form-field">
+          <label>Change Diuretics</label>
+          <div class="dosage-duration-row">
+            <div class="dosage-duration-field">
+              <label class="sub-label">Dosage</label>
+              <div class="unit-input"><input type="number" name="dosage" step="1" min="0" /><span>%</span></div>
+            </div>
+            <div class="dosage-duration-field">
+              <label class="sub-label">Duration</label>
+              <div class="unit-input"><input type="number" name="duration" step="1" min="0" /><span>days</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="form-field">
+          <label class="checkbox-field"><input type="checkbox" name="invite" /> Invite patient to the clinic</label>
+        </div>
+        <div class="form-field">
+          <label>Additional Doctor Instructions</label>
+          <textarea name="instructions" placeholder="Enter Text..."></textarea>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-text" id="cancelCareRec">Cancel</button>
+          <button type="submit" class="btn-save">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
 
 <script src="js/topbar.js"></script>
 <script src="js/table-scroll.js"></script>
