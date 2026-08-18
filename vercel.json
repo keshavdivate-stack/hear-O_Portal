@@ -1,3 +1,23 @@
 {
-  "cleanUrls": true
+  "cleanUrls": true,
+  "rewrites": [
+    { "source": "/allocation", "destination": "/backoffice1/allocation.html" },
+    { "source": "/components", "destination": "/backoffice1/components.html" },
+    { "source": "/dashboard-management", "destination": "/backoffice1/dashboard-management.html" },
+    { "source": "/language-resources", "destination": "/backoffice1/language-resources.html" },
+    { "source": "/mkt-study", "destination": "/backoffice1/mkt-study.html" },
+    { "source": "/mkt-summary", "destination": "/backoffice1/mkt-summary.html" },
+    { "source": "/org-health-dashboard", "destination": "/backoffice1/org-health-dashboard.html" },
+    { "source": "/org-profile", "destination": "/backoffice1/org-profile.html" },
+    { "source": "/patient-health-dashboard", "destination": "/backoffice1/patient-health-dashboard.html" },
+    { "source": "/session-data", "destination": "/backoffice1/session-data.html" },
+    { "source": "/support-dashboard", "destination": "/backoffice1/support-dashboard.html" },
+    { "source": "/patient-events", "destination": "/backoffice1/patient-events.html" },
+    { "source": "/patient-management", "destination": "/backoffice1/patient-management.html" },
+    { "source": "/status-change", "destination": "/backoffice1/status-change.html" },
+    { "source": "/support", "destination": "/backoffice1/support.html" },
+    { "source": "/report-management", "destination": "/backoffice1/report-management.html" },
+    { "source": "/overview-dashboard", "destination": "/backoffice1/overview-dashboard.html" },
+    { "source": "/audit-log", "destination": "/backoffice1/audit-log.html" }
+  ]
 }
