@@ -90,13 +90,51 @@ validateForm();
 const regFormWrap = document.getElementById("regFormWrap");
 const regSuccessPanel = document.getElementById("regSuccessPanel");
 const registerAnotherBtn = document.getElementById("registerAnotherBtn");
+const ehrLinkRow = document.getElementById("ehrLinkRow");
+
+function showSuccessPanel(ehrLinked) {
+  ehrLinkRow.innerHTML = ehrLinked
+    ? `<span class="reg-success-icon-sm">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="var(--green)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </span>
+      <div>
+        <div class="reg-success-row-title">EHR-linked</div>
+        <div class="reg-success-row-desc">Patient record was matched and linked to the connected EHR.</div>
+      </div>`
+    : `<span class="reg-success-icon-sm">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--gray-text)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8V13"/><circle cx="12" cy="16" r="1" fill="var(--gray-text)" stroke="none"/></svg>
+      </span>
+      <div>
+        <div class="reg-success-row-title">Not EHR-linked</div>
+        <div class="reg-success-row-desc">Flagged for later matching to an EHR record — see the Onboarding Pipeline.</div>
+      </div>`;
+
+  regFormWrap.style.display = "none";
+  regSuccessPanel.style.display = "block";
+}
 
 form.addEventListener("submit", (e) => {
   e.preventDefault();
   if (submitBtn.disabled) return;
-  regFormWrap.style.display = "none";
-  regSuccessPanel.style.display = "block";
+  showSuccessPanel(false);
 });
+
+function resetEhrImportPanel() {
+  document.getElementById("ehrFirstName").value = "";
+  document.getElementById("ehrLastName").value = "";
+  document.getElementById("ehrMrn").value = "";
+  document.getElementById("ehrDob").value = "";
+  ehrImportPanel.querySelectorAll(".custom-select").forEach((select) => {
+    const hiddenInput = select.querySelector("input[type=hidden]");
+    setCustomSelectValue(select, hiddenInput.dataset.default || "", { silent: true });
+  });
+  ehrResultsList.innerHTML = "";
+  ehrResultsWrap.style.display = "none";
+  ehrResultsEmpty.style.display = "block";
+  ehrImportBtn.textContent = "Import Patient";
+  ehrImportBtn.disabled = true;
+  ehrImportBtn.classList.remove("enabled");
+}
 
 registerAnotherBtn.addEventListener("click", () => {
   form.reset();
@@ -107,6 +145,13 @@ registerAnotherBtn.addEventListener("click", () => {
     setCustomSelectValue(select, hiddenInput.dataset.default || "", { silent: true });
   });
   validateForm();
+  resetEhrImportPanel();
+
+  manualModeBtn.classList.add("active");
+  ehrModeBtn.classList.remove("active");
+  form.style.display = "block";
+  ehrImportPanel.style.display = "none";
+
   regSuccessPanel.style.display = "none";
   regFormWrap.style.display = "";
 });
@@ -213,6 +258,6 @@ ehrSelectAll.addEventListener("click", () => {
 
 ehrImportBtn.addEventListener("click", () => {
   if (ehrImportBtn.disabled) return;
-  ehrImportBtn.textContent = "Patient Imported";
+  showSuccessPanel(true);
 });
 
