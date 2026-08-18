@@ -2048,7 +2048,9 @@ body {
   top: 100%;
   left: 0;
   margin-top: 8px;
-  width: 300px;
+  width: 320px;
+  max-height: 360px;
+  overflow-y: auto;
   background: #fff;
   border-radius: 12px;
   box-shadow: 0 16px 40px rgba(20, 30, 50, 0.18);
@@ -2069,15 +2071,17 @@ body {
 
 .med-info-row {
   display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 14px;
-  padding: 5px 0;
+  flex-direction: column;
+  gap: 2px;
+  padding: 6px 0;
   font-size: 12.5px;
+  border-bottom: 1px solid #F5F6F8;
 }
 
-.med-info-label { color: #7E8993; font-weight: 600; white-space: nowrap; }
-.med-info-value { color: #23272E; font-weight: 600; text-align: right; }
+.med-info-row:last-child { border-bottom: none; }
+
+.med-info-label { color: #7E8993; font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.3px; }
+.med-info-value { color: #23272E; font-weight: 600; }
 .med-bar { width: 3px; border-radius: 2px; flex-shrink: 0; }
 .med-bar.hf { background: var(--red); }
 .med-bar.other { background: transparent; }
