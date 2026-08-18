@@ -209,7 +209,7 @@ function setBoSelectValue(select, value, { silent = false } = {}) {
   const options = Array.from(select.querySelectorAll(".bo-select-option"));
   /* Compare dataset.value directly rather than building a
      [data-value="..."] CSS selector -- many values here (statuses like "In
-     Progress", levels like "Level 1", categories like "Patient (Mobile/Web)",
+     Progress", levels like "Level 1", categories like "Login / Auth / OTP",
      issue types with colons/slashes) contain characters CSS.escape would
      encode, which never matches the plain, unescaped attribute actually
      rendered in the DOM. That silently left the dropdown showing its
