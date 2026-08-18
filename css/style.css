@@ -2464,6 +2464,42 @@ body {
   min-height: 72px;
 }
 
+.dosage-duration-row {
+  display: flex;
+  gap: 32px;
+}
+
+.dosage-duration-field .sub-label {
+  font-size: 13px;
+  font-weight: 400;
+  color: #6B7684;
+  margin-bottom: 7px;
+}
+
+.unit-input {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.unit-input input {
+  width: 90px;
+  padding: 11px 14px;
+  border: 1px solid var(--gray-border);
+  border-radius: 8px;
+  font-size: 14px;
+  color: #23272E;
+  outline: none;
+  background: #F3F6FB;
+}
+
+.unit-input input:focus { border-color: var(--blue); }
+
+.unit-input span {
+  font-size: 14px;
+  color: #6B7684;
+}
+
 .checkbox-field {
   display: flex;
   align-items: center;

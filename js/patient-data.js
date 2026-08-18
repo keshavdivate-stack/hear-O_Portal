@@ -870,3 +870,18 @@ wireAddModal("addRecOverlay", "addRecForm", "cancelAddRec", "openAddRecBtn", (fd
   });
   renderCareRecs();
 });
+
+wireAddModal("careRecOverlay", "careRecForm", "cancelCareRec", "openCareRecBtn", (fd) => {
+  careRecs.unshift({
+    active: true,
+    title: "Change Diuretics",
+    desc: `Dosage change: ${fd.get("dosage") || 0}% for ${fd.get("duration") || 0} days${fd.get("invite") === "on" ? " · Patient invited to clinic" : ""}${fd.get("instructions") ? ` — ${fd.get("instructions")}` : ""}`,
+    status: "Active",
+    statusClass: REC_STATUS_CLASS.Active,
+    date: "01/10/2026",
+    from: { initials: "EC", cls: "av-blue", name: "Emily Carter" },
+    to: { initials: "EC", cls: "av-blue", name: "Emily Carter" },
+    note: "Just added",
+  });
+  renderCareRecs();
+});
