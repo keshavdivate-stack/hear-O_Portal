@@ -821,6 +821,9 @@ body.bo-page-scroll .bo-page { overflow-y: auto; overflow-x: hidden; }
   border: none;
   outline: none;
   flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
   font-size: 13.5px;
   background: transparent;
   font-family: inherit;
@@ -1176,9 +1179,16 @@ body.bo-page-scroll .bo-page { overflow-y: auto; overflow-x: hidden; }
 .bo-filter-field input[type="text"]::placeholder { color: var(--gray-text); font-weight: 700; }
 
 /* Full-width filter row: fields grow evenly to fill the row (no dead space on the right) */
+.bo-filter-row-label {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--gray-text);
+  margin: 0 0 8px;
+}
+
 .bo-filter-row {
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   gap: 12px;
   margin-bottom: 20px;
 }
@@ -1186,6 +1196,7 @@ body.bo-page-scroll .bo-page { overflow-y: auto; overflow-x: hidden; }
 .bo-filter-row .bo-filter-field,
 .bo-filter-row .bo-date-field,
 .bo-filter-row .bo-select,
+.bo-filter-row .bo-multiselect,
 .bo-filter-row .bo-search-pill {
   flex: 1 1 0;
   width: auto;
@@ -1200,6 +1211,7 @@ body.bo-page-scroll .bo-page { overflow-y: auto; overflow-x: hidden; }
   .bo-filter-row .bo-filter-field,
   .bo-filter-row .bo-date-field,
   .bo-filter-row .bo-select,
+  .bo-filter-row .bo-multiselect,
   .bo-filter-row .bo-search-pill { flex: 1 1 150px; }
 }
 
@@ -1643,6 +1655,103 @@ body.bo-page-scroll .bo-page { overflow-y: auto; overflow-x: hidden; }
 }
 
 .bo-select-option.selected .option-check { display: block; }
+
+/* ---------------- Multi-select checkbox filter (Clinical site / Event type / Approved etc.) ---------------- */
+.bo-multiselect { position: relative; min-width: 160px; }
+
+.bo-multiselect-label {
+  display: block;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--gray-text);
+  margin-bottom: 6px;
+}
+
+.bo-multiselect-trigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 9px 12px;
+  border: 1px solid var(--field-border);
+  border-radius: 8px;
+  background: #fff;
+  font-family: inherit;
+  font-size: 13.5px;
+  color: var(--ink);
+  cursor: pointer;
+  text-align: left;
+}
+
+.bo-multiselect-trigger:hover { border-color: #C9CFD6; }
+.bo-multiselect.open .bo-multiselect-trigger { border-color: var(--blue); }
+
+.bo-multiselect-value { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bo-multiselect-value.placeholder { color: #AEB4BC; }
+
+.bo-multiselect.open .bo-select-caret { transform: rotate(180deg); }
+
+.bo-multiselect-menu {
+  display: none;
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  min-width: 220px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 14px 34px rgba(20, 30, 50, 0.18);
+  padding: 6px;
+  max-height: 260px;
+  overflow-y: auto;
+  z-index: 420;
+}
+
+.bo-multiselect.open .bo-multiselect-menu { display: block; }
+
+.bo-multiselect-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 11px;
+  border-radius: 7px;
+  font-size: 13.5px;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.bo-multiselect-option:hover { background: var(--bg); }
+
+.bo-multiselect-option.all {
+  font-weight: 700;
+  color: var(--blue);
+  border-bottom: 1px solid var(--gray-border);
+  border-radius: 7px 7px 0 0;
+  margin-bottom: 4px;
+  padding-bottom: 11px;
+}
+
+.bo-multiselect-checkbox {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  border: 1.6px solid var(--field-border);
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.bo-multiselect-checkbox svg { display: none; }
+
+.bo-multiselect-option.checked .bo-multiselect-checkbox {
+  background: var(--blue);
+  border-color: var(--blue);
+}
+
+.bo-multiselect-option.checked .bo-multiselect-checkbox svg { display: block; }
 
 .required-star { color: var(--red); margin-left: 2px; }
 
@@ -3418,21 +3527,6 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue); }
 
 .bo-gauge-readout .num { display: block; font-size: 26px; font-weight: 800; color: var(--ink); }
 .bo-gauge-readout .lbl { display: block; font-size: 12px; font-weight: 700; margin-top: 2px; }
-
-.bo-ov-footer {
-  display: flex;
-  align-items: center;
-  gap: 24px;
-  margin-top: 16px;
-  padding-top: 4px;
-  font-size: 12px;
-  color: var(--gray-text);
-  flex-shrink: 0;
-}
-
-.bo-ov-footer-item { display: flex; align-items: center; gap: 6px; }
-.bo-ov-footer-item b { color: var(--ink); }
-.bo-ov-live-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); flex-shrink: 0; }
 
 @media (max-width: 1100px) {
   .bo-health-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }

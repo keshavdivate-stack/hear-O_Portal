@@ -134,15 +134,29 @@
     </div>
 
     <div class="bo-filter-row">
-      <div class="bo-filter-field">
-        <select class="bo-filter-select" id="peSiteFilter">
-          <option value="">Clinical site</option>
-        </select>
+      <div class="bo-multiselect" id="peSiteFilter">
+        <label class="bo-multiselect-label">Clinical site:</label>
+        <button type="button" class="bo-multiselect-trigger">
+          <span class="bo-multiselect-value">All</span>
+          <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="bo-multiselect-menu"></div>
       </div>
-      <div class="bo-filter-field">
-        <select class="bo-filter-select" id="peEventTypeFilter">
-          <option value="">Event type</option>
-        </select>
+      <div class="bo-multiselect" id="peEventTypeFilter">
+        <label class="bo-multiselect-label">Select event type:</label>
+        <button type="button" class="bo-multiselect-trigger">
+          <span class="bo-multiselect-value">All</span>
+          <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="bo-multiselect-menu"></div>
+      </div>
+      <div class="bo-multiselect" id="peApprovedFilter">
+        <label class="bo-multiselect-label">Approved:</label>
+        <button type="button" class="bo-multiselect-trigger">
+          <span class="bo-multiselect-value">All</span>
+          <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="bo-multiselect-menu"></div>
       </div>
       <div class="bo-filter-field">
         <input type="text" id="pePatientFilter" placeholder="Search patient" />

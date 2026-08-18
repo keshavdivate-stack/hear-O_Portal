@@ -16,29 +16,166 @@ statusChanges.forEach((s, i) => (s.id = i));
 
 /* ---------------- State ---------------- */
 const SC_PAGE_SIZE = 20;
+const SC_STATUS_TO_OPTIONS = ["Registered", "Active", "Priority", "Baseline"];
 let scCurrentPage = 1;
-let scSiteFilter = "";
 let scStatusToFilter = "";
 let scSearchTerm = "";
 let scFromDate = "";
 let scToDate = "";
 
-/* ---------------- Filter options ---------------- */
-const scSiteCodes = [...new Set(statusChanges.map((s) => s.username.split("-")[0]))];
-document.getElementById("scSiteFilter").insertAdjacentHTML(
-  "beforeend",
-  scSiteCodes.map((c) => `<option value="${c}">${c}</option>`).join("")
-);
+/* ---------------- Multi-select checkbox filter (Clinical site) ---------------- */
+const scCheckIcon = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 
-const scStatusOptions = [...new Set(statusChanges.map((s) => s.next))];
-document.getElementById("scStatusToFilter").insertAdjacentHTML(
-  "beforeend",
-  scStatusOptions.map((s) => `<option value="${s}">${s}</option>`).join("")
-);
+function wireMultiSelect(containerId, values) {
+  const container = document.getElementById(containerId);
+  const trigger = container.querySelector(".bo-multiselect-trigger");
+  const valueEl = container.querySelector(".bo-multiselect-value");
+  const menu = container.querySelector(".bo-multiselect-menu");
+  const selected = new Set(values);
+
+  function renderMenu() {
+    const allChecked = selected.size === values.length;
+    menu.innerHTML =
+      `<label class="bo-multiselect-option all${allChecked ? " checked" : ""}" data-all="1">
+        <span class="bo-multiselect-checkbox">${scCheckIcon}</span> All
+      </label>` +
+      values
+        .map(
+          (v) => `<label class="bo-multiselect-option${selected.has(v) ? " checked" : ""}" data-value="${v}">
+            <span class="bo-multiselect-checkbox">${scCheckIcon}</span> ${v}
+          </label>`
+        )
+        .join("");
+  }
+
+  function renderTrigger() {
+    if (selected.size === values.length || selected.size === 0) {
+      valueEl.textContent = "All";
+    } else {
+      valueEl.textContent = values.filter((v) => selected.has(v)).join(", ");
+    }
+  }
+
+  renderMenu();
+  renderTrigger();
+
+  trigger.addEventListener("click", (e) => {
+    e.stopPropagation();
+    const willOpen = !container.classList.contains("open");
+    document.querySelectorAll(".bo-multiselect.open").forEach((el) => el.classList.remove("open"));
+    if (willOpen) container.classList.add("open");
+  });
+
+  menu.addEventListener("click", (e) => {
+    const option = e.target.closest(".bo-multiselect-option");
+    if (!option) return;
+    e.stopPropagation();
+
+    if (option.dataset.all) {
+      if (selected.size === values.length) selected.clear();
+      else values.forEach((v) => selected.add(v));
+    } else {
+      const v = option.dataset.value;
+      if (selected.has(v)) selected.delete(v);
+      else selected.add(v);
+    }
+
+    renderMenu();
+    renderTrigger();
+  });
+
+  return { getSelected: () => selected };
+}
+
+document.addEventListener("click", (e) => {
+  if (!e.target.closest(".bo-multiselect")) {
+    document.querySelectorAll(".bo-multiselect.open").forEach((el) => el.classList.remove("open"));
+  }
+});
+
+const scSiteCodes = [...new Set(statusChanges.map((s) => s.username.split("-")[0]))];
+const scSiteMultiSelect = wireMultiSelect("scSiteFilter", scSiteCodes);
+let scSiteFilter = new Set(scSiteCodes);
+
+/* ---------------- Status Change To (single-select) ---------------- */
+const scStatusToSelect = document.querySelector('.bo-select[data-name="scStatusTo"]');
+document.getElementById("scStatusToMenu").innerHTML =
+  `<div class="bo-select-option" data-value="">All<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>` +
+  SC_STATUS_TO_OPTIONS.map(
+    (s) => `<div class="bo-select-option" data-value="${s}">${s}<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>`
+  ).join("");
+
+function setBoSelectValue(select, value, { silent = false } = {}) {
+  const hiddenInput = select.querySelector("input[type=hidden]");
+  const trigger = select.querySelector(".bo-select-value");
+  const option = select.querySelector(`.bo-select-option[data-value="${CSS.escape(value)}"]`);
+
+  select.querySelectorAll(".bo-select-option").forEach((o) => o.classList.remove("selected"));
+
+  if (option) {
+    option.classList.add("selected");
+    trigger.textContent = option.textContent.trim();
+    trigger.classList.remove("placeholder");
+  } else {
+    trigger.textContent = trigger.dataset.placeholder || trigger.textContent;
+    trigger.classList.add("placeholder");
+  }
+
+  hiddenInput.value = value || "";
+  if (!silent) hiddenInput.dispatchEvent(new Event("change", { bubbles: true }));
+}
+
+function positionBoSelectMenu(select) {
+  const trigger = select.querySelector(".bo-select-trigger");
+  const menu = select.querySelector(".bo-select-menu");
+  const rect = trigger.getBoundingClientRect();
+  const menuHeight = Math.min(menu.scrollHeight, 220) + 12;
+  const spaceBelow = window.innerHeight - rect.bottom;
+  const openUpward = spaceBelow < menuHeight && rect.top > menuHeight;
+
+  menu.style.position = "fixed";
+  menu.style.left = `${rect.left}px`;
+  menu.style.width = `${rect.width}px`;
+  menu.style.top = openUpward ? "auto" : `${rect.bottom + 6}px`;
+  menu.style.bottom = openUpward ? `${window.innerHeight - rect.top + 6}px` : "auto";
+}
+
+function closeAllBoSelects() {
+  document.querySelectorAll(".bo-select.open").forEach((s) => s.classList.remove("open"));
+}
+
+document.querySelectorAll(".bo-select").forEach((select) => {
+  const trigger = select.querySelector(".bo-select-trigger");
+  const valueEl = select.querySelector(".bo-select-value");
+  valueEl.dataset.placeholder = valueEl.textContent.trim();
+
+  trigger.addEventListener("click", (e) => {
+    e.stopPropagation();
+    const willOpen = !select.classList.contains("open");
+    closeAllBoSelects();
+    if (willOpen) {
+      select.classList.add("open");
+      positionBoSelectMenu(select);
+    }
+  });
+
+  select.addEventListener("click", (e) => {
+    const option = e.target.closest(".bo-select-option");
+    if (!option) return;
+    setBoSelectValue(select, option.dataset.value);
+    select.classList.remove("open");
+  });
+});
+
+document.addEventListener("click", closeAllBoSelects);
+document.addEventListener("scroll", closeAllBoSelects, true);
+window.addEventListener("resize", closeAllBoSelects);
 
 function scFilteredRows() {
   return statusChanges.filter((s) => {
-    if (scSiteFilter && !s.username.startsWith(scSiteFilter)) return false;
+    if (scSiteFilter.size && scSiteFilter.size < scSiteCodes.length) {
+      if (![...scSiteFilter].some((c) => s.username.startsWith(c))) return false;
+    }
     if (scStatusToFilter && s.next !== scStatusToFilter) return false;
     if (scSearchTerm && !s.username.toLowerCase().includes(scSearchTerm)) return false;
     if (scFromDate && s.start < scFromDate) return false;
@@ -96,20 +233,6 @@ function renderStatusChanges() {
 renderStatusChanges();
 
 /* ---------------- Filters ---------------- */
-function scSyncSelectStyle(select) {
-  select.classList.toggle("has-value", select.value !== "");
-}
-
-document.getElementById("scSiteFilter").addEventListener("change", (e) => {
-  scSiteFilter = e.target.value;
-  scSyncSelectStyle(e.target);
-});
-
-document.getElementById("scStatusToFilter").addEventListener("change", (e) => {
-  scStatusToFilter = e.target.value;
-  scSyncSelectStyle(e.target);
-});
-
 document.getElementById("scSearchInput").addEventListener("input", (e) => {
   scSearchTerm = e.target.value.trim().toLowerCase();
 });
@@ -118,6 +241,8 @@ document.getElementById("scFromDate").addEventListener("change", (e) => { scFrom
 document.getElementById("scToDate").addEventListener("change", (e) => { scToDate = e.target.value; });
 
 document.getElementById("scApplyBtn").addEventListener("click", () => {
+  scSiteFilter = scSiteMultiSelect.getSelected();
+  scStatusToFilter = scStatusToSelect.querySelector("input[type=hidden]").value;
   scCurrentPage = 1;
   renderStatusChanges();
 });

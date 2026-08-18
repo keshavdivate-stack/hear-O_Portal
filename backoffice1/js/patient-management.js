@@ -5,6 +5,15 @@ let patientSortDir = "asc";
 let patientSearchTerm = "";
 let patientStatusFilter = "";
 let patientSiteFilter = "";
+let patientTagFilter = "";
+let patientLanguageFilter = "";
+let patientActiveFilter = "";
+let patientAppVersionFilter = "";
+let patientPhoneModelFilter = "";
+let patientLastSessionUpTo = "";
+let patientScope = "all"; // "all" | "active" -- Active Only / All Patients
+let patientEnvScope = "all"; // "all" | "current" -- This Environment / All Environments
+const CURRENT_ENVIRONMENT = "Production";
 
 /* ---------------- Filter options ---------------- */
 const siteCodes = [...new Set(patients.map((p) => p.username.split("-")[0]))];
@@ -12,11 +21,32 @@ document.getElementById("clinicalSiteFilter").insertAdjacentHTML(
   "beforeend",
   siteCodes.map((c) => `<option value="${c}">${c}</option>`).join("")
 );
+document.getElementById("tagFilter").insertAdjacentHTML(
+  "beforeend",
+  PATIENT_TAGS.map((t) => `<option value="${t}">${t}</option>`).join("")
+);
+document.getElementById("languageFilter").insertAdjacentHTML(
+  "beforeend",
+  PATIENT_LANGUAGES.map((l) => `<option value="${l}">${l}</option>`).join("")
+);
+
+function dmyToIso(s) {
+  const [d, m, y] = s.split("/");
+  return `${y}-${m.padStart(2, "0")}-${d.padStart(2, "0")}`;
+}
 
 function filteredPatients() {
   return patients.filter((p) => {
+    if (patientScope === "active" && !p.active) return false;
+    if (patientEnvScope === "current" && p.environment !== CURRENT_ENVIRONMENT) return false;
     if (patientSiteFilter && !p.username.startsWith(patientSiteFilter)) return false;
+    if (patientTagFilter && p.tag !== patientTagFilter) return false;
+    if (patientLanguageFilter && p.lang !== patientLanguageFilter) return false;
     if (patientStatusFilter && p.status !== patientStatusFilter) return false;
+    if (patientActiveFilter && (p.active ? "yes" : "no") !== patientActiveFilter) return false;
+    if (patientAppVersionFilter && !p.appVersion.toLowerCase().includes(patientAppVersionFilter)) return false;
+    if (patientPhoneModelFilter && !p.phoneModel.toLowerCase().includes(patientPhoneModelFilter)) return false;
+    if (patientLastSessionUpTo && dmyToIso(p.lastSession) > patientLastSessionUpTo) return false;
     if (patientSearchTerm && !p.username.toLowerCase().includes(patientSearchTerm)) return false;
     return true;
   });
@@ -78,27 +108,25 @@ function renderPatients() {
 
 renderPatients();
 
-/* ---------------- Search & filters ---------------- */
-document.getElementById("patientSearchInput").addEventListener("input", (e) => {
-  patientSearchTerm = e.target.value.trim().toLowerCase();
-  patientCurrentPage = 1;
-  renderPatients();
-});
-
+/* ---------------- Filters (staged, applied on Apply click) ---------------- */
 function syncFilterSelectStyle(select) {
   select.classList.toggle("has-value", select.value !== "");
 }
 
-document.getElementById("clinicalSiteFilter").addEventListener("change", (e) => {
-  patientSiteFilter = e.target.value;
-  syncFilterSelectStyle(e.target);
-  patientCurrentPage = 1;
-  renderPatients();
+document.querySelectorAll(".bo-filter-select").forEach((select) => {
+  select.addEventListener("change", () => syncFilterSelectStyle(select));
 });
 
-document.getElementById("statusFilter").addEventListener("change", (e) => {
-  patientStatusFilter = e.target.value;
-  syncFilterSelectStyle(e.target);
+document.getElementById("patientApplyBtn").addEventListener("click", () => {
+  patientSiteFilter = document.getElementById("clinicalSiteFilter").value;
+  patientTagFilter = document.getElementById("tagFilter").value;
+  patientLanguageFilter = document.getElementById("languageFilter").value;
+  patientStatusFilter = document.getElementById("statusFilter").value;
+  patientActiveFilter = document.getElementById("activeFilter").value;
+  patientAppVersionFilter = document.getElementById("appVersionFilter").value.trim().toLowerCase();
+  patientPhoneModelFilter = document.getElementById("phoneModelFilter").value.trim().toLowerCase();
+  patientLastSessionUpTo = document.getElementById("lastSessionUpToFilter").value;
+  patientSearchTerm = document.getElementById("patientSearchInput").value.trim().toLowerCase();
   patientCurrentPage = 1;
   renderPatients();
 });
@@ -108,6 +136,19 @@ document.getElementById("hmoToggle").addEventListener("change", (e) => {
   const siteSelect = document.getElementById("clinicalSiteFilter");
   siteSelect.value = "";
   syncFilterSelectStyle(siteSelect);
+  patientCurrentPage = 1;
+  renderPatients();
+});
+
+/* ---------------- Scope toggles (apply immediately) ---------------- */
+document.getElementById("allPatientsToggle").addEventListener("change", (e) => {
+  patientScope = e.target.checked ? "all" : "active";
+  patientCurrentPage = 1;
+  renderPatients();
+});
+
+document.getElementById("allEnvironmentsToggle").addEventListener("change", (e) => {
+  patientEnvScope = e.target.checked ? "all" : "current";
   patientCurrentPage = 1;
   renderPatients();
 });

@@ -1,25 +1,100 @@
 /* ---------------- Non-HMO Patients Events ---------------- */
 const PE_PAGE_SIZE = 20;
+const PE_APPROVED_OPTIONS = ["APPROVED", "DISAPPROVED"];
 
-document.getElementById("peSiteFilter").insertAdjacentHTML(
-  "beforeend",
-  PE_SITES.map((s) => `<option value="${s}">${s}</option>`).join("")
-);
-document.getElementById("peEventTypeFilter").insertAdjacentHTML(
-  "beforeend",
-  PE_EVENT_TYPES.map((t) => `<option value="${t}">${t}</option>`).join("")
-);
+/* ---------------- Multi-select checkbox filter (Clinical site / Event type / Approved) ----------------
+   Every value starts checked (= "All", no filtering). Unchecking items narrows the filter;
+   the "All" row is just a shortcut that selects/clears every option at once. */
+const peCheckIcon = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 
-let peSiteFilter = "";
-let peEventTypeFilter = "";
+function wireMultiSelect(containerId, values) {
+  const container = document.getElementById(containerId);
+  const trigger = container.querySelector(".bo-multiselect-trigger");
+  const valueEl = container.querySelector(".bo-multiselect-value");
+  const menu = container.querySelector(".bo-multiselect-menu");
+  const selected = new Set(values);
+
+  function renderMenu() {
+    const allChecked = selected.size === values.length;
+    menu.innerHTML =
+      `<label class="bo-multiselect-option all${allChecked ? " checked" : ""}" data-all="1">
+        <span class="bo-multiselect-checkbox">${peCheckIcon}</span> All
+      </label>` +
+      values
+        .map(
+          (v) => `<label class="bo-multiselect-option${selected.has(v) ? " checked" : ""}" data-value="${v}">
+            <span class="bo-multiselect-checkbox">${peCheckIcon}</span> ${v}
+          </label>`
+        )
+        .join("");
+  }
+
+  function renderTrigger() {
+    if (selected.size === values.length || selected.size === 0) {
+      valueEl.textContent = "All";
+    } else {
+      valueEl.textContent = values.filter((v) => selected.has(v)).join(", ");
+    }
+  }
+
+  renderMenu();
+  renderTrigger();
+
+  trigger.addEventListener("click", (e) => {
+    e.stopPropagation();
+    const willOpen = !container.classList.contains("open");
+    document.querySelectorAll(".bo-multiselect.open").forEach((el) => el.classList.remove("open"));
+    if (willOpen) container.classList.add("open");
+  });
+
+  menu.addEventListener("click", (e) => {
+    const option = e.target.closest(".bo-multiselect-option");
+    if (!option) return;
+    e.stopPropagation();
+
+    if (option.dataset.all) {
+      if (selected.size === values.length) selected.clear();
+      else values.forEach((v) => selected.add(v));
+    } else {
+      const v = option.dataset.value;
+      if (selected.has(v)) selected.delete(v);
+      else selected.add(v);
+    }
+
+    renderMenu();
+    renderTrigger();
+  });
+
+  return { getSelected: () => selected };
+}
+
+document.addEventListener("click", (e) => {
+  if (!e.target.closest(".bo-multiselect")) {
+    document.querySelectorAll(".bo-multiselect.open").forEach((el) => el.classList.remove("open"));
+  }
+});
+
+const peSiteMultiSelect = wireMultiSelect("peSiteFilter", PE_SITES);
+const peEventTypeMultiSelect = wireMultiSelect("peEventTypeFilter", PE_EVENT_TYPES);
+const peApprovedMultiSelect = wireMultiSelect("peApprovedFilter", PE_APPROVED_OPTIONS);
+
+let peSiteFilter = new Set(PE_SITES);
+let peEventTypeFilter = new Set(PE_EVENT_TYPES);
+let peApprovedFilter = new Set(PE_APPROVED_OPTIONS);
 let pePatientFilter = "";
 let peAddedByFilter = "";
 let peReportedByFilter = "";
 
 function peFiltered() {
   return peEvents.filter((r) => {
-    if (peSiteFilter && !r.username.startsWith(peSiteFilter)) return false;
-    if (peEventTypeFilter && r.eventType !== peEventTypeFilter) return false;
+    if (peSiteFilter.size && peSiteFilter.size < PE_SITES.length) {
+      if (![...peSiteFilter].some((s) => r.username.startsWith(s))) return false;
+    }
+    if (peEventTypeFilter.size && peEventTypeFilter.size < PE_EVENT_TYPES.length && !peEventTypeFilter.has(r.eventType)) return false;
+    if (peApprovedFilter.size && peApprovedFilter.size < PE_APPROVED_OPTIONS.length) {
+      const label = r.approved ? "APPROVED" : "DISAPPROVED";
+      if (!peApprovedFilter.has(label)) return false;
+    }
 
     if (pePatientFilter) {
       const names = pePatientFilter.split(",").map((s) => s.trim().toLowerCase()).filter(Boolean);
@@ -69,10 +144,6 @@ const pePager = boCreatePager(
 );
 pePager();
 
-document.querySelectorAll(".bo-filter-select").forEach((select) => {
-  select.addEventListener("change", () => select.classList.toggle("has-value", select.value !== ""));
-});
-
 document.getElementById("peRows").addEventListener("change", (e) => {
   const box = e.target.closest(".bo-cell-checkbox");
   if (!box) return;
@@ -117,8 +188,9 @@ peRowMenu.addEventListener("click", (e) => {
 });
 
 document.getElementById("peApplyBtn").addEventListener("click", () => {
-  peSiteFilter = document.getElementById("peSiteFilter").value;
-  peEventTypeFilter = document.getElementById("peEventTypeFilter").value;
+  peSiteFilter = peSiteMultiSelect.getSelected();
+  peEventTypeFilter = peEventTypeMultiSelect.getSelected();
+  peApprovedFilter = peApprovedMultiSelect.getSelected();
   pePatientFilter = document.getElementById("pePatientFilter").value;
   peAddedByFilter = document.getElementById("peAddedByFilter").value;
   peReportedByFilter = document.getElementById("peReportedByFilter").value;
