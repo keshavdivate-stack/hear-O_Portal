@@ -209,7 +209,7 @@ function setBoSelectValue(select, value, { silent = false } = {}) {
   const options = Array.from(select.querySelectorAll(".bo-select-option"));
   /* Compare dataset.value directly rather than building a
      [data-value="..."] CSS selector -- many values here (statuses like "In
-     Progress", levels like "Level 1", categories like "Patient (Mobile/Web)",
+     Progress", levels like "Level 1", categories like "Login / Auth / OTP",
      issue types with colons/slashes) contain characters CSS.escape would
      encode, which never matches the plain, unescaped attribute actually
      rendered in the DOM. That silently left the dropdown showing its
@@ -693,5 +693,97 @@ ruleDrawerForm.addEventListener("submit", (e) => {
   editingRule.channels = Array.from(ruleDrawerForm.querySelectorAll('input[name="ruleChannel"]:checked')).map((b) => b.value);
 
   closeRuleDrawer();
+  renderRules();
+});
+
+/* ---------------- New Rule drawer ---------------- */
+const RULE_APPLIES_TO = ["All organisations", "All Commercial orgs", "Per organisation", "System-wide"];
+const SEND_BY_OPTIONS = ["In-app only", "In-app + Email", "In-app + SMS", "All channels"];
+const SEND_BY_CHANNELS = {
+  "In-app only": ["Notification"],
+  "In-app + Email": ["Notification", "Email"],
+  "In-app + SMS": ["Notification", "SMS"],
+  "All channels": ["Notification", "Email", "SMS"],
+};
+/* New rules don't collect SLA targets directly (the form keeps them out to stay
+   short) -- default from severity using the same response/resolve pairing the
+   hand-authored rules already follow. */
+const SEVERITY_DEFAULT_SLA = {
+  Critical: { response: "30m", resolve: "4h" },
+  High: { response: "2h", resolve: "24h" },
+  Medium: { response: "8h", resolve: "3d" },
+  Low: { response: "24h", resolve: "5d" },
+};
+
+document.querySelector('#newRuleDrawerOverlay .bo-select[data-name="newRuleCategory"] .bo-select-menu').innerHTML = buildSelectOptions(CATEGORIES);
+document.querySelector('#newRuleDrawerOverlay .bo-select[data-name="newRuleSeverity"] .bo-select-menu').innerHTML = buildSelectOptions(SEVERITIES);
+document.querySelector('#newRuleDrawerOverlay .bo-select[data-name="newRuleTier"] .bo-select-menu').innerHTML = buildSelectOptions(TIERS);
+document.querySelector('#newRuleDrawerOverlay .bo-select[data-name="newRuleAppliesTo"] .bo-select-menu').innerHTML = buildSelectOptions(RULE_APPLIES_TO);
+document.querySelector('#newRuleDrawerOverlay .bo-select[data-name="newRuleSendBy"] .bo-select-menu').innerHTML = buildSelectOptions(SEND_BY_OPTIONS);
+
+const newRuleDrawerOverlay = document.getElementById("newRuleDrawerOverlay");
+const newRuleForm = document.getElementById("newRuleForm");
+const saveNewRuleBtn = document.getElementById("saveNewRuleDrawer");
+
+function validateNewRuleForm() {
+  const nameFilled = document.getElementById("newRuleNameInput").value.trim() !== "";
+  const conditionFilled = document.getElementById("newRuleConditionInput").value.trim() !== "";
+  const selectFilled = (name) => newRuleDrawerOverlay.querySelector(`.bo-select[data-name="${name}"] input[type=hidden]`).value !== "";
+  saveNewRuleBtn.disabled = !(
+    nameFilled &&
+    conditionFilled &&
+    selectFilled("newRuleCategory") &&
+    selectFilled("newRuleSeverity") &&
+    selectFilled("newRuleTier") &&
+    selectFilled("newRuleAppliesTo") &&
+    selectFilled("newRuleSendBy")
+  );
+}
+
+function openNewRuleDrawer() {
+  newRuleForm.reset();
+  newRuleDrawerOverlay.querySelectorAll(".bo-select").forEach(resetBoSelect);
+  document.getElementById("newRuleAutoCreateInput").checked = false;
+  validateNewRuleForm();
+  newRuleDrawerOverlay.classList.add("open");
+}
+
+function closeNewRuleDrawer() {
+  newRuleDrawerOverlay.classList.remove("open");
+}
+
+document.getElementById("openNewRuleBtn").addEventListener("click", openNewRuleDrawer);
+document.getElementById("closeNewRuleDrawerX").addEventListener("click", closeNewRuleDrawer);
+document.getElementById("cancelNewRuleDrawer").addEventListener("click", closeNewRuleDrawer);
+newRuleDrawerOverlay.addEventListener("click", (e) => { if (e.target === newRuleDrawerOverlay) closeNewRuleDrawer(); });
+
+newRuleForm.addEventListener("input", validateNewRuleForm);
+newRuleForm.addEventListener("change", validateNewRuleForm);
+
+newRuleForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  if (saveNewRuleBtn.disabled) return;
+
+  const selectValue = (name) => newRuleDrawerOverlay.querySelector(`.bo-select[data-name="${name}"] input[type=hidden]`).value;
+  const severity = selectValue("newRuleSeverity");
+  const sendBy = selectValue("newRuleSendBy");
+  const sla = SEVERITY_DEFAULT_SLA[severity] || { response: "—", resolve: "—" };
+
+  const nextId = alertRules.length ? Math.max(...alertRules.map((r) => r.id)) + 1 : 0;
+  alertRules.unshift({
+    id: nextId,
+    name: document.getElementById("newRuleNameInput").value.trim(),
+    category: selectValue("newRuleCategory"),
+    condition: document.getElementById("newRuleConditionInput").value.trim(),
+    severity,
+    tier: selectValue("newRuleTier"),
+    slaResponse: sla.response,
+    slaResolve: sla.resolve,
+    channels: SEND_BY_CHANNELS[sendBy] || [],
+    autoCreateTicket: document.getElementById("newRuleAutoCreateInput").checked,
+    appliesTo: selectValue("newRuleAppliesTo"),
+  });
+
+  closeNewRuleDrawer();
   renderRules();
 });

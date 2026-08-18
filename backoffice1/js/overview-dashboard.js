@@ -7,11 +7,20 @@ let ovSelectedOrgId = "all";
    instead of drifting out of sync as a separately hand-maintained number. */
 const ovAffectedOrgCount = Object.values(orgHealthData).filter((o) => o.openIssues > 0).length;
 
+/* "Patients Affected" and "Open Issues Requiring Action" are summed from the
+   same per-organization data (orgHealthData) that backs the Affected
+   Organizations list and every org's own drill-down page -- so the
+   all-organizations KPI row always agrees with what a viewer sees when they
+   add up the org list themselves, instead of being separately hand-tuned
+   numbers that drift out of sync. */
+const ovPatientsAffectedCount = Object.values(orgHealthData).reduce((sum, o) => sum + o.patientsAffected.length, 0);
+const ovOpenIssuesCount = Object.values(orgHealthData).reduce((sum, o) => sum + o.openIssues, 0);
+
 const ovAllOrgsHealthStats = [
   { num: Object.keys(orgHealthData).length, label: "Total Organizations", color: "var(--navy)", icon: `<rect width="16" height="18" x="4" y="3" rx="1"/><path d="M9 8h1"/><path d="M14 8h1"/><path d="M9 12h1"/><path d="M14 12h1"/><path d="M9 16h1"/><path d="M14 16h1"/><path d="M10 21v-3a2 2 0 0 1 4 0v3"/>`, delta: 0, deltaDir: "flat" },
   { num: ovAffectedOrgCount, label: "Organizations Affected", color: "var(--blue)", icon: `<rect width="16" height="18" x="4" y="3" rx="1"/><path d="M9 8h1"/><path d="M14 8h1"/><path d="M9 12h1"/><path d="M14 12h1"/>`, delta: 1, deltaDir: "up" },
-  { num: 68, label: "Patients Affected", color: "var(--purple)", icon: `<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>`, delta: 23, deltaDir: "up" },
-  { num: 11, label: "Open Issues Requiring Action", color: "var(--green)", icon: `<path d="M4 12L9 17L20 6"/>`, delta: 2, deltaDir: "down" },
+  { num: ovPatientsAffectedCount, label: "Patients Affected", color: "var(--purple)", icon: `<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>`, delta: 23, deltaDir: "up" },
+  { num: ovOpenIssuesCount, label: "Open Issues Requiring Action", color: "var(--green)", icon: `<path d="M4 12L9 17L20 6"/>`, delta: 2, deltaDir: "down" },
 ];
 
 const ovDeltaArrow = { up: `<path d="M12 19V5"/><path d="m5 12 7-7 7 7"/>`, down: `<path d="M12 5v14"/><path d="m5 12 7 7 7-7"/>`, flat: `<path d="M5 12h14"/>` };
@@ -225,13 +234,19 @@ renderOvTrendFooter();
 /* ---------------- Critical Issues (Top 5) ---------------- */
 /* Severity uses the same 4-level scale as everywhere else issues/tickets
    appear (Critical/High/Medium/Low), with colors matching the ticket
-   severity pills: red/orange/yellow/blue. */
+   severity pills: red/orange/yellow/blue.
+
+   One entry per category in orgHealthData (the same source the donut below
+   aggregates), so this list, the donut, and the "Open Issues Requiring
+   Action" KPI all describe the same underlying set of issues instead of
+   three disconnected numbers. Org/patient counts and "started" times are
+   read from the real per-org records rather than invented separately. */
 const ovCritIssues = [
-  { title: "Recording failures", desc: "Recordings not received from devices", severity: "Critical", started: "42 min ago", orgs: 3, patients: 18, color: "var(--red)", category: "Recording", icon: `<path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3Z"/><path d="M19 11a7 7 0 0 1-14 0"/><path d="M12 19v3"/>` },
-  { title: "Upload failures", desc: "Recordings failing to upload to server", severity: "Critical", started: "2 hrs ago", orgs: 2, patients: 7, color: "var(--red)", category: "Upload", icon: `<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5"/><path d="M12 3v12"/>` },
-  { title: "Voice engine errors", desc: "High error rate in voice processing", severity: "High", started: "3 hrs ago", orgs: 1, patients: 5, color: "var(--orange)", category: "Voice Engine", icon: `<path d="M12 2a10 10 0 1 0 10 10"/><path d="M12 6v6l4 2"/>` },
-  { title: "Device connectivity issues", desc: "Devices not connecting or syncing", severity: "Medium", started: "5 hrs ago", orgs: 2, patients: 9, color: "var(--yellow)", category: "Device / System", icon: `<rect x="4" y="2" width="16" height="20" rx="2"/><path d="M12 18h.01"/>` },
-  { title: "Sensor data delays", desc: "Sensor data delayed or missing", severity: "Low", started: "6 hrs ago", orgs: 1, patients: 4, color: "var(--blue)", category: "Sensors", icon: `<circle cx="12" cy="12" r="9"/><path d="M12 8v4"/><path d="M12 16h.01"/>` },
+  { title: "Recording capture failures", desc: "Recordings not received from devices", severity: "Critical", started: "2 hrs ago", orgs: 1, patients: 3, color: "var(--red)", category: "Recording Failure", icon: `<path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3Z"/><path d="M19 11a7 7 0 0 1-14 0"/><path d="M12 19v3"/>` },
+  { title: "Voice engine errors", desc: "High error rate in voice processing", severity: "Critical", started: "20 min ago", orgs: 1, patients: 2, color: "var(--red)", category: "Voice Engine", icon: `<path d="M12 2a10 10 0 1 0 10 10"/><path d="M12 6v6l4 2"/>` },
+  { title: "Sync delays", desc: "Recordings and compliance data falling behind", severity: "High", started: "3 hrs ago", orgs: 2, patients: 3, color: "var(--orange)", category: "Sync", icon: `<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5"/><path d="M12 3v12"/>` },
+  { title: "App / OS compatibility issues", desc: "Devices running unsupported app or OS versions", severity: "Medium", started: "6 hrs ago", orgs: 3, patients: 3, color: "var(--yellow)", category: "App Version / OS", icon: `<rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 21h8"/><path d="M12 17h.01"/>` },
+  { title: "Sensor data delays", desc: "Sensor data delayed or missing", severity: "Low", started: "1 day ago", orgs: 1, patients: 1, color: "var(--blue)", category: "Sensor / SDK", icon: `<circle cx="12" cy="12" r="9"/><path d="M12 8v4"/><path d="M12 16h.01"/>` },
 ];
 
 const ovSeverityPillClass = { Critical: "critical", High: "high", Medium: "medium", Low: "low" };
@@ -297,36 +312,46 @@ function renderOvCritIssues(orgId) {
 }
 
 /* ---------------- Issues by Category (donut) ---------------- */
-const ovCategories = [
-  { label: "Recording", count: 18, color: "var(--red)" },
-  { label: "Voice Engine", count: 14, color: "var(--orange)" },
-  { label: "Sensors", count: 12, color: "#F2C94C" },
-  { label: "Upload", count: 9, color: "var(--green)" },
-  { label: "Device", count: 8, color: "var(--blue)" },
-  { label: "Compliance", count: 6, color: "var(--purple)" },
-  { label: "Other", count: 12, color: "var(--gray)" },
-];
-
-/* Maps a dashboard issue category to its matching Support ticket "Issue Type"
-   so a legend row can drill into only that category's tickets. */
-const ovCategoryToIssueType = {
-  Recording: "Recording Problem",
-  Upload: "Uploading Problem",
-  "Device / System": "Device/System Issue",
-  Device: "Device/System Issue",
-  "Voice Engine": "Voice Engine Issue",
-  Sensors: "Sensor Issue",
-  Compliance: "Compliance Issue",
-  Other: "Other Software Issue",
+/* Aggregated from orgHealthData's per-org category breakdowns -- the same
+   source ovOpenIssuesCount sums for the KPI row above -- so the donut's
+   total always equals "Open Issues Requiring Action" instead of being a
+   separately maintained figure that can drift apart from it. */
+/* Mirrors the palette used for the same category names in js/support-dashboard.js
+   (supDashCategoryColors) and js/org-health-data.js so a category reads as
+   the same color everywhere it appears. */
+const OV_CATEGORY_COLORS = {
+  "Voice Engine": "var(--orange)",
+  "Sensor / SDK": "var(--yellow)",
+  Sync: "var(--blue)",
+  "App Version / OS": "var(--cyan)",
+  "Recording Failure": "var(--red)",
+  "Login / Auth / OTP": "var(--navy)",
+  Billing: "var(--purple)",
+  "Data / EHR Integration": "var(--green)",
+  Other: "var(--gray)",
 };
 
+const ovCategories = (() => {
+  const totals = {};
+  Object.values(orgHealthData).forEach((o) => {
+    o.categories.forEach((c) => {
+      totals[c.label] = (totals[c.label] || 0) + c.count;
+    });
+  });
+  return Object.entries(totals)
+    .filter(([, count]) => count > 0)
+    .sort((a, b) => b[1] - a[1])
+    .map(([label, count]) => ({ label, count, color: OV_CATEGORY_COLORS[label] || "var(--gray)" }));
+})();
+
+/* Category names here are the same list as CATEGORIES in js/support-data.js,
+   so a legend row can drill straight into that category's tickets via
+   Support's Category filter instead of going through an issue-type lookup. */
 function ovCategoryDrilldownHref(label, orgId) {
   const params = new URLSearchParams();
-  const issueType = ovCategoryToIssueType[label];
-  if (issueType) params.set("issueType", issueType);
+  params.set("category", label);
   if (orgId && orgId !== "all") params.set("q", orgHealthData[orgId].name);
-  const qs = params.toString();
-  return `support.html${qs ? `?${qs}` : ""}`;
+  return `support.html?${params.toString()}`;
 }
 
 function renderOvDonut(orgId) {
