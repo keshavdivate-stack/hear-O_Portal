@@ -538,10 +538,5 @@ document.getElementById("confirmExportReport").addEventListener("click", () => {
   exportReportOverlay.classList.remove("open");
 });
 
-/* ---------------- Generate Report (re-applies the current filters) ---------------- */
-document.getElementById("generateReportBtn").addEventListener("click", () => {
-  renderPatientTable();
-});
-
 /* ---------------- Initial render ---------------- */
 renderPatientTable();
