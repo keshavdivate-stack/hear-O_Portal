@@ -73,15 +73,154 @@ rowsEl.innerHTML = billingList
   )
   .join("");
 
+const exportReportBtn = document.getElementById("exportReportBtn");
+const exportFormatPopover = document.getElementById("exportFormatPopover");
+
+function updateExportBtnState() {
+  const anySelected = document.querySelectorAll(".row-check.checked").length > 0;
+  exportReportBtn.disabled = !anySelected;
+  exportReportBtn.title = anySelected ? "Export Report" : "Select at least one row to export";
+  if (!anySelected) exportFormatPopover.classList.remove("open");
+}
+
 document.querySelectorAll(".bill-checkbox").forEach((box) => {
-  box.addEventListener("click", () => box.classList.toggle("checked"));
+  box.addEventListener("click", () => {
+    box.classList.toggle("checked");
+    updateExportBtnState();
+  });
 });
 
 document.getElementById("selectAllBox").addEventListener("click", function () {
   const checked = this.classList.contains("checked");
   document.querySelectorAll(".row-check").forEach((box) => box.classList.toggle("checked", checked));
+  updateExportBtnState();
+});
+
+wireTopbarToggle("exportReportBtn", "exportFormatPopover");
+
+exportFormatPopover.querySelectorAll(".more-menu-item").forEach((item) => {
+  item.addEventListener("click", () => {
+    exportFormatPopover.classList.remove("open");
+  });
 });
 
 document.getElementById("clearFilters").addEventListener("click", () => {
   document.getElementById("searchInput").value = "";
+});
+
+/* ---------------- Custom dropdowns (same pattern as Registration) ---------------- */
+function setCustomSelectValue(select, value, { silent = false } = {}) {
+  const hiddenInput = select.querySelector("input[type=hidden]");
+  const trigger = select.querySelector(".custom-select-value");
+  const option = select.querySelector(`.custom-select-option[data-value="${CSS.escape(value)}"]`);
+
+  select.querySelectorAll(".custom-select-option").forEach((o) => o.classList.remove("selected"));
+
+  if (option) {
+    option.classList.add("selected");
+    trigger.textContent = option.textContent.trim();
+    trigger.classList.remove("placeholder");
+  } else {
+    trigger.textContent = trigger.dataset.placeholder || trigger.textContent;
+    trigger.classList.add("placeholder");
+  }
+
+  hiddenInput.value = value || "";
+  if (!silent) hiddenInput.dispatchEvent(new Event("change", { bubbles: true }));
+}
+
+function positionCustomSelectMenu(select) {
+  const trigger = select.querySelector(".custom-select-trigger");
+  const menu = select.querySelector(".custom-select-menu");
+  const rect = trigger.getBoundingClientRect();
+  const menuHeight = Math.min(menu.scrollHeight, 220) + 12;
+  const spaceBelow = window.innerHeight - rect.bottom;
+  const openUpward = spaceBelow < menuHeight && rect.top > menuHeight;
+
+  menu.style.position = "fixed";
+  menu.style.left = `${rect.left}px`;
+  menu.style.width = `${rect.width}px`;
+  menu.style.top = openUpward ? "auto" : `${rect.bottom + 6}px`;
+  menu.style.bottom = openUpward ? `${window.innerHeight - rect.top + 6}px` : "auto";
+}
+
+function wireCustomSelect(select) {
+  const trigger = select.querySelector(".custom-select-trigger");
+  const valueEl = select.querySelector(".custom-select-value");
+  const hiddenInput = select.querySelector("input[type=hidden]");
+
+  valueEl.dataset.placeholder = valueEl.textContent.trim();
+  hiddenInput.dataset.default = hiddenInput.value;
+
+  trigger.addEventListener("click", (e) => {
+    e.stopPropagation();
+    const willOpen = !select.classList.contains("open");
+    document.querySelectorAll(".custom-select.open").forEach((s) => s.classList.remove("open"));
+    if (willOpen) positionCustomSelectMenu(select);
+    select.classList.toggle("open", willOpen);
+  });
+
+  select.addEventListener("click", (e) => {
+    const option = e.target.closest(".custom-select-option");
+    if (!option) return;
+    setCustomSelectValue(select, option.dataset.value);
+    select.classList.remove("open");
+  });
+}
+
+function initCustomSelects(root = document) {
+  root.querySelectorAll(".custom-select").forEach(wireCustomSelect);
+}
+
+function closeAllCustomSelects() {
+  document.querySelectorAll(".custom-select.open").forEach((s) => s.classList.remove("open"));
+}
+
+document.addEventListener("click", closeAllCustomSelects);
+document.addEventListener("scroll", closeAllCustomSelects, true);
+window.addEventListener("resize", closeAllCustomSelects);
+
+initCustomSelects();
+
+function resetCustomSelectsIn(root) {
+  root.querySelectorAll(".custom-select").forEach((select) => {
+    const hiddenInput = select.querySelector("input[type=hidden]");
+    setCustomSelectValue(select, hiddenInput.dataset.default || "", { silent: true });
+  });
+}
+
+/* ---------------- Schedule Billing Report modal ---------------- */
+const scheduleBillingReportOverlay = document.getElementById("scheduleBillingReportOverlay");
+const scheduleBillingReportForm = document.getElementById("scheduleBillingReportForm");
+const saveScheduleBillingReport = document.getElementById("saveScheduleBillingReport");
+const scheduleBillingReportRequired = ["reportType", "reportPeriod", "scheduleFrequency"];
+
+function validateScheduleBillingReportForm() {
+  const valid = scheduleBillingReportRequired.every((name) => scheduleBillingReportForm[name].value.trim() !== "");
+  saveScheduleBillingReport.disabled = !valid;
+  saveScheduleBillingReport.classList.toggle("enabled", valid);
+}
+
+scheduleBillingReportForm.addEventListener("input", validateScheduleBillingReportForm);
+scheduleBillingReportForm.addEventListener("change", validateScheduleBillingReportForm);
+
+function openScheduleBillingReportModal() {
+  scheduleBillingReportForm.reset();
+  resetCustomSelectsIn(scheduleBillingReportForm);
+  validateScheduleBillingReportForm();
+  scheduleBillingReportOverlay.classList.add("open");
+}
+
+function closeScheduleBillingReportModal() {
+  scheduleBillingReportOverlay.classList.remove("open");
+}
+
+document.getElementById("scheduleBillingReportBtn").addEventListener("click", openScheduleBillingReportModal);
+document.getElementById("cancelScheduleBillingReport").addEventListener("click", closeScheduleBillingReportModal);
+scheduleBillingReportOverlay.addEventListener("click", (e) => { if (e.target === scheduleBillingReportOverlay) closeScheduleBillingReportModal(); });
+
+scheduleBillingReportForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  if (saveScheduleBillingReport.disabled) return;
+  closeScheduleBillingReportModal();
 });

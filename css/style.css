@@ -168,7 +168,11 @@ body {
   margin-left: var(--sidebar-collapsed);
   min-width: 0;
   max-width: 100%;
-  overflow-x: hidden;
+  /* overflow-x: clip (not hidden) so this doesn't force overflow-y to
+     compute as auto, which would turn .main into its own scroll container
+     and break position:sticky on .overview-card below. */
+  overflow-x: clip;
+  overflow-y: visible;
   transition: margin-left var(--transition);
 }
 
@@ -782,11 +786,15 @@ body {
   border-radius: 16px;
   overflow: hidden;
   box-shadow: 0 2px 6px rgba(20, 30, 50, 0.03);
+  max-height: calc(100vh - 240px);
+  display: flex;
+  flex-direction: column;
 }
 
 .table-scroll {
-  overflow-x: auto;
-  overflow-y: visible;
+  overflow: auto;
+  flex: 1;
+  min-height: 0;
 }
 
 .list-table {
@@ -1135,12 +1143,19 @@ body {
 
 .date-pill .date-label { color: var(--gray-text); font-weight: 400; margin-right: 4px; }
 
-/* -- Overview card / chart -- */
+/* -- Overview card / chart --
+   Sticks to the top of the viewport once scrolled to it, so the HearO
+   status timeline stays visible while Recordings / Health Data / Clinical
+   and History Events scroll underneath it. */
 .overview-card {
   background: #fff;
   border: 1px solid var(--gray-border);
   border-radius: 16px;
   padding: 24px 28px 18px;
+  position: sticky;
+  top: 16px;
+  z-index: 15;
+  box-shadow: 0 8px 20px rgba(20, 30, 50, 0.08);
 }
 
 .overview-heading { font-size: 18px; font-weight: 800; margin: 0 0 14px; }
@@ -1757,7 +1772,12 @@ body {
 .data-tab.open { color: #23272E; }
 .data-tab.open .chevron { transform: rotate(180deg); }
 
-.data-tab-panel { display: none; padding-top: 20px; }
+.data-tab-panel {
+  display: none;
+  padding-top: 20px;
+  max-height: 560px;
+  overflow-y: auto;
+}
 .data-tab-panel.open { display: block; }
 
 /* -- Recordings -- */
@@ -2027,6 +2047,12 @@ body {
   flex-shrink: 0;
 }
 
+.clinical-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 16px;
+}
+
 .clinical-body.collapsed { display: none; }
 
 .collapse-icon { transition: transform 150ms ease; }
@@ -2143,8 +2169,8 @@ body {
 .med-filter-select {
   appearance: none;
   -webkit-appearance: none;
-  background: var(--blue-light);
-  border: none;
+  background: #fff;
+  border: 1px solid var(--gray-border);
   border-radius: 10px;
   padding: 10px 34px 10px 16px;
   font-size: 13.5px;
@@ -2155,7 +2181,7 @@ body {
   outline: none;
 }
 
-.med-filter-select:hover { background: #DCEEF8; }
+.med-filter-select:hover { background: var(--bg); }
 
 .med-filter-caret { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); pointer-events: none; }
 
@@ -2287,11 +2313,24 @@ body {
 .med-list { display: flex; flex-direction: column; }
 
 .med-block {
-  padding: 20px 0;
-  border-bottom: 1px solid #F0F2F5;
+  padding: 20px;
+  border: 1px solid var(--gray-border);
+  border-radius: 12px;
+  margin-bottom: 14px;
 }
 
-.med-block:last-child { border-bottom: none; }
+.med-block:last-child { margin-bottom: 0; }
+
+.med-hf-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: #F2994A;
+  color: #fff;
+  font-size: 11.5px;
+  font-weight: 700;
+}
 
 .med-block-head {
   display: flex;
@@ -2525,8 +2564,14 @@ body {
 
 .modal-wide { width: 760px; }
 
-.modal h2 {
-  margin: 0 0 20px;
+.modal h2:not(.reg-success-title) {
+  position: sticky;
+  top: -28px;
+  z-index: 3;
+  margin: -28px -30px 20px;
+  padding: 28px 30px 16px;
+  background: #fff;
+  border-bottom: 1px solid var(--gray-border);
   font-size: 17px;
   font-weight: 700;
   color: #23272E;
@@ -2657,7 +2702,13 @@ body {
   justify-content: flex-end;
   align-items: center;
   gap: 26px;
-  margin-top: 24px;
+  position: sticky;
+  bottom: -24px;
+  z-index: 3;
+  margin: 24px -30px -24px;
+  padding: 16px 30px 24px;
+  background: #fff;
+  border-top: 1px solid var(--gray-border);
 }
 
 .btn-text {
@@ -2706,6 +2757,20 @@ body {
 
 .topbar-popover.open { display: block; }
 
+/* -- Add Patient menu -- */
+.add-patient-menu {
+  padding: 8px;
+  min-width: 200px;
+}
+
+.add-patient-menu .row-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.add-patient-menu .row-menu-item svg { flex-shrink: 0; color: var(--gray-text); }
+
 /* -- Org switcher -- */
 .org-popover { padding: 10px; min-width: 150px; }
 
@@ -2738,14 +2803,52 @@ body {
   position: relative;
 }
 
-.org-radio-item input:checked + .radio-dot { border-color: var(--blue); }
+.org-radio-item input:checked + .radio-dot,
+.account-radio-item input:checked + .radio-dot { border-color: var(--blue); }
 
-.org-radio-item input:checked + .radio-dot::after {
+.org-radio-item input:checked + .radio-dot::after,
+.account-radio-item input:checked + .radio-dot::after {
   content: "";
   position: absolute;
   inset: 3px;
   border-radius: 50%;
   background: var(--blue);
+}
+
+/* -- Update Account modal -- */
+.account-modal-subtitle {
+  font-size: 14px;
+  color: #6B7684;
+  margin: -12px 0 20px;
+}
+
+.account-radio-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 4px;
+}
+
+.account-radio-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 4px;
+  font-size: 15px;
+  color: #23272E;
+  cursor: pointer;
+}
+
+.account-radio-item input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.account-discontinue-reason {
+  margin-top: 6px;
+  margin-bottom: 4px;
 }
 
 /* -- More menu -- */
@@ -2754,12 +2857,18 @@ body {
 .more-menu-item {
   display: flex;
   align-items: center;
+  width: 100%;
   gap: 10px;
   padding: 10px 10px;
+  border: none;
   border-radius: 8px;
+  background: none;
+  font-family: inherit;
   font-size: 14.5px;
   color: #23272E;
   text-decoration: none;
+  text-align: left;
+  cursor: pointer;
 }
 
 .more-menu-item:hover { background: var(--bg); }
@@ -2865,6 +2974,44 @@ body {
 }
 
 .required-star { color: var(--red); margin-left: 2px; }
+
+.form-field.full { grid-column: 1 / -1; }
+
+.time-pair { display: flex; align-items: center; gap: 6px; }
+
+.time-pair input {
+  width: 60px;
+  text-align: center;
+  padding: 11px 6px;
+  border: 1px solid var(--gray-border);
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 14px;
+  color: #23272E;
+}
+
+.time-pair input:focus { outline: none; border-color: var(--blue); }
+.time-pair span { color: var(--gray-text); font-weight: 700; }
+
+/* Audit Trail: date range pill (filter-btn shell around a native date input) */
+.date-filter-btn { cursor: text; }
+
+.date-filter-input {
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: 14.5px;
+  font-weight: 600;
+  color: #23272E;
+  width: 82px;
+  cursor: pointer;
+}
+
+.date-filter-input::placeholder { color: #23272E; opacity: 1; }
+
+/* Audit Trail: single-select filter popover (Action Type / Made By) reusing .org-popover markup */
+.filter-select-popover { max-height: 280px; overflow-y: auto; }
 
 .custom-select {
   position: relative;
@@ -3070,6 +3217,43 @@ body {
   flex-direction: column;
 }
 
+.import-results-table-wrap {
+  border: 1px solid var(--gray-border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.import-results-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.import-results-table thead th {
+  text-align: left;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  color: #7E8993;
+  padding: 8px 16px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--gray-border);
+  white-space: nowrap;
+}
+
+.import-results-table thead th:first-child { width: 44px; }
+
+.import-results-table tbody tr { cursor: pointer; }
+.import-results-table tbody tr:not(:last-child) td { border-bottom: 1px solid var(--gray-border); }
+.import-results-table tbody tr:hover td { background: var(--bg); }
+
+.import-results-table td {
+  padding: 8px 16px;
+  vertical-align: middle;
+  font-size: 13.5px;
+}
+
+.import-results-table .lt-name { font-weight: 700; }
+
 .reg-title {
   text-align: center;
   font-size: 22px;
@@ -3090,6 +3274,12 @@ body {
   font-weight: 700;
   color: #23272E;
   margin: 0 0 14px;
+}
+
+.form-divider {
+  border: none;
+  border-top: 1px solid var(--gray-border);
+  margin: 22px 0;
 }
 
 .reg-field label {
@@ -3298,6 +3488,25 @@ body {
 }
 
 .btn-secondary:hover { background: var(--blue-light); }
+
+.btn-secondary.icon-only { padding: 10px; }
+
+.btn-secondary:disabled {
+  opacity: 1;
+  background: #fff;
+  border-color: var(--gray-border);
+  color: #C1C7CF;
+  cursor: not-allowed;
+}
+
+.btn-secondary:disabled:hover { background: #fff; }
+
+.export-menu-wrap {
+  position: relative;
+  margin-left: auto;
+}
+
+#scheduleBillingReportBtn { margin-left: 0; }
 
 .bill-checkbox {
   display: inline-block;

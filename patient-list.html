@@ -35,12 +35,6 @@
           </span>
           <span class="nav-label">Patient List</span>
         </a>
-        <a href="registration.html" class="nav-item">
-          <span class="nav-icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="10" cy="8" r="3.5" stroke="currentColor" stroke-width="1.8"/><path d="M2.5 20.5C2.5 16.6 5.8 14 10 14C14.2 14 17.5 16.6 17.5 20.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M18 8H22" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M20 6V10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-          </span>
-          <span class="nav-label">Registration</span>
-        </a>
         <a href="billing.html" class="nav-item">
           <span class="nav-icon">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><path d="M12 7V17" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M15 9.5C15 8.1 13.7 7 12 7C10.3 7 9 8.1 9 9.5C9 10.9 10.3 11.5 12 12C13.7 12.5 15 13.1 15 14.5C15 15.9 13.7 17 12 17C10.3 17 9 15.9 9 14.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
@@ -207,6 +201,25 @@
           </div>
 
           <button class="clear-filters" id="clearFilters">Clear all filters</button>
+
+          <span class="filters-spacer"></span>
+
+          <div class="topbar-item">
+            <button class="btn-add-user" id="openAddPatientBtn">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+              Add Patient
+            </button>
+            <div class="topbar-popover add-patient-menu" id="addPatientMenu">
+              <button type="button" class="row-menu-item" id="openRegisterManualBtn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+                Register Manually
+              </button>
+              <button type="button" class="row-menu-item" id="openImportPatientBtn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 17H7A5 5 0 0 1 7 7h2"/><path d="M15 7h2a5 5 0 0 1 0 10h-2"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                Import from EHR
+              </button>
+            </div>
+          </div>
         </div>
 
         <div class="table-card">
@@ -242,6 +255,483 @@
           </div>
         </div>
 
+      </div>
+    </div>
+  </div>
+
+  <!-- Register Manually modal -->
+  <div class="modal-overlay" id="registerManualOverlay">
+    <div class="modal modal-wide" id="registerManualModal">
+
+      <div id="registerManualFormWrap">
+        <h2>Register Patient</h2>
+        <form id="registerManualForm">
+          <div class="form-grid">
+            <div class="form-field">
+              <label>First Name<span class="required-star">*</span></label>
+              <input type="text" name="firstName" placeholder="First Name" required />
+            </div>
+            <div class="form-field">
+              <label>Last Name<span class="required-star">*</span></label>
+              <input type="text" name="lastName" placeholder="Last Name" required />
+            </div>
+            <div class="form-field">
+              <label>MRN/ID<span class="required-star">*</span></label>
+              <input type="text" name="mrn" placeholder="MRN/ID" required />
+            </div>
+
+            <div class="form-field">
+              <label>Date of birth</label>
+              <div class="reg-date-field">
+                <input type="text" name="dob" placeholder="Date of birth" onfocus="(this.type='date')" onblur="if(!this.value) this.type='text'" />
+                <svg class="reg-date-icon" width="17" height="17" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="17" rx="2" stroke="#6B7684" stroke-width="1.8"/><path d="M3 9H21" stroke="#6B7684" stroke-width="1.8"/><path d="M8 2V6" stroke="#6B7684" stroke-width="1.8" stroke-linecap="round"/><path d="M16 2V6" stroke="#6B7684" stroke-width="1.8" stroke-linecap="round"/></svg>
+              </div>
+            </div>
+            <div class="form-field">
+              <label>Email<span class="required-star">*</span></label>
+              <input type="email" name="email" placeholder="Email" required />
+            </div>
+            <div class="form-field">
+              <label>Email language<span class="required-star">*</span></label>
+              <div class="custom-select" data-name="emailLanguage">
+                <button type="button" class="custom-select-trigger">
+                  <span class="custom-select-value placeholder">Email language</span>
+                  <svg class="custom-select-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
+                <div class="custom-select-menu">
+                  <div class="custom-select-option" data-value="English">English<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                  <div class="custom-select-option" data-value="Spanish">Spanish<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                  <div class="custom-select-option" data-value="Hebrew">Hebrew<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                </div>
+                <input type="hidden" name="emailLanguage" required />
+              </div>
+            </div>
+
+            <div class="form-field">
+              <label>Mobile number</label>
+              <div class="phone-field">
+                <div class="custom-select country-select" data-name="countryCode">
+                  <button type="button" class="custom-select-trigger">
+                    <span class="custom-select-value">+972</span>
+                    <svg class="custom-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                  </button>
+                  <div class="custom-select-menu">
+                    <div class="custom-select-option" data-value="+1">+1<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    <div class="custom-select-option selected" data-value="+972">+972<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    <div class="custom-select-option" data-value="+44">+44<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                  </div>
+                  <input type="hidden" name="countryCode" value="+972" />
+                </div>
+                <input type="text" name="mobile" placeholder="Mobile number" />
+              </div>
+            </div>
+            <div class="form-field">
+              <label>Gender</label>
+              <div class="custom-select" data-name="gender">
+                <button type="button" class="custom-select-trigger">
+                  <span class="custom-select-value placeholder">Gender</span>
+                  <svg class="custom-select-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
+                <div class="custom-select-menu">
+                  <div class="custom-select-option" data-value="Female">Female<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                  <div class="custom-select-option" data-value="Male">Male<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                  <div class="custom-select-option" data-value="Other">Other<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                </div>
+                <input type="hidden" name="gender" />
+              </div>
+            </div>
+            <div class="form-field">
+              <label>Provider</label>
+              <div class="custom-select" data-name="careTeamProvider">
+                <button type="button" class="custom-select-trigger">
+                  <span class="custom-select-value placeholder">Select provider</span>
+                  <svg class="custom-select-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
+                <div class="custom-select-menu">
+                  <div class="custom-select-option" data-value="Dr. Sarah Mitchell">Dr. Sarah Mitchell<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                  <div class="custom-select-option" data-value="Dr. James Carter">Dr. James Carter<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                  <div class="custom-select-option" data-value="Dr. Emily Chen">Dr. Emily Chen<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                  <div class="custom-select-option" data-value="Dr. Michael Reyes">Dr. Michael Reyes<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                </div>
+                <input type="hidden" name="careTeamProvider" />
+              </div>
+            </div>
+          </div>
+
+          <hr class="form-divider" />
+
+          <p class="reg-section-label">Emergency Contact</p>
+          <div class="form-grid">
+            <div class="form-field">
+              <label>Relationship</label>
+              <div class="custom-select" data-name="ecRelationship">
+                <button type="button" class="custom-select-trigger">
+                  <span class="custom-select-value placeholder">Select...</span>
+                  <svg class="custom-select-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
+                <div class="custom-select-menu">
+                  <div class="custom-select-option" data-value="Spouse">Spouse<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                  <div class="custom-select-option" data-value="Parent">Parent<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                  <div class="custom-select-option" data-value="Child">Child<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                  <div class="custom-select-option" data-value="Sibling">Sibling<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                  <div class="custom-select-option" data-value="Friend">Friend<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                  <div class="custom-select-option" data-value="Other">Other<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                </div>
+                <input type="hidden" name="ecRelationship" />
+              </div>
+            </div>
+            <div class="form-field">
+              <label>First name</label>
+              <input type="text" name="ecFirstName" placeholder="First name" />
+            </div>
+            <div class="form-field">
+              <label>Last name</label>
+              <input type="text" name="ecLastName" placeholder="Last name" />
+            </div>
+            <div class="form-field">
+              <label>Email</label>
+              <input type="email" name="ecEmail" placeholder="you@email.com" />
+            </div>
+            <div class="form-field">
+              <label>Phone</label>
+              <input type="tel" name="ecPhone" placeholder="(904) 555-0123" />
+            </div>
+          </div>
+
+          <hr class="form-divider" />
+
+          <div class="reg-note">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#23272E" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 8V13" stroke-linecap="round"/><circle cx="12" cy="16" r="1" fill="#23272E" stroke="none"/></svg>
+            Please advise patient to inform clinic of any HF worsening during baseline
+          </div>
+
+          <button type="button" class="reg-add-vitals" id="addInitialVitalsModal">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5V19M5 12H19"/></svg>
+            Add initial vitals
+          </button>
+
+          <div class="modal-actions">
+            <button type="button" class="btn-text" id="cancelRegisterManual">Cancel</button>
+            <button type="submit" class="btn-save" id="saveRegisterManual" disabled>Register Patient</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- REGISTRATION SUCCESS -->
+      <div id="registerManualSuccessWrap" style="display:none">
+        <div class="reg-success" style="margin-top:0;">
+          <div class="reg-success-icon">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="var(--green)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <h2 class="reg-success-title">Patient registered</h2>
+
+          <div class="reg-success-card">
+            <div class="reg-success-row">
+              <span class="reg-success-icon-sm">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--gray-text)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7L12 13L21 7"/></svg>
+              </span>
+              <div>
+                <div class="reg-success-row-title">Mobile app access sent</div>
+                <div class="reg-success-row-desc">A unique username and password were generated and emailed to the patient, with app-store links for iOS and Android.</div>
+              </div>
+            </div>
+            <div class="reg-success-row">
+              <span class="reg-success-icon-sm">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--gray-text)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8V13"/><circle cx="12" cy="16" r="1" fill="var(--gray-text)" stroke="none"/></svg>
+              </span>
+              <div>
+                <div class="reg-success-row-title">Not EHR-linked</div>
+                <div class="reg-success-row-desc">Flagged for later matching to an EHR record — see the Onboarding Pipeline.</div>
+              </div>
+            </div>
+            <div class="reg-success-row">
+              <span class="reg-success-icon-sm">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--gray-text)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6H20"/><path d="M9 12H20"/><path d="M9 18H20"/><path d="M4 6L5 7L7 5"/><path d="M4 12L5 13L7 11"/><path d="M4 18L5 19L7 17"/></svg>
+              </span>
+              <div>
+                <div class="reg-success-row-title">Next: voice baseline</div>
+                <div class="reg-success-row-desc">The patient completes onboarding and daily recording in the HearO app — 14 valid days within a 21-day window to establish baseline.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="modal-actions" style="justify-content:center;">
+            <button type="button" class="btn-save enabled" id="closeRegisterManualSuccess">Done</button>
+          </div>
+
+          <div style="text-align:center;">
+            <a href="login.html" class="reg-success-preview-link" target="_blank">
+              Preview patient onboarding email
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7"/><path d="M8 7H17V16"/></svg>
+            </a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Import Patient modal -->
+  <div class="modal-overlay" id="importPatientOverlay">
+    <div class="modal modal-wide" id="importPatientModal">
+
+      <div id="importPatientFormWrap">
+        <h2>Import Patient</h2>
+
+        <div class="form-grid">
+          <div class="form-field">
+            <label>Patient ID</label>
+            <input type="text" id="importMrn" placeholder="MRN/ID" />
+          </div>
+          <div class="form-field">
+            <label>First Name</label>
+            <input type="text" id="importFirstName" placeholder="First Name" />
+          </div>
+          <div class="form-field">
+            <label>Last Name</label>
+            <input type="text" id="importLastName" placeholder="Last Name" />
+          </div>
+          <div class="form-field">
+            <label>Date of birth</label>
+            <div class="reg-date-field">
+              <input type="text" id="importDob" placeholder="Date of birth" onfocus="(this.type='date')" onblur="if(!this.value) this.type='text'" />
+              <svg class="reg-date-icon" width="17" height="17" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="17" rx="2" stroke="#6B7684" stroke-width="1.8"/><path d="M3 9H21" stroke="#6B7684" stroke-width="1.8"/><path d="M8 2V6" stroke="#6B7684" stroke-width="1.8" stroke-linecap="round"/><path d="M16 2V6" stroke="#6B7684" stroke-width="1.8" stroke-linecap="round"/></svg>
+            </div>
+          </div>
+          <div class="form-field">
+            <label>EHR Name<span class="required-star">*</span></label>
+            <div class="custom-select" data-name="importEhrName">
+              <button type="button" class="custom-select-trigger">
+                <span class="custom-select-value placeholder">EHR Name</span>
+                <svg class="custom-select-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="custom-select-menu">
+                <div class="custom-select-option" data-value="Athena">Athena<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="eClinicalWorks">eClinicalWorks<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Epic">Epic<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              </div>
+              <input type="hidden" name="importEhrName" required />
+            </div>
+          </div>
+          <div class="form-field">
+            <label>&nbsp;</label>
+            <button type="button" class="btn-secondary" id="importSearchBtn" style="width:100%; justify-content:center;">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8"/><path d="M21 21L16.5 16.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+              Search
+            </button>
+          </div>
+        </div>
+
+        <p class="reg-note" id="importResultsEmpty" style="justify-content:center; margin-top:26px;">
+          Search the connected EHR to find and import a patient record.
+        </p>
+
+        <div id="importResultsWrap" style="display:none; margin-top:26px;">
+          <div class="ehr-results-head">
+            <span id="importSelectedCount">0 selected</span>
+            <label class="ehr-select-all">
+              <span class="bill-checkbox" id="importSelectAll"></span>
+              Select all
+            </label>
+          </div>
+          <div class="import-results-table-wrap">
+            <table class="import-results-table">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th>NAME</th>
+                  <th>MRN</th>
+                  <th>DOB</th>
+                </tr>
+              </thead>
+              <tbody id="importResultsList"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn-text" id="cancelImportPatient">Cancel</button>
+          <button type="button" class="btn-save" id="importPatientBtn" disabled>Import Patient</button>
+        </div>
+      </div>
+
+      <!-- IMPORT SUCCESS -->
+      <div id="importPatientSuccessWrap" style="display:none">
+        <div class="reg-success" style="margin-top:0;">
+          <div class="reg-success-icon">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="var(--green)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <h2 class="reg-success-title">Patient imported</h2>
+
+          <div class="reg-success-card">
+            <div class="reg-success-row">
+              <span class="reg-success-icon-sm">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--gray-text)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7L12 13L21 7"/></svg>
+              </span>
+              <div>
+                <div class="reg-success-row-title">Mobile app access sent</div>
+                <div class="reg-success-row-desc">A unique username and password were generated and emailed to the patient, with app-store links for iOS and Android.</div>
+              </div>
+            </div>
+            <div class="reg-success-row">
+              <span class="reg-success-icon-sm">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="var(--green)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </span>
+              <div>
+                <div class="reg-success-row-title">EHR-linked</div>
+                <div class="reg-success-row-desc">Patient record was matched and linked to the connected EHR.</div>
+              </div>
+            </div>
+            <div class="reg-success-row">
+              <span class="reg-success-icon-sm">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--gray-text)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6H20"/><path d="M9 12H20"/><path d="M9 18H20"/><path d="M4 6L5 7L7 5"/><path d="M4 12L5 13L7 11"/><path d="M4 18L5 19L7 17"/></svg>
+              </span>
+              <div>
+                <div class="reg-success-row-title">Next: voice baseline</div>
+                <div class="reg-success-row-desc">The patient completes onboarding and daily recording in the HearO app — 14 valid days within a 21-day window to establish baseline.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="modal-actions" style="justify-content:center;">
+            <button type="button" class="btn-save enabled" id="closeImportPatientSuccess">Done</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Row action dropdown -->
+  <div class="row-menu" id="patientRowMenu">
+    <button class="row-menu-item" data-action="edit">Edit patient</button>
+    <button class="row-menu-item" data-action="account">Update account</button>
+    <button class="row-menu-item" data-action="reset">Reset password</button>
+  </div>
+
+  <!-- Edit Patient modal -->
+  <div class="modal-overlay" id="editPatientOverlay">
+    <div class="modal modal-wide">
+      <h2>Edit Patient</h2>
+      <form id="editPatientForm">
+        <div class="form-grid">
+          <div class="form-field">
+            <label>First Name<span class="required-star">*</span></label>
+            <input type="text" name="firstName" placeholder="First Name" required />
+          </div>
+          <div class="form-field">
+            <label>Last Name<span class="required-star">*</span></label>
+            <input type="text" name="lastName" placeholder="Last Name" required />
+          </div>
+          <div class="form-field">
+            <label>MRN/ID<span class="required-star">*</span></label>
+            <input type="text" name="mrn" placeholder="MRN/ID" required />
+          </div>
+          <div class="form-field">
+            <label>Email<span class="required-star">*</span></label>
+            <input type="email" name="email" placeholder="Email" required />
+          </div>
+          <div class="form-field">
+            <label>Mobile number</label>
+            <div class="phone-field">
+              <div class="custom-select country-select" data-name="editCountryCode">
+                <button type="button" class="custom-select-trigger">
+                  <span class="custom-select-value">+972</span>
+                  <svg class="custom-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
+                <div class="custom-select-menu">
+                  <div class="custom-select-option" data-value="+1">+1<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                  <div class="custom-select-option selected" data-value="+972">+972<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                  <div class="custom-select-option" data-value="+44">+44<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                </div>
+                <input type="hidden" name="editCountryCode" value="+972" />
+              </div>
+              <input type="text" name="mobile" placeholder="Mobile number" />
+            </div>
+          </div>
+          <div class="form-field">
+            <label>Gender</label>
+            <div class="custom-select" data-name="editGender">
+              <button type="button" class="custom-select-trigger">
+                <span class="custom-select-value placeholder">Gender</span>
+                <svg class="custom-select-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="custom-select-menu">
+                <div class="custom-select-option" data-value="Female">Female<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Male">Male<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Other">Other<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              </div>
+              <input type="hidden" name="editGender" />
+            </div>
+          </div>
+          <div class="form-field">
+            <label>Provider</label>
+            <div class="custom-select" data-name="editProvider">
+              <button type="button" class="custom-select-trigger">
+                <span class="custom-select-value placeholder">Select provider</span>
+                <svg class="custom-select-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="custom-select-menu">
+                <div class="custom-select-option" data-value="Dr. Sarah Mitchell">Dr. Sarah Mitchell<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Dr. James Carter">Dr. James Carter<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Dr. Emily Chen">Dr. Emily Chen<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Dr. Michael Reyes">Dr. Michael Reyes<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              </div>
+              <input type="hidden" name="editProvider" />
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn-text" id="cancelEditPatient">Cancel</button>
+          <button type="submit" class="btn-save" id="saveEditPatient" disabled>Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Update Account modal -->
+  <div class="modal-overlay" id="updateAccountOverlay">
+    <div class="modal">
+      <h2>Update Account</h2>
+      <p class="account-modal-subtitle" id="updateAccountSubtitle">&nbsp;</p>
+
+      <div class="account-radio-list">
+        <label class="account-radio-item">
+          <input type="radio" name="accountAction" value="Paused" />
+          <span class="radio-dot"></span>
+          Move to Paused
+        </label>
+        <label class="account-radio-item">
+          <input type="radio" name="accountAction" value="Discontinued" />
+          <span class="radio-dot"></span>
+          Move to Discontinued
+        </label>
+      </div>
+
+      <div class="form-field account-discontinue-reason" id="discontinueReasonField" style="display:none;">
+        <label>Reason for discontinuation<span class="required-star">*</span></label>
+        <textarea id="discontinueReason" placeholder="Explain why this patient's account is being discontinued"></textarea>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn-text" id="cancelUpdateAccount">Cancel</button>
+        <button type="button" class="btn-save" id="saveUpdateAccount" disabled>Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reset Password modal -->
+  <div class="modal-overlay" id="resetPasswordOverlay">
+    <div class="modal">
+      <h2>Reset Password</h2>
+      <p class="account-modal-subtitle" style="margin-bottom:22px;">
+        Are you sure you want to reset the password to the user <b id="resetPasswordName">&nbsp;</b>?
+      </p>
+
+      <div class="modal-actions">
+        <button type="button" class="btn-text" id="cancelResetPassword">Cancel</button>
+        <button type="button" class="btn-save enabled" id="confirmResetPassword">Reset</button>
       </div>
     </div>
   </div>

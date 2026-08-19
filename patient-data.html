@@ -35,12 +35,6 @@
           </span>
           <span class="nav-label">Patient List</span>
         </a>
-        <a href="registration.html" class="nav-item">
-          <span class="nav-icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="10" cy="8" r="3.5" stroke="currentColor" stroke-width="1.8"/><path d="M2.5 20.5C2.5 16.6 5.8 14 10 14C14.2 14 17.5 16.6 17.5 20.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M18 8H22" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M20 6V10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-          </span>
-          <span class="nav-label">Registration</span>
-        </a>
         <a href="billing.html" class="nav-item">
           <span class="nav-icon">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><path d="M12 7V17" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M15 9.5C15 8.1 13.7 7 12 7C10.3 7 9 8.1 9 9.5C9 10.9 10.3 11.5 12 12C13.7 12.5 15 13.1 15 14.5C15 15.9 13.7 17 12 17C10.3 17 9 15.9 9 14.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
@@ -325,7 +319,7 @@
                 <span class="subtab active" data-subtab="measurement">Measurement</span>
                 <span class="subtab" data-subtab="wellness">Wellness</span>
               </div>
-              <button class="btn-add-vitals">
+              <button class="btn-add-vitals" id="openAddMeasurementBtn">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
                 Add measurement
               </button>
@@ -355,7 +349,7 @@
                 <div class="wellness-card">
                   <div class="wellness-head-row">
                     <h3 class="wellness-title">Weight</h3>
-                    <div class="unit-toggle" id="weightUnitToggle">
+                    <div class="unit-toggle weight-unit-toggle" id="weightUnitToggle">
                       <span data-unit="kg">KG</span>
                       <span data-unit="lbs" class="active">lbs</span>
                     </div>
@@ -509,65 +503,43 @@
 
           <!-- Clinical panel -->
           <div class="data-tab-panel" data-panel="clinical">
-            <div class="clinical-section">
-
-              <!-- Medications -->
-              <div class="clinical-card">
-                <div class="clinical-head-row">
-                  <div class="clinical-title-group">
-                    <button class="collapse-btn" aria-label="Collapse Medications">
-                      <svg class="collapse-icon" width="16" height="16" viewBox="0 0 24 24" fill="none"><polyline points="6 9 12 15 18 9" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                    </button>
-                    <h3 class="clinical-title">
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M8.5 15.5L15.5 8.5" stroke="#23272E" stroke-width="1.7" stroke-linecap="round"/><rect x="4" y="12.5" width="7.1" height="14" rx="3.5" transform="rotate(-45 4 12.5)" stroke="#23272E" stroke-width="1.7"/><rect x="8.9" y="4.5" width="7.1" height="7.5" rx="3.5" transform="rotate(-45 8.9 4.5)" stroke="#23272E" stroke-width="1.7"/></svg>
-                      Medications <span class="count-pill" id="medCount"></span>
-                    </h3>
-                  </div>
-                  <div class="clinical-head-actions">
-                    <div class="med-filter-select-wrap">
-                      <select class="med-filter-select" id="medStatusFilter">
-                        <option value="all">All medication</option>
-                        <option value="active">Active medication</option>
-                        <option value="past">Past medication</option>
-                      </select>
-                      <svg class="med-filter-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#6B7684" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-                    </div>
-                    <a href="#" class="clinical-add-link" id="openAddMedBtn">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-                      Add medication
-                    </a>
-                  </div>
-                </div>
-
-                <div class="clinical-body">
-                  <div class="med-list" id="medList"></div>
-                </div>
+            <div class="subtab-row">
+              <div class="subtabs">
+                <span class="subtab active" data-subtab="medication">Medication <span class="count-pill" id="medCount"></span></span>
+                <span class="subtab" data-subtab="care-rec">Care Recommendations <span class="count-pill" id="careRecCount"></span></span>
               </div>
 
-              <!-- Care Recommendations -->
-              <div class="clinical-card">
-                <div class="clinical-head-row">
-                  <div class="clinical-title-group">
-                    <button class="collapse-btn" aria-label="Collapse Care Recommendations">
-                      <svg class="collapse-icon" width="16" height="16" viewBox="0 0 24 24" fill="none"><polyline points="6 9 12 15 18 9" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                    </button>
-                    <h3 class="clinical-title">
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M9 18H15M10 21H14M12 3C8.5 3 6 5.6 6 9C6 11.2 7 12.6 8 13.8C8.7 14.6 9 15.2 9 16H15C15 15.2 15.3 14.6 16 13.8C17 12.6 18 11.2 18 9C18 5.6 15.5 3 12 3Z" stroke="#23272E" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                      Care Recommendations <span class="count-pill" id="careRecCount"></span>
-                    </h3>
-                  </div>
-                  <div class="clinical-head-actions">
-                    <a href="#" class="clinical-add-link" id="openAddRecBtn">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-                      New recommendation
-                    </a>
-                  </div>
+              <div class="clinical-head-actions" id="medSubtabActions">
+                <div class="med-filter-select-wrap">
+                  <select class="med-filter-select" id="medStatusFilter">
+                    <option value="all">All medication</option>
+                    <option value="active">Active medication</option>
+                    <option value="past">Past medication</option>
+                  </select>
+                  <svg class="med-filter-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#6B7684" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
                 </div>
-                <div class="clinical-body">
-                  <div class="care-rec-list" id="careRecList"></div>
-                </div>
+                <a href="#" class="clinical-add-link" id="openAddMedBtn">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                  Add medication
+                </a>
               </div>
 
+              <div class="clinical-head-actions" id="careRecSubtabActions" style="display:none;">
+                <a href="#" class="clinical-add-link" id="openAddRecBtn">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                  New recommendation
+                </a>
+              </div>
+            </div>
+
+            <!-- Medication -->
+            <div class="subtab-panel open" data-subpanel="medication">
+              <div class="med-list" id="medList"></div>
+            </div>
+
+            <!-- Care Recommendations -->
+            <div class="subtab-panel" data-subpanel="care-rec">
+              <div class="care-rec-list" id="careRecList"></div>
             </div>
           </div>
         </div>
@@ -713,6 +685,56 @@
         <div class="modal-actions">
           <button type="button" class="btn-text" id="cancelAddMed">Cancel</button>
           <button type="submit" class="btn-save">Add Medication</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Add Measurement modal -->
+  <div class="modal-overlay" id="addMeasurementOverlay">
+    <div class="modal modal-wide">
+      <h2>Add Measurement</h2>
+      <form id="addMeasurementForm">
+        <div class="form-grid">
+          <div class="form-field full">
+            <label>Measurement Type<span class="required-star">*</span></label>
+            <select class="select-input" name="measurementType" id="measurementTypeSelect" required>
+              <option value="" disabled selected>Select measurement type</option>
+              <option value="bloodPressure">Blood Pressure</option>
+              <option value="weight">Weight</option>
+              <option value="heartRate">Heart Rate</option>
+              <option value="bloodOxygen">Blood Oxygen</option>
+              <option value="respirationRate">Respiration Rate</option>
+              <option value="temperature">Temperature</option>
+              <option value="bloodGlucose">Blood Glucose</option>
+              <option value="height">Height</option>
+              <option value="bmi">BMI</option>
+            </select>
+          </div>
+
+          <div id="measurementValueFields" style="display:contents"></div>
+
+          <div class="form-field">
+            <label>Date</label>
+            <input type="date" name="date" />
+          </div>
+          <div class="form-field">
+            <label>Time</label>
+            <div class="time-pair">
+              <input type="number" min="0" max="23" placeholder="HH" name="hh" value="0" />
+              <span>:</span>
+              <input type="number" min="0" max="59" placeholder="MM" name="mm" value="0" />
+            </div>
+          </div>
+
+          <div class="form-field full">
+            <label>Notes</label>
+            <textarea name="notes" placeholder="Optional notes"></textarea>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-text" id="cancelAddMeasurement">Cancel</button>
+          <button type="submit" class="btn-save" id="saveAddMeasurement" disabled>Add Measurement</button>
         </div>
       </form>
     </div>
