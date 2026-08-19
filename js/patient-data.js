@@ -608,6 +608,9 @@ const medications = [
   },
 ];
 
+medications.forEach((m, i) => (m.id = i));
+let nextMedId = medications.length;
+
 const adhCheckIcon = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 const adhDashIcon = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M6 12H18" stroke="#9AA5B1" stroke-width="2.4" stroke-linecap="round"/></svg>`;
 
@@ -686,7 +689,7 @@ function renderMeds() {
           </div>
           <div class="med-block-side">
             <span class="source-badge ${m.srcClass}">${m.source}</span>
-            <button class="btn-edit">Edit</button>
+            <button class="btn-edit" data-med-id="${m.id}">Edit</button>
           </div>
         </div>
 
@@ -974,6 +977,7 @@ wireAddModal("addMedOverlay", "addMedForm", "cancelAddMed", "openAddMedBtn", (fd
   const ehrStatus = fd.get("status");
   const dose = fd.get("dose");
   medications.unshift({
+    id: nextMedId++,
     hf: false,
     name: fd.get("name"),
     cls: fd.get("doseForm") || "",
@@ -995,6 +999,89 @@ wireAddModal("addMedOverlay", "addMedForm", "cancelAddMed", "openAddMedBtn", (fd
     drugCodeValue: fd.get("drugCodeValue"),
   });
   renderMeds();
+});
+
+/* ---------------- Edit Medication ---------------- */
+const FREQ_NORMALIZE = {
+  "daily": "Once Daily",
+  "once daily": "Once Daily",
+  "twice daily": "Twice Daily",
+  "three times daily": "Three Times Daily",
+  "four times daily": "Four Times Daily",
+  "every morning": "Every Morning",
+  "every night": "Every Night",
+};
+
+const editMedOverlay = document.getElementById("editMedOverlay");
+const editMedForm = document.getElementById("editMedForm");
+let editingMedId = null;
+
+function openEditMedModal(id) {
+  const m = medications.find((x) => x.id === id);
+  if (!m) return;
+
+  editingMedId = id;
+  editMedForm.reset();
+  resetCustomSelectsIn(editMedForm);
+
+  editMedForm.name.value = m.name || "";
+  editMedForm.amount.value = m.amount || "";
+  editMedForm.effectiveDateTime.value = m.effectiveDateTime || "";
+  editMedForm.dose.value = m.dose || "";
+  editMedForm.sig.value = m.sig || "";
+
+  setCustomSelectValue(editMedForm.querySelector('.custom-select[data-name="drugCodeType"]'), m.drugCodeType || "RxNorm", { silent: true });
+  editMedForm.drugCodeValue.value = m.drugCodeValue || "";
+
+  setCustomSelectValue(editMedForm.querySelector('.custom-select[data-name="status"]'), m.ehrStatus || "", { silent: true });
+  setCustomSelectValue(editMedForm.querySelector('.custom-select[data-name="doseForm"]'), m.doseForm || "", { silent: true });
+  setCustomSelectValue(editMedForm.querySelector('.custom-select[data-name="route"]'), m.route || "", { silent: true });
+
+  const normalizedFreq = FREQ_NORMALIZE[(m.freq || "").trim().toLowerCase()] || "";
+  setCustomSelectValue(editMedForm.querySelector('.custom-select[data-name="frequency"]'), normalizedFreq, { silent: true });
+
+  editMedOverlay.classList.add("open");
+}
+
+function closeEditMedModal() {
+  editMedOverlay.classList.remove("open");
+  editingMedId = null;
+}
+
+document.getElementById("medList").addEventListener("click", (e) => {
+  const btn = e.target.closest(".btn-edit");
+  if (!btn) return;
+  openEditMedModal(Number(btn.dataset.medId));
+});
+
+document.getElementById("cancelEditMed").addEventListener("click", closeEditMedModal);
+editMedOverlay.addEventListener("click", (e) => { if (e.target === editMedOverlay) closeEditMedModal(); });
+
+editMedForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  const m = medications.find((x) => x.id === editingMedId);
+  if (!m) return;
+
+  const fd = new FormData(editMedForm);
+  const ehrStatus = fd.get("status");
+
+  m.name = fd.get("name");
+  m.doseForm = fd.get("doseForm");
+  m.cls = fd.get("doseForm") || m.cls;
+  m.amount = fd.get("amount");
+  m.effectiveDateTime = fd.get("effectiveDateTime");
+  m.dose = fd.get("dose");
+  m.freq = fd.get("frequency") || m.freq;
+  m.route = fd.get("route");
+  m.sig = fd.get("sig");
+  m.schedule = fd.get("sig") || m.schedule;
+  m.drugCodeType = fd.get("drugCodeType");
+  m.drugCodeValue = fd.get("drugCodeValue");
+  m.ehrStatus = ehrStatus;
+  m.status = ehrStatus === "Active" ? "active" : "past";
+
+  renderMeds();
+  closeEditMedModal();
 });
 
 const REC_STATUS_CLASS = { Active: "status-active", Completed: "status-completed" };
