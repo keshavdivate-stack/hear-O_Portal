@@ -699,13 +699,20 @@ editPatientForm.addEventListener("submit", (e) => {
 const updateAccountOverlay = document.getElementById("updateAccountOverlay");
 const updateAccountSubtitle = document.getElementById("updateAccountSubtitle");
 const discontinueReasonField = document.getElementById("discontinueReasonField");
-const discontinueReason = document.getElementById("discontinueReason");
+const discontinueReasonSelect = document.getElementById("discontinueReasonSelect");
+const discontinueReasonInput = discontinueReasonSelect.querySelector('input[type=hidden]');
+const discontinueReasonOtherField = document.getElementById("discontinueReasonOtherField");
+const discontinueReasonOther = document.getElementById("discontinueReasonOther");
 const saveUpdateAccount = document.getElementById("saveUpdateAccount");
 const accountActionRadios = document.querySelectorAll('input[name="accountAction"]');
 
 function validateUpdateAccountForm() {
   const selected = document.querySelector('input[name="accountAction"]:checked');
-  const valid = !!selected && (selected.value !== "Discontinued" || discontinueReason.value.trim() !== "");
+  let valid = !!selected;
+  if (selected && selected.value === "Discontinued") {
+    valid = discontinueReasonInput.value !== "" &&
+      (discontinueReasonInput.value !== "Other" || discontinueReasonOther.value.trim() !== "");
+  }
   saveUpdateAccount.disabled = !valid;
   saveUpdateAccount.classList.toggle("enabled", valid);
 }
@@ -713,17 +720,27 @@ function validateUpdateAccountForm() {
 accountActionRadios.forEach((radio) => {
   radio.addEventListener("change", () => {
     if (radio.checked) discontinueReasonField.style.display = radio.value === "Discontinued" ? "block" : "none";
+    if (radio.checked && radio.value !== "Discontinued") {
+      discontinueReasonOtherField.style.display = "none";
+    }
     validateUpdateAccountForm();
   });
 });
 
-discontinueReason.addEventListener("input", validateUpdateAccountForm);
+discontinueReasonInput.addEventListener("change", () => {
+  discontinueReasonOtherField.style.display = discontinueReasonInput.value === "Other" ? "block" : "none";
+  validateUpdateAccountForm();
+});
+
+discontinueReasonOther.addEventListener("input", validateUpdateAccountForm);
 
 function openUpdateAccountModal(patient) {
   updateAccountSubtitle.textContent = `${patient.name} (${patient.username})`;
   accountActionRadios.forEach((radio) => (radio.checked = false));
   discontinueReasonField.style.display = "none";
-  discontinueReason.value = "";
+  discontinueReasonOtherField.style.display = "none";
+  setCustomSelectValue(discontinueReasonSelect, "", { silent: true });
+  discontinueReasonOther.value = "";
   validateUpdateAccountForm();
   updateAccountOverlay.classList.add("open");
 }

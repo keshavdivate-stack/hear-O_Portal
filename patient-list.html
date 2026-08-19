@@ -714,7 +714,26 @@
 
       <div class="form-field account-discontinue-reason" id="discontinueReasonField" style="display:none;">
         <label>Reason for discontinuation<span class="required-star">*</span></label>
-        <textarea id="discontinueReason" placeholder="Explain why this patient's account is being discontinued"></textarea>
+        <div class="custom-select" id="discontinueReasonSelect" data-name="discontinueReason">
+          <button type="button" class="custom-select-trigger">
+            <span class="custom-select-value placeholder">Select a reason</span>
+            <svg class="custom-select-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="custom-select-menu">
+            <div class="custom-select-option" data-value="Clinical improvement">Clinical improvement<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="custom-select-option" data-value="Patient request">Patient request<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="custom-select-option" data-value="Non-compliance">Non-compliance<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="custom-select-option" data-value="Transferred to another provider">Transferred to another provider<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="custom-select-option" data-value="Deceased">Deceased<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="custom-select-option" data-value="Other">Other<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          </div>
+          <input type="hidden" name="discontinueReason" />
+        </div>
+      </div>
+
+      <div class="form-field account-discontinue-reason" id="discontinueReasonOtherField" style="display:none;">
+        <label>Please specify<span class="required-star">*</span></label>
+        <textarea id="discontinueReasonOther" placeholder="Explain why this patient's account is being discontinued"></textarea>
       </div>
 
       <div class="modal-actions">

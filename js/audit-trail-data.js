@@ -14,9 +14,10 @@ function pad(n) { return String(n).padStart(2, "0"); }
 const auditTrail = Array.from({ length: 1629 }, (_, i) => {
   const template = auditActionTemplates[i % auditActionTemplates.length];
   const madeBy = auditUserPool[i % auditUserPool.length];
-  const related = template.relatedPrefix === "Patient"
-    ? `Patient: ${auditPatientPool[i % auditPatientPool.length]}`
-    : `User: ${madeBy}`;
+  const relatedName = template.relatedPrefix === "Patient"
+    ? auditPatientPool[i % auditPatientPool.length]
+    : madeBy;
+  const related = `${template.relatedPrefix}: ${relatedName}`;
 
   const daysAgo = Math.floor(i / 20);
   const date = new Date(2026, 7, 18 - daysAgo, 23 - (i % 20), 59 - ((i * 7) % 60));
@@ -26,6 +27,8 @@ const auditTrail = Array.from({ length: 1629 }, (_, i) => {
     actionType: template.type,
     description: template.description,
     relatedTo: related,
+    relatedType: template.relatedPrefix,
+    relatedName,
     madeBy,
     timestamp: date,
     timestampLabel: `${pad(date.getMonth() + 1)}/${pad(date.getDate())}/${date.getFullYear()}, ${(() => {

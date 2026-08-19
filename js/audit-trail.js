@@ -4,8 +4,10 @@ let auditCurrentPage = 1;
 let auditSearchTerm = "";
 let auditFromDate = null; // Date or null
 let auditToDate = null; // Date or null
+let auditRelatedType = "all"; // "all" | "Patient" | "User"
 const auditActionTypes = new Set();
 const auditMadeBySet = new Set();
+const auditPatientSet = new Set();
 
 const auditActionTypeOptions = [
   "Register Patient",
@@ -50,10 +52,13 @@ function renderCheckboxMenu(menuEl, options, selectedSet) {
 
 const actionTypeMenu = document.getElementById("actionTypeMenu");
 const madeByMenu = document.getElementById("madeByMenu");
+const patientMenu = document.getElementById("patientMenu");
 const madeByOptions = [...new Set(auditTrail.map((a) => a.madeBy))].sort();
+const patientOptions = [...new Set(auditTrail.filter((a) => a.relatedType === "Patient").map((a) => a.relatedName))].sort();
 
 renderCheckboxMenu(actionTypeMenu, auditActionTypeOptions, auditActionTypes);
 renderCheckboxMenu(madeByMenu, madeByOptions, auditMadeBySet);
+renderCheckboxMenu(patientMenu, patientOptions, auditPatientSet);
 
 function wireCheckboxFilter(wrapEl, menuEl, selectedSet) {
   const trigger = wrapEl.querySelector(".filter-btn");
@@ -83,6 +88,31 @@ function wireCheckboxFilter(wrapEl, menuEl, selectedSet) {
 
 wireCheckboxFilter(document.querySelector('.checkbox-filter[data-name="actionType"]'), actionTypeMenu, auditActionTypes);
 wireCheckboxFilter(document.querySelector('.checkbox-filter[data-name="madeBy"]'), madeByMenu, auditMadeBySet);
+wireCheckboxFilter(document.querySelector('.checkbox-filter[data-name="patient"]'), patientMenu, auditPatientSet);
+
+/* ---------------- Related To tabs (All / Patients / Users) ---------------- */
+const auditTypeTabs = document.getElementById("auditTypeTabs");
+const patientFilterWrap = document.getElementById("patientFilterWrap");
+
+function resetPatientFilter() {
+  auditPatientSet.clear();
+  patientMenu.querySelectorAll('input[type="checkbox"]').forEach((cb) => (cb.checked = false));
+  document.querySelector('.checkbox-filter[data-name="patient"] .checkbox-filter-label').textContent = "Patient";
+}
+
+auditTypeTabs.addEventListener("click", (e) => {
+  const tab = e.target.closest(".filter-tab");
+  if (!tab) return;
+  auditTypeTabs.querySelectorAll(".filter-tab").forEach((t) => t.classList.remove("active"));
+  tab.classList.add("active");
+  auditRelatedType = tab.dataset.type;
+  auditCurrentPage = 1;
+
+  patientFilterWrap.style.display = auditRelatedType === "Patient" ? "" : "none";
+  if (auditRelatedType !== "Patient") resetPatientFilter();
+
+  renderAudit();
+});
 
 /* ---------------- Calendar popovers (From Date / To Date) ---------------- */
 const MONTH_NAMES = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
@@ -259,8 +289,10 @@ document.addEventListener("click", closeAllFilterPopovers);
 /* ---------------- Filtering ---------------- */
 function filteredAudit() {
   return auditTrail.filter((a) => {
-    if (auditSearchTerm && !a.madeBy.toLowerCase().includes(auditSearchTerm)) return false;
+    if (auditRelatedType !== "all" && a.relatedType !== auditRelatedType) return false;
+    if (auditSearchTerm && !a.madeBy.toLowerCase().includes(auditSearchTerm) && !a.relatedName.toLowerCase().includes(auditSearchTerm)) return false;
     if (auditActionTypes.size && !auditActionTypes.has(a.actionType)) return false;
+    if (auditPatientSet.size && !auditPatientSet.has(a.relatedName)) return false;
     if (auditMadeBySet.size && !auditMadeBySet.has(a.madeBy)) return false;
     if (auditFromDate) {
       const from = new Date(auditFromDate.getFullYear(), auditFromDate.getMonth(), auditFromDate.getDate(), 0, 0, 0);
@@ -321,6 +353,7 @@ document.getElementById("clearFilters").addEventListener("click", () => {
   auditSearchTerm = "";
   auditFromDate = null;
   auditToDate = null;
+  auditRelatedType = "all";
   auditActionTypes.clear();
   auditMadeBySet.clear();
   auditCurrentPage = 1;
@@ -328,11 +361,14 @@ document.getElementById("clearFilters").addEventListener("click", () => {
   document.getElementById("auditSearchInput").value = "";
   fromDateFilter.reset();
   toDateFilter.reset();
+  auditTypeTabs.querySelectorAll(".filter-tab").forEach((t) => t.classList.toggle("active", t.dataset.type === "all"));
+  patientFilterWrap.style.display = "none";
 
   document.querySelector('.checkbox-filter[data-name="actionType"] .checkbox-filter-label').textContent = "Action Type";
   document.querySelector('.checkbox-filter[data-name="madeBy"] .checkbox-filter-label').textContent = "Made By";
   renderCheckboxMenu(actionTypeMenu, auditActionTypeOptions, auditActionTypes);
   renderCheckboxMenu(madeByMenu, madeByOptions, auditMadeBySet);
+  resetPatientFilter();
 
   renderAudit();
 });

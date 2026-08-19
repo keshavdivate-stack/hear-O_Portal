@@ -939,10 +939,14 @@ wireAddModal("addRecOverlay", "addRecForm", "cancelAddRec", "openAddRecBtn", (fd
 });
 
 wireAddModal("careRecOverlay", "careRecForm", "cancelCareRec", "openCareRecBtn", (fd) => {
+  const medication = fd.get("medication") || "Medication";
+  const newDose = fd.get("newDose");
+  const frequency = fd.get("frequency");
+  const duration = fd.get("duration");
   careRecs.unshift({
     active: true,
-    title: "Change Diuretics",
-    desc: `Dosage change: ${fd.get("dosage") || 0}% for ${fd.get("duration") || 0} days${fd.get("invite") === "on" ? " · Patient invited to clinic" : ""}${fd.get("instructions") ? ` — ${fd.get("instructions")}` : ""}`,
+    title: `Adjust ${medication}`,
+    desc: `${medication}${newDose ? ` ${newDose} mg` : ""}${frequency ? ` · ${frequency}` : ""}${duration ? ` for ${duration} days` : ""}${fd.get("invite") === "on" ? " · Patient invited to clinic" : ""}${fd.get("instructions") ? ` — ${fd.get("instructions")}` : ""}`,
     status: "Active",
     statusClass: REC_STATUS_CLASS.Active,
     date: "01/10/2026",
