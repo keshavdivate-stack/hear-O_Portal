@@ -301,8 +301,6 @@ document.querySelector('#ticketDetailOverlay .bo-select[data-name="status"] .bo-
 document.querySelector('#ticketDetailOverlay .bo-select[data-name="assignedTo"] .bo-select-menu').innerHTML = buildSelectOptions(SUPPORT_AGENTS);
 document.querySelector('#newTicketOverlay .bo-select[data-name="source"] .bo-select-menu').innerHTML = buildSelectOptions(["Patient", "Clinic"]);
 document.querySelector('#newTicketOverlay .bo-select[data-name="issueType"] .bo-select-menu').innerHTML = buildSelectOptions(ISSUE_TYPES);
-document.querySelector('#newTicketOverlay .bo-select[data-name="severity"] .bo-select-menu').innerHTML = buildSelectOptions(SEVERITIES);
-document.querySelector('#newTicketOverlay .bo-select[data-name="tier"] .bo-select-menu').innerHTML = buildSelectOptions(TIERS);
 document.querySelector('#newTicketOverlay .bo-select[data-name="category"] .bo-select-menu').innerHTML = buildSelectOptions(CATEGORIES);
 
 /* Picking an Issue Type defaults Category to that issue's category (same
@@ -492,8 +490,8 @@ newTicketForm.addEventListener("submit", (e) => {
 
   const sourceValue = newTicketOverlay.querySelector('.bo-select[data-name="source"] input[type=hidden]').value || "Patient";
   const issueType = newTicketOverlay.querySelector('.bo-select[data-name="issueType"] input[type=hidden]').value;
-  const severity = newTicketOverlay.querySelector('.bo-select[data-name="severity"] input[type=hidden]').value || "Medium";
-  const tier = newTicketOverlay.querySelector('.bo-select[data-name="tier"] input[type=hidden]').value || "Level 1";
+  const severity = "Medium";
+  const tier = "Level 1";
   const category = newTicketOverlay.querySelector('.bo-select[data-name="category"] input[type=hidden]').value || ISSUE_TYPE_CATEGORY[issueType];
   const now = new Date();
   const createdDate = `${String(now.getDate()).padStart(2, "0")}/${String(now.getMonth() + 1).padStart(2, "0")}/${now.getFullYear()} ${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
@@ -591,12 +589,6 @@ function renderRules() {
         <td>${tierPill(r.tier)}</td>
         <td>${r.slaResponse} / ${r.slaResolve}</td>
         <td>${channelPills(r.channels)}</td>
-        <td>
-          <span class="bo-switch">
-            <input type="checkbox" class="rule-auto-create-toggle" data-id="${r.id}" ${r.autoCreateTicket ? "checked" : ""} />
-            <span class="bo-switch-track"></span>
-          </span>
-        </td>
         <td>${r.appliesTo}</td>
         <td>
           <div class="bo-row-actions">
@@ -614,13 +606,6 @@ document.querySelector('#ruleDrawerOverlay .bo-select[data-name="ruleTier"] .bo-
 
 const ruleRowMenu = document.getElementById("ruleRowMenu");
 let activeRuleId = null;
-
-document.getElementById("ruleRows").addEventListener("change", (e) => {
-  const toggle = e.target.closest(".rule-auto-create-toggle");
-  if (!toggle) return;
-  const rule = alertRules.find((r) => r.id === Number(toggle.dataset.id));
-  if (rule) rule.autoCreateTicket = toggle.checked;
-});
 
 document.getElementById("ruleRows").addEventListener("click", (e) => {
   const trigger = e.target.closest(".row-menu-trigger");

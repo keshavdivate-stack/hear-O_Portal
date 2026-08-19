@@ -478,6 +478,7 @@ a { color: inherit; }
   min-height: 0;
   overflow: hidden;
 }
+.bo-panel[hidden] { display: none; }
 
 .bo-panel-title {
   font-size: 14px;
@@ -1244,6 +1245,17 @@ body.bo-page-scroll .bo-page { overflow-y: auto; overflow-x: hidden; }
 .bo-date-field input::placeholder { color: var(--gray-text); font-weight: 600; }
 .bo-date-field svg { flex-shrink: 0; color: var(--gray); }
 
+/* When .bo-date-field is a <label> (e.g. the Add Task modal's Due date
+   field) rather than a plain <div>, clicking anywhere in the box --
+   including the calendar icon -- focuses the input, instead of only the
+   text portion reacting to clicks. */
+label.bo-date-field { cursor: text; }
+
+/* Lighter, non-bold placeholder so a modal field reads as empty/optional
+   at a glance, matching the "Optional" placeholder on neighboring fields
+   (Organization/Patient) instead of looking like a filled-in value. */
+.bo-date-field-muted input::placeholder { color: #AEB4BC; font-weight: 400; }
+
 /* ==========================================================
    MODAL (Add / Edit Organization, Add / Edit User, ...)
    Centered dialog — the "drawer" class names stuck around from an
@@ -1397,6 +1409,18 @@ body.bo-page-scroll .bo-page { overflow-y: auto; overflow-x: hidden; }
 
 .bo-modal-field input::placeholder { color: #AEB4BC; }
 .bo-modal-field input:focus { border-color: var(--blue); }
+
+/* A date input nested inside .bo-date-field already sits inside that
+   element's own bordered box -- without this, .bo-modal-field input's
+   border/padding above re-applies to the inner input too, producing a
+   "field inside a field" double-box look. */
+.bo-modal-field .bo-date-field input {
+  border: none;
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+}
+.bo-modal-field .bo-date-field input:focus { border-color: transparent; }
 
 /* New Rule drawer uses uppercase field labels, distinct from the sentence-case
    labels used elsewhere (e.g. the Edit Rule drawer), to match its design. */
@@ -3779,3 +3803,265 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue); }
 }
 
 .bo-send-note svg { flex-shrink: 0; margin-top: 1px; color: var(--blue); }
+
+/* ==========================================================
+   SUPPORT — INCIDENTS TAB
+   System-generated incidents, distinct from manually raised Tickets.
+   Reuses .bo-pill / .bo-table-card / .bo-filter-row / .bo-drawer /
+   .bo-ticket-history / .bo-kv-grid / .bo-panel so the tab matches the
+   existing Ticket screen instead of introducing a new visual language.
+   ========================================================== */
+.bo-list-toolbar-title-wrap { flex-shrink: 0; }
+
+/* Secondary tabs — a lighter-weight underline style for a sub-level tab
+   strip (Active/Monitoring/Resolved) nested under the primary pill tabs
+   (Tickets/Incidents/Rules), so the two tab levels stay visually distinct. */
+.bo-secondary-tabs {
+  display: flex;
+  gap: 26px;
+  border-bottom: 1px solid var(--gray-border);
+  margin-bottom: 14px;
+  flex-shrink: 0;
+}
+
+.bo-secondary-tab {
+  position: relative;
+  background: none;
+  border: none;
+  padding: 4px 2px 12px;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--gray-text);
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.bo-secondary-tab:hover { color: var(--ink); }
+
+.bo-secondary-tab.active { color: var(--ink); }
+
+.bo-secondary-tab-count {
+  display: inline-block;
+  min-width: 18px;
+  padding: 1px 6px;
+  margin-left: 4px;
+  border-radius: 999px;
+  background: var(--bg);
+  color: var(--gray-text);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 16px;
+  text-align: center;
+}
+
+.bo-secondary-tab.active .bo-secondary-tab-count { background: var(--blue-light); color: var(--blue); }
+
+.bo-secondary-tab.active::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--blue);
+}
+
+.bo-incident-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-shrink: 0;
+}
+
+.bo-incident-kpi-card {
+  background: #fff;
+  border: 1px solid var(--gray-border);
+  border-radius: 14px;
+  padding: 14px 16px;
+  box-shadow: 0 4px 16px rgba(20, 30, 50, 0.03);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.bo-incident-kpi-label { font-size: 12px; font-weight: 700; color: var(--gray-text); }
+.bo-incident-kpi-value { font-size: 23px; font-weight: 800; color: var(--ink); line-height: 1.2; }
+.bo-incident-kpi-sub { font-size: 11.5px; color: var(--gray-text); font-weight: 600; }
+.bo-incident-kpi-sub.trend-good { color: var(--green); }
+
+@media (max-width: 1400px) {
+  .bo-incident-kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* Severity badges — SEV-1 is solid so it visually outranks the lighter tints
+   used for SEV-2/3/4, without heavily coloring the rest of the row. */
+.bo-pill-sev1 { background: var(--red); color: #fff; }
+.bo-pill-sev2 { background: var(--orange-light); color: var(--orange); }
+.bo-pill-sev3 { background: var(--yellow-light); color: var(--yellow); }
+.bo-pill-sev4 { background: var(--bg); color: var(--gray-text); }
+
+/* Incident lifecycle status — distinct from Ticket statuses (Open/In
+   Progress/Escalated/Resolved); Resolved intentionally reuses the same
+   green as Ticket Resolved so "done" reads identically across the module. */
+.bo-pill-incident-active { background: var(--orange-light); color: var(--orange); }
+.bo-pill-incident-monitoring { background: var(--blue-light); color: var(--blue); }
+.bo-pill-incident-resolved { background: var(--green-light); color: var(--green); }
+
+.bo-incident-title { font-weight: 700; color: var(--ink); }
+.bo-incident-source-label { display: block; font-size: 11.5px; color: var(--gray-text); margin-top: 2px; font-weight: 500; }
+
+/* Impact column: one compact clickable cell instead of separate org/patient columns */
+.bo-impact-link {
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--blue);
+  cursor: pointer;
+  text-align: left;
+}
+.bo-impact-link:hover { text-decoration: underline; }
+
+.bo-impact-popover {
+  position: fixed;
+  display: none;
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 16px 40px rgba(20, 30, 50, 0.2);
+  padding: 16px;
+  width: 280px;
+  max-height: 360px;
+  overflow-y: auto;
+  z-index: 350;
+}
+.bo-impact-popover.open { display: block; }
+
+.bo-impact-popover-title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  color: var(--gray-text);
+  margin: 0 0 8px;
+}
+.bo-impact-popover-title.second { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--gray-border); }
+
+.bo-impact-chip-list { display: flex; flex-wrap: wrap; gap: 6px; }
+.bo-impact-chip { background: var(--bg); border-radius: 8px; padding: 4px 9px; font-size: 12px; font-weight: 600; color: var(--ink); }
+
+/* Tasks column — compact fraction, clickable only while work remains */
+.bo-task-progress {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--gray-text);
+}
+.bo-task-progress.clickable {
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: inherit;
+  color: var(--blue);
+  cursor: pointer;
+}
+.bo-task-progress.clickable:hover { text-decoration: underline; }
+.bo-task-progress-open { font-size: 11px; font-weight: 600; color: var(--orange); margin-left: 6px; }
+
+.bo-incident-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--blue-light);
+  color: var(--blue);
+  font-weight: 700;
+  font-size: 12.5px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+
+/* "View Task" row-menu popover -- read-only list of a single incident's tasks */
+.bo-task-view-popover { flex-direction: column; padding: 10px; min-width: 240px; max-width: 300px; gap: 2px; }
+
+.bo-task-view-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 10px;
+  border-radius: 8px;
+}
+.bo-task-view-item .title { font-size: 13px; font-weight: 700; color: var(--ink); }
+.bo-task-view-item .meta { font-size: 11.5px; color: var(--gray-text); }
+
+.bo-task-view-empty { padding: 10px; font-size: 13px; color: var(--gray-text); }
+
+/* Incident Detail page — Support Tasks section */
+.bo-task-list { display: flex; flex-direction: column; gap: 10px; }
+
+.bo-task-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  background: #fff;
+  border: 1px solid var(--gray-border);
+  border-radius: 12px;
+  padding: 12px 16px;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
+  width: 100%;
+}
+.bo-task-card:hover { border-color: #C9CFD6; }
+
+.bo-task-card-title { font-size: 13.5px; font-weight: 700; color: var(--ink); margin-bottom: 3px; }
+.bo-task-card-meta { font-size: 12px; color: var(--gray-text); display: flex; align-items: center; gap: 8px; }
+
+.bo-pill-task-open { background: var(--blue-light); color: var(--blue); }
+.bo-pill-task-inprogress { background: var(--orange-light); color: var(--orange); }
+.bo-pill-task-completed { background: var(--green-light); color: var(--green); }
+
+.bo-incident-badges { display: flex; align-items: center; gap: 8px; }
+
+/* Attachment field — styled to match the other modal inputs instead of the
+   browser's native, unstyled "Choose File" button. */
+.bo-file-field {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px dashed var(--field-border);
+  border-radius: 8px;
+  padding: 9px 12px;
+  font-size: 13.5px;
+  color: var(--gray-text);
+  background: #fff;
+  cursor: pointer;
+}
+.bo-file-field:hover { border-color: var(--blue); color: var(--ink); }
+.bo-file-field svg { flex-shrink: 0; color: var(--gray); }
+.bo-file-field .bo-file-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bo-file-field input[type="file"] {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+/* Incident Detail page section spacing (stacked bo-panel cards down the page) */
+.bo-incident-detail-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Timeline/Task/Root-cause/Resolution text blocks stay easy to scan even as
+   the card stretches to fill the page width. */
+.bo-incident-detail-body .bo-ticket-description,
+.bo-incident-detail-body .bo-ticket-history { max-width: 820px; }

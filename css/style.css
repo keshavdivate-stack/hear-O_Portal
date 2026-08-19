@@ -1737,6 +1737,10 @@ body {
 .dot-green { background: var(--green); }
 .dot-gray { background: #C9CFD6; }
 .dot-darkgray { background: #57626D; }
+.dot-slate { background: #8A93A0; }
+.dot-black { background: #23272E; }
+.dot-teal { background: #2AB0B0; }
+.dot-blue { background: var(--blue); }
 
 .add-note-link {
   color: var(--blue);
@@ -1746,8 +1750,47 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 4px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
 }
 .add-note-link:hover { text-decoration: underline; }
+
+.history-add-event-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--blue);
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  padding: 8px 16px;
+  font-size: 13.5px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.history-add-event-btn:hover { background: #2394c4; }
+
+.history-load-more-row {
+  display: flex;
+  justify-content: flex-end;
+  padding: 10px 4px 0;
+}
+
+.history-load-more-btn {
+  background: none;
+  border: none;
+  color: var(--blue);
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+}
+.history-load-more-btn:hover { text-decoration: underline; }
 
 .add-event-btn {
   position: fixed;

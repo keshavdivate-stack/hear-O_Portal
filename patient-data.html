@@ -614,13 +614,17 @@
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="17" rx="2" stroke="#23272E" stroke-width="1.8"/><path d="M3 9H21" stroke="#23272E" stroke-width="1.8"/></svg>
               History Events
             </h2>
+            <button type="button" class="history-add-event-btn" id="openAddEventBtn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
+              Add Event
+            </button>
           </div>
-          <div class="history-tabs">
-            <span>All</span>
-            <span>Account</span>
-            <span class="active">Status</span>
-            <span>Monitoring</span>
-            <span>Other</span>
+          <div class="history-tabs" id="historyTabs">
+            <span data-tab="all" class="active">All</span>
+            <span data-tab="account">Account</span>
+            <span data-tab="status">Status</span>
+            <span data-tab="monitoring">Monitoring</span>
+            <span data-tab="other">Other</span>
           </div>
           <div class="history-table-scroll">
             <table class="history-table">
@@ -630,9 +634,65 @@
               <tbody id="historyRows"></tbody>
             </table>
           </div>
+          <div class="history-load-more-row" id="historyLoadMoreRow" style="display:none;">
+            <button type="button" class="history-load-more-btn" id="historyLoadMoreBtn">Load more</button>
+          </div>
         </div>
 
       </div>
+    </div>
+  </div>
+
+  <!-- Add Event modal -->
+  <div class="modal-overlay" id="addEventOverlay">
+    <div class="modal">
+      <h2>Add Event</h2>
+      <form id="addEventForm">
+        <div class="form-field">
+          <label>Category<span class="required-star">*</span></label>
+          <select class="select-input" name="category" required>
+            <option value="" disabled selected>Select category</option>
+            <option value="account">Account</option>
+            <option value="status">Status</option>
+            <option value="monitoring">Monitoring</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label>Event<span class="required-star">*</span></label>
+          <input type="text" name="label" placeholder="e.g. Message sent to patient" required />
+        </div>
+        <div class="form-field">
+          <label>Date<span class="required-star">*</span></label>
+          <input type="date" name="date" required />
+        </div>
+        <div class="form-field">
+          <label>Note</label>
+          <textarea name="note" placeholder="Optional note"></textarea>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-text" id="cancelAddEvent">Cancel</button>
+          <button type="submit" class="btn-save" id="saveAddEvent" disabled>Add Event</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Add Note modal -->
+  <div class="modal-overlay" id="addNoteOverlay">
+    <div class="modal">
+      <h2>Add Note</h2>
+      <p class="account-modal-subtitle" id="addNoteEventLabel">&nbsp;</p>
+      <form id="addNoteForm">
+        <div class="form-field">
+          <label>Note<span class="required-star">*</span></label>
+          <textarea name="note" placeholder="Add a note for this event" required></textarea>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-text" id="cancelAddNote">Cancel</button>
+          <button type="submit" class="btn-save" id="saveAddNote" disabled>Save Note</button>
+        </div>
+      </form>
     </div>
   </div>
 
