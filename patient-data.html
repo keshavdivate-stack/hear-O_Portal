@@ -35,6 +35,12 @@
           </span>
           <span class="nav-label">Patient List</span>
         </a>
+        <a href="reports.html" class="nav-item">
+          <span class="nav-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><rect x="7" y="12" width="3" height="6"/><rect x="12" y="8" width="3" height="10"/><rect x="17" y="5" width="3" height="13"/></svg>
+          </span>
+          <span class="nav-label">Reports</span>
+        </a>
         <a href="billing.html" class="nav-item">
           <span class="nav-icon">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><path d="M12 7V17" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M15 9.5C15 8.1 13.7 7 12 7C10.3 7 9 8.1 9 9.5C9 10.9 10.3 11.5 12 12C13.7 12.5 15 13.1 15 14.5C15 15.9 13.7 17 12 17C10.3 17 9 15.9 9 14.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
@@ -205,6 +211,14 @@
             <div class="contact-item">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="5" stroke="currentColor" stroke-width="1.7"/><path d="M12 13V21M8 17H16" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
               Female
+            </div>
+            <div class="contact-item">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.7"/><path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M9 21v-4M15 21v-4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+              Dr. Sarah Mitchell (Doctor)
+            </div>
+            <div class="contact-item">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="9" cy="8" r="3.2" stroke="currentColor" stroke-width="1.7"/><path d="M2.5 20C2.5 16.5 5.5 14 9 14C12.5 14 15.5 16.5 15.5 20" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><circle cx="17" cy="8.5" r="2.6" stroke="currentColor" stroke-width="1.5"/><path d="M15.5 20C15.5 17 17.8 15 20.5 15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+              Nurse Amanda Lee (Care Team)
             </div>
           </div>
 
@@ -606,27 +620,56 @@
             <input type="text" name="name" placeholder="Search medication..." required />
           </div>
           <div class="form-field">
+            <label>Drug Code<span class="required-star">*</span></label>
+            <div class="med-code-field">
+              <div class="custom-select med-code-system" data-name="drugCodeType">
+                <button type="button" class="custom-select-trigger">
+                  <span class="custom-select-value">RxNorm</span>
+                  <svg class="custom-select-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
+                <div class="custom-select-menu">
+                  <div class="custom-select-option selected" data-value="RxNorm">RxNorm<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                  <div class="custom-select-option" data-value="NDC">NDC<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                </div>
+                <input type="hidden" name="drugCodeType" value="RxNorm" />
+              </div>
+              <input type="text" name="drugCodeValue" placeholder="Enter code" required />
+            </div>
+          </div>
+          <div class="form-field">
             <label>Status<span class="required-star">*</span></label>
-            <select class="select-input" name="status" required>
-              <option value="" disabled selected>Select status</option>
-              <option value="Active">Active</option>
-              <option value="Inactive">Inactive</option>
-            </select>
+            <div class="custom-select" data-name="status">
+              <button type="button" class="custom-select-trigger">
+                <span class="custom-select-value placeholder">Select status</span>
+                <svg class="custom-select-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="custom-select-menu">
+                <div class="custom-select-option" data-value="Active">Active<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Inactive">Inactive<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              </div>
+              <input type="hidden" name="status" required />
+            </div>
           </div>
           <div class="form-field">
             <label>Dose Form</label>
-            <select class="select-input" name="doseForm">
-              <option value="" disabled selected>Select dose form</option>
-              <option value="Tablet">Tablet</option>
-              <option value="Capsule">Capsule</option>
-              <option value="Liquid">Liquid</option>
-              <option value="Injection">Injection</option>
-              <option value="Topical">Topical</option>
-              <option value="Inhaler">Inhaler</option>
-              <option value="Patch">Patch</option>
-              <option value="Suppository">Suppository</option>
-              <option value="Other">Other</option>
-            </select>
+            <div class="custom-select" data-name="doseForm">
+              <button type="button" class="custom-select-trigger">
+                <span class="custom-select-value placeholder">Select dose form</span>
+                <svg class="custom-select-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="custom-select-menu">
+                <div class="custom-select-option" data-value="Tablet">Tablet<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Capsule">Capsule<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Liquid">Liquid<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Injection">Injection<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Topical">Topical<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Inhaler">Inhaler<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Patch">Patch<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Suppository">Suppository<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Other">Other<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              </div>
+              <input type="hidden" name="doseForm" />
+            </div>
           </div>
           <div class="form-field">
             <label>Amount</label>
@@ -641,50 +684,182 @@
             <input type="text" name="dose" placeholder="e.g. 1 tablet" />
           </div>
           <div class="form-field">
+            <label>Frequency<span class="required-star">*</span></label>
+            <div class="custom-select" data-name="frequency">
+              <button type="button" class="custom-select-trigger">
+                <span class="custom-select-value placeholder">Select Frequency</span>
+                <svg class="custom-select-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="custom-select-menu">
+                <div class="custom-select-option" data-value="Once Daily">Once Daily<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Twice Daily">Twice Daily<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Three Times Daily">Three Times Daily<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Four Times Daily">Four Times Daily<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Every Morning">Every Morning<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Every Night">Every Night<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Every X Hours">Every X Hours<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              </div>
+              <input type="hidden" name="frequency" required />
+            </div>
+          </div>
+          <div class="form-field">
             <label>Route</label>
-            <select class="select-input" name="route">
-              <option value="" disabled selected>Select route</option>
-              <option value="Oral">Oral</option>
-              <option value="Intravenous">Intravenous</option>
-              <option value="Subcutaneous">Subcutaneous</option>
-              <option value="Intramuscular">Intramuscular</option>
-              <option value="Topical">Topical</option>
-              <option value="Inhalation">Inhalation</option>
-              <option value="Sublingual">Sublingual</option>
-              <option value="Rectal">Rectal</option>
-              <option value="Ophthalmic">Ophthalmic</option>
-              <option value="Other">Other</option>
-            </select>
+            <div class="custom-select" data-name="route">
+              <button type="button" class="custom-select-trigger">
+                <span class="custom-select-value placeholder">Select route</span>
+                <svg class="custom-select-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="custom-select-menu">
+                <div class="custom-select-option" data-value="Oral">Oral<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Intravenous">Intravenous<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Subcutaneous">Subcutaneous<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Intramuscular">Intramuscular<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Topical">Topical<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Inhalation">Inhalation<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Sublingual">Sublingual<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Rectal">Rectal<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Ophthalmic">Ophthalmic<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Other">Other<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              </div>
+              <input type="hidden" name="route" />
+            </div>
           </div>
           <div class="form-field">
-            <label>Sig / Directions</label>
+            <label>Directions</label>
             <input type="text" name="sig" placeholder="e.g. Take one tablet by mouth daily" />
-          </div>
-          <div class="form-field">
-            <label>Status Reason</label>
-            <select class="select-input" name="statusReason">
-              <option value="" disabled selected>Select reason</option>
-              <option value="Not applicable">Not applicable</option>
-              <option value="Dose adjustment">Dose adjustment</option>
-              <option value="Adverse reaction">Adverse reaction</option>
-              <option value="Ineffective">Ineffective</option>
-              <option value="Duplicate therapy">Duplicate therapy</option>
-              <option value="Patient request">Patient request</option>
-              <option value="Other">Other</option>
-            </select>
-          </div>
-          <div class="form-field">
-            <label>Lot Number</label>
-            <input type="text" name="lotNumber" placeholder="e.g. L2394A" />
-          </div>
-          <div class="form-field">
-            <label>Expiry Date</label>
-            <input type="date" name="expiryDate" />
           </div>
         </div>
         <div class="modal-actions">
           <button type="button" class="btn-text" id="cancelAddMed">Cancel</button>
           <button type="submit" class="btn-save">Add Medication</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Edit Medication modal -->
+  <div class="modal-overlay" id="editMedOverlay">
+    <div class="modal modal-wide">
+      <h2>Edit Medication</h2>
+      <form id="editMedForm">
+        <div class="form-grid">
+          <div class="form-field">
+            <label>Medication<span class="required-star">*</span></label>
+            <input type="text" name="name" placeholder="Search medication..." required />
+          </div>
+          <div class="form-field">
+            <label>Drug Code<span class="required-star">*</span></label>
+            <div class="med-code-field">
+              <div class="custom-select med-code-system" data-name="drugCodeType">
+                <button type="button" class="custom-select-trigger">
+                  <span class="custom-select-value">RxNorm</span>
+                  <svg class="custom-select-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
+                <div class="custom-select-menu">
+                  <div class="custom-select-option selected" data-value="RxNorm">RxNorm<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                  <div class="custom-select-option" data-value="NDC">NDC<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                </div>
+                <input type="hidden" name="drugCodeType" value="RxNorm" />
+              </div>
+              <input type="text" name="drugCodeValue" placeholder="Enter code" required />
+            </div>
+          </div>
+          <div class="form-field">
+            <label>Status<span class="required-star">*</span></label>
+            <div class="custom-select" data-name="status">
+              <button type="button" class="custom-select-trigger">
+                <span class="custom-select-value placeholder">Select status</span>
+                <svg class="custom-select-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="custom-select-menu">
+                <div class="custom-select-option" data-value="Active">Active<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Inactive">Inactive<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              </div>
+              <input type="hidden" name="status" required />
+            </div>
+          </div>
+          <div class="form-field">
+            <label>Dose Form</label>
+            <div class="custom-select" data-name="doseForm">
+              <button type="button" class="custom-select-trigger">
+                <span class="custom-select-value placeholder">Select dose form</span>
+                <svg class="custom-select-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="custom-select-menu">
+                <div class="custom-select-option" data-value="Tablet">Tablet<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Capsule">Capsule<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Liquid">Liquid<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Injection">Injection<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Topical">Topical<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Inhaler">Inhaler<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Patch">Patch<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Suppository">Suppository<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Other">Other<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              </div>
+              <input type="hidden" name="doseForm" />
+            </div>
+          </div>
+          <div class="form-field">
+            <label>Amount</label>
+            <input type="text" name="amount" placeholder="e.g. 40 mg" />
+          </div>
+          <div class="form-field">
+            <label>Effective Date &amp; Time</label>
+            <input type="datetime-local" name="effectiveDateTime" />
+          </div>
+          <div class="form-field">
+            <label>Dose</label>
+            <input type="text" name="dose" placeholder="e.g. 1 tablet" />
+          </div>
+          <div class="form-field">
+            <label>Frequency<span class="required-star">*</span></label>
+            <div class="custom-select" data-name="frequency">
+              <button type="button" class="custom-select-trigger">
+                <span class="custom-select-value placeholder">Select Frequency</span>
+                <svg class="custom-select-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="custom-select-menu">
+                <div class="custom-select-option" data-value="Once Daily">Once Daily<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Twice Daily">Twice Daily<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Three Times Daily">Three Times Daily<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Four Times Daily">Four Times Daily<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Every Morning">Every Morning<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Every Night">Every Night<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Every X Hours">Every X Hours<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              </div>
+              <input type="hidden" name="frequency" required />
+            </div>
+          </div>
+          <div class="form-field">
+            <label>Route</label>
+            <div class="custom-select" data-name="route">
+              <button type="button" class="custom-select-trigger">
+                <span class="custom-select-value placeholder">Select route</span>
+                <svg class="custom-select-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="custom-select-menu">
+                <div class="custom-select-option" data-value="Oral">Oral<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Intravenous">Intravenous<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Subcutaneous">Subcutaneous<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Intramuscular">Intramuscular<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Topical">Topical<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Inhalation">Inhalation<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Sublingual">Sublingual<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Rectal">Rectal<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Ophthalmic">Ophthalmic<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Other">Other<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              </div>
+              <input type="hidden" name="route" />
+            </div>
+          </div>
+          <div class="form-field">
+            <label>Directions</label>
+            <input type="text" name="sig" placeholder="e.g. Take one tablet by mouth daily" />
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-text" id="cancelEditMed">Cancel</button>
+          <button type="submit" class="btn-save enabled">Save Changes</button>
         </div>
       </form>
     </div>
@@ -832,5 +1007,6 @@
 <script src="js/topbar.js"></script>
 <script src="js/table-scroll.js"></script>
 <script src="js/patient-data.js"></script>
+<script src="js/modal-close.js"></script>
 </body>
 </html>

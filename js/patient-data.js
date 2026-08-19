@@ -608,6 +608,9 @@ const medications = [
   },
 ];
 
+medications.forEach((m, i) => (m.id = i));
+let nextMedId = medications.length;
+
 const adhCheckIcon = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 const adhDashIcon = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M6 12H18" stroke="#9AA5B1" stroke-width="2.4" stroke-linecap="round"/></svg>`;
 
@@ -686,7 +689,7 @@ function renderMeds() {
           </div>
           <div class="med-block-side">
             <span class="source-badge ${m.srcClass}">${m.source}</span>
-            <button class="btn-edit">Edit</button>
+            <button class="btn-edit" data-med-id="${m.id}">Edit</button>
           </div>
         </div>
 
@@ -868,12 +871,89 @@ document.getElementById("chatOpenBtn").addEventListener("click", () => chatPanel
 document.getElementById("chatCloseBtn").addEventListener("click", () => chatPanel.classList.remove("open"));
 
 /* ---------------- Clinical: Add Medication / Recommendation modals ---------------- */
+/* ---------------- Custom dropdowns (same pattern as Registration) ---------------- */
+function setCustomSelectValue(select, value, { silent = false } = {}) {
+  const hiddenInput = select.querySelector("input[type=hidden]");
+  const trigger = select.querySelector(".custom-select-value");
+  const option = select.querySelector(`.custom-select-option[data-value="${CSS.escape(value)}"]`);
+
+  select.querySelectorAll(".custom-select-option").forEach((o) => o.classList.remove("selected"));
+
+  if (option) {
+    option.classList.add("selected");
+    trigger.textContent = option.textContent.trim();
+    trigger.classList.remove("placeholder");
+  } else {
+    trigger.textContent = trigger.dataset.placeholder || trigger.textContent;
+    trigger.classList.add("placeholder");
+  }
+
+  hiddenInput.value = value || "";
+  if (!silent) hiddenInput.dispatchEvent(new Event("change", { bubbles: true }));
+}
+
+function positionCustomSelectMenu(select) {
+  const trigger = select.querySelector(".custom-select-trigger");
+  const menu = select.querySelector(".custom-select-menu");
+  const rect = trigger.getBoundingClientRect();
+  const menuHeight = Math.min(menu.scrollHeight, 220) + 12;
+  const spaceBelow = window.innerHeight - rect.bottom;
+  const openUpward = spaceBelow < menuHeight && rect.top > menuHeight;
+
+  menu.style.position = "fixed";
+  menu.style.left = `${rect.left}px`;
+  menu.style.width = `${rect.width}px`;
+  menu.style.top = openUpward ? "auto" : `${rect.bottom + 6}px`;
+  menu.style.bottom = openUpward ? `${window.innerHeight - rect.top + 6}px` : "auto";
+}
+
+function wireCustomSelect(select) {
+  const trigger = select.querySelector(".custom-select-trigger");
+  const valueEl = select.querySelector(".custom-select-value");
+  const hiddenInput = select.querySelector("input[type=hidden]");
+
+  valueEl.dataset.placeholder = valueEl.textContent.trim();
+  hiddenInput.dataset.default = hiddenInput.value;
+
+  trigger.addEventListener("click", (e) => {
+    e.stopPropagation();
+    const willOpen = !select.classList.contains("open");
+    document.querySelectorAll(".custom-select.open").forEach((s) => s.classList.remove("open"));
+    if (willOpen) positionCustomSelectMenu(select);
+    select.classList.toggle("open", willOpen);
+  });
+
+  select.addEventListener("click", (e) => {
+    const option = e.target.closest(".custom-select-option");
+    if (!option) return;
+    setCustomSelectValue(select, option.dataset.value);
+    select.classList.remove("open");
+  });
+}
+
+function closeAllCustomSelects() {
+  document.querySelectorAll(".custom-select.open").forEach((s) => s.classList.remove("open"));
+}
+
+document.querySelectorAll(".custom-select").forEach(wireCustomSelect);
+document.addEventListener("click", closeAllCustomSelects);
+document.addEventListener("scroll", closeAllCustomSelects, true);
+window.addEventListener("resize", closeAllCustomSelects);
+
+function resetCustomSelectsIn(root) {
+  root.querySelectorAll(".custom-select").forEach((select) => {
+    const hiddenInput = select.querySelector("input[type=hidden]");
+    setCustomSelectValue(select, hiddenInput.dataset.default || "", { silent: true });
+  });
+}
+
 function wireAddModal(overlayId, formId, cancelId, openBtnId, onSubmit) {
   const overlay = document.getElementById(overlayId);
   const form = document.getElementById(formId);
 
   function open() {
     form.reset();
+    resetCustomSelectsIn(form);
     overlay.classList.add("open");
   }
   function close() {
@@ -897,10 +977,11 @@ wireAddModal("addMedOverlay", "addMedForm", "cancelAddMed", "openAddMedBtn", (fd
   const ehrStatus = fd.get("status");
   const dose = fd.get("dose");
   medications.unshift({
+    id: nextMedId++,
     hf: false,
     name: fd.get("name"),
     cls: fd.get("doseForm") || "",
-    freq: "",
+    freq: fd.get("frequency") || "",
     dose: dose || "",
     schedule: fd.get("sig") || "",
     warning: null,
@@ -914,11 +995,93 @@ wireAddModal("addMedOverlay", "addMedForm", "cancelAddMed", "openAddMedBtn", (fd
     effectiveDateTime: fd.get("effectiveDateTime"),
     route: fd.get("route"),
     sig: fd.get("sig"),
-    statusReason: fd.get("statusReason"),
-    lotNumber: fd.get("lotNumber"),
-    expiryDate: fd.get("expiryDate"),
+    drugCodeType: fd.get("drugCodeType"),
+    drugCodeValue: fd.get("drugCodeValue"),
   });
   renderMeds();
+});
+
+/* ---------------- Edit Medication ---------------- */
+const FREQ_NORMALIZE = {
+  "daily": "Once Daily",
+  "once daily": "Once Daily",
+  "twice daily": "Twice Daily",
+  "three times daily": "Three Times Daily",
+  "four times daily": "Four Times Daily",
+  "every morning": "Every Morning",
+  "every night": "Every Night",
+};
+
+const editMedOverlay = document.getElementById("editMedOverlay");
+const editMedForm = document.getElementById("editMedForm");
+let editingMedId = null;
+
+function openEditMedModal(id) {
+  const m = medications.find((x) => x.id === id);
+  if (!m) return;
+
+  editingMedId = id;
+  editMedForm.reset();
+  resetCustomSelectsIn(editMedForm);
+
+  editMedForm.name.value = m.name || "";
+  editMedForm.amount.value = m.amount || "";
+  editMedForm.effectiveDateTime.value = m.effectiveDateTime || "";
+  editMedForm.dose.value = m.dose || "";
+  editMedForm.sig.value = m.sig || "";
+
+  setCustomSelectValue(editMedForm.querySelector('.custom-select[data-name="drugCodeType"]'), m.drugCodeType || "RxNorm", { silent: true });
+  editMedForm.drugCodeValue.value = m.drugCodeValue || "";
+
+  setCustomSelectValue(editMedForm.querySelector('.custom-select[data-name="status"]'), m.ehrStatus || "", { silent: true });
+  setCustomSelectValue(editMedForm.querySelector('.custom-select[data-name="doseForm"]'), m.doseForm || "", { silent: true });
+  setCustomSelectValue(editMedForm.querySelector('.custom-select[data-name="route"]'), m.route || "", { silent: true });
+
+  const normalizedFreq = FREQ_NORMALIZE[(m.freq || "").trim().toLowerCase()] || "";
+  setCustomSelectValue(editMedForm.querySelector('.custom-select[data-name="frequency"]'), normalizedFreq, { silent: true });
+
+  editMedOverlay.classList.add("open");
+}
+
+function closeEditMedModal() {
+  editMedOverlay.classList.remove("open");
+  editingMedId = null;
+}
+
+document.getElementById("medList").addEventListener("click", (e) => {
+  const btn = e.target.closest(".btn-edit");
+  if (!btn) return;
+  openEditMedModal(Number(btn.dataset.medId));
+});
+
+document.getElementById("cancelEditMed").addEventListener("click", closeEditMedModal);
+editMedOverlay.addEventListener("click", (e) => { if (e.target === editMedOverlay) closeEditMedModal(); });
+
+editMedForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  const m = medications.find((x) => x.id === editingMedId);
+  if (!m) return;
+
+  const fd = new FormData(editMedForm);
+  const ehrStatus = fd.get("status");
+
+  m.name = fd.get("name");
+  m.doseForm = fd.get("doseForm");
+  m.cls = fd.get("doseForm") || m.cls;
+  m.amount = fd.get("amount");
+  m.effectiveDateTime = fd.get("effectiveDateTime");
+  m.dose = fd.get("dose");
+  m.freq = fd.get("frequency") || m.freq;
+  m.route = fd.get("route");
+  m.sig = fd.get("sig");
+  m.schedule = fd.get("sig") || m.schedule;
+  m.drugCodeType = fd.get("drugCodeType");
+  m.drugCodeValue = fd.get("drugCodeValue");
+  m.ehrStatus = ehrStatus;
+  m.status = ehrStatus === "Active" ? "active" : "past";
+
+  renderMeds();
+  closeEditMedModal();
 });
 
 const REC_STATUS_CLASS = { Active: "status-active", Completed: "status-completed" };
