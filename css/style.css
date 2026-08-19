@@ -130,8 +130,8 @@ body {
 }
 
 .nav-item.active {
-  background: var(--blue-light);
-  color: var(--blue);
+  background: var(--blue);
+  color: #14213D;
   border-radius: 14px;
   font-weight: 700;
 }

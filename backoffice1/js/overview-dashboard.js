@@ -487,14 +487,8 @@ document.addEventListener("click", () => {
   ovOrgSelect.classList.remove("open");
 });
 
-function stampLastUpdated() {
-  document.getElementById("ovLastUpdated").textContent = "Just now";
-}
-stampLastUpdated();
-
 document.getElementById("ovRefreshBtn").addEventListener("click", () => {
   renderOvTrendChart();
   renderOvTrendFooter();
   renderOvForOrg(ovSelectedOrgId);
-  stampLastUpdated();
 });
