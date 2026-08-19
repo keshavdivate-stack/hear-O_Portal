@@ -1,3 +1,6 @@
+/* ---------------- Care Team popover ---------------- */
+wireTopbarToggle("careTeamTrigger", "careTeamPopover");
+
 /* ---------------- Shared day axis (31 days, gap = 21-23 Dec) ---------------- */
 const chartDays = [
   { label: "11", month: "Dec", status: "baseline" },
@@ -70,8 +73,8 @@ function setMonthRow(id, days) {
 /* ---------------- Overview chart (status timeline) ---------------- */
 const FALLBACK_COL_W = 40;
 const PAD = 30;
-const CHART_H = 190;
-const Y = { baseline: 150, active: 90, priority: 78 };
+const CHART_H = 150;
+const Y = { baseline: 118, active: 71, priority: 62 };
 
 let COL_W = FALLBACK_COL_W;
 let CHART_W = PAD * 2 + (chartDays.length - 1) * COL_W;
@@ -490,72 +493,217 @@ buildOxygenChart();
 buildRespirationChart();
 
 /* ---------------- Clinical: Care Recommendations ---------------- */
+const CARE_REC_STATUS = {
+  recommended: { label: "Recommended", cls: "rec-status-recommended" },
+  "in-progress": { label: "In Progress", cls: "rec-status-progress" },
+  completed: { label: "Completed", cls: "rec-status-completed" },
+};
+
+function timeLabel(d) {
+  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  let h = d.getHours();
+  const ampm = h >= 12 ? "PM" : "AM";
+  h = h % 12 || 12;
+  const m = String(d.getMinutes()).padStart(2, "0");
+  return { short: `${String(d.getDate()).padStart(2, "0")} ${months[d.getMonth()]} · ${h}:${m} ${ampm}`, full: `${String(d.getDate()).padStart(2, "0")} ${months[d.getMonth()]} ${d.getFullYear()}, ${h}:${m} ${ampm}` };
+}
+
+let careRecIdSeq = 4;
 const careRecs = [
   {
-    active: true,
-    title: "Increase loop diuretic",
-    desc: "Increase Furosemide by 50% for 3 days following a 2.1 kg weight gain and rising respiration rate.",
-    status: "Active",
-    statusClass: "status-active",
-    date: "08/08/2026",
-    from: { initials: "LK", cls: "av-blue", name: "Dr. Lior Klein" },
-    to: { initials: "AE", cls: "av-orange", name: "Ayelet Er, NP" },
-    note: "Patient contacted — dose confirmed",
+    id: 1,
+    title: "Follow up on hearing device usage",
+    instruction: "Please contact the patient and confirm whether they are using their hearing device consistently and report back.",
+    status: "recommended",
+    createdBy: "Dr. Sarah Mitchell",
+    createdAt: "08 Aug 2026, 10:32 AM",
+    updatedAt: "08 Aug 2026, 10:32 AM",
+    pickedUpBy: null,
+    activity: [
+      { who: "Dr. Sarah Mitchell", when: "08 Aug · 10:32 AM", text: "Created care recommendation." },
+    ],
   },
   {
-    active: false,
-    title: "Invite to clinic",
-    desc: "Voice biomarker sustained above baseline for 6 consecutive days. Invite for in-person review.",
-    status: "Completed",
-    statusClass: "status-completed",
-    date: "07/22/2026",
-    from: { initials: "SL", cls: "av-purple", name: "Dr. Shani Levin" },
-    to: { initials: "MP", cls: "av-pink", name: "Max Payne" },
-    note: "Appointment booked 07/28",
+    id: 2,
+    title: "Confirm upcoming appointment",
+    instruction: "Please confirm the patient's upcoming appointment and remind them to bring their device charger.",
+    status: "in-progress",
+    createdBy: "Dr. Sarah Mitchell",
+    createdAt: "08 Aug 2026, 11:00 AM",
+    updatedAt: "08 Aug 2026, 02:15 PM",
+    pickedUpBy: "Amanda Lee, RN",
+    activity: [
+      { who: "Dr. Sarah Mitchell", when: "08 Aug · 11:00 AM", text: "Created care recommendation." },
+      { who: "Amanda Lee, RN", when: "08 Aug · 11:20 AM", text: "Picked up recommendation." },
+      { who: "Amanda Lee, RN", when: "08 Aug · 02:15 PM", label: "Action taken: Patient contacted", short: "Patient contacted", note: "Patient confirmed the appointment and will bring the charger." },
+    ],
   },
   {
-    active: false,
-    title: "Review medication adherence",
-    desc: "Three missed ARNI doses in the last 7 days. Review barriers with the patient.",
-    status: "Completed",
-    statusClass: "status-completed",
-    date: "06/30/2026",
-    from: { initials: "LK", cls: "av-blue", name: "Dr. Lior Klein" },
-    to: { initials: "SK", cls: "av-teal", name: "Sandy Kohl" },
-    note: "Reminder schedule adjusted",
+    id: 3,
+    title: "Review care instructions",
+    instruction: "Review the discharge care instructions with the patient to confirm understanding.",
+    status: "completed",
+    createdBy: "Dr. Sarah Mitchell",
+    createdAt: "07 Aug 2026, 09:00 AM",
+    updatedAt: "07 Aug 2026, 04:10 PM",
+    pickedUpBy: "Amanda Lee, RN",
+    activity: [
+      { who: "Dr. Sarah Mitchell", when: "07 Aug · 09:00 AM", text: "Created care recommendation." },
+      { who: "Amanda Lee, RN", when: "07 Aug · 09:40 AM", text: "Picked up recommendation." },
+      { who: "Amanda Lee, RN", when: "07 Aug · 11:15 AM", label: "Action taken: Patient contacted", short: "Patient contacted", note: "Reviewed care instructions with patient; they had questions about medication timing." },
+      { who: "Dr. Sarah Mitchell", when: "07 Aug · 01:00 PM", label: "Added a note", short: "Added a note", note: "Please clarify the evening dose timing with the patient." },
+      { who: "Amanda Lee, RN", when: "07 Aug · 03:00 PM", label: "Action taken", short: "Reviewed dose timing", note: "Clarified evening dose timing; patient confirmed understanding." },
+      { who: "Amanda Lee, RN", when: "07 Aug · 04:10 PM", label: "Marked recommendation as Completed.", short: "Completed" },
+    ],
   },
 ];
 
+function newCareRec(title, instruction, createdBy = "Dr. Sarah Mitchell") {
+  const t = timeLabel(new Date());
+  return {
+    id: careRecIdSeq++,
+    title,
+    instruction,
+    status: "recommended",
+    createdBy,
+    createdAt: t.full,
+    updatedAt: t.full,
+    pickedUpBy: null,
+    activity: [{ who: createdBy, when: t.short, text: "Created care recommendation." }],
+  };
+}
+
+let careRecFilter = "all"; // all | recommended | in-progress | completed
+let activeRecId = null;
+
+function careRecLatest(rec) {
+  if (rec.status === "recommended") return { primary: "Awaiting action", secondary: "Available to care team" };
+  const last = rec.activity[rec.activity.length - 1];
+  return { primary: last.who, secondary: last.short || last.label || last.text };
+}
+
+function careRecMatchesFilter(rec) {
+  if (careRecFilter === "all") return true;
+  return rec.status === careRecFilter;
+}
+
 function renderCareRecs() {
   document.getElementById("careRecCount").textContent = careRecs.length;
-  document.getElementById("careRecList").innerHTML = careRecs
+
+  const list = careRecs.filter(careRecMatchesFilter);
+  document.getElementById("careRecTableBody").innerHTML = list.length
+    ? list
+        .map((rec) => {
+          const meta = CARE_REC_STATUS[rec.status];
+          const latest = careRecLatest(rec);
+          return `
+          <tr>
+            <td><span class="rec-title-cell">${rec.title}</span></td>
+            <td><span class="rec-status-chip ${meta.cls}">${meta.label}</span></td>
+            <td>${rec.createdBy}</td>
+            <td>
+              <div class="rec-latest">
+                <span class="rec-latest-primary">${latest.primary}</span>
+                <span class="rec-latest-secondary">${latest.secondary}</span>
+              </div>
+            </td>
+            <td>${rec.updatedAt}</td>
+            <td><button type="button" class="btn-open rec-open-btn" data-rec-id="${rec.id}">${rec.status === "completed" ? "View" : "Open"}</button></td>
+          </tr>`;
+        })
+        .join("")
+    : `<tr><td colspan="6" class="rec-empty">No care recommendations in this view.</td></tr>`;
+}
+
+function renderRecTimeline(rec) {
+  return rec.activity
     .map(
-      (r) => `
-      <div class="care-rec-item ${r.active ? "active-rec" : ""}">
-        <div class="care-rec-top">
-          <div>
-            <h4 class="care-rec-title">${r.title}</h4>
-            <p class="care-rec-desc">${r.desc}</p>
-          </div>
-          <div class="care-rec-status">
-            <span class="status-chip ${r.statusClass}">${r.status}</span>
-            <span class="status-date">${r.date}</span>
-          </div>
-        </div>
-        <div class="care-rec-handoff">
-          <span class="init-avatar ${r.from.cls}">${r.from.initials}</span>
-          <span class="handoff-person">${r.from.name}</span>
-          <span class="handoff-arrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 12H19M13 6L19 12L13 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-          <span class="init-avatar ${r.to.cls}">${r.to.initials}</span>
-          <span class="handoff-person">${r.to.name}</span>
-          <span class="handoff-note">&middot; ${r.note}</span>
-          <span class="handoff-spacer"></span>
-          <button class="btn-open">Open</button>
+      (a) => `
+      <div class="rec-timeline-item">
+        <div class="rec-timeline-dot"></div>
+        <div class="rec-timeline-content">
+          <div class="rec-timeline-when">${a.when}</div>
+          <div class="rec-timeline-who">${a.who}</div>
+          <div class="rec-timeline-text${a.label ? " rec-timeline-label" : ""}">${a.label || a.text || ""}</div>
+          ${a.note ? `<div class="rec-timeline-note">${a.note}</div>` : ""}
         </div>
       </div>`
     )
     .join("");
 }
+
+function renderRecDrawerFooter(rec) {
+  if (rec.status === "completed") {
+    return `<div class="rec-completed-note">This recommendation is completed. Activity history is shown above.</div>`;
+  }
+  return `
+    <div class="rec-add-note">
+      <label class="drawer-label">Add note</label>
+      <textarea id="recNoteInput" placeholder="Add a note for the care team..."></textarea>
+      <div class="rec-footer-actions" style="justify-content:flex-end;">
+        <button type="button" class="btn-save enabled" id="recAddNote">Add note</button>
+      </div>
+    </div>`;
+}
+
+function openRecDrawer(id) {
+  const rec = careRecs.find((r) => r.id === id);
+  if (!rec) return;
+  activeRecId = id;
+  const meta = CARE_REC_STATUS[rec.status];
+
+  document.getElementById("recDrawerTitle").textContent = rec.title;
+  const statusEl = document.getElementById("recDrawerStatus");
+  statusEl.textContent = meta.label;
+  statusEl.className = `rec-status-chip ${meta.cls}`;
+
+  document.getElementById("recDrawerInstruction").textContent = rec.instruction;
+  document.getElementById("recDrawerCreatedBy").textContent = rec.createdBy;
+  document.getElementById("recDrawerCreatedAt").textContent = rec.createdAt;
+  document.getElementById("recDrawerPickedUp").textContent = rec.pickedUpBy || "Not yet picked up";
+
+  document.getElementById("recDrawerTimeline").innerHTML = renderRecTimeline(rec);
+  document.getElementById("recDrawerFooter").innerHTML = renderRecDrawerFooter(rec);
+
+  document.getElementById("recDrawerOverlay").classList.add("open");
+}
+
+function closeRecDrawer() {
+  document.getElementById("recDrawerOverlay").classList.remove("open");
+  activeRecId = null;
+}
+
+document.getElementById("closeRecDrawer").addEventListener("click", closeRecDrawer);
+document.getElementById("recDrawerOverlay").addEventListener("click", (e) => {
+  if (e.target.id === "recDrawerOverlay") closeRecDrawer();
+});
+
+document.getElementById("careRecTableBody").addEventListener("click", (e) => {
+  const btn = e.target.closest(".rec-open-btn");
+  if (!btn) return;
+  openRecDrawer(Number(btn.dataset.recId));
+});
+
+document.getElementById("recDrawerFooter").addEventListener("click", (e) => {
+  const rec = careRecs.find((r) => r.id === activeRecId);
+  if (!rec) return;
+  const t = timeLabel(new Date());
+
+  if (e.target.id === "recAddNote") {
+    const textarea = document.getElementById("recNoteInput");
+    const note = textarea.value.trim();
+    if (!note) return;
+    rec.activity.push({ who: rec.createdBy, when: t.short, label: "Added a note", short: "Added a note", note });
+    rec.updatedAt = t.full;
+    renderCareRecs();
+    openRecDrawer(rec.id);
+  }
+});
+
+document.getElementById("careRecStatusFilter").addEventListener("change", (e) => {
+  careRecFilter = e.target.value;
+  renderCareRecs();
+});
 renderCareRecs();
 
 /* ---------------- Clinical: Medications ---------------- */
@@ -1084,110 +1232,45 @@ editMedForm.addEventListener("submit", (e) => {
   closeEditMedModal();
 });
 
-const REC_STATUS_CLASS = { Active: "status-active", Completed: "status-completed" };
 wireAddModal("addRecOverlay", "addRecForm", "cancelAddRec", "openAddRecBtn", (fd) => {
-  const status = fd.get("status");
-  careRecs.unshift({
-    active: status === "Active",
-    title: fd.get("title"),
-    desc: fd.get("desc"),
-    status,
-    statusClass: REC_STATUS_CLASS[status],
-    date: "01/10/2026",
-    from: { initials: "EC", cls: "av-blue", name: "Emily Carter" },
-    to: { initials: "EC", cls: "av-blue", name: "Emily Carter" },
-    note: "Just added",
-  });
+  careRecs.unshift(newCareRec(fd.get("title"), fd.get("instruction")));
   renderCareRecs();
 });
 
 wireAddModal("careRecOverlay", "careRecForm", "cancelCareRec", "openCareRecBtn", (fd) => {
-  const medication = fd.get("medication") || "Medication";
-  const newDose = fd.get("newDose");
-  const frequency = fd.get("frequency");
-  const duration = fd.get("duration");
-  careRecs.unshift({
-    active: true,
-    title: `Adjust ${medication}`,
-    desc: `${medication}${newDose ? ` ${newDose} mg` : ""}${frequency ? ` · ${frequency}` : ""}${duration ? ` for ${duration} days` : ""}${fd.get("invite") === "on" ? " · Patient invited to clinic" : ""}${fd.get("instructions") ? ` — ${fd.get("instructions")}` : ""}`,
-    status: "Active",
-    statusClass: REC_STATUS_CLASS.Active,
-    date: "01/10/2026",
-    from: { initials: "EC", cls: "av-blue", name: "Emily Carter" },
-    to: { initials: "EC", cls: "av-blue", name: "Emily Carter" },
-    note: "Just added",
-  });
+  careRecs.unshift(newCareRec(fd.get("title"), fd.get("instruction")));
   renderCareRecs();
 });
 
 /* ---------------- Add Measurement modal ---------------- */
-function mReqField(name, label, placeholder, step) {
-  return `
-    <div class="form-field full">
-      <label>${label}<span class="required-star">*</span></label>
-      <input type="number" ${step ? `step="${step}"` : ""} name="${name}" placeholder="${placeholder}" required />
-    </div>`;
-}
-
-const MEASUREMENT_FIELD_SETS = {
-  bloodPressure: () => `
-    <div class="form-field">
-      <label>Systolic (mmHG)<span class="required-star">*</span></label>
-      <input type="number" name="systolic" placeholder="e.g. 120" required />
-    </div>
-    <div class="form-field">
-      <label>Diastolic (mmHG)<span class="required-star">*</span></label>
-      <input type="number" name="diastolic" placeholder="e.g. 80" required />
-    </div>`,
-  weight: () => `
-    <div class="form-field">
-      <label>Weight<span class="required-star">*</span></label>
-      <input type="number" step="0.1" name="weightValue" placeholder="e.g. 165" required />
-    </div>
-    <div class="form-field">
-      <label>Unit</label>
-      <div class="unit-toggle weight-unit-toggle" id="measurementWeightUnitToggle">
-        <span data-unit="kg" class="${weightUnit === "kg" ? "active" : ""}">KG</span>
-        <span data-unit="lbs" class="${weightUnit === "lbs" ? "active" : ""}">lbs</span>
-      </div>
-      <input type="hidden" name="weightUnit" value="${weightUnit}" />
-    </div>`,
-  heartRate: () => mReqField("heartRateValue", "Heart Rate (bpm)", "e.g. 72"),
-  bloodOxygen: () => mReqField("bloodOxygenValue", "Blood Oxygen (%)", "e.g. 98"),
-  respirationRate: () => mReqField("respirationValue", "Respiration Rate (breaths/min)", "e.g. 16"),
-  temperature: () => mReqField("temperatureValue", "Temperature (°F)", "e.g. 98.6", "0.1"),
-  bloodGlucose: () => mReqField("bloodGlucoseValue", "Blood Glucose (mg/dL)", "e.g. 95"),
-  height: () => mReqField("heightValue", "Height (in)", "e.g. 68"),
-  bmi: () => mReqField("bmiValue", "BMI", "e.g. 24.5", "0.1"),
+const WEIGHT_RANGE = {
+  kg: { min: 1, max: 300, placeholder: "e.g. 75" },
+  lbs: { min: 2, max: 660, placeholder: "e.g. 165" },
 };
 
-const measurementTypeSelect = document.getElementById("measurementTypeSelect");
-const measurementValueFields = document.getElementById("measurementValueFields");
-const saveAddMeasurementBtn = document.getElementById("saveAddMeasurement");
+const measurementWeightUnitToggle = document.getElementById("measurementWeightUnitToggle");
+const measurementWeightUnitInput = document.getElementById("measurementWeightUnit");
+const measurementWeightValueInput = document.getElementById("measurementWeightValue");
 
-function renderMeasurementFields() {
-  const type = measurementTypeSelect.value;
-  measurementValueFields.innerHTML = type ? MEASUREMENT_FIELD_SETS[type]() : "";
-
-  const hiddenWeightInput = measurementValueFields.querySelector('input[name="weightUnit"]');
-  if (hiddenWeightInput) {
-    measurementValueFields.querySelectorAll("#measurementWeightUnitToggle span").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        setWeightUnit(btn.dataset.unit);
-        measurementValueFields.querySelectorAll("#measurementWeightUnitToggle span").forEach((b) => b.classList.toggle("active", b === btn));
-        hiddenWeightInput.value = btn.dataset.unit;
-      });
-    });
-  }
-
-  saveAddMeasurementBtn.disabled = !type;
-  saveAddMeasurementBtn.classList.toggle("enabled", !!type);
+function setMeasurementWeightUnit(unit) {
+  measurementWeightUnitInput.value = unit;
+  measurementWeightUnitToggle.querySelectorAll("span").forEach((btn) => btn.classList.toggle("active", btn.dataset.unit === unit));
+  measurementWeightValueInput.min = WEIGHT_RANGE[unit].min;
+  measurementWeightValueInput.max = WEIGHT_RANGE[unit].max;
+  measurementWeightValueInput.placeholder = WEIGHT_RANGE[unit].placeholder;
 }
 
-measurementTypeSelect.addEventListener("change", renderMeasurementFields);
-
-wireAddModal("addMeasurementOverlay", "addMeasurementForm", "cancelAddMeasurement", "openAddMeasurementBtn", (fd) => {
-  alert(`Measurement added: ${measurementTypeSelect.options[measurementTypeSelect.selectedIndex].text}`);
+measurementWeightUnitToggle.querySelectorAll("span").forEach((btn) => {
+  btn.addEventListener("click", () => setMeasurementWeightUnit(btn.dataset.unit));
 });
 
-document.getElementById("openAddMeasurementBtn").addEventListener("click", renderMeasurementFields);
+wireAddModal("addMeasurementOverlay", "addMeasurementForm", "cancelAddMeasurement", "openAddMeasurementBtn", (fd) => {
+  const parts = [];
+  if (fd.get("systolic") && fd.get("diastolic")) parts.push(`BP ${fd.get("systolic")}/${fd.get("diastolic")} mmHG`);
+  if (fd.get("heartRateValue")) parts.push(`Heart Rate ${fd.get("heartRateValue")} bpm`);
+  if (fd.get("bloodOxygenValue")) parts.push(`Blood Oxygen ${fd.get("bloodOxygenValue")}%`);
+  if (fd.get("weightValue")) parts.push(`Weight ${fd.get("weightValue")} ${fd.get("weightUnit")}`);
+  alert(parts.length ? `Measurement added: ${parts.join(", ")}` : "No measurement values entered");
+});
+
+document.getElementById("openAddMeasurementBtn").addEventListener("click", () => setMeasurementWeightUnit(weightUnit));

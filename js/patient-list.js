@@ -6,17 +6,17 @@ const pencilIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none">
 const kebabIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="1.7" fill="currentColor"/><circle cx="12" cy="12" r="1.7" fill="currentColor"/><circle cx="12" cy="19" r="1.7" fill="currentColor"/></svg>`;
 
 const patientList = [
-  { name: "Alexander White", username: "ABC-1254", mrn: "857452365", phone: "054-857 15423", account: "Enabled", status: "priority", flag: true, since: "Since: 2d | 01.08.2028", monitoring: "monitored", compliance: 92, gender: "M" },
-  { name: "Dan Volex",        username: "ABC-1252", mrn: "854745856", phone: "054-857 15423", account: "Enabled", status: "priority", flag: false, since: "Since: 2d | 01.08.2028", monitoring: "monitored", compliance: 68, gender: "M", action: { type: "contacted", date: "", note: "" } },
+  { name: "Alexander White", username: "ABC-1254", mrn: "857452365", phone: "054-857 15423", account: "Enabled", status: "priority", flag: true, since: "Since: 2d | 01.08.2028", monitoring: "monitored", compliance: 92, gender: "M", careStatus: "in_progress", careTitle: "Confirm upcoming appointment", careAssignee: "Amanda Lee, RN" },
+  { name: "Dan Volex",        username: "ABC-1252", mrn: "854745856", phone: "054-857 15423", account: "Enabled", status: "priority", flag: false, since: "Since: 2d | 01.08.2028", monitoring: "monitored", compliance: 68, gender: "M", action: { type: "contacted", date: "", note: "" }, careStatus: "completed" },
   { name: "Mike Brown",       username: "ABC-1251", mrn: "854125632", phone: "054-857 15423", account: "Enabled", status: "priority", flag: false, since: "Since: 2d | 01.08.2028", monitoring: "unmonitored", monSince: "Since: 1d | 01.09.2028", compliance: 34, gender: "M" },
-  { name: "Ariel Fox",        username: "ABC-1238", mrn: "854123658", phone: "054-857 15423", account: "Enabled", status: "priority", flag: false, since: "Since: 3d | 01.07.2028", monitoring: "monitored", compliance: 81, gender: "F", action: { type: "invite", date: "", note: "" } },
+  { name: "Ariel Fox",        username: "ABC-1238", mrn: "854123658", phone: "054-857 15423", account: "Enabled", status: "priority", flag: false, since: "Since: 3d | 01.07.2028", monitoring: "monitored", compliance: 81, gender: "F", action: { type: "invite", date: "", note: "" }, careStatus: "recommended", careTitle: "Follow up on hearing device usage" },
   { name: "Jeff Frank",       username: "ABC-1242", mrn: "854123658", phone: "054-857 15423", account: "Enabled", status: "priority", flag: false, since: "Since: 4d | 01.06.2028", monitoring: "monitored", compliance: 57, gender: "M" },
-  { name: "Aric Snow",        username: "ABC-1283", mrn: "854125632", phone: "054-857 15423", account: "Enabled", status: "priority", flag: false, since: "Since: 8d | 01.02.2028", monitoring: "monitored", compliance: 76, gender: "M" },
-  { name: "Abe Lol",          username: "ABC-1222", mrn: "854125632", phone: "054-857 15423", account: "Enabled", status: "active", since: "Since: 3d | 01.07.2028", monitoring: "monitored", compliance: 88, gender: "M" },
+  { name: "Aric Snow",        username: "ABC-1283", mrn: "854125632", phone: "054-857 15423", account: "Enabled", status: "priority", flag: false, since: "Since: 8d | 01.02.2028", monitoring: "monitored", compliance: 76, gender: "M", careStatus: "in_progress", careTitle: "Contact patient regarding device-related concerns", careAssignee: "Ayelet Er, NP" },
+  { name: "Abe Lol",          username: "ABC-1222", mrn: "854125632", phone: "054-857 15423", account: "Enabled", status: "active", since: "Since: 3d | 01.07.2028", monitoring: "monitored", compliance: 88, gender: "M", careStatus: "completed" },
   { name: "Annie Zaplin",     username: "ABC-1222", mrn: "854125632", phone: "054-857 15423", account: "Enabled", status: "active", since: "Since: 3d | 01.07.2028", monitoring: "monitored", compliance: 45, gender: "F" },
-  { name: "Nathan Norash",    username: "ABC-1222", mrn: "854125632", phone: "054-857 15423", account: "Paused", status: "active", since: "Since: 3d | 01.07.2028", monitoring: "monitored", compliance: 63, gender: "M" },
+  { name: "Nathan Norash",    username: "ABC-1222", mrn: "854125632", phone: "054-857 15423", account: "Paused", status: "active", since: "Since: 3d | 01.07.2028", monitoring: "monitored", compliance: 63, gender: "M", careStatus: "recommended", careTitle: "Check patient understanding of care instructions" },
   { name: "Henry Fisher",     username: "ABC-1220", mrn: "965412589", phone: "054-857 15423", account: "Enabled", status: "registered", since: "Since: 3d | 01.07.2028", monitoring: "none", compliance: 12, gender: "M" },
-  { name: "Josh Ericson",     username: "ABC-1222", mrn: "854125632", phone: "054-857 15423", account: "Discontinued", status: "baseline", since: "Since: 3d | 01.07.2028", monitoring: "monitored", monInfo: true, compliance: 79, gender: "Other" },
+  { name: "Josh Ericson",     username: "ABC-1222", mrn: "854125632", phone: "054-857 15423", account: "Discontinued", status: "baseline", since: "Since: 3d | 01.07.2028", monitoring: "monitored", monInfo: true, compliance: 79, gender: "Other", careStatus: "completed" },
   { name: "Jack Harris",      username: "ABC-1221", mrn: "854125698", phone: "054-857 15423", account: "Discontinued", status: "none", monitoring: "unmonitored", monSince: "Since: 5d | 01.05.2028", compliance: 24, gender: "M" },
 ];
 
@@ -135,6 +135,32 @@ function complianceCell(p) {
   return `<div class="mon-cell"><span class="mon-line ${cls}">${p.compliance}%</span></div>`;
 }
 
+const careStatusLabels = {
+  recommended: { text: "Recommended", cls: "mon-unmonitored" },
+  in_progress: { text: "In Progress", cls: "mon-progress" },
+  completed: { text: "Completed", cls: "status-active" },
+};
+
+function careCell(p) {
+  const care = p.careStatus && careStatusLabels[p.careStatus];
+  if (!care) return `<div class="mon-cell"><span class="mon-line mon-none">—</span></div>`;
+  return `
+    <button type="button" class="care-indicator-trigger" data-id="${p.id}">
+      <span class="mon-line ${care.cls}">${care.text}</span>
+    </button>`;
+}
+
+function careIndicatorPopoverHtml(p) {
+  return `
+    <div class="care-indicator-popover-title">Care Recommendations</div>
+    <div class="care-indicator-popover-item">
+      <span class="mon-line ${careStatusLabels[p.careStatus].cls}">${careStatusLabels[p.careStatus].text}</span>
+      <div class="care-indicator-popover-rec">${p.careTitle || ""}</div>
+      ${p.careAssignee ? `<div class="care-indicator-popover-assignee">${p.careAssignee}</div>` : ""}
+    </div>
+    <a class="care-indicator-popover-link" href="patient-data.html">View patient chart &rarr;</a>`;
+}
+
 function complianceInRange(value) {
   if (!selectedComplianceRanges.size) return true;
   return [...selectedComplianceRanges].some((key) => {
@@ -173,6 +199,7 @@ function renderPatientList() {
         <td>${statusCell(p)}</td>
         <td>${monitoringCell(p)}</td>
         <td>${complianceCell(p)}</td>
+        <td>${careCell(p)}</td>
         <td>${actionCell(p)}</td>
       </tr>`
     )
@@ -427,7 +454,7 @@ const registerManualForm = document.getElementById("registerManualForm");
 const registerManualFormWrap = document.getElementById("registerManualFormWrap");
 const registerManualSuccessWrap = document.getElementById("registerManualSuccessWrap");
 const saveRegisterManual = document.getElementById("saveRegisterManual");
-const registerManualRequired = ["firstName", "lastName", "mrn", "email", "emailLanguage"];
+const registerManualRequired = ["firstName", "lastName", "email", "emailLanguage"];
 
 function validateRegisterManualForm() {
   const valid = registerManualRequired.every((name) => registerManualForm[name].value.trim() !== "");
@@ -437,6 +464,45 @@ function validateRegisterManualForm() {
 
 registerManualForm.addEventListener("input", validateRegisterManualForm);
 registerManualForm.addEventListener("change", validateRegisterManualForm);
+
+/* ---------------- Care Team multiselect (Register Patient) ---------------- */
+const careTeamField = registerManualForm.querySelector('.care-team-field[data-name="careTeam"]');
+const careTeamTrigger = careTeamField.querySelector(".care-team-trigger");
+const careTeamValueEl = careTeamField.querySelector(".care-team-trigger-value");
+const careTeamMenu = careTeamField.querySelector(".care-team-menu");
+const careTeamHidden = careTeamField.querySelector('input[name="careTeam"]');
+const careTeamPlaceholder = careTeamValueEl.textContent.trim();
+const selectedCareTeam = new Set();
+
+careTeamTrigger.addEventListener("click", (e) => {
+  e.stopPropagation();
+  const willOpen = !careTeamField.classList.contains("open");
+  document.querySelectorAll(".checkbox-filter.open, .custom-select.open").forEach((el) => el.classList.remove("open"));
+  careTeamField.classList.toggle("open", willOpen);
+});
+
+careTeamMenu.addEventListener("click", (e) => e.stopPropagation());
+
+careTeamMenu.addEventListener("change", (e) => {
+  const checkbox = e.target.closest('input[type="checkbox"]');
+  if (!checkbox) return;
+  if (checkbox.checked) selectedCareTeam.add(checkbox.value);
+  else selectedCareTeam.delete(checkbox.value);
+
+  careTeamHidden.value = [...selectedCareTeam].join(", ");
+  careTeamValueEl.textContent = selectedCareTeam.size ? `${selectedCareTeam.size} selected` : careTeamPlaceholder;
+  careTeamValueEl.classList.toggle("placeholder", !selectedCareTeam.size);
+});
+
+document.addEventListener("click", () => careTeamField.classList.remove("open"));
+
+function resetCareTeamSelect() {
+  selectedCareTeam.clear();
+  careTeamMenu.querySelectorAll('input[type="checkbox"]').forEach((cb) => (cb.checked = false));
+  careTeamHidden.value = "";
+  careTeamValueEl.textContent = careTeamPlaceholder;
+  careTeamValueEl.classList.add("placeholder");
+}
 
 const addInitialVitalsModalBtn = document.getElementById("addInitialVitalsModal");
 addInitialVitalsModalBtn.addEventListener("click", () => {
@@ -467,6 +533,7 @@ addInitialVitalsModalBtn.addEventListener("click", () => {
 function openRegisterManualModal() {
   registerManualForm.reset();
   resetCustomSelectsIn(registerManualForm);
+  resetCareTeamSelect();
   validateRegisterManualForm();
   document.getElementById("vitalsGridModal")?.remove();
   addInitialVitalsModalBtn.style.display = "";
@@ -622,6 +689,19 @@ function openRowMenuFor(id, trigger) {
   patientRowMenu.classList.add("open");
 }
 
+/* ---------------- Care indicator popover ---------------- */
+const careIndicatorPopover = document.getElementById("careIndicatorPopover");
+
+function openCareIndicatorFor(id, trigger) {
+  const patient = patientList.find((p) => p.id === id);
+  if (!patient || !patient.careStatus) return;
+  careIndicatorPopover.innerHTML = careIndicatorPopoverHtml(patient);
+  const rect = trigger.getBoundingClientRect();
+  careIndicatorPopover.style.top = `${rect.bottom + 6}px`;
+  careIndicatorPopover.style.left = `${rect.left}px`;
+  careIndicatorPopover.classList.add("open");
+}
+
 rows.addEventListener("click", (e) => {
   const addActionBtn = e.target.closest('.action-icon[data-act="addAction"]');
   if (addActionBtn) {
@@ -630,14 +710,26 @@ rows.addEventListener("click", (e) => {
     return;
   }
 
+  const careTrigger = e.target.closest(".care-indicator-trigger");
+  if (careTrigger) {
+    e.stopPropagation();
+    patientRowMenu.classList.remove("open");
+    openCareIndicatorFor(Number(careTrigger.dataset.id), careTrigger);
+    return;
+  }
+
   const trigger = e.target.closest(".row-menu-trigger");
   if (!trigger) return;
   e.stopPropagation();
+  careIndicatorPopover.classList.remove("open");
   openRowMenuFor(Number(trigger.dataset.id), trigger);
 });
 
 document.addEventListener("click", (e) => {
   if (!patientRowMenu.contains(e.target)) patientRowMenu.classList.remove("open");
+  if (!careIndicatorPopover.contains(e.target) && !e.target.closest(".care-indicator-trigger")) {
+    careIndicatorPopover.classList.remove("open");
+  }
 });
 
 patientRowMenu.addEventListener("click", (e) => {

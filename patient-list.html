@@ -238,6 +238,7 @@
                   <th><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9AA5B1" stroke-width="1.8"><path d="M12 21C12 21 4 15.5 4 9.8C4 6.6 6.5 4.5 9.2 4.5C10.6 4.5 11.6 5.1 12 5.7C12.4 5.1 13.4 4.5 14.8 4.5C17.5 4.5 20 6.6 20 9.8C20 15.5 12 21 12 21Z"/></svg>STATUS</th>
                   <th><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9AA5B1" stroke-width="1.8"><path d="M4 19V13M10 19V9M16 19V5M20 19V11"/></svg>MONITORING</th>
                   <th><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9AA5B1" stroke-width="1.8"><path d="M4 19V13M10 19V9M16 19V5M20 19V11"/></svg>COMPLIANCE</th>
+                  <th><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9AA5B1" stroke-width="1.8"><path d="M9 18H15M10 21H14M12 3C8.5 3 6 5.6 6 9C6 11.2 7 12.6 8 13.8C8.7 14.6 9 15.2 9 16H15C15 15.2 15.3 14.6 16 13.8C17 12.6 18 11.2 18 9C18 5.6 15.5 3 12 3Z"/></svg>CARE</th>
                   <th class="th-action"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9AA5B1" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/></svg>ACTION</th>
                 </tr>
               </thead>
@@ -278,11 +279,6 @@
               <label>Last Name<span class="required-star">*</span></label>
               <input type="text" name="lastName" placeholder="Last Name" required />
             </div>
-            <div class="form-field">
-              <label>MRN/ID<span class="required-star">*</span></label>
-              <input type="text" name="mrn" placeholder="MRN/ID" required />
-            </div>
-
             <div class="form-field">
               <label>Date of birth</label>
               <div class="reg-date-field">
@@ -344,19 +340,24 @@
               </div>
             </div>
             <div class="form-field">
-              <label>Provider</label>
-              <div class="custom-select" data-name="careTeamProvider">
-                <button type="button" class="custom-select-trigger">
-                  <span class="custom-select-value placeholder">Select provider</span>
-                  <svg class="custom-select-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              <label>Care Team</label>
+              <div class="checkbox-filter care-team-field" data-name="careTeam">
+                <button type="button" class="care-team-trigger">
+                  <span class="care-team-trigger-value placeholder">Select care team</span>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
                 </button>
-                <div class="custom-select-menu">
-                  <div class="custom-select-option" data-value="Dr. Sarah Mitchell">Dr. Sarah Mitchell<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                  <div class="custom-select-option" data-value="Dr. James Carter">Dr. James Carter<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                  <div class="custom-select-option" data-value="Dr. Emily Chen">Dr. Emily Chen<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                  <div class="custom-select-option" data-value="Dr. Michael Reyes">Dr. Michael Reyes<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="checkbox-filter-menu care-team-menu">
+                  <div class="care-team-menu-group">Provider</div>
+                  <label class="checkbox-filter-option"><input type="checkbox" value="Dr. Sarah Mitchell" />Dr. Sarah Mitchell</label>
+                  <label class="checkbox-filter-option"><input type="checkbox" value="Dr. James Carter" />Dr. James Carter</label>
+                  <label class="checkbox-filter-option"><input type="checkbox" value="Dr. Emily Chen" />Dr. Emily Chen</label>
+                  <label class="checkbox-filter-option"><input type="checkbox" value="Dr. Michael Reyes" />Dr. Michael Reyes</label>
+                  <div class="care-team-menu-group">Nurse</div>
+                  <label class="checkbox-filter-option"><input type="checkbox" value="Amanda Lee, RN" />Amanda Lee, RN</label>
+                  <label class="checkbox-filter-option"><input type="checkbox" value="Ayelet Er, NP" />Ayelet Er, NP</label>
+                  <label class="checkbox-filter-option"><input type="checkbox" value="Sandy Kohl, RN" />Sandy Kohl, RN</label>
                 </div>
-                <input type="hidden" name="careTeamProvider" />
+                <input type="hidden" name="careTeam" />
               </div>
             </div>
           </div>
@@ -611,6 +612,9 @@
     <button class="row-menu-item" data-action="account">Update account</button>
     <button class="row-menu-item" data-action="reset">Reset password</button>
   </div>
+
+  <!-- Care indicator popover -->
+  <div class="care-indicator-popover" id="careIndicatorPopover"></div>
 
   <!-- Edit Patient modal -->
   <div class="modal-overlay" id="editPatientOverlay">
