@@ -130,8 +130,8 @@ body {
 }
 
 .nav-item.active {
-  background: var(--blue);
-  color: #14213D;
+  background: var(--blue-light);
+  color: var(--blue);
   border-radius: 14px;
   font-weight: 700;
 }
@@ -626,6 +626,9 @@ body {
 .date-filter-btn,
 .checkbox-filter { position: relative; }
 
+.date-filter-btn .filter-btn,
+.checkbox-filter .filter-btn { font-weight: 400; }
+
 .date-filter-btn .caret,
 .checkbox-filter .caret { transition: transform 150ms ease; }
 
@@ -818,6 +821,8 @@ body {
 
 .list-table thead th svg { vertical-align: -2px; margin-right: 6px; }
 
+.list-table thead th.th-action { text-align: right; }
+
 .list-table tbody td {
   padding: 16px 18px;
   font-size: 13.5px;
@@ -829,6 +834,10 @@ body {
 
 .list-table tbody tr:last-child td { border-bottom: none; }
 .list-table tbody tr:hover td { background: #FAFBFC; }
+
+.list-table-compact.list-table { min-width: 1080px; }
+.list-table-compact.list-table thead th,
+.list-table-compact.list-table tbody td { padding-left: 12px; padding-right: 12px; }
 
 /* Sticky first/last columns so long tables keep name + actions visible while
    scrolling horizontally through the columns in between. The depth-cue
@@ -911,7 +920,15 @@ body {
 .action-cell {
   display: flex;
   align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.action-icon-group {
+  display: flex;
+  align-items: center;
   gap: 16px;
+  flex-shrink: 0;
 }
 
 .action-icon {
@@ -924,6 +941,8 @@ body {
 }
 
 .action-icon.kebab { color: #7E8993; }
+
+.action-label { font-size: 13px; color: #23272E; white-space: nowrap; }
 
 .list-footer {
   display: flex;

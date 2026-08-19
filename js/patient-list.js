@@ -6,19 +6,56 @@ const pencilIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none">
 const kebabIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="1.7" fill="currentColor"/><circle cx="12" cy="12" r="1.7" fill="currentColor"/><circle cx="12" cy="19" r="1.7" fill="currentColor"/></svg>`;
 
 const patientList = [
-  { name: "Alexander White", username: "ABC-1254", mrn: "857452365", phone: "054-857 15423", account: "Enabled", status: "priority", flag: true, since: "Since: 2d | 01.08.2028", monitoring: "monitored" },
-  { name: "Dan Volex",        username: "ABC-1252", mrn: "854745856", phone: "054-857 15423", account: "Enabled", status: "priority", flag: false, since: "Since: 2d | 01.08.2028", monitoring: "monitored" },
-  { name: "Mike Brown",       username: "ABC-1251", mrn: "854125632", phone: "054-857 15423", account: "Enabled", status: "priority", flag: false, since: "Since: 2d | 01.08.2028", monitoring: "unmonitored", monSince: "Since: 1d | 01.09.2028" },
-  { name: "Ariel Fox",        username: "ABC-1238", mrn: "854123658", phone: "054-857 15423", account: "Enabled", status: "priority", flag: false, since: "Since: 3d | 01.07.2028", monitoring: "monitored" },
-  { name: "Jeff Frank",       username: "ABC-1242", mrn: "854123658", phone: "054-857 15423", account: "Enabled", status: "priority", flag: false, since: "Since: 4d | 01.06.2028", monitoring: "monitored" },
-  { name: "Aric Snow",        username: "ABC-1283", mrn: "854125632", phone: "054-857 15423", account: "Enabled", status: "priority", flag: false, since: "Since: 8d | 01.02.2028", monitoring: "monitored" },
-  { name: "Abe Lol",          username: "ABC-1222", mrn: "854125632", phone: "054-857 15423", account: "Enabled", status: "active", since: "Since: 3d | 01.07.2028", monitoring: "monitored" },
-  { name: "Annie Zaplin",     username: "ABC-1222", mrn: "854125632", phone: "054-857 15423", account: "Enabled", status: "active", since: "Since: 3d | 01.07.2028", monitoring: "monitored" },
-  { name: "Nathan Norash",    username: "ABC-1222", mrn: "854125632", phone: "054-857 15423", account: "Enabled", status: "active", since: "Since: 3d | 01.07.2028", monitoring: "monitored" },
-  { name: "Henry Fisher",     username: "ABC-1220", mrn: "965412589", phone: "054-857 15423", account: "Enabled", status: "registered", since: "Since: 3d | 01.07.2028", monitoring: "none" },
-  { name: "Josh Ericson",     username: "ABC-1222", mrn: "854125632", phone: "054-857 15423", account: "Enabled", status: "baseline", since: "Since: 3d | 01.07.2028", monitoring: "monitored", monInfo: true },
-  { name: "Jack Harris",      username: "ABC-1221", mrn: "854125698", phone: "054-857 15423", account: "Enabled", status: "none", monitoring: "unmonitored", monSince: "Since: 5d | 01.05.2028" },
+  { name: "Alexander White", username: "ABC-1254", mrn: "857452365", phone: "054-857 15423", account: "Enabled", status: "priority", flag: true, since: "Since: 2d | 01.08.2028", monitoring: "monitored", compliance: 92, gender: "M" },
+  { name: "Dan Volex",        username: "ABC-1252", mrn: "854745856", phone: "054-857 15423", account: "Enabled", status: "priority", flag: false, since: "Since: 2d | 01.08.2028", monitoring: "monitored", compliance: 68, gender: "M", action: { type: "contacted", date: "", note: "" } },
+  { name: "Mike Brown",       username: "ABC-1251", mrn: "854125632", phone: "054-857 15423", account: "Enabled", status: "priority", flag: false, since: "Since: 2d | 01.08.2028", monitoring: "unmonitored", monSince: "Since: 1d | 01.09.2028", compliance: 34, gender: "M" },
+  { name: "Ariel Fox",        username: "ABC-1238", mrn: "854123658", phone: "054-857 15423", account: "Enabled", status: "priority", flag: false, since: "Since: 3d | 01.07.2028", monitoring: "monitored", compliance: 81, gender: "F", action: { type: "invite", date: "", note: "" } },
+  { name: "Jeff Frank",       username: "ABC-1242", mrn: "854123658", phone: "054-857 15423", account: "Enabled", status: "priority", flag: false, since: "Since: 4d | 01.06.2028", monitoring: "monitored", compliance: 57, gender: "M" },
+  { name: "Aric Snow",        username: "ABC-1283", mrn: "854125632", phone: "054-857 15423", account: "Enabled", status: "priority", flag: false, since: "Since: 8d | 01.02.2028", monitoring: "monitored", compliance: 76, gender: "M" },
+  { name: "Abe Lol",          username: "ABC-1222", mrn: "854125632", phone: "054-857 15423", account: "Enabled", status: "active", since: "Since: 3d | 01.07.2028", monitoring: "monitored", compliance: 88, gender: "M" },
+  { name: "Annie Zaplin",     username: "ABC-1222", mrn: "854125632", phone: "054-857 15423", account: "Enabled", status: "active", since: "Since: 3d | 01.07.2028", monitoring: "monitored", compliance: 45, gender: "F" },
+  { name: "Nathan Norash",    username: "ABC-1222", mrn: "854125632", phone: "054-857 15423", account: "Paused", status: "active", since: "Since: 3d | 01.07.2028", monitoring: "monitored", compliance: 63, gender: "M" },
+  { name: "Henry Fisher",     username: "ABC-1220", mrn: "965412589", phone: "054-857 15423", account: "Enabled", status: "registered", since: "Since: 3d | 01.07.2028", monitoring: "none", compliance: 12, gender: "M" },
+  { name: "Josh Ericson",     username: "ABC-1222", mrn: "854125632", phone: "054-857 15423", account: "Discontinued", status: "baseline", since: "Since: 3d | 01.07.2028", monitoring: "monitored", monInfo: true, compliance: 79, gender: "Other" },
+  { name: "Jack Harris",      username: "ABC-1221", mrn: "854125698", phone: "054-857 15423", account: "Discontinued", status: "none", monitoring: "unmonitored", monSince: "Since: 5d | 01.05.2028", compliance: 24, gender: "M" },
 ];
+
+const complianceRanges = [
+  { key: "76-100", label: "76-100%", min: 76, max: 100 },
+  { key: "51-75", label: "51-75%", min: 51, max: 75 },
+  { key: "26-50", label: "26-50%", min: 26, max: 50 },
+  { key: "0-25", label: "0-25%", min: 0, max: 25 },
+];
+
+const genderOptions = [
+  { key: "M", label: "Male (M)" },
+  { key: "F", label: "Female (F)" },
+  { key: "Other", label: "Other" },
+];
+
+const accountOptions = [
+  { key: "Enabled", label: "Enabled" },
+  { key: "Paused", label: "Paused" },
+  { key: "Discontinued", label: "Discontinued" },
+];
+
+const statusOptions = [
+  { key: "registered", label: "Registered" },
+  { key: "baseline", label: "Baseline" },
+  { key: "active", label: "Active" },
+  { key: "priority", label: "Priority" },
+];
+
+const monitoringOptions = [
+  { key: "monitored", label: "Monitored" },
+  { key: "unmonitored", label: "Unmonitored" },
+];
+
+const selectedComplianceRanges = new Set();
+const selectedGenders = new Set();
+const selectedAccounts = new Set();
+const selectedStatuses = new Set();
+const selectedMonitorings = new Set();
 
 function statusCell(p) {
   if (p.status === "priority") {
@@ -72,32 +109,220 @@ function monitoringCell(p) {
   return `<div class="mon-cell"><span class="mon-line mon-none">None</span></div>`;
 }
 
+const actionTypeLabels = {
+  contacted: "Contacted",
+  invite: "Invite to clinic",
+  hospital: "Send to hospital",
+  other: "Other",
+};
+
+function actionCell(p) {
+  const label = p.action ? actionTypeLabels[p.action.type] || "" : "";
+  return `
+    <div class="action-cell">
+      ${label ? `<span class="action-label">${label}</span>` : "<span></span>"}
+      <div class="action-icon-group">
+        <button class="action-icon" aria-label="Add action" data-id="${p.id}" data-act="addAction">${pencilIcon}</button>
+        <button class="action-icon kebab row-menu-trigger" aria-label="More" data-id="${p.id}">${kebabIcon}</button>
+      </div>
+    </div>`;
+}
+
 patientList.forEach((p, i) => (p.id = i));
 
+function complianceCell(p) {
+  const cls = p.compliance >= 76 ? "status-active" : p.compliance >= 51 ? "mon-unmonitored" : "status-priority";
+  return `<div class="mon-cell"><span class="mon-line ${cls}">${p.compliance}%</span></div>`;
+}
+
+function complianceInRange(value) {
+  if (!selectedComplianceRanges.size) return true;
+  return [...selectedComplianceRanges].some((key) => {
+    const range = complianceRanges.find((r) => r.key === key);
+    return range && value >= range.min && value <= range.max;
+  });
+}
+
+function genderLabel(gender) {
+  return gender === "M" ? "(M)" : gender === "F" ? "(F)" : "(Other)";
+}
+
+function filteredPatientList() {
+  return patientList.filter(
+    (p) =>
+      complianceInRange(p.compliance) &&
+      (!selectedGenders.size || selectedGenders.has(p.gender)) &&
+      (!selectedAccounts.size || selectedAccounts.has(p.account)) &&
+      (!selectedStatuses.size || selectedStatuses.has(p.status)) &&
+      (!selectedMonitorings.size || selectedMonitorings.has(p.monitoring))
+  );
+}
+
 const rows = document.getElementById("patientListRows");
-rows.innerHTML = patientList
+
+function renderPatientList() {
+  rows.innerHTML = filteredPatientList()
+    .map(
+      (p) => `
+      <tr>
+        <td><a class="lt-name ${p.status === "priority" ? "priority" : "active-name"}" href="patient-data.html">${p.name} ${genderLabel(p.gender)}</a></td>
+        <td>${p.username}</td>
+        <td>${p.mrn}</td>
+        <td>${p.phone}</td>
+        <td>${p.account}</td>
+        <td>${statusCell(p)}</td>
+        <td>${monitoringCell(p)}</td>
+        <td>${complianceCell(p)}</td>
+        <td>${actionCell(p)}</td>
+      </tr>`
+    )
+    .join("");
+}
+
+renderPatientList();
+
+/* ---------------- Compliance filter ---------------- */
+const complianceMenu = document.getElementById("complianceMenu");
+complianceMenu.innerHTML = complianceRanges
   .map(
-    (p) => `
-    <tr>
-      <td><a class="lt-name ${p.status === "priority" ? "priority" : "active-name"}" href="patient-data.html">${p.name}</a></td>
-      <td>${p.username}</td>
-      <td>${p.mrn}</td>
-      <td>${p.phone}</td>
-      <td>${p.account}</td>
-      <td>${statusCell(p)}</td>
-      <td>${monitoringCell(p)}</td>
-      <td>
-        <div class="action-cell">
-          <button class="action-icon" aria-label="Edit" data-id="${p.id}" data-act="edit">${pencilIcon}</button>
-          <button class="action-icon kebab row-menu-trigger" aria-label="More" data-id="${p.id}">${kebabIcon}</button>
-        </div>
-      </td>
-    </tr>`
+    (r) => `
+    <label class="checkbox-filter-option">
+      <input type="checkbox" value="${r.key}" />
+      ${r.label}
+    </label>`
   )
   .join("");
 
+function wireCheckboxFilter(wrapEl, menuEl, selectedSet, onChange) {
+  const trigger = wrapEl.querySelector(".filter-btn");
+  const label = wrapEl.querySelector(".checkbox-filter-label");
+  const baseLabel = label.textContent.trim();
+
+  trigger.addEventListener("click", (e) => {
+    e.stopPropagation();
+    const willOpen = !wrapEl.classList.contains("open");
+    closeAllFilterPopovers();
+    wrapEl.classList.toggle("open", willOpen);
+  });
+
+  menuEl.addEventListener("click", (e) => e.stopPropagation());
+
+  menuEl.addEventListener("change", (e) => {
+    const checkbox = e.target.closest('input[type="checkbox"]');
+    if (!checkbox) return;
+    if (checkbox.checked) selectedSet.add(checkbox.value);
+    else selectedSet.delete(checkbox.value);
+
+    label.textContent = selectedSet.size ? `${baseLabel} (${selectedSet.size})` : baseLabel;
+    onChange();
+  });
+}
+
+wireCheckboxFilter(
+  document.querySelector('.checkbox-filter[data-name="compliance"]'),
+  complianceMenu,
+  selectedComplianceRanges,
+  renderPatientList
+);
+
+/* ---------------- Gender filter ---------------- */
+const genderMenu = document.getElementById("genderMenu");
+genderMenu.innerHTML = genderOptions
+  .map(
+    (g) => `
+    <label class="checkbox-filter-option">
+      <input type="checkbox" value="${g.key}" />
+      ${g.label}
+    </label>`
+  )
+  .join("");
+
+wireCheckboxFilter(
+  document.querySelector('.checkbox-filter[data-name="gender"]'),
+  genderMenu,
+  selectedGenders,
+  renderPatientList
+);
+
+/* ---------------- Account filter ---------------- */
+const accountMenu = document.getElementById("accountMenu");
+accountMenu.innerHTML = accountOptions
+  .map(
+    (a) => `
+    <label class="checkbox-filter-option">
+      <input type="checkbox" value="${a.key}" />
+      ${a.label}
+    </label>`
+  )
+  .join("");
+
+wireCheckboxFilter(
+  document.querySelector('.checkbox-filter[data-name="account"]'),
+  accountMenu,
+  selectedAccounts,
+  renderPatientList
+);
+
+/* ---------------- Status filter ---------------- */
+const statusMenu = document.getElementById("statusMenu");
+statusMenu.innerHTML = statusOptions
+  .map(
+    (s) => `
+    <label class="checkbox-filter-option">
+      <input type="checkbox" value="${s.key}" />
+      ${s.label}
+    </label>`
+  )
+  .join("");
+
+wireCheckboxFilter(
+  document.querySelector('.checkbox-filter[data-name="status"]'),
+  statusMenu,
+  selectedStatuses,
+  renderPatientList
+);
+
+/* ---------------- Monitoring filter ---------------- */
+const monitoringMenu = document.getElementById("monitoringMenu");
+monitoringMenu.innerHTML = monitoringOptions
+  .map(
+    (m) => `
+    <label class="checkbox-filter-option">
+      <input type="checkbox" value="${m.key}" />
+      ${m.label}
+    </label>`
+  )
+  .join("");
+
+wireCheckboxFilter(
+  document.querySelector('.checkbox-filter[data-name="monitoring"]'),
+  monitoringMenu,
+  selectedMonitorings,
+  renderPatientList
+);
+
+function closeAllFilterPopovers() {
+  document.querySelectorAll(".checkbox-filter.open").forEach((el) => el.classList.remove("open"));
+}
+
+document.addEventListener("click", closeAllFilterPopovers);
+
+const clearableFilters = [
+  { name: "account", menu: accountMenu, set: selectedAccounts, label: "Account" },
+  { name: "status", menu: statusMenu, set: selectedStatuses, label: "Status" },
+  { name: "monitoring", menu: monitoringMenu, set: selectedMonitorings, label: "Monitoring" },
+  { name: "compliance", menu: complianceMenu, set: selectedComplianceRanges, label: "Compliance" },
+  { name: "gender", menu: genderMenu, set: selectedGenders, label: "Gender" },
+];
+
 document.getElementById("clearFilters").addEventListener("click", () => {
   document.getElementById("searchInput").value = "";
+  clearableFilters.forEach(({ name, menu, set, label }) => {
+    set.clear();
+    menu.querySelectorAll('input[type="checkbox"]').forEach((cb) => (cb.checked = false));
+    document.querySelector(`.checkbox-filter[data-name="${name}"] .checkbox-filter-label`).textContent = label;
+  });
+  renderPatientList();
 });
 
 /* ---------------- Custom dropdowns (same pattern as Registration) ---------------- */
@@ -398,10 +623,10 @@ function openRowMenuFor(id, trigger) {
 }
 
 rows.addEventListener("click", (e) => {
-  const editBtn = e.target.closest('.action-icon[data-act="edit"]');
-  if (editBtn) {
-    const patient = patientList.find((p) => p.id === Number(editBtn.dataset.id));
-    if (patient) openEditPatientModal(patient);
+  const addActionBtn = e.target.closest('.action-icon[data-act="addAction"]');
+  if (addActionBtn) {
+    const patient = patientList.find((p) => p.id === Number(addActionBtn.dataset.id));
+    if (patient) openAddActionModal(patient);
     return;
   }
 
@@ -531,3 +756,43 @@ function closeResetPasswordModal() {
 document.getElementById("cancelResetPassword").addEventListener("click", closeResetPasswordModal);
 resetPasswordOverlay.addEventListener("click", (e) => { if (e.target === resetPasswordOverlay) closeResetPasswordModal(); });
 document.getElementById("confirmResetPassword").addEventListener("click", closeResetPasswordModal);
+
+/* ---------------- Add Action modal ---------------- */
+const addActionOverlay = document.getElementById("addActionOverlay");
+const addActionForm = document.getElementById("addActionForm");
+let activeActionPatientId = null;
+
+function openAddActionModal(patient) {
+  activeActionPatientId = patient.id;
+  addActionForm.reset();
+  if (patient.action) {
+    addActionForm.actionType.value = patient.action.type;
+    addActionForm.actionDate.value = patient.action.date || "";
+    addActionForm.actionNote.value = patient.action.note || "";
+  }
+  addActionOverlay.classList.add("open");
+}
+
+function closeAddActionModal() {
+  addActionOverlay.classList.remove("open");
+  activeActionPatientId = null;
+}
+
+document.getElementById("cancelAddAction").addEventListener("click", closeAddActionModal);
+addActionOverlay.addEventListener("click", (e) => { if (e.target === addActionOverlay) closeAddActionModal(); });
+
+addActionForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  const patient = patientList.find((p) => p.id === activeActionPatientId);
+  if (!patient) return;
+  const type = addActionForm.actionType.value;
+  if (type) {
+    patient.action = {
+      type,
+      date: addActionForm.actionDate.value,
+      note: addActionForm.actionNote.value,
+    };
+  }
+  closeAddActionModal();
+  renderPatientList();
+});
