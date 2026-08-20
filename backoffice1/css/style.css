@@ -4028,21 +4028,6 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue); }
   margin-bottom: 16px;
 }
 
-/* "View Task" row-menu popover -- read-only list of a single incident's tasks */
-.bo-task-view-popover { flex-direction: column; padding: 10px; min-width: 240px; max-width: 300px; gap: 2px; }
-
-.bo-task-view-item {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  padding: 8px 10px;
-  border-radius: 8px;
-}
-.bo-task-view-item .title { font-size: 13px; font-weight: 700; color: var(--ink); }
-.bo-task-view-item .meta { font-size: 11.5px; color: var(--gray-text); }
-
-.bo-task-view-empty { padding: 10px; font-size: 13px; color: var(--gray-text); }
-
 /* Incident Detail page — Support Tasks section */
 .bo-task-list { display: flex; flex-direction: column; gap: 10px; }
 

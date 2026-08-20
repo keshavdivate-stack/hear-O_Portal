@@ -124,23 +124,7 @@ incidentRowMenu.addEventListener("click", (e) => {
   incidentRowMenu.classList.remove("open");
 
   if (action === "createTask") openAddTaskDrawer(incident);
-  if (action === "viewTask") openTaskViewPopover(item, incident);
-});
-
-/* ---------------- View Task popover (read-only list) ---------------- */
-const incidentTaskPopover = document.getElementById("incidentTaskPopover");
-
-function openTaskViewPopover(anchorEl, incident) {
-  incidentTaskPopover.innerHTML = incident.tasks.length
-    ? incident.tasks.map((t) => `<div class="bo-task-view-item"><span class="title">${t.title}</span><span class="meta">${t.assignee} · ${t.status}</span></div>`).join("")
-    : `<div class="bo-task-view-empty">No tickets yet for this incident.</div>`;
-  const rect = anchorEl.getBoundingClientRect();
-  incidentTaskPopover.style.top = `${rect.bottom + 6}px`;
-  incidentTaskPopover.style.left = `${rect.right - 260}px`;
-  incidentTaskPopover.classList.add("open");
-}
-document.addEventListener("click", (e) => {
-  if (!incidentTaskPopover.contains(e.target)) incidentTaskPopover.classList.remove("open");
+  if (action === "viewTask") location.href = `incident-detail.html?id=${encodeURIComponent(incident.id)}`;
 });
 
 /* ---------------- Create Support Task drawer ---------------- */
