@@ -833,7 +833,6 @@ function validateNewRuleForm() {
 function openNewRuleDrawer() {
   newRuleForm.reset();
   newRuleDrawerOverlay.querySelectorAll(".bo-select").forEach(resetBoSelect);
-  document.getElementById("newRuleAutoCreateInput").checked = false;
   validateNewRuleForm();
   newRuleDrawerOverlay.classList.add("open");
 }
@@ -870,7 +869,7 @@ newRuleForm.addEventListener("submit", (e) => {
     slaResponse: sla.response,
     slaResolve: sla.resolve,
     channels: SEND_BY_CHANNELS[sendBy] || [],
-    autoCreateTicket: document.getElementById("newRuleAutoCreateInput").checked,
+    autoCreateTicket: false,
     appliesTo: selectValue("newRuleAppliesTo"),
   });
 

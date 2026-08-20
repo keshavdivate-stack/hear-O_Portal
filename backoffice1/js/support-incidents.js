@@ -133,13 +133,16 @@ const addTaskForm = document.getElementById("addTaskForm");
 const saveAddTaskBtn = document.getElementById("saveAddTask");
 let addTaskTargetIncident = null;
 
+document.querySelector('#addTaskOverlay .bo-select[data-name="taskTeam"] .bo-select-menu').innerHTML = buildSelectOptions(["Clinical Team", "Support Team"]);
+document.querySelector('#addTaskOverlay .bo-select[data-name="taskLevel"] .bo-select-menu').innerHTML = buildSelectOptions(["Level 1", "Level 2", "Level 3"]);
 document.querySelector('#addTaskOverlay .bo-select[data-name="taskAssignee"] .bo-select-menu').innerHTML = buildSelectOptions(SUPPORT_TEAM);
 document.querySelector('#addTaskOverlay .bo-select[data-name="taskPriority"] .bo-select-menu').innerHTML = buildSelectOptions(Object.values(INC_SEVERITY_LABEL));
 
 function validateAddTaskForm() {
   const titleFilled = addTaskForm.taskTitle.value.trim() !== "";
+  const teamFilled = addTaskOverlay.querySelector('.bo-select[data-name="taskTeam"] input[type=hidden]').value !== "";
   const assigneeFilled = addTaskOverlay.querySelector('.bo-select[data-name="taskAssignee"] input[type=hidden]').value !== "";
-  saveAddTaskBtn.disabled = !(titleFilled && assigneeFilled);
+  saveAddTaskBtn.disabled = !(titleFilled && teamFilled && assigneeFilled);
 }
 
 const taskAttachmentInput = document.getElementById("taskAttachmentInput");
@@ -171,10 +174,12 @@ addTaskForm.addEventListener("submit", (e) => {
   e.preventDefault();
   if (saveAddTaskBtn.disabled || !addTaskTargetIncident) return;
 
+  const team = addTaskOverlay.querySelector('.bo-select[data-name="taskTeam"] input[type=hidden]').value;
+  const level = addTaskOverlay.querySelector('.bo-select[data-name="taskLevel"] input[type=hidden]').value;
   const assignee = addTaskOverlay.querySelector('.bo-select[data-name="taskAssignee"] input[type=hidden]').value;
   const isFirstTask = addTaskTargetIncident.tasks.length === 0;
   const nextId = addTaskTargetIncident.tasks.length ? Math.max(...addTaskTargetIncident.tasks.map((t) => t.id)) + 1 : 1;
-  addTaskTargetIncident.tasks.push({ id: nextId, title: addTaskForm.taskTitle.value.trim(), assignee, status: "Open" });
+  addTaskTargetIncident.tasks.push({ id: nextId, title: addTaskForm.taskTitle.value.trim(), team, level, assignee, status: "Open" });
   addTaskTargetIncident.timeline.push({ time: "Just now", text: `Ticket "${addTaskForm.taskTitle.value.trim()}" assigned to ${assignee}` });
 
   /* Incident Owner (overall responsibility) is distinct from a task's
