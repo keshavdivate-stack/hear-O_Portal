@@ -999,9 +999,7 @@ body {
   background: #FAFBFC;
 }
 
-.lt-name { font-weight: 700; }
-.lt-name.priority { color: var(--red); }
-.lt-name.active-name { color: #23272E; }
+.lt-name { font-weight: 700; color: #23272E; }
 
 .status-cell { line-height: 1.5; }
 .status-line {
@@ -1052,7 +1050,7 @@ body {
   font-weight: 700;
 }
 
-.care-indicator-trigger .mon-line.mon-unmonitored { background: var(--blue-light); }
+.care-indicator-trigger .mon-line.mon-unmonitored { background: var(--blue-light); color: var(--blue); }
 .care-indicator-trigger .mon-line.mon-progress { background: #FDF3E7; }
 .care-indicator-trigger .mon-line.status-active { background: #E7F8EF; }
 
@@ -3111,6 +3109,12 @@ label.checkbox-field {
   font-size: 14px;
   color: #23272E;
   font-weight: 600;
+}
+
+.care-team-checkbox-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
 }
 
 .checkbox-field input[type="checkbox"] {

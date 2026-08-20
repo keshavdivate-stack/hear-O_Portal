@@ -3,194 +3,1104 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>HearO | Nurse View — Care Recommendations</title>
+<title>HearO | Patient Data (Nurse View)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="css/style.css" />
-<style>
-  /* Standalone page shell — this view is not part of the main app shell/sidebar. */
-  body { background: var(--bg); }
-  .nurse-view-topbar {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 18px 32px;
-    background: #fff;
-    border-bottom: 1px solid var(--gray-border);
-  }
-  .nurse-view-topbar .logo-mark { width: 28px; height: 28px; }
-  .nurse-view-topbar-title { font-size: 16px; font-weight: 700; color: #23272E; }
-  .nurse-view-topbar-badge {
-    display: inline-flex;
-    align-items: center;
-    padding: 4px 10px;
-    border-radius: 999px;
-    background: var(--blue-light);
-    color: var(--blue);
-    font-size: 11.5px;
-    font-weight: 700;
-    letter-spacing: 0.3px;
-    text-transform: uppercase;
-  }
-  .nurse-view-content {
-    max-width: 860px;
-    margin: 0 auto;
-    padding: 28px 24px 60px;
-    display: flex;
-    flex-direction: column;
-    gap: 22px;
-  }
-  .nurse-rec-card {
-    background: #fff;
-    border: 1px solid var(--gray-border);
-    border-radius: 16px;
-    padding: 24px 26px;
-  }
-  .nurse-rec-card-head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    margin-bottom: 18px;
-  }
-  .nurse-rec-title { font-size: 16px; font-weight: 700; color: #23272E; }
-  .nurse-action-panel {
-    margin-top: 22px;
-    padding-top: 22px;
-    border-top: 1px solid var(--gray-border);
-  }
-  .nurse-action-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 18px;
-    margin-bottom: 16px;
-  }
-</style>
 </head>
 <body>
 
-  <header class="nurse-view-topbar">
-    <img src="https://web.dev3.cordiomed.com/assets/icons/logo.svg" alt="HearO" class="logo-mark" />
-    <span class="nurse-view-topbar-title">HearO</span>
-    <span class="nurse-view-topbar-badge">Nurse View</span>
-  </header>
+  <div class="app">
 
-  <div class="nurse-view-content">
-
-    <!-- Patient header -->
-    <div class="patient-card">
-      <div class="patient-identity">
-        <div class="patient-avatar-row">
-          <div class="patient-avatar">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.8"/><path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-          </div>
-          <div>
-            <div class="patient-name">Sarah White</div>
-            <div class="patient-mrn">ABC-123</div>
-          </div>
-        </div>
-        <div class="patient-priority-row">
-          <span class="priority-tag">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="#F16C6C"><path d="M12 21C12 21 4 15.5 4 9.8C4 6.6 6.5 4.5 9.2 4.5C10.6 4.5 11.6 5.1 12 5.7C12.4 5.1 13.4 4.5 14.8 4.5C17.5 4.5 20 6.6 20 9.8C20 15.5 12 21 12 21Z"/></svg>
-            Priority
-          </span>
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="logo">
+          <img src="https://web.dev3.cordiomed.com/assets/new-screen-assets/components/Side%20menu%20icon.svg" alt="HearO" class="logo-mark logo-mark-collapsed" />
+          <img src="https://web.dev3.cordiomed.com/assets/icons/logo.svg" alt="HearO" class="logo-mark logo-mark-expanded" />
         </div>
       </div>
+
+      <nav class="nav-list">
+        <a href="index.html" class="nav-item">
+          <span class="nav-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="17" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3 9H21" stroke="currentColor" stroke-width="1.8"/><path d="M8 2V6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M16 2V6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M7 13L10 16L14 12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+          <span class="nav-label">Dashboard</span>
+        </a>
+        <a href="patient-list.html" class="nav-item active">
+          <span class="nav-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="9" cy="8" r="3.2" stroke="currentColor" stroke-width="1.8"/><path d="M2.5 20C2.5 16.5 5.5 14 9 14C12.5 14 15.5 16.5 15.5 20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="17" cy="8.5" r="2.6" stroke="currentColor" stroke-width="1.6"/><path d="M15.5 20C15.5 17 17.8 15 20.5 15" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          </span>
+          <span class="nav-label">Patient List</span>
+        </a>
+        <a href="reports.html" class="nav-item">
+          <span class="nav-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><rect x="7" y="12" width="3" height="6"/><rect x="12" y="8" width="3" height="10"/><rect x="17" y="5" width="3" height="13"/></svg>
+          </span>
+          <span class="nav-label">Reports</span>
+        </a>
+        <a href="billing.html" class="nav-item">
+          <span class="nav-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><path d="M12 7V17" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M15 9.5C15 8.1 13.7 7 12 7C10.3 7 9 8.1 9 9.5C9 10.9 10.3 11.5 12 12C13.7 12.5 15 13.1 15 14.5C15 15.9 13.7 17 12 17C10.3 17 9 15.9 9 14.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          </span>
+          <span class="nav-label">Billing</span>
+        </a>
+        <a href="audit-trail.html" class="nav-item">
+          <span class="nav-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><path d="M12 7V12L15.5 14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+          <span class="nav-label">Audit Trail</span>
+        </a>
+        <a href="manage-users.html" class="nav-item">
+          <span class="nav-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="9" cy="8" r="3.2" stroke="currentColor" stroke-width="1.8"/><path d="M2.5 20C2.5 16.5 5.5 14 9 14C12.5 14 15.5 16.5 15.5 20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="18" cy="16.5" r="2.4" stroke="currentColor" stroke-width="1.5"/><path d="M18 13.8V14.6M18 18.4V19.2M15.6 16.5H16.4M19.6 16.5H20.4M16.3 14.8L16.85 15.35M19.15 17.65L19.7 18.2M19.7 14.8L19.15 15.35M16.85 17.65L16.3 18.2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+          </span>
+          <span class="nav-label">Manage Users</span>
+        </a>
+      </nav>
+    </aside>
+
+    <!-- MAIN -->
+    <div class="main" id="main">
+
+      <!-- TOPBAR -->
+      <header class="topbar">
+        <h1 class="page-title">Patient Data</h1>
+        <div class="search">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#9AA5B1" stroke-width="1.8"/><path d="M21 21L16.5 16.5" stroke="#9AA5B1" stroke-width="1.8" stroke-linecap="round"/></svg>
+          <input type="text" placeholder="Search for a patient by name, username, MRN or ID" />
+        </div>
+        <div class="topbar-actions">
+          <div class="topbar-item">
+            <button class="icon-btn" aria-label="Add" id="orgSwitchBtn">
+              <svg width="19" height="19" viewBox="0 0 24 24" fill="none"><path d="M10 3H14C14.55 3 15 3.45 15 4V9H20C20.55 9 21 9.45 21 10V14C21 14.55 20.55 15 20 15H15V20C15 20.55 14.55 21 14 21H10C9.45 21 9 20.55 9 20V15H4C3.45 15 3 14.55 3 14V10C3 9.45 3.45 9 4 9H9V4C9 3.45 9.45 3 10 3Z" stroke="#6B7684" stroke-width="1.6" stroke-linejoin="round"/></svg>
+            </button>
+            <div class="topbar-popover org-popover" id="orgPopover">
+              <label class="org-radio-item">
+                <input type="radio" name="org" value="b01" checked />
+                <span class="radio-dot"></span>
+                B01
+              </label>
+              <label class="org-radio-item">
+                <input type="radio" name="org" value="101" />
+                <span class="radio-dot"></span>
+                101
+              </label>
+              <label class="org-radio-item">
+                <input type="radio" name="org" value="104" />
+                <span class="radio-dot"></span>
+                104
+              </label>
+              <label class="org-radio-item">
+                <input type="radio" name="org" value="b03" />
+                <span class="radio-dot"></span>
+                B03
+              </label>
+              <label class="org-radio-item">
+                <input type="radio" name="org" value="105" />
+                <span class="radio-dot"></span>
+                105
+              </label>
+            </div>
+          </div>
+          <div class="topbar-item">
+            <button class="icon-btn" aria-label="Language" id="langBtn">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#6B7684" stroke-width="1.8"/><path d="M3 12H21" stroke="#6B7684" stroke-width="1.8"/><path d="M12 3C14.5 5.7 15.8 8.8 15.8 12C15.8 15.2 14.5 18.3 12 21C9.5 18.3 8.2 15.2 8.2 12C8.2 8.8 9.5 5.7 12 3Z" stroke="#6B7684" stroke-width="1.8"/></svg>
+            </button>
+            <div class="topbar-popover org-popover" id="langPopover">
+              <label class="org-radio-item">
+                <input type="radio" name="lang" value="en" checked />
+                <span class="radio-dot"></span>
+                English
+              </label>
+              <label class="org-radio-item">
+                <input type="radio" name="lang" value="es" />
+                <span class="radio-dot"></span>
+                Español
+              </label>
+              <label class="org-radio-item">
+                <input type="radio" name="lang" value="hi" />
+                <span class="radio-dot"></span>
+                हिन्दी
+              </label>
+            </div>
+          </div>
+          <div class="topbar-item">
+            <button class="icon-btn badge" aria-label="Notifications" data-count="2" id="notifBtn">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M18 9.5C18 7.7 17.3 6 16 4.8C14.7 3.6 13 3 11.3 3.1C8.1 3.3 5.6 6.1 5.6 9.4V12.5C5.6 13.1 5.4 13.7 5 14.2L4 15.5C3.4 16.3 4 17.5 5 17.5H19C20 17.5 20.6 16.3 20 15.5L19 14.2C18.6 13.7 18.4 13.1 18.4 12.5" stroke="#6B7684" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M9.5 20.5C10 21.3 10.9 21.8 12 21.8C13.1 21.8 14 21.3 14.5 20.5" stroke="#6B7684" stroke-width="1.6" stroke-linecap="round"/></svg>
+            </button>
+            <div class="topbar-popover notif-popover" id="notifPopover">
+              <h3 class="notif-title">Notifications</h3>
+              <div class="notif-tabs" id="notifTabs">
+                <button class="notif-tab" data-tab="team">Team</button>
+                <button class="notif-tab active" data-tab="foryou">For you</button>
+              </div>
+              <div class="notif-list" id="notifList"></div>
+              <a href="#" class="notif-view-more">View more</a>
+            </div>
+          </div>
+          <button class="icon-btn badge" aria-label="Messages" data-count="1">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 5.5C4 4.4 4.9 3.5 6 3.5H18C19.1 3.5 20 4.4 20 5.5V14.5C20 15.6 19.1 16.5 18 16.5H9L5 20V16.5H6C4.9 16.5 4 15.6 4 14.5V5.5Z" stroke="#6B7684" stroke-width="1.6" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="avatar">EC</div>
+          <div class="topbar-item">
+            <button class="icon-btn" aria-label="More" id="moreBtn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="1.6" fill="#6B7684"/><circle cx="12" cy="12" r="1.6" fill="#6B7684"/><circle cx="12" cy="19" r="1.6" fill="#6B7684"/></svg>
+            </button>
+            <div class="topbar-popover more-popover" id="morePopover">
+              <a href="backoffice1/index.html" class="more-menu-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="7" rx="1.5" stroke="#6B7684" stroke-width="1.6"/><rect x="14" y="3" width="7" height="7" rx="1.5" stroke="#6B7684" stroke-width="1.6"/><rect x="3" y="14" width="7" height="7" rx="1.5" stroke="#6B7684" stroke-width="1.6"/><rect x="14" y="14" width="7" height="7" rx="1.5" stroke="#6B7684" stroke-width="1.6"/></svg>
+                Backoffice Designs
+              </a>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- CONTENT -->
+      <div class="data-content">
+
+        <!-- Patient header card -->
+        <div class="patient-card">
+          <div class="patient-identity">
+            <div class="patient-avatar-row">
+              <div class="patient-avatar">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.8"/><path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+              </div>
+              <div>
+                <div class="patient-name">Sarah White</div>
+                <div class="patient-mrn">ABC-123</div>
+              </div>
+              <button class="action-icon kebab" style="margin-left:10px;" aria-label="More options">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="1.7" fill="currentColor"/><circle cx="12" cy="12" r="1.7" fill="currentColor"/><circle cx="12" cy="19" r="1.7" fill="currentColor"/></svg>
+              </button>
+            </div>
+            <div class="patient-priority-row">
+              <span class="priority-tag">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="#F16C6C"><path d="M12 21C12 21 4 15.5 4 9.8C4 6.6 6.5 4.5 9.2 4.5C10.6 4.5 11.6 5.1 12 5.7C12.4 5.1 13.4 4.5 14.8 4.5C17.5 4.5 20 6.6 20 9.8C20 15.5 12 21 12 21Z"/></svg>
+                Priority
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M5 21V4" stroke="#F16C6C" stroke-width="1.8" stroke-linecap="round"/><path d="M5 4H16L13.5 8L16 12H5" stroke="#F16C6C" stroke-width="1.8" stroke-linejoin="round"/></svg>
+              </span>
+              <button class="btn-care" id="openCareRecBtn">View Recommendation</button>
+            </div>
+          </div>
+
+          <div class="patient-contact">
+            <div class="contact-item">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><path d="M8 12H16M8 8H16M8 16H12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+              857 152 365
+            </div>
+            <div class="contact-item">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><path d="M3 12H21" stroke="currentColor" stroke-width="1.8"/><path d="M12 3C14.5 5.7 15.8 8.8 15.8 12C15.8 15.2 14.5 18.3 12 21C9.5 18.3 8.2 15.2 8.2 12C8.2 8.8 9.5 5.7 12 3Z" stroke="currentColor" stroke-width="1.8"/></svg>
+              English
+            </div>
+            <div class="contact-item">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 4L4 8V13C4 17 7.5 20.4 12 21C16.5 20.4 20 17 20 13V8L12 4Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>
+              71 Years Old
+            </div>
+            <div class="contact-item">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="17" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3 9H21" stroke="currentColor" stroke-width="1.8"/></svg>
+              Onboarding 12.01.2025
+            </div>
+            <div class="contact-item">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="7" y="2" width="10" height="20" rx="2" stroke="currentColor" stroke-width="1.7"/></svg>
+              +1 (415) 555-0132
+            </div>
+            <div class="contact-item">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="5" stroke="currentColor" stroke-width="1.7"/><path d="M12 13V21M8 17H16" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+              Female
+            </div>
+            <div class="contact-item">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.7"/><path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M9 21v-4M15 21v-4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+              Dr. Sarah Mitchell (Doctor)
+            </div>
+            <div class="contact-item care-team-item" id="careTeamTrigger">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="9" cy="8" r="3.2" stroke="currentColor" stroke-width="1.7"/><path d="M2.5 20C2.5 16.5 5.5 14 9 14C12.5 14 15.5 16.5 15.5 20" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><circle cx="17" cy="8.5" r="2.6" stroke="currentColor" stroke-width="1.5"/><path d="M15.5 20C15.5 17 17.8 15 20.5 15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+              Nurse Amanda Lee (Care Team)
+              <span class="care-team-more">+2</span>
+              <div class="topbar-popover care-team-popover" id="careTeamPopover">
+                <div class="care-team-popover-title">Care Team</div>
+                <div class="care-team-popover-item">
+                  <span class="care-team-popover-name">Amanda Lee</span>
+                  <span class="care-team-popover-role">Nurse · Care Team</span>
+                </div>
+                <div class="care-team-popover-item">
+                  <span class="care-team-popover-name">Ayelet Er</span>
+                  <span class="care-team-popover-role">Nurse · Care Team</span>
+                </div>
+                <div class="care-team-popover-item">
+                  <span class="care-team-popover-name">Sandy Kohl</span>
+                  <span class="care-team-popover-role">Nurse · Care Team</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="patient-stats">
+            <div>
+              <div class="stat-row-head">
+                <span>MONTHLY MONITORING TIME</span>
+                <span>03 Minutes in January</span>
+              </div>
+              <div class="stat-bar-track">
+                <span class="stat-bar-num">0</span>
+                <div class="stat-bar"><div class="stat-bar-fill" style="width:15%"></div></div>
+                <span class="stat-bar-num">20</span>
+              </div>
+            </div>
+            <div>
+              <div class="stat-row-head">
+                <span>PATIENT MONTHLY COMPLIANCE</span>
+                <span>08 Days in January</span>
+              </div>
+              <div class="stat-bar-track">
+                <span class="stat-bar-num">0</span>
+                <div class="stat-bar"><div class="stat-bar-fill" style="width:50%"></div></div>
+                <span class="stat-bar-num">16</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Overview -->
+        <div class="section-title-row">
+          <h2 class="section-title">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 17L9 11L13 15L21 7" stroke="#23272E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M15 7H21V13" stroke="#23272E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Overview
+          </h2>
+          <div class="date-pill">
+            <span class="date-label">Date</span> 01.10.2026
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="17" rx="2" stroke="#6B7684" stroke-width="1.8"/><path d="M3 9H21" stroke="#6B7684" stroke-width="1.8"/></svg>
+          </div>
+        </div>
+
+        <div class="overview-card">
+          <div class="overview-head-row">
+            <h3 class="overview-heading">HearO</h3>
+            <div class="overview-legend">
+              <div class="legend-group">
+                <span class="legend-group-label">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 21C12 21 4 15.5 4 9.8C4 6.6 6.5 4.5 9.2 4.5C10.6 4.5 11.6 5.1 12 5.7C12.4 5.1 13.4 4.5 14.8 4.5C17.5 4.5 20 6.6 20 9.8C20 15.5 12 21 12 21Z" stroke="#23272E" stroke-width="1.7"/></svg>
+                  Status:
+                </span>
+                <span class="legend-chip"><span class="dot-outline"></span> Active</span>
+                <span class="legend-chip"><span class="dot-fill-red"></span> Priority</span>
+                <span class="legend-chip"><span class="dot-square-gray"></span> Baseline</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="chart-nav">
+            <button class="chart-arrow" aria-label="Earlier">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M15 6L9 12L15 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <div class="chart-wrap" id="overviewChartWrap"></div>
+            <button class="chart-arrow" aria-label="Later">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M9 6L15 12L9 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+          </div>
+
+          <div class="chart-day-scale" id="chartDayScale"></div>
+          <div class="chart-month-row"><span>Dec</span><span>Jan</span></div>
+        </div>
+
+        <!-- Recordings / Health Data / Medication -->
+        <div class="data-tabs-card">
+          <div class="data-tab-row">
+            <div class="data-tab-group">
+              <button class="data-tab open" data-tab="recordings">
+                Recordings
+                <svg class="chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <button class="data-tab" data-tab="health-data">
+                Health Data
+                <svg class="chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <button class="data-tab" data-tab="clinical">
+                Clinical
+                <svg class="chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+            </div>
+            <div class="range-toggle">
+              <span data-range="week">Week</span>
+              <span class="active" data-range="month">Month</span>
+            </div>
+          </div>
+
+          <!-- Recordings panel -->
+          <div class="data-tab-panel open" data-panel="recordings">
+            <div class="recordings-row">
+              <button class="chart-arrow" aria-label="Earlier"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15 6L9 12L15 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+              <div class="rec-scroll" id="recordingsRow"></div>
+              <button class="chart-arrow" aria-label="Later"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 6L15 12L9 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+            </div>
+            <div class="chart-month-row" id="recMonthRow"><span>Dec</span><span>Jan</span></div>
+            <div class="rec-legend">
+              <span><span class="dot rec-none"></span> Did not record</span>
+              <span><span class="dot rec-valid"><svg width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span> Valid recording</span>
+              <span><span class="dot rec-low">!</span> Low quality</span>
+            </div>
+          </div>
+
+          <!-- Health Data panel -->
+          <div class="data-tab-panel" data-panel="health-data">
+            <div class="subtab-row">
+              <div class="subtabs">
+                <span class="subtab active" data-subtab="measurement">Measurement</span>
+                <span class="subtab" data-subtab="wellness">Wellness</span>
+              </div>
+              <button class="btn-add-vitals" id="openAddMeasurementBtn">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                Add measurement
+              </button>
+            </div>
+
+            <div class="subtab-panel open" data-subpanel="measurement">
+              <div class="wellness-section">
+
+                <div class="wellness-card">
+                  <div class="wellness-head-row">
+                    <h3 class="wellness-title">Blood Pressure</h3>
+                  </div>
+                  <div class="range-chart-wrap">
+                    <div class="range-axis-flex">
+                      <div class="range-y-axis"><span>180</span><span>120</span><span>60</span></div>
+                      <div class="chart-wrap" id="bpChartWrap" style="flex:1;"></div>
+                    </div>
+                    <div class="chart-day-scale" id="bpDayScale"></div>
+                    <div class="chart-month-row" id="bpMonthRow"><span>Dec</span><span>Jan</span></div>
+                  </div>
+                  <div class="sleep-legend" style="margin-top:14px;">
+                    <span class="legend-chip"><span class="swatch" style="background:#D9A628;"></span> Systolic (mmHG)</span>
+                    <span class="legend-chip"><span class="swatch" style="background:#F2994A;"></span> Diastolic (mmHG)</span>
+                  </div>
+                </div>
+
+                <div class="wellness-card">
+                  <div class="wellness-head-row">
+                    <h3 class="wellness-title">Weight</h3>
+                    <div class="unit-toggle weight-unit-toggle" id="weightUnitToggle">
+                      <span data-unit="kg">KG</span>
+                      <span data-unit="lbs" class="active">lbs</span>
+                    </div>
+                  </div>
+                  <div class="range-chart-wrap">
+                    <div class="range-axis-flex">
+                      <div class="range-y-axis" id="weightYAxis"><span>220</span><span>198</span><span>176</span></div>
+                      <div class="chart-wrap" id="weightChartWrap" style="flex:1;"></div>
+                    </div>
+                    <div class="chart-day-scale" id="weightDayScale"></div>
+                    <div class="chart-month-row" id="weightMonthRow"><span>Dec</span><span>Jan</span></div>
+                  </div>
+                  <div class="sleep-legend" style="margin-top:14px;">
+                    <span class="legend-chip"><span class="swatch" style="background:#2E5AAC;"></span> <span id="weightLegendLabel">lbs</span></span>
+                  </div>
+                </div>
+
+                <div class="wellness-card">
+                  <div class="wellness-head-row">
+                    <h3 class="wellness-title">Heart Rate</h3>
+                  </div>
+                  <div class="range-chart-wrap">
+                    <div class="range-axis-flex">
+                      <div class="range-y-axis"><span>180</span><span>120</span><span>60</span></div>
+                      <div class="chart-wrap" id="hrmChartWrap" style="flex:1;"></div>
+                    </div>
+                    <div class="chart-day-scale" id="hrmDayScale"></div>
+                    <div class="chart-month-row" id="hrmMonthRow"><span>Dec</span><span>Jan</span></div>
+                  </div>
+                  <div class="sleep-legend" style="margin-top:14px;">
+                    <span class="legend-chip"><span class="swatch" style="background:#1CBFA6;"></span> bpm</span>
+                  </div>
+                </div>
+
+                <div class="wellness-card">
+                  <div class="wellness-head-row">
+                    <h3 class="wellness-title">Blood Saturation (SpO&#8322;)</h3>
+                  </div>
+                  <div class="range-chart-wrap">
+                    <div class="range-axis-flex">
+                      <div class="range-y-axis"><span>100</span><span>98</span><span>96</span></div>
+                      <div class="chart-wrap" id="spo2ChartWrap" style="flex:1;"></div>
+                    </div>
+                    <div class="chart-day-scale" id="spo2DayScale"></div>
+                    <div class="chart-month-row" id="spo2MonthRow"><span>Dec</span><span>Jan</span></div>
+                  </div>
+                  <div class="sleep-legend" style="margin-top:14px;">
+                    <span class="legend-chip"><span class="swatch" style="background:#7C7CE0;"></span> SpO&#8322;</span>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <div class="subtab-panel" data-subpanel="wellness">
+              <div class="wellness-section">
+
+                <div class="wellness-card">
+                  <div class="wellness-head-row">
+                    <h3 class="wellness-title">Activity</h3>
+                    <div class="wellness-stats">
+                      <span>Avg. Steps: <b>1180</b> steps</span>
+                      <span>Avg. Distance: <b>6.2</b> km</span>
+                      <span>Avg. Elevation: <b>1.8</b> floors</span>
+                    </div>
+                  </div>
+                  <div class="chart-wrap" id="activityChartWrap"></div>
+                  <div class="chart-day-scale" id="activityDayScale"></div>
+                  <div class="chart-month-row" id="activityMonthRow"><span>Dec</span><span>Jan</span></div>
+                  <div class="sleep-legend" style="margin-top:12px;">
+                    <span class="legend-chip"><span class="swatch" style="background:#8E97F2;"></span> Steps</span>
+                    <span class="legend-chip"><span class="swatch" style="background:#1CBFA6;"></span> Distance</span>
+                    <span class="legend-chip"><span class="swatch" style="background:#B23FD8;"></span> Elevation</span>
+                  </div>
+                </div>
+
+                <div class="wellness-card">
+                  <div class="wellness-head-row">
+                    <h3 class="wellness-title">Sleep</h3>
+                    <div class="wellness-stats"><span>Avg. Time Asleep: <b>6 hr 30 min</b></span></div>
+                  </div>
+                  <div class="sleep-chart-wrap">
+                    <div class="sleep-axis-flex">
+                      <div class="sleep-y-axis-static"><span>10 AM</span><span>4 AM</span><span>22 PM</span></div>
+                      <div class="sleep-chart" id="sleepChart"></div>
+                    </div>
+                    <div class="month-row" id="sleepMonthRow"><span>Dec</span><span>Jan</span></div>
+                  </div>
+                  <div class="sleep-legend" style="margin-top:30px;">
+                    <span class="legend-chip"><span class="swatch swatch-deep"></span> Deep</span>
+                    <span class="legend-chip"><span class="swatch swatch-light"></span> Light</span>
+                    <span class="legend-chip"><span class="swatch swatch-rem"></span> REM</span>
+                    <span class="legend-chip"><span class="swatch swatch-awake"></span> Awake</span>
+                  </div>
+                </div>
+
+                <div class="wellness-card">
+                  <div class="wellness-head-row">
+                    <h3 class="wellness-title">Heart Rate</h3>
+                    <div class="wellness-stats"><span>Avg. Range : <b>45-135</b> BPM</span></div>
+                  </div>
+                  <div class="range-chart-wrap">
+                    <div class="range-axis-flex">
+                      <div class="range-y-axis"><span>200</span><span>100</span><span>45</span></div>
+                      <div class="range-chart" id="heartChart"></div>
+                    </div>
+                    <div class="month-row" id="heartMonthRow"><span>Dec</span><span>Jan</span></div>
+                  </div>
+                  <div class="sleep-legend" style="margin-top:30px;">
+                    <span class="legend-chip"><span class="swatch" style="background:#1CBFA6;"></span> BPM</span>
+                  </div>
+                </div>
+
+                <div class="wellness-card">
+                  <div class="wellness-head-row">
+                    <h3 class="wellness-title">Blood Oxygen</h3>
+                    <div class="wellness-stats"><span>Avg. Range : <b>88-100</b> %</span></div>
+                  </div>
+                  <div class="range-chart-wrap">
+                    <div class="range-axis-flex">
+                      <div class="range-y-axis"><span>100</span><span>90</span><span>80</span></div>
+                      <div class="range-chart" id="oxygenChart"></div>
+                    </div>
+                    <div class="month-row" id="oxygenMonthRow"><span>Dec</span><span>Jan</span></div>
+                  </div>
+                  <div class="sleep-legend" style="margin-top:30px;">
+                    <span class="legend-chip"><span class="swatch" style="background:#F2994A;"></span> %</span>
+                  </div>
+                </div>
+
+                <div class="wellness-card">
+                  <div class="wellness-head-row">
+                    <h3 class="wellness-title">Respiration Rate</h3>
+                    <div class="wellness-stats"><span>Avg. Range : <b>18-27</b> Breaths/min</span></div>
+                  </div>
+                  <div class="range-chart-wrap">
+                    <div class="range-axis-flex">
+                      <div class="range-y-axis"><span>50</span><span>30</span><span>10</span></div>
+                      <div class="range-chart" id="respirationChart"></div>
+                    </div>
+                    <div class="month-row" id="respirationMonthRow"><span>Dec</span><span>Jan</span></div>
+                  </div>
+                  <div class="sleep-legend" style="margin-top:30px;">
+                    <span class="legend-chip"><span class="swatch" style="background:#7C7CE0;"></span> Breaths/min</span>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+          <!-- Clinical panel -->
+          <div class="data-tab-panel" data-panel="clinical">
+            <div class="subtab-row">
+              <div class="subtabs">
+                <span class="subtab active" data-subtab="medication">Medication <span class="count-pill" id="medCount"></span></span>
+                <span class="subtab" data-subtab="care-rec">Care Recommendations <span class="count-pill" id="careRecCount"></span></span>
+              </div>
+
+              <div class="clinical-head-actions" id="medSubtabActions">
+                <div class="custom-select filter-select" id="medStatusFilter" data-name="medStatusFilter">
+                  <button type="button" class="custom-select-trigger">
+                    <span class="custom-select-value">All medication</span>
+                    <svg class="custom-select-caret caret" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                  </button>
+                  <div class="custom-select-menu">
+                    <div class="custom-select-option selected" data-value="all">All medication<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    <div class="custom-select-option" data-value="active">Active medication<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    <div class="custom-select-option" data-value="past">Past medication<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                  </div>
+                  <input type="hidden" name="medStatusFilter" value="all" />
+                </div>
+                <a href="#" class="clinical-add-link" id="openAddMedBtn">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                  Add medication
+                </a>
+              </div>
+
+              <div class="clinical-head-actions" id="careRecSubtabActions" style="display:none;">
+                <div class="custom-select" id="careRecStatusFilter" data-name="careRecStatus">
+                  <button type="button" class="custom-select-trigger">
+                    <span class="custom-select-value">All</span>
+                    <svg class="custom-select-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                  </button>
+                  <div class="custom-select-menu">
+                    <div class="custom-select-option selected" data-value="all">All<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    <div class="custom-select-option" data-value="recommended">New<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    <div class="custom-select-option" data-value="in-progress">In Progress<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    <div class="custom-select-option" data-value="completed">Completed<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                  </div>
+                  <input type="hidden" name="careRecStatus" value="all" />
+                </div>
+              </div>
+            </div>
+
+            <!-- Medication -->
+            <div class="subtab-panel open" data-subpanel="medication">
+              <div class="med-list" id="medList"></div>
+            </div>
+
+            <!-- Care Recommendations -->
+            <div class="subtab-panel" data-subpanel="care-rec">
+              <div class="rec-table-wrap">
+                <table class="rec-table">
+                  <thead>
+                    <tr>
+                      <th>Recommendation</th>
+                      <th>Status</th>
+                      <th>Created by</th>
+                      <th>Latest activity</th>
+                      <th>Last updated</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody id="careRecTableBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- History Events -->
+        <div class="history-card">
+          <div class="section-title-row">
+            <h2 class="section-title" style="margin:0;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="17" rx="2" stroke="#23272E" stroke-width="1.8"/><path d="M3 9H21" stroke="#23272E" stroke-width="1.8"/></svg>
+              History Events
+            </h2>
+            <button type="button" class="history-add-event-btn" id="openAddEventBtn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
+              Add Event
+            </button>
+          </div>
+          <div class="history-tabs" id="historyTabs">
+            <span data-tab="all" class="active">All</span>
+            <span data-tab="account">Account</span>
+            <span data-tab="status">Status</span>
+            <span data-tab="monitoring">Monitoring</span>
+            <span data-tab="other">Other</span>
+          </div>
+          <div class="history-table-scroll">
+            <table class="history-table">
+              <thead>
+                <tr><th>EVENT</th><th>DATE</th><th>NOTE</th></tr>
+              </thead>
+              <tbody id="historyRows"></tbody>
+            </table>
+          </div>
+          <div class="history-load-more-row" id="historyLoadMoreRow" style="display:none;">
+            <button type="button" class="history-load-more-btn" id="historyLoadMoreBtn">Load more</button>
+          </div>
+        </div>
+
+      </div>
     </div>
-
-    <div>
-      <h2 class="section-title" style="margin:0 0 4px;">Care Recommendations</h2>
-      <p style="margin:0; font-size:13.5px; color:var(--gray-text);">Review recommendations from the care team and record the action you took.</p>
-    </div>
-
-    <div id="nurseRecList"></div>
-
   </div>
 
-  <!-- Recommendation card template -->
-  <template id="nurseRecTemplate">
-    <div class="nurse-rec-card">
-      <div class="nurse-rec-card-head">
-        <span class="nurse-rec-title" data-field="title"></span>
-        <span class="rec-status-chip" data-field="status"></span>
+  <!-- Add Event modal -->
+  <div class="modal-overlay" id="addEventOverlay">
+    <div class="modal">
+      <h2>Add Event</h2>
+      <form id="addEventForm">
+        <div class="form-field">
+          <label>Category<span class="required-star">*</span></label>
+          <select class="select-input" name="category" required>
+            <option value="" disabled selected>Select category</option>
+            <option value="account">Account</option>
+            <option value="status">Status</option>
+            <option value="monitoring">Monitoring</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label>Event<span class="required-star">*</span></label>
+          <input type="text" name="label" placeholder="e.g. Message sent to patient" required />
+        </div>
+        <div class="form-field">
+          <label>Date<span class="required-star">*</span></label>
+          <input type="date" name="date" required />
+        </div>
+        <div class="form-field">
+          <label>Note</label>
+          <textarea name="note" placeholder="Optional note"></textarea>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-text" id="cancelAddEvent">Cancel</button>
+          <button type="submit" class="btn-save" id="saveAddEvent" disabled>Add Event</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Add Note modal -->
+  <div class="modal-overlay" id="addNoteOverlay">
+    <div class="modal">
+      <h2>Add Note</h2>
+      <p class="account-modal-subtitle" id="addNoteEventLabel">&nbsp;</p>
+      <form id="addNoteForm">
+        <div class="form-field">
+          <label>Note<span class="required-star">*</span></label>
+          <textarea name="note" placeholder="Add a note for this event" required></textarea>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-text" id="cancelAddNote">Cancel</button>
+          <button type="submit" class="btn-save" id="saveAddNote" disabled>Save Note</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Chat -->
+  <button class="chat-tab" id="chatOpenBtn"><span class="dot-live"></span>Chat</button>
+
+  <aside class="chat-panel" id="chatPanel">
+    <div class="chat-panel-header">
+      Chat
+      <button class="chat-close" id="chatCloseBtn" aria-label="Close chat">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M6 6L18 18M18 6L6 18" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div class="chat-messages" id="chatMessages"></div>
+    <div class="chat-input-row">
+      <button class="chat-attach" aria-label="Attach">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
+      <input type="text" placeholder="Type a message..." />
+      <button class="chat-send" aria-label="Send">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 12L20 4L14 20L11 13L4 12Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" fill="none"/></svg>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Add Medication modal -->
+  <div class="modal-overlay" id="addMedOverlay">
+    <div class="modal modal-wide">
+      <h2>Add Medication</h2>
+      <form id="addMedForm">
+        <div class="form-grid">
+          <div class="form-field">
+            <label>Medication<span class="required-star">*</span></label>
+            <input type="text" name="name" placeholder="Search medication..." required />
+          </div>
+          <div class="form-field">
+            <label>Drug Code<span class="required-star">*</span></label>
+            <div class="med-code-field">
+              <div class="custom-select med-code-system" data-name="drugCodeType">
+                <button type="button" class="custom-select-trigger">
+                  <span class="custom-select-value">RxNorm</span>
+                  <svg class="custom-select-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
+                <div class="custom-select-menu">
+                  <div class="custom-select-option selected" data-value="RxNorm">RxNorm<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                  <div class="custom-select-option" data-value="NDC">NDC<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                </div>
+                <input type="hidden" name="drugCodeType" value="RxNorm" />
+              </div>
+              <input type="text" name="drugCodeValue" placeholder="Enter code" required />
+            </div>
+          </div>
+          <div class="form-field">
+            <label>Status<span class="required-star">*</span></label>
+            <div class="custom-select" data-name="status">
+              <button type="button" class="custom-select-trigger">
+                <span class="custom-select-value placeholder">Select status</span>
+                <svg class="custom-select-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="custom-select-menu">
+                <div class="custom-select-option" data-value="Active">Active<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Inactive">Inactive<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              </div>
+              <input type="hidden" name="status" required />
+            </div>
+          </div>
+          <div class="form-field">
+            <label>Dose Form</label>
+            <div class="custom-select" data-name="doseForm">
+              <button type="button" class="custom-select-trigger">
+                <span class="custom-select-value placeholder">Select dose form</span>
+                <svg class="custom-select-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="custom-select-menu">
+                <div class="custom-select-option" data-value="Tablet">Tablet<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Capsule">Capsule<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Liquid">Liquid<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Injection">Injection<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Topical">Topical<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Inhaler">Inhaler<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Patch">Patch<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Suppository">Suppository<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Other">Other<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              </div>
+              <input type="hidden" name="doseForm" />
+            </div>
+          </div>
+          <div class="form-field">
+            <label>Amount</label>
+            <input type="text" name="amount" placeholder="e.g. 40 mg" />
+          </div>
+          <div class="form-field">
+            <label>Effective Date &amp; Time</label>
+            <input type="datetime-local" name="effectiveDateTime" />
+          </div>
+          <div class="form-field">
+            <label>Dose</label>
+            <input type="text" name="dose" placeholder="e.g. 1 tablet" />
+          </div>
+          <div class="form-field">
+            <label>Frequency<span class="required-star">*</span></label>
+            <div class="custom-select" data-name="frequency">
+              <button type="button" class="custom-select-trigger">
+                <span class="custom-select-value placeholder">Select Frequency</span>
+                <svg class="custom-select-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="custom-select-menu">
+                <div class="custom-select-option" data-value="Once Daily">Once Daily<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Twice Daily">Twice Daily<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Three Times Daily">Three Times Daily<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Four Times Daily">Four Times Daily<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Every Morning">Every Morning<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Every Night">Every Night<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Every X Hours">Every X Hours<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              </div>
+              <input type="hidden" name="frequency" required />
+            </div>
+          </div>
+          <div class="form-field">
+            <label>Route</label>
+            <div class="custom-select" data-name="route">
+              <button type="button" class="custom-select-trigger">
+                <span class="custom-select-value placeholder">Select route</span>
+                <svg class="custom-select-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="custom-select-menu">
+                <div class="custom-select-option" data-value="Oral">Oral<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Intravenous">Intravenous<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Subcutaneous">Subcutaneous<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Intramuscular">Intramuscular<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Topical">Topical<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Inhalation">Inhalation<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Sublingual">Sublingual<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Rectal">Rectal<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Ophthalmic">Ophthalmic<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Other">Other<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              </div>
+              <input type="hidden" name="route" />
+            </div>
+          </div>
+          <div class="form-field">
+            <label>Directions</label>
+            <input type="text" name="sig" placeholder="e.g. Take one tablet by mouth daily" />
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-text" id="cancelAddMed">Cancel</button>
+          <button type="submit" class="btn-save">Add Medication</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Edit Medication modal -->
+  <div class="modal-overlay" id="editMedOverlay">
+    <div class="modal modal-wide">
+      <h2>Edit Medication</h2>
+      <form id="editMedForm">
+        <div class="form-grid">
+          <div class="form-field">
+            <label>Medication<span class="required-star">*</span></label>
+            <input type="text" name="name" placeholder="Search medication..." required />
+          </div>
+          <div class="form-field">
+            <label>Drug Code<span class="required-star">*</span></label>
+            <div class="med-code-field">
+              <div class="custom-select med-code-system" data-name="drugCodeType">
+                <button type="button" class="custom-select-trigger">
+                  <span class="custom-select-value">RxNorm</span>
+                  <svg class="custom-select-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
+                <div class="custom-select-menu">
+                  <div class="custom-select-option selected" data-value="RxNorm">RxNorm<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                  <div class="custom-select-option" data-value="NDC">NDC<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                </div>
+                <input type="hidden" name="drugCodeType" value="RxNorm" />
+              </div>
+              <input type="text" name="drugCodeValue" placeholder="Enter code" required />
+            </div>
+          </div>
+          <div class="form-field">
+            <label>Status<span class="required-star">*</span></label>
+            <div class="custom-select" data-name="status">
+              <button type="button" class="custom-select-trigger">
+                <span class="custom-select-value placeholder">Select status</span>
+                <svg class="custom-select-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="custom-select-menu">
+                <div class="custom-select-option" data-value="Active">Active<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Inactive">Inactive<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              </div>
+              <input type="hidden" name="status" required />
+            </div>
+          </div>
+          <div class="form-field">
+            <label>Dose Form</label>
+            <div class="custom-select" data-name="doseForm">
+              <button type="button" class="custom-select-trigger">
+                <span class="custom-select-value placeholder">Select dose form</span>
+                <svg class="custom-select-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="custom-select-menu">
+                <div class="custom-select-option" data-value="Tablet">Tablet<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Capsule">Capsule<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Liquid">Liquid<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Injection">Injection<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Topical">Topical<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Inhaler">Inhaler<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Patch">Patch<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Suppository">Suppository<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Other">Other<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              </div>
+              <input type="hidden" name="doseForm" />
+            </div>
+          </div>
+          <div class="form-field">
+            <label>Amount</label>
+            <input type="text" name="amount" placeholder="e.g. 40 mg" />
+          </div>
+          <div class="form-field">
+            <label>Effective Date &amp; Time</label>
+            <input type="datetime-local" name="effectiveDateTime" />
+          </div>
+          <div class="form-field">
+            <label>Dose</label>
+            <input type="text" name="dose" placeholder="e.g. 1 tablet" />
+          </div>
+          <div class="form-field">
+            <label>Frequency<span class="required-star">*</span></label>
+            <div class="custom-select" data-name="frequency">
+              <button type="button" class="custom-select-trigger">
+                <span class="custom-select-value placeholder">Select Frequency</span>
+                <svg class="custom-select-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="custom-select-menu">
+                <div class="custom-select-option" data-value="Once Daily">Once Daily<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Twice Daily">Twice Daily<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Three Times Daily">Three Times Daily<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Four Times Daily">Four Times Daily<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Every Morning">Every Morning<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Every Night">Every Night<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Every X Hours">Every X Hours<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              </div>
+              <input type="hidden" name="frequency" required />
+            </div>
+          </div>
+          <div class="form-field">
+            <label>Route</label>
+            <div class="custom-select" data-name="route">
+              <button type="button" class="custom-select-trigger">
+                <span class="custom-select-value placeholder">Select route</span>
+                <svg class="custom-select-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="custom-select-menu">
+                <div class="custom-select-option" data-value="Oral">Oral<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Intravenous">Intravenous<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Subcutaneous">Subcutaneous<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Intramuscular">Intramuscular<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Topical">Topical<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Inhalation">Inhalation<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Sublingual">Sublingual<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Rectal">Rectal<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Ophthalmic">Ophthalmic<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Other">Other<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              </div>
+              <input type="hidden" name="route" />
+            </div>
+          </div>
+          <div class="form-field">
+            <label>Directions</label>
+            <input type="text" name="sig" placeholder="e.g. Take one tablet by mouth daily" />
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-text" id="cancelEditMed">Cancel</button>
+          <button type="submit" class="btn-save enabled">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Add Measurement modal -->
+  <div class="modal-overlay" id="addMeasurementOverlay">
+    <div class="modal modal-wide">
+      <h2>Add Measurement</h2>
+      <form id="addMeasurementForm">
+        <div class="form-field">
+          <label>Blood Pressure</label>
+          <div class="field-pair field-pair-tight">
+            <div class="unit-input"><input type="number" name="systolic" min="60" max="250" placeholder="e.g. 120" /></div>
+            <div class="unit-input"><input type="number" name="diastolic" min="30" max="150" placeholder="e.g. 80" /><span>mmHG</span></div>
+          </div>
+        </div>
+        <div class="form-grid" style="margin-top: 18px;">
+          <div class="form-field">
+            <label>Heart Rate</label>
+            <div class="unit-input"><input type="number" name="heartRateValue" min="30" max="250" placeholder="e.g. 72" /><span>bpm</span></div>
+          </div>
+          <div class="form-field">
+            <label>Blood Oxygen Saturation</label>
+            <div class="unit-input"><input type="number" name="bloodOxygenValue" min="50" max="100" placeholder="e.g. 98" /><span>%</span></div>
+          </div>
+          <div class="form-field">
+            <label>Weight</label>
+            <div class="unit-input">
+              <input type="number" step="0.1" name="weightValue" id="measurementWeightValue" placeholder="e.g. 165" />
+              <div class="unit-toggle weight-unit-toggle" id="measurementWeightUnitToggle">
+                <span data-unit="kg">KG</span>
+                <span data-unit="lbs">lbs</span>
+              </div>
+            </div>
+            <input type="hidden" name="weightUnit" id="measurementWeightUnit" value="lbs" />
+          </div>
+          <div class="form-field">
+            <label>Date</label>
+            <input type="date" name="date" />
+          </div>
+          <div class="form-field">
+            <label>Time</label>
+            <div class="time-pair">
+              <input type="number" min="0" max="23" placeholder="HH" name="hh" value="0" />
+              <span>:</span>
+              <input type="number" min="0" max="59" placeholder="MM" name="mm" value="0" />
+            </div>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-text" id="cancelAddMeasurement">Cancel</button>
+          <button type="submit" class="btn-save enabled" id="saveAddMeasurement">Add Measurement</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Care Recommendation detail modal -->
+  <div class="modal-overlay" id="recDrawerOverlay">
+    <div class="modal modal-wide">
+      <div class="drawer-header">
+        <h2 id="recDrawerTitle">&nbsp;</h2>
+        <button type="button" class="modal-close-x" id="closeRecDrawer" aria-label="Close">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6L18 18M6 18L18 6"/></svg>
+        </button>
+      </div>
+
+      <div class="rec-drawer-status-row">
+        <span class="rec-status-chip" id="recDrawerStatus"></span>
       </div>
 
       <div class="drawer-section rec-info-grid">
         <div>
           <div class="drawer-label">Medication</div>
-          <div class="rec-info-value" data-field="medication"></div>
+          <div class="rec-info-value" id="recDrawerMedication"></div>
         </div>
         <div>
           <div class="drawer-label">Dose Change</div>
-          <div class="rec-info-value" data-field="doseChange"></div>
+          <div class="rec-info-value" id="recDrawerDoseChange"></div>
         </div>
         <div>
           <div class="drawer-label">Frequency</div>
-          <div class="rec-info-value" data-field="frequency"></div>
+          <div class="rec-info-value" id="recDrawerFrequency"></div>
         </div>
         <div>
           <div class="drawer-label">Duration</div>
-          <div class="rec-info-value" data-field="duration"></div>
+          <div class="rec-info-value" id="recDrawerDuration"></div>
         </div>
         <div>
           <div class="drawer-label">Start Date</div>
-          <div class="rec-info-value" data-field="startDate"></div>
+          <div class="rec-info-value" id="recDrawerStartDate"></div>
         </div>
         <div>
           <div class="drawer-label">Invite Patient</div>
-          <div class="rec-info-value" data-field="invite"></div>
+          <div class="rec-info-value" id="recDrawerInvite"></div>
         </div>
       </div>
 
       <div class="drawer-section">
         <div class="drawer-label">Instructions for the Patient</div>
-        <p class="drawer-instruction" data-field="instructionsPatient"></p>
+        <p class="drawer-instruction" id="recDrawerInstructionPatient"></p>
       </div>
 
       <div class="drawer-section">
         <div class="drawer-label">Instructions for Care Team</div>
-        <p class="drawer-instruction" data-field="instructionsCareTeam"></p>
+        <p class="drawer-instruction" id="recDrawerInstructionCareTeam"></p>
       </div>
 
-      <div class="drawer-section" style="margin-bottom:0;">
+      <div class="drawer-section rec-info-grid">
+        <div>
+          <div class="drawer-label">Created by</div>
+          <div class="rec-info-value" id="recDrawerCreatedBy"></div>
+        </div>
+        <div>
+          <div class="drawer-label">Created</div>
+          <div class="rec-info-value" id="recDrawerCreatedAt"></div>
+        </div>
+        <div>
+          <div class="drawer-label">Picked up by</div>
+          <div class="rec-info-value" id="recDrawerPickedUp"></div>
+        </div>
+      </div>
+
+      <div class="drawer-section">
         <div class="drawer-label">Care Team Activity</div>
-        <div class="rec-timeline" data-field="timeline"></div>
+        <div class="rec-timeline" id="recDrawerTimeline"></div>
       </div>
 
-      <div class="nurse-action-panel" data-field="actionPanel">
-        <div class="nurse-action-grid">
-          <div class="form-field" style="margin-bottom:0;">
-            <label>Action Taken By<span class="required-star">*</span></label>
-            <div class="custom-select" data-name="actionTakenBy">
-              <button type="button" class="custom-select-trigger">
-                <span class="custom-select-value placeholder">Select your name</span>
-                <svg class="custom-select-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </button>
-              <div class="custom-select-menu">
-                <div class="custom-select-option" data-value="Amanda Lee, RN">Amanda Lee, RN<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                <div class="custom-select-option" data-value="Ayelet Er, NP">Ayelet Er, NP<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                <div class="custom-select-option" data-value="Sandy Kohl, Care Coordinator">Sandy Kohl, Care Coordinator<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-              </div>
-              <input type="hidden" name="actionTakenBy" />
-            </div>
-          </div>
-          <div class="form-field" style="margin-bottom:0;">
-            <label>Note for Provider</label>
-            <textarea data-field="noteInput" placeholder="Add a note the provider will see..."></textarea>
-          </div>
-        </div>
-        <div class="rec-footer-actions">
-          <span class="rec-completed-note">Add a note or mark this recommendation complete.</span>
-          <div class="rec-footer-actions-right">
-            <button type="button" class="btn-save enabled" data-action="save">Save</button>
-            <button type="button" class="btn-complete" data-action="complete">Mark as Complete</button>
-          </div>
-        </div>
-      </div>
+      <div class="drawer-footer" id="recDrawerFooter"></div>
     </div>
-  </template>
+  </div>
 
+<script src="js/topbar.js"></script>
+<script src="js/table-scroll.js"></script>
 <script src="js/nurse-view.js"></script>
+<script src="js/modal-close.js"></script>
 </body>
 </html>

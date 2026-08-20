@@ -599,6 +599,7 @@ function newCareRec(fields, createdBy = "Dr. Sarah Mitchell") {
     instructionsPatient: fields.instructionsPatient,
     instructionsCareTeam: fields.instructionsCareTeam,
     invitePatient: fields.invitePatient,
+    assignedCareTeam: fields.assignedCareTeam,
     status: "recommended",
     createdBy,
     createdAt: t.full,
@@ -746,6 +747,7 @@ function openRecDrawer(id) {
   document.getElementById("recDrawerDuration").textContent = rec.duration ? `${rec.duration} days` : "—";
   document.getElementById("recDrawerStartDate").textContent = rec.startDate || "—";
   document.getElementById("recDrawerInvite").textContent = rec.invitePatient ? "Yes" : "No";
+  document.getElementById("recDrawerCareTeam").textContent = rec.assignedCareTeam && rec.assignedCareTeam.length ? rec.assignedCareTeam.join(", ") : "—";
 
   document.getElementById("recDrawerInstructionPatient").textContent = rec.instructionsPatient || "—";
   document.getElementById("recDrawerInstructionCareTeam").textContent = rec.instructionsCareTeam || "—";
@@ -1522,6 +1524,7 @@ wireAddModal(
         instructionsPatient: fd.get("instructionsPatient"),
         instructionsCareTeam: fd.get("instructionsCareTeam"),
         invitePatient: fd.get("invitePatient") === "on",
+        assignedCareTeam: fd.getAll("careTeam"),
       })
     );
     renderCareRecs();
