@@ -545,7 +545,7 @@ const careRecs = [
     instructionsPatient: "Take with food, morning and evening. Report any dizziness right away.",
     instructionsCareTeam: "Please review the patient's tolerance to the current Carvedilol dose and report any dizziness, fatigue, or low heart rate readings.",
     invitePatient: false,
-    status: "in-progress",
+    status: "completed",
     createdBy: "Dr. Sarah Mitchell",
     createdAt: "08 Aug 2026, 11:00 AM",
     updatedAt: "08 Aug 2026, 02:15 PM",
@@ -554,6 +554,7 @@ const careRecs = [
       { who: "Dr. Sarah Mitchell", when: "08 Aug · 11:00 AM", text: "Created care recommendation." },
       { who: "Amanda Lee, RN", when: "08 Aug · 11:20 AM", text: "Picked up recommendation." },
       { who: "Amanda Lee, RN", when: "08 Aug · 02:15 PM", label: "Action taken: Patient contacted", short: "Patient contacted", note: "Patient reports mild dizziness on standing; no other symptoms. Heart rate readings within range." },
+      { who: "Amanda Lee, RN", when: "08 Aug · 02:15 PM", label: "Marked recommendation as Completed.", short: "Completed" },
     ],
   },
   {
@@ -1501,7 +1502,7 @@ careRecMedicationMenu.innerHTML = medications
 
 document.getElementById("careRecMedicationSelect").addEventListener("change", (e) => {
   const med = medications.find((m) => m.name === e.target.value);
-  document.getElementById("careRecCurrentDose").value = med ? `${med.dose} · from patient record` : "—";
+  document.getElementById("careRecCurrentDose").value = med ? med.dose : "—";
 });
 
 wireAddModal(
@@ -1513,7 +1514,7 @@ wireAddModal(
     careRecs.unshift(
       newCareRec({
         medication: fd.get("medication"),
-        currentDose: document.getElementById("careRecCurrentDose").value.split(" · ")[0],
+        currentDose: document.getElementById("careRecCurrentDose").value,
         newDose: fd.get("newDose"),
         frequency: fd.get("frequency"),
         duration: fd.get("duration"),

@@ -3082,7 +3082,19 @@ body {
 
 .unit-input input:focus { border-color: var(--blue); }
 
+.unit-input input:disabled {
+  background: #F3F6FB;
+  color: #9AA5B1;
+  cursor: not-allowed;
+}
+
 #addMeasurementForm .unit-input input { width: 140px; background: #fff; }
+
+#careRecForm .unit-input input[type="number"] { background: #fff; }
+
+#careRecCurrentDose { width: 100%; }
+
+#careRecForm .form-grid { margin-bottom: 18px; }
 
 .unit-input span {
   font-size: 14px;
@@ -3091,16 +3103,46 @@ body {
   white-space: nowrap;
 }
 
-.checkbox-field {
+label.checkbox-field {
   display: flex;
   align-items: center;
   gap: 8px;
+  margin-bottom: 0;
   font-size: 14px;
   color: #23272E;
   font-weight: 600;
 }
 
-.checkbox-field input { width: auto; }
+.checkbox-field input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  padding: 0;
+  border: 1.5px solid #9AA5B1;
+  border-radius: 5px;
+  background: #fff;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 120ms ease, border-color 120ms ease;
+}
+
+.checkbox-field input[type="checkbox"]:hover { border-color: var(--blue); }
+
+.checkbox-field input[type="checkbox"]:checked {
+  background-color: var(--blue);
+  border-color: var(--blue);
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'><path d='M5 13L9.5 17.5L19 7' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 13px;
+}
+
+.checkbox-field input[type="checkbox"]:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 2px;
+}
 
 .select-input {
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6'><path d='M0 0l5 6 5-6z' fill='%236B7684'/></svg>");
