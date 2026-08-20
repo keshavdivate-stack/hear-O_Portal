@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>HearO | Nurse View — Care Recommendations</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="css/style.css" />
+<style>
+  /* Standalone page shell — this view is not part of the main app shell/sidebar. */
+  body { background: var(--bg); }
+  .nurse-view-topbar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 18px 32px;
+    background: #fff;
+    border-bottom: 1px solid var(--gray-border);
+  }
+  .nurse-view-topbar .logo-mark { width: 28px; height: 28px; }
+  .nurse-view-topbar-title { font-size: 16px; font-weight: 700; color: #23272E; }
+  .nurse-view-topbar-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: var(--blue-light);
+    color: var(--blue);
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+  }
+  .nurse-view-content {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 28px 24px 60px;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+  }
+  .nurse-rec-card {
+    background: #fff;
+    border: 1px solid var(--gray-border);
+    border-radius: 16px;
+    padding: 24px 26px;
+  }
+  .nurse-rec-card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 18px;
+  }
+  .nurse-rec-title { font-size: 16px; font-weight: 700; color: #23272E; }
+  .nurse-action-panel {
+    margin-top: 22px;
+    padding-top: 22px;
+    border-top: 1px solid var(--gray-border);
+  }
+  .nurse-action-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 18px;
+    margin-bottom: 16px;
+  }
+</style>
+</head>
+<body>
+
+  <header class="nurse-view-topbar">
+    <img src="https://web.dev3.cordiomed.com/assets/icons/logo.svg" alt="HearO" class="logo-mark" />
+    <span class="nurse-view-topbar-title">HearO</span>
+    <span class="nurse-view-topbar-badge">Nurse View</span>
+  </header>
+
+  <div class="nurse-view-content">
+
+    <!-- Patient header -->
+    <div class="patient-card">
+      <div class="patient-identity">
+        <div class="patient-avatar-row">
+          <div class="patient-avatar">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.8"/><path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          </div>
+          <div>
+            <div class="patient-name">Sarah White</div>
+            <div class="patient-mrn">ABC-123</div>
+          </div>
+        </div>
+        <div class="patient-priority-row">
+          <span class="priority-tag">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="#F16C6C"><path d="M12 21C12 21 4 15.5 4 9.8C4 6.6 6.5 4.5 9.2 4.5C10.6 4.5 11.6 5.1 12 5.7C12.4 5.1 13.4 4.5 14.8 4.5C17.5 4.5 20 6.6 20 9.8C20 15.5 12 21 12 21Z"/></svg>
+            Priority
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <h2 class="section-title" style="margin:0 0 4px;">Care Recommendations</h2>
+      <p style="margin:0; font-size:13.5px; color:var(--gray-text);">Review recommendations from the care team and record the action you took.</p>
+    </div>
+
+    <div id="nurseRecList"></div>
+
+  </div>
+
+  <!-- Recommendation card template -->
+  <template id="nurseRecTemplate">
+    <div class="nurse-rec-card">
+      <div class="nurse-rec-card-head">
+        <span class="nurse-rec-title" data-field="title"></span>
+        <span class="rec-status-chip" data-field="status"></span>
+      </div>
+
+      <div class="drawer-section rec-info-grid">
+        <div>
+          <div class="drawer-label">Medication</div>
+          <div class="rec-info-value" data-field="medication"></div>
+        </div>
+        <div>
+          <div class="drawer-label">Dose Change</div>
+          <div class="rec-info-value" data-field="doseChange"></div>
+        </div>
+        <div>
+          <div class="drawer-label">Frequency</div>
+          <div class="rec-info-value" data-field="frequency"></div>
+        </div>
+        <div>
+          <div class="drawer-label">Duration</div>
+          <div class="rec-info-value" data-field="duration"></div>
+        </div>
+        <div>
+          <div class="drawer-label">Start Date</div>
+          <div class="rec-info-value" data-field="startDate"></div>
+        </div>
+        <div>
+          <div class="drawer-label">Invite Patient</div>
+          <div class="rec-info-value" data-field="invite"></div>
+        </div>
+      </div>
+
+      <div class="drawer-section">
+        <div class="drawer-label">Instructions for the Patient</div>
+        <p class="drawer-instruction" data-field="instructionsPatient"></p>
+      </div>
+
+      <div class="drawer-section">
+        <div class="drawer-label">Instructions for Care Team</div>
+        <p class="drawer-instruction" data-field="instructionsCareTeam"></p>
+      </div>
+
+      <div class="drawer-section" style="margin-bottom:0;">
+        <div class="drawer-label">Care Team Activity</div>
+        <div class="rec-timeline" data-field="timeline"></div>
+      </div>
+
+      <div class="nurse-action-panel" data-field="actionPanel">
+        <div class="nurse-action-grid">
+          <div class="form-field" style="margin-bottom:0;">
+            <label>Action Taken By<span class="required-star">*</span></label>
+            <div class="custom-select" data-name="actionTakenBy">
+              <button type="button" class="custom-select-trigger">
+                <span class="custom-select-value placeholder">Select your name</span>
+                <svg class="custom-select-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="custom-select-menu">
+                <div class="custom-select-option" data-value="Amanda Lee, RN">Amanda Lee, RN<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Ayelet Er, NP">Ayelet Er, NP<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Sandy Kohl, Care Coordinator">Sandy Kohl, Care Coordinator<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              </div>
+              <input type="hidden" name="actionTakenBy" />
+            </div>
+          </div>
+          <div class="form-field" style="margin-bottom:0;">
+            <label>Note for Provider</label>
+            <textarea data-field="noteInput" placeholder="Add a note the provider will see..."></textarea>
+          </div>
+        </div>
+        <div class="rec-footer-actions">
+          <span class="rec-completed-note">Add a note or mark this recommendation complete.</span>
+          <div class="rec-footer-actions-right">
+            <button type="button" class="btn-save enabled" data-action="save">Save</button>
+            <button type="button" class="btn-complete" data-action="complete">Mark as Complete</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </template>
+
+<script src="js/nurse-view.js"></script>
+</body>
+</html>

@@ -2526,8 +2526,8 @@ body {
 .rec-archive-link:hover { color: var(--red); text-decoration: underline; }
 
 .btn-complete {
-  background: var(--green);
-  color: #fff;
+  background: var(--btn-bg);
+  color: var(--btn-text);
   border: none;
   border-radius: 8px;
   padding: 11px 20px;
@@ -2536,7 +2536,7 @@ body {
   cursor: pointer;
 }
 
-.btn-complete:hover { filter: brightness(0.93); }
+.btn-complete:hover { background: var(--btn-bg-hover); }
 
 .rec-completed-note { font-size: 13px; color: var(--gray-text); }
 
