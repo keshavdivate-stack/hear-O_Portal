@@ -136,6 +136,7 @@ orgRowMenu.addEventListener("click", (e) => {
   if (!item) return;
   orgRowMenu.classList.remove("open");
   if (item.dataset.action === "ehr") openEhrConnDrawer(activeOrgRowId);
+  if (item.dataset.action === "view") window.location.href = `org-profile.html?id=${activeOrgRowId}`;
 });
 
 /* ---------------- Custom selects (used inside the Add Organization drawer) ---------------- */
