@@ -15,18 +15,29 @@ function fitTableToRows(selector, visibleRows) {
   const table = scrollEl.querySelector("table");
   if (!table) return;
   const thead = table.querySelector("thead");
-  const rows = table.querySelectorAll("tbody tr");
+  const allRows = Array.from(table.querySelectorAll("tbody tr"));
 
-  if (!thead || rows.length === 0) {
+  if (!thead || allRows.length === 0) {
     scrollEl.style.maxHeight = "none";
     return;
   }
 
-  const visible = Array.from(rows).slice(0, visibleRows);
+  // Rows can be paired with a secondary "detail" row that expands/collapses
+  // in place (e.g. .p-detail-row). Count only primary rows toward
+  // `visibleRows`, but still include any detail rows in between so an
+  // expanded one is reflected in the measured height (it reports 0 while
+  // hidden anyway).
+  const visible = [];
+  let primaryCount = 0;
+  for (const row of allRows) {
+    if (primaryCount >= visibleRows) break;
+    visible.push(row);
+    if (!row.classList.contains("p-detail-row")) primaryCount++;
+  }
+  const primaryTotal = allRows.filter((row) => !row.classList.contains("p-detail-row")).length;
 
   const recompute = () => {
-    const count = table.querySelectorAll("tbody tr").length;
-    if (count <= visibleRows) {
+    if (primaryTotal <= visibleRows) {
       scrollEl.style.maxHeight = "none";
       return;
     }
