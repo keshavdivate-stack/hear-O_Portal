@@ -683,12 +683,12 @@ body {
 .filter-tabs {
   display: inline-flex;
   align-items: center;
+  align-self: flex-start;
   gap: 2px;
   background: #fff;
   border: 1px solid var(--gray-border);
   border-radius: 10px;
   padding: 4px;
-  margin-bottom: 16px;
 }
 
 .filter-tab {
@@ -1148,6 +1148,7 @@ body {
 }
 
 .pager-btn:hover { background: var(--gray-border); }
+.pager-btn:disabled { opacity: 0.35; cursor: not-allowed; background: transparent; }
 
 /* ============================================================
    PATIENT DATA PAGE
@@ -2079,6 +2080,23 @@ body {
   overflow-y: auto;
 }
 .data-tab-panel.open { display: block; }
+
+/* Reports' tab panels fill the remaining page height instead of capping at
+   560px like patient-data.html's accordion panels, so each table (via its
+   own flex:1 on .table-card) grows to fill the container and scrolls
+   internally once its rows overflow, rather than the card shrinking to fit
+   however few rows it currently has. */
+#section-patient.data-tab-panel.open,
+#section-staffing.data-tab-panel.open,
+#section-outcomes.data-tab-panel.open {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  max-height: none;
+  overflow: visible;
+  padding-top: 0;
+}
 
 /* -- Recordings -- */
 .recordings-row {
@@ -4430,6 +4448,46 @@ label.checkbox-field {
   gap: 12px;
   margin-bottom: 16px;
 }
+
+.reports-tab-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.primary-tabs {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--gray-text);
+}
+
+.primary-tabs span {
+  cursor: pointer;
+  padding: 4px 0 14px;
+  border-bottom: 2px solid transparent;
+}
+
+.primary-tabs span.active {
+  color: #23272E;
+  font-weight: 700;
+  border-bottom-color: var(--blue);
+}
+
+.reports-tab-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+  margin-bottom: 12px;
+}
+
+.reports-tab-search { width: 240px; flex-shrink: 0; }
 
 #section-patient .filters-bar {
   gap: 10px;

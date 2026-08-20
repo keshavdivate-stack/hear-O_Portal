@@ -431,6 +431,87 @@ function renderOvOrgList(orgId) {
     <div style="font-size:12px; color:var(--gray-text); padding:6px 4px 2px;">${o.providers} providers &middot; Last incident ${o.lastIncident}</div>`;
 }
 
+/* ---------------- Patient Compliance ---------------- */
+/* Three fixed tiers (mirrors the compliance banding used across the app:
+   compliant / nearly unmonitored / unmonitored) sized as a share of each
+   organization's real patient count from orgHealthData, so the total always
+   matches "Patients Affected" scope elsewhere on this page instead of being
+   a separately invented number. Per-tier compliance/usable averages are
+   representative snapshot figures, since per-patient compliance history
+   isn't part of this dashboard's data. */
+const OV_COMPLIANCE_TIERS = [
+  { key: "compliant", label: "Compliant", color: "var(--green)", share: 0.68, compliance: 89, usable: 85 },
+  { key: "nearly", label: "Nearly Unmonitored", color: "var(--yellow)", share: 0.22, compliance: 64, usable: 58 },
+  { key: "unmonitored", label: "Unmonitored", color: "var(--red)", share: 0.10, compliance: 31, usable: 24 },
+];
+
+function ovComplianceStatsFor(orgId) {
+  const totalPatients = orgId === "all"
+    ? Object.values(orgHealthData).reduce((sum, o) => sum + o.patients, 0)
+    : orgHealthData[orgId].patients;
+
+  let allocated = 0;
+  const rows = OV_COMPLIANCE_TIERS.map((tier, i) => {
+    const count = i === OV_COMPLIANCE_TIERS.length - 1 ? totalPatients - allocated : Math.round(totalPatients * tier.share);
+    allocated += count;
+    return { ...tier, count };
+  });
+
+  return { totalPatients, rows };
+}
+
+function renderOvCompliance(orgId) {
+  const { totalPatients, rows } = ovComplianceStatsFor(orgId);
+
+  const titleEl = document.getElementById("ovComplianceTitle");
+  if (titleEl) titleEl.textContent = orgId === "all" ? "Patient Compliance" : `Patient Compliance — ${orgHealthData[orgId].name}`;
+
+  const donutEl = document.getElementById("ovComplianceDonut");
+  const totalEl = document.getElementById("ovComplianceDonutTotal");
+
+  if (!totalPatients) {
+    donutEl.style.background = "var(--bg)";
+    totalEl.textContent = "0";
+    document.getElementById("ovComplianceRows").innerHTML = `<div class="bo-empty-state" style="color:var(--gray-text); font-size:13px;">No patient data.</div>`;
+    return;
+  }
+
+  let acc = 0;
+  const stops = rows
+    .map((r) => {
+      const from = (acc / totalPatients) * 360;
+      acc += r.count;
+      const to = (acc / totalPatients) * 360;
+      return `${r.color} ${from}deg ${to}deg`;
+    })
+    .join(", ");
+  donutEl.style.background = `conic-gradient(${stops})`;
+  totalEl.textContent = totalPatients;
+
+  const head = `
+    <div class="bo-compliance-head-row">
+      <span>Tier</span>
+      <span>Patients</span>
+      <span>Compliance</span>
+      <span>Usable</span>
+    </div>`;
+
+  const body = rows
+    .map((r) => {
+      const pct = Math.round((r.count / totalPatients) * 100);
+      return `
+    <div class="bo-compliance-row">
+      <span class="bo-compliance-row-name"><span class="dot" style="background:${r.color};"></span><span>${r.label}</span></span>
+      <span class="num"><b>${r.count}</b><span class="sub">${pct}%</span></span>
+      <span class="num"><b>${r.compliance}%</b></span>
+      <span class="num"><b>${r.usable}%</b></span>
+    </div>`;
+    })
+    .join("");
+
+  document.getElementById("ovComplianceRows").innerHTML = head + body;
+}
+
 /* ---------------- Render orchestration (re-run per organization scope) ---------------- */
 function renderOvForOrg(orgId) {
   ovSelectedOrgId = orgId;
@@ -438,6 +519,7 @@ function renderOvForOrg(orgId) {
   renderOvCritIssues(orgId);
   renderOvDonut(orgId);
   renderOvOrgList(orgId);
+  renderOvCompliance(orgId);
 }
 
 /* ---------------- Header: organization dropdown ---------------- */

@@ -23,7 +23,7 @@ const RM_ORGS = ["120", "121", "122", "104", "B01", "B03", "105"];
 const RM_TAGS = ["CURRENT", "NEW"];
 const RM_FREQUENCIES = ["Daily", "Weekly", "Monthly"];
 const RM_STATUSES = ["Active", "Paused"];
-const RM_DELIVERY_STATUSES = ["Delivered", "Failed", "Partially Delivered", "Processing"];
+const RM_DELIVERY_STATUSES = ["Delivered", "Failed", "Processing"];
 const RM_DIRECTORY = ["VickyDev1", "igor_clinic", "emily.carter", "supervisor_dev3"];
 
 function rmReportLabel(key) {
@@ -120,7 +120,7 @@ let rmSchedules = [
     recipients: ["VickyDev1"],
     status: "Active",
     lastSent: "Today, 12:15 PM",
-    lastDeliveryStatus: "Partially Delivered",
+    lastDeliveryStatus: "Failed",
     nextRun: "Tomorrow, 12:15 PM",
   },
 ];
@@ -130,7 +130,7 @@ const rmHistory = [
   { id: rmHistorySeq++, reportKey: "missedRecordings", org: "HMO Clalit", sentOn: "Today, 10:22 AM", recipients: 3, status: "Delivered" },
   { id: rmHistorySeq++, reportKey: "missedRecordings", org: "HMO Clalit", sentOn: "Today, 08:57 AM", recipients: 2, status: "Delivered" },
   { id: rmHistorySeq++, reportKey: "clinicSummary", org: "Maccabi West", sentOn: "Fri, 04:00 PM", recipients: 1, status: "Failed", failureReason: "SMTP relay timed out after 3 retries." },
-  { id: rmHistorySeq++, reportKey: "clinicPriorityNotification", org: "B01 Pilot", sentOn: "Today, 12:15 PM", recipients: 2, status: "Partially Delivered", failureReason: "1 of 2 recipient addresses bounced." },
+  { id: rmHistorySeq++, reportKey: "clinicPriorityNotification", org: "B01 Pilot", sentOn: "Today, 12:15 PM", recipients: 2, status: "Failed", failureReason: "1 of 2 recipient addresses bounced." },
   { id: rmHistorySeq++, reportKey: "qualityNotification", org: "Assuta Cardio", sentOn: "Mon, 09:00 AM", recipients: 1, status: "Delivered" },
   { id: rmHistorySeq++, reportKey: "lowCompliance", org: "Clalit South", sentOn: "Aug 1, 09:00 AM", recipients: 2, status: "Delivered" },
   { id: rmHistorySeq++, reportKey: "missedRecordings", org: "HMO Clalit", sentOn: "Yesterday, 10:22 AM", recipients: 3, status: "Processing" },

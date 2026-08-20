@@ -5,13 +5,14 @@
    Support Team works them via lightweight Support Tasks instead. */
 
 /* ---------------- Filter option lists ---------------- */
+document.getElementById("incStatusFilterMenu").innerHTML = buildFilterSelectOptions(INC_STATUSES, "All statuses");
 document.getElementById("incSeverityFilterMenu").innerHTML = buildFilterSelectOptions(INC_SEVERITIES, "All severities");
 document.getElementById("incSourceFilterMenu").innerHTML = buildFilterSelectOptions(INC_SOURCES, "All sources");
 document.getElementById("incCategoryFilterMenu").innerHTML = buildFilterSelectOptions(INC_CATEGORIES, "All categories");
 document.getElementById("incOwnerFilterMenu").innerHTML = buildFilterSelectOptions(SUPPORT_TEAM, "All owners");
 
-/* ---------------- Filter + status-tab state ---------------- */
-let incStatusValue = "Active";
+/* ---------------- Filter state ---------------- */
+let incStatusValue = "";
 let incSeverityValue = "";
 let incSourceValue = "";
 let incCategoryValue = "";
@@ -20,7 +21,7 @@ let incDateValue = "";
 let incSearchTerm = "";
 
 function incMatchesFilters(incident) {
-  if (incident.status !== incStatusValue) return false;
+  if (incStatusValue && incident.status !== incStatusValue) return false;
   if (incSeverityValue && incident.severity !== incSeverityValue) return false;
   if (incSourceValue && incident.source !== incSourceValue) return false;
   if (incCategoryValue && incident.category !== incCategoryValue) return false;
@@ -36,13 +37,6 @@ function incMatchesFilters(incident) {
 function filteredIncidents() {
   return incidents.filter(incMatchesFilters);
 }
-
-function updateIncidentStatusCounts() {
-  document.getElementById("incStatusCountActive").textContent = incidents.filter((i) => i.status === "Active").length;
-  document.getElementById("incStatusCountMonitoring").textContent = incidents.filter((i) => i.status === "Monitoring").length;
-  document.getElementById("incStatusCountResolved").textContent = incidents.filter((i) => i.status === "Resolved").length;
-}
-updateIncidentStatusCounts();
 
 /* ---------------- Table ---------------- */
 const INC_PAGE_SIZE = 8;
@@ -61,7 +55,6 @@ function incidentRowHtml(incident) {
       <td><button type="button" class="bo-impact-link" data-impact-trigger data-id="${incident.id}">${incImpactLabel(incident)}</button></td>
       <td>${incident.duration}</td>
       <td>${incident.detectedAt}</td>
-      <td>${incident.owner}</td>
       <td>
         <div class="bo-row-actions">
           <button class="bo-action-icon row-menu-trigger" data-id="${incident.id}" aria-label="Row actions">${incKebabIcon}</button>
@@ -74,7 +67,7 @@ const incidentPager = boCreatePager(
   "incidentRows",
   () => filteredIncidents(),
   incidentRowHtml,
-  { pageSize: INC_PAGE_SIZE, emptyColspan: 10, emptyText: "No incidents match these filters." }
+  { pageSize: INC_PAGE_SIZE, emptyColspan: 9, emptyText: "No incidents match these filters." }
 );
 incidentPager();
 
@@ -83,17 +76,7 @@ function refreshIncidentTable() {
   incidentPager();
 }
 
-/* Status tabs (Active / Monitoring / Resolved) drive the primary filter --
-   independent from the Tickets/Incidents/Rules tab switcher above. */
-document.querySelectorAll("#incidentStatusTabs .bo-tab").forEach((tab) => {
-  tab.addEventListener("click", () => {
-    document.querySelectorAll("#incidentStatusTabs .bo-tab").forEach((t) => t.classList.remove("active"));
-    tab.classList.add("active");
-    incStatusValue = tab.dataset.status;
-    refreshIncidentTable();
-  });
-});
-
+document.getElementById("incStatusFilter").addEventListener("change", (e) => { incStatusValue = e.target.value; refreshIncidentTable(); });
 document.getElementById("incSeverityFilter").addEventListener("change", (e) => { incSeverityValue = e.target.value; refreshIncidentTable(); });
 document.getElementById("incSourceFilter").addEventListener("change", (e) => { incSourceValue = e.target.value; refreshIncidentTable(); });
 document.getElementById("incCategoryFilter").addEventListener("change", (e) => { incCategoryValue = e.target.value; refreshIncidentTable(); });
@@ -141,23 +124,7 @@ incidentRowMenu.addEventListener("click", (e) => {
   incidentRowMenu.classList.remove("open");
 
   if (action === "createTask") openAddTaskDrawer(incident);
-  if (action === "viewTask") openTaskViewPopover(item, incident);
-});
-
-/* ---------------- View Task popover (read-only list) ---------------- */
-const incidentTaskPopover = document.getElementById("incidentTaskPopover");
-
-function openTaskViewPopover(anchorEl, incident) {
-  incidentTaskPopover.innerHTML = incident.tasks.length
-    ? incident.tasks.map((t) => `<div class="bo-task-view-item"><span class="title">${t.title}</span><span class="meta">${t.assignee} · ${t.status}</span></div>`).join("")
-    : `<div class="bo-task-view-empty">No tasks yet for this incident.</div>`;
-  const rect = anchorEl.getBoundingClientRect();
-  incidentTaskPopover.style.top = `${rect.bottom + 6}px`;
-  incidentTaskPopover.style.left = `${rect.right - 260}px`;
-  incidentTaskPopover.classList.add("open");
-}
-document.addEventListener("click", (e) => {
-  if (!incidentTaskPopover.contains(e.target)) incidentTaskPopover.classList.remove("open");
+  if (action === "viewTask") location.href = `incident-detail.html?id=${encodeURIComponent(incident.id)}`;
 });
 
 /* ---------------- Create Support Task drawer ---------------- */
@@ -166,13 +133,16 @@ const addTaskForm = document.getElementById("addTaskForm");
 const saveAddTaskBtn = document.getElementById("saveAddTask");
 let addTaskTargetIncident = null;
 
+document.querySelector('#addTaskOverlay .bo-select[data-name="taskTeam"] .bo-select-menu').innerHTML = buildSelectOptions(["Clinical Team", "Support Team"]);
+document.querySelector('#addTaskOverlay .bo-select[data-name="taskLevel"] .bo-select-menu').innerHTML = buildSelectOptions(["Level 1", "Level 2", "Level 3"]);
 document.querySelector('#addTaskOverlay .bo-select[data-name="taskAssignee"] .bo-select-menu').innerHTML = buildSelectOptions(SUPPORT_TEAM);
-document.querySelector('#addTaskOverlay .bo-select[data-name="taskPriority"] .bo-select-menu').innerHTML = buildSelectOptions(["Low", "Medium", "High", "Urgent"]);
+document.querySelector('#addTaskOverlay .bo-select[data-name="taskPriority"] .bo-select-menu').innerHTML = buildSelectOptions(Object.values(INC_SEVERITY_LABEL));
 
 function validateAddTaskForm() {
   const titleFilled = addTaskForm.taskTitle.value.trim() !== "";
+  const teamFilled = addTaskOverlay.querySelector('.bo-select[data-name="taskTeam"] input[type=hidden]').value !== "";
   const assigneeFilled = addTaskOverlay.querySelector('.bo-select[data-name="taskAssignee"] input[type=hidden]').value !== "";
-  saveAddTaskBtn.disabled = !(titleFilled && assigneeFilled);
+  saveAddTaskBtn.disabled = !(titleFilled && teamFilled && assigneeFilled);
 }
 
 const taskAttachmentInput = document.getElementById("taskAttachmentInput");
@@ -184,6 +154,8 @@ taskAttachmentInput.addEventListener("change", () => {
 function openAddTaskDrawer(incident) {
   addTaskTargetIncident = incident;
   addTaskForm.reset();
+  document.querySelector('#addTaskOverlay .bo-select[data-name="taskOrg"] .bo-select-menu').innerHTML = buildFilterSelectOptions(incident.orgs, "Optional");
+  document.querySelector('#addTaskOverlay .bo-select[data-name="taskPatient"] .bo-select-menu').innerHTML = buildFilterSelectOptions(incident.patients, "Optional");
   addTaskOverlay.querySelectorAll(".bo-select").forEach(resetBoSelect);
   taskAttachmentName.textContent = "Click to attach a file";
   document.getElementById("addTaskIncidentTag").textContent = `Incident: ${incident.id}`;
@@ -202,11 +174,13 @@ addTaskForm.addEventListener("submit", (e) => {
   e.preventDefault();
   if (saveAddTaskBtn.disabled || !addTaskTargetIncident) return;
 
+  const team = addTaskOverlay.querySelector('.bo-select[data-name="taskTeam"] input[type=hidden]').value;
+  const level = addTaskOverlay.querySelector('.bo-select[data-name="taskLevel"] input[type=hidden]').value;
   const assignee = addTaskOverlay.querySelector('.bo-select[data-name="taskAssignee"] input[type=hidden]').value;
   const isFirstTask = addTaskTargetIncident.tasks.length === 0;
   const nextId = addTaskTargetIncident.tasks.length ? Math.max(...addTaskTargetIncident.tasks.map((t) => t.id)) + 1 : 1;
-  addTaskTargetIncident.tasks.push({ id: nextId, title: addTaskForm.taskTitle.value.trim(), assignee, status: "Open" });
-  addTaskTargetIncident.timeline.push({ time: "Just now", text: `Task "${addTaskForm.taskTitle.value.trim()}" assigned to ${assignee}` });
+  addTaskTargetIncident.tasks.push({ id: nextId, title: addTaskForm.taskTitle.value.trim(), team, level, assignee, status: "Open" });
+  addTaskTargetIncident.timeline.push({ time: "Just now", text: `Ticket "${addTaskForm.taskTitle.value.trim()}" assigned to ${assignee}` });
 
   /* Incident Owner (overall responsibility) is distinct from a task's
      Owner/Assignee (responsibility for that one task) -- but when nobody
@@ -215,7 +189,7 @@ addTaskForm.addEventListener("submit", (e) => {
   const hasNoOwner = !addTaskTargetIncident.owner || addTaskTargetIncident.owner === "Unassigned";
   if (isFirstTask && hasNoOwner) {
     addTaskTargetIncident.owner = assignee;
-    addTaskTargetIncident.timeline.push({ time: "Just now", text: `${assignee} became Incident Owner (first task assigned)` });
+    addTaskTargetIncident.timeline.push({ time: "Just now", text: `${assignee} became Incident Owner (first ticket assigned)` });
   }
 
   closeAddTaskDrawer();

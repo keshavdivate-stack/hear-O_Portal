@@ -133,6 +133,25 @@
     <!-- TICKETS -->
     <div class="bo-tab-panel active" id="tab-tickets">
 
+      <div class="bo-incident-kpi-grid">
+        <div class="bo-incident-kpi-card">
+          <span class="bo-incident-kpi-label">Open Tickets</span>
+          <span class="bo-incident-kpi-value" id="ticketKpiOpen">—</span>
+        </div>
+        <div class="bo-incident-kpi-card">
+          <span class="bo-incident-kpi-label">Escalated</span>
+          <span class="bo-incident-kpi-value" id="ticketKpiEscalated">—</span>
+        </div>
+        <div class="bo-incident-kpi-card">
+          <span class="bo-incident-kpi-label">Critical Severity</span>
+          <span class="bo-incident-kpi-value" id="ticketKpiCritical">—</span>
+        </div>
+        <div class="bo-incident-kpi-card">
+          <span class="bo-incident-kpi-label">Resolved</span>
+          <span class="bo-incident-kpi-value" id="ticketKpiResolved">—</span>
+        </div>
+      </div>
+
     <div class="bo-filter-row">
       <div class="bo-select bo-toolbar-select" data-name="ticketStatus">
         <button type="button" class="bo-select-trigger">
@@ -217,36 +236,34 @@
     <!-- INCIDENTS -->
     <div class="bo-tab-panel" id="tab-incidents">
 
-      <div class="bo-secondary-tabs" id="incidentStatusTabs">
-        <button class="bo-tab bo-secondary-tab active" data-status="Active">Active <span class="bo-secondary-tab-count" id="incStatusCountActive"></span></button>
-        <button class="bo-tab bo-secondary-tab" data-status="Monitoring">Monitoring <span class="bo-secondary-tab-count" id="incStatusCountMonitoring"></span></button>
-        <button class="bo-tab bo-secondary-tab" data-status="Resolved">Resolved <span class="bo-secondary-tab-count" id="incStatusCountResolved"></span></button>
-      </div>
-
       <div class="bo-incident-kpi-grid">
         <div class="bo-incident-kpi-card">
           <span class="bo-incident-kpi-label">Active Incidents</span>
           <span class="bo-incident-kpi-value">2</span>
-          <span class="bo-incident-kpi-sub">1 SEV-1 · 1 SEV-2</span>
         </div>
         <div class="bo-incident-kpi-card">
           <span class="bo-incident-kpi-label">Organizations Impacted</span>
           <span class="bo-incident-kpi-value">12</span>
-          <span class="bo-incident-kpi-sub">Across active incidents</span>
         </div>
         <div class="bo-incident-kpi-card">
           <span class="bo-incident-kpi-label">Mean Time to Acknowledge</span>
           <span class="bo-incident-kpi-value">6m</span>
-          <span class="bo-incident-kpi-sub trend-good">↓ 3m · 30-day rolling</span>
         </div>
         <div class="bo-incident-kpi-card">
           <span class="bo-incident-kpi-label">Mean Time to Resolve</span>
           <span class="bo-incident-kpi-value">2h 41m</span>
-          <span class="bo-incident-kpi-sub">SEV-1 target: 4h</span>
         </div>
       </div>
 
       <div class="bo-filter-row">
+        <div class="bo-select bo-toolbar-select" data-name="incStatus">
+          <button type="button" class="bo-select-trigger">
+            <span class="bo-select-value placeholder">Status</span>
+            <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="bo-select-menu" id="incStatusFilterMenu"></div>
+          <input type="hidden" id="incStatusFilter" />
+        </div>
         <div class="bo-select bo-toolbar-select" data-name="incSeverity">
           <button type="button" class="bo-select-trigger">
             <span class="bo-select-value placeholder">Severity</span>
@@ -302,7 +319,6 @@
                 <th>IMPACT</th>
                 <th>DURATION</th>
                 <th>DETECTED</th>
-                <th>OWNER</th>
                 <th></th>
               </tr>
             </thead>
@@ -508,16 +524,6 @@
             </div>
           </div>
         </div>
-
-        <div class="bo-modal-field full">
-          <label>Open a ticket automatically</label>
-          <div class="bo-switch-field">
-            <label class="bo-switch">
-              <input type="checkbox" id="newRuleAutoCreateInput" />
-              <span class="bo-switch-track"></span>
-            </label>
-          </div>
-        </div>
       </div>
       <div class="bo-drawer-foot">
         <button type="button" class="bo-btn-text" id="cancelNewRuleDrawer">Cancel</button>
@@ -593,31 +599,9 @@
           <div class="bo-modal-section">
             <p class="bo-modal-section-title">Handling</p>
             <div class="bo-modal-grid">
-              <div class="bo-modal-field">
-                <label>Level</label>
-                <div class="bo-select" data-name="tier">
-                  <button type="button" class="bo-select-trigger">
-                    <span class="bo-select-value placeholder">Select level</span>
-                    <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-                  </button>
-                  <div class="bo-select-menu"></div>
-                  <input type="hidden" />
-                </div>
-              </div>
-              <div class="bo-modal-field">
-                <label>Severity</label>
-                <div class="bo-select" data-name="severity">
-                  <button type="button" class="bo-select-trigger">
-                    <span class="bo-select-value placeholder">Select severity</span>
-                    <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-                  </button>
-                  <div class="bo-select-menu"></div>
-                  <input type="hidden" />
-                </div>
-              </div>
-              <div class="bo-modal-field">
+              <div class="bo-modal-field full">
                 <label>Status</label>
-                <div class="bo-select" data-name="status">
+                <div class="bo-select" data-name="ticketStatus">
                   <button type="button" class="bo-select-trigger">
                     <span class="bo-select-value placeholder">Select status</span>
                     <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
@@ -626,11 +610,39 @@
                   <input type="hidden" />
                 </div>
               </div>
-              <div class="bo-modal-field">
-                <label>Assigned To</label>
-                <div class="bo-select" data-name="assignedTo">
+
+              <div class="bo-modal-field full">
+                <label>Description</label>
+                <textarea id="ticketDetailRootCause" placeholder="What caused this issue? (optional)"></textarea>
+              </div>
+
+              <div class="bo-modal-field" id="ticketDetailLevelField">
+                <label>Level</label>
+                <div class="bo-select" data-name="ticketLevel">
                   <button type="button" class="bo-select-trigger">
-                    <span class="bo-select-value placeholder">Unassigned</span>
+                    <span class="bo-select-value placeholder">Select level</span>
+                    <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                  </button>
+                  <div class="bo-select-menu"></div>
+                  <input type="hidden" />
+                </div>
+              </div>
+              <div class="bo-modal-field" id="ticketDetailSeverityField">
+                <label>Severity</label>
+                <div class="bo-select" data-name="ticketSeverityHandling">
+                  <button type="button" class="bo-select-trigger">
+                    <span class="bo-select-value placeholder">Select severity</span>
+                    <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                  </button>
+                  <div class="bo-select-menu"></div>
+                  <input type="hidden" />
+                </div>
+              </div>
+              <div class="bo-modal-field" id="ticketDetailAssignedToField">
+                <label>Assigned To<span class="required-star">*</span></label>
+                <div class="bo-select" data-name="ticketAssignedTo">
+                  <button type="button" class="bo-select-trigger">
+                    <span class="bo-select-value placeholder">Select team member</span>
                     <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
                   </button>
                   <div class="bo-select-menu"></div>
@@ -649,7 +661,7 @@
 
         <div class="bo-drawer-foot">
           <button type="button" class="bo-btn-text" id="cancelTicketDetail">Cancel</button>
-          <button type="submit" class="bo-btn-primary">Save Changes</button>
+          <button type="submit" class="bo-btn-primary" id="saveTicketDetail" disabled>Save Changes</button>
         </div>
       </form>
     </div>
@@ -684,11 +696,25 @@
               </div>
               <div class="bo-modal-field">
                 <label>Organization<span class="required-star">*</span></label>
-                <input type="text" name="organization" placeholder="Organization code, e.g. 120" required />
+                <div class="bo-select" data-name="ticketOrg">
+                  <button type="button" class="bo-select-trigger">
+                    <span class="bo-select-value placeholder">Select organization</span>
+                    <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                  </button>
+                  <div class="bo-select-menu"></div>
+                  <input type="hidden" name="organization" required />
+                </div>
               </div>
               <div class="bo-modal-field full">
                 <label id="newTicketWhoLabel">Patient ID</label>
-                <input type="text" name="who" placeholder="e.g. 120-2001" required />
+                <div class="bo-select" data-name="ticketWho">
+                  <button type="button" class="bo-select-trigger">
+                    <span class="bo-select-value placeholder">Select patient</span>
+                    <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                  </button>
+                  <div class="bo-select-menu"></div>
+                  <input type="hidden" name="who" required />
+                </div>
               </div>
             </div>
           </div>
@@ -697,14 +723,14 @@
             <p class="bo-modal-section-title">Issue</p>
             <div class="bo-modal-grid">
               <div class="bo-modal-field">
-                <label>Category</label>
+                <label>Category<span class="required-star">*</span></label>
                 <div class="bo-select" data-name="category">
                   <button type="button" class="bo-select-trigger">
                     <span class="bo-select-value placeholder">Select category</span>
                     <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
                   </button>
                   <div class="bo-select-menu"></div>
-                  <input type="hidden" />
+                  <input type="hidden" name="category" required />
                 </div>
               </div>
               <div class="bo-modal-field">
@@ -716,6 +742,28 @@
                   </button>
                   <div class="bo-select-menu"></div>
                   <input type="hidden" />
+                </div>
+              </div>
+              <div class="bo-modal-field">
+                <label>Severity</label>
+                <div class="bo-select" data-name="ticketSeverity">
+                  <button type="button" class="bo-select-trigger" disabled>
+                    <span class="bo-select-value placeholder">Select category &amp; issue type first</span>
+                    <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                  </button>
+                  <div class="bo-select-menu"></div>
+                  <input type="hidden" name="severity" />
+                </div>
+              </div>
+              <div class="bo-modal-field">
+                <label>Level</label>
+                <div class="bo-select" data-name="ticketLevel">
+                  <button type="button" class="bo-select-trigger" disabled>
+                    <span class="bo-select-value placeholder">Select category &amp; issue type first</span>
+                    <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                  </button>
+                  <div class="bo-select-menu"></div>
+                  <input type="hidden" name="level" />
                 </div>
               </div>
               <div class="bo-modal-field full">
@@ -737,18 +785,15 @@
 
   <!-- Incident row action dropdown -->
   <div class="bo-row-menu" id="incidentRowMenu">
-    <button class="bo-row-menu-item" data-action="createTask">Create Task</button>
-    <button class="bo-row-menu-item" data-action="viewTask">View Task</button>
+    <button class="bo-row-menu-item" data-action="createTask">Escalate &amp; Create Ticket</button>
+    <button class="bo-row-menu-item" data-action="viewTask">View Ticket</button>
   </div>
-
-  <!-- Task list popover (View Task) -->
-  <div class="bo-row-menu bo-task-view-popover" id="incidentTaskPopover"></div>
 
   <!-- Create Support Task drawer -->
   <div class="bo-drawer-overlay" id="addTaskOverlay">
     <div class="bo-drawer">
       <div class="bo-drawer-head">
-        <h2>Create Support Task</h2>
+        <h2>Escalate &amp; Create Ticket</h2>
         <button type="button" class="bo-drawer-close" id="closeAddTaskX" aria-label="Close">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6L18 18M6 18L18 6"/></svg>
         </button>
@@ -759,12 +804,34 @@
           <span class="bo-incident-tag" id="addTaskIncidentTag">Incident: —</span>
           <div class="bo-modal-grid">
             <div class="bo-modal-field full">
-              <label>Task title<span class="required-star">*</span></label>
+              <label>Ticket title<span class="required-star">*</span></label>
               <input type="text" name="taskTitle" placeholder="e.g. Re-run affected schedules" required />
             </div>
             <div class="bo-modal-field full">
               <label>Description</label>
               <input type="text" name="taskDescription" placeholder="Optional details for whoever picks this up" />
+            </div>
+            <div class="bo-modal-field full">
+              <label>Assign to Team<span class="required-star">*</span></label>
+              <div class="bo-select" data-name="taskTeam">
+                <button type="button" class="bo-select-trigger">
+                  <span class="bo-select-value placeholder">Select team</span>
+                  <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
+                <div class="bo-select-menu"></div>
+                <input type="hidden" />
+              </div>
+            </div>
+            <div class="bo-modal-field full">
+              <label>Level</label>
+              <div class="bo-select" data-name="taskLevel">
+                <button type="button" class="bo-select-trigger">
+                  <span class="bo-select-value placeholder">Select level</span>
+                  <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
+                <div class="bo-select-menu"></div>
+                <input type="hidden" />
+              </div>
             </div>
             <div class="bo-modal-field">
               <label>Owner / Assignee<span class="required-star">*</span></label>
@@ -778,10 +845,10 @@
               </div>
             </div>
             <div class="bo-modal-field">
-              <label>Priority</label>
+              <label>Severity</label>
               <div class="bo-select" data-name="taskPriority">
                 <button type="button" class="bo-select-trigger">
-                  <span class="bo-select-value placeholder">Select priority</span>
+                  <span class="bo-select-value placeholder">Select severity</span>
                   <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
                 </button>
                 <div class="bo-select-menu"></div>
@@ -797,11 +864,25 @@
             </div>
             <div class="bo-modal-field">
               <label>Organization</label>
-              <input type="text" name="taskOrg" placeholder="Optional" />
+              <div class="bo-select" data-name="taskOrg">
+                <button type="button" class="bo-select-trigger">
+                  <span class="bo-select-value placeholder">Optional</span>
+                  <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
+                <div class="bo-select-menu"></div>
+                <input type="hidden" />
+              </div>
             </div>
             <div class="bo-modal-field">
               <label>Patient</label>
-              <input type="text" name="taskPatient" placeholder="Optional" />
+              <div class="bo-select" data-name="taskPatient">
+                <button type="button" class="bo-select-trigger">
+                  <span class="bo-select-value placeholder">Optional</span>
+                  <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
+                <div class="bo-select-menu"></div>
+                <input type="hidden" />
+              </div>
             </div>
             <div class="bo-modal-field">
               <label>Attachment</label>
@@ -815,7 +896,7 @@
         </div>
         <div class="bo-drawer-foot">
           <button type="button" class="bo-btn-text" id="cancelAddTask">Cancel</button>
-          <button type="submit" class="bo-btn-primary" id="saveAddTask" disabled>Create Task</button>
+          <button type="submit" class="bo-btn-primary" id="saveAddTask" disabled>Create Ticket</button>
         </div>
       </form>
     </div>

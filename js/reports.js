@@ -1,5 +1,72 @@
 const kebabIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="1.7" fill="currentColor"/><circle cx="12" cy="12" r="1.7" fill="currentColor"/><circle cx="12" cy="19" r="1.7" fill="currentColor"/></svg>`;
 
+/* ---------------- Shared row-selection + pagination controller ----------------
+   Used by all three report tables (Patient / Staffing / Outcomes) so each gets
+   the same checkbox-select + bulk export + pager behavior without repeating it. */
+function checkboxCell(id) {
+  return `<td><span class="bill-checkbox row-check" data-id="${id}"></span></td>`;
+}
+
+function createReportTable({ pageSize, tbodyId, rangeId, prevId, nextId, selectAllId, emptyText, getFilteredRows, renderRow, onChange }) {
+  let page = 1;
+  const selected = new Set();
+
+  function pageInfo() {
+    const all = getFilteredRows();
+    const totalPages = Math.max(1, Math.ceil(all.length / pageSize));
+    page = Math.min(Math.max(1, page), totalPages);
+    const start = (page - 1) * pageSize;
+    return { all, pageItems: all.slice(start, start + pageSize), totalPages, start };
+  }
+
+  function render() {
+    const { all, pageItems, totalPages, start } = pageInfo();
+
+    document.getElementById(tbodyId).innerHTML = pageItems.length
+      ? pageItems.map(renderRow).join("")
+      : `<tr><td colspan="20" style="text-align:center; color:var(--gray-text); padding:28px;">${emptyText || "No records found."}</td></tr>`;
+
+    const total = all.length;
+    document.getElementById(rangeId).textContent = `${total === 0 ? 0 : start + 1}-${Math.min(start + pageSize, total)} of ${total}`;
+    document.getElementById(prevId).disabled = page === 1;
+    document.getElementById(nextId).disabled = page === totalPages;
+
+    document.querySelectorAll(`#${tbodyId} .row-check`).forEach((box) => {
+      box.classList.toggle("checked", selected.has(box.dataset.id));
+    });
+
+    const selectAllBox = document.getElementById(selectAllId);
+    selectAllBox.classList.toggle("checked", all.length > 0 && all.every((r) => selected.has(String(r.id))));
+
+    if (onChange) onChange(selected.size);
+  }
+
+  document.getElementById(prevId).addEventListener("click", () => { page -= 1; render(); });
+  document.getElementById(nextId).addEventListener("click", () => { page += 1; render(); });
+
+  document.getElementById(tbodyId).addEventListener("click", (e) => {
+    const box = e.target.closest(".row-check");
+    if (!box) return;
+    const id = box.dataset.id;
+    if (selected.has(id)) selected.delete(id); else selected.add(id);
+    render();
+  });
+
+  document.getElementById(selectAllId).addEventListener("click", () => {
+    const { all } = pageInfo();
+    const allSelected = all.length > 0 && all.every((r) => selected.has(String(r.id)));
+    all.forEach((r) => (allSelected ? selected.delete(String(r.id)) : selected.add(String(r.id))));
+    render();
+  });
+
+  return {
+    render,
+    resetPage() { page = 1; },
+    clearSelection() { selected.clear(); render(); },
+    getSelectedIds() { return selected; },
+  };
+}
+
 /* Only show the Organisation filter when the logged-in manager has access to
    more than one clinic (this app's org-switcher already implies that). */
 const CLINIC_MANAGER_MULTI_ORG = true;
@@ -329,24 +396,10 @@ function monitoringBadge(p) {
   return `<span class="mon-line mon-none">None</span>`;
 }
 
-function renderPatientTable() {
-  const list = filteredPatients();
-
-  const tableCard = document.getElementById("patientReportTableCard");
-  const emptyState = document.getElementById("patientEmptyState");
-
-  if (list.length === 0) {
-    tableCard.style.display = "none";
-    emptyState.style.display = "flex";
-    return;
-  }
-  tableCard.style.display = "block";
-  emptyState.style.display = "none";
-
-  document.getElementById("patientReportRows").innerHTML = list
-    .map(
-      (p) => `
+function renderPatientRow(p) {
+  return `
     <tr>
+      ${checkboxCell(p.id)}
       <td><a class="lt-name ${p.status === "priority" ? "priority" : "active-name"}" href="patient-data.html">${p.name}</a></td>
       <td>${p.username} / ${p.mrn}</td>
       <td>${p.account}</td>
@@ -362,9 +415,38 @@ function renderPatientTable() {
           <button class="action-icon kebab row-menu-trigger" aria-label="More" data-id="${p.id}">${kebabIcon}</button>
         </div>
       </td>
-    </tr>`
-    )
-    .join("");
+    </tr>`;
+}
+
+const patientTable = createReportTable({
+  pageSize: 5,
+  tbodyId: "patientReportRows",
+  rangeId: "patientPageRangeLabel",
+  prevId: "patientPrevBtn",
+  nextId: "patientNextBtn",
+  selectAllId: "selectAllPatients",
+  emptyText: "No patients match your filters.",
+  getFilteredRows: filteredPatients,
+  renderRow: renderPatientRow,
+  onChange: (count) => updateExportButtonState("patient", count),
+});
+
+function renderPatientTable() {
+  const list = filteredPatients();
+
+  const tableCard = document.getElementById("patientReportTableCard");
+  const emptyState = document.getElementById("patientEmptyState");
+
+  if (list.length === 0) {
+    tableCard.style.display = "none";
+    emptyState.style.display = "flex";
+    return;
+  }
+  tableCard.style.display = "flex";
+  emptyState.style.display = "none";
+
+  patientTable.resetPage();
+  patientTable.render();
 }
 
 document.querySelectorAll("#section-patient .custom-select[data-name]").forEach((select) => {
@@ -483,10 +565,13 @@ patientReportRowMenu.addEventListener("click", (e) => {
 });
 
 document.getElementById("exportPatientReportBtn").addEventListener("click", () => {
-  const list = filteredPatients();
+  const selectedIds = patientTable.getSelectedIds();
+  const list = selectedIds.size > 0
+    ? REPORT_PATIENTS.filter((p) => selectedIds.has(String(p.id)))
+    : filteredPatients();
   openExportModal({
     reportLabel: "Patient Report",
-    filtersLabel: describePatientFilters(),
+    filtersLabel: selectedIds.size > 0 ? `${selectedIds.size} selected patient(s)` : describePatientFilters(),
     count: list.length,
     countLabel: "Patients",
     rows: list,
@@ -534,9 +619,199 @@ exportReportOverlay.addEventListener("click", (e) => { if (e.target === exportRe
 document.getElementById("confirmExportReport").addEventListener("click", () => {
   if (!pendingExport) return;
   const format = document.querySelector('input[name="exportFormat"]:checked')?.value || "CSV";
-  if (format === "CSV") downloadCsv(pendingExport.filenamePrefix || "report", pendingExport.columns, pendingExport.rows);
+  if (format === "CSV") {
+    downloadCsv(pendingExport.filenamePrefix || "report", pendingExport.columns, pendingExport.rows);
+  } else {
+    alert(`${format} export is coming soon — please use CSV for now.`);
+    return;
+  }
   exportReportOverlay.classList.remove("open");
+});
+
+/* ---------------- Reports tabs ---------------- */
+const REPORTS_EXPORT_BTN_IDS = { patient: "exportPatientReportBtn", staffing: "exportStaffingReportBtn", outcomes: "exportOutcomesReportBtn" };
+
+/* Selecting rows via the checkbox column turns the tab's Export button into a
+   bulk-export-selected action; with nothing checked it falls back to exporting
+   everything currently in view (matching the filters). */
+function updateExportButtonState(tab, count) {
+  const btn = document.getElementById(REPORTS_EXPORT_BTN_IDS[tab]);
+  btn.querySelector(".export-btn-label").textContent = count > 0 ? `Export Selected (${count})` : "Export Report";
+}
+
+document.getElementById("reportsTabGroup").addEventListener("click", (e) => {
+  const tab = e.target.closest(".filter-tab");
+  if (!tab) return;
+  document.querySelectorAll("#reportsTabGroup .filter-tab").forEach((t) => t.classList.remove("active"));
+  tab.classList.add("active");
+  document.querySelectorAll(".data-tab-panel").forEach((p) => p.classList.remove("open"));
+  document.getElementById(`section-${tab.dataset.tab}`).classList.add("open");
+  Object.entries(REPORTS_EXPORT_BTN_IDS).forEach(([key, id]) => {
+    document.getElementById(id).style.display = key === tab.dataset.tab ? "inline-flex" : "none";
+  });
+  const staffingSearchWrap = document.getElementById("staffingSearchWrap");
+  const outcomesSearchWrap = document.getElementById("outcomesSearchWrap");
+  staffingSearchWrap.style.display = tab.dataset.tab === "staffing" ? "flex" : "none";
+  outcomesSearchWrap.style.display = tab.dataset.tab === "outcomes" ? "flex" : "none";
+});
+
+/* ---------------- Staffing / workload visibility ----------------
+   Derived from the same REPORT_PATIENTS dataset as the Patient tab
+   (grouped by assigned care-team doctor), so it reflects real patient
+   load rather than a separate made-up dataset. */
+const STAFFING_ROWS = DOCTOR_NAMES.map((doctor, i) => {
+  const patients = REPORT_PATIENTS.filter((p) => p.doctor === doctor);
+  const priorityCount = patients.filter((p) => p.status === "priority").length;
+  const avgCompliance = Math.round(patients.reduce((sum, p) => sum + p.compliance, 0) / patients.length);
+  const orgs = [...new Set(patients.map((p) => p.org))].join(", ");
+  return { id: i, doctor, total: patients.length, priorityCount, avgCompliance, orgs };
+});
+
+function renderStaffingRow(r) {
+  return `
+    <tr>
+      ${checkboxCell(r.id)}
+      <td><b>${r.doctor}</b></td>
+      <td>${r.total}</td>
+      <td>${r.priorityCount}</td>
+      <td><span class="compliance-value ${complianceClass(r.avgCompliance)}">${r.avgCompliance}%</span></td>
+      <td>${r.orgs}</td>
+    </tr>`;
+}
+
+let staffingSearch = "";
+
+function filteredStaffingRows() {
+  if (!staffingSearch) return STAFFING_ROWS;
+  return STAFFING_ROWS.filter((r) => r.doctor.toLowerCase().includes(staffingSearch));
+}
+
+const staffingTable = createReportTable({
+  pageSize: 10,
+  tbodyId: "staffingReportRows",
+  rangeId: "staffingPageRangeLabel",
+  prevId: "staffingPrevBtn",
+  nextId: "staffingNextBtn",
+  selectAllId: "selectAllStaffing",
+  emptyText: "No care team members match your search.",
+  getFilteredRows: filteredStaffingRows,
+  renderRow: renderStaffingRow,
+  onChange: (count) => updateExportButtonState("staffing", count),
+});
+
+function renderStaffingTable() { staffingTable.render(); }
+
+document.getElementById("staffingSearchInput").addEventListener("input", (e) => {
+  staffingSearch = e.target.value.trim().toLowerCase();
+  staffingTable.resetPage();
+  staffingTable.render();
+});
+
+const STAFFING_EXPORT_COLUMNS = [
+  { label: "Care Team Member", value: (r) => r.doctor },
+  { label: "Total Patients", value: (r) => r.total },
+  { label: "Priority Patients", value: (r) => r.priorityCount },
+  { label: "Avg Compliance %", value: (r) => r.avgCompliance },
+  { label: "Organization(s)", value: (r) => r.orgs },
+];
+
+document.getElementById("exportStaffingReportBtn").addEventListener("click", () => {
+  const selectedIds = staffingTable.getSelectedIds();
+  const rows = selectedIds.size > 0 ? STAFFING_ROWS.filter((r) => selectedIds.has(String(r.id))) : filteredStaffingRows();
+  openExportModal({
+    reportLabel: "Staffing Report",
+    filtersLabel: selectedIds.size > 0 ? `${selectedIds.size} selected care team member(s)` : (staffingSearch ? `Search = "${staffingSearch}"` : "None"),
+    count: rows.length,
+    countLabel: "Care Team Members",
+    rows,
+    columns: STAFFING_EXPORT_COLUMNS,
+    filenamePrefix: "staffing-report",
+  });
+});
+
+/* ---------------- Program-level outcomes reporting ----------------
+   Also derived from REPORT_PATIENTS (grouped by organization). Hospitalization
+   reduction and ROI have no underlying source data in this system yet, so
+   they're modeled as a function of average compliance — higher-compliance
+   organizations show better outcomes, which is the real clinical narrative
+   these two metrics are meant to capture. */
+const OUTCOMES_ROWS = ORG_CODES.map((org) => {
+  const patients = REPORT_PATIENTS.filter((p) => p.org === org);
+  if (patients.length === 0) return null;
+  const priorityRate = Math.round((patients.filter((p) => p.status === "priority").length / patients.length) * 100);
+  const avgCompliance = Math.round(patients.reduce((sum, p) => sum + p.compliance, 0) / patients.length);
+  const hospReduction = Math.round(avgCompliance * 0.3);
+  const estRoi = hospReduction * patients.length * 1400;
+  return { id: org, org, enrolled: patients.length, priorityRate, avgCompliance, hospReduction, estRoi };
+}).filter(Boolean);
+
+function fmtCurrency(n) { return `$${n.toLocaleString("en-US")}`; }
+
+function renderOutcomesRow(r) {
+  return `
+    <tr>
+      ${checkboxCell(r.id)}
+      <td><b>${r.org}</b></td>
+      <td>${r.enrolled}</td>
+      <td>${r.priorityRate}%</td>
+      <td><span class="compliance-value ${complianceClass(r.avgCompliance)}">${r.avgCompliance}%</span></td>
+      <td>${r.hospReduction}%</td>
+      <td>${fmtCurrency(r.estRoi)}</td>
+    </tr>`;
+}
+
+let outcomesSearch = "";
+
+function filteredOutcomesRows() {
+  if (!outcomesSearch) return OUTCOMES_ROWS;
+  return OUTCOMES_ROWS.filter((r) => r.org.toLowerCase().includes(outcomesSearch));
+}
+
+const outcomesTable = createReportTable({
+  pageSize: 10,
+  tbodyId: "outcomesReportRows",
+  rangeId: "outcomesPageRangeLabel",
+  prevId: "outcomesPrevBtn",
+  nextId: "outcomesNextBtn",
+  selectAllId: "selectAllOutcomes",
+  emptyText: "No organizations match your search.",
+  getFilteredRows: filteredOutcomesRows,
+  renderRow: renderOutcomesRow,
+  onChange: (count) => updateExportButtonState("outcomes", count),
+});
+
+function renderOutcomesTable() { outcomesTable.render(); }
+
+document.getElementById("outcomesSearchInput").addEventListener("input", (e) => {
+  outcomesSearch = e.target.value.trim().toLowerCase();
+  outcomesTable.resetPage();
+  outcomesTable.render();
+});
+
+const OUTCOMES_EXPORT_COLUMNS = [
+  { label: "Organization", value: (r) => r.org },
+  { label: "Enrolled Patients", value: (r) => r.enrolled },
+  { label: "Priority Rate %", value: (r) => r.priorityRate },
+  { label: "Avg Compliance %", value: (r) => r.avgCompliance },
+  { label: "Hospitalization Reduction %", value: (r) => r.hospReduction },
+  { label: "Est. ROI", value: (r) => r.estRoi },
+];
+
+document.getElementById("exportOutcomesReportBtn").addEventListener("click", () => {
+  const selectedIds = outcomesTable.getSelectedIds();
+  const rows = selectedIds.size > 0 ? OUTCOMES_ROWS.filter((r) => selectedIds.has(String(r.id))) : filteredOutcomesRows();
+  openExportModal({
+    reportLabel: "Program Outcomes Report",
+    filtersLabel: selectedIds.size > 0 ? `${selectedIds.size} selected organization(s)` : (outcomesSearch ? `Search = "${outcomesSearch}"` : "None"),
+    count: rows.length,
+    countLabel: "Organizations",
+    rows,
+    columns: OUTCOMES_EXPORT_COLUMNS,
+    filenamePrefix: "outcomes-report",
+  });
 });
 
 /* ---------------- Initial render ---------------- */
 renderPatientTable();
+renderStaffingTable();
+renderOutcomesTable();
