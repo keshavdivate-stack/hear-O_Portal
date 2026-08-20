@@ -512,8 +512,8 @@ let careRecIdSeq = 4;
 const careRecs = [
   {
     id: 1,
-    title: "Follow up on hearing device usage",
-    instruction: "Please contact the patient and confirm whether they are using their hearing device consistently and report back.",
+    title: "Increase Furosemide dose",
+    instruction: "Patient shows a 2.1 kg weight gain over 3 days with a rising respiration rate. Please increase Furosemide by 50% for 3 days and monitor daily weight closely.",
     status: "recommended",
     createdBy: "Dr. Sarah Mitchell",
     createdAt: "08 Aug 2026, 10:32 AM",
@@ -525,8 +525,8 @@ const careRecs = [
   },
   {
     id: 2,
-    title: "Confirm upcoming appointment",
-    instruction: "Please confirm the patient's upcoming appointment and remind them to bring their device charger.",
+    title: "Review Carvedilol titration",
+    instruction: "Please review the patient's tolerance to the current Carvedilol dose and report any dizziness, fatigue, or low heart rate readings.",
     status: "in-progress",
     createdBy: "Dr. Sarah Mitchell",
     createdAt: "08 Aug 2026, 11:00 AM",
@@ -535,13 +535,13 @@ const careRecs = [
     activity: [
       { who: "Dr. Sarah Mitchell", when: "08 Aug · 11:00 AM", text: "Created care recommendation." },
       { who: "Amanda Lee, RN", when: "08 Aug · 11:20 AM", text: "Picked up recommendation." },
-      { who: "Amanda Lee, RN", when: "08 Aug · 02:15 PM", label: "Action taken: Patient contacted", short: "Patient contacted", note: "Patient confirmed the appointment and will bring the charger." },
+      { who: "Amanda Lee, RN", when: "08 Aug · 02:15 PM", label: "Action taken: Patient contacted", short: "Patient contacted", note: "Patient reports mild dizziness on standing; no other symptoms. Heart rate readings within range." },
     ],
   },
   {
     id: 3,
-    title: "Review care instructions",
-    instruction: "Review the discharge care instructions with the patient to confirm understanding.",
+    title: "Review medication adherence",
+    instruction: "Review Furosemide adherence with the patient following two missed doses this week.",
     status: "completed",
     createdBy: "Dr. Sarah Mitchell",
     createdAt: "07 Aug 2026, 09:00 AM",
@@ -550,9 +550,9 @@ const careRecs = [
     activity: [
       { who: "Dr. Sarah Mitchell", when: "07 Aug · 09:00 AM", text: "Created care recommendation." },
       { who: "Amanda Lee, RN", when: "07 Aug · 09:40 AM", text: "Picked up recommendation." },
-      { who: "Amanda Lee, RN", when: "07 Aug · 11:15 AM", label: "Action taken: Patient contacted", short: "Patient contacted", note: "Reviewed care instructions with patient; they had questions about medication timing." },
+      { who: "Amanda Lee, RN", when: "07 Aug · 11:15 AM", label: "Action taken: Patient contacted", short: "Patient contacted", note: "Patient confirmed the missed doses; reported confusion about the evening dose schedule." },
       { who: "Dr. Sarah Mitchell", when: "07 Aug · 01:00 PM", label: "Added a note", short: "Added a note", note: "Please clarify the evening dose timing with the patient." },
-      { who: "Amanda Lee, RN", when: "07 Aug · 03:00 PM", label: "Action taken", short: "Reviewed dose timing", note: "Clarified evening dose timing; patient confirmed understanding." },
+      { who: "Amanda Lee, RN", when: "07 Aug · 03:00 PM", label: "Action taken", short: "Reviewed dose timing", note: "Clarified evening dose timing with the patient; adherence confirmed going forward." },
       { who: "Amanda Lee, RN", when: "07 Aug · 04:10 PM", label: "Marked recommendation as Completed.", short: "Completed" },
     ],
   },
