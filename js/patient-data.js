@@ -964,34 +964,183 @@ document.querySelectorAll(".range-toggle span").forEach((r) => {
   });
 });
 
+/* ---------------- History events ---------------- */
+// Account-status changes made from the Patient List's "Update account" modal
+// (Pause / Discontinue) are stored in localStorage so they show up here too,
+// on whichever patient's chart is opened next.
+const pendingAccountHistory = JSON.parse(localStorage.getItem("hearoAccountHistory") || "[]");
+localStorage.removeItem("hearoAccountHistory");
+
+let history = [
+  ...pendingAccountHistory,
+
+  // Status
+  { category: "status", color: "dot-red", label: "Status changed to Priority", date: "01.09.2026" },
+  { category: "status", color: "dot-green", label: "Status changed to Active", date: "12.24.2025" },
+  { category: "status", color: "dot-green", label: "Status changed to Active", date: "12.16.2025" },
+  { category: "status", color: "dot-gray", label: "Status changed to Baseline", date: "12.01.2025" },
+  { category: "status", color: "dot-darkgray", label: "Status changed to Registered", date: "12.01.2025" },
+
+  // Monitoring
+  { category: "monitoring", color: "dot-teal", label: "Patient is Monitored", date: "01.03.2026" },
+  { category: "monitoring", color: "dot-teal", label: "Monitoring issue: Low quality", date: "01.01.2026" },
+  { category: "monitoring", color: "dot-teal", label: "Monitoring issue: Low quality", date: "12.30.2025" },
+  { category: "monitoring", color: "dot-teal", label: "Patient is Unmonitored", date: "12.23.2025" },
+  { category: "monitoring", color: "dot-teal", label: "Patient is Unmonitored", date: "12.21.2025", note: "Dr. Ellen: Patient forgot to record" },
+  { category: "monitoring", color: "dot-teal", label: "Monitoring issue: Missed recording", date: "12.20.2025" },
+  { category: "monitoring", color: "dot-teal", label: "Patient is Monitored", date: "12.16.2025" },
+  { category: "monitoring", color: "dot-teal", label: "Baseline phase monitoring", date: "12.01.2025" },
+  { category: "monitoring", color: "dot-teal", label: "Patient is Monitored", date: "12.01.2025" },
+
+  // Other
+  { category: "other", color: "dot-blue", label: "Action taken: Other", date: "01.09.2026", note: "Emily Conley: Patient is not feeling well. Invited to clinic" },
+  { category: "other", color: "dot-blue", label: "Care recommendation action taken: Contacted", date: "01.03.2026", note: "Jully Show: Patient is not feeling well. Invited to clinic" },
+  { category: "other", color: "dot-blue", label: "Message sent to patient", date: "01.03.2026", note: "Sent by Ayelet Er. Seen 01.03.2026, 01:12 PM" },
+  { category: "other", color: "dot-blue", label: "Message sent to patient", date: "01.02.2026", note: "Seen 01.02.2026, 11:22 AM" },
+  { category: "other", color: "dot-blue", label: "Action taken: Contacted", date: "12.20.2025", note: "Maya Cohen: Patient forgot to record" },
+  { category: "other", color: "dot-blue", label: "Operational difficulty", date: "12.10.2025", note: "Dana Levi: Patient reported transportation issues and is unable to attend clinic visits" },
+
+  // Account
+  { category: "account", color: "dot-black", label: "Account changed to Discontinued", date: "12.28.2025", note: "Changed by Dr. Ellen. Reason: Deceased - CHF related." },
+  { category: "account", color: "dot-blue", label: "Account changed to Enabled", date: "12.28.2025", note: "Changed by Dr. Ellen" },
+  { category: "account", color: "dot-slate", label: "Account changed to Paused", date: "12.20.2025", note: "Changed by Dr. Ellen" },
+  { category: "account", color: "dot-blue", label: "Account is Enabled", date: "08.28.2025" },
+];
+
+function parseHistoryDate(str) {
+  const [m, d, y] = str.split(".").map(Number);
+  return new Date(y, m - 1, d).getTime();
+}
+
+const HISTORY_PAGE_SIZE = 12;
+let activeHistoryTab = "all";
+let historyVisibleCount = HISTORY_PAGE_SIZE;
+
+function filteredHistory() {
+  const items = activeHistoryTab === "all" ? history : history.filter((h) => h.category === activeHistoryTab);
+  return [...items].sort((a, b) => parseHistoryDate(b.date) - parseHistoryDate(a.date));
+}
+
+function renderHistory() {
+  const items = filteredHistory();
+  const visible = items.slice(0, historyVisibleCount);
+
+  document.getElementById("historyRows").innerHTML = visible
+    .map(
+      (h, i) => `
+    <tr>
+      <td><span class="event-dot"><span class="dot ${h.color}"></span>${h.label}</span></td>
+      <td>${h.date}</td>
+      <td>${
+        h.note
+          ? h.note
+          : `<button type="button" class="add-note-link" data-index="${history.indexOf(h)}"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Add Note</button>`
+      }</td>
+    </tr>`
+    )
+    .join("");
+
+  const loadMoreRow = document.getElementById("historyLoadMoreRow");
+  loadMoreRow.style.display = items.length > historyVisibleCount ? "flex" : "none";
+
+  fitTableToRows(".history-table-scroll", 6);
+}
+
+renderHistory();
+
 document.querySelectorAll(".history-tabs span").forEach((t) => {
   t.addEventListener("click", () => {
     document.querySelectorAll(".history-tabs span").forEach((s) => s.classList.remove("active"));
     t.classList.add("active");
+    activeHistoryTab = t.dataset.tab;
+    historyVisibleCount = HISTORY_PAGE_SIZE;
+    renderHistory();
   });
 });
 
-/* ---------------- History events ---------------- */
-const history = [
-  { color: "dot-red", label: "Status changed to Priority", date: "01.09.2026" },
-  { color: "dot-green", label: "Status changed to Active", date: "12.24.2025" },
-  { color: "dot-green", label: "Status changed to Active", date: "12.16.2025" },
-  { color: "dot-gray", label: "Status changed to Baseline", date: "12.01.2025" },
-  { color: "dot-darkgray", label: "Status changed to Registered", date: "12.01.2025" },
-];
+document.getElementById("historyLoadMoreBtn").addEventListener("click", () => {
+  historyVisibleCount += HISTORY_PAGE_SIZE;
+  renderHistory();
+});
 
-document.getElementById("historyRows").innerHTML = history
-  .map(
-    (h) => `
-    <tr>
-      <td><span class="event-dot"><span class="dot ${h.color}"></span>${h.label}</span></td>
-      <td>${h.date}</td>
-      <td><a class="add-note-link" href="#"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Add Note</a></td>
-    </tr>`
-  )
-  .join("");
+/* ---------------- Add Event modal ---------------- */
+const addEventOverlay = document.getElementById("addEventOverlay");
+const addEventForm = document.getElementById("addEventForm");
+const saveAddEvent = document.getElementById("saveAddEvent");
 
-fitTableToRows(".history-table-scroll", 4);
+const CATEGORY_DOT = { account: "dot-blue", status: "dot-green", monitoring: "dot-teal", other: "dot-blue" };
+
+function validateAddEventForm() {
+  const valid = addEventForm.category.value !== "" && addEventForm.label.value.trim() !== "" && addEventForm.date.value !== "";
+  saveAddEvent.disabled = !valid;
+  saveAddEvent.classList.toggle("enabled", valid);
+}
+
+addEventForm.addEventListener("input", validateAddEventForm);
+addEventForm.addEventListener("change", validateAddEventForm);
+
+document.getElementById("openAddEventBtn").addEventListener("click", () => {
+  addEventForm.reset();
+  validateAddEventForm();
+  addEventOverlay.classList.add("open");
+});
+
+function closeAddEventModal() { addEventOverlay.classList.remove("open"); }
+document.getElementById("cancelAddEvent").addEventListener("click", closeAddEventModal);
+addEventOverlay.addEventListener("click", (e) => { if (e.target === addEventOverlay) closeAddEventModal(); });
+
+addEventForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  if (saveAddEvent.disabled) return;
+
+  const [y, m, d] = addEventForm.date.value.split("-");
+  history.unshift({
+    category: addEventForm.category.value,
+    color: CATEGORY_DOT[addEventForm.category.value],
+    label: addEventForm.label.value.trim(),
+    date: `${m}.${d}.${y}`,
+    note: addEventForm.note.value.trim() || undefined,
+  });
+
+  closeAddEventModal();
+  renderHistory();
+});
+
+/* ---------------- Add Note modal ---------------- */
+const addNoteOverlay = document.getElementById("addNoteOverlay");
+const addNoteForm = document.getElementById("addNoteForm");
+const saveAddNote = document.getElementById("saveAddNote");
+let addNoteTargetIndex = null;
+
+function validateAddNoteForm() {
+  const valid = addNoteForm.note.value.trim() !== "";
+  saveAddNote.disabled = !valid;
+  saveAddNote.classList.toggle("enabled", valid);
+}
+
+addNoteForm.addEventListener("input", validateAddNoteForm);
+
+function closeAddNoteModal() { addNoteOverlay.classList.remove("open"); }
+document.getElementById("cancelAddNote").addEventListener("click", closeAddNoteModal);
+addNoteOverlay.addEventListener("click", (e) => { if (e.target === addNoteOverlay) closeAddNoteModal(); });
+
+document.getElementById("historyRows").addEventListener("click", (e) => {
+  const btn = e.target.closest(".add-note-link");
+  if (!btn) return;
+  addNoteTargetIndex = Number(btn.dataset.index);
+  addNoteForm.reset();
+  validateAddNoteForm();
+  document.getElementById("addNoteEventLabel").textContent = history[addNoteTargetIndex].label;
+  addNoteOverlay.classList.add("open");
+});
+
+addNoteForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  if (saveAddNote.disabled || addNoteTargetIndex === null) return;
+  history[addNoteTargetIndex].note = addNoteForm.note.value.trim();
+  closeAddNoteModal();
+  renderHistory();
+});
 
 /* ---------------- Chat panel ---------------- */
 const chatMessages = [

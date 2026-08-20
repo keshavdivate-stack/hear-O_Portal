@@ -846,6 +846,19 @@ updateAccountOverlay.addEventListener("click", (e) => { if (e.target === updateA
 
 saveUpdateAccount.addEventListener("click", () => {
   if (saveUpdateAccount.disabled) return;
+
+  const selected = document.querySelector('input[name="accountAction"]:checked');
+  if (selected) {
+    const today = new Date();
+    const dateLabel = `${String(today.getMonth() + 1).padStart(2, "0")}.${String(today.getDate()).padStart(2, "0")}.${today.getFullYear()}`;
+    const dotColor = selected.value === "Discontinued" ? "dot-black" : "dot-slate";
+    const entry = { category: "account", color: dotColor, label: `Account changed to ${selected.value}`, date: dateLabel };
+
+    const stored = JSON.parse(localStorage.getItem("hearoAccountHistory") || "[]");
+    stored.unshift(entry);
+    localStorage.setItem("hearoAccountHistory", JSON.stringify(stored));
+  }
+
   closeUpdateAccountModal();
 });
 
