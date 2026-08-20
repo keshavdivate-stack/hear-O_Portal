@@ -494,7 +494,7 @@ buildRespirationChart();
 
 /* ---------------- Clinical: Care Recommendations ---------------- */
 const CARE_REC_STATUS = {
-  recommended: { label: "Recommended", cls: "rec-status-recommended" },
+  recommended: { label: "New", cls: "rec-status-recommended" },
   "in-progress": { label: "In Progress", cls: "rec-status-progress" },
   completed: { label: "Completed", cls: "rec-status-completed" },
   archived: { label: "Archived", cls: "rec-status-archived" },
@@ -545,7 +545,7 @@ const careRecs = [
     instructionsPatient: "Take with food, morning and evening. Report any dizziness right away.",
     instructionsCareTeam: "Please review the patient's tolerance to the current Carvedilol dose and report any dizziness, fatigue, or low heart rate readings.",
     invitePatient: false,
-    status: "completed",
+    status: "in-progress",
     createdBy: "Dr. Sarah Mitchell",
     createdAt: "08 Aug 2026, 11:00 AM",
     updatedAt: "08 Aug 2026, 02:15 PM",
@@ -554,7 +554,6 @@ const careRecs = [
       { who: "Dr. Sarah Mitchell", when: "08 Aug · 11:00 AM", text: "Created care recommendation." },
       { who: "Amanda Lee, RN", when: "08 Aug · 11:20 AM", text: "Picked up recommendation." },
       { who: "Amanda Lee, RN", when: "08 Aug · 02:15 PM", label: "Action taken: Patient contacted", short: "Patient contacted", note: "Patient reports mild dizziness on standing; no other symptoms. Heart rate readings within range." },
-      { who: "Amanda Lee, RN", when: "08 Aug · 02:15 PM", label: "Marked recommendation as Completed.", short: "Completed" },
     ],
   },
   {
@@ -585,30 +584,6 @@ const careRecs = [
   },
 ];
 
-function newCareRec(fields, createdBy = "Dr. Sarah Mitchell") {
-  const t = timeLabel(new Date());
-  return {
-    id: careRecIdSeq++,
-    title: `${fields.medication} dose change`,
-    medication: fields.medication,
-    currentDose: fields.currentDose,
-    newDose: fields.newDose,
-    frequency: fields.frequency,
-    duration: fields.duration,
-    startDate: fields.startDate,
-    instructionsPatient: fields.instructionsPatient,
-    instructionsCareTeam: fields.instructionsCareTeam,
-    invitePatient: fields.invitePatient,
-    assignedCareTeam: fields.assignedCareTeam,
-    status: "recommended",
-    createdBy,
-    createdAt: t.full,
-    updatedAt: t.full,
-    pickedUpBy: null,
-    activity: [{ who: createdBy, when: t.short, text: "Created care recommendation." }],
-  };
-}
-
 let careRecFilter = "all"; // all | recommended | in-progress | completed
 let activeRecId = null;
 
@@ -619,29 +594,17 @@ function careRecLatest(rec) {
 }
 
 function careRecMatchesFilter(rec) {
+  if (rec.status === "archived") return false;
   if (careRecFilter === "all") return true;
   return rec.status === careRecFilter;
 }
 
-function hasActiveCareRec() {
-  return careRecs.some((r) => r.status === "recommended" || r.status === "in-progress");
-}
-
 function updateCareRecTriggers() {
-  const blocked = hasActiveCareRec();
-  const tooltip = "Resolve the active recommendation before creating a new one.";
-
+  const visibleCount = careRecs.filter((r) => r.status !== "archived").length;
   const careBtn = document.getElementById("openCareRecBtn");
   if (careBtn) {
-    careBtn.disabled = false;
-    careBtn.title = "";
-    careBtn.textContent = blocked ? "View Recommendation" : "Care Recommendation";
-  }
-
-  const addLink = document.getElementById("openAddRecBtn");
-  if (addLink) {
-    addLink.classList.toggle("is-disabled", blocked);
-    addLink.title = blocked ? tooltip : "";
+    careBtn.disabled = visibleCount === 0;
+    careBtn.title = visibleCount === 0 ? "No care recommendations for this patient yet" : "";
   }
 }
 
@@ -651,22 +614,20 @@ function goToCareRecList() {
 }
 
 document.getElementById("openCareRecBtn").addEventListener("click", (e) => {
-  if (!hasActiveCareRec()) return;
   e.preventDefault();
-  e.stopImmediatePropagation();
+  const visible = careRecs.filter((r) => r.status !== "archived");
+  if (!visible.length) return;
   goToCareRecList();
-  const activeRec = careRecs.find((r) => r.status === "in-progress") || careRecs.find((r) => r.status === "recommended");
+  const activeRec = visible.find((r) => r.status === "in-progress") || visible.find((r) => r.status === "recommended") || visible[0];
   if (activeRec) openRecDrawer(activeRec.id);
 });
 
 function renderCareRecs() {
-  document.getElementById("careRecCount").textContent = careRecs.length;
+  const visible = careRecs.filter((r) => r.status !== "archived");
+  document.getElementById("careRecCount").textContent = visible.length;
   updateCareRecTriggers();
 
-  const list = careRecs
-    .filter(careRecMatchesFilter)
-    .slice()
-    .sort((a, b) => (a.status === "archived") - (b.status === "archived"));
+  const list = visible.filter(careRecMatchesFilter);
   document.getElementById("careRecTableBody").innerHTML = list.length
     ? list
         .map((rec) => {
@@ -718,12 +679,27 @@ function renderRecDrawerFooter(rec) {
   }
   return `
     <div class="rec-add-note">
-      <label class="drawer-label">Add note</label>
-      <textarea id="recNoteInput" placeholder="Add a note for the care team..."></textarea>
+      <div class="form-field" style="margin-bottom:16px;">
+        <label>Action Taken By<span class="required-star">*</span></label>
+        <div class="custom-select" data-name="actionTakenBy" id="recActionTakenBy">
+          <button type="button" class="custom-select-trigger">
+            <span class="custom-select-value placeholder">Select your name</span>
+            <svg class="custom-select-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="custom-select-menu">
+            <div class="custom-select-option" data-value="Amanda Lee, RN">Amanda Lee, RN<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="custom-select-option" data-value="Ayelet Er, NP">Ayelet Er, NP<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="custom-select-option" data-value="Sandy Kohl, Care Coordinator">Sandy Kohl, Care Coordinator<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          </div>
+          <input type="hidden" name="actionTakenBy" />
+        </div>
+      </div>
+      <label class="drawer-label">Note for Provider</label>
+      <textarea id="recNoteInput" placeholder="Add a note the provider will see..."></textarea>
       <div class="rec-footer-actions">
-        <button type="button" class="rec-archive-link" id="recArchive">Archive</button>
+        <span class="rec-completed-note">Add a note or mark this recommendation complete.</span>
         <div class="rec-footer-actions-right">
-          <button type="button" class="btn-secondary" id="recAddNote">Add note</button>
+          <button type="button" class="btn-secondary" id="recAddNote">Save</button>
           <button type="button" class="btn-complete" id="recMarkComplete">Mark as Complete</button>
         </div>
       </div>
@@ -736,7 +712,7 @@ function openRecDrawer(id) {
   activeRecId = id;
   const meta = CARE_REC_STATUS[rec.status];
 
-  document.getElementById("recDrawerTitle").textContent = rec.title;
+  document.getElementById("recDrawerTitle").textContent = "View Care Recommendation";
   const statusEl = document.getElementById("recDrawerStatus");
   statusEl.textContent = meta.label;
   statusEl.className = `rec-status-chip ${meta.cls}`;
@@ -747,7 +723,6 @@ function openRecDrawer(id) {
   document.getElementById("recDrawerDuration").textContent = rec.duration ? `${rec.duration} days` : "—";
   document.getElementById("recDrawerStartDate").textContent = rec.startDate || "—";
   document.getElementById("recDrawerInvite").textContent = rec.invitePatient ? "Yes" : "No";
-  document.getElementById("recDrawerCareTeam").textContent = rec.assignedCareTeam && rec.assignedCareTeam.length ? rec.assignedCareTeam.join(", ") : "—";
 
   document.getElementById("recDrawerInstructionPatient").textContent = rec.instructionsPatient || "—";
   document.getElementById("recDrawerInstructionCareTeam").textContent = rec.instructionsCareTeam || "—";
@@ -758,6 +733,12 @@ function openRecDrawer(id) {
 
   document.getElementById("recDrawerTimeline").innerHTML = renderRecTimeline(rec);
   document.getElementById("recDrawerFooter").innerHTML = renderRecDrawerFooter(rec);
+
+  const actionTakenBySelect = document.getElementById("recActionTakenBy");
+  if (actionTakenBySelect) {
+    wireCustomSelect(actionTakenBySelect);
+    if (rec.pickedUpBy) setCustomSelectValue(actionTakenBySelect, rec.pickedUpBy, { silent: true });
+  }
 
   document.getElementById("recDrawerOverlay").classList.add("open");
 }
@@ -783,27 +764,38 @@ document.getElementById("recDrawerFooter").addEventListener("click", (e) => {
   if (!rec) return;
   const t = timeLabel(new Date());
 
-  if (e.target.id === "recAddNote") {
-    const textarea = document.getElementById("recNoteInput");
-    const note = textarea.value.trim();
-    if (!note) return;
-    rec.activity.push({ who: rec.createdBy, when: t.short, label: "Added a note", short: "Added a note", note });
-    rec.updatedAt = t.full;
-    renderCareRecs();
-    openRecDrawer(rec.id);
+  function getActionTakenBy() {
+    const select = document.getElementById("recActionTakenBy");
+    const value = select ? select.querySelector('input[type=hidden]').value : "";
+    if (!value && select) {
+      positionCustomSelectMenu(select);
+      select.classList.add("open");
+    }
+    return value;
   }
 
-  if (e.target.id === "recArchive") {
-    rec.status = "archived";
-    rec.activity.push({ who: rec.createdBy, when: t.short, label: "Archived", short: "Archived" });
+  if (e.target.id === "recAddNote") {
+    const actionTakenBy = getActionTakenBy();
+    if (!actionTakenBy) return;
+    const textarea = document.getElementById("recNoteInput");
+    const note = textarea.value.trim();
+    if (!note) { textarea.focus(); return; }
+    if (rec.status === "recommended") rec.status = "in-progress";
+    if (!rec.pickedUpBy) rec.pickedUpBy = actionTakenBy;
+    rec.activity.push({ who: actionTakenBy, when: t.short, label: "Note added for provider", short: "Note added for provider", note });
     rec.updatedAt = t.full;
     renderCareRecs();
     openRecDrawer(rec.id);
   }
 
   if (e.target.id === "recMarkComplete") {
+    const actionTakenBy = getActionTakenBy();
+    if (!actionTakenBy) return;
+    if (!rec.pickedUpBy) rec.pickedUpBy = actionTakenBy;
+    const textarea = document.getElementById("recNoteInput");
+    const note = textarea.value.trim();
     rec.status = "completed";
-    rec.activity.push({ who: rec.createdBy, when: t.short, label: "Marked recommendation as Completed.", short: "Completed" });
+    rec.activity.push({ who: actionTakenBy, when: t.short, label: "Marked recommendation as Completed.", short: "Completed", note: note || undefined });
     rec.updatedAt = t.full;
     renderCareRecs();
     openRecDrawer(rec.id);
@@ -1493,44 +1485,6 @@ editMedForm.addEventListener("submit", (e) => {
   renderMeds();
   closeEditMedModal();
 });
-
-const careRecMedicationMenu = document.getElementById("careRecMedicationMenu");
-careRecMedicationMenu.innerHTML = medications
-  .map(
-    (m) => `
-    <div class="custom-select-option" data-value="${m.name}">${m.name}<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>`
-  )
-  .join("");
-
-document.getElementById("careRecMedicationSelect").addEventListener("change", (e) => {
-  const med = medications.find((m) => m.name === e.target.value);
-  document.getElementById("careRecCurrentDose").value = med ? med.dose : "—";
-});
-
-wireAddModal(
-  "careRecOverlay",
-  "careRecForm",
-  "cancelCareRec",
-  ["openCareRecBtn", "openAddRecBtn"],
-  (fd) => {
-    careRecs.unshift(
-      newCareRec({
-        medication: fd.get("medication"),
-        currentDose: document.getElementById("careRecCurrentDose").value,
-        newDose: fd.get("newDose"),
-        frequency: fd.get("frequency"),
-        duration: fd.get("duration"),
-        startDate: fd.get("startDate"),
-        instructionsPatient: fd.get("instructionsPatient"),
-        instructionsCareTeam: fd.get("instructionsCareTeam"),
-        invitePatient: fd.get("invitePatient") === "on",
-        assignedCareTeam: fd.getAll("careTeam"),
-      })
-    );
-    renderCareRecs();
-  },
-  { canOpen: () => !hasActiveCareRec() }
-);
 
 /* ---------------- Add Measurement modal ---------------- */
 const WEIGHT_RANGE = {

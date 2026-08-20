@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>HearO | Patient Data</title>
+<title>HearO | Patient Data (Nurse View)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -183,7 +183,7 @@
                 Priority
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M5 21V4" stroke="#F16C6C" stroke-width="1.8" stroke-linecap="round"/><path d="M5 4H16L13.5 8L16 12H5" stroke="#F16C6C" stroke-width="1.8" stroke-linejoin="round"/></svg>
               </span>
-              <button class="btn-care" id="openCareRecBtn">Care Recommendation</button>
+              <button class="btn-care" id="openCareRecBtn">View Recommendation</button>
             </div>
           </div>
 
@@ -568,17 +568,12 @@
                   </button>
                   <div class="custom-select-menu">
                     <div class="custom-select-option selected" data-value="all">All<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                    <div class="custom-select-option" data-value="recommended">Recommended<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    <div class="custom-select-option" data-value="recommended">New<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
                     <div class="custom-select-option" data-value="in-progress">In Progress<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
                     <div class="custom-select-option" data-value="completed">Completed<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                    <div class="custom-select-option" data-value="archived">Archived<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
                   </div>
                   <input type="hidden" name="careRecStatus" value="all" />
                 </div>
-                <a href="#" class="clinical-add-link" id="openAddRecBtn" title="">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-                  New recommendation
-                </a>
               </div>
             </div>
 
@@ -1028,88 +1023,6 @@
     </div>
   </div>
 
-  <!-- Care Recommendation modal (medication change) -->
-  <div class="modal-overlay" id="careRecOverlay">
-    <div class="modal modal-wide">
-      <h2>Create Care Recommendation</h2>
-      <form id="careRecForm">
-        <div class="form-grid">
-          <div class="form-field">
-            <label>Medication<span class="required-star">*</span></label>
-            <div class="custom-select" data-name="medication" id="careRecMedicationSelect">
-              <button type="button" class="custom-select-trigger">
-                <span class="custom-select-value placeholder">Select medication</span>
-                <svg class="custom-select-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </button>
-              <div class="custom-select-menu" id="careRecMedicationMenu"></div>
-              <input type="hidden" name="medication" required />
-            </div>
-          </div>
-          <div class="form-field">
-            <label>Current Dose</label>
-            <div class="unit-input"><input type="text" id="careRecCurrentDose" value="—" disabled /></div>
-          </div>
-          <div class="form-field">
-            <label>New Dose<span class="required-star">*</span></label>
-            <div class="unit-input"><input type="number" name="newDose" min="0" step="0.5" placeholder="e.g. 80" required /><span>mg</span></div>
-          </div>
-          <div class="form-field">
-            <label>Frequency<span class="required-star">*</span></label>
-            <div class="custom-select" data-name="frequency">
-              <button type="button" class="custom-select-trigger">
-                <span class="custom-select-value placeholder">Select frequency</span>
-                <svg class="custom-select-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </button>
-              <div class="custom-select-menu">
-                <div class="custom-select-option" data-value="Once Daily">Once Daily<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                <div class="custom-select-option" data-value="Twice Daily">Twice Daily<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                <div class="custom-select-option" data-value="Three Times Daily">Three Times Daily<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                <div class="custom-select-option" data-value="As Needed">As Needed<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-              </div>
-              <input type="hidden" name="frequency" required />
-            </div>
-          </div>
-          <div class="form-field">
-            <label>Duration<span class="required-star">*</span></label>
-            <div class="unit-input"><input type="number" name="duration" min="1" step="1" placeholder="e.g. 14" required /><span>days</span></div>
-          </div>
-          <div class="form-field">
-            <label>Start Date</label>
-            <input type="date" name="startDate" />
-          </div>
-        </div>
-
-        <div class="form-field" style="margin-top: 18px;">
-          <label>Instructions for the Patient<span class="required-star">*</span></label>
-          <textarea name="instructionsPatient" placeholder="e.g. Take with breakfast. Weigh yourself each morning and record it in the app." required></textarea>
-        </div>
-
-        <div class="form-field" style="margin-top: 18px;">
-          <label>Instructions for Care Team</label>
-          <textarea name="instructionsCareTeam" placeholder="Internal notes for the nurse/care team picking this up"></textarea>
-        </div>
-
-        <div class="form-field" style="margin-top: 18px;">
-          <label>Care Team</label>
-          <div class="care-team-checkbox-group">
-            <label class="checkbox-field"><input type="checkbox" name="careTeam" value="Amanda Lee" checked /> Amanda Lee</label>
-            <label class="checkbox-field"><input type="checkbox" name="careTeam" value="Ayelet Er" checked /> Ayelet Er</label>
-            <label class="checkbox-field"><input type="checkbox" name="careTeam" value="Sandy Kohl" checked /> Sandy Kohl</label>
-          </div>
-        </div>
-
-        <div class="form-field" style="margin-top: 18px;">
-          <label class="checkbox-field"><input type="checkbox" name="invitePatient" /> Invite patient to the clinic</label>
-        </div>
-
-        <div class="modal-actions">
-          <button type="button" class="btn-text" id="cancelCareRec">Cancel</button>
-          <button type="submit" class="btn-save enabled">Create Recommendation</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
   <!-- Care Recommendation detail modal -->
   <div class="modal-overlay" id="recDrawerOverlay">
     <div class="modal modal-wide">
@@ -1149,10 +1062,6 @@
           <div class="drawer-label">Invite Patient</div>
           <div class="rec-info-value" id="recDrawerInvite"></div>
         </div>
-        <div>
-          <div class="drawer-label">Care Team</div>
-          <div class="rec-info-value" id="recDrawerCareTeam"></div>
-        </div>
       </div>
 
       <div class="drawer-section">
@@ -1191,7 +1100,7 @@
 
 <script src="js/topbar.js"></script>
 <script src="js/table-scroll.js"></script>
-<script src="js/patient-data.js"></script>
+<script src="js/nurse-view.js"></script>
 <script src="js/modal-close.js"></script>
 </body>
 </html>

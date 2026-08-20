@@ -999,9 +999,7 @@ body {
   background: #FAFBFC;
 }
 
-.lt-name { font-weight: 700; }
-.lt-name.priority { color: var(--red); }
-.lt-name.active-name { color: #23272E; }
+.lt-name { font-weight: 700; color: #23272E; }
 
 .status-cell { line-height: 1.5; }
 .status-line {
@@ -1052,7 +1050,7 @@ body {
   font-weight: 700;
 }
 
-.care-indicator-trigger .mon-line.mon-unmonitored { background: var(--blue-light); }
+.care-indicator-trigger .mon-line.mon-unmonitored { background: var(--blue-light); color: var(--blue); }
 .care-indicator-trigger .mon-line.mon-progress { background: #FDF3E7; }
 .care-indicator-trigger .mon-line.status-active { background: #E7F8EF; }
 
@@ -1230,6 +1228,14 @@ body {
 }
 
 .btn-care:hover { background: var(--btn-bg-hover); }
+
+.btn-care:disabled {
+  background: #E3E7EB;
+  color: #9AA5B1;
+  cursor: not-allowed;
+}
+
+.btn-care:disabled:hover { background: #E3E7EB; }
 
 .patient-contact {
   display: grid;
@@ -2352,6 +2358,13 @@ body {
 
 .clinical-add-link:hover { text-decoration: underline; }
 
+.clinical-add-link.is-disabled {
+  color: #9AA5B1;
+  cursor: not-allowed;
+}
+
+.clinical-add-link.is-disabled:hover { text-decoration: none; }
+
 .clinical-head-actions {
   display: flex;
   align-items: center;
@@ -2411,6 +2424,7 @@ body {
 .rec-status-recommended { background: var(--blue-light); color: var(--blue); }
 .rec-status-progress { background: #FEF3E8; color: #C97A2B; }
 .rec-status-completed { background: var(--green-light, #E9FBF3); color: #2E9A66; }
+.rec-status-archived { background: var(--bg); color: #7E8993; }
 
 .rec-latest { display: flex; flex-direction: column; gap: 1px; }
 .rec-latest-primary { font-size: 13.5px; font-weight: 600; color: #23272E; }
@@ -2512,6 +2526,33 @@ body {
 .rec-add-note textarea:focus { border-color: var(--blue); }
 
 .rec-footer-actions { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+
+.rec-footer-actions-right { display: flex; align-items: center; gap: 12px; }
+
+.rec-archive-link {
+  background: none;
+  border: none;
+  color: #9AA5B1;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 2px;
+}
+
+.rec-archive-link:hover { color: var(--red); text-decoration: underline; }
+
+.btn-complete {
+  background: var(--btn-bg);
+  color: var(--btn-text);
+  border: none;
+  border-radius: 8px;
+  padding: 11px 20px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn-complete:hover { background: var(--btn-bg-hover); }
 
 .rec-completed-note { font-size: 13px; color: var(--gray-text); }
 
@@ -2927,7 +2968,7 @@ body {
 
 .modal-wide { width: 760px; }
 
-.modal h2:not(.reg-success-title) {
+.modal > h2:not(.reg-success-title) {
   position: sticky;
   top: -28px;
   z-index: 3;
@@ -2940,10 +2981,28 @@ body {
   color: #23272E;
 }
 
+.drawer-header {
+  position: sticky;
+  top: -28px;
+  z-index: 3;
+  margin: -28px -30px 20px;
+  padding: 28px 30px 16px;
+  background: #fff;
+  border-bottom: 1px solid var(--gray-border);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.drawer-header h2 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+  color: #23272E;
+}
+
 .modal-close-x {
-  position: absolute;
-  top: 18px;
-  right: 20px;
   z-index: 4;
   width: 30px;
   height: 30px;
@@ -3039,7 +3098,19 @@ body {
 
 .unit-input input:focus { border-color: var(--blue); }
 
+.unit-input input:disabled {
+  background: #F3F6FB;
+  color: #9AA5B1;
+  cursor: not-allowed;
+}
+
 #addMeasurementForm .unit-input input { width: 140px; background: #fff; }
+
+#careRecForm .unit-input input[type="number"] { background: #fff; }
+
+#careRecCurrentDose { width: 100%; }
+
+#careRecForm .form-grid { margin-bottom: 18px; }
 
 .unit-input span {
   font-size: 14px;
@@ -3048,16 +3119,52 @@ body {
   white-space: nowrap;
 }
 
-.checkbox-field {
+label.checkbox-field {
   display: flex;
   align-items: center;
   gap: 8px;
+  margin-bottom: 0;
   font-size: 14px;
   color: #23272E;
   font-weight: 600;
 }
 
-.checkbox-field input { width: auto; }
+.care-team-checkbox-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.checkbox-field input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  padding: 0;
+  border: 1.5px solid #9AA5B1;
+  border-radius: 5px;
+  background: #fff;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 120ms ease, border-color 120ms ease;
+}
+
+.checkbox-field input[type="checkbox"]:hover { border-color: var(--blue); }
+
+.checkbox-field input[type="checkbox"]:checked {
+  background-color: var(--blue);
+  border-color: var(--blue);
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'><path d='M5 13L9.5 17.5L19 7' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 13px;
+}
+
+.checkbox-field input[type="checkbox"]:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 2px;
+}
 
 .select-input {
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6'><path d='M0 0l5 6 5-6z' fill='%236B7684'/></svg>");
