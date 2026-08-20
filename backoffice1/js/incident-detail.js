@@ -40,10 +40,6 @@ function renderIncidentTimeline() {
     .join("");
 }
 
-function renderIncidentRootCause() {
-  document.getElementById("incDetailRootCause").textContent = currentIncident.rootCause || "Not identified";
-}
-
 function renderIncidentResolution() {
   const section = document.getElementById("resolution");
   if (currentIncident.status !== "Resolved" || !currentIncident.resolution) {
@@ -64,7 +60,6 @@ function renderAll() {
   renderIncidentSummary();
   renderIncidentImpact();
   renderIncidentTimeline();
-  renderIncidentRootCause();
   renderIncidentResolution();
 }
 renderAll();
