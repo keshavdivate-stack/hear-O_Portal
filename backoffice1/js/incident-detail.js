@@ -86,6 +86,7 @@ const addTaskForm = document.getElementById("addTaskForm");
 const saveAddTaskBtn = document.getElementById("saveAddTask");
 
 document.querySelector('#addTaskOverlay .bo-select[data-name="taskTeam"] .bo-select-menu').innerHTML = buildSelectOptions(["Clinical", "Technical"]);
+document.querySelector('#addTaskOverlay .bo-select[data-name="taskLevel"] .bo-select-menu').innerHTML = buildSelectOptions(["Level 1", "Level 2", "Level 3"]);
 document.querySelector('#addTaskOverlay .bo-select[data-name="taskAssignee"] .bo-select-menu').innerHTML = buildSelectOptions(SUPPORT_TEAM);
 document.querySelector('#addTaskOverlay .bo-select[data-name="taskPriority"] .bo-select-menu').innerHTML = buildSelectOptions(Object.values(INC_SEVERITY_LABEL));
 
@@ -126,10 +127,11 @@ addTaskForm.addEventListener("submit", (e) => {
   if (saveAddTaskBtn.disabled) return;
 
   const team = addTaskOverlay.querySelector('.bo-select[data-name="taskTeam"] input[type=hidden]').value;
+  const level = addTaskOverlay.querySelector('.bo-select[data-name="taskLevel"] input[type=hidden]').value;
   const assignee = addTaskOverlay.querySelector('.bo-select[data-name="taskAssignee"] input[type=hidden]').value;
   const isFirstTask = currentIncident.tasks.length === 0;
   const nextId = currentIncident.tasks.length ? Math.max(...currentIncident.tasks.map((t) => t.id)) + 1 : 1;
-  currentIncident.tasks.push({ id: nextId, title: addTaskForm.taskTitle.value.trim(), team, assignee, status: "Open" });
+  currentIncident.tasks.push({ id: nextId, title: addTaskForm.taskTitle.value.trim(), team, level, assignee, status: "Open" });
   currentIncident.timeline.push({ time: "Just now", text: `Ticket "${addTaskForm.taskTitle.value.trim()}" assigned to ${assignee}` });
 
   /* Incident Owner (overall responsibility) is distinct from a task's
