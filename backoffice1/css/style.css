@@ -1633,6 +1633,14 @@ label.bo-date-field { cursor: text; }
 .bo-select-trigger:hover { border-color: #C9CFD6; }
 .bo-select.open .bo-select-trigger { border-color: var(--blue); }
 
+.bo-select-trigger:disabled {
+  background: #F4F5F7;
+  color: var(--gray-text);
+  cursor: not-allowed;
+}
+.bo-select-trigger:disabled .bo-select-value.placeholder { color: #AEB4BC; }
+.bo-select-trigger:disabled .bo-select-caret { opacity: 0.5; }
+
 .bo-select-value { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .bo-select-value.placeholder { color: #AEB4BC; }
 

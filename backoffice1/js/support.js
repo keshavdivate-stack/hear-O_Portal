@@ -313,6 +313,28 @@ document.querySelector('#newTicketOverlay .bo-select[data-name="issueType"] .bo-
 document.querySelector('#newTicketOverlay .bo-select[data-name="category"] .bo-select-menu').innerHTML = buildSelectOptions(CATEGORIES);
 document.querySelector('#newTicketOverlay .bo-select[data-name="ticketOrg"] .bo-select-menu').innerHTML = buildSelectOptions(SUPPORT_ORG_CODES);
 document.querySelector('#newTicketOverlay .bo-select[data-name="ticketSeverity"] .bo-select-menu').innerHTML = buildSelectOptions(SEVERITIES);
+document.querySelector('#newTicketOverlay .bo-select[data-name="ticketLevel"] .bo-select-menu').innerHTML = buildSelectOptions(TIERS);
+
+/* Severity and Level depend on knowing what the ticket actually is, so they
+   stay locked until both Category and Issue Type are set (Issue Type alone
+   is usually enough, since picking it auto-fills Category below). */
+function updateNewTicketSeverityLevelState() {
+  const categoryValue = newTicketOverlay.querySelector('.bo-select[data-name="category"] input[type=hidden]').value;
+  const issueTypeValue = newTicketOverlay.querySelector('.bo-select[data-name="issueType"] input[type=hidden]').value;
+  const ready = !!categoryValue && !!issueTypeValue;
+
+  [
+    { select: newTicketOverlay.querySelector('.bo-select[data-name="ticketSeverity"]'), placeholder: "Select severity" },
+    { select: newTicketOverlay.querySelector('.bo-select[data-name="ticketLevel"]'), placeholder: "Select level" },
+  ].forEach(({ select, placeholder }) => {
+    const trigger = select.querySelector(".bo-select-trigger");
+    const valueEl = select.querySelector(".bo-select-value");
+    trigger.disabled = !ready;
+    if (!valueEl.classList.contains("placeholder")) return;
+    valueEl.dataset.placeholder = placeholder;
+    valueEl.textContent = placeholder;
+  });
+}
 
 /* The "who" dropdown lists patient IDs when raising on behalf of a patient,
    or clinic staff names when raising on behalf of a clinic -- same toggle
@@ -338,7 +360,10 @@ function renderNewTicketWhoOptions() {
 document.querySelector('#newTicketOverlay .bo-select[data-name="issueType"] input[type=hidden]').addEventListener("change", (e) => {
   const category = ISSUE_TYPE_CATEGORY[e.target.value];
   if (category) setBoSelectValue(newTicketOverlay.querySelector('.bo-select[data-name="category"]'), category, { silent: true });
+  updateNewTicketSeverityLevelState();
 });
+
+document.querySelector('#newTicketOverlay .bo-select[data-name="category"] input[type=hidden]').addEventListener("change", updateNewTicketSeverityLevelState);
 
 /* ---------------- Ticket detail drawer ---------------- */
 const ticketDetailOverlay = document.getElementById("ticketDetailOverlay");
@@ -526,7 +551,8 @@ function validateNewTicketForm() {
   const orgFilled = newTicketForm.organization.value.trim() !== "";
   const whoFilled = newTicketForm.who.value.trim() !== "";
   const issueSelect = newTicketOverlay.querySelector('.bo-select[data-name="issueType"] input[type=hidden]');
-  createTicketBtn.disabled = !(orgFilled && whoFilled && issueSelect.value);
+  const categorySelect = newTicketOverlay.querySelector('.bo-select[data-name="category"] input[type=hidden]');
+  createTicketBtn.disabled = !(orgFilled && whoFilled && issueSelect.value && categorySelect.value);
 }
 
 function openNewTicketDrawer() {
@@ -535,6 +561,7 @@ function openNewTicketDrawer() {
   setBoSelectValue(newTicketOverlay.querySelector('.bo-select[data-name="source"]'), "Patient", { silent: true });
   document.getElementById("newTicketWhoLabel").textContent = "Patient ID";
   renderNewTicketWhoOptions();
+  updateNewTicketSeverityLevelState();
   validateNewTicketForm();
   newTicketOverlay.classList.add("open");
 }
@@ -569,7 +596,7 @@ newTicketForm.addEventListener("submit", (e) => {
   const sourceValue = newTicketOverlay.querySelector('.bo-select[data-name="source"] input[type=hidden]').value || "Patient";
   const issueType = newTicketOverlay.querySelector('.bo-select[data-name="issueType"] input[type=hidden]').value;
   const severity = newTicketForm.severity.value || "Medium";
-  const tier = "Level 1";
+  const tier = newTicketForm.level.value || "Level 1";
   const category = newTicketOverlay.querySelector('.bo-select[data-name="category"] input[type=hidden]').value || ISSUE_TYPE_CATEGORY[issueType];
   const now = new Date();
   const createdDate = `${String(now.getDate()).padStart(2, "0")}/${String(now.getMonth() + 1).padStart(2, "0")}/${now.getFullYear()} ${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
