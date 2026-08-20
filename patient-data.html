@@ -1091,10 +1091,17 @@
 
         <div class="form-field" style="margin-top: 18px;">
           <label>Care Team</label>
-          <div class="care-team-checkbox-group">
-            <label class="checkbox-field"><input type="checkbox" name="careTeam" value="Amanda Lee" checked /> Amanda Lee</label>
-            <label class="checkbox-field"><input type="checkbox" name="careTeam" value="Ayelet Er" checked /> Ayelet Er</label>
-            <label class="checkbox-field"><input type="checkbox" name="careTeam" value="Sandy Kohl" checked /> Sandy Kohl</label>
+          <div class="checkbox-filter care-team-field" data-name="careTeam" id="careRecCareTeamField">
+            <button type="button" class="care-team-trigger">
+              <span class="care-team-trigger-value">3 selected</span>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="checkbox-filter-menu care-team-menu">
+              <label class="checkbox-filter-option"><input type="checkbox" value="Amanda Lee" checked />Amanda Lee</label>
+              <label class="checkbox-filter-option"><input type="checkbox" value="Ayelet Er" checked />Ayelet Er</label>
+              <label class="checkbox-filter-option"><input type="checkbox" value="Sandy Kohl" checked />Sandy Kohl</label>
+            </div>
+            <input type="hidden" name="careTeam" />
           </div>
         </div>
 

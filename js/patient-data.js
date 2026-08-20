@@ -1524,13 +1524,48 @@ wireAddModal(
         instructionsPatient: fd.get("instructionsPatient"),
         instructionsCareTeam: fd.get("instructionsCareTeam"),
         invitePatient: fd.get("invitePatient") === "on",
-        assignedCareTeam: fd.getAll("careTeam"),
+        assignedCareTeam: (fd.get("careTeam") || "").split(", ").filter(Boolean),
       })
     );
     renderCareRecs();
   },
   { canOpen: () => !hasActiveCareRec() }
 );
+
+/* ---------------- Care Recommendation: Care Team multiselect ---------------- */
+const careRecCareTeamField = document.getElementById("careRecCareTeamField");
+const careRecCareTeamTrigger = careRecCareTeamField.querySelector(".care-team-trigger");
+const careRecCareTeamValueEl = careRecCareTeamField.querySelector(".care-team-trigger-value");
+const careRecCareTeamMenu = careRecCareTeamField.querySelector(".care-team-menu");
+const careRecCareTeamHidden = careRecCareTeamField.querySelector('input[name="careTeam"]');
+const careRecCareTeamPlaceholder = "Select care team";
+
+careRecCareTeamTrigger.addEventListener("click", (e) => {
+  e.stopPropagation();
+  const willOpen = !careRecCareTeamField.classList.contains("open");
+  document.querySelectorAll(".checkbox-filter.open, .care-team-field.open").forEach((el) => el.classList.remove("open"));
+  careRecCareTeamField.classList.toggle("open", willOpen);
+});
+careRecCareTeamMenu.addEventListener("click", (e) => e.stopPropagation());
+document.addEventListener("click", () => careRecCareTeamField.classList.remove("open"));
+
+function syncCareRecCareTeam() {
+  const selected = Array.from(careRecCareTeamMenu.querySelectorAll('input[type="checkbox"]:checked')).map((cb) => cb.value);
+  careRecCareTeamHidden.value = selected.join(", ");
+  careRecCareTeamValueEl.textContent = selected.length ? `${selected.length} selected` : careRecCareTeamPlaceholder;
+  careRecCareTeamValueEl.classList.toggle("placeholder", !selected.length);
+}
+careRecCareTeamMenu.addEventListener("change", syncCareRecCareTeam);
+syncCareRecCareTeam();
+
+/* form.reset() (called by wireAddModal's open()) restores each checkbox's
+   default `checked` state but not this field's derived hidden value/label --
+   re-sync after every open so it reflects the reset checkboxes. */
+["openCareRecBtn", "openAddRecBtn"].forEach((id) => {
+  document.getElementById(id).addEventListener("click", () => {
+    if (!hasActiveCareRec()) syncCareRecCareTeam();
+  });
+});
 
 /* ---------------- Add Measurement modal ---------------- */
 const WEIGHT_RANGE = {
