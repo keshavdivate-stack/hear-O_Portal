@@ -1,0 +1,231 @@
+/* ---------------- Support > Incidents tab ----------------
+   System-generated incidents live in their own tab, separate from manually
+   raised Tickets (Support > Tickets) and detection/escalation config
+   (Support > Rules). Incidents are never converted into Tickets -- the
+   Support Team works them via lightweight Support Tasks instead. */
+
+/* ---------------- Filter option lists ---------------- */
+document.getElementById("incSeverityFilterMenu").innerHTML = buildFilterSelectOptions(INC_SEVERITIES, "All severities");
+document.getElementById("incSourceFilterMenu").innerHTML = buildFilterSelectOptions(INC_SOURCES, "All sources");
+document.getElementById("incCategoryFilterMenu").innerHTML = buildFilterSelectOptions(INC_CATEGORIES, "All categories");
+document.getElementById("incOwnerFilterMenu").innerHTML = buildFilterSelectOptions(SUPPORT_TEAM, "All owners");
+
+/* ---------------- Filter + status-tab state ---------------- */
+let incStatusValue = "Active";
+let incSeverityValue = "";
+let incSourceValue = "";
+let incCategoryValue = "";
+let incOwnerValue = "";
+let incDateValue = "";
+let incSearchTerm = "";
+
+function incMatchesFilters(incident) {
+  if (incident.status !== incStatusValue) return false;
+  if (incSeverityValue && incident.severity !== incSeverityValue) return false;
+  if (incSourceValue && incident.source !== incSourceValue) return false;
+  if (incCategoryValue && incident.category !== incCategoryValue) return false;
+  if (incOwnerValue && incident.owner !== incOwnerValue) return false;
+  if (incDateValue && incident.detectedAt.indexOf(incDateValue) === -1) return false;
+  if (incSearchTerm) {
+    const haystack = `${incident.id} ${incident.title} ${incident.orgs.join(" ")} ${incident.patients.join(" ")}`.toLowerCase();
+    if (!haystack.includes(incSearchTerm)) return false;
+  }
+  return true;
+}
+
+function filteredIncidents() {
+  return incidents.filter(incMatchesFilters);
+}
+
+function updateIncidentStatusCounts() {
+  document.getElementById("incStatusCountActive").textContent = incidents.filter((i) => i.status === "Active").length;
+  document.getElementById("incStatusCountMonitoring").textContent = incidents.filter((i) => i.status === "Monitoring").length;
+  document.getElementById("incStatusCountResolved").textContent = incidents.filter((i) => i.status === "Resolved").length;
+}
+updateIncidentStatusCounts();
+
+/* ---------------- Table ---------------- */
+const INC_PAGE_SIZE = 8;
+
+function incidentRowHtml(incident) {
+  return `
+    <tr data-id="${incident.id}">
+      <td><a class="bo-name-link" href="incident-detail.html?id=${encodeURIComponent(incident.id)}">${incident.id}</a></td>
+      <td>
+        <span class="bo-incident-title">${incident.title}</span>
+        <span class="bo-incident-source-label">${incident.source}</span>
+      </td>
+      <td><span class="bo-pill bo-pill-tag">${incident.category}</span></td>
+      <td>${incSeverityPill(incident.severity)}</td>
+      <td>${incStatusPill(incident.status)}</td>
+      <td><button type="button" class="bo-impact-link" data-impact-trigger data-id="${incident.id}">${incImpactLabel(incident)}</button></td>
+      <td>${incident.duration}</td>
+      <td>${incident.detectedAt}</td>
+      <td>${incident.owner}</td>
+      <td>
+        <div class="bo-row-actions">
+          <button class="bo-action-icon row-menu-trigger" data-id="${incident.id}" aria-label="Row actions">${incKebabIcon}</button>
+        </div>
+      </td>
+    </tr>`;
+}
+
+const incidentPager = boCreatePager(
+  "incidentRows",
+  () => filteredIncidents(),
+  incidentRowHtml,
+  { pageSize: INC_PAGE_SIZE, emptyColspan: 10, emptyText: "No incidents match these filters." }
+);
+incidentPager();
+
+function refreshIncidentTable() {
+  incidentPager.resetPage();
+  incidentPager();
+}
+
+/* Status tabs (Active / Monitoring / Resolved) drive the primary filter --
+   independent from the Tickets/Incidents/Rules tab switcher above. */
+document.querySelectorAll("#incidentStatusTabs .bo-tab").forEach((tab) => {
+  tab.addEventListener("click", () => {
+    document.querySelectorAll("#incidentStatusTabs .bo-tab").forEach((t) => t.classList.remove("active"));
+    tab.classList.add("active");
+    incStatusValue = tab.dataset.status;
+    refreshIncidentTable();
+  });
+});
+
+document.getElementById("incSeverityFilter").addEventListener("change", (e) => { incSeverityValue = e.target.value; refreshIncidentTable(); });
+document.getElementById("incSourceFilter").addEventListener("change", (e) => { incSourceValue = e.target.value; refreshIncidentTable(); });
+document.getElementById("incCategoryFilter").addEventListener("change", (e) => { incCategoryValue = e.target.value; refreshIncidentTable(); });
+document.getElementById("incOwnerFilter").addEventListener("change", (e) => { incOwnerValue = e.target.value; refreshIncidentTable(); });
+document.getElementById("incDateFilter").addEventListener("change", (e) => { incDateValue = e.target.value; refreshIncidentTable(); });
+document.getElementById("incSearchInput").addEventListener("input", (e) => { incSearchTerm = e.target.value.trim().toLowerCase(); refreshIncidentTable(); });
+
+/* ---------------- Impact popover trigger (Impact column) ---------------- */
+document.getElementById("incidentRows").addEventListener("click", (e) => {
+  const trigger = e.target.closest("[data-impact-trigger]");
+  if (!trigger) return;
+  e.stopPropagation();
+  const incident = incidents.find((i) => i.id === trigger.dataset.id);
+  if (incident) incImpactPopover.open(trigger, incident);
+});
+
+function findIncident(id) { return incidents.find((i) => i.id === id); }
+
+/* ---------------- Row action menu: Create Task / View Task ---------------- */
+const incidentRowMenu = document.getElementById("incidentRowMenu");
+let activeIncidentId = null;
+
+document.getElementById("incidentRows").addEventListener("click", (e) => {
+  const trigger = e.target.closest(".row-menu-trigger");
+  if (!trigger) return;
+  e.stopPropagation();
+  activeIncidentId = trigger.dataset.id;
+  const rect = trigger.getBoundingClientRect();
+  incidentRowMenu.style.top = `${rect.bottom + 6}px`;
+  incidentRowMenu.style.left = `${rect.right - 190}px`;
+  incidentRowMenu.classList.add("open");
+});
+
+document.addEventListener("click", (e) => {
+  if (!incidentRowMenu.contains(e.target)) incidentRowMenu.classList.remove("open");
+});
+
+incidentRowMenu.addEventListener("click", (e) => {
+  const item = e.target.closest(".bo-row-menu-item");
+  if (!item || !activeIncidentId) return;
+  const incident = findIncident(activeIncidentId);
+  if (!incident) return;
+  const action = item.dataset.action;
+  e.stopPropagation();
+  incidentRowMenu.classList.remove("open");
+
+  if (action === "createTask") openAddTaskDrawer(incident);
+  if (action === "viewTask") openTaskViewPopover(item, incident);
+});
+
+/* ---------------- View Task popover (read-only list) ---------------- */
+const incidentTaskPopover = document.getElementById("incidentTaskPopover");
+
+function openTaskViewPopover(anchorEl, incident) {
+  incidentTaskPopover.innerHTML = incident.tasks.length
+    ? incident.tasks.map((t) => `<div class="bo-task-view-item"><span class="title">${t.title}</span><span class="meta">${t.assignee} · ${t.status}</span></div>`).join("")
+    : `<div class="bo-task-view-empty">No tasks yet for this incident.</div>`;
+  const rect = anchorEl.getBoundingClientRect();
+  incidentTaskPopover.style.top = `${rect.bottom + 6}px`;
+  incidentTaskPopover.style.left = `${rect.right - 260}px`;
+  incidentTaskPopover.classList.add("open");
+}
+document.addEventListener("click", (e) => {
+  if (!incidentTaskPopover.contains(e.target)) incidentTaskPopover.classList.remove("open");
+});
+
+/* ---------------- Create Support Task drawer ---------------- */
+const addTaskOverlay = document.getElementById("addTaskOverlay");
+const addTaskForm = document.getElementById("addTaskForm");
+const saveAddTaskBtn = document.getElementById("saveAddTask");
+let addTaskTargetIncident = null;
+
+document.querySelector('#addTaskOverlay .bo-select[data-name="taskAssignee"] .bo-select-menu').innerHTML = buildSelectOptions(SUPPORT_TEAM);
+document.querySelector('#addTaskOverlay .bo-select[data-name="taskPriority"] .bo-select-menu').innerHTML = buildSelectOptions(["Low", "Medium", "High", "Urgent"]);
+
+function validateAddTaskForm() {
+  const titleFilled = addTaskForm.taskTitle.value.trim() !== "";
+  const assigneeFilled = addTaskOverlay.querySelector('.bo-select[data-name="taskAssignee"] input[type=hidden]').value !== "";
+  saveAddTaskBtn.disabled = !(titleFilled && assigneeFilled);
+}
+
+const taskAttachmentInput = document.getElementById("taskAttachmentInput");
+const taskAttachmentName = document.getElementById("taskAttachmentName");
+taskAttachmentInput.addEventListener("change", () => {
+  taskAttachmentName.textContent = taskAttachmentInput.files.length ? taskAttachmentInput.files[0].name : "Click to attach a file";
+});
+
+function openAddTaskDrawer(incident) {
+  addTaskTargetIncident = incident;
+  addTaskForm.reset();
+  addTaskOverlay.querySelectorAll(".bo-select").forEach(resetBoSelect);
+  taskAttachmentName.textContent = "Click to attach a file";
+  document.getElementById("addTaskIncidentTag").textContent = `Incident: ${incident.id}`;
+  validateAddTaskForm();
+  addTaskOverlay.classList.add("open");
+}
+function closeAddTaskDrawer() { addTaskOverlay.classList.remove("open"); addTaskTargetIncident = null; }
+
+document.getElementById("closeAddTaskX").addEventListener("click", closeAddTaskDrawer);
+document.getElementById("cancelAddTask").addEventListener("click", closeAddTaskDrawer);
+addTaskOverlay.addEventListener("click", (e) => { if (e.target === addTaskOverlay) closeAddTaskDrawer(); });
+addTaskForm.addEventListener("input", validateAddTaskForm);
+addTaskForm.addEventListener("change", validateAddTaskForm);
+
+addTaskForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  if (saveAddTaskBtn.disabled || !addTaskTargetIncident) return;
+
+  const assignee = addTaskOverlay.querySelector('.bo-select[data-name="taskAssignee"] input[type=hidden]').value;
+  const isFirstTask = addTaskTargetIncident.tasks.length === 0;
+  const nextId = addTaskTargetIncident.tasks.length ? Math.max(...addTaskTargetIncident.tasks.map((t) => t.id)) + 1 : 1;
+  addTaskTargetIncident.tasks.push({ id: nextId, title: addTaskForm.taskTitle.value.trim(), assignee, status: "Open" });
+  addTaskTargetIncident.timeline.push({ time: "Just now", text: `Task "${addTaskForm.taskTitle.value.trim()}" assigned to ${assignee}` });
+
+  /* Incident Owner (overall responsibility) is distinct from a task's
+     Owner/Assignee (responsibility for that one task) -- but when nobody
+     owns the incident yet, the first task's assignee steps into that role
+     rather than leaving the incident unowned. */
+  const hasNoOwner = !addTaskTargetIncident.owner || addTaskTargetIncident.owner === "Unassigned";
+  if (isFirstTask && hasNoOwner) {
+    addTaskTargetIncident.owner = assignee;
+    addTaskTargetIncident.timeline.push({ time: "Just now", text: `${assignee} became Incident Owner (first task assigned)` });
+  }
+
+  closeAddTaskDrawer();
+  refreshIncidentTable();
+});
+
+/* ---------------- Deep link: support.html?tab=incidents ---------------- */
+(function openIncidentsTabFromUrl() {
+  const params = new URLSearchParams(location.search);
+  if (params.get("tab") !== "incidents") return;
+  const tabBtn = document.querySelector('#supportTabs .bo-tab[data-tab="incidents"]');
+  if (tabBtn) tabBtn.click();
+})();
