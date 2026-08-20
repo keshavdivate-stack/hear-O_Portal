@@ -1230,6 +1230,14 @@ body {
 
 .btn-care:hover { background: var(--btn-bg-hover); }
 
+.btn-care:disabled {
+  background: #E3E7EB;
+  color: #9AA5B1;
+  cursor: not-allowed;
+}
+
+.btn-care:disabled:hover { background: #E3E7EB; }
+
 .patient-contact {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -2334,6 +2342,13 @@ body {
 
 .clinical-add-link:hover { text-decoration: underline; }
 
+.clinical-add-link.is-disabled {
+  color: #9AA5B1;
+  cursor: not-allowed;
+}
+
+.clinical-add-link.is-disabled:hover { text-decoration: none; }
+
 .clinical-head-actions {
   display: flex;
   align-items: center;
@@ -2393,6 +2408,7 @@ body {
 .rec-status-recommended { background: var(--blue-light); color: var(--blue); }
 .rec-status-progress { background: #FEF3E8; color: #C97A2B; }
 .rec-status-completed { background: var(--green-light, #E9FBF3); color: #2E9A66; }
+.rec-status-archived { background: var(--bg); color: #7E8993; }
 
 .rec-latest { display: flex; flex-direction: column; gap: 1px; }
 .rec-latest-primary { font-size: 13.5px; font-weight: 600; color: #23272E; }
@@ -2494,6 +2510,33 @@ body {
 .rec-add-note textarea:focus { border-color: var(--blue); }
 
 .rec-footer-actions { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+
+.rec-footer-actions-right { display: flex; align-items: center; gap: 12px; }
+
+.rec-archive-link {
+  background: none;
+  border: none;
+  color: #9AA5B1;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 2px;
+}
+
+.rec-archive-link:hover { color: var(--red); text-decoration: underline; }
+
+.btn-complete {
+  background: var(--green);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 11px 20px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn-complete:hover { filter: brightness(0.93); }
 
 .rec-completed-note { font-size: 13px; color: var(--gray-text); }
 
@@ -2909,7 +2952,7 @@ body {
 
 .modal-wide { width: 760px; }
 
-.modal h2:not(.reg-success-title) {
+.modal > h2:not(.reg-success-title) {
   position: sticky;
   top: -28px;
   z-index: 3;
@@ -2922,10 +2965,28 @@ body {
   color: #23272E;
 }
 
+.drawer-header {
+  position: sticky;
+  top: -28px;
+  z-index: 3;
+  margin: -28px -30px 20px;
+  padding: 28px 30px 16px;
+  background: #fff;
+  border-bottom: 1px solid var(--gray-border);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.drawer-header h2 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+  color: #23272E;
+}
+
 .modal-close-x {
-  position: absolute;
-  top: 18px;
-  right: 20px;
   z-index: 4;
   width: 30px;
   height: 30px;
