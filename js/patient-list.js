@@ -6,19 +6,23 @@ const pencilIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none">
 const kebabIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="1.7" fill="currentColor"/><circle cx="12" cy="12" r="1.7" fill="currentColor"/><circle cx="12" cy="19" r="1.7" fill="currentColor"/></svg>`;
 
 const patientList = [
-  { name: "Alexander White", username: "ABC-1254", mrn: "857452365", phone: "054-857 15423", account: "Enabled", status: "priority", flag: true, since: "Since: 2d | 01.08.2028", monitoring: "monitored", compliance: 92, gender: "M", careStatus: "in_progress", careTitle: "Review Carvedilol titration", careAssignee: "Amanda Lee, RN" },
-  { name: "Dan Volex",        username: "ABC-1252", mrn: "854745856", phone: "054-857 15423", account: "Enabled", status: "priority", flag: false, since: "Since: 2d | 01.08.2028", monitoring: "monitored", compliance: 68, gender: "M", action: { type: "contacted", date: "", note: "" }, careStatus: "completed" },
-  { name: "Mike Brown",       username: "ABC-1251", mrn: "854125632", phone: "054-857 15423", account: "Enabled", status: "priority", flag: false, since: "Since: 2d | 01.08.2028", monitoring: "unmonitored", monSince: "Since: 1d | 01.09.2028", compliance: 34, gender: "M" },
-  { name: "Ariel Fox",        username: "ABC-1238", mrn: "854123658", phone: "054-857 15423", account: "Enabled", status: "priority", flag: false, since: "Since: 3d | 01.07.2028", monitoring: "monitored", compliance: 81, gender: "F", action: { type: "invite", date: "", note: "" }, careStatus: "recommended", careTitle: "Increase Furosemide dose" },
-  { name: "Jeff Frank",       username: "ABC-1242", mrn: "854123658", phone: "054-857 15423", account: "Enabled", status: "priority", flag: false, since: "Since: 4d | 01.06.2028", monitoring: "monitored", compliance: 57, gender: "M" },
-  { name: "Aric Snow",        username: "ABC-1283", mrn: "854125632", phone: "054-857 15423", account: "Enabled", status: "priority", flag: false, since: "Since: 8d | 01.02.2028", monitoring: "monitored", compliance: 76, gender: "M", careStatus: "in_progress", careTitle: "Review Metoprolol tolerance", careAssignee: "Ayelet Er, NP" },
-  { name: "Abe Lol",          username: "ABC-1222", mrn: "854125632", phone: "054-857 15423", account: "Enabled", status: "active", since: "Since: 3d | 01.07.2028", monitoring: "monitored", compliance: 88, gender: "M", careStatus: "completed" },
-  { name: "Annie Zaplin",     username: "ABC-1222", mrn: "854125632", phone: "054-857 15423", account: "Enabled", status: "active", since: "Since: 3d | 01.07.2028", monitoring: "monitored", compliance: 45, gender: "F" },
-  { name: "Nathan Norash",    username: "ABC-1222", mrn: "854125632", phone: "054-857 15423", account: "Paused", status: "active", since: "Since: 3d | 01.07.2028", monitoring: "monitored", compliance: 63, gender: "M", careStatus: "recommended", careTitle: "Confirm Lisinopril adherence" },
-  { name: "Henry Fisher",     username: "ABC-1220", mrn: "965412589", phone: "054-857 15423", account: "Enabled", status: "registered", since: "Since: 3d | 01.07.2028", monitoring: "none", compliance: 12, gender: "M" },
-  { name: "Josh Ericson",     username: "ABC-1222", mrn: "854125632", phone: "054-857 15423", account: "Discontinued", status: "baseline", since: "Since: 3d | 01.07.2028", monitoring: "monitored", monInfo: true, compliance: 79, gender: "Other", careStatus: "completed" },
-  { name: "Jack Harris",      username: "ABC-1221", mrn: "854125698", phone: "054-857 15423", account: "Discontinued", status: "none", monitoring: "unmonitored", monSince: "Since: 5d | 01.05.2028", compliance: 24, gender: "M" },
+  { name: "Alexander White", username: "ABC-1254", mrn: "857452365", phone: "054-857 15423", account: "Enabled", status: "priority", flag: true, since: "Since: 2d | 01.08.2028", monitoring: "monitored", compliance: 92, gender: "M", careStatus: "in_progress", careTitle: "Review Carvedilol titration", careAssignee: "Amanda Lee, RN", team: "Heart Failure Team", teamMember: "Dr. Sarah Mitchell" },
+  { name: "Dan Volex",        username: "ABC-1252", mrn: "854745856", phone: "054-857 15423", account: "Enabled", status: "priority", flag: false, since: "Since: 2d | 01.08.2028", monitoring: "monitored", compliance: 68, gender: "M", action: { type: "contacted", date: "", note: "" }, careStatus: "completed", team: "Remote Monitoring Team", teamMember: "Amanda Lee, RN" },
+  { name: "Mike Brown",       username: "ABC-1251", mrn: "854125632", phone: "054-857 15423", account: "Enabled", status: "priority", flag: false, since: "Since: 2d | 01.08.2028", monitoring: "unmonitored", monSince: "Since: 1d | 01.09.2028", compliance: 34, gender: "M", team: "Heart Failure Team", teamMember: "Dr. James Carter" },
+  { name: "Ariel Fox",        username: "ABC-1238", mrn: "854123658", phone: "054-857 15423", account: "Enabled", status: "priority", flag: false, since: "Since: 3d | 01.07.2028", monitoring: "monitored", compliance: 81, gender: "F", action: { type: "invite", date: "", note: "" }, careStatus: "recommended", careTitle: "Increase Furosemide dose", team: "Post-Discharge Team", teamMember: "Emily Carter" },
+  { name: "Jeff Frank",       username: "ABC-1242", mrn: "854123658", phone: "054-857 15423", account: "Enabled", status: "priority", flag: false, since: "Since: 4d | 01.06.2028", monitoring: "monitored", compliance: 57, gender: "M", team: "Remote Monitoring Team", teamMember: "Ayelet Er, NP" },
+  { name: "Aric Snow",        username: "ABC-1283", mrn: "854125632", phone: "054-857 15423", account: "Enabled", status: "priority", flag: false, since: "Since: 8d | 01.02.2028", monitoring: "monitored", compliance: 76, gender: "M", careStatus: "in_progress", careTitle: "Review Metoprolol tolerance", careAssignee: "Ayelet Er, NP", team: "Heart Failure Team", teamMember: "Ayelet Er, NP" },
+  { name: "Abe Lol",          username: "ABC-1222", mrn: "854125632", phone: "054-857 15423", account: "Enabled", status: "active", since: "Since: 3d | 01.07.2028", monitoring: "monitored", compliance: 88, gender: "M", careStatus: "completed", team: "Post-Discharge Team", teamMember: "Emily Carter" },
+  { name: "Annie Zaplin",     username: "ABC-1222", mrn: "854125632", phone: "054-857 15423", account: "Enabled", status: "active", since: "Since: 3d | 01.07.2028", monitoring: "monitored", compliance: 45, gender: "F", team: "Remote Monitoring Team", teamMember: "Sandy Kohl, RN" },
+  { name: "Nathan Norash",    username: "ABC-1222", mrn: "854125632", phone: "054-857 15423", account: "Paused", status: "active", since: "Since: 3d | 01.07.2028", monitoring: "monitored", compliance: 63, gender: "M", careStatus: "recommended", careTitle: "Confirm Lisinopril adherence", team: "Heart Failure Team", teamMember: "Dr. Michael Reyes" },
+  { name: "Henry Fisher",     username: "ABC-1220", mrn: "965412589", phone: "054-857 15423", account: "Enabled", status: "registered", since: "Since: 3d | 01.07.2028", monitoring: "none", compliance: 12, gender: "M", team: "Post-Discharge Team", teamMember: "Emily Carter" },
+  { name: "Josh Ericson",     username: "ABC-1222", mrn: "854125632", phone: "054-857 15423", account: "Discontinued", status: "baseline", since: "Since: 3d | 01.07.2028", monitoring: "monitored", monInfo: true, compliance: 79, gender: "Other", careStatus: "completed", team: "Remote Monitoring Team", teamMember: "Dr. Emily Chen" },
+  { name: "Jack Harris",      username: "ABC-1221", mrn: "854125698", phone: "054-857 15423", account: "Discontinued", status: "none", monitoring: "unmonitored", monSince: "Since: 5d | 01.05.2028", compliance: 24, gender: "M", team: "Heart Failure Team", teamMember: "Dr. Sarah Mitchell" },
 ];
+
+/* Current logged-in clinician (matches the "EC" topbar avatar), used by the
+   All Patients / My Patients scope toggle. */
+const CURRENT_TEAM_MEMBER = "Emily Carter";
 
 const complianceRanges = [
   { key: "76-100", label: "76-100%", min: 76, max: 100 },
@@ -51,11 +55,34 @@ const monitoringOptions = [
   { key: "unmonitored", label: "Unmonitored" },
 ];
 
+/* Care Team = the clinical pod/program the patient is enrolled in.
+   Team Member = the individual clinician on that team assigned to the
+   patient -- same roster used by the Register Patient "Care Team" field. */
+const careTeamOptions = [
+  { key: "Heart Failure Team", label: "Heart Failure Team" },
+  { key: "Post-Discharge Team", label: "Post-Discharge Team" },
+  { key: "Remote Monitoring Team", label: "Remote Monitoring Team" },
+];
+
+const teamMemberOptions = [
+  { key: "Emily Carter", label: "Emily Carter" },
+  { key: "Dr. Sarah Mitchell", label: "Dr. Sarah Mitchell" },
+  { key: "Dr. James Carter", label: "Dr. James Carter" },
+  { key: "Dr. Emily Chen", label: "Dr. Emily Chen" },
+  { key: "Dr. Michael Reyes", label: "Dr. Michael Reyes" },
+  { key: "Amanda Lee, RN", label: "Amanda Lee, RN" },
+  { key: "Ayelet Er, NP", label: "Ayelet Er, NP" },
+  { key: "Sandy Kohl, RN", label: "Sandy Kohl, RN" },
+];
+
 const selectedComplianceRanges = new Set();
 const selectedGenders = new Set();
 const selectedAccounts = new Set();
 const selectedStatuses = new Set();
 const selectedMonitorings = new Set();
+const selectedCareTeams = new Set();
+const selectedTeamMembers = new Set();
+let patientScope = "all";
 
 function statusCell(p) {
   if (p.status === "priority") {
@@ -180,7 +207,10 @@ function filteredPatientList() {
       (!selectedGenders.size || selectedGenders.has(p.gender)) &&
       (!selectedAccounts.size || selectedAccounts.has(p.account)) &&
       (!selectedStatuses.size || selectedStatuses.has(p.status)) &&
-      (!selectedMonitorings.size || selectedMonitorings.has(p.monitoring))
+      (!selectedMonitorings.size || selectedMonitorings.has(p.monitoring)) &&
+      (!selectedCareTeams.size || selectedCareTeams.has(p.team)) &&
+      (!selectedTeamMembers.size || selectedTeamMembers.has(p.teamMember)) &&
+      (patientScope === "all" || p.teamMember === CURRENT_TEAM_MEMBER)
   );
 }
 
@@ -328,11 +358,59 @@ wireCheckboxFilter(
   renderPatientList
 );
 
+/* ---------------- Care Team filter ---------------- */
+const careTeamFilterMenu = document.getElementById("careTeamFilterMenu");
+careTeamFilterMenu.innerHTML = careTeamOptions
+  .map(
+    (t) => `
+    <label class="checkbox-filter-option">
+      <input type="checkbox" value="${t.key}" />
+      ${t.label}
+    </label>`
+  )
+  .join("");
+
+wireCheckboxFilter(
+  document.querySelector('.checkbox-filter[data-name="careTeam"]'),
+  careTeamFilterMenu,
+  selectedCareTeams,
+  renderPatientList
+);
+
+/* ---------------- Team Member filter ---------------- */
+const teamMemberFilterMenu = document.getElementById("teamMemberFilterMenu");
+teamMemberFilterMenu.innerHTML = teamMemberOptions
+  .map(
+    (m) => `
+    <label class="checkbox-filter-option">
+      <input type="checkbox" value="${m.key}" />
+      ${m.label}
+    </label>`
+  )
+  .join("");
+
+wireCheckboxFilter(
+  document.querySelector('.checkbox-filter[data-name="teamMember"]'),
+  teamMemberFilterMenu,
+  selectedTeamMembers,
+  renderPatientList
+);
+
 function closeAllFilterPopovers() {
   document.querySelectorAll(".checkbox-filter.open").forEach((el) => el.classList.remove("open"));
 }
 
 document.addEventListener("click", closeAllFilterPopovers);
+
+/* ---------------- All Patients / My Patients scope ---------------- */
+document.querySelectorAll('#patientScopeTabs .filter-tab').forEach((tab) => {
+  tab.addEventListener("click", () => {
+    document.querySelectorAll('#patientScopeTabs .filter-tab').forEach((t) => t.classList.remove("active"));
+    tab.classList.add("active");
+    patientScope = tab.dataset.scope;
+    renderPatientList();
+  });
+});
 
 const clearableFilters = [
   { name: "account", menu: accountMenu, set: selectedAccounts, label: "Account" },
@@ -340,6 +418,8 @@ const clearableFilters = [
   { name: "monitoring", menu: monitoringMenu, set: selectedMonitorings, label: "Monitoring" },
   { name: "compliance", menu: complianceMenu, set: selectedComplianceRanges, label: "Compliance" },
   { name: "gender", menu: genderMenu, set: selectedGenders, label: "Gender" },
+  { name: "careTeam", menu: careTeamFilterMenu, set: selectedCareTeams, label: "Care Team" },
+  { name: "teamMember", menu: teamMemberFilterMenu, set: selectedTeamMembers, label: "Team Member" },
 ];
 
 document.getElementById("clearFilters").addEventListener("click", () => {
@@ -349,6 +429,9 @@ document.getElementById("clearFilters").addEventListener("click", () => {
     menu.querySelectorAll('input[type="checkbox"]').forEach((cb) => (cb.checked = false));
     document.querySelector(`.checkbox-filter[data-name="${name}"] .checkbox-filter-label`).textContent = label;
   });
+  document.querySelectorAll('#patientScopeTabs .filter-tab').forEach((t) => t.classList.remove("active"));
+  document.querySelector('#patientScopeTabs .filter-tab[data-scope="all"]').classList.add("active");
+  patientScope = "all";
   renderPatientList();
 });
 

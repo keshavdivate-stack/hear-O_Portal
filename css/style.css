@@ -3107,6 +3107,7 @@ body {
 #addMeasurementForm .unit-input input { width: 140px; background: #fff; }
 
 #careRecForm .unit-input input[type="number"] { background: #fff; }
+#careRecForm input[name="newDose"], #careRecForm input[name="duration"] { width: 64px; }
 
 #careRecCurrentDose { width: 100%; }
 
