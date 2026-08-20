@@ -118,6 +118,14 @@ const TICKET_TYPES = ["Patient", "Clinic"];
 /* ---------------- Support agents (ticket owners) ---------------- */
 const SUPPORT_AGENTS = ["Sarah Cohen", "Daniel Avraham", "Maya Gold", "Tomer Regev", "Liat Peretz"];
 
+/* Who a ticket can be transferred to, grouped by the tier it's being routed
+   to -- so picking a tier narrows the assignee list to that tier's team. */
+const TIER_AGENTS = {
+  "Level 1": ["Sarah Cohen", "Daniel Avraham"],
+  "Level 2": ["Maya Gold", "Tomer Regev"],
+  "Level 3": ["Liat Peretz"],
+};
+
 /* ---------------- Sample tickets raised by patients ---------------- */
 const patientTickets = [
   { id: 0, ticketNo: "TCK-1042", patientId: "120-2001", organization: "120", issueType: "Missing ASR Results", scope: "Patient", tier: "Level 1", severity: "Critical", status: "Open", origin: "User Created", assignedTo: "Sarah Cohen", createdDate: "02/08/2026 09:14", description: "Patient's recordings aren't producing ASR results -- the app freezes a few seconds into every attempt and no audio file is saved." },

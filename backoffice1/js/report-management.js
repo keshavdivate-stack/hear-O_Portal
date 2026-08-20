@@ -31,12 +31,13 @@ const rmKebabIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none"
 const rmPeopleIcon = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`;
 
 const rmStatusPillClass = { Active: "bo-pill-active", Paused: "bo-pill-paused" };
-const rmDeliveryPillClass = { Delivered: "bo-pill-delivered", Failed: "bo-pill-failed", "Partially Delivered": "bo-pill-partial", Processing: "bo-pill-processing" };
+const rmDeliveryPillClass = { Delivered: "bo-pill-delivered", Failed: "bo-pill-failed", Processing: "bo-pill-processing" };
 const rmStatusPill = (s) => `<span class="bo-pill ${rmStatusPillClass[s] || ""}">${s}</span>`;
 const rmDeliveryPill = (s) => `<span class="bo-pill ${rmDeliveryPillClass[s] || ""}">${s}</span>`;
 const rmRecipientsChip = (count) => `<span class="bo-recipients-chip">${rmPeopleIcon}${count} ${count === 1 ? "person" : "people"}</span>`;
 
 function rmEsc(v) { return String(v == null ? "" : v).replace(/"/g, "&quot;"); }
+function rmParseRecipients(str) { return String(str || "").split(/[,;\s]+/).map((s) => s.trim()).filter(Boolean); }
 
 /* ---------------- Tabs ---------------- */
 document.querySelectorAll("#rmTabs .bo-tab").forEach((tab) => {
@@ -506,14 +507,13 @@ const rmWizardForm = document.getElementById("rmWizardForm");
 const rmWizardSaveBtn = document.getElementById("rmWizardSave");
 let rmWizardEditingId = null;
 let rmWizardSelectedTags = new Set();
-let rmWizardSelectedRecipients = new Set();
-let rmWizardRecipientSearch = "";
 
 document.getElementById("rmWizardReportMenu").innerHTML = RM_REPORTS.map(
   (r) => `<div class="bo-select-option" data-value="${r.key}">${r.label}<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>`
 ).join("");
 document.getElementById("rmWizardOrgMenu").innerHTML = buildSelectOptions(RM_ORGS);
 document.getElementById("rmWizardFrequencyMenu").innerHTML = buildSelectOptions(RM_FREQUENCIES);
+document.getElementById("rmWizardUsersMenu").innerHTML = buildSelectOptions(RM_DIRECTORY);
 
 function renderWizardTags() {
   document.getElementById("rmWizardTags").innerHTML = RM_TAGS.map(
@@ -521,33 +521,11 @@ function renderWizardTags() {
   ).join("");
 }
 
-function renderWizardRecipients() {
-  const names = RM_DIRECTORY.filter((name) => name.toLowerCase().includes(rmWizardRecipientSearch));
-  document.getElementById("rmWizardRecipients").innerHTML = names.length
-    ? names.map(
-        (name) => `<label class="bo-recipient-item"><input type="checkbox" data-wiz-recipient="${name}" ${rmWizardSelectedRecipients.has(name) ? "checked" : ""} /> ${name}</label>`
-      ).join("")
-    : `<p class="bo-empty-state-sub" style="padding:8px 4px; margin:0;">No recipients match "${rmEsc(rmWizardRecipientSearch)}".</p>`;
-}
-
-document.getElementById("rmWizardRecipientSearch").addEventListener("input", (e) => {
-  rmWizardRecipientSearch = e.target.value.trim().toLowerCase();
-  renderWizardRecipients();
-});
-
 document.getElementById("rmWizardTags").addEventListener("change", (e) => {
   const box = e.target.closest("[data-wiz-tag]");
   if (!box) return;
   if (box.checked) rmWizardSelectedTags.add(box.dataset.wizTag);
   else rmWizardSelectedTags.delete(box.dataset.wizTag);
-});
-
-document.getElementById("rmWizardRecipients").addEventListener("change", (e) => {
-  const box = e.target.closest("[data-wiz-recipient]");
-  if (!box) return;
-  if (box.checked) rmWizardSelectedRecipients.add(box.dataset.wizRecipient);
-  else rmWizardSelectedRecipients.delete(box.dataset.wizRecipient);
-  validateWizardForm();
 });
 
 function computeNextRun(frequency) {
@@ -561,7 +539,7 @@ function validateWizardForm() {
   const reportOk = !!rmWizardForm.reportKey.value;
   const configOk = rmWizardForm.name.value.trim() !== "" && !!rmWizardForm.org.value;
   const scheduleOk = !!rmWizardForm.frequency.value;
-  const recipientsOk = rmWizardSelectedRecipients.size > 0;
+  const recipientsOk = rmWizardForm.recipients.value.trim() !== "";
   rmWizardSaveBtn.disabled = !(reportOk && configOk && scheduleOk && recipientsOk);
 }
 
@@ -571,15 +549,11 @@ rmWizardForm.addEventListener("change", validateWizardForm);
 function openWizardForCreate() {
   rmWizardEditingId = null;
   rmWizardSelectedTags = new Set();
-  rmWizardSelectedRecipients = new Set();
-  rmWizardRecipientSearch = "";
   document.getElementById("rmWizardTitle").textContent = "Schedule Report";
   rmWizardSaveBtn.textContent = "Schedule Report";
   rmWizardForm.reset();
   rmWizardForm.querySelectorAll(".bo-select").forEach(resetBoSelect);
-  document.getElementById("rmWizardRecipientSearch").value = "";
   renderWizardTags();
-  renderWizardRecipients();
   validateWizardForm();
   rmWizardOverlay.classList.add("open");
 }
@@ -589,24 +563,23 @@ function openWizardForEdit(id) {
   if (!s) return;
   rmWizardEditingId = id;
   rmWizardSelectedTags = new Set(s.tags);
-  rmWizardSelectedRecipients = new Set(s.recipients);
-  rmWizardRecipientSearch = "";
 
   document.getElementById("rmWizardTitle").textContent = `Edit Schedule — ${s.name}`;
   rmWizardSaveBtn.textContent = "Save Changes";
   rmWizardForm.reset();
-  document.getElementById("rmWizardRecipientSearch").value = "";
 
   setBoSelectValue(rmWizardForm.querySelector('.bo-select[data-name="wizReport"]'), s.reportKey, { silent: true });
   setBoSelectValue(rmWizardForm.querySelector('.bo-select[data-name="wizOrg"]'), s.org, { silent: true });
+  setBoSelectValue(rmWizardForm.querySelector('.bo-select[data-name="wizUsers"]'), s.usersFilter || "", { silent: true });
   setBoSelectValue(rmWizardForm.querySelector('.bo-select[data-name="wizFrequency"]'), s.frequency, { silent: true });
   rmWizardForm.name.value = s.name;
+  rmWizardForm.title.value = s.title || "";
+  rmWizardForm.recipients.value = (s.recipients || []).join(", ");
   const [hh, mm] = s.time.replace(/\s*[AP]M/i, "").split(":");
   rmWizardForm.hh.value = hh || "9";
   rmWizardForm.mm.value = mm || "0";
 
   renderWizardTags();
-  renderWizardRecipients();
   validateWizardForm();
   rmWizardOverlay.classList.add("open");
 }
@@ -623,14 +596,16 @@ rmWizardForm.addEventListener("submit", (e) => {
   if (rmWizardSaveBtn.disabled) return;
 
   const reportKey = rmWizardForm.reportKey.value;
+  const title = rmWizardForm.title.value.trim();
   const org = rmWizardForm.org.value;
+  const usersFilter = rmWizardForm.usersFilter.value;
   const frequency = rmWizardForm.frequency.value;
   const timezone = "GMT";
   const hh = String(rmWizardForm.hh.value || "0").padStart(2, "0");
   const mm = String(rmWizardForm.mm.value || "0").padStart(2, "0");
   const time = `${hh}:${mm}`;
   const tags = Array.from(rmWizardSelectedTags);
-  const recipients = Array.from(rmWizardSelectedRecipients);
+  const recipients = rmParseRecipients(rmWizardForm.recipients.value);
   const nextRun = `${computeNextRun(frequency)}, ${time} ${timezone}`;
 
   if (rmWizardEditingId === null) {
@@ -639,7 +614,9 @@ rmWizardForm.addEventListener("submit", (e) => {
       id: nextId,
       reportKey,
       name: rmWizardForm.name.value.trim(),
+      title,
       org,
+      usersFilter,
       tags,
       frequency,
       time,
@@ -652,7 +629,7 @@ rmWizardForm.addEventListener("submit", (e) => {
     });
   } else {
     const s = rmSchedules.find((x) => x.id === rmWizardEditingId);
-    if (s) Object.assign(s, { reportKey, name: rmWizardForm.name.value.trim(), org, tags, frequency, time, timezone, recipients, nextRun });
+    if (s) Object.assign(s, { reportKey, name: rmWizardForm.name.value.trim(), title, org, usersFilter, tags, frequency, time, timezone, recipients, nextRun });
   }
 
   closeWizard();
@@ -664,8 +641,6 @@ const rmSendOverlay = document.getElementById("rmSendReportOverlay");
 const rmSendForm = document.getElementById("rmSendForm");
 const rmSendBtn = document.getElementById("rmSendBtn");
 let rmSendSelectedTags = new Set();
-let rmSendSelectedRecipients = new Set();
-let rmSendRecipientSearch = "";
 
 document.getElementById("rmSendReportMenu").innerHTML = RM_REPORTS.map(
   (r) => `<div class="bo-select-option" data-value="${r.key}">${r.label}<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>`
@@ -678,20 +653,6 @@ function renderSendTags() {
   ).join("");
 }
 
-function renderSendRecipients() {
-  const names = RM_DIRECTORY.filter((name) => name.toLowerCase().includes(rmSendRecipientSearch));
-  document.getElementById("rmSendRecipients").innerHTML = names.length
-    ? names.map(
-        (name) => `<label class="bo-recipient-item"><input type="checkbox" data-send-recipient="${name}" ${rmSendSelectedRecipients.has(name) ? "checked" : ""} /> ${name}</label>`
-      ).join("")
-    : `<p class="bo-empty-state-sub" style="padding:8px 4px; margin:0;">No recipients match "${rmEsc(rmSendRecipientSearch)}".</p>`;
-}
-
-document.getElementById("rmSendRecipientSearch").addEventListener("input", (e) => {
-  rmSendRecipientSearch = e.target.value.trim().toLowerCase();
-  renderSendRecipients();
-});
-
 document.getElementById("rmSendTags").addEventListener("change", (e) => {
   const box = e.target.closest("[data-send-tag]");
   if (!box) return;
@@ -699,16 +660,8 @@ document.getElementById("rmSendTags").addEventListener("change", (e) => {
   else rmSendSelectedTags.delete(box.dataset.sendTag);
 });
 
-document.getElementById("rmSendRecipients").addEventListener("change", (e) => {
-  const box = e.target.closest("[data-send-recipient]");
-  if (!box) return;
-  if (box.checked) rmSendSelectedRecipients.add(box.dataset.sendRecipient);
-  else rmSendSelectedRecipients.delete(box.dataset.sendRecipient);
-  validateSendForm();
-});
-
 function validateSendForm() {
-  const ok = !!rmSendForm.reportKey.value && !!rmSendForm.org.value && rmSendSelectedRecipients.size > 0;
+  const ok = !!rmSendForm.reportKey.value && !!rmSendForm.org.value && rmSendForm.recipients.value.trim() !== "";
   rmSendBtn.disabled = !ok;
 }
 rmSendForm.addEventListener("input", validateSendForm);
@@ -716,13 +669,9 @@ rmSendForm.addEventListener("change", validateSendForm);
 
 function openSendReport() {
   rmSendSelectedTags = new Set();
-  rmSendSelectedRecipients = new Set();
-  rmSendRecipientSearch = "";
   rmSendForm.reset();
   rmSendForm.querySelectorAll(".bo-select").forEach(resetBoSelect);
-  document.getElementById("rmSendRecipientSearch").value = "";
   renderSendTags();
-  renderSendRecipients();
   validateSendForm();
   rmSendOverlay.classList.add("open");
 }
@@ -739,12 +688,16 @@ rmSendForm.addEventListener("submit", (e) => {
 
   const reportKey = rmSendForm.reportKey.value;
   const org = rmSendForm.org.value;
-  const recipients = Array.from(rmSendSelectedRecipients);
+  const title = rmSendForm.title.value.trim();
+  const email = rmSendForm.email.value.trim();
+  const fromDate = rmSendForm.fromDate.value;
+  const toDate = rmSendForm.toDate.value;
+  const recipients = rmParseRecipients(rmSendForm.recipients.value);
   const now = new Date();
   const sentOn = `Today, ${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
 
   const nextId = rmHistory.length ? Math.max(...rmHistory.map((h) => h.id)) + 1 : 0;
-  rmHistory.unshift({ id: nextId, reportKey, org, sentOn, recipients: recipients.length, status: "Processing" });
+  rmHistory.unshift({ id: nextId, reportKey, org, title, email, fromDate, toDate, sentOn, recipients: recipients.length, status: "Processing" });
 
   closeSendReport();
   rmRenderHistory();

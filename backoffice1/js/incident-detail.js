@@ -14,7 +14,6 @@ function fmtBool(v) { return v ? "Yes" : "No"; }
 
 function renderIncidentHeader() {
   document.getElementById("incDetailId").textContent = currentIncident.id;
-  document.getElementById("incDetailTitle").textContent = currentIncident.title;
   document.getElementById("incDetailBadges").innerHTML = `${incSeverityPill(currentIncident.severity)}${incStatusPill(currentIncident.status)}`;
   document.title = `HearO Backoffice | ${currentIncident.id}`;
 }
@@ -79,11 +78,11 @@ if (location.hash) {
 /* ---------------- Impact popover triggers ---------------- */
 document.getElementById("incDetailViewOrgsBtn").addEventListener("click", (e) => {
   e.stopPropagation();
-  incImpactPopover.open(e.currentTarget, currentIncident);
+  incImpactPopover.open(e.currentTarget, currentIncident, "orgs");
 });
 document.getElementById("incDetailViewPatientsBtn").addEventListener("click", (e) => {
   e.stopPropagation();
-  incImpactPopover.open(e.currentTarget, currentIncident);
+  incImpactPopover.open(e.currentTarget, currentIncident, "patients");
 });
 
 /* ---------------- Create Support Task drawer ---------------- */
@@ -91,13 +90,15 @@ const addTaskOverlay = document.getElementById("addTaskOverlay");
 const addTaskForm = document.getElementById("addTaskForm");
 const saveAddTaskBtn = document.getElementById("saveAddTask");
 
+document.querySelector('#addTaskOverlay .bo-select[data-name="taskTeam"] .bo-select-menu').innerHTML = buildSelectOptions(["Clinical", "Technical"]);
 document.querySelector('#addTaskOverlay .bo-select[data-name="taskAssignee"] .bo-select-menu').innerHTML = buildSelectOptions(SUPPORT_TEAM);
-document.querySelector('#addTaskOverlay .bo-select[data-name="taskPriority"] .bo-select-menu').innerHTML = buildSelectOptions(["Low", "Medium", "High", "Urgent"]);
+document.querySelector('#addTaskOverlay .bo-select[data-name="taskPriority"] .bo-select-menu').innerHTML = buildSelectOptions(Object.values(INC_SEVERITY_LABEL));
 
 function validateAddTaskForm() {
   const titleFilled = addTaskForm.taskTitle.value.trim() !== "";
+  const teamFilled = addTaskOverlay.querySelector('.bo-select[data-name="taskTeam"] input[type=hidden]').value !== "";
   const assigneeFilled = addTaskOverlay.querySelector('.bo-select[data-name="taskAssignee"] input[type=hidden]').value !== "";
-  saveAddTaskBtn.disabled = !(titleFilled && assigneeFilled);
+  saveAddTaskBtn.disabled = !(titleFilled && teamFilled && assigneeFilled);
 }
 
 const taskAttachmentInput = document.getElementById("taskAttachmentInput");
@@ -108,6 +109,8 @@ taskAttachmentInput.addEventListener("change", () => {
 
 function openAddTaskDrawer() {
   addTaskForm.reset();
+  document.querySelector('#addTaskOverlay .bo-select[data-name="taskOrg"] .bo-select-menu').innerHTML = buildFilterSelectOptions(currentIncident.orgs, "Optional");
+  document.querySelector('#addTaskOverlay .bo-select[data-name="taskPatient"] .bo-select-menu').innerHTML = buildFilterSelectOptions(currentIncident.patients, "Optional");
   addTaskOverlay.querySelectorAll(".bo-select").forEach(resetBoSelect);
   taskAttachmentName.textContent = "Click to attach a file";
   document.getElementById("addTaskIncidentTag").textContent = `Incident: ${currentIncident.id}`;
@@ -127,11 +130,12 @@ addTaskForm.addEventListener("submit", (e) => {
   e.preventDefault();
   if (saveAddTaskBtn.disabled) return;
 
+  const team = addTaskOverlay.querySelector('.bo-select[data-name="taskTeam"] input[type=hidden]').value;
   const assignee = addTaskOverlay.querySelector('.bo-select[data-name="taskAssignee"] input[type=hidden]').value;
   const isFirstTask = currentIncident.tasks.length === 0;
   const nextId = currentIncident.tasks.length ? Math.max(...currentIncident.tasks.map((t) => t.id)) + 1 : 1;
-  currentIncident.tasks.push({ id: nextId, title: addTaskForm.taskTitle.value.trim(), assignee, status: "Open" });
-  currentIncident.timeline.push({ time: "Just now", text: `Task "${addTaskForm.taskTitle.value.trim()}" assigned to ${assignee}` });
+  currentIncident.tasks.push({ id: nextId, title: addTaskForm.taskTitle.value.trim(), team, assignee, status: "Open" });
+  currentIncident.timeline.push({ time: "Just now", text: `Ticket "${addTaskForm.taskTitle.value.trim()}" assigned to ${assignee}` });
 
   /* Incident Owner (overall responsibility) is distinct from a task's
      Owner/Assignee (responsibility for that one task) -- but when nobody
@@ -140,7 +144,7 @@ addTaskForm.addEventListener("submit", (e) => {
   const hasNoOwner = !currentIncident.owner || currentIncident.owner === "Unassigned";
   if (isFirstTask && hasNoOwner) {
     currentIncident.owner = assignee;
-    currentIncident.timeline.push({ time: "Just now", text: `${assignee} became Incident Owner (first task assigned)` });
+    currentIncident.timeline.push({ time: "Just now", text: `${assignee} became Incident Owner (first ticket assigned)` });
   }
 
   closeAddTaskDrawer();

@@ -201,6 +201,26 @@
       </section>
     </div>
 
+    <!-- PATIENT COMPLIANCE (overall snapshot; scoped by the org filter above like
+         the panels before it — no separate 7/30-day toggle since the page's own
+         "Last 24 hours / 7 days / 30 days" selector already covers that) -->
+    <section class="bo-card bo-panel bo-panel--static" style="display:block; margin-bottom:20px;">
+      <div class="bo-panel-head">
+        <h3 class="bo-panel-title" style="margin:0;" id="ovComplianceTitle">Patient Compliance</h3>
+        <a class="bo-row-link" href="patient-management.html">View all patients</a>
+      </div>
+      <div class="bo-donut-row">
+        <div class="bo-donut-wrap">
+          <div class="bo-donut" id="ovComplianceDonut"></div>
+          <div class="bo-donut-center">
+            <span class="num" id="ovComplianceDonutTotal">&nbsp;</span>
+            <span class="lbl">Patients</span>
+          </div>
+        </div>
+        <div class="bo-compliance-legend" id="ovComplianceRows"></div>
+      </div>
+    </section>
+
   </main>
 
 <script src="js/dashboard-nav.js"></script>

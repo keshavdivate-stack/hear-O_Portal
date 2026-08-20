@@ -43,7 +43,9 @@
       "Bash(ls -la --time-style=full-iso \"/c/React Project/UI Design\"/*.png 2>&1)",
       "Read(//tmp/docxext/**)",
       "Bash(sed -e 's/<\\\\/w:p>/\\\\n/g' document.xml)",
-      "Bash(sed '/^[[:space:]]*$/d')"
+      "Bash(sed '/^[[:space:]]*$/d')",
+      "Read(//tmp/**)",
+      "Bash(sed -e 's/<w:p[ >]/\\\\n<w:p>/g' word/document.xml)"
     ],
     "additionalDirectories": [
       "C:\\React Project\\UI Design"

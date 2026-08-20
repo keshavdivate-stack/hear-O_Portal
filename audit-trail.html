@@ -158,10 +158,16 @@
       <!-- CONTENT -->
       <div class="list-content">
 
-        <div class="filter-tabs" id="auditTypeTabs">
-          <button type="button" class="filter-tab active" data-type="all">All</button>
-          <button type="button" class="filter-tab" data-type="Patient">Patients</button>
-          <button type="button" class="filter-tab" data-type="User">Users</button>
+        <div class="reports-tab-row" style="border-bottom:none;">
+          <div class="filter-tabs" id="auditTypeTabs">
+            <button type="button" class="filter-tab active" data-type="all">All</button>
+            <button type="button" class="filter-tab" data-type="Patient">Patients</button>
+            <button type="button" class="filter-tab" data-type="User">Users</button>
+          </div>
+          <button class="btn-add-user" id="exportAuditBtn">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 3V15M12 15L8 11M12 15L16 11" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 16V19C4 20.1 4.9 21 6 21H18C19.1 21 20 20.1 20 19V16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Export
+          </button>
         </div>
 
         <div class="filters-bar">
@@ -207,12 +213,6 @@
           </div>
 
           <button class="clear-filters" id="clearFilters">Clear all filters</button>
-
-          <span class="filters-spacer"></span>
-          <button class="btn-add-user" id="exportAuditBtn">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 3V15M12 15L8 11M12 15L16 11" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 16V19C4 20.1 4.9 21 6 21H18C19.1 21 20 20.1 20 19V16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            Export
-          </button>
         </div>
 
         <div class="table-card">

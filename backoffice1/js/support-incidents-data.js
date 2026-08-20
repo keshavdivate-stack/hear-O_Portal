@@ -3,22 +3,25 @@
    Voice Engine failure, ...), never a manually raised Ticket. */
 const INC_SEVERITIES = ["SEV-1", "SEV-2", "SEV-3", "SEV-4"];
 const INC_SEVERITY_LABEL = { "SEV-1": "Critical", "SEV-2": "High", "SEV-3": "Medium", "SEV-4": "Low" };
-const INC_SEVERITY_CLASS = { "SEV-1": "bo-pill-sev1", "SEV-2": "bo-pill-sev2", "SEV-3": "bo-pill-sev3", "SEV-4": "bo-pill-sev4" };
+const INC_SEVERITY_CLASS = { "SEV-1": "bo-pill-severity-critical", "SEV-2": "bo-pill-severity-high", "SEV-3": "bo-pill-severity-medium", "SEV-4": "bo-pill-severity-low" };
 
 const INC_STATUSES = ["Active", "Monitoring", "Resolved"];
 const INC_STATUS_CLASS = { Active: "bo-pill-incident-active", Monitoring: "bo-pill-incident-monitoring", Resolved: "bo-pill-incident-resolved" };
 
+/* Category values are shared with Tickets (see CATEGORIES in support-data.js)
+   wherever the underlying area overlaps, so the same category reads the same
+   way in both the Tickets and Incidents tables. */
 const INC_SOURCES = ["System Scheduler", "Voice Engine", "Sensors", "EHR Integration", "Patient Monitoring", "System Health", "Other"];
 const INC_SOURCE_CATEGORY = {
-  "System Scheduler": "Scheduling",
+  "System Scheduler": "System Schedule Engine",
   "Voice Engine": "Voice Engine",
   "Sensors": "Sensors",
   "EHR Integration": "Integrations",
-  "Patient Monitoring": "Patient Monitoring",
+  "Patient Monitoring": "Patient (Mobile/Web)",
   "System Health": "Platform / Infra",
   "Other": "Other",
 };
-const INC_CATEGORIES = ["Scheduling", "Voice Engine", "Sensors", "Integrations", "Patient Monitoring", "Platform / Infra", "Localization", "Other"];
+const INC_CATEGORIES = ["System Schedule Engine", "Voice Engine", "Sensors", "Integrations", "Patient (Mobile/Web)", "Platform / Infra", "Localization", "Other"];
 
 /* Dedicated Support Team — distinct from SUPPORT_AGENTS (Ticket assignees) so
    the Incident Owner is never confused with who a Ticket is assigned to. */
@@ -45,7 +48,7 @@ const incidents = [
     id: "INC-2026-0042",
     title: "Start Date Engine skipped a run",
     source: "System Scheduler",
-    category: "Scheduling",
+    category: "System Schedule Engine",
     severity: "SEV-2",
     status: "Monitoring",
     owner: "Maya Chen",

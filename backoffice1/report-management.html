@@ -350,11 +350,11 @@
         <div class="bo-drawer-body">
           <div class="bo-modal-section">
             <div class="bo-modal-grid">
-              <div class="bo-modal-field full">
-                <label>Report<span class="required-star">*</span></label>
+              <div class="bo-modal-field">
+                <label>Report type<span class="required-star">*</span></label>
                 <div class="bo-select" data-name="wizReport">
                   <button type="button" class="bo-select-trigger">
-                    <span class="bo-select-value placeholder">Select report</span>
+                    <span class="bo-select-value placeholder">Report type</span>
                     <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
                   </button>
                   <div class="bo-select-menu" id="rmWizardReportMenu"></div>
@@ -362,29 +362,44 @@
                 </div>
               </div>
               <div class="bo-modal-field">
-                <label>Schedule name<span class="required-star">*</span></label>
-                <input type="text" name="name" placeholder="e.g. Daily – Current &amp; New" required />
+                <label>Report name<span class="required-star">*</span></label>
+                <input type="text" name="name" placeholder="Report name" required />
               </div>
               <div class="bo-modal-field">
-                <label>Organisation<span class="required-star">*</span></label>
+                <label>Report title</label>
+                <input type="text" name="title" placeholder="Report title" />
+              </div>
+              <div class="bo-modal-field">
+                <label>HMO<span class="required-star">*</span></label>
                 <div class="bo-select" data-name="wizOrg">
                   <button type="button" class="bo-select-trigger">
-                    <span class="bo-select-value placeholder">Select organisation</span>
+                    <span class="bo-select-value placeholder">HMO</span>
                     <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
                   </button>
                   <div class="bo-select-menu" id="rmWizardOrgMenu"></div>
                   <input type="hidden" name="org" required />
                 </div>
               </div>
-              <div class="bo-modal-field full">
-                <label>Tags / filters</label>
+              <div class="bo-modal-field">
+                <label>Tag</label>
                 <div class="bo-checkbox-row" id="rmWizardTags"></div>
               </div>
               <div class="bo-modal-field">
-                <label>Frequency<span class="required-star">*</span></label>
+                <label>Users</label>
+                <div class="bo-select" data-name="wizUsers">
+                  <button type="button" class="bo-select-trigger">
+                    <span class="bo-select-value placeholder">Users</span>
+                    <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                  </button>
+                  <div class="bo-select-menu" id="rmWizardUsersMenu"></div>
+                  <input type="hidden" name="usersFilter" />
+                </div>
+              </div>
+              <div class="bo-modal-field">
+                <label>Schedule type<span class="required-star">*</span></label>
                 <div class="bo-select" data-name="wizFrequency">
                   <button type="button" class="bo-select-trigger">
-                    <span class="bo-select-value placeholder">Select frequency</span>
+                    <span class="bo-select-value placeholder">Schedule type</span>
                     <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
                   </button>
                   <div class="bo-select-menu" id="rmWizardFrequencyMenu"></div>
@@ -401,11 +416,7 @@
               </div>
               <div class="bo-modal-field full">
                 <label>Recipients<span class="required-star">*</span></label>
-                <div class="bo-recipient-search">
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8"/><path d="M21 21L16.5 16.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-                  <input type="text" id="rmWizardRecipientSearch" placeholder="Search recipients" />
-                </div>
-                <div class="bo-recipient-list" id="rmWizardRecipients"></div>
+                <input type="text" name="recipients" placeholder="Enter recipient email(s)" required />
               </div>
             </div>
           </div>
@@ -439,10 +450,10 @@
           <div class="bo-modal-section">
             <div class="bo-modal-grid">
               <div class="bo-modal-field">
-                <label>Report<span class="required-star">*</span></label>
+                <label>Report type<span class="required-star">*</span></label>
                 <div class="bo-select" data-name="sendReport">
                   <button type="button" class="bo-select-trigger">
-                    <span class="bo-select-value placeholder">Select report</span>
+                    <span class="bo-select-value placeholder">Report type</span>
                     <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
                   </button>
                   <div class="bo-select-menu" id="rmSendReportMenu"></div>
@@ -450,10 +461,14 @@
                 </div>
               </div>
               <div class="bo-modal-field">
-                <label>Organisation<span class="required-star">*</span></label>
+                <label>Title</label>
+                <input type="text" name="title" placeholder="Title" />
+              </div>
+              <div class="bo-modal-field">
+                <label>HMO<span class="required-star">*</span></label>
                 <div class="bo-select" data-name="sendOrg">
                   <button type="button" class="bo-select-trigger">
-                    <span class="bo-select-value placeholder">Select organisation</span>
+                    <span class="bo-select-value placeholder">HMO</span>
                     <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
                   </button>
                   <div class="bo-select-menu" id="rmSendOrgMenu"></div>
@@ -461,16 +476,30 @@
                 </div>
               </div>
               <div class="bo-modal-field full">
-                <label>Tags / filters</label>
+                <label>Tag</label>
                 <div class="bo-checkbox-row" id="rmSendTags"></div>
               </div>
               <div class="bo-modal-field full">
-                <label>Recipients<span class="required-star">*</span></label>
-                <div class="bo-recipient-search">
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8"/><path d="M21 21L16.5 16.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-                  <input type="text" id="rmSendRecipientSearch" placeholder="Search recipients" />
+                <label>Email</label>
+                <input type="email" name="email" placeholder="Email" />
+              </div>
+              <div class="bo-modal-field">
+                <label>From Date</label>
+                <div class="bo-date-field">
+                  <input type="text" name="fromDate" placeholder="From Date" onfocus="(this.type='date')" onblur="if(!this.value)this.type='text'" />
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="17" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3 9H21" stroke="currentColor" stroke-width="1.8"/></svg>
                 </div>
-                <div class="bo-recipient-list" id="rmSendRecipients"></div>
+              </div>
+              <div class="bo-modal-field">
+                <label>To Date</label>
+                <div class="bo-date-field">
+                  <input type="text" name="toDate" placeholder="To Date" onfocus="(this.type='date')" onblur="if(!this.value)this.type='text'" />
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="17" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3 9H21" stroke="currentColor" stroke-width="1.8"/></svg>
+                </div>
+              </div>
+              <div class="bo-modal-field full">
+                <label>Recipients<span class="required-star">*</span></label>
+                <input type="text" name="recipients" placeholder="Enter recipient email(s)" required />
               </div>
             </div>
           </div>

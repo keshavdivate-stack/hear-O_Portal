@@ -104,7 +104,7 @@ const incKebabIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none
 /* ---------------- Shared render helpers (used by both the Incidents tab
    inside support.html and the standalone incident-detail.html page) ---------------- */
 function incSeverityPill(sev) {
-  return `<span class="bo-pill ${INC_SEVERITY_CLASS[sev] || ""}">${sev}</span>`;
+  return `<span class="bo-pill ${INC_SEVERITY_CLASS[sev] || ""}">${INC_SEVERITY_LABEL[sev] || sev}</span>`;
 }
 function incStatusPill(status) {
   return `<span class="bo-pill ${INC_STATUS_CLASS[status] || ""}">${status}</span>`;
@@ -133,13 +133,17 @@ const incImpactPopover = (function () {
     document.addEventListener("scroll", () => el && el.classList.remove("open"), true);
     return el;
   }
-  function open(anchorEl, incident) {
+  function open(anchorEl, incident, mode) {
     const popover = ensure();
+    const showOrgs = mode !== "patients";
+    const showPatients = mode !== "orgs";
     popover.innerHTML = `
+      ${showOrgs ? `
       <p class="bo-impact-popover-title">Affected Organizations</p>
-      <div class="bo-impact-chip-list">${incImpactChips(incident.orgs)}</div>
-      <p class="bo-impact-popover-title second">Affected Patients</p>
-      <div class="bo-impact-chip-list">${incImpactChips(incident.patients)}</div>
+      <div class="bo-impact-chip-list">${incImpactChips(incident.orgs)}</div>` : ""}
+      ${showPatients ? `
+      <p class="bo-impact-popover-title${showOrgs ? " second" : ""}">Affected Patients</p>
+      <div class="bo-impact-chip-list">${incImpactChips(incident.patients)}</div>` : ""}
     `;
     const rect = anchorEl.getBoundingClientRect();
     const width = 280;
