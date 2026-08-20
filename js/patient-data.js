@@ -661,7 +661,10 @@ function renderCareRecs() {
   document.getElementById("careRecCount").textContent = careRecs.length;
   updateCareRecTriggers();
 
-  const list = careRecs.filter(careRecMatchesFilter);
+  const list = careRecs
+    .filter(careRecMatchesFilter)
+    .slice()
+    .sort((a, b) => (a.status === "archived") - (b.status === "archived"));
   document.getElementById("careRecTableBody").innerHTML = list.length
     ? list
         .map((rec) => {
