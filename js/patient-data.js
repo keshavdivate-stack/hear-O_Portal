@@ -986,24 +986,23 @@ let history = [
   { category: "monitoring", color: "dot-teal", label: "Monitoring issue: Low quality", date: "01.01.2026" },
   { category: "monitoring", color: "dot-teal", label: "Monitoring issue: Low quality", date: "12.30.2025" },
   { category: "monitoring", color: "dot-teal", label: "Patient is Unmonitored", date: "12.23.2025" },
-  { category: "monitoring", color: "dot-teal", label: "Patient is Unmonitored", date: "12.21.2025", note: "Dr. Ellen: Patient forgot to record" },
+  { category: "monitoring", color: "dot-teal", label: "Patient is Unmonitored", date: "12.21.2025", note: "Amanda Lee, RN: Patient forgot to record" },
   { category: "monitoring", color: "dot-teal", label: "Monitoring issue: Missed recording", date: "12.20.2025" },
   { category: "monitoring", color: "dot-teal", label: "Patient is Monitored", date: "12.16.2025" },
   { category: "monitoring", color: "dot-teal", label: "Baseline phase monitoring", date: "12.01.2025" },
   { category: "monitoring", color: "dot-teal", label: "Patient is Monitored", date: "12.01.2025" },
 
   // Other
-  { category: "other", color: "dot-blue", label: "Action taken: Other", date: "01.09.2026", note: "Emily Conley: Patient is not feeling well. Invited to clinic" },
-  { category: "other", color: "dot-blue", label: "Care recommendation action taken: Contacted", date: "01.03.2026", note: "Jully Show: Patient is not feeling well. Invited to clinic" },
-  { category: "other", color: "dot-blue", label: "Message sent to patient", date: "01.03.2026", note: "Sent by Ayelet Er. Seen 01.03.2026, 01:12 PM" },
+  { category: "other", color: "dot-blue", label: "Care recommendation created: Increase Furosemide dose", date: "01.09.2026", note: "Dr. Sarah Mitchell: 2.1 kg weight gain over 3 days with rising respiration rate" },
+  { category: "other", color: "dot-blue", label: "Care recommendation action taken: Patient contacted", date: "01.03.2026", note: "Amanda Lee, RN: Reviewed Carvedilol tolerance; mild dizziness reported, no other symptoms" },
+  { category: "other", color: "dot-blue", label: "Message sent to patient", date: "01.03.2026", note: "Sent by Ayelet Er, NP. Seen 01.03.2026, 01:12 PM" },
   { category: "other", color: "dot-blue", label: "Message sent to patient", date: "01.02.2026", note: "Seen 01.02.2026, 11:22 AM" },
-  { category: "other", color: "dot-blue", label: "Action taken: Contacted", date: "12.20.2025", note: "Maya Cohen: Patient forgot to record" },
-  { category: "other", color: "dot-blue", label: "Operational difficulty", date: "12.10.2025", note: "Dana Levi: Patient reported transportation issues and is unable to attend clinic visits" },
+  { category: "other", color: "dot-blue", label: "Action taken: Contacted", date: "12.20.2025", note: "Ayelet Er, NP: Patient forgot to record; reminder sent" },
+  { category: "other", color: "dot-blue", label: "Operational difficulty", date: "12.10.2025", note: "Sandy Kohl, RN: Patient reported transportation issues and is unable to attend clinic visits" },
 
   // Account
-  { category: "account", color: "dot-black", label: "Account changed to Discontinued", date: "12.28.2025", note: "Changed by Dr. Ellen. Reason: Deceased - CHF related." },
-  { category: "account", color: "dot-blue", label: "Account changed to Enabled", date: "12.28.2025", note: "Changed by Dr. Ellen" },
-  { category: "account", color: "dot-slate", label: "Account changed to Paused", date: "12.20.2025", note: "Changed by Dr. Ellen" },
+  { category: "account", color: "dot-blue", label: "Account changed to Enabled", date: "12.28.2025", note: "Changed by Dr. Sarah Mitchell" },
+  { category: "account", color: "dot-slate", label: "Account changed to Paused", date: "12.20.2025", note: "Changed by Dr. Sarah Mitchell" },
   { category: "account", color: "dot-blue", label: "Account is Enabled", date: "08.28.2025" },
 ];
 
