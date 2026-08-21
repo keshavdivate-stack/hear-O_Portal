@@ -42,7 +42,7 @@
     notifList.innerHTML = notifications
       .map(
         (t) => `
-      <a class="bo-notif-item" href="support.html?ticket=${encodeURIComponent(t.ticketNo)}&source=${t.source}">
+      <a class="bo-notif-item" href="ticket-detail.html?ticket=${encodeURIComponent(t.ticketNo)}&source=${t.source}">
         <span class="bo-notif-dot" style="background:${notifSeverityColor[t.severity] || "var(--gray-text)"};"></span>
         <span>
           <span class="text">${t.ticketNo} — ${t.issueType}</span>
