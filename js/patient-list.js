@@ -55,15 +55,8 @@ const monitoringOptions = [
   { key: "unmonitored", label: "Unmonitored" },
 ];
 
-/* Care Team = the clinical pod/program the patient is enrolled in.
-   Team Member = the individual clinician on that team assigned to the
-   patient -- same roster used by the Register Patient "Care Team" field. */
-const careTeamOptions = [
-  { key: "Heart Failure Team", label: "Heart Failure Team" },
-  { key: "Post-Discharge Team", label: "Post-Discharge Team" },
-  { key: "Remote Monitoring Team", label: "Remote Monitoring Team" },
-];
-
+/* Care Team = the individual clinician assigned to the patient -- same
+   roster used by the Register Patient "Care Team" field. */
 const teamMemberOptions = [
   { key: "Emily Carter", label: "Emily Carter" },
   { key: "Dr. Sarah Mitchell", label: "Dr. Sarah Mitchell" },
@@ -81,7 +74,6 @@ const selectedAccounts = new Set();
 const selectedStatuses = new Set();
 const selectedMonitorings = new Set();
 const selectedCareTeams = new Set();
-const selectedTeamMembers = new Set();
 let patientScope = "all";
 
 function statusCell(p) {
@@ -208,8 +200,7 @@ function filteredPatientList() {
       (!selectedAccounts.size || selectedAccounts.has(p.account)) &&
       (!selectedStatuses.size || selectedStatuses.has(p.status)) &&
       (!selectedMonitorings.size || selectedMonitorings.has(p.monitoring)) &&
-      (!selectedCareTeams.size || selectedCareTeams.has(p.team)) &&
-      (!selectedTeamMembers.size || selectedTeamMembers.has(p.teamMember)) &&
+      (!selectedCareTeams.size || selectedCareTeams.has(p.teamMember)) &&
       (patientScope === "all" || p.teamMember === CURRENT_TEAM_MEMBER)
   );
 }
@@ -360,26 +351,7 @@ wireCheckboxFilter(
 
 /* ---------------- Care Team filter ---------------- */
 const careTeamFilterMenu = document.getElementById("careTeamFilterMenu");
-careTeamFilterMenu.innerHTML = careTeamOptions
-  .map(
-    (t) => `
-    <label class="checkbox-filter-option">
-      <input type="checkbox" value="${t.key}" />
-      ${t.label}
-    </label>`
-  )
-  .join("");
-
-wireCheckboxFilter(
-  document.querySelector('.checkbox-filter[data-name="careTeam"]'),
-  careTeamFilterMenu,
-  selectedCareTeams,
-  renderPatientList
-);
-
-/* ---------------- Team Member filter ---------------- */
-const teamMemberFilterMenu = document.getElementById("teamMemberFilterMenu");
-teamMemberFilterMenu.innerHTML = teamMemberOptions
+careTeamFilterMenu.innerHTML = teamMemberOptions
   .map(
     (m) => `
     <label class="checkbox-filter-option">
@@ -390,9 +362,9 @@ teamMemberFilterMenu.innerHTML = teamMemberOptions
   .join("");
 
 wireCheckboxFilter(
-  document.querySelector('.checkbox-filter[data-name="teamMember"]'),
-  teamMemberFilterMenu,
-  selectedTeamMembers,
+  document.querySelector('.checkbox-filter[data-name="careTeam"]'),
+  careTeamFilterMenu,
+  selectedCareTeams,
   renderPatientList
 );
 
@@ -419,7 +391,6 @@ const clearableFilters = [
   { name: "compliance", menu: complianceMenu, set: selectedComplianceRanges, label: "Compliance" },
   { name: "gender", menu: genderMenu, set: selectedGenders, label: "Gender" },
   { name: "careTeam", menu: careTeamFilterMenu, set: selectedCareTeams, label: "Care Team" },
-  { name: "teamMember", menu: teamMemberFilterMenu, set: selectedTeamMembers, label: "Team Member" },
 ];
 
 document.getElementById("clearFilters").addEventListener("click", () => {

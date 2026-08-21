@@ -1260,21 +1260,71 @@ const chatMessages = [
   { type: "in", time: "11:25 AM", text: "I'm having a little trouble breathing" },
 ];
 
-document.getElementById("chatMessages").innerHTML = chatMessages
-  .map((m) => {
-    if (m.type === "sep") return `<div class="chat-day-sep">${m.label}</div>`;
-    return `
-      <div class="chat-msg ${m.type}">
-        <div class="chat-msg-meta">${m.name ? `<b>${m.name}</b> &middot; ` : ""}${m.time}</div>
-        <div class="chat-bubble">${m.text}</div>
-        ${m.seen ? `<div class="chat-seen">${m.seen}</div>` : ""}
-      </div>`;
-  })
-  .join("");
+const chatMessagesEl = document.getElementById("chatMessages");
+const chatEmptyStateEl = document.getElementById("chatEmptyState");
+
+function renderChatMessages() {
+  chatEmptyStateEl.hidden = chatMessages.length > 0;
+  chatMessagesEl.hidden = chatMessages.length === 0;
+  chatMessagesEl.innerHTML = chatMessages
+    .map((m) => {
+      if (m.type === "sep") return `<div class="chat-day-sep">${m.label}</div>`;
+      return `
+        <div class="chat-msg ${m.type}">
+          <div class="chat-msg-meta">${m.name ? `<b>${m.name}</b> &middot; ` : ""}${m.time}</div>
+          <div class="chat-bubble">${m.text}</div>
+          ${m.seen ? `<div class="chat-seen">${m.seen}</div>` : ""}
+        </div>`;
+    })
+    .join("");
+  chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight;
+}
+
+renderChatMessages();
 
 const chatPanel = document.getElementById("chatPanel");
 document.getElementById("chatOpenBtn").addEventListener("click", () => chatPanel.classList.add("open"));
 document.getElementById("chatCloseBtn").addEventListener("click", () => chatPanel.classList.remove("open"));
+
+function chatNowTime() {
+  return new Date().toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+}
+
+function addOutgoingChatMessage(text) {
+  chatMessages.push({ type: "out", name: "Dr. Alex Sholl", time: chatNowTime(), text });
+  renderChatMessages();
+}
+
+const chatInputField = document.getElementById("chatInputField");
+document.getElementById("chatSendBtn").addEventListener("click", () => {
+  const text = chatInputField.value.trim();
+  if (!text) return;
+  addOutgoingChatMessage(text);
+  chatInputField.value = "";
+});
+chatInputField.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    document.getElementById("chatSendBtn").click();
+  }
+});
+
+const chatPlusBtn = document.getElementById("chatPlusBtn");
+const chatPlusMenu = document.getElementById("chatPlusMenu");
+chatPlusBtn.addEventListener("click", (e) => {
+  e.stopPropagation();
+  chatPlusMenu.classList.toggle("open");
+});
+document.addEventListener("click", (e) => {
+  if (!chatPlusMenu.contains(e.target) && e.target !== chatPlusBtn) chatPlusMenu.classList.remove("open");
+});
+chatPlusMenu.addEventListener("click", (e) => {
+  const item = e.target.closest(".chat-plus-menu-item");
+  if (!item) return;
+  chatPlusMenu.classList.remove("open");
+  const label = item.dataset.request === "image" ? "Requested an image" : "Requested a video";
+  addOutgoingChatMessage(label);
+});
 
 /* ---------------- Clinical: Add Medication / Recommendation modals ---------------- */
 /* ---------------- Custom dropdowns (same pattern as Registration) ---------------- */

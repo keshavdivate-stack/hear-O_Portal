@@ -708,14 +708,26 @@
       </button>
     </div>
     <div class="chat-messages" id="chatMessages"></div>
+    <div class="chat-empty-state" id="chatEmptyState" hidden>
+      <p class="chat-empty-title">No messages yet</p>
+      <p class="chat-empty-sub">Start a conversation by sending a message below</p>
+    </div>
     <div class="chat-input-row">
-      <button class="chat-attach" aria-label="Attach">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-      </button>
-      <input type="text" placeholder="Type a message..." />
-      <button class="chat-send" aria-label="Send">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 12L20 4L14 20L11 13L4 12Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" fill="none"/></svg>
-      </button>
+      <div class="chat-input-wrap">
+        <input type="text" id="chatInputField" placeholder="Type a message..." />
+        <button class="chat-send" id="chatSendBtn" aria-label="Send">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 12L20 4L14 20L11 13L4 12Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" fill="none"/></svg>
+        </button>
+      </div>
+      <div class="chat-plus-wrap">
+        <button type="button" class="chat-plus" id="chatPlusBtn" aria-label="Add attachment">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </button>
+        <div class="chat-plus-menu" id="chatPlusMenu">
+          <button type="button" class="chat-plus-menu-item" data-request="image">Request an image</button>
+          <button type="button" class="chat-plus-menu-item" data-request="video">Request a video</button>
+        </div>
+      </div>
     </div>
   </aside>
 
