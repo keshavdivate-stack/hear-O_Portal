@@ -978,40 +978,6 @@ function renderDocuments() {
 }
 renderDocuments();
 
-/* ---------------- Clinical: Encounters ---------------- */
-const encounters = [
-  { date: "08/12/2026", type: "Inpatient", provider: "Dr. Sarah Mitchell", facility: "Memorial General Hospital", reason: "CHF exacerbation", status: "discharged", source: "Epic" },
-  { date: "07/28/2026", type: "Office Visit", provider: "Dr. Sarah Mitchell", facility: "Cardiology Clinic", reason: "Follow-up", status: "completed", source: "Epic" },
-  { date: "06/15/2026", type: "Outpatient Procedure", provider: "Dr. James Carter", facility: "Imaging Center", reason: "Echocardiogram", status: "completed", source: "Epic" },
-];
-
-const ENCOUNTER_STATUS = {
-  discharged: { label: "Discharged", cls: "rec-status-resolved" },
-  completed: { label: "Completed", cls: "rec-status-completed" },
-  scheduled: { label: "Scheduled", cls: "rec-status-recommended" },
-};
-
-function renderEncounters() {
-  document.getElementById("encountersTableBody").innerHTML = encounters.length
-    ? encounters
-        .map((e) => {
-          const meta = ENCOUNTER_STATUS[e.status];
-          return `
-      <tr>
-        <td>${e.date}</td>
-        <td>${e.type}</td>
-        <td>${e.provider}</td>
-        <td>${e.facility}</td>
-        <td>${e.reason}</td>
-        <td><span class="rec-status-chip ${meta.cls}">${meta.label}</span></td>
-        <td>${ehrSourceCell(e.source)}</td>
-      </tr>`;
-        })
-        .join("")
-    : `<tr><td colspan="7" class="rec-empty">No encounters on file.</td></tr>`;
-}
-renderEncounters();
-
 /* ---------------- Patient Profile: Demographics ---------------- */
 const demographicsFields = [
   { label: "Onboarding Date", value: "12/01/2025" },
