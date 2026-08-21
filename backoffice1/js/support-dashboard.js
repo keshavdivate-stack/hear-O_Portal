@@ -49,7 +49,7 @@ document.getElementById("supDashCriticalRows").innerHTML = supDashCritical.lengt
       .map(
         (t) => `
       <tr>
-        <td><a class="bo-row-link" href="support.html?ticket=${encodeURIComponent(t.ticketNo)}&source=${t.source.toLowerCase()}">${t.ticketNo}</a></td>
+        <td><a class="bo-row-link" href="ticket-detail.html?ticket=${encodeURIComponent(t.ticketNo)}&source=${t.source.toLowerCase()}">${t.ticketNo}</a></td>
         <td>${t.raisedBy}</td>
         <td>${t.organization}</td>
         <td>${t.issueType}</td>

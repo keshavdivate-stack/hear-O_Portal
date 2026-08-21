@@ -10,13 +10,6 @@ document.querySelectorAll("#supportTabs .bo-tab").forEach((tab) => {
 });
 
 /* ---------------- Filter option lists ---------------- */
-function buildFilterSelectOptions(values, clearLabel) {
-  const clearOption = `
-      <div class="bo-select-option" data-value="">${clearLabel}
-        <svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </div>`;
-  return clearOption + buildSelectOptions(values);
-}
 document.getElementById("ticketStatusFilterMenu").innerHTML = buildFilterSelectOptions(STATUSES, "All statuses");
 document.getElementById("ticketSeverityFilterMenu").innerHTML = buildFilterSelectOptions(SEVERITIES, "All severities");
 document.getElementById("ticketCategoryFilterMenu").innerHTML = buildFilterSelectOptions(CATEGORIES, "All categories");
@@ -24,30 +17,10 @@ document.getElementById("ticketIssueFilterMenu").innerHTML = buildFilterSelectOp
 document.getElementById("ticketOriginFilterMenu").innerHTML = buildFilterSelectOptions(ORIGINS, "All origins");
 document.getElementById("ticketTypeFilterMenu").innerHTML = buildFilterSelectOptions(TICKET_TYPES, "All types");
 
-/* ---------------- Badges ---------------- */
-const statusPillClass = { "Open": "bo-pill-status-open", "In Progress": "bo-pill-status-inprogress", "Escalated": "bo-pill-status-escalated", "Resolved": "bo-pill-status-resolved" };
-const severityPillClass = { "Low": "bo-pill-severity-low", "Medium": "bo-pill-severity-medium", "High": "bo-pill-severity-high", "Critical": "bo-pill-severity-critical" };
-const originPillClass = { "System Generated": "bo-pill-origin-system", "User Created": "bo-pill-origin-user" };
-const typePillClass = { "Patient": "bo-pill-type-patient", "Clinic": "bo-pill-type-clinic" };
-
-const statusPill = (s) => `<span class="bo-pill ${statusPillClass[s] || ""}">${s}</span>`;
-const severityPill = (p) => `<span class="bo-pill ${severityPillClass[p] || ""}">${p}</span>`;
-const tierPill = (t) => `<span class="bo-pill bo-pill-tier">${t}</span>`;
-const originPill = (o) => `<span class="bo-pill ${originPillClass[o] || ""}">${o}</span>`;
-const typePill = (s) => `<span class="bo-pill ${typePillClass[s] || ""}">${s}</span>`;
-/* Category is a classification/routing field, not an urgency indicator --
-   rendered as a neutral tag so it doesn't visually compete with the
-   severity/status color coding in the same row. Tickets created via the
-   New Ticket form can carry an explicit category (user picked it, or it
-   defaulted from Issue Type); older/generated tickets fall back to the
-   Issue Type -> category lookup. */
-const ticketCategory = (t) => t.category || ISSUE_TYPE_CATEGORY[t.issueType];
-const categoryPill = (t) => `<span class="bo-pill bo-pill-tag">${ticketCategory(t) || "—"}</span>`;
-
 /* ---------------- Combine patient + clinic tickets into one list ----------------
-   Tags each ticket in place (rather than spreading into copies) so edits made
-   through the detail drawer stay in sync between this merged view and the
-   underlying patientTickets/clinicTickets arrays. */
+   Tags each ticket in place (rather than spreading into copies) so this
+   merged view stays in sync with the underlying patientTickets/clinicTickets
+   arrays that ticket-detail.html also reads from. */
 patientTickets.forEach((t) => { t.source = "patient"; t.type = "Patient"; t.who = t.patientId; });
 clinicTickets.forEach((t) => { t.source = "clinic"; t.type = "Clinic"; t.who = t.raisedBy; });
 const allTickets = [...patientTickets, ...clinicTickets];
@@ -212,102 +185,11 @@ document.getElementById("ticketSearchInput").addEventListener("input", (e) => {
   refreshTicketTables();
 });
 
-/* ---------------- Custom selects (used inside the ticket drawers) ---------------- */
-function setBoSelectValue(select, value, { silent = false } = {}) {
-  const hiddenInput = select.querySelector("input[type=hidden]");
-  const trigger = select.querySelector(".bo-select-value");
-  const options = Array.from(select.querySelectorAll(".bo-select-option"));
-  /* Compare dataset.value directly rather than building a
-     [data-value="..."] CSS selector -- many values here (statuses like "In
-     Progress", levels like "Level 1", categories like "Patient (Mobile/Web)",
-     issue types with colons/slashes) contain characters CSS.escape would
-     encode, which never matches the plain, unescaped attribute actually
-     rendered in the DOM. That silently left the dropdown showing its
-     placeholder instead of the selected value, even though the underlying
-     filter was applied correctly. */
-  const option = options.find((o) => o.dataset.value === value);
-
-  options.forEach((o) => o.classList.remove("selected"));
-
-  if (option) {
-    option.classList.add("selected");
-    trigger.textContent = option.textContent.trim();
-    trigger.classList.remove("placeholder");
-  } else {
-    trigger.textContent = trigger.dataset.placeholder || trigger.textContent;
-    trigger.classList.add("placeholder");
-  }
-
-  hiddenInput.value = value || "";
-  if (!silent) hiddenInput.dispatchEvent(new Event("change", { bubbles: true }));
-}
-
-function positionBoSelectMenu(select) {
-  const trigger = select.querySelector(".bo-select-trigger");
-  const menu = select.querySelector(".bo-select-menu");
-  const rect = trigger.getBoundingClientRect();
-  const menuHeight = Math.min(menu.scrollHeight, 220) + 12;
-  const spaceBelow = window.innerHeight - rect.bottom;
-  const openUpward = spaceBelow < menuHeight && rect.top > menuHeight;
-
-  menu.style.position = "fixed";
-  menu.style.left = `${rect.left}px`;
-  menu.style.width = `${rect.width}px`;
-  menu.style.top = openUpward ? "auto" : `${rect.bottom + 6}px`;
-  menu.style.bottom = openUpward ? `${window.innerHeight - rect.top + 6}px` : "auto";
-}
-
-function resetBoSelect(select) {
-  setBoSelectValue(select, "", { silent: true });
-}
-
-function closeAllBoSelects() {
-  document.querySelectorAll(".bo-select.open").forEach((s) => s.classList.remove("open"));
-}
-
-function initBoSelects() {
-  document.querySelectorAll(".bo-select").forEach((select) => {
-    const trigger = select.querySelector(".bo-select-trigger");
-    const valueEl = select.querySelector(".bo-select-value");
-
-    valueEl.dataset.placeholder = valueEl.textContent.trim();
-
-    trigger.addEventListener("click", (e) => {
-      e.stopPropagation();
-      const willOpen = !select.classList.contains("open");
-      closeAllBoSelects();
-      if (willOpen) positionBoSelectMenu(select);
-      select.classList.toggle("open", willOpen);
-    });
-
-    select.addEventListener("click", (e) => {
-      const option = e.target.closest(".bo-select-option");
-      if (!option) return;
-      setBoSelectValue(select, option.dataset.value);
-      select.classList.remove("open");
-    });
-  });
-
-  document.addEventListener("click", closeAllBoSelects);
-  document.addEventListener("scroll", closeAllBoSelects, true);
-  window.addEventListener("resize", closeAllBoSelects);
-}
-
+/* ---------------- Custom selects (used inside the ticket drawers) ----------------
+   Plumbing (setBoSelectValue/buildSelectOptions/initBoSelects/etc.) lives in
+   support-tickets-common.js, shared with ticket-detail.html. */
 initBoSelects();
 
-function buildSelectOptions(values) {
-  return values
-    .map(
-      (v) => `
-      <div class="bo-select-option" data-value="${v}">${v}
-        <svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </div>`
-    )
-    .join("");
-}
-document.querySelector('#ticketDetailOverlay .bo-select[data-name="ticketLevel"] .bo-select-menu').innerHTML = buildSelectOptions(TIERS);
-document.querySelector('#ticketDetailOverlay .bo-select[data-name="ticketSeverityHandling"] .bo-select-menu').innerHTML = buildSelectOptions(SEVERITIES);
-document.querySelector('#ticketDetailOverlay .bo-select[data-name="ticketStatus"] .bo-select-menu').innerHTML = buildSelectOptions(STATUSES);
 document.querySelector('#newTicketOverlay .bo-select[data-name="source"] .bo-select-menu').innerHTML = buildSelectOptions(["Patient", "Clinic"]);
 document.querySelector('#newTicketOverlay .bo-select[data-name="issueType"] .bo-select-menu').innerHTML = buildSelectOptions(ISSUE_TYPES);
 document.querySelector('#newTicketOverlay .bo-select[data-name="category"] .bo-select-menu').innerHTML = buildSelectOptions(CATEGORIES);
@@ -365,99 +247,18 @@ document.querySelector('#newTicketOverlay .bo-select[data-name="issueType"] inpu
 
 document.querySelector('#newTicketOverlay .bo-select[data-name="category"] input[type=hidden]').addEventListener("change", updateNewTicketSeverityLevelState);
 
-/* ---------------- Ticket detail drawer ---------------- */
-const ticketDetailOverlay = document.getElementById("ticketDetailOverlay");
-let activeTicket = null;
-
-/* Tickets are seeded without a history log -- back-fill a single "Created"
-   entry the first time a ticket is opened, so every ticket shows at least
-   its origin instead of an empty timeline. */
-function ensureTicketHistory(ticket) {
-  if (!ticket.history) {
-    ticket.history = [{ text: `Ticket created (${ticket.origin})`, date: ticket.createdDate }];
-  }
-  return ticket.history;
-}
-
-function renderTicketHistory(ticket) {
-  const entries = ensureTicketHistory(ticket);
-  document.getElementById("ticketDetailHistory").innerHTML = entries
-    .slice()
-    .reverse()
-    .map((h) => `<div class="bo-ticket-history-item"><span class="text">${h.text}</span><span class="meta">${h.date}</span></div>`)
-    .join("");
-}
-
-function setActiveTicket(source, id) {
-  const list = source === "patient" ? patientTickets : clinicTickets;
-  const ticket = list.find((t) => t.id === id);
-  if (!ticket) return null;
-  activeTicket = { source, ticket };
-  return ticket;
-}
-
-/* Assignee choices narrow to whichever tier is currently selected in the
-   Level field, so a ticket always lands on someone who actually works
-   that tier. */
-function populateTicketDetailAssignees(tier) {
-  const menu = document.querySelector('#ticketDetailOverlay .bo-select[data-name="ticketAssignedTo"] .bo-select-menu');
-  menu.innerHTML = buildSelectOptions(TIER_AGENTS[tier] || SUPPORT_AGENTS);
-}
-
-/* Resolved tickets no longer need routing info -- hide Level/Severity/
-   Assigned To rather than asking for values that don't matter anymore. */
-function applyTicketDetailStatusVisibility(status) {
-  const resolved = status === "Resolved";
-  document.getElementById("ticketDetailLevelField").hidden = resolved;
-  document.getElementById("ticketDetailSeverityField").hidden = resolved;
-  document.getElementById("ticketDetailAssignedToField").hidden = resolved;
-}
-
-function validateTicketDetailForm() {
-  const status = ticketDetailOverlay.querySelector('.bo-select[data-name="ticketStatus"] input[type=hidden]').value;
-  applyTicketDetailStatusVisibility(status);
-  const assigneeFilled = status === "Resolved" || ticketDetailOverlay.querySelector('.bo-select[data-name="ticketAssignedTo"] input[type=hidden]').value !== "";
-  document.getElementById("saveTicketDetail").disabled = !assigneeFilled;
-}
-
-function openTicketDetail(source, id) {
-  const ticket = setActiveTicket(source, id);
-  if (!ticket) return;
-
-  document.getElementById("ticketDetailTitle").textContent = ticket.ticketNo;
-  document.getElementById("ticketDetailSource").textContent = source === "patient" ? "Patient" : "Clinic";
-  document.getElementById("ticketDetailWhoLabel").textContent = source === "patient" ? "Patient ID" : "Raised By";
-  document.getElementById("ticketDetailWho").textContent = source === "patient" ? ticket.patientId : ticket.raisedBy;
-  document.getElementById("ticketDetailOrg").textContent = ticket.organization;
-  document.getElementById("ticketDetailOrigin").textContent = ticket.origin;
-  document.getElementById("ticketDetailScope").textContent = ticket.scope;
-  document.getElementById("ticketDetailCreated").textContent = ticket.createdDate;
-  document.getElementById("ticketDetailIssueType").textContent = ticket.issueType;
-  document.getElementById("ticketDetailCategory").textContent = ticketCategory(ticket) || "—";
-  document.getElementById("ticketDetailDescription").textContent = ticket.description;
-
-  document.getElementById("ticketDetailRootCause").value = ticket.rootCause || "";
-  setBoSelectValue(ticketDetailOverlay.querySelector('.bo-select[data-name="ticketStatus"]'), ticket.status, { silent: true });
-  setBoSelectValue(ticketDetailOverlay.querySelector('.bo-select[data-name="ticketLevel"]'), ticket.tier, { silent: true });
-  setBoSelectValue(ticketDetailOverlay.querySelector('.bo-select[data-name="ticketSeverityHandling"]'), ticket.severity, { silent: true });
-  populateTicketDetailAssignees(ticket.tier);
-  setBoSelectValue(ticketDetailOverlay.querySelector('.bo-select[data-name="ticketAssignedTo"]'), ticket.assignedTo || "", { silent: true });
-  validateTicketDetailForm();
-
-  renderTicketHistory(ticket);
-
-  ticketDetailOverlay.classList.add("open");
-}
-
-function closeTicketDetail() {
-  ticketDetailOverlay.classList.remove("open");
-  activeTicket = null;
-}
-
-/* ---------------- Row action dropdown (view ticket) ---------------- */
+/* ---------------- Row action dropdown (view ticket) ----------------
+   Clicking the row, or "View Ticket" in the kebab menu, opens the full-page
+   ticket-detail.html (mirrors how Incidents open incident-detail.html)
+   instead of a drawer -- that page also renders the Patient Log content
+   that used to live in a separate modal here. */
 const ticketRowMenu = document.getElementById("ticketRowMenu");
 let activeTicketSource = null;
 let activeTicketId = null;
+
+function goToTicketDetail(source, id) {
+  location.href = `ticket-detail.html?source=${source}&id=${id}`;
+}
 
 function wireTicketRowMenu(rowsId) {
   const rowsEl = document.getElementById(rowsId);
@@ -468,23 +269,19 @@ function wireTicketRowMenu(rowsId) {
     e.stopPropagation();
     activeTicketSource = trigger.dataset.source;
     activeTicketId = Number(trigger.dataset.id);
-    /* Device/app log data only exists for tickets raised on behalf of a
-       patient (clinic-staff tickets have no device to report on), so the
-       option is hidden rather than shown disabled. */
-    document.getElementById("viewLogMenuItem").hidden = activeTicketSource !== "patient";
     const rect = trigger.getBoundingClientRect();
     ticketRowMenu.style.top = `${rect.bottom + 6}px`;
     ticketRowMenu.style.left = `${rect.right - 190}px`;
     ticketRowMenu.classList.add("open");
   });
 
-  /* Clicking anywhere else in the row opens the ticket detail drawer
+  /* Clicking anywhere else in the row opens the ticket detail page
      directly, so the kebab menu is only needed as a secondary entry point. */
   rowsEl.addEventListener("click", (e) => {
     if (e.target.closest(".row-menu-trigger")) return;
     const row = e.target.closest("tr[data-source][data-id]");
     if (!row) return;
-    openTicketDetail(row.dataset.source, Number(row.dataset.id));
+    goToTicketDetail(row.dataset.source, Number(row.dataset.id));
   });
 }
 wireTicketRowMenu("ticketRows");
@@ -497,223 +294,7 @@ ticketRowMenu.addEventListener("click", (e) => {
   const item = e.target.closest(".bo-row-menu-item");
   if (!item || activeTicketId === null) return;
   ticketRowMenu.classList.remove("open");
-  if (item.dataset.action === "view") openTicketDetail(activeTicketSource, activeTicketId);
-  if (item.dataset.action === "viewLog") openPatientLogModal(activeTicketSource, activeTicketId);
-});
-
-/* ---------------- Patient log modal (app version / device / permissions) ----------------
-   Field set mirrors what the mobile app's own device log actually reports
-   (see a raw log export: `[DeviceID]: iPhone17-5`, `VersionUpdateManager:
-   Current App version: 3.2.0`, `Available device capacity usage MB: ...`,
-   `HealthKit: Permission requesting - success`, `reading Blood Pressure -
-   permissions denied`, etc.) -- so this only surfaces fields the app log
-   really emits, not invented telemetry (no battery %, network type, etc.
-   which the log never records). The seeded ticket data has no device
-   telemetry attached to it, so the log is derived deterministically from
-   the patient ID -- same ticket always shows the same "captured" log
-   instead of re-rolling on every open. */
-const patientLogOverlay = document.getElementById("patientLogOverlay");
-let activePatientLog = null;
-
-function seededRandom(seed) {
-  let hash = 0;
-  for (let i = 0; i < seed.length; i++) hash = (hash * 31 + seed.charCodeAt(i)) >>> 0;
-  return () => {
-    hash = (hash * 1103515245 + 12345) >>> 0;
-    return hash / 4294967296;
-  };
-}
-
-function pickFrom(rand, arr) {
-  return arr[Math.floor(rand() * arr.length)];
-}
-
-const LOG_DEVICES = [
-  { deviceId: "iPhone17-5", os: "iOS 26.5", platform: "iOS" },
-  { deviceId: "iPhone16-2", os: "iOS 18.4", platform: "iOS" },
-  { deviceId: "iPhone14-7", os: "iOS 17.6", platform: "iOS" },
-  { deviceId: "SM-G991B", os: "Android 14", platform: "Android" },
-  { deviceId: "Pixel-7", os: "Android 14", platform: "Android" },
-];
-const LOG_APP_VERSIONS = ["3.1.5", "3.2.0", "3.2.7", "3.3.0", "3.4.1"];
-
-/* Raw event lines the mobile app's device log actually emits, sampled from a
-   real log export -- used to fabricate a plausible "Log History" list. */
-const LOG_HISTORY_TEMPLATES = [
-  "AudioEngineManager: Initalize session configuration - success",
-  "AudioEngineManager: Set preferred sample rate - success",
-  "AudioEngineManager: Activate session - success",
-  "AudioEngineManager: Starting mic",
-  "AudioRecorder: Mixer attach - success",
-  "AudioRecorder: Mixer Input - success",
-  "AudioRecorder: Engine Start - success",
-  "AudioEngineManager: Model successfully initialized for language 'en'",
-  "CordioNetworkManager: POST /api/Auth/saveFCMToken",
-  "CordioNetworkManager: Response Status Code: 200",
-  "CordioNetworkManager: POST /api/comm/chatmessage/GetForPatient",
-  "FCM Token Sync: Successfully sent token to server",
-  "Lexicon: Getting new version url - success",
-  "Lexicon: Download - started chunk #0. Chunk size is 20MB",
-  "Lexicon: Found model for language 'en' with version '0.0'",
-  "FileUploader: get pending files list - failed: folder \"recordings\" doesn't exist",
-  "Notification Manager: reminder mode updated from new config",
-  "VoskModel: Found model path for language 'en'",
-  "reset the app Badge",
-  "Available device capacity usage MB: 110286 MB",
-  "NoSessionLog: skipped - gap 0d < required 3d",
-];
-
-function buildLogHistory(rand, ticket) {
-  const count = 18 + Math.floor(rand() * 10);
-  let h = 8 + Math.floor(rand() * 10);
-  let m = Math.floor(rand() * 60);
-  let s = Math.floor(rand() * 60);
-  const day = (ticket.createdDate || "").split(" ")[0] || "";
-  const lines = [];
-  for (let i = 0; i < count; i++) {
-    s += 1 + Math.floor(rand() * 4);
-    if (s >= 60) { s -= 60; m += 1; }
-    if (m >= 60) { m -= 60; h += 1; }
-    const ts = `${day} ${String(h % 24).padStart(2, "0")}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
-    lines.push({ ts, msg: pickFrom(rand, LOG_HISTORY_TEMPLATES) });
-  }
-  return lines;
-}
-
-function buildPatientLog(ticket) {
-  const rand = seededRandom(ticket.patientId || String(ticket.id));
-  const device = pickFrom(rand, LOG_DEVICES);
-  const appVersion = pickFrom(rand, LOG_APP_VERSIONS);
-  const buildNumber = 80 + Math.floor(rand() * 20);
-  const storageMb = 40000 + Math.floor(rand() * 90000);
-
-  return {
-    appVersion: [
-      { label: "App Version", value: appVersion },
-      { label: "Build Number", value: String(buildNumber) },
-      { label: "Platform", value: device.platform },
-      { label: "Last Updated", value: ticket.createdDate.split(" ")[0] },
-    ],
-    deviceInfo: [
-      { label: "Device ID", value: device.deviceId },
-      { label: "OS Version", value: device.os },
-      { label: "Available Storage", value: `${(storageMb / 1024).toFixed(1)} GB` },
-    ],
-    permissions: [
-      { label: "Microphone", value: "Granted" },
-      { label: "Notifications", value: "Granted" },
-      { label: "Health Data Access", value: "Granted" },
-      { label: "Blood Pressure Data", value: rand() > 0.5 ? "Denied" : "Granted" },
-    ],
-    logHistory: buildLogHistory(rand, ticket),
-  };
-}
-
-function renderPatientLogSection(elId, rows) {
-  document.getElementById(elId).innerHTML = rows
-    .map((r) => `<div class="patient-log-chip"><span class="label">${r.label}</span><span class="value">${r.value}</span></div>`)
-    .join("");
-}
-
-function renderPatientLogHistory(elId, lines) {
-  document.getElementById(elId).innerHTML = lines
-    .map((l) => `<div class="patient-log-line"><span class="ts">${l.ts}</span><span class="msg">${l.msg}</span></div>`)
-    .join("");
-}
-
-function openPatientLogModal(source, id) {
-  const ticket = setActiveTicket(source, id);
-  if (!ticket) return;
-  const log = buildPatientLog(ticket);
-  activePatientLog = { ticket, log };
-
-  document.getElementById("patientLogTicketNo").textContent = `— ${ticket.ticketNo} (${ticket.patientId})`;
-  renderPatientLogSection("patientLogAppVersion", log.appVersion);
-  renderPatientLogSection("patientLogDeviceInfo", log.deviceInfo);
-  renderPatientLogSection("patientLogPermissions", log.permissions);
-  renderPatientLogHistory("patientLogHistory", log.logHistory);
-
-  patientLogOverlay.classList.add("open");
-}
-
-function closePatientLogModal() {
-  patientLogOverlay.classList.remove("open");
-  activePatientLog = null;
-}
-
-function downloadPatientLog() {
-  if (!activePatientLog) return;
-  const { ticket, log } = activePatientLog;
-  const section = (title, rows) => `${title}\n${rows.map((r) => `  ${r.label}: ${r.value}`).join("\n")}\n`;
-  const historySection = `Log History\n${log.logHistory.map((l) => `  ${l.ts}: ${l.msg}`).join("\n")}\n`;
-  const text = [
-    `Patient Log - ${ticket.ticketNo} (${ticket.patientId})`,
-    "",
-    section("App Version", log.appVersion),
-    section("Device Info", log.deviceInfo),
-    section("Permissions Info", log.permissions),
-    historySection,
-  ].join("\n");
-
-  const blob = new Blob([text], { type: "text/plain" });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = `${ticket.ticketNo}-patient-log.txt`;
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
-  URL.revokeObjectURL(url);
-}
-
-document.getElementById("closePatientLogModal").addEventListener("click", closePatientLogModal);
-document.getElementById("downloadPatientLogBtn").addEventListener("click", downloadPatientLog);
-patientLogOverlay.addEventListener("click", (e) => { if (e.target === patientLogOverlay) closePatientLogModal(); });
-
-document.getElementById("closeTicketDetailX").addEventListener("click", closeTicketDetail);
-document.getElementById("cancelTicketDetail").addEventListener("click", closeTicketDetail);
-ticketDetailOverlay.addEventListener("click", (e) => { if (e.target === ticketDetailOverlay) closeTicketDetail(); });
-document.getElementById("ticketDetailForm").addEventListener("input", validateTicketDetailForm);
-document.getElementById("ticketDetailForm").addEventListener("change", validateTicketDetailForm);
-
-document.querySelector('#ticketDetailOverlay .bo-select[data-name="ticketLevel"] input[type=hidden]').addEventListener("change", (e) => {
-  populateTicketDetailAssignees(e.target.value);
-  resetBoSelect(ticketDetailOverlay.querySelector('.bo-select[data-name="ticketAssignedTo"]'));
-  validateTicketDetailForm();
-});
-
-function formatChangeDate() {
-  const now = new Date();
-  return `${String(now.getDate()).padStart(2, "0")}/${String(now.getMonth() + 1).padStart(2, "0")}/${now.getFullYear()} ${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
-}
-
-document.getElementById("ticketDetailForm").addEventListener("submit", (e) => {
-  e.preventDefault();
-  if (!activeTicket || document.getElementById("saveTicketDetail").disabled) return;
-  const ticket = activeTicket.ticket;
-  const history = ensureTicketHistory(ticket);
-  const changeDate = formatChangeDate();
-
-  const rootCause = document.getElementById("ticketDetailRootCause").value.trim();
-  const nextAssignee = ticketDetailOverlay.querySelector('.bo-select[data-name="ticketAssignedTo"] input[type=hidden]').value;
-  const nextTier = ticketDetailOverlay.querySelector('.bo-select[data-name="ticketLevel"] input[type=hidden]').value || ticket.tier;
-  const nextSeverity = ticketDetailOverlay.querySelector('.bo-select[data-name="ticketSeverityHandling"] input[type=hidden]').value || ticket.severity;
-  const nextStatus = ticketDetailOverlay.querySelector('.bo-select[data-name="ticketStatus"] input[type=hidden]').value || ticket.status;
-
-  if (rootCause !== (ticket.rootCause || "")) history.push({ text: `Root cause recorded: ${rootCause}`, date: changeDate });
-  if (nextAssignee !== (ticket.assignedTo || "")) history.push({ text: `Reassigned from ${ticket.assignedTo || "Unassigned"} to ${nextAssignee}`, date: changeDate });
-  if (nextTier !== ticket.tier) history.push({ text: `Level changed from ${ticket.tier} to ${nextTier}`, date: changeDate });
-  if (nextSeverity !== ticket.severity) history.push({ text: `Severity changed from ${ticket.severity} to ${nextSeverity}`, date: changeDate });
-  if (nextStatus !== ticket.status) history.push({ text: `Status changed from ${ticket.status} to ${nextStatus}`, date: changeDate });
-
-  ticket.rootCause = rootCause;
-  ticket.assignedTo = nextAssignee;
-  ticket.tier = nextTier;
-  ticket.severity = nextSeverity;
-  ticket.status = nextStatus;
-
-  closeTicketDetail();
-  refreshTicketTables();
+  if (item.dataset.action === "view") goToTicketDetail(activeTicketSource, activeTicketId);
 });
 
 /* ---------------- New ticket drawer ---------------- */
@@ -824,34 +405,6 @@ newTicketForm.addEventListener("submit", (e) => {
   closeNewTicketDrawer();
   refreshTicketTables();
 });
-
-/* ---------------- Deep link: ?ticket=TCK-xxxx&source=patient|clinic ----------------
-   Lets other screens (e.g. Support Dashboard's Critical & Escalated Tickets list)
-   link straight into a specific ticket instead of just the tickets page. */
-(function openTicketFromUrl() {
-  const params = new URLSearchParams(location.search);
-  const ticketNo = params.get("ticket");
-  if (!ticketNo) return;
-
-  const sourceParam = params.get("source");
-  let source = sourceParam === "clinic" ? "clinic" : sourceParam === "patient" ? "patient" : null;
-  let match = null;
-
-  if (source) {
-    match = (source === "patient" ? patientTickets : clinicTickets).find((t) => t.ticketNo === ticketNo);
-  }
-  if (!match) {
-    match = patientTickets.find((t) => t.ticketNo === ticketNo);
-    if (match) source = "patient";
-  }
-  if (!match) {
-    match = clinicTickets.find((t) => t.ticketNo === ticketNo);
-    if (match) source = "clinic";
-  }
-  if (!match) return;
-
-  openTicketDetail(source, match.id);
-})();
 
 /* ---------------- Rules table ---------------- */
 const channelPillClass = { "Notification": "bo-pill-channel-notification", "Email": "bo-pill-channel-email", "SMS": "bo-pill-channel-sms" };
