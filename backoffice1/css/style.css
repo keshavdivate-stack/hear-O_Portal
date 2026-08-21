@@ -2894,6 +2894,100 @@ label.bo-date-field { cursor: text; }
   color: var(--ink);
 }
 
+.bo-center-modal-wide { width: 520px; }
+.bo-center-modal-xl { width: 760px; }
+
+/* Patient log modal: compact device snapshot + scrollable log history */
+.patient-log-modal {
+  display: flex;
+  flex-direction: column;
+  max-height: 88vh;
+}
+
+.patient-log-snapshot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 32px;
+  padding: 14px 16px;
+  background: var(--bg);
+  border-radius: 10px;
+  margin-bottom: 18px;
+  flex-shrink: 0;
+}
+
+.patient-log-snapshot-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1 1 200px;
+  min-width: 180px;
+}
+
+.patient-log-snapshot-group .bo-modal-section-title {
+  margin: 0;
+  padding-top: 0;
+  border-top: none;
+}
+
+.patient-log-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 20px;
+}
+
+.patient-log-chip { display: flex; flex-direction: column; gap: 2px; }
+
+.patient-log-chip .label {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  color: var(--gray-text);
+}
+
+.patient-log-chip .value { font-size: 13px; font-weight: 700; color: var(--ink); }
+
+.patient-log-history {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.patient-log-history-title { margin-bottom: 10px; }
+
+.patient-log-console {
+  flex: 1;
+  min-height: 220px;
+  max-height: 360px;
+  overflow-y: auto;
+  background: #F4F5F7;
+  border: 1px solid var(--gray-border);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.patient-log-line {
+  display: flex;
+  gap: 10px;
+  padding: 2px 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.patient-log-line .ts { color: var(--gray-text); flex-shrink: 0; }
+.patient-log-line .msg { color: var(--ink); }
+
+.bo-modal-subtitle {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--gray-text);
+  margin-left: 8px;
+}
+
 .bo-center-modal .bo-modal-field { margin-bottom: 16px; }
 
 .bo-center-modal-foot {

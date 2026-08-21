@@ -546,6 +546,39 @@
   <!-- Row action dropdown -->
   <div class="bo-row-menu" id="ticketRowMenu">
     <button class="bo-row-menu-item" data-action="view">View Ticket</button>
+    <button class="bo-row-menu-item" data-action="viewLog" id="viewLogMenuItem">View Log</button>
+  </div>
+
+  <!-- Patient log modal (app version / device / permissions + log history, patient tickets only) -->
+  <div class="bo-center-modal-overlay" id="patientLogOverlay">
+    <div class="bo-center-modal bo-center-modal-xl patient-log-modal">
+      <h2>Patient Log <span class="bo-modal-subtitle" id="patientLogTicketNo"></span></h2>
+
+      <div class="patient-log-snapshot">
+        <div class="patient-log-snapshot-group">
+          <div class="bo-modal-section-title">App Version</div>
+          <div class="patient-log-chip-row" id="patientLogAppVersion"></div>
+        </div>
+        <div class="patient-log-snapshot-group">
+          <div class="bo-modal-section-title">Device Info</div>
+          <div class="patient-log-chip-row" id="patientLogDeviceInfo"></div>
+        </div>
+        <div class="patient-log-snapshot-group">
+          <div class="bo-modal-section-title">Permissions Info</div>
+          <div class="patient-log-chip-row" id="patientLogPermissions"></div>
+        </div>
+      </div>
+
+      <div class="patient-log-history">
+        <div class="bo-modal-section-title patient-log-history-title">Log History</div>
+        <div class="patient-log-console" id="patientLogHistory"></div>
+      </div>
+
+      <div class="bo-center-modal-foot">
+        <button type="button" class="bo-btn-text" id="closePatientLogModal">Close</button>
+        <button type="button" class="bo-btn-primary" id="downloadPatientLogBtn">Download Log</button>
+      </div>
+    </div>
   </div>
 
   <!-- Ticket detail drawer -->

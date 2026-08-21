@@ -158,36 +158,19 @@
       <!-- CONTENT -->
       <div class="list-content">
 
-        <div class="list-top-row">
-          <div class="filter-tabs" id="patientScopeTabs">
-            <button type="button" class="filter-tab active" data-scope="all">All Patients</button>
-            <button type="button" class="filter-tab" data-scope="mine">My Patients</button>
-          </div>
-
-          <span class="filters-spacer"></span>
-
-          <div class="topbar-item">
-            <button class="btn-add-user" id="openAddPatientBtn">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-              Add Patient
-            </button>
-            <div class="topbar-popover add-patient-menu" id="addPatientMenu">
-              <button type="button" class="row-menu-item" id="openRegisterManualBtn">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
-                Register Manually
-              </button>
-              <button type="button" class="row-menu-item" id="openImportPatientBtn">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 17H7A5 5 0 0 1 7 7h2"/><path d="M15 7h2a5 5 0 0 1 0 10h-2"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
-                Import from EHR
-              </button>
-            </div>
-          </div>
-        </div>
-
         <div class="filters-bar">
           <div class="search-pill">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#9AA5B1" stroke-width="1.8"/><path d="M21 21L16.5 16.5" stroke="#9AA5B1" stroke-width="1.8" stroke-linecap="round"/></svg>
             <input type="text" id="searchInput" placeholder="Search patient" />
+          </div>
+
+          <div class="checkbox-filter" data-name="scope">
+            <button type="button" class="filter-btn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="9" cy="8" r="3.2" stroke="#6B7684" stroke-width="1.6"/><path d="M2.5 20C2.5 16.5 5.5 14 9 14C12.5 14 15.5 16.5 15.5 20" stroke="#6B7684" stroke-width="1.6" stroke-linecap="round"/><circle cx="17" cy="8.5" r="2.6" stroke="#6B7684" stroke-width="1.4"/><path d="M15.5 20C15.5 17 17.8 15 20.5 15" stroke="#6B7684" stroke-width="1.4" stroke-linecap="round"/></svg>
+              <span class="checkbox-filter-label" id="scopeFilterLabel">All Patients</span>
+              <svg class="caret" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#6B7684" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="checkbox-filter-menu" id="scopeMenu"></div>
           </div>
 
           <div class="checkbox-filter" data-name="account">
@@ -245,6 +228,25 @@
           </div>
 
           <button class="clear-filters" id="clearFilters">Clear all filters</button>
+
+          <span class="filters-spacer"></span>
+
+          <div class="topbar-item">
+            <button class="btn-add-user" id="openAddPatientBtn">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+              Add Patient
+            </button>
+            <div class="topbar-popover add-patient-menu" id="addPatientMenu">
+              <button type="button" class="row-menu-item" id="openRegisterManualBtn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+                Register Manually
+              </button>
+              <button type="button" class="row-menu-item" id="openImportPatientBtn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 17H7A5 5 0 0 1 7 7h2"/><path d="M15 7h2a5 5 0 0 1 0 10h-2"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                Import from EHR
+              </button>
+            </div>
+          </div>
         </div>
 
         <div class="table-card">
