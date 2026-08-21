@@ -7,7 +7,7 @@ const kebabIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><
 
 const patientList = [
   { name: "Alexander White", username: "ABC-1254", mrn: "857452365", phone: "054-857 15423", account: "Enabled", status: "priority", flag: true, since: "Since: 2d | 01.08.2028", monitoring: "monitored", compliance: 92, gender: "M", careStatus: "in_progress", careTitle: "Review Carvedilol titration", careAssignee: "Amanda Lee, RN", team: "Heart Failure Team", teamMember: "Dr. Sarah Mitchell" },
-  { name: "Dan Volex",        username: "ABC-1252", mrn: "854745856", phone: "054-857 15423", account: "Enabled", status: "priority", flag: false, since: "Since: 2d | 01.08.2028", monitoring: "monitored", compliance: 68, gender: "M", action: { type: "contacted", date: "", note: "" }, careStatus: "completed", team: "Remote Monitoring Team", teamMember: "Amanda Lee, RN" },
+  { name: "Dan Volex",        username: "ABC-1252", mrn: "854745856", phone: "054-857 15423", account: "Enabled", status: "priority", flag: false, since: "Since: 2d | 01.08.2028", monitoring: "monitored", compliance: 68, gender: "M", action: { type: "contacted", date: "", note: "" }, careStatus: "completed", team: "Remote Monitoring Team", teamMember: "Amanda Lee, RN", ehrOrg: true },
   { name: "Mike Brown",       username: "ABC-1251", mrn: "854125632", phone: "054-857 15423", account: "Enabled", status: "priority", flag: false, since: "Since: 2d | 01.08.2028", monitoring: "unmonitored", monSince: "Since: 1d | 01.09.2028", compliance: 34, gender: "M", team: "Heart Failure Team", teamMember: "Dr. James Carter" },
   { name: "Ariel Fox",        username: "ABC-1238", mrn: "854123658", phone: "054-857 15423", account: "Enabled", status: "priority", flag: false, since: "Since: 3d | 01.07.2028", monitoring: "monitored", compliance: 81, gender: "F", action: { type: "invite", date: "", note: "" }, careStatus: "recommended", careTitle: "Increase Furosemide dose", team: "Post-Discharge Team", teamMember: "Emily Carter" },
   { name: "Jeff Frank",       username: "ABC-1242", mrn: "854123658", phone: "054-857 15423", account: "Enabled", status: "priority", flag: false, since: "Since: 4d | 01.06.2028", monitoring: "monitored", compliance: 57, gender: "M", team: "Remote Monitoring Team", teamMember: "Ayelet Er, NP" },
@@ -177,7 +177,7 @@ function careIndicatorPopoverHtml(p) {
       <div class="care-indicator-popover-rec">${p.careTitle || ""}</div>
       ${p.careAssignee ? `<div class="care-indicator-popover-assignee">${p.careAssignee}</div>` : ""}
     </div>
-    <a class="care-indicator-popover-link" href="patient-data.html">View patient chart &rarr;</a>`;
+    <a class="care-indicator-popover-link" href="${patientChartHref(p)}">View patient chart &rarr;</a>`;
 }
 
 function complianceInRange(value) {
@@ -190,6 +190,13 @@ function complianceInRange(value) {
 
 function genderLabel(gender) {
   return gender === "M" ? "(M)" : gender === "F" ? "(F)" : "(Other)";
+}
+
+/* Patients from an EHR-connected organization open the EHR patient chart
+   (ehr-integration/patient-data.html); everyone else opens the standard
+   patient chart. Kept as separate pages/portals -- see ehr-integration/. */
+function patientChartHref(p) {
+  return p.ehrOrg ? "ehr-integration/patient-data.html" : "patient-data.html";
 }
 
 function filteredPatientList() {
@@ -212,7 +219,7 @@ function renderPatientList() {
     .map(
       (p) => `
       <tr>
-        <td><a class="lt-name ${p.status === "priority" ? "priority" : "active-name"}" href="patient-data.html">${p.name} ${genderLabel(p.gender)}</a></td>
+        <td><a class="lt-name ${p.status === "priority" ? "priority" : "active-name"}" href="${patientChartHref(p)}">${p.name} ${genderLabel(p.gender)}</a></td>
         <td>${p.username}</td>
         <td>${p.mrn}</td>
         <td>${p.phone}</td>
