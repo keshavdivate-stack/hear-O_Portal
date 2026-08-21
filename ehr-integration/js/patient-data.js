@@ -1963,3 +1963,32 @@ wireAddModal("addMeasurementOverlay", "addMeasurementForm", "cancelAddMeasuremen
 });
 
 document.getElementById("openAddMeasurementBtn").addEventListener("click", () => setMeasurementWeightUnit(weightUnit));
+
+/* ---------------- Patient header kebab menu ---------------- */
+const patientHeaderKebab = document.getElementById("patientHeaderKebab");
+const patientHeaderMenu = document.getElementById("patientHeaderMenu");
+
+if (patientHeaderKebab && patientHeaderMenu) {
+  patientHeaderKebab.addEventListener("click", (e) => {
+    e.stopPropagation();
+    const willOpen = !patientHeaderMenu.classList.contains("open");
+    patientHeaderMenu.classList.remove("open");
+    if (willOpen) {
+      const rect = patientHeaderKebab.getBoundingClientRect();
+      patientHeaderMenu.style.top = `${rect.bottom + 6}px`;
+      patientHeaderMenu.style.left = `${rect.right - 190}px`;
+      patientHeaderMenu.classList.add("open");
+    }
+  });
+
+  patientHeaderMenu.addEventListener("click", (e) => {
+    e.stopPropagation();
+    if (e.target.closest(".row-menu-item")) patientHeaderMenu.classList.remove("open");
+  });
+
+  document.addEventListener("click", (e) => {
+    if (!patientHeaderMenu.contains(e.target) && e.target !== patientHeaderKebab) {
+      patientHeaderMenu.classList.remove("open");
+    }
+  });
+}
