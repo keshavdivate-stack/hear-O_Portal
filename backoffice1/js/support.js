@@ -468,6 +468,10 @@ function wireTicketRowMenu(rowsId) {
     e.stopPropagation();
     activeTicketSource = trigger.dataset.source;
     activeTicketId = Number(trigger.dataset.id);
+    /* Device/app log data only exists for tickets raised on behalf of a
+       patient (clinic-staff tickets have no device to report on), so the
+       option is hidden rather than shown disabled. */
+    document.getElementById("viewLogMenuItem").hidden = activeTicketSource !== "patient";
     const rect = trigger.getBoundingClientRect();
     ticketRowMenu.style.top = `${rect.bottom + 6}px`;
     ticketRowMenu.style.left = `${rect.right - 190}px`;
@@ -494,7 +498,124 @@ ticketRowMenu.addEventListener("click", (e) => {
   if (!item || activeTicketId === null) return;
   ticketRowMenu.classList.remove("open");
   if (item.dataset.action === "view") openTicketDetail(activeTicketSource, activeTicketId);
+  if (item.dataset.action === "viewLog") openPatientLogModal(activeTicketSource, activeTicketId);
 });
+
+/* ---------------- Patient log modal (app version / device / permissions) ----------------
+   Field set mirrors what the mobile app's own device log actually reports
+   (see a raw log export: `[DeviceID]: iPhone17-5`, `VersionUpdateManager:
+   Current App version: 3.2.0`, `Available device capacity usage MB: ...`,
+   `HealthKit: Permission requesting - success`, `reading Blood Pressure -
+   permissions denied`, etc.) -- so this only surfaces fields the app log
+   really emits, not invented telemetry (no battery %, network type, etc.
+   which the log never records). The seeded ticket data has no device
+   telemetry attached to it, so the log is derived deterministically from
+   the patient ID -- same ticket always shows the same "captured" log
+   instead of re-rolling on every open. */
+const patientLogOverlay = document.getElementById("patientLogOverlay");
+let activePatientLog = null;
+
+function seededRandom(seed) {
+  let hash = 0;
+  for (let i = 0; i < seed.length; i++) hash = (hash * 31 + seed.charCodeAt(i)) >>> 0;
+  return () => {
+    hash = (hash * 1103515245 + 12345) >>> 0;
+    return hash / 4294967296;
+  };
+}
+
+function pickFrom(rand, arr) {
+  return arr[Math.floor(rand() * arr.length)];
+}
+
+const LOG_DEVICES = [
+  { deviceId: "iPhone17-5", os: "iOS 26.5", platform: "iOS" },
+  { deviceId: "iPhone16-2", os: "iOS 18.4", platform: "iOS" },
+  { deviceId: "iPhone14-7", os: "iOS 17.6", platform: "iOS" },
+  { deviceId: "SM-G991B", os: "Android 14", platform: "Android" },
+  { deviceId: "Pixel-7", os: "Android 14", platform: "Android" },
+];
+const LOG_APP_VERSIONS = ["3.1.5", "3.2.0", "3.2.7", "3.3.0", "3.4.1"];
+
+function buildPatientLog(ticket) {
+  const rand = seededRandom(ticket.patientId || String(ticket.id));
+  const device = pickFrom(rand, LOG_DEVICES);
+  const appVersion = pickFrom(rand, LOG_APP_VERSIONS);
+  const buildNumber = 80 + Math.floor(rand() * 20);
+  const storageMb = 40000 + Math.floor(rand() * 90000);
+
+  return {
+    appVersion: [
+      { label: "App Version", value: appVersion },
+      { label: "Build Number", value: String(buildNumber) },
+      { label: "Platform", value: device.platform },
+      { label: "Last Updated", value: ticket.createdDate.split(" ")[0] },
+    ],
+    deviceInfo: [
+      { label: "Device ID", value: device.deviceId },
+      { label: "OS Version", value: device.os },
+      { label: "Available Storage", value: `${(storageMb / 1024).toFixed(1)} GB` },
+    ],
+    permissions: [
+      { label: "Microphone", value: "Granted" },
+      { label: "Notifications", value: "Granted" },
+      { label: "Health Data Access", value: "Granted" },
+      { label: "Blood Pressure Data", value: rand() > 0.5 ? "Denied" : "Granted" },
+    ],
+  };
+}
+
+function renderPatientLogSection(elId, rows) {
+  document.getElementById(elId).innerHTML = rows
+    .map((r) => `<div class="bo-ticket-summary-item"><span class="label">${r.label}</span><span class="value">${r.value}</span></div>`)
+    .join("");
+}
+
+function openPatientLogModal(source, id) {
+  const ticket = setActiveTicket(source, id);
+  if (!ticket) return;
+  const log = buildPatientLog(ticket);
+  activePatientLog = { ticket, log };
+
+  document.getElementById("patientLogTicketNo").textContent = `— ${ticket.ticketNo} (${ticket.patientId})`;
+  renderPatientLogSection("patientLogAppVersion", log.appVersion);
+  renderPatientLogSection("patientLogDeviceInfo", log.deviceInfo);
+  renderPatientLogSection("patientLogPermissions", log.permissions);
+
+  patientLogOverlay.classList.add("open");
+}
+
+function closePatientLogModal() {
+  patientLogOverlay.classList.remove("open");
+  activePatientLog = null;
+}
+
+function downloadPatientLog() {
+  if (!activePatientLog) return;
+  const { ticket, log } = activePatientLog;
+  const section = (title, rows) => `${title}\n${rows.map((r) => `  ${r.label}: ${r.value}`).join("\n")}\n`;
+  const text = [
+    `Patient Log - ${ticket.ticketNo} (${ticket.patientId})`,
+    "",
+    section("App Version", log.appVersion),
+    section("Device Info", log.deviceInfo),
+    section("Permissions Info", log.permissions),
+  ].join("\n");
+
+  const blob = new Blob([text], { type: "text/plain" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `${ticket.ticketNo}-patient-log.txt`;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+}
+
+document.getElementById("closePatientLogModal").addEventListener("click", closePatientLogModal);
+document.getElementById("downloadPatientLogBtn").addEventListener("click", downloadPatientLog);
+patientLogOverlay.addEventListener("click", (e) => { if (e.target === patientLogOverlay) closePatientLogModal(); });
 
 document.getElementById("closeTicketDetailX").addEventListener("click", closeTicketDetail);
 document.getElementById("cancelTicketDetail").addEventListener("click", closeTicketDetail);

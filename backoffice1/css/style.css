@@ -2894,6 +2894,15 @@ label.bo-date-field { cursor: text; }
   color: var(--ink);
 }
 
+.bo-center-modal-wide { width: 520px; }
+
+.bo-modal-subtitle {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--gray-text);
+  margin-left: 8px;
+}
+
 .bo-center-modal .bo-modal-field { margin-bottom: 16px; }
 
 .bo-center-modal-foot {
