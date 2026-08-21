@@ -4821,4 +4821,448 @@ label.checkbox-field {
 
 .export-summary-box b { font-weight: 700; }
 
+.rec-create-form .unit-input { width: 100%; }
+.rec-create-form .unit-input input {
+  width: 100%;
+  min-width: 0;
+  flex: 1;
+  background: #fff;
+}
+
+/* ============================================================
+   CARE RECOMMENDATION — FULL-SCREEN PAGE
+   ============================================================ */
+.rec-page-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  border-bottom: 1px solid var(--gray-border);
+  padding: 20px 28px;
+}
+
+.rec-page-back {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1px solid var(--gray-border);
+  background: #fff;
+  color: #23272E;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  text-decoration: none;
+}
+
+.rec-page-back:hover { background: var(--bg); }
+
+.rec-page-title-group { display: flex; flex-direction: column; gap: 3px; }
+
+.rec-page-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #9AA5B1;
+}
+
+.rec-page-breadcrumb a {
+  color: var(--gray-text);
+  text-decoration: none;
+}
+
+.rec-page-breadcrumb a:hover { color: var(--blue); text-decoration: underline; }
+
+.rec-page-title { font-size: 22px; font-weight: 800; color: #23272E; line-height: 1.2; }
+
+.rec-page-patient {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--gray-text);
+}
+
+.rec-page-patient b { color: #23272E; font-weight: 700; }
+
+.rec-page-header-spacer { flex: 1; }
+
+.rec-page-close {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: var(--gray-text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  text-decoration: none;
+}
+
+.rec-page-close:hover { background: var(--bg); color: #23272E; }
+
+/* -- Care Recommendations page: fixed viewport shell, no page-level scroll --
+   only the Recent Care Recommendations list scrolls internally. */
+.main:has(.rec-page-card) {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.main:has(.rec-page-card) .topbar { flex-shrink: 0; }
+
+.main:has(.rec-page-card) .data-content {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* -- Single white container for patient card + tabs -- */
+.rec-page-card {
+  background: #fff;
+  border: 1px solid var(--gray-border);
+  border-radius: 16px;
+  overflow: hidden;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.rec-page-card .rec-page-header { flex-shrink: 0; }
+
+.rec-page-card .data-tabs-card {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.rec-page-card .rec-page-header,
+.rec-page-card .patient-card {
+  border: none;
+  border-radius: 0;
+  border-bottom: 1px solid var(--gray-border);
+}
+
+.rec-page-card .data-tabs-card {
+  border: none;
+  border-radius: 0;
+  padding: 20px 28px 28px;
+}
+
+/* -- Top-level Summary / History / Create New tabs -- */
+.rec-tabs-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 14px;
+  padding-bottom: 16px;
+  margin-bottom: 22px;
+  border-bottom: 1px solid var(--gray-border);
+  flex-shrink: 0;
+}
+
+.rec-tabs { display: flex; gap: 30px; }
+
+.rec-tab {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--gray-text);
+  cursor: pointer;
+  padding-bottom: 10px;
+  border-bottom: 2px solid transparent;
+  background: none;
+  border-left: none;
+  border-right: none;
+  border-top: none;
+}
+
+.rec-tab.active { color: var(--blue); border-bottom-color: var(--blue); }
+
+.rec-tab-panel { display: none; }
+.rec-tab-panel.open {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.rec-tab-panel[data-rec-panel="create"].open,
+.rec-tab-panel[data-rec-panel="summary"].open { overflow-y: auto; }
+
+/* -- Summary tab: Allergies / Critical Alerts -- */
+.rec-alert-banner {
+  background: var(--red-light);
+  border: 1px solid rgba(241, 108, 108, 0.35);
+  border-radius: 12px;
+  padding: 16px 18px;
+  margin-bottom: 22px;
+  flex-shrink: 0;
+}
+
+.rec-alert-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 800;
+  color: #B23B3B;
+  margin-bottom: 12px;
+}
+
+.rec-alert-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 24px;
+}
+
+.rec-alert-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #7A2E2E;
+}
+
+.rec-alert-tag {
+  display: inline-block;
+  background: #fff;
+  color: var(--red);
+  border: 1px solid rgba(241, 108, 108, 0.4);
+  border-radius: 6px;
+  padding: 2px 8px;
+  font-size: 10.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.rec-alert-tag-condition { color: #C77B22; border-color: rgba(199, 123, 34, 0.4); }
+
+/* -- Summary tab: Relevant Patient Information cards -- */
+.rec-info-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 26px;
+  flex-shrink: 0;
+}
+
+.rec-info-card {
+  border: 1px solid var(--gray-border);
+  border-radius: 12px;
+  padding: 14px 16px;
+}
+
+/* Emphasize the cards most relevant to a care recommendation decision */
+.rec-info-card-highlight {
+  background: var(--blue-light);
+  border-color: rgba(42, 169, 224, 0.3);
+}
+
+.rec-info-card-highlight .rec-info-card-title { color: var(--blue); }
+.rec-info-card-highlight .rec-info-card-list li { color: #0C4A6E; }
+
+.rec-info-card-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #7E8993;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  margin-bottom: 10px;
+}
+
+.rec-info-card-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.rec-info-card-list li {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #23272E;
+}
+
+.rec-info-card-meta { font-size: 11.5px; color: var(--gray-text); font-weight: 500; flex-shrink: 0; }
+
+/* -- Summary tab: Recent Care Recommendations --
+   The whole Summary panel scrolls as one region (see .rec-tab-panel[...].open
+   above), so this doesn't need its own flex/min-height sizing to carve out
+   scroll space for the list below it -- that nested approach depended on the
+   ancestor height chain resolving and could clip the list entirely on a
+   shorter viewport. */
+.rec-recent-card {
+  padding-top: 22px;
+  border-top: 1px solid var(--gray-border);
+}
+
+.rec-recent-header {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.rec-recent-title { margin: 0; padding: 0; border: none; }
+
+/* -- Create New tab: persistent patient alert -- */
+.rec-form-alert {
+  background: var(--red-light);
+  border: 1px solid rgba(241, 108, 108, 0.35);
+  border-radius: 12px;
+  padding: 14px 18px;
+  margin-bottom: 26px;
+}
+
+.rec-form-alert-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13.5px;
+  font-weight: 800;
+  color: #B23B3B;
+  margin-bottom: 10px;
+}
+
+/* -- Summary tab -- */
+.rec-summary-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.rec-summary-card {
+  border: 1px solid var(--gray-border);
+  border-radius: 14px;
+  padding: 18px 22px;
+}
+
+.rec-summary-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.rec-summary-title { font-size: 15.5px; font-weight: 700; color: #23272E; margin-bottom: 4px; }
+.rec-summary-sub-row { display: flex; align-items: center; gap: 8px; }
+.rec-summary-sub { font-size: 12.5px; color: var(--gray-text); }
+
+.rec-adherence-chip {
+  display: inline-block;
+  padding: 2px 9px;
+  border-radius: 999px;
+  background: var(--blue-light);
+  color: var(--blue);
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.rec-summary-meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 14px 20px;
+  margin-bottom: 14px;
+}
+
+.rec-summary-meta-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  color: #9AA5B1;
+  margin-bottom: 4px;
+}
+
+.rec-summary-meta-value { font-size: 13.5px; font-weight: 600; color: #23272E; }
+.rec-summary-meta-value.rec-summary-meta-muted { color: #9AA5B1; font-weight: 500; }
+
+.rec-action-taken {
+  background: var(--bg);
+  border-radius: 10px;
+  padding: 10px 14px;
+  margin-bottom: 14px;
+}
+
+.rec-action-taken-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  color: #9AA5B1;
+  margin-bottom: 3px;
+}
+
+.rec-action-taken-text { font-size: 13px; color: #363B42; line-height: 1.45; }
+
+.rec-summary-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 14px;
+  border-top: 1px solid var(--gray-border);
+}
+
+.rec-summary-foot-meta { font-size: 12.5px; color: var(--gray-text); }
+
+/* -- Create New tab -- */
+.rec-form-section { margin-bottom: 30px; }
+.rec-form-section:last-of-type { margin-bottom: 0; }
+
+.rec-form-section-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #23272E;
+  margin: 0 0 16px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--gray-border);
+}
+
+.rec-create-form .form-grid { margin-bottom: 0; }
+
+.rec-create-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 26px;
+  padding-top: 22px;
+  margin-top: 30px;
+  border-top: 1px solid var(--gray-border);
+}
+
+@media (max-width: 900px) {
+  .rec-summary-meta { grid-template-columns: repeat(2, 1fr); }
+  .form-grid { grid-template-columns: 1fr 1fr; }
+}
+
 
