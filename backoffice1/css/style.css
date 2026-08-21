@@ -1380,6 +1380,18 @@ label.bo-date-field { cursor: text; }
   margin-bottom: 18px;
 }
 
+/* Ticket Detail's Handling section: Status/Level/Severity/Assigned To in a
+   single row above the Description field, instead of stacking them. */
+.bo-handling-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+@media (max-width: 1180px) {
+  .bo-handling-row { grid-template-columns: repeat(2, 1fr); }
+}
+
 .bo-modal-field { display: flex; flex-direction: column; gap: 6px; }
 .bo-modal-field[hidden] { display: none; }
 .bo-modal-field.full { grid-column: 1 / -1; }
