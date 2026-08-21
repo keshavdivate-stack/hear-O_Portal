@@ -76,3 +76,24 @@ document.getElementById("alApplyBtn").addEventListener("click", () => {
   alPager.resetPage();
   alPager();
 });
+
+function alCsvCell(value) {
+  const str = String(value ?? "");
+  return /[",\n]/.test(str) ? `"${str.replace(/"/g, '""')}"` : str;
+}
+
+document.getElementById("alExportBtn").addEventListener("click", () => {
+  const header = ["Action", "Description", "User", "Role", "Organization", "Patient Usercode", "Time"];
+  const rows = alFiltered().map((e) => [e.action, e.description, e.user, e.role, e.org || "", e.usercode || "", alFormatTime(e.time)]);
+  const csv = [header, ...rows].map((row) => row.map(alCsvCell).join(",")).join("\n");
+
+  const blob = new Blob([csv], { type: "text/csv" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "audit-log.csv";
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+});
