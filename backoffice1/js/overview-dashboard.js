@@ -512,6 +512,135 @@ function renderOvCompliance(orgId) {
   document.getElementById("ovComplianceRows").innerHTML = head + body;
 }
 
+/* ---------------- Clinic-level Patient Compliance (monthly trend) ---------------- */
+/* Same Compliance / Usable Compliance line-chart language used on the
+   per-patient Monthly Compliance chart, but scoped to a clinic (or averaged
+   across all clinics, weighted by patient count) instead of one patient --
+   swapping the org dropdown above re-renders this chart for that clinic. */
+const OV_COMPLIANCE_MONTHS = ["Aug", "Sep", "Oct", "Nov", "Dec", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul"];
+
+function ovHash(str) {
+  let h = 0;
+  for (let i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) >>> 0;
+  return h;
+}
+
+/* Deterministic per-clinic monthly series, centered on that clinic's current
+   compliance snapshot (orgHealthData[id].compliance) so the chart's latest
+   point stays consistent with the tier donut and KPI figures above it. */
+function ovOrgMonthlySeries(id, org) {
+  const seed = ovHash(id);
+  const usableBaseline = Math.max(20, org.compliance - 8);
+  return OV_COMPLIANCE_MONTHS.map((month, i) => ({
+    month,
+    compliance: Math.max(20, Math.min(100, Math.round(org.compliance + Math.sin((seed + i) / 2) * 8))),
+    usable: Math.max(15, Math.min(100, Math.round(usableBaseline + Math.cos((seed + i) / 2) * 8))),
+  }));
+}
+
+function ovMonthlyComplianceFor(orgId) {
+  if (orgId !== "all") return ovOrgMonthlySeries(orgId, orgHealthData[orgId]);
+
+  const entries = Object.entries(orgHealthData);
+  const totalPatients = entries.reduce((sum, [, o]) => sum + o.patients, 0) || 1;
+  const perOrgSeries = entries.map(([id, o]) => ({ weight: o.patients, series: ovOrgMonthlySeries(id, o) }));
+
+  return OV_COMPLIANCE_MONTHS.map((month, i) => {
+    const compliance = perOrgSeries.reduce((sum, o) => sum + o.series[i].compliance * o.weight, 0) / totalPatients;
+    const usable = perOrgSeries.reduce((sum, o) => sum + o.series[i].usable * o.weight, 0) / totalPatients;
+    return { month, compliance: Math.round(compliance), usable: Math.round(usable) };
+  });
+}
+
+document.getElementById("ovClinicComplianceLegend").innerHTML = [
+  { label: "Compliance", color: "#1F3C73" },
+  { label: "Usable Compliance", color: "#F2994A" },
+]
+  .map((s) => `<span><span class="dot" style="background:${s.color}"></span>${s.label}</span>`)
+  .join("");
+
+function renderOvClinicComplianceChart(orgId) {
+  const titleEl = document.getElementById("ovClinicComplianceTitle");
+  if (titleEl) titleEl.textContent = orgId === "all" ? "Clinic-level Patient Compliance" : `Clinic-level Patient Compliance — ${orgHealthData[orgId].name}`;
+
+  const monthly = ovMonthlyComplianceFor(orgId);
+  const container = document.getElementById("ovClinicComplianceChart");
+  const width = container.clientWidth || 640;
+  const height = container.clientHeight || 220;
+  const padL = 34;
+  const padR = 14;
+  const padT = 12;
+  const padB = 22;
+  const plotW = width - padL - padR;
+  const plotH = height - padT - padB;
+  const yMin = 0;
+  const yMax = 100;
+  const gridStep = 20;
+
+  const months = monthly.map((m) => m.month);
+  const complianceSeries = monthly.map((m) => m.compliance);
+  const usableSeries = monthly.map((m) => m.usable);
+
+  const xAt = (i) => padL + (plotW * i) / (months.length - 1);
+  const yAt = (v) => padT + plotH - ((v - yMin) / (yMax - yMin)) * plotH;
+
+  const gridLines = [];
+  for (let v = yMin; v <= yMax; v += gridStep) {
+    const y = yAt(v);
+    gridLines.push(
+      `<line x1="${padL}" y1="${y}" x2="${width - padR}" y2="${y}" stroke="#EEF1F4" stroke-width="1"/>` +
+        `<text x="${padL - 8}" y="${y + 4}" text-anchor="end" font-size="10.5" fill="#9AA5B1">${v}</text>`
+    );
+  }
+
+  const xLabels = months
+    .map((m, i) => `<text x="${xAt(i)}" y="${height - 6}" text-anchor="middle" font-size="10.5" fill="#9AA5B1">${m}</text>`)
+    .join("");
+
+  const buildLine = (series, color, label) => {
+    const line = series.map((v, i) => `${xAt(i)},${yAt(v)}`).join(" L ");
+    const dots = series
+      .map(
+        (v, i) =>
+          `<circle class="bo-trend-dot" cx="${xAt(i)}" cy="${yAt(v)}" r="2.8" fill="${color}" data-label="${label}" data-value="${v}" data-x="${months[i]}" data-color="${color}"/>`
+      )
+      .join("");
+    return `<path d="M ${xAt(0)},${yAt(series[0])} L ${line}" fill="none" stroke="${color}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>${dots}`;
+  };
+
+  container.innerHTML = `
+    <svg viewBox="0 0 ${width} ${height}" class="bo-area-svg" preserveAspectRatio="none">
+      ${gridLines.join("")}
+      ${buildLine(complianceSeries, "#1F3C73", "Compliance")}
+      ${buildLine(usableSeries, "#F2994A", "Usable Compliance")}
+      ${xLabels}
+    </svg>
+    <div class="bo-trend-tooltip" id="ovClinicComplianceTooltip"></div>`;
+
+  wireOvChartTooltips(container, document.getElementById("ovClinicComplianceTooltip"));
+}
+
+/* Shared with renderOvTrendChart's tooltip wiring, generalized to take the
+   container/tooltip elements so both charts' hover dots behave the same. */
+function wireOvChartTooltips(container, tooltip) {
+  container.querySelectorAll(".bo-trend-dot").forEach((dot) => {
+    dot.addEventListener("mouseenter", () => {
+      const { label, value, x, color } = dot.dataset;
+      tooltip.innerHTML = `<span class="dot" style="background:${color};"></span>${label}: <b>${value}%</b> &middot; ${x}`;
+      tooltip.style.left = `${dot.getAttribute("cx")}px`;
+      tooltip.style.top = `${dot.getAttribute("cy")}px`;
+      tooltip.style.display = "block";
+      dot.setAttribute("r", "4.5");
+    });
+    dot.addEventListener("mouseleave", () => {
+      tooltip.style.display = "none";
+      dot.setAttribute("r", "2.8");
+    });
+  });
+}
+
+window.addEventListener("resize", () => renderOvClinicComplianceChart(ovSelectedOrgId));
+
 /* ---------------- Render orchestration (re-run per organization scope) ---------------- */
 function renderOvForOrg(orgId) {
   ovSelectedOrgId = orgId;
@@ -520,6 +649,7 @@ function renderOvForOrg(orgId) {
   renderOvDonut(orgId);
   renderOvOrgList(orgId);
   renderOvCompliance(orgId);
+  renderOvClinicComplianceChart(orgId);
 }
 
 /* ---------------- Header: organization dropdown ---------------- */
