@@ -660,6 +660,7 @@ document.getElementById("openCareRecBtn").addEventListener("click", (e) => {
 });
 
 function renderCareRecs() {
+  document.getElementById("careRecCount").textContent = careRecs.length;
   updateCareRecTriggers();
 
   const list = careRecs
@@ -671,7 +672,6 @@ function renderCareRecs() {
         .map((rec) => {
           const meta = CARE_REC_STATUS[rec.status];
           const latest = careRecLatest(rec);
-          const editable = rec.status !== "completed" && rec.status !== "archived";
           return `
           <tr>
             <td><span class="rec-title-cell">${rec.title}</span></td>
@@ -684,7 +684,12 @@ function renderCareRecs() {
               </div>
             </td>
             <td>${rec.updatedAt}</td>
-            <td><button type="button" class="btn-open rec-open-btn" data-rec-id="${rec.id}">${editable ? "Open" : "View"}</button></td>
+            <td>
+              <div class="rec-row-actions">
+                <button type="button" class="btn-open rec-view-btn" data-rec-id="${rec.id}">View</button>
+                <button type="button" class="btn-open rec-edit-btn" data-rec-id="${rec.id}">Edit</button>
+              </div>
+            </td>
           </tr>`;
         })
         .join("")
@@ -706,27 +711,6 @@ function renderRecTimeline(rec) {
       </div>`
     )
     .join("");
-}
-
-function renderRecDrawerFooter(rec) {
-  if (rec.status === "completed") {
-    return `<div class="rec-completed-note">This recommendation is completed. Activity history is shown above.</div>`;
-  }
-  if (rec.status === "archived") {
-    return `<div class="rec-completed-note">This recommendation was archived. Activity history is shown above.</div>`;
-  }
-  return `
-    <div class="rec-add-note">
-      <label class="drawer-label">Add note</label>
-      <textarea id="recNoteInput" placeholder="Add a note for the care team..."></textarea>
-      <div class="rec-footer-actions">
-        <button type="button" class="rec-archive-link" id="recArchive">Archive</button>
-        <div class="rec-footer-actions-right">
-          <button type="button" class="btn-secondary" id="recAddNote">Add note</button>
-          <button type="button" class="btn-complete" id="recMarkComplete">Mark as Complete</button>
-        </div>
-      </div>
-    </div>`;
 }
 
 function openRecDrawer(id) {
@@ -751,12 +735,33 @@ function openRecDrawer(id) {
   document.getElementById("recDrawerInstructionPatient").textContent = rec.instructionsPatient || "—";
   document.getElementById("recDrawerInstructionCareTeam").textContent = rec.instructionsCareTeam || "—";
 
+  const actionTakenSection = document.getElementById("recDrawerActionTakenSection");
+  if (rec.actionTaken) {
+    actionTakenSection.style.display = "";
+    document.getElementById("recDrawerActionTaken").textContent = rec.actionTaken;
+  } else {
+    actionTakenSection.style.display = "none";
+  }
+
   document.getElementById("recDrawerCreatedBy").textContent = rec.createdBy;
   document.getElementById("recDrawerCreatedAt").textContent = rec.createdAt;
-  document.getElementById("recDrawerPickedUp").textContent = rec.pickedUpBy || "Not yet picked up";
+  document.getElementById("recDrawerUpdatedAt").textContent = rec.updatedAt;
+  document.getElementById("recDrawerPickedUp").textContent = rec.pickedUpBy || "Not yet assigned";
+  document.getElementById("recDrawerAck").textContent = rec.patientAcknowledgedAt ? `Yes · ${rec.patientAcknowledgedAt}` : "Not yet acknowledged";
+
+  const completedByWrap = document.getElementById("recDrawerCompletedByWrap");
+  const completedOnWrap = document.getElementById("recDrawerCompletedOnWrap");
+  if (rec.status === "completed") {
+    completedByWrap.style.display = "";
+    completedOnWrap.style.display = "";
+    document.getElementById("recDrawerCompletedBy").textContent = rec.completedBy || "—";
+    document.getElementById("recDrawerCompletedOn").textContent = rec.completedOn || "—";
+  } else {
+    completedByWrap.style.display = "none";
+    completedOnWrap.style.display = "none";
+  }
 
   document.getElementById("recDrawerTimeline").innerHTML = renderRecTimeline(rec);
-  document.getElementById("recDrawerFooter").innerHTML = renderRecDrawerFooter(rec);
 
   document.getElementById("recDrawerOverlay").classList.add("open");
 }
@@ -772,40 +777,15 @@ document.getElementById("recDrawerOverlay").addEventListener("click", (e) => {
 });
 
 document.getElementById("careRecTableBody").addEventListener("click", (e) => {
-  const btn = e.target.closest(".rec-open-btn");
-  if (!btn) return;
-  openRecDrawer(Number(btn.dataset.recId));
-});
-
-document.getElementById("recDrawerFooter").addEventListener("click", (e) => {
-  const rec = careRecs.find((r) => r.id === activeRecId);
-  if (!rec) return;
-  const t = timeLabel(new Date());
-
-  if (e.target.id === "recAddNote") {
-    const textarea = document.getElementById("recNoteInput");
-    const note = textarea.value.trim();
-    if (!note) return;
-    rec.activity.push({ who: rec.createdBy, when: t.short, label: "Added a note", short: "Added a note", note });
-    rec.updatedAt = t.full;
-    renderCareRecs();
-    openRecDrawer(rec.id);
+  const viewBtn = e.target.closest(".rec-view-btn");
+  if (viewBtn) {
+    openRecDrawer(Number(viewBtn.dataset.recId));
+    return;
   }
 
-  if (e.target.id === "recArchive") {
-    rec.status = "archived";
-    rec.activity.push({ who: rec.createdBy, when: t.short, label: "Archived", short: "Archived" });
-    rec.updatedAt = t.full;
-    renderCareRecs();
-    openRecDrawer(rec.id);
-  }
-
-  if (e.target.id === "recMarkComplete") {
-    rec.status = "completed";
-    rec.activity.push({ who: rec.createdBy, when: t.short, label: "Marked recommendation as Completed.", short: "Completed" });
-    rec.updatedAt = t.full;
-    renderCareRecs();
-    openRecDrawer(rec.id);
+  const editBtn = e.target.closest(".rec-edit-btn");
+  if (editBtn) {
+    openEditRecModal(Number(editBtn.dataset.recId));
   }
 });
 
@@ -853,8 +833,16 @@ function renderProfileGrid(containerId, fields) {
     .join("");
 }
 
-["openAddConditionBtn", "openAddAllergyBtn", "openAddCarePlanBtn", "openAddGoalBtn", "openAddDocumentBtn", "openAddRelatedPersonBtn", "openAddCareTeamMemberBtn"].forEach((id) => {
+["openAddRelatedPersonBtn", "openAddCareTeamMemberBtn"].forEach((id) => {
   document.getElementById(id)?.addEventListener("click", (e) => e.preventDefault());
+});
+
+/* Overview header sync button: this patient's records sync from Epic
+   (matches the "source" shown on Conditions/Allergies/etc. rows below). */
+const connectedEhrName = "Epic";
+const overviewLastSynced = document.getElementById("overviewLastSynced");
+wireSyncButton("syncOverviewBtn", () => {
+  if (overviewLastSynced) overviewLastSynced.innerHTML = `Last synced with <strong>${connectedEhrName}</strong> &middot; Just now`;
 });
 
 /* ---------------- Clinical: Conditions ---------------- */
@@ -884,7 +872,6 @@ function renderConditions() {
     : `<tr><td colspan="7" class="rec-empty">No conditions on file.</td></tr>`;
 }
 renderConditions();
-wireSyncButton("syncConditionsBtn", renderConditions);
 
 /* ---------------- Clinical: Allergies ---------------- */
 const allergies = [
@@ -911,7 +898,6 @@ function renderAllergies() {
     : `<tr><td colspan="6" class="rec-empty">No known allergies on file.</td></tr>`;
 }
 renderAllergies();
-wireSyncButton("syncAllergiesBtn", renderAllergies);
 
 /* ---------------- Clinical: Care Plan ---------------- */
 const carePlans = [
@@ -937,7 +923,6 @@ function renderCarePlans() {
     : `<tr><td colspan="6" class="rec-empty">No care plans on file.</td></tr>`;
 }
 renderCarePlans();
-wireSyncButton("syncCarePlanBtn", renderCarePlans);
 
 /* ---------------- Clinical: Goals ---------------- */
 const goals = [
@@ -966,7 +951,6 @@ function renderGoals() {
     : `<tr><td colspan="6" class="rec-empty">No goals on file.</td></tr>`;
 }
 renderGoals();
-wireSyncButton("syncGoalsBtn", renderGoals);
 
 /* ---------------- Clinical: Documents ---------------- */
 const clinicalDocuments = [
@@ -993,42 +977,6 @@ function renderDocuments() {
     : `<tr><td colspan="6" class="rec-empty">No documents on file.</td></tr>`;
 }
 renderDocuments();
-wireSyncButton("syncDocumentsBtn", renderDocuments);
-
-/* ---------------- Clinical: Encounters ---------------- */
-const encounters = [
-  { date: "08/12/2026", type: "Inpatient", provider: "Dr. Sarah Mitchell", facility: "Memorial General Hospital", reason: "CHF exacerbation", status: "discharged", source: "Epic" },
-  { date: "07/28/2026", type: "Office Visit", provider: "Dr. Sarah Mitchell", facility: "Cardiology Clinic", reason: "Follow-up", status: "completed", source: "Epic" },
-  { date: "06/15/2026", type: "Outpatient Procedure", provider: "Dr. James Carter", facility: "Imaging Center", reason: "Echocardiogram", status: "completed", source: "Epic" },
-];
-
-const ENCOUNTER_STATUS = {
-  discharged: { label: "Discharged", cls: "rec-status-resolved" },
-  completed: { label: "Completed", cls: "rec-status-completed" },
-  scheduled: { label: "Scheduled", cls: "rec-status-recommended" },
-};
-
-function renderEncounters() {
-  document.getElementById("encountersTableBody").innerHTML = encounters.length
-    ? encounters
-        .map((e) => {
-          const meta = ENCOUNTER_STATUS[e.status];
-          return `
-      <tr>
-        <td>${e.date}</td>
-        <td>${e.type}</td>
-        <td>${e.provider}</td>
-        <td>${e.facility}</td>
-        <td>${e.reason}</td>
-        <td><span class="rec-status-chip ${meta.cls}">${meta.label}</span></td>
-        <td>${ehrSourceCell(e.source)}</td>
-      </tr>`;
-        })
-        .join("")
-    : `<tr><td colspan="7" class="rec-empty">No encounters on file.</td></tr>`;
-}
-renderEncounters();
-wireSyncButton("syncEncountersBtn", renderEncounters);
 
 /* ---------------- Patient Profile: Demographics ---------------- */
 const demographicsFields = [
@@ -1046,7 +994,6 @@ const demographicsFields = [
   { label: "Preferred Location", value: "B01 — Main Clinic" },
 ];
 renderProfileGrid("demographicsGrid", demographicsFields);
-wireSyncButton("syncDemographicsBtn", () => renderProfileGrid("demographicsGrid", demographicsFields));
 
 /* ---------------- Patient Profile: Contact Information ---------------- */
 const contactFields = [
@@ -1059,7 +1006,6 @@ const contactFields = [
   { label: "Default Communication Channel", value: "SMS" },
 ];
 renderProfileGrid("contactGrid", contactFields);
-wireSyncButton("syncContactBtn", () => renderProfileGrid("contactGrid", contactFields));
 
 const consentOptions = [
   { label: "Consent to Message", checked: true },
@@ -1102,7 +1048,6 @@ function renderInsurance() {
     : `<tr><td colspan="7" class="rec-empty">No insurance on file.</td></tr>`;
 }
 renderInsurance();
-wireSyncButton("syncInsuranceBtn", renderInsurance);
 
 /* ---------------- Patient Profile: Related Persons ---------------- */
 const relatedPersons = [
@@ -1128,7 +1073,6 @@ function renderRelatedPersons() {
     : `<tr><td colspan="6" class="rec-empty">No related persons on file.</td></tr>`;
 }
 renderRelatedPersons();
-wireSyncButton("syncRelatedPersonsBtn", renderRelatedPersons);
 
 /* ---------------- Patient Profile: Care Team ---------------- */
 const careTeamProfile = [
@@ -1209,6 +1153,111 @@ const medications = [
 medications.forEach((m, i) => (m.id = i));
 let nextMedId = medications.length;
 
+/* ---------------- Care Recommendation: Edit ---------------- */
+const editRecMedicationMenu = document.getElementById("editRecMedicationMenu");
+editRecMedicationMenu.innerHTML = medications
+  .map(
+    (m) => `
+    <div class="custom-select-option" data-value="${m.name}">${m.name}<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>`
+  )
+  .join("");
+
+document.getElementById("editRecMedicationSelect").addEventListener("change", (e) => {
+  const med = medications.find((m) => m.name === e.target.value);
+  document.getElementById("editRecCurrentDose").value = med ? med.dose : "—";
+});
+
+const editRecCareTeamField = document.getElementById("editRecCareTeamField");
+const editRecCareTeamTrigger = editRecCareTeamField.querySelector(".care-team-trigger");
+const editRecCareTeamValueEl = editRecCareTeamField.querySelector(".care-team-trigger-value");
+const editRecCareTeamMenu = editRecCareTeamField.querySelector(".care-team-menu");
+const editRecCareTeamHidden = editRecCareTeamField.querySelector('input[name="careTeam"]');
+const editRecCareTeamPlaceholder = "Select care team";
+
+editRecCareTeamTrigger.addEventListener("click", (e) => {
+  e.stopPropagation();
+  const willOpen = !editRecCareTeamField.classList.contains("open");
+  document.querySelectorAll(".checkbox-filter.open, .care-team-field.open").forEach((el) => el.classList.remove("open"));
+  editRecCareTeamField.classList.toggle("open", willOpen);
+});
+editRecCareTeamMenu.addEventListener("click", (e) => e.stopPropagation());
+document.addEventListener("click", () => editRecCareTeamField.classList.remove("open"));
+
+function syncEditRecCareTeam() {
+  const selected = Array.from(editRecCareTeamMenu.querySelectorAll('input[type="checkbox"]:checked')).map((cb) => cb.value);
+  editRecCareTeamHidden.value = selected.join(", ");
+  editRecCareTeamValueEl.textContent = selected.length ? `${selected.length} selected` : editRecCareTeamPlaceholder;
+  editRecCareTeamValueEl.classList.toggle("placeholder", !selected.length);
+}
+editRecCareTeamMenu.addEventListener("change", syncEditRecCareTeam);
+
+const editRecOverlay = document.getElementById("editRecOverlay");
+const editRecForm = document.getElementById("editRecForm");
+let editingRecId = null;
+
+function openEditRecModal(id) {
+  const rec = careRecs.find((r) => r.id === id);
+  if (!rec) return;
+
+  editingRecId = id;
+  editRecForm.reset();
+  resetCustomSelectsIn(editRecForm);
+
+  setCustomSelectValue(editRecForm.querySelector('.custom-select[data-name="medication"]'), rec.medication || "", { silent: true });
+  document.getElementById("editRecCurrentDose").value = rec.currentDose || "—";
+  editRecForm.newDose.value = rec.newDose || "";
+  setCustomSelectValue(editRecForm.querySelector('.custom-select[data-name="frequency"]'), rec.frequency || "", { silent: true });
+  editRecForm.duration.value = rec.duration || "";
+  editRecForm.startDate.value = rec.startDate || "";
+  editRecForm.instructionsPatient.value = rec.instructionsPatient || "";
+  editRecForm.instructionsCareTeam.value = rec.instructionsCareTeam || "";
+  editRecForm.invitePatient.checked = !!rec.invitePatient;
+
+  editRecCareTeamMenu.querySelectorAll('input[type="checkbox"]').forEach((cb) => {
+    cb.checked = (rec.assignedCareTeam || []).includes(cb.value);
+  });
+  syncEditRecCareTeam();
+
+  editRecOverlay.classList.add("open");
+}
+
+function closeEditRecModal() {
+  editRecOverlay.classList.remove("open");
+  editingRecId = null;
+}
+
+document.getElementById("cancelEditRec").addEventListener("click", closeEditRecModal);
+editRecOverlay.addEventListener("click", (e) => { if (e.target === editRecOverlay) closeEditRecModal(); });
+
+editRecForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  const rec = careRecs.find((r) => r.id === editingRecId);
+  if (!rec) return;
+
+  const fd = new FormData(editRecForm);
+  const t = timeLabel(new Date());
+
+  rec.medication = fd.get("medication");
+  rec.title = `${rec.medication} dose change`;
+  rec.currentDose = document.getElementById("editRecCurrentDose").value;
+  rec.newDose = fd.get("newDose");
+  rec.frequency = fd.get("frequency");
+  rec.duration = fd.get("duration");
+  rec.startDate = fd.get("startDate");
+  rec.instructionsPatient = fd.get("instructionsPatient");
+  rec.instructionsCareTeam = fd.get("instructionsCareTeam");
+  rec.invitePatient = fd.get("invitePatient") === "on";
+  rec.assignedCareTeam = (fd.get("careTeam") || "").split(", ").filter(Boolean);
+  rec.updatedAt = t.full;
+  rec.activity.push({ who: rec.createdBy, when: t.short, label: "Updated care recommendation.", short: "Updated" });
+
+  renderCareRecs();
+  closeEditRecModal();
+  if (document.getElementById("recDrawerOverlay").classList.contains("open") && activeRecId === rec.id) {
+    openRecDrawer(rec.id);
+  }
+});
+
 const adhCheckIcon = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 const adhDashIcon = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M6 12H18" stroke="#9AA5B1" stroke-width="2.4" stroke-linecap="round"/></svg>`;
 
@@ -1262,6 +1311,7 @@ function medInfoPopover(m, mi) {
 
 function renderMeds() {
   const list = filteredMeds();
+  document.getElementById("medCount").textContent = medications.length;
   document.getElementById("medList").innerHTML = list
     .map(
       (m, mi) => `
