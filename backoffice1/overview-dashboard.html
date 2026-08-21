@@ -201,36 +201,24 @@
       </section>
     </div>
 
-    <!-- PATIENT COMPLIANCE (overall snapshot; scoped by the org filter above like
-         the panels before it — no separate 7/30-day toggle since the page's own
-         "Last 24 hours / 7 days / 30 days" selector already covers that) -->
-    <section class="bo-card bo-panel bo-panel--static" style="display:block; margin-bottom:20px;">
-      <div class="bo-panel-head">
-        <h3 class="bo-panel-title" style="margin:0;" id="ovComplianceTitle">Patient Compliance</h3>
-        <a class="bo-row-link" href="patient-management.html">View all patients</a>
-      </div>
-      <div class="bo-donut-row">
-        <div class="bo-donut-wrap">
-          <div class="bo-donut" id="ovComplianceDonut"></div>
-          <div class="bo-donut-center">
-            <span class="num" id="ovComplianceDonutTotal">&nbsp;</span>
-            <span class="lbl">Patients</span>
-          </div>
-        </div>
-        <div class="bo-compliance-legend" id="ovComplianceRows"></div>
-      </div>
-    </section>
-
     <!-- CLINIC-LEVEL PATIENT COMPLIANCE (monthly trend, scoped by the org filter
          above like the panels before it -- picking a clinic there swaps this
          chart to that clinic's own Compliance/Usable Compliance trend) -->
-    <section class="bo-card bo-panel bo-panel--static" style="display:block; margin-bottom:20px;">
-      <div class="bo-panel-head">
-        <h3 class="bo-panel-title" style="margin:0;" id="ovClinicComplianceTitle">Clinic-level Patient Compliance</h3>
-        <div class="bo-legend-row" id="ovClinicComplianceLegend" style="margin:0;"></div>
-      </div>
-      <div id="ovClinicComplianceChart" class="bo-chart-area" style="height:220px;"></div>
-    </section>
+    <div style="display:flex; align-items:stretch; gap:16px; flex-shrink:0; margin-bottom:20px;">
+      <section class="bo-card bo-panel bo-panel--static" style="flex:1.6 1 0; display:block;">
+        <div class="bo-panel-head">
+          <h3 class="bo-panel-title" style="margin:0;" id="ovClinicComplianceTitle">Clinic-level Patient Compliance</h3>
+          <div class="bo-legend-row" id="ovClinicComplianceLegend" style="margin:0;"></div>
+        </div>
+        <div id="ovClinicComplianceChart" class="bo-chart-area" style="height:220px;"></div>
+      </section>
+
+      <!-- WORKLOAD (placeholder -- content/metrics TBD) -->
+      <section class="bo-card bo-panel bo-panel--static" style="flex:1 1 0; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:6px;">
+        <h3 class="bo-panel-title" style="margin:0;">Workload</h3>
+        <p style="color:var(--gray-text); font-size:13px; margin:0;">Coming soon</p>
+      </section>
+    </div>
 
   </main>
 
