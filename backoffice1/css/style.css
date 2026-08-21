@@ -2919,7 +2919,7 @@ label.bo-date-field { cursor: text; }
 .patient-log-snapshot {
   display: flex;
   flex-wrap: wrap;
-  gap: 14px;
+  gap: 16px;
   margin-bottom: 18px;
   flex-shrink: 0;
 }
@@ -2930,10 +2930,11 @@ label.bo-date-field { cursor: text; }
   gap: 10px;
   flex: 1 1 200px;
   min-width: 180px;
-  background: var(--bg);
+  background: #fff;
   border: 1px solid var(--gray-border);
-  border-radius: 10px;
-  padding: 12px 14px;
+  border-radius: 14px;
+  padding: 14px 16px;
+  box-shadow: 0 4px 16px rgba(20, 30, 50, 0.03);
 }
 
 .patient-log-snapshot-group .bo-modal-section-title {

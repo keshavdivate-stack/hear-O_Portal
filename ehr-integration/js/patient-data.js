@@ -1,6 +1,9 @@
 /* ---------------- Care Team popover ---------------- */
 wireTopbarToggle("careTeamTrigger", "careTeamPopover");
 
+/* ---------------- App & Device Info popover ---------------- */
+wireTopbarToggle("appDeviceTrigger", "appDevicePopover");
+
 /* ---------------- Shared day axis (31 days, gap = 21-23 Dec) ---------------- */
 const chartDays = [
   { label: "11", month: "Dec", status: "baseline" },
@@ -837,12 +840,16 @@ function renderProfileGrid(containerId, fields) {
   document.getElementById(id)?.addEventListener("click", (e) => e.preventDefault());
 });
 
-/* Overview header sync button: this patient's records sync from Epic
-   (matches the "source" shown on Conditions/Allergies/etc. rows below). */
+/* Patient card EHR Sync: this patient's records sync from Epic (matches
+   the "source" shown on Conditions/Allergies/etc. rows below). */
 const connectedEhrName = "Epic";
-const overviewLastSynced = document.getElementById("overviewLastSynced");
-wireSyncButton("syncOverviewBtn", () => {
-  if (overviewLastSynced) overviewLastSynced.innerHTML = `Last synced with <strong>${connectedEhrName}</strong> &middot; Just now`;
+const cardLastSynced = document.getElementById("cardLastSynced");
+wireSyncButton("syncCardBtn", () => {
+  if (cardLastSynced) {
+    cardLastSynced.innerHTML = `
+      <span class="ehr-last-synced-line">Last synced with <strong>${connectedEhrName}</strong></span>
+      <span class="ehr-last-synced-line">Just now</span>`;
+  }
 });
 
 /* ---------------- Clinical: Conditions ---------------- */
