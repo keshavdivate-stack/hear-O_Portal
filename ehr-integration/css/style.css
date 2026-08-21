@@ -1396,6 +1396,22 @@ body {
   margin-bottom: 10px;
 }
 
+.care-team-popover-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.care-team-popover-heading .care-team-popover-title { margin-bottom: 10px; }
+.care-team-add-button, .care-team-confirm-button { border: 0; border-radius: 5px; background: var(--blue); color: #fff; font: inherit; font-size: 11px; font-weight: 700; line-height: 1; cursor: pointer; }
+.care-team-add-button { padding: 6px 8px; margin-top: -3px; white-space: nowrap; }
+.care-team-add-button:hover, .care-team-confirm-button:hover { background: #148ec5; }
+.care-team-add-panel { position: absolute; top: 0; left: calc(100% + 8px); width: 238px; padding: 12px; border: 1px solid var(--gray-border); border-radius: 10px; background: #fff; box-shadow: 0 12px 28px rgba(20, 30, 50, 0.16); }
+.care-team-add-label { display: block; margin-bottom: 6px; color: #596673; font-size: 11.5px; font-weight: 600; }
+.care-team-multiselect { max-height: 122px; overflow-y: auto; border: 1px solid var(--gray-border); border-radius: 5px; background: #fff; }
+.care-team-multiselect label { display: flex; align-items: center; gap: 7px; padding: 7px 9px; color: #343a42; font-size: 12px; cursor: pointer; }
+.care-team-multiselect label + label { border-top: 1px solid #edf0f3; }
+.care-team-multiselect input { accent-color: var(--blue); }
+.care-team-empty-option { display: block; padding: 9px; color: #7E8993; font-size: 12px; }
+.care-team-add-actions { display: flex; justify-content: flex-end; align-items: center; gap: 9px; margin-top: 9px; }
+.care-team-cancel-button { padding: 3px 0; font-size: 11.5px; }
+.care-team-confirm-button { padding: 7px 9px; }
+
 .care-team-popover-item {
   display: flex;
   flex-direction: column;

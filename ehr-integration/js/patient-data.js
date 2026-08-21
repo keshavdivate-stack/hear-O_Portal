@@ -1,6 +1,64 @@
 /* ---------------- Care Team popover ---------------- */
 wireTopbarToggle("careTeamTrigger", "careTeamPopover");
 
+/* Add care-team members from the Care Team popover. */
+const patientCareTeam = [
+  { name: "Dr. Sarah Mitchell", role: "Doctor · Provider" },
+  { name: "Amanda Lee", role: "Nurse · Care Team" },
+  { name: "Ayelet Er", role: "Nurse · Care Team" },
+  { name: "Sandy Kohl", role: "Nurse · Care Team" },
+];
+const availableCareTeamMembers = [
+  { name: "Michael Chen", role: "Care Coordinator · Care Team" },
+  { name: "Priya Shah", role: "Pharmacist · Care Team" },
+  { name: "James Wilson", role: "Social Worker · Care Team" },
+  { name: "Elena Rodriguez", role: "Nurse · Care Team" },
+];
+const careTeamPopover = document.getElementById("careTeamPopover");
+const careTeamTitle = careTeamPopover.querySelector(".care-team-popover-title");
+const careTeamMemberList = document.createElement("div");
+const careTeamHeading = document.createElement("div");
+const openCareTeamAdd = document.createElement("button");
+const careTeamAddPanel = document.createElement("div");
+const careTeamMultiselect = document.createElement("div");
+careTeamMemberList.id = "careTeamMemberList";
+careTeamHeading.className = "care-team-popover-heading";
+openCareTeamAdd.type = "button";
+openCareTeamAdd.className = "care-team-add-button";
+openCareTeamAdd.textContent = "+ Add member";
+careTeamAddPanel.className = "care-team-add-panel";
+careTeamAddPanel.hidden = true;
+careTeamMultiselect.className = "care-team-multiselect";
+careTeamAddPanel.innerHTML = '<span class="care-team-add-label">Select care team members</span>';
+careTeamAddPanel.append(careTeamMultiselect);
+careTeamAddPanel.insertAdjacentHTML("beforeend", '<div class="care-team-add-actions"><button type="button" class="btn-text care-team-cancel-button">Cancel</button><button type="button" class="care-team-confirm-button">Add selected</button></div>');
+careTeamHeading.append(careTeamTitle, openCareTeamAdd);
+careTeamPopover.replaceChildren(careTeamHeading, careTeamMemberList, careTeamAddPanel);
+function renderPatientCareTeam() {
+  careTeamMemberList.innerHTML = patientCareTeam.map((member) => `<div class="care-team-popover-item"><span class="care-team-popover-name">${member.name}</span><span class="care-team-popover-role">${member.role}</span></div>`).join("");
+  const count = document.querySelector("#careTeamTrigger .care-team-more");
+  if (count) count.textContent = patientCareTeam.length;
+}
+function renderCareTeamMultiselect() {
+  const assignedNames = new Set(patientCareTeam.map((member) => member.name));
+  careTeamMultiselect.innerHTML = availableCareTeamMembers.filter((member) => !assignedNames.has(member.name)).map((member) => `<label><input type="checkbox" value="${member.name}"> ${member.name}</label>`).join("") || '<span class="care-team-empty-option">All available members are assigned.</span>';
+}
+function closeCareTeamAddPanel() { careTeamAddPanel.hidden = true; openCareTeamAdd.hidden = false; }
+renderPatientCareTeam();
+renderCareTeamMultiselect();
+openCareTeamAdd.addEventListener("click", (event) => { event.stopPropagation(); careTeamAddPanel.hidden = false; openCareTeamAdd.hidden = true; });
+careTeamAddPanel.querySelector(".care-team-cancel-button").addEventListener("click", (event) => { event.stopPropagation(); closeCareTeamAddPanel(); });
+careTeamAddPanel.querySelector(".care-team-confirm-button").addEventListener("click", (event) => {
+  event.stopPropagation();
+  Array.from(careTeamMultiselect.querySelectorAll("input:checked")).map((input) => input.value).forEach((name) => {
+    const member = availableCareTeamMembers.find((item) => item.name === name);
+    if (member) patientCareTeam.push(member);
+  });
+  renderPatientCareTeam();
+  renderCareTeamMultiselect();
+  closeCareTeamAddPanel();
+});
+
 /* ---------------- App & Device Info popover ---------------- */
 wireTopbarToggle("appDeviceTrigger", "appDevicePopover");
 
