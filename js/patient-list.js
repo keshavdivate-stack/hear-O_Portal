@@ -573,18 +573,65 @@ function resetCustomSelectsIn(root) {
   });
 }
 
-/* ---------------- Add Patient menu ---------------- */
-wireTopbarToggle("openAddPatientBtn", "addPatientMenu");
-
+/* ---------------- Add Patient menu ----------------
+   Lives inside .filters-bar, whose overflow-x:auto clips this dropdown (forces
+   overflow-y:auto too, per spec). Portal it to <body> with fixed positioning
+   when open -- same fix already used for the checkbox filter menus above. */
+const addPatientBtn = document.getElementById("openAddPatientBtn");
 const addPatientMenuEl = document.getElementById("addPatientMenu");
+const addPatientMenuHome = { parent: addPatientMenuEl.parentNode, next: addPatientMenuEl.nextSibling };
+
+function positionAddPatientMenu() {
+  const rect = addPatientBtn.getBoundingClientRect();
+  addPatientMenuEl.style.position = "fixed";
+  addPatientMenuEl.style.top = `${rect.bottom + 6}px`;
+  addPatientMenuEl.style.right = `${window.innerWidth - rect.right}px`;
+  addPatientMenuEl.style.left = "auto";
+}
+
+function closeAddPatientMenu() {
+  addPatientMenuEl.classList.remove("open");
+  addPatientMenuEl.style.position = "";
+  addPatientMenuEl.style.top = "";
+  addPatientMenuEl.style.right = "";
+  addPatientMenuEl.style.left = "";
+  if (addPatientMenuEl.parentNode === document.body) {
+    if (addPatientMenuHome.next && addPatientMenuHome.next.parentNode === addPatientMenuHome.parent) {
+      addPatientMenuHome.parent.insertBefore(addPatientMenuEl, addPatientMenuHome.next);
+    } else {
+      addPatientMenuHome.parent.appendChild(addPatientMenuEl);
+    }
+  }
+}
+
+addPatientBtn.addEventListener("click", (e) => {
+  e.stopPropagation();
+  const willOpen = !addPatientMenuEl.classList.contains("open");
+  closeAllTopbarPopovers();
+  if (willOpen) {
+    document.body.appendChild(addPatientMenuEl);
+    positionAddPatientMenu();
+    addPatientMenuEl.classList.add("open");
+  } else {
+    closeAddPatientMenu();
+  }
+});
+
+addPatientMenuEl.addEventListener("click", (e) => e.stopPropagation());
+document.addEventListener("click", () => {
+  if (addPatientMenuEl.classList.contains("open")) closeAddPatientMenu();
+});
+window.addEventListener("resize", () => {
+  if (addPatientMenuEl.classList.contains("open")) positionAddPatientMenu();
+});
 
 document.getElementById("openRegisterManualBtn").addEventListener("click", () => {
-  addPatientMenuEl.classList.remove("open");
+  closeAddPatientMenu();
   openRegisterManualModal();
 });
 
 document.getElementById("openImportPatientBtn").addEventListener("click", () => {
-  addPatientMenuEl.classList.remove("open");
+  closeAddPatientMenu();
   openImportPatientModal();
 });
 
