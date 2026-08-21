@@ -537,6 +537,49 @@ const LOG_DEVICES = [
 ];
 const LOG_APP_VERSIONS = ["3.1.5", "3.2.0", "3.2.7", "3.3.0", "3.4.1"];
 
+/* Raw event lines the mobile app's device log actually emits, sampled from a
+   real log export -- used to fabricate a plausible "Log History" list. */
+const LOG_HISTORY_TEMPLATES = [
+  "AudioEngineManager: Initalize session configuration - success",
+  "AudioEngineManager: Set preferred sample rate - success",
+  "AudioEngineManager: Activate session - success",
+  "AudioEngineManager: Starting mic",
+  "AudioRecorder: Mixer attach - success",
+  "AudioRecorder: Mixer Input - success",
+  "AudioRecorder: Engine Start - success",
+  "AudioEngineManager: Model successfully initialized for language 'en'",
+  "CordioNetworkManager: POST /api/Auth/saveFCMToken",
+  "CordioNetworkManager: Response Status Code: 200",
+  "CordioNetworkManager: POST /api/comm/chatmessage/GetForPatient",
+  "FCM Token Sync: Successfully sent token to server",
+  "Lexicon: Getting new version url - success",
+  "Lexicon: Download - started chunk #0. Chunk size is 20MB",
+  "Lexicon: Found model for language 'en' with version '0.0'",
+  "FileUploader: get pending files list - failed: folder \"recordings\" doesn't exist",
+  "Notification Manager: reminder mode updated from new config",
+  "VoskModel: Found model path for language 'en'",
+  "reset the app Badge",
+  "Available device capacity usage MB: 110286 MB",
+  "NoSessionLog: skipped - gap 0d < required 3d",
+];
+
+function buildLogHistory(rand, ticket) {
+  const count = 18 + Math.floor(rand() * 10);
+  let h = 8 + Math.floor(rand() * 10);
+  let m = Math.floor(rand() * 60);
+  let s = Math.floor(rand() * 60);
+  const day = (ticket.createdDate || "").split(" ")[0] || "";
+  const lines = [];
+  for (let i = 0; i < count; i++) {
+    s += 1 + Math.floor(rand() * 4);
+    if (s >= 60) { s -= 60; m += 1; }
+    if (m >= 60) { m -= 60; h += 1; }
+    const ts = `${day} ${String(h % 24).padStart(2, "0")}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+    lines.push({ ts, msg: pickFrom(rand, LOG_HISTORY_TEMPLATES) });
+  }
+  return lines;
+}
+
 function buildPatientLog(ticket) {
   const rand = seededRandom(ticket.patientId || String(ticket.id));
   const device = pickFrom(rand, LOG_DEVICES);
@@ -562,12 +605,19 @@ function buildPatientLog(ticket) {
       { label: "Health Data Access", value: "Granted" },
       { label: "Blood Pressure Data", value: rand() > 0.5 ? "Denied" : "Granted" },
     ],
+    logHistory: buildLogHistory(rand, ticket),
   };
 }
 
 function renderPatientLogSection(elId, rows) {
   document.getElementById(elId).innerHTML = rows
-    .map((r) => `<div class="bo-ticket-summary-item"><span class="label">${r.label}</span><span class="value">${r.value}</span></div>`)
+    .map((r) => `<div class="patient-log-chip"><span class="label">${r.label}</span><span class="value">${r.value}</span></div>`)
+    .join("");
+}
+
+function renderPatientLogHistory(elId, lines) {
+  document.getElementById(elId).innerHTML = lines
+    .map((l) => `<div class="patient-log-line"><span class="ts">${l.ts}</span><span class="msg">${l.msg}</span></div>`)
     .join("");
 }
 
@@ -581,6 +631,7 @@ function openPatientLogModal(source, id) {
   renderPatientLogSection("patientLogAppVersion", log.appVersion);
   renderPatientLogSection("patientLogDeviceInfo", log.deviceInfo);
   renderPatientLogSection("patientLogPermissions", log.permissions);
+  renderPatientLogHistory("patientLogHistory", log.logHistory);
 
   patientLogOverlay.classList.add("open");
 }
@@ -594,12 +645,14 @@ function downloadPatientLog() {
   if (!activePatientLog) return;
   const { ticket, log } = activePatientLog;
   const section = (title, rows) => `${title}\n${rows.map((r) => `  ${r.label}: ${r.value}`).join("\n")}\n`;
+  const historySection = `Log History\n${log.logHistory.map((l) => `  ${l.ts}: ${l.msg}`).join("\n")}\n`;
   const text = [
     `Patient Log - ${ticket.ticketNo} (${ticket.patientId})`,
     "",
     section("App Version", log.appVersion),
     section("Device Info", log.deviceInfo),
     section("Permissions Info", log.permissions),
+    historySection,
   ].join("\n");
 
   const blob = new Blob([text], { type: "text/plain" });
