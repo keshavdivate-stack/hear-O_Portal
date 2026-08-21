@@ -428,45 +428,14 @@ function closeAllFilterPopovers() {
 
 document.addEventListener("click", closeAllFilterPopovers);
 
-/* ---------------- All Patients / My Patients scope (single-select filter) ---------------- */
-const scopeFilterWrap = document.querySelector('.checkbox-filter[data-name="scope"]');
-const scopeTrigger = scopeFilterWrap.querySelector(".filter-btn");
-const scopeLabel = document.getElementById("scopeFilterLabel");
-const scopeMenu = document.getElementById("scopeMenu");
-const ALL_PATIENTS_LABEL = "All Patients";
-const scopeOptions = [
-  { value: "all", label: ALL_PATIENTS_LABEL },
-  { value: "mine", label: "My Patients" },
-];
+/* ---------------- All Patients / My Patients scope (segmented tabs) ---------------- */
+const scopeTabs = document.getElementById("scopeTabs");
 
-function renderScopeMenu() {
-  scopeMenu.innerHTML = scopeOptions
-    .map(
-      (opt) => `
-      <div class="checkbox-filter-option scope-option ${patientScope === opt.value ? "selected" : ""}" data-value="${opt.value}">${opt.label}</div>`
-    )
-    .join("");
-}
-
-renderScopeMenu();
-
-scopeTrigger.addEventListener("click", (e) => {
-  e.stopPropagation();
-  const willOpen = !scopeFilterWrap.classList.contains("open");
-  closeAllFilterPopovers();
-  scopeFilterWrap.classList.toggle("open", willOpen);
-  if (willOpen) openFilterMenu(scopeFilterWrap, scopeMenu);
-});
-
-scopeMenu.addEventListener("click", (e) => {
-  e.stopPropagation();
-  const option = e.target.closest(".scope-option");
-  if (!option) return;
-  patientScope = option.dataset.value;
-  scopeLabel.textContent = scopeOptions.find((opt) => opt.value === patientScope).label;
-  renderScopeMenu();
-  scopeFilterWrap.classList.remove("open");
-  closeFilterMenu(scopeMenu);
+scopeTabs.addEventListener("click", (e) => {
+  const tab = e.target.closest("[data-scope]");
+  if (!tab) return;
+  patientScope = tab.dataset.scope;
+  scopeTabs.querySelectorAll("[data-scope]").forEach((el) => el.classList.toggle("active", el === tab));
   renderPatientList();
 });
 
@@ -487,8 +456,7 @@ document.getElementById("clearFilters").addEventListener("click", () => {
     document.querySelector(`.checkbox-filter[data-name="${name}"] .checkbox-filter-label`).textContent = label;
   });
   patientScope = "all";
-  scopeLabel.textContent = ALL_PATIENTS_LABEL;
-  renderScopeMenu();
+  scopeTabs.querySelectorAll("[data-scope]").forEach((el) => el.classList.toggle("active", el.dataset.scope === "all"));
   renderPatientList();
 });
 
