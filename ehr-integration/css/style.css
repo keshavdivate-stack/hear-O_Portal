@@ -4996,8 +4996,8 @@ label.checkbox-field {
   min-height: 0;
 }
 
-.rec-tab-panel[data-rec-panel="create"].open { overflow-y: auto; }
-.rec-tab-panel[data-rec-panel="summary"].open { overflow: hidden; }
+.rec-tab-panel[data-rec-panel="create"].open,
+.rec-tab-panel[data-rec-panel="summary"].open { overflow-y: auto; }
 
 /* -- Summary tab: Allergies / Critical Alerts -- */
 .rec-alert-banner {
@@ -5109,14 +5109,15 @@ label.checkbox-field {
 
 .rec-info-card-meta { font-size: 11.5px; color: var(--gray-text); font-weight: 500; flex-shrink: 0; }
 
-/* -- Summary tab: Recent Care Recommendations -- */
+/* -- Summary tab: Recent Care Recommendations --
+   The whole Summary panel scrolls as one region (see .rec-tab-panel[...].open
+   above), so this doesn't need its own flex/min-height sizing to carve out
+   scroll space for the list below it -- that nested approach depended on the
+   ancestor height chain resolving and could clip the list entirely on a
+   shorter viewport. */
 .rec-recent-card {
   padding-top: 22px;
   border-top: 1px solid var(--gray-border);
-  flex: 1;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
 }
 
 .rec-recent-header {
@@ -5155,10 +5156,6 @@ label.checkbox-field {
   display: flex;
   flex-direction: column;
   gap: 14px;
-  flex: 1;
-  min-height: 0;
-  overflow-y: auto;
-  padding-right: 6px;
 }
 
 .rec-summary-card {
