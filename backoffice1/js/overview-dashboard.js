@@ -480,7 +480,7 @@ document.getElementById("ovClinicComplianceLegend").innerHTML = [
 
 function renderOvClinicComplianceChart(orgId) {
   const titleEl = document.getElementById("ovClinicComplianceTitle");
-  if (titleEl) titleEl.textContent = orgId === "all" ? "Clinic-level Patient Compliance" : `Clinic-level Patient Compliance — ${orgHealthData[orgId].name}`;
+  if (titleEl) titleEl.textContent = orgId === "all" ? "Organization-level Patient Compliance" : `Organization-level Patient Compliance — ${orgHealthData[orgId].name}`;
 
   const monthly = ovMonthlyComplianceFor(orgId);
   const container = document.getElementById("ovClinicComplianceChart");
