@@ -845,7 +845,11 @@ function renderProfileGrid(containerId, fields) {
 const connectedEhrName = "Epic";
 const cardLastSynced = document.getElementById("cardLastSynced");
 wireSyncButton("syncCardBtn", () => {
-  if (cardLastSynced) cardLastSynced.innerHTML = `Last synced with <strong>${connectedEhrName}</strong> &middot; Just now`;
+  if (cardLastSynced) {
+    cardLastSynced.innerHTML = `
+      <span class="ehr-last-synced-line">Last synced with <strong>${connectedEhrName}</strong></span>
+      <span class="ehr-last-synced-line">Just now</span>`;
+  }
 });
 
 /* ---------------- Clinical: Conditions ---------------- */

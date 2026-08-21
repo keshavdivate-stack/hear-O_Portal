@@ -269,18 +269,6 @@
             </div>
           </div>
 
-          <div class="ehr-sync-col">
-            <span class="ehr-sync-row-label">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 3v6h-6"/></svg>
-              EHR Sync
-            </span>
-            <span class="ehr-last-synced" id="cardLastSynced">Last synced with <strong>Epic</strong> &middot; Today, 09:42 AM</span>
-            <button type="button" class="btn-secondary btn-sync" id="syncCardBtn">
-              <svg class="sync-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 3v6h-6"/></svg>
-              <span class="btn-sync-label">Sync with EHR</span>
-            </button>
-          </div>
-
           <div class="patient-stats">
             <div>
               <div class="stat-row-head">
@@ -304,6 +292,17 @@
                 <span class="stat-bar-num">16</span>
               </div>
             </div>
+          </div>
+
+          <div class="ehr-sync-col">
+            <span class="ehr-last-synced" id="cardLastSynced">
+              <span class="ehr-last-synced-line">Last synced with <strong>Epic</strong></span>
+              <span class="ehr-last-synced-line">Today, 09:42 AM</span>
+            </span>
+            <button type="button" class="btn-secondary btn-sync" id="syncCardBtn">
+              <svg class="sync-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 3v6h-6"/></svg>
+              <span class="btn-sync-label">Sync with EHR</span>
+            </button>
           </div>
         </div>
 
