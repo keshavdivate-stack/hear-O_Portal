@@ -1,6 +1,9 @@
 /* ---------------- Care Team popover ---------------- */
 wireTopbarToggle("careTeamTrigger", "careTeamPopover");
 
+/* ---------------- App & Device Info popover ---------------- */
+wireTopbarToggle("appDeviceTrigger", "appDevicePopover");
+
 /* ---------------- Shared day axis (31 days, gap = 21-23 Dec) ---------------- */
 const chartDays = [
   { label: "11", month: "Dec", status: "baseline" },
