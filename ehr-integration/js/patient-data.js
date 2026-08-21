@@ -528,10 +528,6 @@ const careRecs = [
     createdAt: "05 Aug 2026, 09:10 AM",
     updatedAt: "05 Aug 2026, 09:20 AM",
     pickedUpBy: null,
-    actionTaken: null,
-    completedBy: null,
-    completedOn: null,
-    patientAcknowledgedAt: null,
     activity: [
       { who: "Dr. Sarah Mitchell", when: "05 Aug · 09:10 AM", text: "Created care recommendation." },
       { who: "Dr. Sarah Mitchell", when: "05 Aug · 09:20 AM", label: "Archived", short: "Archived", note: "Created in error — duplicate of an existing titration plan." },
@@ -554,10 +550,6 @@ const careRecs = [
     createdAt: "08 Aug 2026, 11:00 AM",
     updatedAt: "08 Aug 2026, 02:15 PM",
     pickedUpBy: "Amanda Lee, RN",
-    actionTaken: "Patient contacted — mild dizziness reported on standing, no other symptoms. Heart rate readings within range.",
-    completedBy: "Amanda Lee, RN",
-    completedOn: "08 Aug 2026, 02:15 PM",
-    patientAcknowledgedAt: "08 Aug 2026, 01:05 PM",
     activity: [
       { who: "Dr. Sarah Mitchell", when: "08 Aug · 11:00 AM", text: "Created care recommendation." },
       { who: "Amanda Lee, RN", when: "08 Aug · 11:20 AM", text: "Picked up recommendation." },
@@ -582,10 +574,6 @@ const careRecs = [
     createdAt: "07 Aug 2026, 09:00 AM",
     updatedAt: "07 Aug 2026, 04:10 PM",
     pickedUpBy: "Amanda Lee, RN",
-    actionTaken: "Clarified evening dose timing with the patient; adherence confirmed going forward.",
-    completedBy: "Amanda Lee, RN",
-    completedOn: "07 Aug 2026, 04:10 PM",
-    patientAcknowledgedAt: "07 Aug 2026, 10:30 AM",
     activity: [
       { who: "Dr. Sarah Mitchell", when: "07 Aug · 09:00 AM", text: "Created care recommendation." },
       { who: "Amanda Lee, RN", when: "07 Aug · 09:40 AM", text: "Picked up recommendation." },
@@ -617,10 +605,6 @@ function newCareRec(fields, createdBy = "Dr. Sarah Mitchell") {
     createdAt: t.full,
     updatedAt: t.full,
     pickedUpBy: null,
-    actionTaken: null,
-    completedBy: null,
-    completedOn: null,
-    patientAcknowledgedAt: null,
     activity: [{ who: createdBy, when: t.short, text: "Created care recommendation." }],
   };
 }
@@ -675,13 +659,7 @@ document.getElementById("openCareRecBtn").addEventListener("click", (e) => {
   if (activeRec) openRecDrawer(activeRec.id);
 });
 
-document.getElementById("openAddRecBtn").addEventListener("click", (e) => {
-  if (!hasActiveCareRec()) return;
-  e.preventDefault();
-});
-
 function renderCareRecs() {
-  document.getElementById("careRecCount").textContent = careRecs.length;
   updateCareRecTriggers();
 
   const list = careRecs
@@ -693,6 +671,7 @@ function renderCareRecs() {
         .map((rec) => {
           const meta = CARE_REC_STATUS[rec.status];
           const latest = careRecLatest(rec);
+          const editable = rec.status !== "completed" && rec.status !== "archived";
           return `
           <tr>
             <td><span class="rec-title-cell">${rec.title}</span></td>
@@ -705,12 +684,7 @@ function renderCareRecs() {
               </div>
             </td>
             <td>${rec.updatedAt}</td>
-            <td>
-              <div class="rec-row-actions">
-                <button type="button" class="btn-open rec-view-btn" data-rec-id="${rec.id}">View</button>
-                <button type="button" class="btn-open rec-edit-btn" data-rec-id="${rec.id}">Edit</button>
-              </div>
-            </td>
+            <td><button type="button" class="btn-open rec-open-btn" data-rec-id="${rec.id}">${editable ? "Open" : "View"}</button></td>
           </tr>`;
         })
         .join("")
@@ -732,6 +706,27 @@ function renderRecTimeline(rec) {
       </div>`
     )
     .join("");
+}
+
+function renderRecDrawerFooter(rec) {
+  if (rec.status === "completed") {
+    return `<div class="rec-completed-note">This recommendation is completed. Activity history is shown above.</div>`;
+  }
+  if (rec.status === "archived") {
+    return `<div class="rec-completed-note">This recommendation was archived. Activity history is shown above.</div>`;
+  }
+  return `
+    <div class="rec-add-note">
+      <label class="drawer-label">Add note</label>
+      <textarea id="recNoteInput" placeholder="Add a note for the care team..."></textarea>
+      <div class="rec-footer-actions">
+        <button type="button" class="rec-archive-link" id="recArchive">Archive</button>
+        <div class="rec-footer-actions-right">
+          <button type="button" class="btn-secondary" id="recAddNote">Add note</button>
+          <button type="button" class="btn-complete" id="recMarkComplete">Mark as Complete</button>
+        </div>
+      </div>
+    </div>`;
 }
 
 function openRecDrawer(id) {
@@ -756,33 +751,12 @@ function openRecDrawer(id) {
   document.getElementById("recDrawerInstructionPatient").textContent = rec.instructionsPatient || "—";
   document.getElementById("recDrawerInstructionCareTeam").textContent = rec.instructionsCareTeam || "—";
 
-  const actionTakenSection = document.getElementById("recDrawerActionTakenSection");
-  if (rec.actionTaken) {
-    actionTakenSection.style.display = "";
-    document.getElementById("recDrawerActionTaken").textContent = rec.actionTaken;
-  } else {
-    actionTakenSection.style.display = "none";
-  }
-
   document.getElementById("recDrawerCreatedBy").textContent = rec.createdBy;
   document.getElementById("recDrawerCreatedAt").textContent = rec.createdAt;
-  document.getElementById("recDrawerUpdatedAt").textContent = rec.updatedAt;
-  document.getElementById("recDrawerPickedUp").textContent = rec.pickedUpBy || "Not yet assigned";
-  document.getElementById("recDrawerAck").textContent = rec.patientAcknowledgedAt ? `Yes · ${rec.patientAcknowledgedAt}` : "Not yet acknowledged";
-
-  const completedByWrap = document.getElementById("recDrawerCompletedByWrap");
-  const completedOnWrap = document.getElementById("recDrawerCompletedOnWrap");
-  if (rec.status === "completed") {
-    completedByWrap.style.display = "";
-    completedOnWrap.style.display = "";
-    document.getElementById("recDrawerCompletedBy").textContent = rec.completedBy || "—";
-    document.getElementById("recDrawerCompletedOn").textContent = rec.completedOn || "—";
-  } else {
-    completedByWrap.style.display = "none";
-    completedOnWrap.style.display = "none";
-  }
+  document.getElementById("recDrawerPickedUp").textContent = rec.pickedUpBy || "Not yet picked up";
 
   document.getElementById("recDrawerTimeline").innerHTML = renderRecTimeline(rec);
+  document.getElementById("recDrawerFooter").innerHTML = renderRecDrawerFooter(rec);
 
   document.getElementById("recDrawerOverlay").classList.add("open");
 }
@@ -798,15 +772,40 @@ document.getElementById("recDrawerOverlay").addEventListener("click", (e) => {
 });
 
 document.getElementById("careRecTableBody").addEventListener("click", (e) => {
-  const viewBtn = e.target.closest(".rec-view-btn");
-  if (viewBtn) {
-    openRecDrawer(Number(viewBtn.dataset.recId));
-    return;
+  const btn = e.target.closest(".rec-open-btn");
+  if (!btn) return;
+  openRecDrawer(Number(btn.dataset.recId));
+});
+
+document.getElementById("recDrawerFooter").addEventListener("click", (e) => {
+  const rec = careRecs.find((r) => r.id === activeRecId);
+  if (!rec) return;
+  const t = timeLabel(new Date());
+
+  if (e.target.id === "recAddNote") {
+    const textarea = document.getElementById("recNoteInput");
+    const note = textarea.value.trim();
+    if (!note) return;
+    rec.activity.push({ who: rec.createdBy, when: t.short, label: "Added a note", short: "Added a note", note });
+    rec.updatedAt = t.full;
+    renderCareRecs();
+    openRecDrawer(rec.id);
   }
 
-  const editBtn = e.target.closest(".rec-edit-btn");
-  if (editBtn) {
-    openEditRecModal(Number(editBtn.dataset.recId));
+  if (e.target.id === "recArchive") {
+    rec.status = "archived";
+    rec.activity.push({ who: rec.createdBy, when: t.short, label: "Archived", short: "Archived" });
+    rec.updatedAt = t.full;
+    renderCareRecs();
+    openRecDrawer(rec.id);
+  }
+
+  if (e.target.id === "recMarkComplete") {
+    rec.status = "completed";
+    rec.activity.push({ who: rec.createdBy, when: t.short, label: "Marked recommendation as Completed.", short: "Completed" });
+    rec.updatedAt = t.full;
+    renderCareRecs();
+    openRecDrawer(rec.id);
   }
 });
 
@@ -815,6 +814,347 @@ document.getElementById("careRecStatusFilter").addEventListener("change", (e) =>
   renderCareRecs();
 });
 renderCareRecs();
+
+/* ---------------- EHR-integrated data: sync affordance ---------------- */
+function ehrSourceCell(source) {
+  if (source === "Manual entry" || source === "HearO") {
+    return `<span class="profile-field-source">${source}</span>`;
+  }
+  return `<span class="profile-field-source"><span class="ehr-connected-dot" style="width:6px;height:6px;"></span>${source}</span>`;
+}
+
+function wireSyncButton(btnId, onSynced) {
+  const btn = document.getElementById(btnId);
+  if (!btn) return;
+  const label = btn.querySelector(".btn-sync-label");
+  btn.addEventListener("click", () => {
+    if (btn.classList.contains("is-syncing")) return;
+    btn.classList.add("is-syncing");
+    if (label) label.textContent = "Syncing…";
+    setTimeout(() => {
+      btn.classList.remove("is-syncing");
+      if (label) label.textContent = "Sync with EHR";
+      if (onSynced) onSynced();
+    }, 900);
+  });
+}
+
+function renderProfileGrid(containerId, fields) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  el.innerHTML = fields
+    .map(
+      (f) => `
+      <div class="profile-field">
+        <span class="profile-field-label">${f.label}</span>
+        <span class="profile-field-value">${f.value}</span>
+      </div>`
+    )
+    .join("");
+}
+
+["openAddConditionBtn", "openAddAllergyBtn", "openAddCarePlanBtn", "openAddGoalBtn", "openAddDocumentBtn", "openAddRelatedPersonBtn", "openAddCareTeamMemberBtn"].forEach((id) => {
+  document.getElementById(id)?.addEventListener("click", (e) => e.preventDefault());
+});
+
+/* ---------------- Clinical: Conditions ---------------- */
+const conditions = [
+  { name: "Heart Failure with reduced Ejection Fraction", code: "I50.22", status: "active", type: "Chronic", onset: "03/15/2024", source: "Epic", updated: "08/17/2026" },
+  { name: "Hypertension", code: "I10", status: "active", type: "Chronic", onset: "06/02/2020", source: "Epic", updated: "08/17/2026" },
+  { name: "Type 2 Diabetes Mellitus", code: "E11.9", status: "active", type: "Chronic", onset: "01/10/2022", source: "Epic", updated: "08/17/2026" },
+  { name: "Seasonal Allergic Rhinitis", code: "J30.2", status: "resolved", type: "Acute", onset: "04/12/2019", source: "Manual entry", updated: "06/03/2025" },
+];
+
+function renderConditions() {
+  document.getElementById("conditionsTableBody").innerHTML = conditions.length
+    ? conditions
+        .map(
+          (c) => `
+      <tr>
+        <td><span class="rec-title-cell">${c.name}</span></td>
+        <td>${c.code}</td>
+        <td><span class="rec-status-chip rec-status-${c.status}">${c.status === "active" ? "Active" : "Resolved"}</span></td>
+        <td>${c.type}</td>
+        <td>${c.onset}</td>
+        <td>${ehrSourceCell(c.source)}</td>
+        <td>${c.updated}</td>
+      </tr>`
+        )
+        .join("")
+    : `<tr><td colspan="7" class="rec-empty">No conditions on file.</td></tr>`;
+}
+renderConditions();
+wireSyncButton("syncConditionsBtn", renderConditions);
+
+/* ---------------- Clinical: Allergies ---------------- */
+const allergies = [
+  { allergen: "Penicillin", reaction: "Hives", severity: "severe", onset: "—", source: "Epic", updated: "08/10/2026" },
+  { allergen: "Pollen", reaction: "Fever", severity: "moderate", onset: "08/04/2026", source: "Epic", updated: "08/17/2026" },
+  { allergen: "Shellfish", reaction: "Nausea", severity: "mild", onset: "—", source: "Manual entry", updated: "07/02/2025" },
+];
+
+function renderAllergies() {
+  document.getElementById("allergiesTableBody").innerHTML = allergies.length
+    ? allergies
+        .map(
+          (a) => `
+      <tr>
+        <td><span class="rec-title-cell">${a.allergen}</span></td>
+        <td>${a.reaction}</td>
+        <td><span class="rec-status-chip rec-status-${a.severity}">${a.severity[0].toUpperCase()}${a.severity.slice(1)}</span></td>
+        <td>${a.onset}</td>
+        <td>${ehrSourceCell(a.source)}</td>
+        <td>${a.updated}</td>
+      </tr>`
+        )
+        .join("")
+    : `<tr><td colspan="6" class="rec-empty">No known allergies on file.</td></tr>`;
+}
+renderAllergies();
+wireSyncButton("syncAllergiesBtn", renderAllergies);
+
+/* ---------------- Clinical: Care Plan ---------------- */
+const carePlans = [
+  { name: "Heart Failure Management Plan", status: "active", start: "01/15/2026", review: "09/15/2026", owner: "Dr. Sarah Mitchell", source: "Epic" },
+  { name: "Diabetes Self-Management Plan", status: "active", start: "03/01/2026", review: "09/01/2026", owner: "Amanda Lee, RN", source: "Epic" },
+];
+
+function renderCarePlans() {
+  document.getElementById("carePlanTableBody").innerHTML = carePlans.length
+    ? carePlans
+        .map(
+          (p) => `
+      <tr>
+        <td><span class="rec-title-cell">${p.name}</span></td>
+        <td><span class="rec-status-chip rec-status-${p.status}">${p.status === "active" ? "Active" : "Completed"}</span></td>
+        <td>${p.start}</td>
+        <td>${p.review}</td>
+        <td>${p.owner}</td>
+        <td>${ehrSourceCell(p.source)}</td>
+      </tr>`
+        )
+        .join("")
+    : `<tr><td colspan="6" class="rec-empty">No care plans on file.</td></tr>`;
+}
+renderCarePlans();
+wireSyncButton("syncCarePlanBtn", renderCarePlans);
+
+/* ---------------- Clinical: Goals ---------------- */
+const goals = [
+  { goal: "Maintain daily weight within 2 lbs of baseline", target: "≤ 2 lbs variance", progress: "on-track", due: "09/30/2026", owner: "Patient", source: "HearO" },
+  { goal: "Reduce sodium intake to under 2g/day", target: "< 2 g/day", progress: "at-risk", due: "09/30/2026", owner: "Dietitian", source: "Epic" },
+  { goal: "Complete cardiac rehabilitation program", target: "12 sessions", progress: "on-track", due: "10/31/2026", owner: "Care Team", source: "Epic" },
+];
+
+const GOAL_PROGRESS_LABEL = { "on-track": "On Track", "at-risk": "At Risk", achieved: "Achieved", "not-met": "Not Met" };
+
+function renderGoals() {
+  document.getElementById("goalsTableBody").innerHTML = goals.length
+    ? goals
+        .map(
+          (g) => `
+      <tr>
+        <td><span class="rec-title-cell">${g.goal}</span></td>
+        <td>${g.target}</td>
+        <td><span class="rec-status-chip rec-status-${g.progress}">${GOAL_PROGRESS_LABEL[g.progress]}</span></td>
+        <td>${g.due}</td>
+        <td>${g.owner}</td>
+        <td>${ehrSourceCell(g.source)}</td>
+      </tr>`
+        )
+        .join("")
+    : `<tr><td colspan="6" class="rec-empty">No goals on file.</td></tr>`;
+}
+renderGoals();
+wireSyncButton("syncGoalsBtn", renderGoals);
+
+/* ---------------- Clinical: Documents ---------------- */
+const clinicalDocuments = [
+  { name: "Discharge Summary", type: "Discharge Summary", date: "08/12/2026", source: "Epic", added: "08/17/2026" },
+  { name: "Cardiology Consult Note", type: "Consult Note", date: "07/28/2026", source: "Epic", added: "08/17/2026" },
+  { name: "Echocardiogram Report", type: "Diagnostic Report", date: "06/15/2026", source: "Epic", added: "08/17/2026" },
+];
+
+function renderDocuments() {
+  document.getElementById("documentsTableBody").innerHTML = clinicalDocuments.length
+    ? clinicalDocuments
+        .map(
+          (d) => `
+      <tr>
+        <td><span class="rec-title-cell">${d.name}</span></td>
+        <td>${d.type}</td>
+        <td>${d.date}</td>
+        <td>${ehrSourceCell(d.source)}</td>
+        <td>${d.added}</td>
+        <td><button type="button" class="btn-open">View</button></td>
+      </tr>`
+        )
+        .join("")
+    : `<tr><td colspan="6" class="rec-empty">No documents on file.</td></tr>`;
+}
+renderDocuments();
+wireSyncButton("syncDocumentsBtn", renderDocuments);
+
+/* ---------------- Clinical: Encounters ---------------- */
+const encounters = [
+  { date: "08/12/2026", type: "Inpatient", provider: "Dr. Sarah Mitchell", facility: "Memorial General Hospital", reason: "CHF exacerbation", status: "discharged", source: "Epic" },
+  { date: "07/28/2026", type: "Office Visit", provider: "Dr. Sarah Mitchell", facility: "Cardiology Clinic", reason: "Follow-up", status: "completed", source: "Epic" },
+  { date: "06/15/2026", type: "Outpatient Procedure", provider: "Dr. James Carter", facility: "Imaging Center", reason: "Echocardiogram", status: "completed", source: "Epic" },
+];
+
+const ENCOUNTER_STATUS = {
+  discharged: { label: "Discharged", cls: "rec-status-resolved" },
+  completed: { label: "Completed", cls: "rec-status-completed" },
+  scheduled: { label: "Scheduled", cls: "rec-status-recommended" },
+};
+
+function renderEncounters() {
+  document.getElementById("encountersTableBody").innerHTML = encounters.length
+    ? encounters
+        .map((e) => {
+          const meta = ENCOUNTER_STATUS[e.status];
+          return `
+      <tr>
+        <td>${e.date}</td>
+        <td>${e.type}</td>
+        <td>${e.provider}</td>
+        <td>${e.facility}</td>
+        <td>${e.reason}</td>
+        <td><span class="rec-status-chip ${meta.cls}">${meta.label}</span></td>
+        <td>${ehrSourceCell(e.source)}</td>
+      </tr>`;
+        })
+        .join("")
+    : `<tr><td colspan="7" class="rec-empty">No encounters on file.</td></tr>`;
+}
+renderEncounters();
+wireSyncButton("syncEncountersBtn", renderEncounters);
+
+/* ---------------- Patient Profile: Demographics ---------------- */
+const demographicsFields = [
+  { label: "Onboarding Date", value: "12/01/2025" },
+  { label: "MRN", value: "ABC-123" },
+  { label: "SSN", value: "•••-••-4471" },
+  { label: "Language", value: "English" },
+  { label: "Date of Birth", value: "04/12/1955" },
+  { label: "Gender", value: "Female" },
+  { label: "Marital Status", value: "Married" },
+  { label: "Race", value: "White" },
+  { label: "Ethnicity", value: "Not Hispanic or Latino" },
+  { label: "Risk Score", value: "62 / 100" },
+  { label: "Risk Level", value: "Moderate" },
+  { label: "Preferred Location", value: "B01 — Main Clinic" },
+];
+renderProfileGrid("demographicsGrid", demographicsFields);
+wireSyncButton("syncDemographicsBtn", () => renderProfileGrid("demographicsGrid", demographicsFields));
+
+/* ---------------- Patient Profile: Contact Information ---------------- */
+const contactFields = [
+  { label: "Primary Phone Number", value: "+1 (415) 555-0132" },
+  { label: "Secondary Phone Number", value: "—" },
+  { label: "Work Phone Number", value: "+1 (415) 555-0177" },
+  { label: "Home Phone Number", value: "—" },
+  { label: "Email", value: "sarah.white@gmail.com" },
+  { label: "Mailing Address", value: "482 Willow Creek Dr, San Mateo, CA 94402" },
+  { label: "Default Communication Channel", value: "SMS" },
+];
+renderProfileGrid("contactGrid", contactFields);
+wireSyncButton("syncContactBtn", () => renderProfileGrid("contactGrid", contactFields));
+
+const consentOptions = [
+  { label: "Consent to Message", checked: true },
+  { label: "Consent to Email", checked: true },
+  { label: "Consent to Call", checked: false },
+  { label: "Enable Call Recording", checked: true },
+];
+document.getElementById("contactConsentList").innerHTML = consentOptions
+  .map(
+    (c, i) => `
+    <label class="profile-consent-item">
+      ${c.label}
+      <input type="checkbox" ${c.checked ? "checked" : ""} data-consent-idx="${i}" />
+    </label>`
+  )
+  .join("");
+
+/* ---------------- Patient Profile: Insurance ---------------- */
+const insurancePlans = [
+  { payer: "UnitedHealthcare Medicare Advantage", planType: "Medicare Advantage", memberId: "UHC-88213456", group: "GRP-4021", effective: "01/01/2026", status: "active", source: "Epic" },
+  { payer: "Blue Cross Blue Shield PPO", planType: "Commercial PPO — Secondary", memberId: "BCBS-7729841", group: "GRP-1187", effective: "01/01/2025", status: "active", source: "Epic" },
+];
+
+function renderInsurance() {
+  document.getElementById("insuranceTableBody").innerHTML = insurancePlans.length
+    ? insurancePlans
+        .map(
+          (p) => `
+      <tr>
+        <td><span class="rec-title-cell">${p.payer}</span></td>
+        <td>${p.planType}</td>
+        <td>${p.memberId}</td>
+        <td>${p.group}</td>
+        <td>${p.effective}</td>
+        <td><span class="rec-status-chip rec-status-active">Active</span></td>
+        <td>${ehrSourceCell(p.source)}</td>
+      </tr>`
+        )
+        .join("")
+    : `<tr><td colspan="7" class="rec-empty">No insurance on file.</td></tr>`;
+}
+renderInsurance();
+wireSyncButton("syncInsuranceBtn", renderInsurance);
+
+/* ---------------- Patient Profile: Related Persons ---------------- */
+const relatedPersons = [
+  { name: "Robert White", relationship: "Spouse", phone: "+1 (415) 555-0199", email: "robert.white@gmail.com", primary: true, source: "Epic" },
+  { name: "Emily White", relationship: "Daughter", phone: "+1 (415) 555-0148", email: "—", primary: false, source: "Manual entry" },
+];
+
+function renderRelatedPersons() {
+  document.getElementById("relatedPersonsTableBody").innerHTML = relatedPersons.length
+    ? relatedPersons
+        .map(
+          (p) => `
+      <tr>
+        <td><span class="rec-title-cell">${p.name}</span></td>
+        <td>${p.relationship}</td>
+        <td>${p.phone}</td>
+        <td>${p.email}</td>
+        <td>${p.primary ? "Yes" : "No"}</td>
+        <td>${ehrSourceCell(p.source)}</td>
+      </tr>`
+        )
+        .join("")
+    : `<tr><td colspan="6" class="rec-empty">No related persons on file.</td></tr>`;
+}
+renderRelatedPersons();
+wireSyncButton("syncRelatedPersonsBtn", renderRelatedPersons);
+
+/* ---------------- Patient Profile: Care Team ---------------- */
+const careTeamProfile = [
+  { name: "Dr. Sarah Mitchell", role: "Doctor", team: "Heart Failure Team", phone: "+1 (415) 555-0110", email: "s.mitchell@medclinic.com" },
+  { name: "Amanda Lee", role: "Nurse · Care Team", team: "Heart Failure Team", phone: "+1 (415) 555-0121", email: "a.lee@medclinic.com" },
+  { name: "Ayelet Er", role: "Nurse · Care Team", team: "Heart Failure Team", phone: "+1 (415) 555-0132", email: "a.er@medclinic.com" },
+  { name: "Sandy Kohl", role: "Nurse · Care Team", team: "Heart Failure Team", phone: "+1 (415) 555-0143", email: "s.kohl@medclinic.com" },
+];
+
+function renderCareTeamProfile() {
+  document.getElementById("careTeamProfileTableBody").innerHTML = careTeamProfile.length
+    ? careTeamProfile
+        .map(
+          (m) => `
+      <tr>
+        <td><span class="rec-title-cell">${m.name}</span></td>
+        <td>${m.role}</td>
+        <td>${m.team}</td>
+        <td>${m.phone}</td>
+        <td>${m.email}</td>
+      </tr>`
+        )
+        .join("")
+    : `<tr><td colspan="5" class="rec-empty">No care team members assigned.</td></tr>`;
+}
+renderCareTeamProfile();
 
 /* ---------------- Clinical: Medications ---------------- */
 function dailyAdherence(missedIdx) {
@@ -869,111 +1209,6 @@ const medications = [
 medications.forEach((m, i) => (m.id = i));
 let nextMedId = medications.length;
 
-/* ---------------- Care Recommendation: Edit ---------------- */
-const editRecMedicationMenu = document.getElementById("editRecMedicationMenu");
-editRecMedicationMenu.innerHTML = medications
-  .map(
-    (m) => `
-    <div class="custom-select-option" data-value="${m.name}">${m.name}<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>`
-  )
-  .join("");
-
-document.getElementById("editRecMedicationSelect").addEventListener("change", (e) => {
-  const med = medications.find((m) => m.name === e.target.value);
-  document.getElementById("editRecCurrentDose").value = med ? med.dose : "—";
-});
-
-const editRecCareTeamField = document.getElementById("editRecCareTeamField");
-const editRecCareTeamTrigger = editRecCareTeamField.querySelector(".care-team-trigger");
-const editRecCareTeamValueEl = editRecCareTeamField.querySelector(".care-team-trigger-value");
-const editRecCareTeamMenu = editRecCareTeamField.querySelector(".care-team-menu");
-const editRecCareTeamHidden = editRecCareTeamField.querySelector('input[name="careTeam"]');
-const editRecCareTeamPlaceholder = "Select care team";
-
-editRecCareTeamTrigger.addEventListener("click", (e) => {
-  e.stopPropagation();
-  const willOpen = !editRecCareTeamField.classList.contains("open");
-  document.querySelectorAll(".checkbox-filter.open, .care-team-field.open").forEach((el) => el.classList.remove("open"));
-  editRecCareTeamField.classList.toggle("open", willOpen);
-});
-editRecCareTeamMenu.addEventListener("click", (e) => e.stopPropagation());
-document.addEventListener("click", () => editRecCareTeamField.classList.remove("open"));
-
-function syncEditRecCareTeam() {
-  const selected = Array.from(editRecCareTeamMenu.querySelectorAll('input[type="checkbox"]:checked')).map((cb) => cb.value);
-  editRecCareTeamHidden.value = selected.join(", ");
-  editRecCareTeamValueEl.textContent = selected.length ? `${selected.length} selected` : editRecCareTeamPlaceholder;
-  editRecCareTeamValueEl.classList.toggle("placeholder", !selected.length);
-}
-editRecCareTeamMenu.addEventListener("change", syncEditRecCareTeam);
-
-const editRecOverlay = document.getElementById("editRecOverlay");
-const editRecForm = document.getElementById("editRecForm");
-let editingRecId = null;
-
-function openEditRecModal(id) {
-  const rec = careRecs.find((r) => r.id === id);
-  if (!rec) return;
-
-  editingRecId = id;
-  editRecForm.reset();
-  resetCustomSelectsIn(editRecForm);
-
-  setCustomSelectValue(editRecForm.querySelector('.custom-select[data-name="medication"]'), rec.medication || "", { silent: true });
-  document.getElementById("editRecCurrentDose").value = rec.currentDose || "—";
-  editRecForm.newDose.value = rec.newDose || "";
-  setCustomSelectValue(editRecForm.querySelector('.custom-select[data-name="frequency"]'), rec.frequency || "", { silent: true });
-  editRecForm.duration.value = rec.duration || "";
-  editRecForm.startDate.value = rec.startDate || "";
-  editRecForm.instructionsPatient.value = rec.instructionsPatient || "";
-  editRecForm.instructionsCareTeam.value = rec.instructionsCareTeam || "";
-  editRecForm.invitePatient.checked = !!rec.invitePatient;
-
-  editRecCareTeamMenu.querySelectorAll('input[type="checkbox"]').forEach((cb) => {
-    cb.checked = (rec.assignedCareTeam || []).includes(cb.value);
-  });
-  syncEditRecCareTeam();
-
-  editRecOverlay.classList.add("open");
-}
-
-function closeEditRecModal() {
-  editRecOverlay.classList.remove("open");
-  editingRecId = null;
-}
-
-document.getElementById("cancelEditRec").addEventListener("click", closeEditRecModal);
-editRecOverlay.addEventListener("click", (e) => { if (e.target === editRecOverlay) closeEditRecModal(); });
-
-editRecForm.addEventListener("submit", (e) => {
-  e.preventDefault();
-  const rec = careRecs.find((r) => r.id === editingRecId);
-  if (!rec) return;
-
-  const fd = new FormData(editRecForm);
-  const t = timeLabel(new Date());
-
-  rec.medication = fd.get("medication");
-  rec.title = `${rec.medication} dose change`;
-  rec.currentDose = document.getElementById("editRecCurrentDose").value;
-  rec.newDose = fd.get("newDose");
-  rec.frequency = fd.get("frequency");
-  rec.duration = fd.get("duration");
-  rec.startDate = fd.get("startDate");
-  rec.instructionsPatient = fd.get("instructionsPatient");
-  rec.instructionsCareTeam = fd.get("instructionsCareTeam");
-  rec.invitePatient = fd.get("invitePatient") === "on";
-  rec.assignedCareTeam = (fd.get("careTeam") || "").split(", ").filter(Boolean);
-  rec.updatedAt = t.full;
-  rec.activity.push({ who: rec.createdBy, when: t.short, label: "Updated care recommendation.", short: "Updated" });
-
-  renderCareRecs();
-  closeEditRecModal();
-  if (document.getElementById("recDrawerOverlay").classList.contains("open") && activeRecId === rec.id) {
-    openRecDrawer(rec.id);
-  }
-});
-
 const adhCheckIcon = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 const adhDashIcon = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M6 12H18" stroke="#9AA5B1" stroke-width="2.4" stroke-linecap="round"/></svg>`;
 
@@ -1027,7 +1262,6 @@ function medInfoPopover(m, mi) {
 
 function renderMeds() {
   const list = filteredMeds();
-  document.getElementById("medCount").textContent = medications.length;
   document.getElementById("medList").innerHTML = list
     .map(
       (m, mi) => `
@@ -1147,12 +1381,9 @@ document.querySelectorAll(".subtab").forEach((tab) => {
     scope.querySelector(`.subtab-panel[data-subpanel="${target}"]`).classList.add("open");
     rebuildRangedCharts();
 
-    const medActions = document.getElementById("medSubtabActions");
-    const careRecActions = document.getElementById("careRecSubtabActions");
-    if (medActions && careRecActions) {
-      medActions.style.display = target === "medication" ? "flex" : "none";
-      careRecActions.style.display = target === "care-rec" ? "flex" : "none";
-    }
+    scope.querySelectorAll("[data-subtab-actions]").forEach((actions) => {
+      actions.style.display = actions.dataset.subtabActions === target ? "flex" : "none";
+    });
   });
 });
 
@@ -1647,6 +1878,79 @@ editMedForm.addEventListener("submit", (e) => {
 
   renderMeds();
   closeEditMedModal();
+});
+
+const careRecMedicationMenu = document.getElementById("careRecMedicationMenu");
+careRecMedicationMenu.innerHTML = medications
+  .map(
+    (m) => `
+    <div class="custom-select-option" data-value="${m.name}">${m.name}<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>`
+  )
+  .join("");
+
+document.getElementById("careRecMedicationSelect").addEventListener("change", (e) => {
+  const med = medications.find((m) => m.name === e.target.value);
+  document.getElementById("careRecCurrentDose").value = med ? med.dose : "—";
+});
+
+wireAddModal(
+  "careRecOverlay",
+  "careRecForm",
+  "cancelCareRec",
+  ["openCareRecBtn", "openAddRecBtn"],
+  (fd) => {
+    careRecs.unshift(
+      newCareRec({
+        medication: fd.get("medication"),
+        currentDose: document.getElementById("careRecCurrentDose").value,
+        newDose: fd.get("newDose"),
+        frequency: fd.get("frequency"),
+        duration: fd.get("duration"),
+        startDate: fd.get("startDate"),
+        instructionsPatient: fd.get("instructionsPatient"),
+        instructionsCareTeam: fd.get("instructionsCareTeam"),
+        invitePatient: fd.get("invitePatient") === "on",
+        assignedCareTeam: (fd.get("careTeam") || "").split(", ").filter(Boolean),
+      })
+    );
+    renderCareRecs();
+  },
+  { canOpen: () => !hasActiveCareRec() }
+);
+
+/* ---------------- Care Recommendation: Care Team multiselect ---------------- */
+const careRecCareTeamField = document.getElementById("careRecCareTeamField");
+const careRecCareTeamTrigger = careRecCareTeamField.querySelector(".care-team-trigger");
+const careRecCareTeamValueEl = careRecCareTeamField.querySelector(".care-team-trigger-value");
+const careRecCareTeamMenu = careRecCareTeamField.querySelector(".care-team-menu");
+const careRecCareTeamHidden = careRecCareTeamField.querySelector('input[name="careTeam"]');
+const careRecCareTeamPlaceholder = "Select care team";
+
+careRecCareTeamTrigger.addEventListener("click", (e) => {
+  e.stopPropagation();
+  const willOpen = !careRecCareTeamField.classList.contains("open");
+  document.querySelectorAll(".checkbox-filter.open, .care-team-field.open").forEach((el) => el.classList.remove("open"));
+  careRecCareTeamField.classList.toggle("open", willOpen);
+});
+careRecCareTeamMenu.addEventListener("click", (e) => e.stopPropagation());
+document.addEventListener("click", () => careRecCareTeamField.classList.remove("open"));
+
+function syncCareRecCareTeam() {
+  const selected = Array.from(careRecCareTeamMenu.querySelectorAll('input[type="checkbox"]:checked')).map((cb) => cb.value);
+  careRecCareTeamHidden.value = selected.join(", ");
+  careRecCareTeamValueEl.textContent = selected.length ? `${selected.length} selected` : careRecCareTeamPlaceholder;
+  careRecCareTeamValueEl.classList.toggle("placeholder", !selected.length);
+}
+careRecCareTeamMenu.addEventListener("change", syncCareRecCareTeam);
+syncCareRecCareTeam();
+
+/* form.reset() (called by wireAddModal's open()) restores each checkbox's
+   default `checked` state but not this field's derived hidden value/label --
+   re-sync after every open so it reflects the reset checkboxes. */
+["openCareRecBtn", "openAddRecBtn"].forEach((id) => {
+  document.getElementById(id).addEventListener("click", () => {
+    if (!hasActiveCareRec()) syncCareRecCareTeam();
+  });
 });
 
 /* ---------------- Add Measurement modal ---------------- */

@@ -1406,10 +1406,15 @@ label.bo-date-field { cursor: text; }
   color: var(--ink);
   background: #fff;
   outline: none;
+  transition: border-color 120ms ease, box-shadow 120ms ease;
 }
 
 .bo-modal-field input::placeholder { color: #AEB4BC; }
-.bo-modal-field input:focus { border-color: var(--blue); }
+.bo-modal-field input:hover { border-color: #C9CFD6; }
+.bo-modal-field input:focus {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(42, 169, 224, 0.15);
+}
 
 /* A date input nested inside .bo-date-field already sits inside that
    element's own bordered box -- without this, .bo-modal-field input's
@@ -1434,6 +1439,53 @@ label.bo-date-field { cursor: text; }
 }
 
 #newRuleDrawerOverlay .bo-switch-field { font-weight: 400; }
+
+.bo-field-label-row { display: flex; align-items: center; gap: 5px; }
+
+.bo-info-tip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--gray-text);
+  cursor: help;
+  outline: none;
+}
+.bo-info-tip:hover, .bo-info-tip:focus-visible { color: var(--blue); }
+
+.bo-info-tip-panel {
+  display: none;
+  position: absolute;
+  z-index: 430;
+  right: 0;
+  left: auto;
+  top: calc(100% + 8px);
+  width: 220px;
+  max-width: 60vw;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: var(--ink);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.5;
+  text-transform: none;
+  letter-spacing: normal;
+  box-shadow: 0 10px 28px rgba(20, 30, 50, 0.22);
+}
+.bo-info-tip-panel strong {
+  display: block;
+  margin-top: 6px;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #fff;
+}
+.bo-info-tip-panel strong:first-child { margin-top: 0; }
+
+.bo-info-tip:hover .bo-info-tip-panel,
+.bo-info-tip:focus-visible .bo-info-tip-panel {
+  display: block;
+}
 
 .bo-modal-toggle-field {
   display: flex;
@@ -1628,10 +1680,14 @@ label.bo-date-field { cursor: text; }
   color: var(--ink);
   cursor: pointer;
   text-align: left;
+  transition: border-color 120ms ease, box-shadow 120ms ease;
 }
 
 .bo-select-trigger:hover { border-color: #C9CFD6; }
-.bo-select.open .bo-select-trigger { border-color: var(--blue); }
+.bo-select.open .bo-select-trigger {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(42, 169, 224, 0.15);
+}
 
 .bo-select-trigger:disabled {
   background: #F4F5F7;

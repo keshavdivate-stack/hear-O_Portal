@@ -8,6 +8,7 @@ const orgHealthData = {
     openIssues: 9,
     criticalIssues: 4,
     lastIncident: "2h ago",
+    compliance: 58,
     categories: [
       { label: "Patient (Mobile/Web)", count: 6, color: "var(--blue)" },
       { label: "Compliance", count: 3, color: "var(--purple)" },
@@ -32,6 +33,7 @@ const orgHealthData = {
     openIssues: 5,
     criticalIssues: 2,
     lastIncident: "20m ago",
+    compliance: 64,
     categories: [
       { label: "Voice Engine", count: 4, color: "var(--orange)" },
       { label: "Patient (Mobile/Web)", count: 1, color: "var(--blue)" },
@@ -50,6 +52,7 @@ const orgHealthData = {
     openIssues: 3,
     criticalIssues: 0,
     lastIncident: "3h ago",
+    compliance: 76,
     categories: [
       { label: "Compliance", count: 3, color: "var(--purple)" },
       { label: "System Schedule Engine", count: 1, color: "var(--gray)" },
@@ -68,6 +71,7 @@ const orgHealthData = {
     openIssues: 4,
     criticalIssues: 1,
     lastIncident: "1d ago",
+    compliance: 81,
     categories: [
       { label: "Sensors", count: 3, color: "var(--yellow)" },
       { label: "Patient (Mobile/Web)", count: 1, color: "var(--blue)" },
@@ -85,6 +89,7 @@ const orgHealthData = {
     openIssues: 2,
     criticalIssues: 1,
     lastIncident: "6h ago",
+    compliance: 52,
     categories: [
       { label: "Patient (Mobile/Web)", count: 2, color: "var(--blue)" },
     ],
@@ -100,6 +105,7 @@ const orgHealthData = {
     openIssues: 0,
     criticalIssues: 0,
     lastIncident: "—",
+    compliance: 94,
     categories: [],
     patientsAffected: [],
   },

@@ -221,6 +221,17 @@
       </div>
     </section>
 
+    <!-- CLINIC-LEVEL PATIENT COMPLIANCE (monthly trend, scoped by the org filter
+         above like the panels before it -- picking a clinic there swaps this
+         chart to that clinic's own Compliance/Usable Compliance trend) -->
+    <section class="bo-card bo-panel bo-panel--static" style="display:block; margin-bottom:20px;">
+      <div class="bo-panel-head">
+        <h3 class="bo-panel-title" style="margin:0;" id="ovClinicComplianceTitle">Clinic-level Patient Compliance</h3>
+        <div class="bo-legend-row" id="ovClinicComplianceLegend" style="margin:0;"></div>
+      </div>
+      <div id="ovClinicComplianceChart" class="bo-chart-area" style="height:220px;"></div>
+    </section>
+
   </main>
 
 <script src="js/dashboard-nav.js"></script>

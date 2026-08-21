@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Connect Your EHR</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <div class="ehr-split">
+        <div class="ehr-split-form">
+
+          <div class="ehr-brand-lockup ehr-brand-lockup-logo">
+            <img src="img/ecw-logo.webp" alt="eClinicalWorks" class="ehr-brand-logo" />
+            <div class="ehr-brand-sub">Patient Portal &middot; v9.2</div>
+          </div>
+
+          <!-- STEP 1: username -->
+          <div id="ehrStepUsername">
+            <h1 class="auth-title" style="text-align:left; font-size:22px;">Sign in to your patient portal</h1>
+            <p class="auth-subtitle" style="text-align:left;">Connect your account to share your health record with HearO.</p>
+
+            <form id="ehrUsernameForm">
+              <div class="auth-field">
+                <label>Username</label>
+                <input type="text" id="ehrUsernameInput" placeholder="Enter your username" required autocomplete="username" />
+              </div>
+              <button type="submit" class="auth-btn">Next</button>
+            </form>
+          </div>
+
+          <!-- STEP 2: password -->
+          <div id="ehrStepPassword" style="display:none">
+            <h1 class="auth-title" style="text-align:left; font-size:22px;">Enter your password</h1>
+            <p class="auth-subtitle" style="text-align:left;">Signing in to your patient portal account.</p>
+
+            <div class="auth-user-chip">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="3.5"/><path d="M4.5 20C4.5 16.4 7.8 14 12 14C16.2 14 19.5 16.4 19.5 20"/></svg>
+              <span id="ehrUsernameLabel"></span>
+              <a href="#" class="auth-change-link" id="ehrChangeUserBtn">Change</a>
+            </div>
+
+            <form id="ehrPasswordForm">
+              <div class="auth-field">
+                <label>Password</label>
+                <input type="password" id="ehrPasswordInput" placeholder="Enter your password" required autocomplete="current-password" />
+              </div>
+              <button type="submit" class="auth-btn">Log in</button>
+            </form>
+          </div>
+
+          <a href="login.html" class="auth-link">&larr; Back to email</a>
+        </div>
+
+        <div class="ehr-split-visual">
+          <div class="ehr-visual-shape" style="width:380px; height:380px; top:-120px; left:-120px;"></div>
+          <div class="ehr-visual-shape" style="width:260px; height:260px; bottom:-80px; right:-60px;"></div>
+          <div class="ehr-visual-shape" style="width:140px; height:140px; bottom:120px; left:80px;"></div>
+          <div class="ehr-visual-content">
+            <div class="ehr-visual-icon">
+              <svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12H7L9 6L13 18L15 12H21"/></svg>
+            </div>
+            <h2 class="ehr-visual-title">Your records, securely connected</h2>
+            <p class="ehr-visual-desc">Sign in once to safely share your medications, vitals and care plan with your HearO care team.</p>
+          </div>
+        </div>
+      </div>
+
+<script>
+  const stepUsername = document.getElementById("ehrStepUsername");
+  const stepPassword = document.getElementById("ehrStepPassword");
+  const usernameInput = document.getElementById("ehrUsernameInput");
+  const usernameLabel = document.getElementById("ehrUsernameLabel");
+
+  document.getElementById("ehrUsernameForm").addEventListener("submit", (e) => {
+    e.preventDefault();
+    usernameLabel.textContent = usernameInput.value.trim();
+    stepUsername.style.display = "none";
+    stepPassword.style.display = "block";
+  });
+
+  document.getElementById("ehrChangeUserBtn").addEventListener("click", (e) => {
+    e.preventDefault();
+    stepPassword.style.display = "none";
+    stepUsername.style.display = "block";
+  });
+
+  document.getElementById("ehrPasswordForm").addEventListener("submit", (e) => {
+    e.preventDefault();
+    window.location.href = "ehr-consent.html";
+  });
+</script>
+
+</body>
+</html>
