@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>HearO | Care Recommendations</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <div class="app">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="logo">
+          <img src="https://web.dev3.cordiomed.com/assets/new-screen-assets/components/Side%20menu%20icon.svg" alt="HearO" class="logo-mark logo-mark-collapsed" />
+          <img src="https://web.dev3.cordiomed.com/assets/icons/logo.svg" alt="HearO" class="logo-mark logo-mark-expanded" />
+        </div>
+      </div>
+
+      <nav class="nav-list">
+        <a href="index.html" class="nav-item">
+          <span class="nav-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="17" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3 9H21" stroke="currentColor" stroke-width="1.8"/><path d="M8 2V6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M16 2V6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M7 13L10 16L14 12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+          <span class="nav-label">Dashboard</span>
+        </a>
+        <a href="patient-list.html" class="nav-item active">
+          <span class="nav-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="9" cy="8" r="3.2" stroke="currentColor" stroke-width="1.8"/><path d="M2.5 20C2.5 16.5 5.5 14 9 14C12.5 14 15.5 16.5 15.5 20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="17" cy="8.5" r="2.6" stroke="currentColor" stroke-width="1.6"/><path d="M15.5 20C15.5 17 17.8 15 20.5 15" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          </span>
+          <span class="nav-label">Patient List</span>
+        </a>
+        <a href="reports.html" class="nav-item">
+          <span class="nav-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><rect x="7" y="12" width="3" height="6"/><rect x="12" y="8" width="3" height="10"/><rect x="17" y="5" width="3" height="13"/></svg>
+          </span>
+          <span class="nav-label">Reports</span>
+        </a>
+        <a href="billing.html" class="nav-item">
+          <span class="nav-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><path d="M12 7V17" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M15 9.5C15 8.1 13.7 7 12 7C10.3 7 9 8.1 9 9.5C9 10.9 10.3 11.5 12 12C13.7 12.5 15 13.1 15 14.5C15 15.9 13.7 17 12 17C10.3 17 9 15.9 9 14.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          </span>
+          <span class="nav-label">Billing</span>
+        </a>
+        <a href="audit-trail.html" class="nav-item">
+          <span class="nav-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><path d="M12 7V12L15.5 14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+          <span class="nav-label">Audit Trail</span>
+        </a>
+        <a href="manage-users.html" class="nav-item">
+          <span class="nav-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="9" cy="8" r="3.2" stroke="currentColor" stroke-width="1.8"/><path d="M2.5 20C2.5 16.5 5.5 14 9 14C12.5 14 15.5 16.5 15.5 20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M18 11.2L21.3 12.6V15.6C21.3 17.9 19.9 19.7 18 20.3C16.1 19.7 14.7 17.9 14.7 15.6V12.6L18 11.2Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+          </span>
+          <span class="nav-label">Manage Users</span>
+        </a>
+      </nav>
+    </aside>
+
+    <!-- MAIN -->
+    <div class="main" id="main">
+
+      <!-- TOPBAR -->
+      <header class="topbar">
+        <h1 class="page-title">Patient Data</h1>
+        <div class="search">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#9AA5B1" stroke-width="1.8"/><path d="M21 21L16.5 16.5" stroke="#9AA5B1" stroke-width="1.8" stroke-linecap="round"/></svg>
+          <input type="text" placeholder="Search for a patient by name, username, MRN or ID" />
+        </div>
+        <div class="topbar-actions">
+          <div class="topbar-item">
+            <button class="icon-btn" aria-label="Language" id="langBtn">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#6B7684" stroke-width="1.8"/><path d="M3 12H21" stroke="#6B7684" stroke-width="1.8"/><path d="M12 3C14.5 5.7 15.8 8.8 15.8 12C15.8 15.2 14.5 18.3 12 21C9.5 18.3 8.2 15.2 8.2 12C8.2 8.8 9.5 5.7 12 3Z" stroke="#6B7684" stroke-width="1.8"/></svg>
+            </button>
+            <div class="topbar-popover org-popover" id="langPopover">
+              <label class="org-radio-item">
+                <input type="radio" name="lang" value="en" checked />
+                <span class="radio-dot"></span>
+                English
+              </label>
+              <label class="org-radio-item">
+                <input type="radio" name="lang" value="es" />
+                <span class="radio-dot"></span>
+                Español
+              </label>
+              <label class="org-radio-item">
+                <input type="radio" name="lang" value="hi" />
+                <span class="radio-dot"></span>
+                हिन्दी
+              </label>
+            </div>
+          </div>
+          <div class="topbar-item">
+            <button class="icon-btn badge" aria-label="Notifications" data-count="2" id="notifBtn">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M18 9.5C18 7.7 17.3 6 16 4.8C14.7 3.6 13 3 11.3 3.1C8.1 3.3 5.6 6.1 5.6 9.4V12.5C5.6 13.1 5.4 13.7 5 14.2L4 15.5C3.4 16.3 4 17.5 5 17.5H19C20 17.5 20.6 16.3 20 15.5L19 14.2C18.6 13.7 18.4 13.1 18.4 12.5" stroke="#6B7684" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M9.5 20.5C10 21.3 10.9 21.8 12 21.8C13.1 21.8 14 21.3 14.5 20.5" stroke="#6B7684" stroke-width="1.6" stroke-linecap="round"/></svg>
+            </button>
+            <div class="topbar-popover notif-popover" id="notifPopover">
+              <h3 class="notif-title">Notifications</h3>
+              <div class="notif-tabs" id="notifTabs">
+                <button class="notif-tab" data-tab="team">Team</button>
+                <button class="notif-tab active" data-tab="foryou">For you</button>
+              </div>
+              <div class="notif-list" id="notifList"></div>
+              <a href="#" class="notif-view-more">View more</a>
+            </div>
+          </div>
+          <button class="icon-btn badge" aria-label="Messages" data-count="1">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 5.5C4 4.4 4.9 3.5 6 3.5H18C19.1 3.5 20 4.4 20 5.5V14.5C20 15.6 19.1 16.5 18 16.5H9L5 20V16.5H6C4.9 16.5 4 15.6 4 14.5V5.5Z" stroke="#6B7684" stroke-width="1.6" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="avatar">EC</div>
+        </div>
+      </header>
+
+      <!-- CONTENT -->
+      <div class="data-content">
+
+        <div class="rec-page-card">
+
+        <!-- Page header: breadcrumb + back navigation + title + close -->
+        <div class="rec-page-header">
+          <a href="patient-data.html" class="rec-page-back" aria-label="Back to Patient Chart">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          </a>
+          <div class="rec-page-title-group">
+            <div class="rec-page-breadcrumb">
+              <a href="patient-data.html">Patient Chart</a>
+              <span>&rsaquo;</span>
+              <span>Sarah White (ABC-123)</span>
+            </div>
+            <div class="rec-page-title">Care Recommendations</div>
+          </div>
+          <span class="rec-page-header-spacer"></span>
+        </div>
+
+        <!-- Summary / Create New -->
+        <div class="data-tabs-card">
+          <div class="rec-tabs-row">
+            <div class="rec-tabs" id="recTabs">
+              <button type="button" class="rec-tab active" data-rec-tab="summary">Summary</button>
+              <button type="button" class="rec-tab" data-rec-tab="create">Create New</button>
+            </div>
+          </div>
+
+          <!-- Summary: clinical decision summary before reviewing/creating a recommendation -->
+          <div class="rec-tab-panel open" data-rec-panel="summary">
+
+            <!-- Allergies / Critical Alerts -->
+            <div class="rec-alert-banner">
+              <div class="rec-alert-header">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.6L2.6 17a1.8 1.8 0 0 0 1.55 2.7h15.7A1.8 1.8 0 0 0 21.4 17L13.7 3.6a1.8 1.8 0 0 0-3.4 0Z"/><path d="M12 9v4"/><path d="M12 16.5h.01"/></svg>
+                Allergies &amp; Critical Alerts
+              </div>
+              <ul class="rec-alert-list">
+                <li class="rec-alert-item"><span class="rec-alert-tag">Allergy</span>Penicillin</li>
+                <li class="rec-alert-item"><span class="rec-alert-tag">Allergy</span>Sulfa drugs</li>
+                <li class="rec-alert-item"><span class="rec-alert-tag rec-alert-tag-condition">High-risk</span>Heart failure</li>
+              </ul>
+            </div>
+
+            <!-- Relevant Patient Information -->
+            <div class="rec-info-cards-grid">
+              <div class="rec-info-card rec-info-card-highlight">
+                <div class="rec-info-card-title">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>
+                  Current Medications
+                </div>
+                <ul class="rec-info-card-list">
+                  <li><span>Furosemide 40 mg</span><span class="rec-info-card-meta">Once Daily</span></li>
+                  <li><span>Carvedilol 6.25 mg</span><span class="rec-info-card-meta">Twice Daily</span></li>
+                  <li><span>Spironolactone 25 mg</span><span class="rec-info-card-meta">Once Daily</span></li>
+                </ul>
+              </div>
+              <div class="rec-info-card">
+                <div class="rec-info-card-title">Recent Vitals</div>
+                <ul class="rec-info-card-list">
+                  <li><span>BP 128/82 mmHg</span><span class="rec-info-card-meta">18 Aug</span></li>
+                  <li><span>Heart Rate 76 bpm</span><span class="rec-info-card-meta">18 Aug</span></li>
+                  <li><span>Weight 84.2 kg</span><span class="rec-info-card-meta">18 Aug</span></li>
+                </ul>
+              </div>
+              <div class="rec-info-card rec-info-card-highlight">
+                <div class="rec-info-card-title">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6c-1.9-1.9-5-1.9-6.9 0L12 6.5l-1.9-1.9c-1.9-1.9-5-1.9-6.9 0-1.9 1.9-1.9 5 0 6.9L12 20l8.8-8.5c1.9-1.9 1.9-5 0-6.9Z"/></svg>
+                  Key Conditions
+                </div>
+                <ul class="rec-info-card-list">
+                  <li><span>Heart failure (reduced EF)</span></li>
+                  <li><span>Hypertension</span></li>
+                  <li><span>Type 2 diabetes</span></li>
+                </ul>
+              </div>
+              <div class="rec-info-card">
+                <div class="rec-info-card-title">Care Plan / Goals</div>
+                <ul class="rec-info-card-list">
+                  <li><span>Maintain dry weight under 85 kg</span></li>
+                  <li><span>Titrate Furosemide as tolerated</span></li>
+                </ul>
+              </div>
+              <div class="rec-info-card">
+                <div class="rec-info-card-title">Recording &amp; Compliance</div>
+                <ul class="rec-info-card-list">
+                  <li><span>69% total compliance</span><span class="rec-info-card-meta">30 days</span></li>
+                  <li><span>Last recorded</span><span class="rec-info-card-meta">Today, 07:40 AM</span></li>
+                </ul>
+              </div>
+            </div>
+
+            <!-- Recent Care Recommendations -->
+            <div class="rec-recent-card">
+              <div class="rec-recent-header">
+                <h3 class="rec-form-section-title rec-recent-title">Recent Care Recommendations</h3>
+                <div class="custom-select" id="careRecStatusFilter" data-name="careRecStatus">
+                  <button type="button" class="custom-select-trigger">
+                    <span class="custom-select-value">All</span>
+                    <svg class="custom-select-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                  </button>
+                  <div class="custom-select-menu">
+                    <div class="custom-select-option selected" data-value="all">All<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    <div class="custom-select-option" data-value="recommended">Recommended<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    <div class="custom-select-option" data-value="in-progress">In Progress<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    <div class="custom-select-option" data-value="completed">Completed<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                  </div>
+                  <input type="hidden" name="careRecStatus" value="all" />
+                </div>
+              </div>
+              <div class="rec-summary-list" id="recSummaryList"></div>
+            </div>
+          </div>
+
+          <!-- Create New -->
+          <div class="rec-tab-panel" data-rec-panel="create">
+            <form id="careRecCreateForm" class="rec-create-form">
+
+              <!-- Persistent patient alert -->
+              <div class="rec-form-alert">
+                <div class="rec-form-alert-header">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.6L2.6 17a1.8 1.8 0 0 0 1.55 2.7h15.7A1.8 1.8 0 0 0 21.4 17L13.7 3.6a1.8 1.8 0 0 0-3.4 0Z"/><path d="M12 9v4"/><path d="M12 16.5h.01"/></svg>
+                  Patient Alerts
+                </div>
+                <ul class="rec-alert-list">
+                  <li class="rec-alert-item"><span class="rec-alert-tag">Allergy</span>Penicillin</li>
+                  <li class="rec-alert-item"><span class="rec-alert-tag">Allergy</span>Sulfa drugs</li>
+                  <li class="rec-alert-item"><span class="rec-alert-tag rec-alert-tag-condition">High-risk</span>Heart failure</li>
+                </ul>
+              </div>
+
+              <div class="rec-form-section">
+                <h3 class="rec-form-section-title">Medication Details</h3>
+                <div class="form-grid">
+                  <div class="form-field">
+                    <label>Medication<span class="required-star">*</span></label>
+                    <div class="custom-select" data-name="medication" id="careRecMedicationSelect">
+                      <button type="button" class="custom-select-trigger">
+                        <span class="custom-select-value placeholder">Select medication</span>
+                        <svg class="custom-select-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                      </button>
+                      <div class="custom-select-menu" id="careRecMedicationMenu"></div>
+                      <input type="hidden" name="medication" required />
+                    </div>
+                  </div>
+                  <div class="form-field">
+                    <label>Current Dose</label>
+                    <div class="unit-input"><input type="text" id="careRecCurrentDose" value="—" disabled /></div>
+                  </div>
+                  <div class="form-field">
+                    <label>New Dose<span class="required-star">*</span></label>
+                    <div class="unit-input"><input type="number" name="newDose" min="0" step="0.5" placeholder="e.g. 80" required /><span>mg</span></div>
+                  </div>
+                  <div class="form-field">
+                    <label>Frequency<span class="required-star">*</span></label>
+                    <div class="custom-select" data-name="frequency">
+                      <button type="button" class="custom-select-trigger">
+                        <span class="custom-select-value placeholder">Select frequency</span>
+                        <svg class="custom-select-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                      </button>
+                      <div class="custom-select-menu">
+                        <div class="custom-select-option" data-value="Once Daily">Once Daily<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                        <div class="custom-select-option" data-value="Twice Daily">Twice Daily<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                        <div class="custom-select-option" data-value="Three Times Daily">Three Times Daily<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                        <div class="custom-select-option" data-value="As Needed">As Needed<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                      </div>
+                      <input type="hidden" name="frequency" required />
+                    </div>
+                  </div>
+                  <div class="form-field">
+                    <label>Duration<span class="required-star">*</span></label>
+                    <div class="unit-input"><input type="number" name="duration" min="1" step="1" placeholder="e.g. 14" required /><span>days</span></div>
+                  </div>
+                  <div class="form-field">
+                    <label>Start Date</label>
+                    <input type="date" name="startDate" />
+                  </div>
+                </div>
+              </div>
+
+              <div class="rec-form-section">
+                <h3 class="rec-form-section-title">Instructions</h3>
+                <div class="form-field">
+                  <label>Instructions for the Patient<span class="required-star">*</span></label>
+                  <textarea name="instructionsPatient" placeholder="e.g. Take with breakfast. Weigh yourself each morning and record it in the app." required></textarea>
+                </div>
+                <div class="form-field" style="margin-bottom: 0;">
+                  <label>Instructions for Care Team</label>
+                  <textarea name="instructionsCareTeam" placeholder="Internal notes for the nurse/care team picking this up"></textarea>
+                </div>
+              </div>
+
+              <div class="rec-form-section">
+                <h3 class="rec-form-section-title">Care Team</h3>
+                <div class="form-field">
+                  <label>Care Team</label>
+                  <div class="checkbox-filter care-team-field" data-name="careTeam" id="careRecCareTeamField">
+                    <button type="button" class="care-team-trigger">
+                      <span class="care-team-trigger-value">3 selected</span>
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                    </button>
+                    <div class="checkbox-filter-menu care-team-menu">
+                      <label class="checkbox-filter-option"><input type="checkbox" value="Amanda Lee" checked />Amanda Lee</label>
+                      <label class="checkbox-filter-option"><input type="checkbox" value="Ayelet Er" checked />Ayelet Er</label>
+                      <label class="checkbox-filter-option"><input type="checkbox" value="Sandy Kohl" checked />Sandy Kohl</label>
+                    </div>
+                    <input type="hidden" name="careTeam" />
+                  </div>
+                </div>
+                <div class="form-field" style="margin-bottom: 0;">
+                  <label class="checkbox-field"><input type="checkbox" name="invitePatient" /> Invite patient to the clinic</label>
+                </div>
+              </div>
+
+              <div class="rec-create-actions">
+                <button type="button" class="btn-text" id="cancelCareRecCreate">Cancel</button>
+                <button type="submit" class="btn-save enabled">Create Recommendation</button>
+              </div>
+            </form>
+          </div>
+
+        </div>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Care Recommendation detail modal -->
+  <div class="modal-overlay" id="recDrawerOverlay">
+    <div class="modal modal-wide">
+      <div class="drawer-header">
+        <h2 id="recDrawerTitle">&nbsp;</h2>
+        <button type="button" class="modal-close-x" id="closeRecDrawer" aria-label="Close">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6L18 18M6 18L18 6"/></svg>
+        </button>
+      </div>
+
+      <div class="rec-drawer-status-row">
+        <span class="rec-status-chip" id="recDrawerStatus"></span>
+      </div>
+
+      <div class="drawer-section rec-info-grid">
+        <div>
+          <div class="drawer-label">Medication</div>
+          <div class="rec-info-value" id="recDrawerMedication"></div>
+        </div>
+        <div>
+          <div class="drawer-label">Dose Change</div>
+          <div class="rec-info-value" id="recDrawerDoseChange"></div>
+        </div>
+        <div>
+          <div class="drawer-label">Frequency</div>
+          <div class="rec-info-value" id="recDrawerFrequency"></div>
+        </div>
+        <div>
+          <div class="drawer-label">Duration</div>
+          <div class="rec-info-value" id="recDrawerDuration"></div>
+        </div>
+        <div>
+          <div class="drawer-label">Start Date</div>
+          <div class="rec-info-value" id="recDrawerStartDate"></div>
+        </div>
+        <div>
+          <div class="drawer-label">Invite Patient</div>
+          <div class="rec-info-value" id="recDrawerInvite"></div>
+        </div>
+        <div>
+          <div class="drawer-label">Care Team</div>
+          <div class="rec-info-value" id="recDrawerCareTeam"></div>
+        </div>
+      </div>
+
+      <div class="drawer-section">
+        <div class="drawer-label">Instructions for the Patient</div>
+        <p class="drawer-instruction" id="recDrawerInstructionPatient"></p>
+      </div>
+
+      <div class="drawer-section">
+        <div class="drawer-label">Instructions for Care Team</div>
+        <p class="drawer-instruction" id="recDrawerInstructionCareTeam"></p>
+      </div>
+
+      <div class="drawer-section rec-info-grid">
+        <div>
+          <div class="drawer-label">Created by</div>
+          <div class="rec-info-value" id="recDrawerCreatedBy"></div>
+        </div>
+        <div>
+          <div class="drawer-label">Created</div>
+          <div class="rec-info-value" id="recDrawerCreatedAt"></div>
+        </div>
+        <div>
+          <div class="drawer-label">Picked up by</div>
+          <div class="rec-info-value" id="recDrawerPickedUp"></div>
+        </div>
+      </div>
+
+      <div class="drawer-section">
+        <div class="drawer-label">Care Team Activity</div>
+        <div class="rec-timeline" id="recDrawerTimeline"></div>
+      </div>
+
+      <div class="drawer-footer" id="recDrawerFooter"></div>
+    </div>
+  </div>
+
+<script src="js/topbar.js"></script>
+<script src="js/care-recommendation.js"></script>
+</body>
+</html>

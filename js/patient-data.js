@@ -528,6 +528,10 @@ const careRecs = [
     createdAt: "05 Aug 2026, 09:10 AM",
     updatedAt: "05 Aug 2026, 09:20 AM",
     pickedUpBy: null,
+    actionTaken: null,
+    completedBy: null,
+    completedOn: null,
+    patientAcknowledgedAt: null,
     activity: [
       { who: "Dr. Sarah Mitchell", when: "05 Aug · 09:10 AM", text: "Created care recommendation." },
       { who: "Dr. Sarah Mitchell", when: "05 Aug · 09:20 AM", label: "Archived", short: "Archived", note: "Created in error — duplicate of an existing titration plan." },
@@ -550,6 +554,10 @@ const careRecs = [
     createdAt: "08 Aug 2026, 11:00 AM",
     updatedAt: "08 Aug 2026, 02:15 PM",
     pickedUpBy: "Amanda Lee, RN",
+    actionTaken: "Patient contacted — mild dizziness reported on standing, no other symptoms. Heart rate readings within range.",
+    completedBy: "Amanda Lee, RN",
+    completedOn: "08 Aug 2026, 02:15 PM",
+    patientAcknowledgedAt: "08 Aug 2026, 01:05 PM",
     activity: [
       { who: "Dr. Sarah Mitchell", when: "08 Aug · 11:00 AM", text: "Created care recommendation." },
       { who: "Amanda Lee, RN", when: "08 Aug · 11:20 AM", text: "Picked up recommendation." },
@@ -574,6 +582,10 @@ const careRecs = [
     createdAt: "07 Aug 2026, 09:00 AM",
     updatedAt: "07 Aug 2026, 04:10 PM",
     pickedUpBy: "Amanda Lee, RN",
+    actionTaken: "Clarified evening dose timing with the patient; adherence confirmed going forward.",
+    completedBy: "Amanda Lee, RN",
+    completedOn: "07 Aug 2026, 04:10 PM",
+    patientAcknowledgedAt: "07 Aug 2026, 10:30 AM",
     activity: [
       { who: "Dr. Sarah Mitchell", when: "07 Aug · 09:00 AM", text: "Created care recommendation." },
       { who: "Amanda Lee, RN", when: "07 Aug · 09:40 AM", text: "Picked up recommendation." },
@@ -605,6 +617,10 @@ function newCareRec(fields, createdBy = "Dr. Sarah Mitchell") {
     createdAt: t.full,
     updatedAt: t.full,
     pickedUpBy: null,
+    actionTaken: null,
+    completedBy: null,
+    completedOn: null,
+    patientAcknowledgedAt: null,
     activity: [{ who: createdBy, when: t.short, text: "Created care recommendation." }],
   };
 }
@@ -659,6 +675,11 @@ document.getElementById("openCareRecBtn").addEventListener("click", (e) => {
   if (activeRec) openRecDrawer(activeRec.id);
 });
 
+document.getElementById("openAddRecBtn").addEventListener("click", (e) => {
+  if (!hasActiveCareRec()) return;
+  e.preventDefault();
+});
+
 function renderCareRecs() {
   document.getElementById("careRecCount").textContent = careRecs.length;
   updateCareRecTriggers();
@@ -672,7 +693,6 @@ function renderCareRecs() {
         .map((rec) => {
           const meta = CARE_REC_STATUS[rec.status];
           const latest = careRecLatest(rec);
-          const editable = rec.status !== "completed" && rec.status !== "archived";
           return `
           <tr>
             <td><span class="rec-title-cell">${rec.title}</span></td>
@@ -685,7 +705,12 @@ function renderCareRecs() {
               </div>
             </td>
             <td>${rec.updatedAt}</td>
-            <td><button type="button" class="btn-open rec-open-btn" data-rec-id="${rec.id}">${editable ? "Open" : "View"}</button></td>
+            <td>
+              <div class="rec-row-actions">
+                <button type="button" class="btn-open rec-view-btn" data-rec-id="${rec.id}">View</button>
+                <button type="button" class="btn-open rec-edit-btn" data-rec-id="${rec.id}">Edit</button>
+              </div>
+            </td>
           </tr>`;
         })
         .join("")
@@ -707,27 +732,6 @@ function renderRecTimeline(rec) {
       </div>`
     )
     .join("");
-}
-
-function renderRecDrawerFooter(rec) {
-  if (rec.status === "completed") {
-    return `<div class="rec-completed-note">This recommendation is completed. Activity history is shown above.</div>`;
-  }
-  if (rec.status === "archived") {
-    return `<div class="rec-completed-note">This recommendation was archived. Activity history is shown above.</div>`;
-  }
-  return `
-    <div class="rec-add-note">
-      <label class="drawer-label">Add note</label>
-      <textarea id="recNoteInput" placeholder="Add a note for the care team..."></textarea>
-      <div class="rec-footer-actions">
-        <button type="button" class="rec-archive-link" id="recArchive">Archive</button>
-        <div class="rec-footer-actions-right">
-          <button type="button" class="btn-secondary" id="recAddNote">Add note</button>
-          <button type="button" class="btn-complete" id="recMarkComplete">Mark as Complete</button>
-        </div>
-      </div>
-    </div>`;
 }
 
 function openRecDrawer(id) {
@@ -752,12 +756,33 @@ function openRecDrawer(id) {
   document.getElementById("recDrawerInstructionPatient").textContent = rec.instructionsPatient || "—";
   document.getElementById("recDrawerInstructionCareTeam").textContent = rec.instructionsCareTeam || "—";
 
+  const actionTakenSection = document.getElementById("recDrawerActionTakenSection");
+  if (rec.actionTaken) {
+    actionTakenSection.style.display = "";
+    document.getElementById("recDrawerActionTaken").textContent = rec.actionTaken;
+  } else {
+    actionTakenSection.style.display = "none";
+  }
+
   document.getElementById("recDrawerCreatedBy").textContent = rec.createdBy;
   document.getElementById("recDrawerCreatedAt").textContent = rec.createdAt;
-  document.getElementById("recDrawerPickedUp").textContent = rec.pickedUpBy || "Not yet picked up";
+  document.getElementById("recDrawerUpdatedAt").textContent = rec.updatedAt;
+  document.getElementById("recDrawerPickedUp").textContent = rec.pickedUpBy || "Not yet assigned";
+  document.getElementById("recDrawerAck").textContent = rec.patientAcknowledgedAt ? `Yes · ${rec.patientAcknowledgedAt}` : "Not yet acknowledged";
+
+  const completedByWrap = document.getElementById("recDrawerCompletedByWrap");
+  const completedOnWrap = document.getElementById("recDrawerCompletedOnWrap");
+  if (rec.status === "completed") {
+    completedByWrap.style.display = "";
+    completedOnWrap.style.display = "";
+    document.getElementById("recDrawerCompletedBy").textContent = rec.completedBy || "—";
+    document.getElementById("recDrawerCompletedOn").textContent = rec.completedOn || "—";
+  } else {
+    completedByWrap.style.display = "none";
+    completedOnWrap.style.display = "none";
+  }
 
   document.getElementById("recDrawerTimeline").innerHTML = renderRecTimeline(rec);
-  document.getElementById("recDrawerFooter").innerHTML = renderRecDrawerFooter(rec);
 
   document.getElementById("recDrawerOverlay").classList.add("open");
 }
@@ -773,40 +798,15 @@ document.getElementById("recDrawerOverlay").addEventListener("click", (e) => {
 });
 
 document.getElementById("careRecTableBody").addEventListener("click", (e) => {
-  const btn = e.target.closest(".rec-open-btn");
-  if (!btn) return;
-  openRecDrawer(Number(btn.dataset.recId));
-});
-
-document.getElementById("recDrawerFooter").addEventListener("click", (e) => {
-  const rec = careRecs.find((r) => r.id === activeRecId);
-  if (!rec) return;
-  const t = timeLabel(new Date());
-
-  if (e.target.id === "recAddNote") {
-    const textarea = document.getElementById("recNoteInput");
-    const note = textarea.value.trim();
-    if (!note) return;
-    rec.activity.push({ who: rec.createdBy, when: t.short, label: "Added a note", short: "Added a note", note });
-    rec.updatedAt = t.full;
-    renderCareRecs();
-    openRecDrawer(rec.id);
+  const viewBtn = e.target.closest(".rec-view-btn");
+  if (viewBtn) {
+    openRecDrawer(Number(viewBtn.dataset.recId));
+    return;
   }
 
-  if (e.target.id === "recArchive") {
-    rec.status = "archived";
-    rec.activity.push({ who: rec.createdBy, when: t.short, label: "Archived", short: "Archived" });
-    rec.updatedAt = t.full;
-    renderCareRecs();
-    openRecDrawer(rec.id);
-  }
-
-  if (e.target.id === "recMarkComplete") {
-    rec.status = "completed";
-    rec.activity.push({ who: rec.createdBy, when: t.short, label: "Marked recommendation as Completed.", short: "Completed" });
-    rec.updatedAt = t.full;
-    renderCareRecs();
-    openRecDrawer(rec.id);
+  const editBtn = e.target.closest(".rec-edit-btn");
+  if (editBtn) {
+    openEditRecModal(Number(editBtn.dataset.recId));
   }
 });
 
@@ -868,6 +868,111 @@ const medications = [
 
 medications.forEach((m, i) => (m.id = i));
 let nextMedId = medications.length;
+
+/* ---------------- Care Recommendation: Edit ---------------- */
+const editRecMedicationMenu = document.getElementById("editRecMedicationMenu");
+editRecMedicationMenu.innerHTML = medications
+  .map(
+    (m) => `
+    <div class="custom-select-option" data-value="${m.name}">${m.name}<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>`
+  )
+  .join("");
+
+document.getElementById("editRecMedicationSelect").addEventListener("change", (e) => {
+  const med = medications.find((m) => m.name === e.target.value);
+  document.getElementById("editRecCurrentDose").value = med ? med.dose : "—";
+});
+
+const editRecCareTeamField = document.getElementById("editRecCareTeamField");
+const editRecCareTeamTrigger = editRecCareTeamField.querySelector(".care-team-trigger");
+const editRecCareTeamValueEl = editRecCareTeamField.querySelector(".care-team-trigger-value");
+const editRecCareTeamMenu = editRecCareTeamField.querySelector(".care-team-menu");
+const editRecCareTeamHidden = editRecCareTeamField.querySelector('input[name="careTeam"]');
+const editRecCareTeamPlaceholder = "Select care team";
+
+editRecCareTeamTrigger.addEventListener("click", (e) => {
+  e.stopPropagation();
+  const willOpen = !editRecCareTeamField.classList.contains("open");
+  document.querySelectorAll(".checkbox-filter.open, .care-team-field.open").forEach((el) => el.classList.remove("open"));
+  editRecCareTeamField.classList.toggle("open", willOpen);
+});
+editRecCareTeamMenu.addEventListener("click", (e) => e.stopPropagation());
+document.addEventListener("click", () => editRecCareTeamField.classList.remove("open"));
+
+function syncEditRecCareTeam() {
+  const selected = Array.from(editRecCareTeamMenu.querySelectorAll('input[type="checkbox"]:checked')).map((cb) => cb.value);
+  editRecCareTeamHidden.value = selected.join(", ");
+  editRecCareTeamValueEl.textContent = selected.length ? `${selected.length} selected` : editRecCareTeamPlaceholder;
+  editRecCareTeamValueEl.classList.toggle("placeholder", !selected.length);
+}
+editRecCareTeamMenu.addEventListener("change", syncEditRecCareTeam);
+
+const editRecOverlay = document.getElementById("editRecOverlay");
+const editRecForm = document.getElementById("editRecForm");
+let editingRecId = null;
+
+function openEditRecModal(id) {
+  const rec = careRecs.find((r) => r.id === id);
+  if (!rec) return;
+
+  editingRecId = id;
+  editRecForm.reset();
+  resetCustomSelectsIn(editRecForm);
+
+  setCustomSelectValue(editRecForm.querySelector('.custom-select[data-name="medication"]'), rec.medication || "", { silent: true });
+  document.getElementById("editRecCurrentDose").value = rec.currentDose || "—";
+  editRecForm.newDose.value = rec.newDose || "";
+  setCustomSelectValue(editRecForm.querySelector('.custom-select[data-name="frequency"]'), rec.frequency || "", { silent: true });
+  editRecForm.duration.value = rec.duration || "";
+  editRecForm.startDate.value = rec.startDate || "";
+  editRecForm.instructionsPatient.value = rec.instructionsPatient || "";
+  editRecForm.instructionsCareTeam.value = rec.instructionsCareTeam || "";
+  editRecForm.invitePatient.checked = !!rec.invitePatient;
+
+  editRecCareTeamMenu.querySelectorAll('input[type="checkbox"]').forEach((cb) => {
+    cb.checked = (rec.assignedCareTeam || []).includes(cb.value);
+  });
+  syncEditRecCareTeam();
+
+  editRecOverlay.classList.add("open");
+}
+
+function closeEditRecModal() {
+  editRecOverlay.classList.remove("open");
+  editingRecId = null;
+}
+
+document.getElementById("cancelEditRec").addEventListener("click", closeEditRecModal);
+editRecOverlay.addEventListener("click", (e) => { if (e.target === editRecOverlay) closeEditRecModal(); });
+
+editRecForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  const rec = careRecs.find((r) => r.id === editingRecId);
+  if (!rec) return;
+
+  const fd = new FormData(editRecForm);
+  const t = timeLabel(new Date());
+
+  rec.medication = fd.get("medication");
+  rec.title = `${rec.medication} dose change`;
+  rec.currentDose = document.getElementById("editRecCurrentDose").value;
+  rec.newDose = fd.get("newDose");
+  rec.frequency = fd.get("frequency");
+  rec.duration = fd.get("duration");
+  rec.startDate = fd.get("startDate");
+  rec.instructionsPatient = fd.get("instructionsPatient");
+  rec.instructionsCareTeam = fd.get("instructionsCareTeam");
+  rec.invitePatient = fd.get("invitePatient") === "on";
+  rec.assignedCareTeam = (fd.get("careTeam") || "").split(", ").filter(Boolean);
+  rec.updatedAt = t.full;
+  rec.activity.push({ who: rec.createdBy, when: t.short, label: "Updated care recommendation.", short: "Updated" });
+
+  renderCareRecs();
+  closeEditRecModal();
+  if (document.getElementById("recDrawerOverlay").classList.contains("open") && activeRecId === rec.id) {
+    openRecDrawer(rec.id);
+  }
+});
 
 const adhCheckIcon = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 const adhDashIcon = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M6 12H18" stroke="#9AA5B1" stroke-width="2.4" stroke-linecap="round"/></svg>`;
@@ -1492,79 +1597,6 @@ editMedForm.addEventListener("submit", (e) => {
 
   renderMeds();
   closeEditMedModal();
-});
-
-const careRecMedicationMenu = document.getElementById("careRecMedicationMenu");
-careRecMedicationMenu.innerHTML = medications
-  .map(
-    (m) => `
-    <div class="custom-select-option" data-value="${m.name}">${m.name}<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>`
-  )
-  .join("");
-
-document.getElementById("careRecMedicationSelect").addEventListener("change", (e) => {
-  const med = medications.find((m) => m.name === e.target.value);
-  document.getElementById("careRecCurrentDose").value = med ? med.dose : "—";
-});
-
-wireAddModal(
-  "careRecOverlay",
-  "careRecForm",
-  "cancelCareRec",
-  ["openCareRecBtn", "openAddRecBtn"],
-  (fd) => {
-    careRecs.unshift(
-      newCareRec({
-        medication: fd.get("medication"),
-        currentDose: document.getElementById("careRecCurrentDose").value,
-        newDose: fd.get("newDose"),
-        frequency: fd.get("frequency"),
-        duration: fd.get("duration"),
-        startDate: fd.get("startDate"),
-        instructionsPatient: fd.get("instructionsPatient"),
-        instructionsCareTeam: fd.get("instructionsCareTeam"),
-        invitePatient: fd.get("invitePatient") === "on",
-        assignedCareTeam: (fd.get("careTeam") || "").split(", ").filter(Boolean),
-      })
-    );
-    renderCareRecs();
-  },
-  { canOpen: () => !hasActiveCareRec() }
-);
-
-/* ---------------- Care Recommendation: Care Team multiselect ---------------- */
-const careRecCareTeamField = document.getElementById("careRecCareTeamField");
-const careRecCareTeamTrigger = careRecCareTeamField.querySelector(".care-team-trigger");
-const careRecCareTeamValueEl = careRecCareTeamField.querySelector(".care-team-trigger-value");
-const careRecCareTeamMenu = careRecCareTeamField.querySelector(".care-team-menu");
-const careRecCareTeamHidden = careRecCareTeamField.querySelector('input[name="careTeam"]');
-const careRecCareTeamPlaceholder = "Select care team";
-
-careRecCareTeamTrigger.addEventListener("click", (e) => {
-  e.stopPropagation();
-  const willOpen = !careRecCareTeamField.classList.contains("open");
-  document.querySelectorAll(".checkbox-filter.open, .care-team-field.open").forEach((el) => el.classList.remove("open"));
-  careRecCareTeamField.classList.toggle("open", willOpen);
-});
-careRecCareTeamMenu.addEventListener("click", (e) => e.stopPropagation());
-document.addEventListener("click", () => careRecCareTeamField.classList.remove("open"));
-
-function syncCareRecCareTeam() {
-  const selected = Array.from(careRecCareTeamMenu.querySelectorAll('input[type="checkbox"]:checked')).map((cb) => cb.value);
-  careRecCareTeamHidden.value = selected.join(", ");
-  careRecCareTeamValueEl.textContent = selected.length ? `${selected.length} selected` : careRecCareTeamPlaceholder;
-  careRecCareTeamValueEl.classList.toggle("placeholder", !selected.length);
-}
-careRecCareTeamMenu.addEventListener("change", syncCareRecCareTeam);
-syncCareRecCareTeam();
-
-/* form.reset() (called by wireAddModal's open()) restores each checkbox's
-   default `checked` state but not this field's derived hidden value/label --
-   re-sync after every open so it reflects the reset checkboxes. */
-["openCareRecBtn", "openAddRecBtn"].forEach((id) => {
-  document.getElementById(id).addEventListener("click", () => {
-    if (!hasActiveCareRec()) syncCareRecCareTeam();
-  });
 });
 
 /* ---------------- Add Measurement modal ---------------- */
