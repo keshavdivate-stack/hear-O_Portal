@@ -5,8 +5,8 @@ const INC_SEVERITIES = ["SEV-1", "SEV-2", "SEV-3", "SEV-4"];
 const INC_SEVERITY_LABEL = { "SEV-1": "Critical", "SEV-2": "High", "SEV-3": "Medium", "SEV-4": "Low" };
 const INC_SEVERITY_CLASS = { "SEV-1": "bo-pill-severity-critical", "SEV-2": "bo-pill-severity-high", "SEV-3": "bo-pill-severity-medium", "SEV-4": "bo-pill-severity-low" };
 
-const INC_STATUSES = ["Active", "Monitoring", "Resolved"];
-const INC_STATUS_CLASS = { Active: "bo-pill-incident-active", Monitoring: "bo-pill-incident-monitoring", Resolved: "bo-pill-incident-resolved" };
+const INC_STATUSES = ["Active", "Escalated", "Resolved"];
+const INC_STATUS_CLASS = { Active: "bo-pill-incident-active", Escalated: "bo-pill-incident-escalated", Resolved: "bo-pill-incident-resolved" };
 
 /* Category values are shared with Tickets (see CATEGORIES in support-data.js)
    wherever the underlying area overlaps, so the same category reads the same
@@ -50,7 +50,7 @@ const incidents = [
     source: "System Scheduler",
     category: "System Schedule Engine",
     severity: "SEV-2",
-    status: "Monitoring",
+    status: "Escalated",
     owner: "Maya Chen",
     detectedAt: "Aug 19, 2026 · 10:42 AM",
     duration: "1h 05m",
@@ -70,7 +70,7 @@ const incidents = [
       { time: "10:44 AM", text: "SEV-2 escalation triggered" },
       { time: "10:48 AM", text: "Maya Chen acknowledged incident" },
       { time: "11:12 AM", text: "Fix deployed" },
-      { time: "11:15 AM", text: "Incident moved to Monitoring" },
+      { time: "11:15 AM", text: "Incident moved to Escalated" },
       { time: "11:45 AM", text: "No new failures detected" },
     ],
     resolution: null,
@@ -152,7 +152,7 @@ const incidents = [
       { time: "9:10 AM", text: "SEV-3 escalation triggered" },
       { time: "9:22 AM", text: "Daniel Adams acknowledged incident" },
       { time: "1:40 PM", text: "Fix deployed" },
-      { time: "3:45 PM", text: "Incident moved to Monitoring" },
+      { time: "3:45 PM", text: "Incident moved to Escalated" },
       { time: "3:45 PM", text: "Verification completed, incident resolved" },
     ],
     resolution: {
