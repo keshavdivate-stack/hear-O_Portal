@@ -35,10 +35,22 @@ careTeamAddPanel.insertAdjacentHTML("beforeend", '<div class="care-team-add-acti
 careTeamHeading.append(careTeamTitle, openCareTeamAdd);
 careTeamPopover.replaceChildren(careTeamHeading, careTeamMemberList, careTeamAddPanel);
 function renderPatientCareTeam() {
-  careTeamMemberList.innerHTML = patientCareTeam.map((member) => `<div class="care-team-popover-item"><span class="care-team-popover-name">${member.name}</span><span class="care-team-popover-role">${member.role}</span></div>`).join("");
+  careTeamMemberList.innerHTML = patientCareTeam.map((member) => `<div class="care-team-popover-item"><div class="care-team-popover-info"><span class="care-team-popover-name">${member.name}</span><span class="care-team-popover-role">${member.role}</span></div><button type="button" class="care-team-remove-button" data-name="${member.name}" title="Remove from care team" aria-label="Remove ${member.name} from care team"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6L18 18M18 6L6 18"/></svg></button></div>`).join("");
   const count = document.querySelector("#careTeamTrigger .care-team-more");
   if (count) count.textContent = patientCareTeam.length;
 }
+
+careTeamMemberList.addEventListener("click", (event) => {
+  const removeBtn = event.target.closest(".care-team-remove-button");
+  if (!removeBtn) return;
+  event.stopPropagation();
+  const name = removeBtn.dataset.name;
+  const index = patientCareTeam.findIndex((member) => member.name === name);
+  if (index === -1) return;
+  patientCareTeam.splice(index, 1);
+  renderPatientCareTeam();
+  renderCareTeamMultiselect();
+});
 function renderCareTeamMultiselect() {
   const assignedNames = new Set(patientCareTeam.map((member) => member.name));
   careTeamMultiselect.innerHTML = availableCareTeamMembers.filter((member) => !assignedNames.has(member.name)).map((member) => `<label><input type="checkbox" value="${member.name}"> ${member.name}</label>`).join("") || '<span class="care-team-empty-option">All available members are assigned.</span>';
