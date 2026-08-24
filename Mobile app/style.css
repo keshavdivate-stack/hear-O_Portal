@@ -1092,6 +1092,12 @@ input[type="password"]:focus {
 .nav-item-card--lavender { background: #efeafb; }
 .nav-item-card--blue { background: #e9f1ff; }
 .nav-item-card--amber { background: #fdf3e3; }
+/* Kept out of amber -- that tint is reserved for the "needs your attention"
+   update banner, so a same-colored nav card next to it reads as another
+   alert at a glance (easy to miss for anyone scanning quickly). Also kept
+   out of green/teal -- that's the "Recording complete" success color on
+   this same screen, so a teal card next to it looked like a completed state. */
+.nav-item-card--rose { background: #fdeef4; }
 
 .nav-item-card.highlight-blue {
   background: #e9f1ff;
@@ -1965,6 +1971,32 @@ input[type="password"]:focus {
   font-weight: 700;
   color: #2f6fed;
 }
+
+.med-update-instructions {
+  border: 1.5px solid #eceef1;
+  border-radius: 16px;
+  padding: 18px 20px;
+  margin-top: 16px;
+}
+
+.med-update-instructions-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1c1c1c;
+  margin: 0 0 12px;
+}
+
+.med-update-instruction-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 15px;
+  line-height: 1.4;
+  color: #444;
+}
+
+.med-update-instruction-row + .med-update-instruction-row { margin-top: 10px; }
+.med-update-instruction-row svg { flex-shrink: 0; margin-top: 1px; }
 
 .med-update-ack-btn { margin-top: auto; }
 
