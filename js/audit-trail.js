@@ -4,7 +4,7 @@ let auditCurrentPage = 1;
 let auditSearchTerm = "";
 let auditFromDate = null; // Date or null
 let auditToDate = null; // Date or null
-let auditRelatedType = "all"; // "all" | "Patient" | "User"
+let auditRelatedType = "Patient"; // "Patient" | "User"
 const auditActionTypes = new Set();
 const auditMadeBySet = new Set();
 
@@ -274,7 +274,7 @@ document.addEventListener("click", closeAllFilterPopovers);
 /* ---------------- Filtering ---------------- */
 function filteredAudit() {
   return auditTrail.filter((a) => {
-    if (auditRelatedType !== "all" && a.relatedType !== auditRelatedType) return false;
+    if (a.relatedType !== auditRelatedType) return false;
     if (auditSearchTerm && !a.madeBy.toLowerCase().includes(auditSearchTerm) && !a.relatedName.toLowerCase().includes(auditSearchTerm)) return false;
     if (auditActionTypes.size && !auditActionTypes.has(a.actionType)) return false;
     if (auditMadeBySet.size && !auditMadeBySet.has(a.madeBy)) return false;
@@ -337,7 +337,7 @@ document.getElementById("clearFilters").addEventListener("click", () => {
   auditSearchTerm = "";
   auditFromDate = null;
   auditToDate = null;
-  auditRelatedType = "all";
+  auditRelatedType = "Patient";
   auditActionTypes.clear();
   auditMadeBySet.clear();
   auditCurrentPage = 1;
@@ -345,7 +345,7 @@ document.getElementById("clearFilters").addEventListener("click", () => {
   document.getElementById("auditSearchInput").value = "";
   fromDateFilter.reset();
   toDateFilter.reset();
-  auditTypeTabs.querySelectorAll(".filter-tab").forEach((t) => t.classList.toggle("active", t.dataset.type === "all"));
+  auditTypeTabs.querySelectorAll(".filter-tab").forEach((t) => t.classList.toggle("active", t.dataset.type === "Patient"));
 
   document.querySelector('.checkbox-filter[data-name="actionType"] .checkbox-filter-label').textContent = "Action Type";
   document.querySelector('.checkbox-filter[data-name="madeBy"] .checkbox-filter-label').textContent = "Made By";
