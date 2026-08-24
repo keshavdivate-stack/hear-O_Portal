@@ -766,6 +766,10 @@ a { color: inherit; }
 .bo-mini-num { font-size: 28px; font-weight: 800; color: var(--blue); margin: 0; }
 .bo-mini-unit { font-size: 14px; font-weight: 600; color: var(--ink); margin-left: 4px; }
 
+.bo-usable-compliance-card { text-align: center; padding-top: 14px; padding-bottom: 18px; }
+.bo-usable-compliance-card .bo-panel-head { text-align: left; }
+.bo-usable-compliance-pct { font-size: 34px; font-weight: 800; color: #2E1C8C; margin: 8px 0 0; }
+
 @media (max-width: 1400px) {
   .bo-stat-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .bo-panels-grid { grid-template-columns: 1fr 1fr; }
