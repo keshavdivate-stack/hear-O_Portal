@@ -89,7 +89,111 @@ function renderTicketInfo() {
   document.getElementById("ticketDetailIssueType").textContent = currentTicket.issueType;
   document.getElementById("ticketDetailCategory").textContent = ticketCategory(currentTicket) || "—";
   document.getElementById("ticketDetailDescription").textContent = currentTicket.description;
+  renderTicketRecording();
 }
+
+/* ---------------- Recording (Voice Engine tickets only) ----------------
+   Voice Engine issue types (Missing ASR Results, Missing Smart Merger
+   Results, Missing ASR Derived Features, Missing Track Feature Extraction)
+   are all about the patient's spoken recording failing somewhere in the
+   ASR pipeline, so an agent investigating one needs to actually listen to
+   what the patient recorded. Every other category has nothing to play. */
+const lrPlayIcon = `<svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M6 4L20 12L6 20Z"/></svg>`;
+const lrPauseIcon = `<svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>`;
+
+function isRecordingIssue(ticket) {
+  return ticketCategory(ticket) === "Voice Engine";
+}
+
+/* Deterministic bar heights (seeded off the ticket number) so the waveform
+   looks like a real recording instead of a flat line, and stays the same
+   shape every time this ticket is opened. */
+const WAVEFORM_BAR_COUNT = 48;
+function buildWaveformBars(rand) {
+  let html = "";
+  for (let i = 0; i < WAVEFORM_BAR_COUNT; i++) {
+    const height = 20 + Math.floor(rand() * 80);
+    html += `<span class="bar" style="height:${height}%"></span>`;
+  }
+  return html;
+}
+
+let ticketRecordingTimer = null;
+
+function formatRecordingTime(sec) {
+  return `0:${String(Math.floor(sec)).padStart(2, "0")}`;
+}
+
+function renderTicketRecording() {
+  const wrap = document.getElementById("ticketDetailRecordingWrap");
+  const micAlert = document.getElementById("ticketDetailMicAlert");
+  const playBtn = document.getElementById("ticketDetailAudioPlay");
+  const timeEl = document.getElementById("ticketDetailAudioTime");
+  const progressEl = document.getElementById("ticketDetailWaveformProgress");
+
+  clearInterval(ticketRecordingTimer);
+  playBtn.classList.remove("playing");
+  playBtn.innerHTML = lrPlayIcon;
+  progressEl.style.width = "0%";
+  micAlert.hidden = true;
+
+  if (!isRecordingIssue(currentTicket)) {
+    wrap.hidden = true;
+    return;
+  }
+
+  wrap.hidden = false;
+  const rand = seededRandom(currentTicket.ticketNo);
+  const durationSec = 8 + Math.floor(rand() * 40);
+  const barsHtml = buildWaveformBars(rand);
+  document.getElementById("ticketDetailWaveformBars").innerHTML = barsHtml;
+  document.getElementById("ticketDetailWaveformBarsFill").innerHTML = barsHtml;
+
+  const durationMs = durationSec * 1000;
+  playBtn.dataset.durationMs = durationMs;
+  playBtn.dataset.elapsedMs = 0;
+  timeEl.textContent = `0:00 / ${formatRecordingTime(durationSec)}`;
+
+  /* Root-cause check: this is the same seeded permissions data the
+     Patient Log's Permissions Info panel shows -- built independently
+     here rather than reused from currentPatientLog so this doesn't
+     depend on render order (Patient Log renders after the Issue panel). */
+  if (currentSource === "patient") {
+    const micPermission = buildPatientLog(currentTicket).permissions.find((p) => p.label === "Microphone");
+    micAlert.hidden = !micPermission || micPermission.value !== "Denied";
+  }
+}
+
+document.getElementById("ticketDetailAudioPlay").addEventListener("click", (e) => {
+  const btn = e.currentTarget;
+  const timeEl = document.getElementById("ticketDetailAudioTime");
+  const progressEl = document.getElementById("ticketDetailWaveformProgress");
+  const durationMs = Number(btn.dataset.durationMs) || 0;
+  const durationSec = durationMs / 1000;
+
+  clearInterval(ticketRecordingTimer);
+
+  const playing = btn.classList.toggle("playing");
+  btn.innerHTML = playing ? lrPauseIcon : lrPlayIcon;
+  if (!playing) return;
+
+  const startedAt = Date.now() - Number(btn.dataset.elapsedMs || 0);
+  ticketRecordingTimer = setInterval(() => {
+    const elapsedMs = Math.min(Date.now() - startedAt, durationMs);
+    btn.dataset.elapsedMs = elapsedMs;
+    progressEl.style.width = `${(elapsedMs / durationMs) * 100}%`;
+    timeEl.textContent = `${formatRecordingTime(elapsedMs / 1000)} / ${formatRecordingTime(durationSec)}`;
+
+    if (elapsedMs >= durationMs) {
+      clearInterval(ticketRecordingTimer);
+      btn.classList.remove("playing");
+      btn.innerHTML = lrPlayIcon;
+      btn.dataset.elapsedMs = 0;
+      progressEl.style.width = "0%";
+      timeEl.textContent = `0:00 / ${formatRecordingTime(durationSec)}`;
+    }
+  }, 200);
+});
 
 function renderTicketHandling() {
   document.getElementById("ticketDetailRootCause").value = currentTicket.rootCause || "";

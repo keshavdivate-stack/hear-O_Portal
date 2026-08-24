@@ -151,6 +151,31 @@
           <div class="bo-kv-cell"><span class="k">Issue Type</span><span class="v" id="ticketDetailIssueType">—</span></div>
         </div>
         <p class="bo-ticket-description" id="ticketDetailDescription"></p>
+
+        <div id="ticketDetailRecordingWrap" hidden>
+          <div class="bo-modal-section-title">Recording</div>
+
+          <div class="bo-permission-alert" id="ticketDetailMicAlert" hidden>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.73 3h16.9a2 2 0 0 0 1.73-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/></svg>
+            <span>Microphone permission is <b>Denied</b> on this patient's device — likely cause of the missing recording.</span>
+          </div>
+
+          <div class="bo-audio-player" id="ticketDetailRecording">
+            <button type="button" class="bo-audio-play" id="ticketDetailAudioPlay" aria-label="Play">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M6 4L20 12L6 20Z"/></svg>
+            </button>
+            <span class="bo-audio-time" id="ticketDetailAudioTime"></span>
+            <div class="bo-waveform" id="ticketDetailWaveform">
+              <div class="bo-waveform-bars" id="ticketDetailWaveformBars"></div>
+              <div class="bo-waveform-progress" id="ticketDetailWaveformProgress">
+                <div class="bo-waveform-bars" id="ticketDetailWaveformBarsFill"></div>
+              </div>
+            </div>
+            <button type="button" class="bo-action-icon" aria-label="Volume">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9H4Z"/><path d="M17 9a4 4 0 0 1 0 6"/></svg>
+            </button>
+          </div>
+        </div>
       </section>
 
       <!-- Handling -->

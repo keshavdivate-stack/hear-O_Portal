@@ -229,10 +229,17 @@ function buildPatientLog(ticket) {
       { label: "OS Version", value: device.os },
       { label: "Available Storage", value: `${(storageMb / 1024).toFixed(1)} GB` },
     ],
+    /* Microphone and Health Data Access used to be hardcoded "Granted" --
+       that made it impossible to ever see the single most common cause of a
+       failed recording (mic access denied on-device), so they're now
+       seeded per patient like every other field here. Voice Engine tickets
+       skew toward "Denied" so the diagnostic path (Issue panel's
+       permission callout) actually has something to demonstrate. */
     permissions: [
-      { label: "Microphone", value: "Granted" },
+      { label: "Microphone", value: rand() < (ticketCategory(ticket) === "Voice Engine" ? 0.6 : 0.1) ? "Denied" : "Granted" },
       { label: "Notifications", value: "Granted" },
-      { label: "Health Data Access", value: "Granted" },
+      { label: "Health Data Access", value: rand() > 0.8 ? "Denied" : "Granted" },
+      { label: "Chat", value: rand() > 0.85 ? "Denied" : "Granted" },
       { label: "Blood Pressure Data", value: rand() > 0.5 ? "Denied" : "Granted" },
     ],
     logHistory: buildLogHistory(rand, ticket),

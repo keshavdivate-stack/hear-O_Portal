@@ -2245,6 +2245,64 @@ label.bo-date-field { cursor: text; }
   background: var(--blue);
 }
 
+/* Waveform variant of the audio player track (ticket-detail Recording section) --
+   two stacked identical bar rows, the top one colored and width-clipped to the
+   playback position, so the underlying gray bars are revealed as "unplayed". */
+.bo-waveform {
+  position: relative;
+  flex: 1;
+  min-width: 80px;
+  height: 26px;
+}
+
+.bo-waveform-bars {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  height: 100%;
+}
+
+.bo-waveform-bars .bar {
+  flex: 0 0 3px;
+  width: 3px;
+  min-height: 3px;
+  border-radius: 2px;
+  background: var(--gray-border);
+}
+
+.bo-waveform-progress {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 0%;
+  overflow: hidden;
+  transition: width 0.2s linear;
+}
+
+.bo-waveform-progress .bar { background: var(--blue); }
+
+/* Root-cause callout shown on Voice Engine tickets when the patient log
+   reports Microphone permission as Denied -- surfaces the most common
+   cause of a failed recording right where the agent is already looking,
+   instead of leaving it buried in the Patient Log's Permissions Info. */
+.bo-permission-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: var(--red-light);
+  color: var(--red);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.4;
+  margin-bottom: 14px;
+}
+
+.bo-permission-alert svg { flex-shrink: 0; margin-top: 1px; }
+.bo-permission-alert b { font-weight: 800; }
+
 /* ==========================================================
    ORGANIZATION PROFILE PAGE
    ========================================================== */
@@ -3504,6 +3562,8 @@ a.bo-health-card:hover { border-color: var(--field-border); }
 .bo-cal-nav-btn.primary:hover { opacity: 0.9; }
 
 .bo-health-grid--5 { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+
+.bo-health-card--accent { background: var(--red-light); border-color: #F6C9C9; }
 
 /* Alert feed row (replaces plain table rows for Critical Issues) */
 .bo-alert-list { display: flex; flex-direction: column; gap: 8px; }
