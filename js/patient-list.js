@@ -1007,7 +1007,14 @@ saveUpdateAccount.addEventListener("click", () => {
     const today = new Date();
     const dateLabel = `${String(today.getMonth() + 1).padStart(2, "0")}.${String(today.getDate()).padStart(2, "0")}.${today.getFullYear()}`;
     const dotColor = selected.value === "Discontinued" ? "dot-black" : "dot-slate";
-    const entry = { category: "account", color: dotColor, label: `Account changed to ${selected.value}`, date: dateLabel };
+
+    let note = `Changed by ${CURRENT_TEAM_MEMBER}`;
+    if (selected.value === "Discontinued") {
+      const reason = discontinueReasonInput.value === "Other" ? discontinueReasonOther.value.trim() : discontinueReasonInput.value;
+      if (reason) note += ` · Reason: ${reason}`;
+    }
+
+    const entry = { category: "account", color: dotColor, label: `Account changed to ${selected.value}`, date: dateLabel, note };
 
     const stored = JSON.parse(localStorage.getItem("hearoAccountHistory") || "[]");
     stored.unshift(entry);
