@@ -8,7 +8,7 @@ const kebabIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><
 const patientList = [
   { name: "Alexander White", username: "ABC-1254", mrn: "857452365", phone: "054-857 15423", account: "Enabled", status: "priority", flag: true, since: "Since: 2d | 01.08.2028", monitoring: "monitored", compliance: 92, gender: "M", careStatus: "in_progress", careTitle: "Review Carvedilol titration", careAssignee: "Amanda Lee, RN", team: "Heart Failure Team", teamMember: "Dr. Sarah Mitchell" },
   { name: "Dan Volex",        username: "ABC-1252", mrn: "854745856", phone: "054-857 15423", account: "Enabled", status: "priority", flag: false, since: "Since: 2d | 01.08.2028", monitoring: "monitored", compliance: 68, gender: "M", action: { type: "contacted", date: "", note: "" }, careStatus: "completed", team: "Remote Monitoring Team", teamMember: "Amanda Lee, RN", ehrOrg: true },
-  { name: "Mike Brown",       username: "ABC-1251", mrn: "854125632", phone: "054-857 15423", account: "Enabled", status: "priority", flag: false, since: "Since: 2d | 01.08.2028", monitoring: "unmonitored", monSince: "Since: 1d | 01.09.2028", compliance: 34, gender: "M", team: "Heart Failure Team", teamMember: "Dr. James Carter" },
+  { name: "Mike Brown",       username: "ABC-1251", mrn: "854125632", phone: "054-857 15423", account: "Enabled", status: "priority", flag: false, since: "Since: 2d | 01.08.2028", monitoring: "unmonitored", monSince: "Since: 1d | 01.09.2028", compliance: 34, gender: "M", team: "Heart Failure Team", teamMember: "Dr. James Carter", chartView: "nurse" },
   { name: "Ariel Fox",        username: "ABC-1238", mrn: "854123658", phone: "054-857 15423", account: "Enabled", status: "priority", flag: false, since: "Since: 3d | 01.07.2028", monitoring: "monitored", compliance: 81, gender: "F", action: { type: "invite", date: "", note: "" }, careStatus: "recommended", careTitle: "Increase Furosemide dose", team: "Post-Discharge Team", teamMember: "Emily Carter" },
   { name: "Jeff Frank",       username: "ABC-1242", mrn: "854123658", phone: "054-857 15423", account: "Enabled", status: "priority", flag: false, since: "Since: 4d | 01.06.2028", monitoring: "monitored", compliance: 57, gender: "M", team: "Remote Monitoring Team", teamMember: "Ayelet Er, NP" },
   { name: "Aric Snow",        username: "ABC-1283", mrn: "854125632", phone: "054-857 15423", account: "Enabled", status: "priority", flag: false, since: "Since: 8d | 01.02.2028", monitoring: "monitored", compliance: 76, gender: "M", careStatus: "in_progress", careTitle: "Review Metoprolol tolerance", careAssignee: "Ayelet Er, NP", team: "Heart Failure Team", teamMember: "Ayelet Er, NP" },
@@ -193,9 +193,11 @@ function genderLabel(gender) {
 }
 
 /* Patients from an EHR-connected organization open the EHR patient chart
-   (ehr-integration/patient-data.html); everyone else opens the standard
-   patient chart. Kept as separate pages/portals -- see ehr-integration/. */
+   (ehr-integration/patient-data.html); patients flagged chartView: "nurse"
+   open the nurse view; everyone else opens the standard patient chart.
+   Kept as separate pages/portals -- see ehr-integration/. */
 function patientChartHref(p) {
+  if (p.chartView === "nurse") return "nurse-view.html";
   return p.ehrOrg ? "ehr-integration/patient-data.html" : "patient-data.html";
 }
 
