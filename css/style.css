@@ -5516,12 +5516,6 @@ label.checkbox-field {
 }
 
 /* ---------------- Support / Tickets ---------------- */
-.support-subtitle {
-  font-size: 14px;
-  color: var(--gray-text);
-  margin: 0;
-}
-
 .ticket-pill {
   display: inline-flex;
   align-items: center;
