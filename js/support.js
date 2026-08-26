@@ -1,75 +1,3 @@
-/* Current logged-in clinician (matches the "EC" topbar avatar) -- tickets
-   assigned to this person are what "Support" shows by default. */
-const CURRENT_ASSIGNEE = "Emily Carter";
-
-const ticketCategories = [
-  { key: "Compliance", label: "Compliance" },
-  { key: "Voice Engine", label: "Voice Engine" },
-  { key: "Sensors", label: "Sensors" },
-  { key: "Patient App", label: "Patient App" },
-  { key: "Clinic User Security", label: "Clinic User Security" },
-  { key: "Scheduling Engine", label: "Scheduling Engine" },
-];
-
-const issueTypesByCategory = {
-  "Compliance": ["Non-compliance Alert", "Compliance Score Mismatch"],
-  "Voice Engine": ["Missing ASR Results", "Recording Failed to Process"],
-  "Sensors": ["Sensor Data Gap", "Device Sync Failure"],
-  "Patient App": ["Paused Too Long", "Stuck In Baseline", "App Crash On Login"],
-  "Clinic User Security": ["Suspicious Login Attempt", "MFA Reset Request"],
-  "Scheduling Engine": ["Missing Run: Start Date Engine", "Schedule Conflict"],
-};
-
-const ticketOrigins = [
-  { key: "System Generated", label: "System Generated" },
-  { key: "User Created", label: "User Created" },
-];
-
-const ticketSeverities = [
-  { key: "Critical", label: "Critical" },
-  { key: "High", label: "High" },
-  { key: "Medium", label: "Medium" },
-  { key: "Low", label: "Low" },
-];
-
-const ticketStates = [
-  { key: "Open", label: "Open" },
-  { key: "In Progress", label: "In Progress" },
-  { key: "Escalated", label: "Escalated" },
-  { key: "Resolved", label: "Resolved" },
-];
-
-const ticketTypes = [
-  { key: "Patient", label: "Patient" },
-  { key: "Clinic", label: "Clinic" },
-];
-
-function issueType(category, index) {
-  return issueTypesByCategory[category][index % issueTypesByCategory[category].length];
-}
-
-const ticketList = [
-  { ticketId: "TCK-1050", organization: "121", type: "Patient", who: "121-2010", category: "Voice Engine", issueType: issueType("Voice Engine", 0), origin: "System Generated", severity: "Critical", state: "Open", assignedTo: "Emily Carter", created: "18.08.2028", description: "The voice engine failed to return ASR results for the patient's daily recording. No transcript was generated for the last 3 sessions." },
-  { ticketId: "TCK-1207", organization: "B03", type: "Patient", who: "B03-5107", category: "Scheduling Engine", issueType: issueType("Scheduling Engine", 0), origin: "System Generated", severity: "Critical", state: "In Progress", assignedTo: "Emily Carter", created: "17.08.2028", description: "Scheduled recording run did not trigger for the patient's start date. Baseline window is at risk of expiring." },
-  { ticketId: "TCK-1315", organization: "ATP", type: "Patient", who: "ATP-5215", category: "Patient App", issueType: issueType("Patient App", 0), origin: "System Generated", severity: "Critical", state: "Resolved", assignedTo: "Emily Carter", created: "12.08.2028", description: "Patient app remained paused beyond the expected threshold, blocking new recordings." },
-  { ticketId: "TCK-1339", organization: "ATP", type: "Patient", who: "ATP-5239", category: "Patient App", issueType: issueType("Patient App", 1), origin: "System Generated", severity: "Critical", state: "Open", assignedTo: "Emily Carter", created: "20.08.2028", description: "Patient onboarding is stuck in baseline collection with no valid recordings for 6 days." },
-  { ticketId: "TCK-1401", organization: "B01", type: "Patient", who: "B01-3312", category: "Compliance", issueType: issueType("Compliance", 0), origin: "System Generated", severity: "Medium", state: "Escalated", assignedTo: "Emily Carter", created: "19.08.2028", description: "Patient compliance score dropped below the configured threshold for two consecutive weeks." },
-  { ticketId: "TCK-1422", organization: "B01", type: "Clinic", who: "Ariel Fox", category: "Clinic User Security", issueType: issueType("Clinic User Security", 0), origin: "System Generated", severity: "High", state: "Open", assignedTo: "Emily Carter", created: "21.08.2028", description: "Multiple failed login attempts detected for a clinic user account outside of normal usage hours." },
-  { ticketId: "TCK-1478", organization: "105", type: "Patient", who: "105-4471", category: "Sensors", issueType: issueType("Sensors", 0), origin: "System Generated", severity: "Low", state: "In Progress", assignedTo: "Emily Carter", created: "16.08.2028", description: "No sensor readings received from the patient's connected device for the past 24 hours." },
-  { ticketId: "TCK-1502", organization: "B01", type: "Clinic", who: "Dr. Sarah Mitchell", category: "Clinic User Security", issueType: issueType("Clinic User Security", 1), origin: "User Created", severity: "Medium", state: "Resolved", assignedTo: "Emily Carter", created: "10.08.2028", description: "Clinic user requested an MFA reset after losing access to their authenticator app." },
-  { ticketId: "TCK-1231", organization: "B03", type: "Patient", who: "B03-5131", category: "Patient App", issueType: issueType("Patient App", 0), origin: "System Generated", severity: "Critical", state: "In Progress", assignedTo: "Daniel Roy", created: "18.08.2028", description: "Patient app remained paused beyond the expected threshold, blocking new recordings." },
-  { ticketId: "TCK-2207", organization: "B03", type: "Clinic", who: "Omer Peretz", category: "Scheduling Engine", issueType: issueType("Scheduling Engine", 0), origin: "User Created", severity: "Critical", state: "In Progress", assignedTo: "Maya Cohen", created: "17.08.2028", description: "Clinic reported the scheduling engine did not start the patient's monitoring run on the agreed date." },
-  { ticketId: "TCK-2231", organization: "B03", type: "Clinic", who: "Omer Peretz", category: "Patient App", issueType: issueType("Patient App", 0), origin: "User Created", severity: "Critical", state: "Resolved", assignedTo: "Daniel Roy", created: "13.08.2028", description: "Clinic reported patient app pause issue, since resolved after a forced re-sync." },
-  { ticketId: "TCK-1123", organization: "ATP", type: "Patient", who: "ATP-5023", category: "Scheduling Engine", issueType: issueType("Scheduling Engine", 0), origin: "User Created", severity: "Medium", state: "Escalated", assignedTo: "Tomer Levi", created: "14.08.2028", description: "Scheduled run missing a start date, escalated after repeated occurrence for this organization." },
-  { ticketId: "TCK-1560", organization: "104", type: "Patient", who: "104-2290", category: "Voice Engine", issueType: issueType("Voice Engine", 1), origin: "System Generated", severity: "High", state: "Open", assignedTo: "Sarah Cline", created: "21.08.2028", description: "Recording uploaded but failed to process through the voice engine pipeline." },
-  { ticketId: "TCK-1588", organization: "B01", type: "Patient", who: "B01-3390", category: "Sensors", issueType: issueType("Sensors", 1), origin: "System Generated", severity: "Low", state: "Resolved", assignedTo: "Maya Cohen", created: "09.08.2028", description: "Connected device failed to sync after a firmware update; resolved by re-pairing the device." },
-];
-
-ticketList.forEach((t, i) => (t.id = i));
-ticketList.forEach((t) => (t.history = [
-  { date: t.created, text: `Ticket created (${t.origin}).` },
-]));
-
 const selectedTypes = new Set();
 const selectedCategories = new Set();
 const selectedIssueTypes = new Set();
@@ -77,19 +5,6 @@ const selectedOrigins = new Set();
 const selectedSeverities = new Set();
 const selectedStates = new Set();
 let ticketSearchTerm = "";
-
-function stateCellClass(state) {
-  return { Open: "ticket-pill-state-open", "In Progress": "ticket-pill-state-inprogress", Escalated: "ticket-pill-state-escalated", Resolved: "ticket-pill-state-resolved" }[state];
-}
-function severityCellClass(severity) {
-  return { Critical: "ticket-pill-severity-critical", High: "ticket-pill-severity-high", Medium: "ticket-pill-severity-medium", Low: "ticket-pill-severity-low" }[severity];
-}
-function originCellClass(origin) {
-  return origin === "System Generated" ? "ticket-pill-origin-system" : "ticket-pill-origin-user";
-}
-function typeCellClass(type) {
-  return type === "Patient" ? "ticket-pill-type-patient" : "ticket-pill-type-clinic";
-}
 
 function filteredTicketList() {
   const term = ticketSearchTerm.trim().toLowerCase();
@@ -125,7 +40,7 @@ function renderTicketList() {
         <td><span class="ticket-pill ${severityCellClass(t.severity)}">${t.severity}</span></td>
         <td><span class="ticket-pill ${stateCellClass(t.state)}">${t.state}</span></td>
         <td>${t.created}</td>
-        <td><button type="button" class="ticket-view-link" data-id="${t.id}">View</button></td>
+        <td><a class="ticket-view-link" href="ticket-detail.html?id=${t.id}">View</a></td>
       </tr>`
     )
     .join("");
@@ -267,89 +182,4 @@ document.getElementById("clearTicketFilters").addEventListener("click", () => {
     document.querySelector(`.checkbox-filter[data-name="${name}"] .checkbox-filter-label`).textContent = label;
   });
   renderTicketList();
-});
-
-/* ---------------- View / Resolve ticket ---------------- */
-const ticketDetailOverlay = document.getElementById("ticketDetailOverlay");
-const ticketDetailBody = document.getElementById("ticketDetailBody");
-const ticketResolutionNote = document.getElementById("ticketResolutionNote");
-const resolveTicketBtn = document.getElementById("resolveTicketBtn");
-let openTicketId = null;
-
-function openTicketDetail(id) {
-  const t = ticketList.find((x) => x.id === id);
-  if (!t) return;
-  openTicketId = id;
-
-  ticketDetailBody.innerHTML = `
-    <h2>${t.ticketId}</h2>
-    <div style="display:flex; gap:8px; margin-top:6px;">
-      <span class="ticket-pill ${typeCellClass(t.type)}">${t.type}</span>
-      <span class="ticket-pill ${severityCellClass(t.severity)}">${t.severity}</span>
-      <span class="ticket-pill ${stateCellClass(t.state)}">${t.state}</span>
-    </div>
-
-    <div class="ticket-detail-grid">
-      <div class="ticket-detail-field"><label>Organization</label><span>${t.organization}</span></div>
-      <div class="ticket-detail-field"><label>${t.type === "Patient" ? "Patient" : "Raised By"}</label><span>${t.who}</span></div>
-      <div class="ticket-detail-field"><label>Category</label><span>${t.category}</span></div>
-      <div class="ticket-detail-field"><label>Issue Type</label><span>${t.issueType}</span></div>
-      <div class="ticket-detail-field"><label>Origin</label><span>${t.origin}</span></div>
-      <div class="ticket-detail-field"><label>Assigned To</label><span>${t.assignedTo}</span></div>
-      <div class="ticket-detail-field"><label>Created</label><span>${t.created}</span></div>
-    </div>
-
-    <div class="ticket-detail-description">${t.description}</div>
-
-    <h3 style="margin-top:22px; margin-bottom:0; font-size:15px;">History</h3>
-    <div class="ticket-history">
-      ${t.history.map((h) => `<div class="ticket-history-item"><b>${h.date}</b> — ${h.text}</div>`).join("")}
-    </div>
-  `;
-
-  const alreadyResolved = t.state === "Resolved";
-  ticketResolutionNote.value = "";
-  ticketResolutionNote.disabled = alreadyResolved;
-  ticketResolutionNote.placeholder = alreadyResolved ? "This ticket is already resolved." : "Describe how this ticket was resolved";
-  resolveTicketBtn.disabled = true;
-  resolveTicketBtn.textContent = alreadyResolved ? "Already resolved" : "Resolve ticket";
-  resolveTicketBtn.classList.toggle("enabled", false);
-
-  ticketDetailOverlay.classList.add("open");
-}
-
-function closeTicketDetail() {
-  ticketDetailOverlay.classList.remove("open");
-  openTicketId = null;
-}
-
-ticketRows.addEventListener("click", (e) => {
-  const link = e.target.closest(".ticket-view-link");
-  if (!link) return;
-  openTicketDetail(Number(link.dataset.id));
-});
-
-document.getElementById("closeTicketDetail").addEventListener("click", closeTicketDetail);
-ticketDetailOverlay.addEventListener("click", (e) => {
-  if (e.target === ticketDetailOverlay) closeTicketDetail();
-});
-
-ticketResolutionNote.addEventListener("input", () => {
-  const t = ticketList.find((x) => x.id === openTicketId);
-  const hasNote = ticketResolutionNote.value.trim().length > 0;
-  const canResolve = hasNote && t && t.state !== "Resolved";
-  resolveTicketBtn.disabled = !canResolve;
-  resolveTicketBtn.classList.toggle("enabled", canResolve);
-});
-
-resolveTicketBtn.addEventListener("click", () => {
-  const t = ticketList.find((x) => x.id === openTicketId);
-  if (!t || resolveTicketBtn.disabled) return;
-  const note = ticketResolutionNote.value.trim();
-  if (!note) return;
-
-  t.state = "Resolved";
-  t.history.push({ date: "Today", text: `Resolved: ${note}` });
-  renderTicketList();
-  closeTicketDetail();
 });

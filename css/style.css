@@ -5552,28 +5552,38 @@ label.checkbox-field {
   border: none;
   cursor: pointer;
   padding: 0;
+  text-decoration: none;
 }
 
 .ticket-detail-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px 28px;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 14px;
   margin-top: 18px;
 }
 
-.ticket-detail-field { display: flex; flex-direction: column; gap: 4px; }
-.ticket-detail-field label { font-size: 12px; color: var(--gray-text); font-weight: 600; }
-.ticket-detail-field span { font-size: 14px; color: #23272E; font-weight: 600; }
+.ticket-detail-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: #F7F9FA;
+  border-radius: 10px;
+  padding: 12px 16px;
+}
+.ticket-detail-field label { font-size: 11px; letter-spacing: 0.3px; color: var(--gray-text); font-weight: 700; text-transform: uppercase; }
+.ticket-detail-field span { font-size: 14.5px; color: #23272E; font-weight: 700; }
 
 .ticket-detail-description {
-  margin-top: 18px;
+  margin-top: 16px;
   font-size: 13.5px;
   color: var(--gray-text);
   line-height: 1.5;
+  background: #F7F9FA;
+  border-radius: 10px;
+  padding: 14px 16px;
 }
 
 .ticket-history {
-  margin-top: 18px;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -5587,5 +5597,43 @@ label.checkbox-field {
 }
 
 .ticket-history-item b { color: #23272E; }
+
+/* Full ticket-detail page */
+.ticket-detail-topbar-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 22px;
+}
+
+.ticket-detail-title-group { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+
+.ticket-detail-back {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  border: 1px solid var(--gray-border);
+  background: #fff;
+  color: #23272E;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.ticket-detail-title { font-size: 22px; font-weight: 800; margin: 0; }
+
+.ticket-detail-card {
+  background: #fff;
+  border: 1px solid var(--gray-border);
+  border-radius: 16px;
+  padding: 22px 26px 26px;
+  margin-bottom: 18px;
+}
+
+.ticket-detail-card h2 { margin: 0 0 4px; font-size: 15px; font-weight: 800; }
 
 
