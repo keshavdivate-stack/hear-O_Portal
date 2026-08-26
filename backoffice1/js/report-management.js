@@ -574,8 +574,6 @@ function openWizardForEdit(id) {
   setBoSelectValue(rmWizardForm.querySelector('.bo-select[data-name="wizFrequency"]'), s.frequency, { silent: true });
   rmWizardForm.name.value = s.name;
   rmWizardForm.title.value = s.title || "";
-  rmWizardForm.dateFrom.value = s.dateFrom || "";
-  rmWizardForm.dateTo.value = s.dateTo || "";
   rmWizardForm.recipients.value = (s.recipients || []).join(", ");
   const [hh, mm] = s.time.replace(/\s*[AP]M/i, "").split(":");
   rmWizardForm.hh.value = hh || "9";
@@ -609,8 +607,6 @@ rmWizardForm.addEventListener("submit", (e) => {
   const tags = Array.from(rmWizardSelectedTags);
   const recipients = rmParseRecipients(rmWizardForm.recipients.value);
   const nextRun = `${computeNextRun(frequency)}, ${time} ${timezone}`;
-  const dateFrom = rmWizardForm.dateFrom.value;
-  const dateTo = rmWizardForm.dateTo.value;
 
   if (rmWizardEditingId === null) {
     const nextId = rmSchedules.length ? Math.max(...rmSchedules.map((s) => s.id)) + 1 : 0;
@@ -625,8 +621,6 @@ rmWizardForm.addEventListener("submit", (e) => {
       frequency,
       time,
       timezone,
-      dateFrom,
-      dateTo,
       recipients,
       status: "Active",
       lastSent: "—",
@@ -635,7 +629,7 @@ rmWizardForm.addEventListener("submit", (e) => {
     });
   } else {
     const s = rmSchedules.find((x) => x.id === rmWizardEditingId);
-    if (s) Object.assign(s, { reportKey, name: rmWizardForm.name.value.trim(), title, org, usersFilter, tags, frequency, time, timezone, dateFrom, dateTo, recipients, nextRun });
+    if (s) Object.assign(s, { reportKey, name: rmWizardForm.name.value.trim(), title, org, usersFilter, tags, frequency, time, timezone, recipients, nextRun });
   }
 
   closeWizard();
