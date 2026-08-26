@@ -245,6 +245,13 @@
                   <input type="hidden" name="role" required />
                 </div>
               </div>
+              <div class="bo-modal-toggle-field">
+                <label>MFA</label>
+                <span class="bo-switch">
+                  <input type="checkbox" name="mfa" />
+                  <span class="bo-switch-track"></span>
+                </span>
+              </div>
               <div class="bo-modal-field">
                 <label>MFA Method</label>
                 <div class="bo-select" data-name="mfaMethod">
@@ -260,12 +267,37 @@
                   <input type="hidden" name="mfaMethod" />
                 </div>
               </div>
-              <div class="bo-modal-toggle-field">
-                <label>MFA</label>
-                <span class="bo-switch">
-                  <input type="checkbox" name="mfa" />
-                  <span class="bo-switch-track"></span>
-                </span>
+
+              <div class="bo-modal-field">
+                <label>Communication Preference</label>
+                <div class="bo-select" data-name="commPref">
+                  <button type="button" class="bo-select-trigger">
+                    <span class="bo-select-value placeholder">Select preference</span>
+                    <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                  </button>
+                  <div class="bo-select-menu">
+                    <div class="bo-select-option" data-value="Email">Email<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    <div class="bo-select-option" data-value="SMS">SMS<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    <div class="bo-select-option" data-value="In App">In App<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                  </div>
+                  <input type="hidden" name="commPref" />
+                </div>
+              </div>
+
+              <div class="bo-modal-field">
+                <label>Level</label>
+                <div class="bo-select" data-name="level">
+                  <button type="button" class="bo-select-trigger">
+                    <span class="bo-select-value placeholder">Select level</span>
+                    <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                  </button>
+                  <div class="bo-select-menu">
+                    <div class="bo-select-option" data-value="Level 1">Level 1<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    <div class="bo-select-option" data-value="Level 2">Level 2<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    <div class="bo-select-option" data-value="Level 3">Level 3<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                  </div>
+                  <input type="hidden" name="level" />
+                </div>
               </div>
 
               <div class="bo-modal-field full" id="orgRowsWrap">

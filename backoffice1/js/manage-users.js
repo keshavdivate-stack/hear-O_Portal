@@ -315,6 +315,8 @@ addUserForm.addEventListener("submit", (e) => {
   if (saveAddUserBtn.disabled) return;
 
   const roleValue = addUserForm.querySelector('.bo-select[data-name="role"] input[type=hidden]').value;
+  const levelValue = addUserForm.querySelector('.bo-select[data-name="level"] input[type=hidden]').value;
+  const commPrefValue = addUserForm.querySelector('.bo-select[data-name="commPref"] input[type=hidden]').value;
   const countryCode = addUserForm.querySelector('.bo-select[data-name="countryCode"] input[type=hidden]').value;
   const orgValues = Array.from(orgRowsWrap.parentElement.querySelectorAll('[data-org-row] input[type=hidden]'))
     .map((i) => i.value)
@@ -328,6 +330,8 @@ addUserForm.addEventListener("submit", (e) => {
     email: addUserForm.email.value.trim(),
     phone: addUserForm.mobile.value.trim() ? `${countryCode}-${addUserForm.mobile.value.trim()}` : "",
     role: roleValue,
+    level: levelValue,
+    commPreference: commPrefValue,
     dateCreated: new Date().toLocaleDateString("en-GB"),
     allowedOrgs: orgValues.length ? orgValues.join(", ") : "—",
     mfa: addUserForm.mfa.checked,
