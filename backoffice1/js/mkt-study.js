@@ -23,8 +23,6 @@ const mktBinDataBase = {
   ],
 };
 
-const mktStudyHeadBase = { sites: 5, avgDays: 42, needAttention: 11 };
-
 let screenedSeries = screenedSeriesBase;
 let mktBinData = mktBinDataBase;
 let activeMktBinsTab = "usable";
@@ -192,10 +190,6 @@ function renderForOrg(orgIds) {
     compliance: mktBinDataBase.compliance.map((b, i) => ({ ...b, val: Math.min(100, mktScale(b.val, seed + i + 4, 0.4)) })),
   };
   renderMktBins(activeMktBinsTab);
-
-  document.getElementById("mktSitesEnrolled").textContent = isAll ? mktStudyHeadBase.sites : orgIds.length;
-  document.getElementById("mktAvgDays").textContent = mktScale(mktStudyHeadBase.avgDays, seed + 2, 0.3);
-  document.getElementById("mktNeedAttention").textContent = mktScale(mktStudyHeadBase.needAttention, seed + 5, 0.5);
 }
 
 mktRenderOrgSelect("mktStudyOrgSelect", renderForOrg);

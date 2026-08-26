@@ -245,26 +245,19 @@
                   <input type="hidden" name="role" required />
                 </div>
               </div>
-              <div class="bo-modal-toggle-field">
-                <label>MFA</label>
-                <span class="bo-switch">
-                  <input type="checkbox" name="mfa" />
-                  <span class="bo-switch-track"></span>
-                </span>
-              </div>
-              <div class="bo-modal-field">
-                <label>MFA Method</label>
-                <div class="bo-select" data-name="mfaMethod">
+              <div class="bo-modal-field full">
+                <label>User Language</label>
+                <div class="bo-select" data-name="language">
                   <button type="button" class="bo-select-trigger">
-                    <span class="bo-select-value placeholder">MFA</span>
+                    <span class="bo-select-value">English</span>
                     <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
                   </button>
                   <div class="bo-select-menu">
-                    <div class="bo-select-option" data-value="Sms">Sms<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                    <div class="bo-select-option" data-value="Email">Email<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                    <div class="bo-select-option" data-value="Authenticator app">Authenticator app<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    <div class="bo-select-option selected" data-value="English">English<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    <div class="bo-select-option" data-value="Spanish">Spanish<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    <div class="bo-select-option" data-value="Hebrew">Hebrew<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
                   </div>
-                  <input type="hidden" name="mfaMethod" />
+                  <input type="hidden" name="language" value="English" />
                 </div>
               </div>
 
@@ -326,19 +319,26 @@
                 </button>
               </div>
 
-              <div class="bo-modal-field full">
-                <label>User Language</label>
-                <div class="bo-select" data-name="language">
+              <div class="bo-modal-toggle-field">
+                <label>MFA</label>
+                <span class="bo-switch">
+                  <input type="checkbox" name="mfa" />
+                  <span class="bo-switch-track"></span>
+                </span>
+              </div>
+              <div class="bo-modal-field">
+                <label>MFA Method</label>
+                <div class="bo-select" data-name="mfaMethod">
                   <button type="button" class="bo-select-trigger">
-                    <span class="bo-select-value">English</span>
+                    <span class="bo-select-value placeholder">MFA</span>
                     <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
                   </button>
                   <div class="bo-select-menu">
-                    <div class="bo-select-option selected" data-value="English">English<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                    <div class="bo-select-option" data-value="Spanish">Spanish<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                    <div class="bo-select-option" data-value="Hebrew">Hebrew<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    <div class="bo-select-option" data-value="Sms">Sms<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    <div class="bo-select-option" data-value="Email">Email<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    <div class="bo-select-option" data-value="Authenticator app">Authenticator app<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
                   </div>
-                  <input type="hidden" name="language" value="English" />
+                  <input type="hidden" name="mfaMethod" />
                 </div>
               </div>
             </div>
