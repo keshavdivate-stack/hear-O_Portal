@@ -195,10 +195,23 @@
       <section class="bo-card bo-panel bo-panel--static" style="flex:1 1 0; display:block;">
         <div class="bo-panel-head">
           <h3 class="bo-panel-title" style="margin:0;" id="ovOrgListTitle">Affected Organizations</h3>
-          <a class="bo-row-link" href="organizations.html">View all</a>
+          <button type="button" class="bo-row-link" id="ovOrgListViewAllBtn" style="background:none; border:none; cursor:pointer;">View all</button>
         </div>
         <div class="bo-org-mini-list" id="ovOrgMiniList"></div>
       </section>
+    </div>
+
+    <!-- Affected Organizations — full list modal -->
+    <div class="bo-center-modal-overlay" id="ovOrgListModalOverlay">
+      <div class="bo-center-modal" style="width:480px;">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;">
+          <h2 style="margin:0;" id="ovOrgListModalTitle">Affected Organizations</h2>
+          <button type="button" class="bo-drawer-close" id="ovOrgListModalClose" aria-label="Close">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6L18 18M6 18L18 6"/></svg>
+          </button>
+        </div>
+        <div class="bo-org-mini-list" id="ovOrgListModalBody" style="max-height:60vh; overflow-y:auto;"></div>
+      </div>
     </div>
 
     <!-- CLINIC-LEVEL PATIENT COMPLIANCE (monthly trend, scoped by the org filter

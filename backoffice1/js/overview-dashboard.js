@@ -402,7 +402,7 @@ function renderOvOrgList(orgId) {
   const listEl = document.getElementById("ovOrgMiniList");
 
   if (orgId === "all") {
-    if (panelTitle) panelTitle.textContent = "Affected Organizations";
+    if (panelTitle) panelTitle.textContent = `Affected Organizations (${ovAffectedOrgCount})`;
     listEl.innerHTML = Object.entries(orgHealthData)
       .sort((a, b) => b[1].openIssues - a[1].openIssues)
       .slice(0, 5)
@@ -430,6 +430,38 @@ function renderOvOrgList(orgId) {
     </a>
     <div style="font-size:12px; color:var(--gray-text); padding:6px 4px 2px;">${o.providers} providers &middot; Last incident ${o.lastIncident}</div>`;
 }
+
+/* "View all" opens a modal with every affected organization (not just the
+   top 5 shown in the mini list), scrollable so the count doesn't push the
+   dashboard layout around. */
+const ovOrgListModalOverlay = document.getElementById("ovOrgListModalOverlay");
+const ovOrgListModalBody = document.getElementById("ovOrgListModalBody");
+
+function openOvOrgListModal() {
+  document.getElementById("ovOrgListModalTitle").textContent = `Affected Organizations (${ovAffectedOrgCount})`;
+  ovOrgListModalBody.innerHTML = Object.entries(orgHealthData)
+    .filter(([, o]) => o.openIssues > 0)
+    .sort((a, b) => b[1].openIssues - a[1].openIssues)
+    .map(
+      ([id, o]) => `
+    <a class="bo-org-mini-row" href="org-health-dashboard.html?org=${id}">
+      <span class="dot" style="background:${ovOrgDotColor[o.severity]};"></span>
+      <span class="bo-org-mini-name">${o.name}</span>
+      <span class="bo-severity-pill ${ovOrgIssuesPillClass[o.severity]} bo-org-mini-issues">${o.openIssues} issue${o.openIssues === 1 ? "" : "s"}</span>
+      <span class="bo-org-mini-patients">${o.patients} patients</span>
+    </a>`
+    )
+    .join("");
+  ovOrgListModalOverlay.classList.add("open");
+}
+
+function closeOvOrgListModal() {
+  ovOrgListModalOverlay.classList.remove("open");
+}
+
+document.getElementById("ovOrgListViewAllBtn").addEventListener("click", openOvOrgListModal);
+document.getElementById("ovOrgListModalClose").addEventListener("click", closeOvOrgListModal);
+ovOrgListModalOverlay.addEventListener("click", (e) => { if (e.target === ovOrgListModalOverlay) closeOvOrgListModal(); });
 
 /* ---------------- Clinic-level Patient Compliance (monthly trend) ---------------- */
 /* Same Compliance / Usable Compliance line-chart language used on the
