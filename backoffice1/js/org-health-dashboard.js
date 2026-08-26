@@ -85,11 +85,7 @@ document.getElementById("orgContextList").innerHTML = `
   <div class="bo-chip-row" style="cursor:default;">
     <span class="bo-chip-left">Last incident</span>
     <span class="bo-chip-count" style="font-size:13px;">${orgHealth.lastIncident}</span>
-  </div>
-  <a class="bo-chip-row" href="organizations.html">
-    <span class="bo-chip-left">Organization profile</span>
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
-  </a>`;
+  </div>`;
 
 /* ---------------- Affected patients / issue tickets ----------------
    Arriving with an ?issue= context (e.g. clicked from a Critical Issue
