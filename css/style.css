@@ -5515,4 +5515,83 @@ label.checkbox-field {
   .form-grid { grid-template-columns: 1fr 1fr; }
 }
 
+/* ---------------- Support / Tickets ---------------- */
+.support-subtitle {
+  font-size: 14px;
+  color: var(--gray-text);
+  margin: 0;
+}
+
+.ticket-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.ticket-pill-type-patient { background: var(--blue-light); color: var(--blue); }
+.ticket-pill-type-clinic { background: #F1EAFB; color: #7C4DDB; }
+
+.ticket-pill-category { background: #F1F3F5; color: var(--gray-text); font-weight: 600; }
+
+.ticket-pill-origin-system { background: #E7EBFB; color: #4B5FC7; }
+.ticket-pill-origin-user { background: var(--blue-light); color: var(--blue); }
+
+.ticket-pill-severity-critical { background: var(--red-light); color: var(--red); }
+.ticket-pill-severity-high { background: #FDF3E7; color: #C77B22; }
+.ticket-pill-severity-medium { background: #FCF6DA; color: #A68B0A; }
+.ticket-pill-severity-low { background: #F1F3F5; color: var(--gray-text); }
+
+.ticket-pill-state-open { background: var(--blue-light); color: var(--blue); }
+.ticket-pill-state-inprogress { background: #FDF3E7; color: #C77B22; }
+.ticket-pill-state-escalated { background: var(--red-light); color: var(--red); }
+.ticket-pill-state-resolved { background: #E7F8EF; color: var(--green); }
+
+.ticket-view-link {
+  color: var(--blue);
+  font-weight: 700;
+  font-size: 13px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.ticket-detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px 28px;
+  margin-top: 18px;
+}
+
+.ticket-detail-field { display: flex; flex-direction: column; gap: 4px; }
+.ticket-detail-field label { font-size: 12px; color: var(--gray-text); font-weight: 600; }
+.ticket-detail-field span { font-size: 14px; color: #23272E; font-weight: 600; }
+
+.ticket-detail-description {
+  margin-top: 18px;
+  font-size: 13.5px;
+  color: var(--gray-text);
+  line-height: 1.5;
+}
+
+.ticket-history {
+  margin-top: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ticket-history-item {
+  font-size: 13px;
+  color: var(--gray-text);
+  padding-left: 14px;
+  border-left: 2px solid var(--gray-border);
+}
+
+.ticket-history-item b { color: #23272E; }
+
 
