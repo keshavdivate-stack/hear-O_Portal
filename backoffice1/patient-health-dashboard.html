@@ -129,16 +129,6 @@
         <button class="bo-tab bo-seg-btn" data-tab="compliance">Compliance</button>
         <button class="bo-tab bo-seg-btn" data-tab="events">Events</button>
       </div>
-      <div class="bo-profile-topbar-actions" id="eventsTabActions" hidden>
-        <button type="button" class="bo-btn-primary" id="patientAddMessageBtn">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-          Message
-        </button>
-        <button type="button" class="bo-btn-primary" id="patientAddEventBtn">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-          Event
-        </button>
-      </div>
     </div>
 
     <!-- SUMMARY -->
@@ -285,6 +275,16 @@
 
     <!-- EVENTS -->
     <div class="bo-tab-panel" id="tab-events">
+      <div style="display:flex; justify-content:flex-end; align-items:center; gap:12px; margin-bottom:12px;">
+        <button type="button" class="bo-btn-primary" id="patientAddMessageBtn">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          Message
+        </button>
+        <button type="button" class="bo-btn-primary" id="patientAddEventBtn">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          Event
+        </button>
+      </div>
       <div class="bo-table-card">
         <div class="bo-table-scroll">
           <table class="bo-list-table">

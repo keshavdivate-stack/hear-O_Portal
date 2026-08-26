@@ -522,15 +522,12 @@ document.getElementById("patientCloseMessageDrawerX").addEventListener("click", 
 patientMessageDrawerOverlay.addEventListener("click", (e) => { if (e.target === patientMessageDrawerOverlay) closePatientMessageDrawer(); });
 
 /* ---------------- Tabs ---------------- */
-const eventsTabActions = document.getElementById("eventsTabActions");
-
 document.querySelectorAll("#patientTabs .bo-tab").forEach((tab) => {
   tab.addEventListener("click", () => {
     document.querySelectorAll("#patientTabs .bo-tab").forEach((t) => t.classList.remove("active"));
     document.querySelectorAll(".bo-tab-panel").forEach((p) => p.classList.remove("active"));
     tab.classList.add("active");
     document.getElementById(`tab-${tab.dataset.tab}`).classList.add("active");
-    eventsTabActions.hidden = tab.dataset.tab !== "events";
     if (tab.dataset.tab === "summary") renderPatientComplianceChart();
   });
 });
