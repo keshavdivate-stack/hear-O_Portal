@@ -147,22 +147,15 @@ document.getElementById("orgUserLastPage").addEventListener("click", () => {
   renderUsers();
 });
 
-/* ---------------- Row action dropdown (lock / edit / delete) ---------------- */
+/* ---------------- Row action dropdown (reset password / edit / delete) ---------------- */
 const userRowMenu = document.getElementById("userRowMenu");
 let activeUserId = null;
-
-function refreshUserRowMenuLabel() {
-  const user = boUsers.find((u) => u.id === activeUserId);
-  const lockItem = userRowMenu.querySelector('[data-action="lock"]');
-  if (user && lockItem) lockItem.textContent = user.locked ? "Unlock User" : "Lock User";
-}
 
 document.getElementById("orgUsersRows").addEventListener("click", (e) => {
   const trigger = e.target.closest(".row-menu-trigger");
   if (!trigger) return;
   e.stopPropagation();
   activeUserId = Number(trigger.dataset.id);
-  refreshUserRowMenuLabel();
   const rect = trigger.getBoundingClientRect();
   userRowMenu.style.top = `${rect.bottom + 6}px`;
   userRowMenu.style.left = `${rect.right - 190}px`;
@@ -174,22 +167,20 @@ document.addEventListener("click", (e) => {
 });
 
 userRowMenu.addEventListener("click", (e) => {
-  const item = e.target.closest(".bo-row-menu-item");
+  const item = e.target.closest(".bo-row-menu-icon-btn");
   if (!item || activeUserId === null) return;
   userRowMenu.classList.remove("open");
 
   const user = boUsers.find((u) => u.id === activeUserId);
   if (!user) return;
 
-  if (item.dataset.action === "lock") {
-    user.locked = !user.locked;
-    renderUsers();
-  } else if (item.dataset.action === "delete") {
+  if (item.dataset.action === "delete") {
     boUsers.splice(boUsers.indexOf(user), 1);
     renderUsers();
   } else if (item.dataset.action === "edit") {
     openUserDrawer(user);
   }
+  // "reset" (Reset Password) has no wired behavior in this preview.
 });
 
 /* ---------------- Custom selects (role) ---------------- */
@@ -467,7 +458,7 @@ document.addEventListener("click", (e) => {
 });
 
 orgPatientRowMenu.addEventListener("click", (e) => {
-  const item = e.target.closest(".bo-row-menu-item");
+  const item = e.target.closest(".bo-row-menu-icon-btn");
   if (!item) return;
   orgPatientRowMenu.classList.remove("open");
 });

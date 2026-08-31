@@ -176,27 +176,27 @@
             <div class="reg-grid">
               <div class="reg-field">
                 <label>First Name<span class="required-star">*</span></label>
-                <input type="text" name="firstName" placeholder="First Name" required />
+                <input type="text" name="firstName" placeholder="Enter first name" required />
               </div>
               <div class="reg-field">
                 <label>Last Name<span class="required-star">*</span></label>
-                <input type="text" name="lastName" placeholder="Last Name" required />
+                <input type="text" name="lastName" placeholder="Enter last name" required />
               </div>
               <div class="reg-field">
                 <label>MRN/ID<span class="required-star">*</span></label>
-                <input type="text" name="mrn" placeholder="MRN/ID" required />
+                <input type="text" name="mrn" placeholder="Enter MRN or patient ID" required />
               </div>
 
               <div class="reg-field">
                 <label>Date of birth</label>
                 <div class="reg-date-field">
-                  <input type="text" name="dob" placeholder="Date of birth" onfocus="(this.type='date')" onblur="if(!this.value) this.type='text'" />
+                  <input type="text" name="dob" placeholder="mm/dd/yyyy" onfocus="(this.type='date')" onblur="if(!this.value) this.type='text'" />
                   <svg class="reg-date-icon" width="17" height="17" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="17" rx="2" stroke="#6B7684" stroke-width="1.8"/><path d="M3 9H21" stroke="#6B7684" stroke-width="1.8"/><path d="M8 2V6" stroke="#6B7684" stroke-width="1.8" stroke-linecap="round"/><path d="M16 2V6" stroke="#6B7684" stroke-width="1.8" stroke-linecap="round"/></svg>
                 </div>
               </div>
               <div class="reg-field">
                 <label>Email<span class="required-star">*</span></label>
-                <input type="email" name="email" placeholder="Email" required />
+                <input type="email" name="email" placeholder="you@email.com" required />
               </div>
               <div class="reg-field">
                 <label>Email language<span class="required-star">*</span></label>
@@ -224,12 +224,14 @@
                     </button>
                     <div class="custom-select-menu">
                       <div class="custom-select-option" data-value="+1">+1<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                      <div class="custom-select-option" data-value="+91">+91<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
                       <div class="custom-select-option selected" data-value="+972">+972<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
                       <div class="custom-select-option" data-value="+44">+44<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                      <div class="custom-select-option" data-value="+380">+380<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
                     </div>
                     <input type="hidden" name="countryCode" value="+972" />
                   </div>
-                  <input type="text" name="mobile" placeholder="Mobile number" />
+                  <input type="text" name="mobile" placeholder="Enter mobile number" />
                 </div>
               </div>
               <div class="reg-field">
@@ -289,11 +291,11 @@
               </div>
               <div class="reg-field">
                 <label>First name</label>
-                <input type="text" name="ecFirstName" placeholder="First name" />
+                <input type="text" name="ecFirstName" placeholder="Enter first name" />
               </div>
               <div class="reg-field">
                 <label>Last name</label>
-                <input type="text" name="ecLastName" placeholder="Last name" />
+                <input type="text" name="ecLastName" placeholder="Enter last name" />
               </div>
               <div class="reg-field">
                 <label>Email</label>
@@ -301,7 +303,23 @@
               </div>
               <div class="reg-field">
                 <label>Phone</label>
-                <input type="tel" name="ecPhone" placeholder="(904) 555-0123" />
+                <div class="phone-field">
+                  <div class="custom-select country-select" data-name="ecCountryCode">
+                    <button type="button" class="custom-select-trigger">
+                      <span class="custom-select-value">+972</span>
+                      <svg class="custom-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                    </button>
+                    <div class="custom-select-menu">
+                      <div class="custom-select-option" data-value="+1">+1<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                      <div class="custom-select-option" data-value="+91">+91<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                      <div class="custom-select-option selected" data-value="+972">+972<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                      <div class="custom-select-option" data-value="+44">+44<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                      <div class="custom-select-option" data-value="+380">+380<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    </div>
+                    <input type="hidden" name="ecCountryCode" value="+972" />
+                  </div>
+                  <input type="tel" name="ecPhone" placeholder="Enter phone number" />
+                </div>
               </div>
             </div>
 
@@ -327,20 +345,20 @@
             <div class="reg-grid">
               <div class="reg-field">
                 <label>First Name</label>
-                <input type="text" id="ehrFirstName" placeholder="First Name" />
+                <input type="text" id="ehrFirstName" placeholder="Enter first name" />
               </div>
               <div class="reg-field">
                 <label>Last Name</label>
-                <input type="text" id="ehrLastName" placeholder="Last Name" />
+                <input type="text" id="ehrLastName" placeholder="Enter last name" />
               </div>
               <div class="reg-field">
                 <label>MRN/ID</label>
-                <input type="text" id="ehrMrn" placeholder="MRN/ID" />
+                <input type="text" id="ehrMrn" placeholder="Enter MRN or patient ID" />
               </div>
               <div class="reg-field">
                 <label>Date of birth</label>
                 <div class="reg-date-field">
-                  <input type="text" id="ehrDob" placeholder="Date of birth" onfocus="(this.type='date')" onblur="if(!this.value) this.type='text'" />
+                  <input type="text" id="ehrDob" placeholder="mm/dd/yyyy" onfocus="(this.type='date')" onblur="if(!this.value) this.type='text'" />
                   <svg class="reg-date-icon" width="17" height="17" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="17" rx="2" stroke="#6B7684" stroke-width="1.8"/><path d="M3 9H21" stroke="#6B7684" stroke-width="1.8"/><path d="M8 2V6" stroke="#6B7684" stroke-width="1.8" stroke-linecap="round"/><path d="M16 2V6" stroke="#6B7684" stroke-width="1.8" stroke-linecap="round"/></svg>
                 </div>
               </div>

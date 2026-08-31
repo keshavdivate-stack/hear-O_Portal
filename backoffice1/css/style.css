@@ -1088,6 +1088,33 @@ body.bo-page-scroll .bo-page { overflow-y: auto; overflow-x: hidden; }
 .bo-row-menu-item:hover { background: var(--bg); }
 .bo-row-menu-item.danger { color: var(--red); }
 
+/* Icon-only row action popup (e.g. Reset Password / Edit / Delete) */
+.bo-row-menu-icons {
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+  padding: 6px;
+  min-width: 0;
+  background: var(--purple-light);
+}
+
+.bo-row-menu-icon-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  border: none;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--purple);
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(20, 30, 50, 0.08);
+}
+
+.bo-row-menu-icon-btn:hover { background: #fff; filter: brightness(0.97); }
+.bo-row-menu-icon-btn.danger { color: var(--red); }
+
 /* Switch toggle (e.g. HMO on/off) */
 .bo-switch-field {
   display: inline-flex;

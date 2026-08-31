@@ -188,7 +188,7 @@ document.addEventListener("click", (e) => {
 });
 
 patientRowMenu.addEventListener("click", (e) => {
-  const item = e.target.closest(".bo-row-menu-item");
+  const item = e.target.closest(".bo-row-menu-icon-btn");
   if (!item || activePatientRowId === null) return;
   patientRowMenu.classList.remove("open");
 });

@@ -96,22 +96,15 @@ document.getElementById("userLastPage").addEventListener("click", () => {
   renderUsers();
 });
 
-/* ---------------- Row action dropdown (lock / edit / delete) ---------------- */
+/* ---------------- Row action dropdown (reset password / edit / delete) ---------------- */
 const userRowMenu = document.getElementById("userRowMenu");
 let activeUserRowId = null;
-
-function refreshUserRowMenuLabel() {
-  const user = boUsers.find((u) => u.id === activeUserRowId);
-  const lockItem = userRowMenu.querySelector('[data-action="lock"]');
-  if (user && lockItem) lockItem.textContent = user.locked ? "Unlock User" : "Lock User";
-}
 
 document.getElementById("usersRows").addEventListener("click", (e) => {
   const trigger = e.target.closest(".row-menu-trigger");
   if (!trigger) return;
   e.stopPropagation();
   activeUserRowId = Number(trigger.dataset.id);
-  refreshUserRowMenuLabel();
   const rect = trigger.getBoundingClientRect();
   userRowMenu.style.top = `${rect.bottom + 6}px`;
   userRowMenu.style.left = `${rect.right - 190}px`;
@@ -123,22 +116,20 @@ document.addEventListener("click", (e) => {
 });
 
 userRowMenu.addEventListener("click", (e) => {
-  const item = e.target.closest(".bo-row-menu-item");
+  const item = e.target.closest(".bo-row-menu-icon-btn");
   if (!item || activeUserRowId === null) return;
   userRowMenu.classList.remove("open");
 
   const user = boUsers.find((u) => u.id === activeUserRowId);
   if (!user) return;
 
-  if (item.dataset.action === "lock") {
-    user.locked = !user.locked;
-    renderUsers();
-  } else if (item.dataset.action === "delete") {
+  if (item.dataset.action === "delete") {
     boUsers.splice(boUsers.indexOf(user), 1);
     renderUsers();
   } else if (item.dataset.action === "edit") {
     openAddUserModal();
   }
+  // "reset" (Reset Password) has no wired behavior in this preview.
 });
 
 /* ---------------- Custom selects (used inside the Create user drawer) ---------------- */
