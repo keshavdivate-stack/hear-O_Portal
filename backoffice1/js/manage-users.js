@@ -279,12 +279,43 @@ const addUserOverlay = document.getElementById("addUserOverlay");
 const addUserForm = document.getElementById("addUserForm");
 const saveAddUserBtn = document.getElementById("saveAddUser");
 
+/* Level and the recording/log view permissions only apply to Support
+   users -- everyone else is a clinic-side role that doesn't touch tickets
+   or patient recordings, so those fields stay hidden until Support is picked. */
+const levelFieldWrap = document.getElementById("levelFieldWrap");
+const viewRecordingsFieldWrap = document.getElementById("viewRecordingsFieldWrap");
+const viewLogsFieldWrap = document.getElementById("viewLogsFieldWrap");
+
+function updateSupportFieldsVisibility() {
+  const roleValue = addUserForm.querySelector('.bo-select[data-name="role"] input[type=hidden]').value;
+  const isSupport = roleValue === "SUPPORT";
+  levelFieldWrap.hidden = !isSupport;
+  viewRecordingsFieldWrap.hidden = !isSupport;
+  viewLogsFieldWrap.hidden = !isSupport;
+  const levelSelect = addUserForm.querySelector('.bo-select[data-name="level"]');
+  if (isSupport) {
+    /* Default new Support users to Level 1 -- per the onboarding rules
+       discussion, everything starts at Level 1 until routing is defined
+       more granularly, rather than forcing a level choice up front. */
+    if (levelSelect.querySelector("input[type=hidden]").value === "") {
+      setBoSelectValue(levelSelect, "Level 1", { silent: true });
+    }
+  } else {
+    setBoSelectValue(levelSelect, "", { silent: true });
+    addUserForm.canViewRecordings.checked = false;
+    addUserForm.canViewLogs.checked = false;
+  }
+}
+
+addUserForm.querySelector('.bo-select[data-name="role"] input[type=hidden]').addEventListener("change", updateSupportFieldsVisibility);
+
 function openAddUserModal() {
   addUserForm.reset();
   addUserForm.querySelectorAll(".bo-select").forEach(resetBoSelect);
   setBoSelectValue(addUserForm.querySelector('.bo-select[data-name="countryCode"]'), "+91", { silent: true });
   setBoSelectValue(addUserForm.querySelector('.bo-select[data-name="language"]'), "English", { silent: true });
   resetOrgRows();
+  updateSupportFieldsVisibility();
   validateAddUserForm();
   addUserOverlay.classList.add("open");
 }
@@ -295,7 +326,9 @@ function closeAddUserModal() {
 
 function validateAddUserForm() {
   const roleValue = addUserForm.querySelector('.bo-select[data-name="role"] input[type=hidden]').value;
-  saveAddUserBtn.disabled = addUserForm.username.value.trim() === "" || addUserForm.email.value.trim() === "" || roleValue === "";
+  const levelValue = addUserForm.querySelector('.bo-select[data-name="level"] input[type=hidden]').value;
+  const levelMissing = roleValue === "SUPPORT" && levelValue === "";
+  saveAddUserBtn.disabled = addUserForm.username.value.trim() === "" || addUserForm.email.value.trim() === "" || roleValue === "" || levelMissing;
 }
 
 addUserForm.addEventListener("input", validateAddUserForm);
@@ -327,6 +360,8 @@ addUserForm.addEventListener("submit", (e) => {
     allowedOrgs: orgValues.length ? orgValues.join(", ") : "—",
     mfa: addUserForm.mfa.checked,
     locked: false,
+    canViewRecordings: roleValue === "SUPPORT" ? addUserForm.canViewRecordings.checked : false,
+    canViewLogs: roleValue === "SUPPORT" ? addUserForm.canViewLogs.checked : false,
   });
 
   closeAddUserModal();

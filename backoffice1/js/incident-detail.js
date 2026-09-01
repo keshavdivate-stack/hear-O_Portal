@@ -26,6 +26,9 @@ function renderIncidentSummary() {
   document.getElementById("incDetailSource").textContent = currentIncident.source;
   document.getElementById("incDetailOwnerKv").textContent = currentIncident.owner;
   document.getElementById("incDetailDuration").textContent = currentIncident.duration;
+  document.getElementById("incDetailRelatedTicket").innerHTML = currentIncident.relatedTicket
+    ? `<a class="bo-name-link" href="${incTicketHref(currentIncident.relatedTicket)}">${currentIncident.relatedTicket.ticketNo}</a>`
+    : "—";
 }
 
 function renderIncidentImpact() {

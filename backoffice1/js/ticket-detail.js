@@ -49,7 +49,7 @@ document.querySelector('.bo-select[data-name="ticketStatus"] .bo-select-menu').i
    that tier. */
 function populateTicketDetailAssignees(tier) {
   const menu = document.querySelector('.bo-select[data-name="ticketAssignedTo"] .bo-select-menu');
-  menu.innerHTML = buildSelectOptions(TIER_AGENTS[tier] || SUPPORT_AGENTS);
+  menu.innerHTML = buildAgentSelectOptions(TIER_AGENTS[tier] || SUPPORT_AGENTS);
 }
 
 /* Resolved tickets no longer need routing info -- hide Level/Severity/
@@ -228,6 +228,11 @@ function renderPatientLogHistory(elId, lines) {
 }
 
 let currentPatientLog = null;
+let currentPatientLogSessionId = null;
+
+function currentSession() {
+  return currentPatientLog && currentPatientLog.sessions.find((s) => s.id === currentPatientLogSessionId);
+}
 
 function renderPatientLog() {
   const section = document.getElementById("patientLog");
@@ -241,15 +246,83 @@ function renderPatientLog() {
   renderPatientLogSection("patientLogAppVersion", currentPatientLog.appVersion);
   renderPatientLogSection("patientLogDeviceInfo", currentPatientLog.deviceInfo);
   renderPatientLogSection("patientLogPermissions", currentPatientLog.permissions);
-  renderPatientLogHistory("patientLogHistory", currentPatientLog.logHistory);
+
+  const sessionSelect = document.getElementById("patientLogSessionSelect");
+  sessionSelect.innerHTML = currentPatientLog.sessions
+    .map((s, i) => `<option value="${s.id}">${s.date}${i === 0 ? " (latest)" : ""}</option>`)
+    .join("");
+  currentPatientLogSessionId = currentPatientLog.sessions[0].id;
+  sessionSelect.value = currentPatientLogSessionId;
+  renderPatientLogHistory("patientLogHistory", currentSession().lines);
+
+  const sessionDates = currentPatientLog.sessions.map((s) => s.dateObj).sort((a, b) => a - b);
+  document.getElementById("patientLogDownloadFrom").value = toIsoDate(sessionDates[0]);
+  document.getElementById("patientLogDownloadTo").value = toIsoDate(sessionDates[sessionDates.length - 1]);
 }
 
-document.getElementById("downloadPatientLogBtn").addEventListener("click", () => {
+document.getElementById("patientLogSessionSelect").addEventListener("change", (e) => {
+  currentPatientLogSessionId = e.target.value;
+  const session = currentSession();
+  if (session) renderPatientLogHistory("patientLogHistory", session.lines);
+});
+
+/* ---------------- Download Log (date-range picker) ---------------- */
+function toIsoDate(d) {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
+const patientLogDownloadPopover = document.getElementById("patientLogDownloadPopover");
+
+function openPatientLogDownloadPopover() {
+  document.getElementById("patientLogDownloadHint").textContent = "";
+  patientLogDownloadPopover.hidden = false;
+}
+function closePatientLogDownloadPopover() {
+  patientLogDownloadPopover.hidden = true;
+}
+
+document.getElementById("downloadPatientLogBtn").addEventListener("click", (e) => {
+  e.stopPropagation();
   if (!currentPatientLog) return;
+  if (patientLogDownloadPopover.hidden) openPatientLogDownloadPopover();
+  else closePatientLogDownloadPopover();
+});
+document.getElementById("patientLogDownloadCancel").addEventListener("click", closePatientLogDownloadPopover);
+document.addEventListener("click", (e) => {
+  if (!patientLogDownloadPopover.hidden && !e.target.closest(".patient-log-download-wrap")) closePatientLogDownloadPopover();
+});
+
+document.getElementById("patientLogDownloadConfirm").addEventListener("click", () => {
+  if (!currentPatientLog) return;
+  const fromValue = document.getElementById("patientLogDownloadFrom").value;
+  const toValue = document.getElementById("patientLogDownloadTo").value;
+  const hint = document.getElementById("patientLogDownloadHint");
+  if (!fromValue || !toValue) {
+    hint.textContent = "Pick both a from and to date.";
+    return;
+  }
+  const from = new Date(fromValue);
+  const to = new Date(toValue);
+  if (from > to) {
+    hint.textContent = "From date must be before the to date.";
+    return;
+  }
+
+  const sessionsInRange = currentPatientLog.sessions
+    .filter((s) => s.dateObj >= from && s.dateObj <= to)
+    .sort((a, b) => a.dateObj - b.dateObj);
+  if (!sessionsInRange.length) {
+    hint.textContent = "No sessions found in that date range.";
+    return;
+  }
+
   const section = (title, rows) => `${title}\n${rows.map((r) => `  ${r.label}: ${r.value}`).join("\n")}\n`;
-  const historySection = `Log History\n${currentPatientLog.logHistory.map((l) => `  ${l.ts}: ${l.msg}`).join("\n")}\n`;
+  const historySection = sessionsInRange
+    .map((s) => `Session ${s.date}\n${s.lines.map((l) => `  ${l.ts}: ${l.msg}`).join("\n")}\n`)
+    .join("\n");
   const text = [
     `Patient Log - ${currentTicket.ticketNo} (${currentTicket.patientId})`,
+    `Date range: ${sessionsInRange[0].date} - ${sessionsInRange[sessionsInRange.length - 1].date}`,
     "",
     section("App Version", currentPatientLog.appVersion),
     section("Device Info", currentPatientLog.deviceInfo),
@@ -266,6 +339,7 @@ document.getElementById("downloadPatientLogBtn").addEventListener("click", () =>
   link.click();
   link.remove();
   URL.revokeObjectURL(url);
+  closePatientLogDownloadPopover();
 });
 
 function renderAll() {

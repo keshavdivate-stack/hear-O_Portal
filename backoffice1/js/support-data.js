@@ -126,6 +126,17 @@ const TIER_AGENTS = {
   "Level 3": ["Liat Peretz"],
 };
 
+/* Reverse lookup so any support agent's name can carry its level wherever
+   it's displayed (ticket lists, Ticket Detail's Assigned To), matching each
+   agent's level to the tier they were defined under above. */
+const AGENT_LEVEL = {};
+Object.entries(TIER_AGENTS).forEach(([level, names]) => names.forEach((name) => { AGENT_LEVEL[name] = level; }));
+
+function agentLabel(name) {
+  const level = AGENT_LEVEL[name];
+  return name && level ? `${name} (${level})` : name || "";
+}
+
 /* ---------------- Sample tickets raised by patients ---------------- */
 const patientTickets = [
   { id: 0, ticketNo: "TCK-1042", patientId: "120-2001", organization: "120", issueType: "Missing ASR Results", scope: "Patient", tier: "Level 1", severity: "Critical", status: "Open", origin: "User Created", assignedTo: "Sarah Cohen", createdDate: "02/08/2026 09:14", description: "Patient's recordings aren't producing ASR results -- the app freezes a few seconds into every attempt and no audio file is saved." },

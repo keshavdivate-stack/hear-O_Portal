@@ -43,6 +43,20 @@ function buildSelectOptions(values) {
     .join("");
 }
 
+/* Like buildSelectOptions, but for a list of support agent names -- the
+   option (and the trigger, once selected) displays "Name (Level X)" while
+   the underlying stored value stays the plain agent name. */
+function buildAgentSelectOptions(names) {
+  return names
+    .map(
+      (n) => `
+      <div class="bo-select-option" data-value="${n}">${agentLabel(n)}
+        <svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>`
+    )
+    .join("");
+}
+
 function setBoSelectValue(select, value, { silent = false } = {}) {
   const hiddenInput = select.querySelector("input[type=hidden]");
   const trigger = select.querySelector(".bo-select-value");
@@ -210,6 +224,40 @@ function buildLogHistory(rand, ticket) {
   return lines;
 }
 
+/* Each patient session writes its own log file on-device (see the Patient
+   Log review comments on session-by-session logs) -- so the console shows
+   one session at a time, with a selector to move between the sessions that
+   exist for this patient rather than pretending there's a single log. */
+const PATIENT_LOG_SESSION_COUNT = 6;
+
+function parseDdMmYyyy(datePart) {
+  const [dd, mm, yyyy] = (datePart || "").split("/").map(Number);
+  return dd && mm && yyyy ? new Date(yyyy, mm - 1, dd) : new Date();
+}
+function formatDdMmYyyy(d) {
+  return `${String(d.getDate()).padStart(2, "0")}/${String(d.getMonth() + 1).padStart(2, "0")}/${d.getFullYear()}`;
+}
+
+function buildLogSessions(ticket) {
+  const seedBase = ticket.patientId || String(ticket.id);
+  const gapRand = seededRandom(`${seedBase}-session-gaps`);
+  const anchorDate = parseDdMmYyyy((ticket.createdDate || "").split(" ")[0]);
+  const sessions = [];
+  let cursor = new Date(anchorDate);
+  for (let i = 0; i < PATIENT_LOG_SESSION_COUNT; i++) {
+    const dateLabel = formatDdMmYyyy(cursor);
+    const sessionRand = seededRandom(`${seedBase}-session-${dateLabel}`);
+    sessions.push({
+      id: `session-${i}`,
+      date: dateLabel,
+      dateObj: new Date(cursor),
+      lines: buildLogHistory(sessionRand, { createdDate: `${dateLabel} 00:00` }),
+    });
+    cursor.setDate(cursor.getDate() - (1 + Math.floor(gapRand() * 3)));
+  }
+  return sessions; // most-recent-first, sessions[0] matches the ticket's own created date
+}
+
 function buildPatientLog(ticket) {
   const rand = seededRandom(ticket.patientId || String(ticket.id));
   const device = pickFrom(rand, LOG_DEVICES);
@@ -242,6 +290,6 @@ function buildPatientLog(ticket) {
       { label: "Chat", value: rand() > 0.85 ? "Denied" : "Granted" },
       { label: "Blood Pressure Data", value: rand() > 0.5 ? "Denied" : "Granted" },
     ],
-    logHistory: buildLogHistory(rand, ticket),
+    sessions: buildLogSessions(ticket),
   };
 }

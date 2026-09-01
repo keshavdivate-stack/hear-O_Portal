@@ -51,7 +51,7 @@ function incidentRowHtml(incident) {
       </td>
       <td><span class="bo-pill bo-pill-tag">${incident.category}</span></td>
       <td>${incSeverityPill(incident.severity)}</td>
-      <td>${incStatusPill(incident.status)}</td>
+      <td>${incStatusPill(incident.status)}${incRelatedTicketLink(incident)}</td>
       <td><button type="button" class="bo-impact-link" data-impact-trigger data-id="${incident.id}">${incImpactLabel(incident)}</button></td>
       <td>${incident.duration}</td>
       <td>${incident.detectedAt}</td>
@@ -97,6 +97,7 @@ function findIncident(id) { return incidents.find((i) => i.id === id); }
 
 /* ---------------- Row action menu: Create Task / View Task ---------------- */
 const incidentRowMenu = document.getElementById("incidentRowMenu");
+const incidentRowMenuViewTicketBtn = document.getElementById("incidentRowMenuViewTicketBtn");
 let activeIncidentId = null;
 
 document.getElementById("incidentRows").addEventListener("click", (e) => {
@@ -104,6 +105,8 @@ document.getElementById("incidentRows").addEventListener("click", (e) => {
   if (!trigger) return;
   e.stopPropagation();
   activeIncidentId = trigger.dataset.id;
+  const incident = findIncident(activeIncidentId);
+  incidentRowMenuViewTicketBtn.hidden = !incident || !incident.relatedTicket;
   const rect = trigger.getBoundingClientRect();
   incidentRowMenu.style.top = `${rect.bottom + 6}px`;
   incidentRowMenu.style.left = `${rect.right - 190}px`;
@@ -124,7 +127,7 @@ incidentRowMenu.addEventListener("click", (e) => {
   incidentRowMenu.classList.remove("open");
 
   if (action === "createTask") openAddTaskDrawer(incident);
-  if (action === "viewTask") location.href = `incident-detail.html?id=${encodeURIComponent(incident.id)}`;
+  if (action === "viewTicket" && incident.relatedTicket) location.href = incTicketHref(incident.relatedTicket);
 });
 
 /* ---------------- Create Support Task drawer ---------------- */

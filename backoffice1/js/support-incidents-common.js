@@ -113,6 +113,17 @@ function incImpactLabel(incident) {
   return `${incident.orgs.length} orgs · ${incident.patients.length} patients`;
 }
 
+/* Escalated incidents get a Ticket created via "Escalate & Create Ticket";
+   once that link exists we surface it everywhere the incident is shown so
+   support staff can jump straight to the related ticket. */
+function incTicketHref(relatedTicket) {
+  return `ticket-detail.html?ticket=${encodeURIComponent(relatedTicket.ticketNo)}&source=${encodeURIComponent(relatedTicket.source)}`;
+}
+function incRelatedTicketLink(incident) {
+  if (!incident.relatedTicket) return "";
+  return `<a class="bo-name-link bo-related-ticket-link" href="${incTicketHref(incident.relatedTicket)}" title="${incident.relatedTicket.ticketNo}">Support Ticket</a>`;
+}
+
 function incImpactChips(list) {
   return list.map((v) => `<span class="bo-impact-chip">${v}</span>`).join("");
 }
