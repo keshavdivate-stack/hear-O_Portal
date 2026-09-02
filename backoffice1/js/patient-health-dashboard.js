@@ -470,6 +470,7 @@ patientEventDrawerOverlay.addEventListener("click", (e) => { if (e.target === pa
 const patientMessageDrawerOverlay = document.getElementById("patientMessageDrawerOverlay");
 const patientMessageForm = document.getElementById("patientMessageForm");
 const patientSaveMessageBtn = document.getElementById("patientSaveMessageBtn");
+const patientMessageLanguageSelect = document.getElementById("patientMessageLanguage");
 
 function validatePatientMessageForm() {
   patientSaveMessageBtn.disabled = patientMessageForm.message.value.trim() === "";
@@ -478,7 +479,7 @@ function validatePatientMessageForm() {
 function openPatientMessageDrawer() {
   patientMessageForm.reset();
   document.getElementById("patientMessageSendTo").value = ph.username;
-  document.getElementById("patientMessageLanguage").value = "";
+  setBoSelectValue(patientMessageLanguageSelect, "", { silent: true });
   validatePatientMessageForm();
   patientMessageDrawerOverlay.classList.add("open");
 }
@@ -490,7 +491,7 @@ function closePatientMessageDrawer() {
 patientMessageForm.addEventListener("input", validatePatientMessageForm);
 
 document.getElementById("patientCheckLanguageBtn").addEventListener("click", () => {
-  document.getElementById("patientMessageLanguage").value = ph.langName;
+  setBoSelectValue(patientMessageLanguageSelect, ph.langName);
 });
 
 patientMessageForm.addEventListener("submit", (e) => {

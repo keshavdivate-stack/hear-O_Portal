@@ -366,6 +366,7 @@ const peMessageDrawerOverlay = document.getElementById("peMessageDrawerOverlay")
 const peMessageForm = document.getElementById("peMessageForm");
 const peSaveMessageBtn = document.getElementById("peSaveMessageBtn");
 const peMsgPatientField = document.getElementById("peMsgPatientField");
+const peMessageLanguageSelect = peMessageForm.querySelector('.bo-select[data-name="language"]');
 
 function validateMessageForm() {
   const sendTo = peMessageForm.sendTo.value;
@@ -382,7 +383,7 @@ function syncMessageSendTo() {
 
 function openMessageDrawer() {
   peMessageForm.reset();
-  peMessageForm.language.value = "";
+  setBoSelectValue(peMessageLanguageSelect, "", { silent: true });
   syncMessageSendTo();
   peMessageDrawerOverlay.classList.add("open");
 }
@@ -404,7 +405,7 @@ document.getElementById("peCheckLanguageBtn").addEventListener("click", () => {
     return;
   }
   const langs = ["EN", "HE", "AR", "ES", "RU", "DE"];
-  peMessageForm.language.value = langs[username.length % langs.length];
+  setBoSelectValue(peMessageLanguageSelect, langs[username.length % langs.length]);
 });
 
 peMessageForm.addEventListener("submit", (e) => {
