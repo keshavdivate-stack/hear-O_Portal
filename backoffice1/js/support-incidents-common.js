@@ -96,6 +96,25 @@ function buildFilterSelectOptions(values, clearLabel) {
   return clearOption + buildSelectOptions(values);
 }
 
+/* Like buildFilterSelectOptions, but the option's displayed text (labels[i])
+   can differ from the value it filters on (values[i]) -- used for the
+   severity filter, whose underlying values are SEV-1..4. */
+function buildFilterSelectOptionsLabeled(values, labels, clearLabel) {
+  const clearOption = `
+      <div class="bo-select-option" data-value="">${clearLabel}
+        <svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>`;
+  const options = values
+    .map(
+      (v, i) => `
+      <div class="bo-select-option" data-value="${v}">${labels[i]}
+        <svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>`
+    )
+    .join("");
+  return clearOption + options;
+}
+
 /* Named distinctly from support.js's ticketKebabIcon -- both this file and
    support.js load together on support.html, and redeclaring the same
    `const` name across separate <script> tags throws a SyntaxError. */

@@ -6,7 +6,7 @@
 
 /* ---------------- Filter option lists ---------------- */
 document.getElementById("incStatusFilterMenu").innerHTML = buildFilterSelectOptions(INC_STATUSES, "All statuses");
-document.getElementById("incSeverityFilterMenu").innerHTML = buildFilterSelectOptions(INC_SEVERITIES, "All severities");
+document.getElementById("incSeverityFilterMenu").innerHTML = buildFilterSelectOptionsLabeled(INC_SEVERITIES, INC_SEVERITIES.map((s) => INC_SEVERITY_LABEL[s]), "All severities");
 document.getElementById("incSourceFilterMenu").innerHTML = buildFilterSelectOptions(INC_SOURCES, "All sources");
 document.getElementById("incCategoryFilterMenu").innerHTML = buildFilterSelectOptions(INC_CATEGORIES, "All categories");
 document.getElementById("incOwnerFilterMenu").innerHTML = buildFilterSelectOptions(SUPPORT_TEAM, "All owners");
