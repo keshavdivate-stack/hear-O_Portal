@@ -3031,6 +3031,12 @@ a.bo-btn-secondary { text-decoration: none; }
 .bo-center-modal-wide { width: 520px; }
 .bo-center-modal-xl { width: 760px; }
 
+/* "View Version" modal (avatar menu) */
+.bo-version-list { display: flex; flex-direction: column; gap: 14px; max-height: 60vh; overflow-y: auto; padding-right: 4px; }
+.bo-version-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; font-size: 14px; color: var(--ink); }
+.bo-version-row span:first-child { color: var(--gray-text); }
+.bo-version-row span:last-child { font-weight: 700; }
+
 /* Patient log modal: compact device snapshot + scrollable log history */
 .patient-log-modal {
   display: flex;

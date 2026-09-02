@@ -16,29 +16,11 @@ const resolvedTickets = supDashTickets.filter((t) => t.status === "Resolved");
 /* ---------------- Incidents ---------------- */
 const activeIncidents = incidents.filter((i) => i.status === "Active");
 const escalatedIncidents = incidents.filter((i) => i.status === "Escalated");
-const resolvedIncidents = incidents.filter((i) => i.status === "Resolved");
 
 /* "Organizations Impacted" counts unique orgs across incidents that are
    still open (Active/Escalated) -- a Resolved incident's orgs aren't
    currently impacted by anything. */
 const impactedOrgs = new Set([...activeIncidents, ...escalatedIncidents].flatMap((i) => i.orgs));
-
-/* Mean Time to Resolve is a real average of each Resolved incident's own
-   `duration` field (parsed from strings like "1h 05m" / "42m"), not a
-   placeholder. */
-function parseDurationToMinutes(duration) {
-  const hoursMatch = duration.match(/(\d+)\s*h/);
-  const minsMatch = duration.match(/(\d+)\s*m/);
-  return (hoursMatch ? Number(hoursMatch[1]) * 60 : 0) + (minsMatch ? Number(minsMatch[1]) : 0);
-}
-function formatMinutes(mins) {
-  const h = Math.floor(mins / 60);
-  const m = Math.round(mins % 60);
-  return h > 0 ? `${h}h ${m}m` : `${m}m`;
-}
-const meanResolveMinutes = resolvedIncidents.length
-  ? resolvedIncidents.reduce((sum, i) => sum + parseDurationToMinutes(i.duration), 0) / resolvedIncidents.length
-  : 0;
 
 /* ---------------- KPI row (Tickets + Incidents, one combined row) ---------------- */
 const supDashStats = [
@@ -47,7 +29,6 @@ const supDashStats = [
   { num: activeIncidents.length, label: "Active Incidents", color: "var(--orange)", icon: `<circle cx="12" cy="12" r="9"/><path d="M12 7v5l4 2"/>` },
   { num: escalatedIncidents.length, label: "Escalated Incidents", color: "var(--navy)", icon: `<path d="M12 19V5"/><path d="m5 12 7-7 7 7"/>` },
   { num: impactedOrgs.size, label: "Organizations Impacted", color: "var(--purple)", icon: `<rect width="16" height="18" x="4" y="3" rx="1"/><path d="M9 8h1"/><path d="M14 8h1"/><path d="M9 12h1"/><path d="M14 12h1"/>` },
-  { num: resolvedIncidents.length ? formatMinutes(meanResolveMinutes) : "—", label: "Mean Time to Resolve", color: "var(--gray)", icon: `<circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 2"/>` },
   { num: resolvedTickets.length, label: "Resolved Tickets (7d)", color: "var(--green)", icon: `<path d="M4 12L9 17L20 6"/>` },
 ];
 

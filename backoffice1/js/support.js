@@ -427,6 +427,7 @@ function renderRules() {
       (r) => `
       <tr>
         <td><b>${r.name}</b></td>
+        <td>${r.category}</td>
         <td>${r.condition}</td>
         <td>${severityPill(r.severity)}</td>
         <td>${tierPill(r.tier)}</td>
