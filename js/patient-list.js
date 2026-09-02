@@ -389,6 +389,17 @@ wireCheckboxFilter(
   renderPatientList
 );
 
+/* Default the Account filter to Enabled + Paused so Discontinued patients
+   are hidden until someone explicitly asks to see them. */
+["Enabled", "Paused"].forEach((value) => {
+  selectedAccounts.add(value);
+  const checkbox = accountMenu.querySelector(`input[value="${value}"]`);
+  if (checkbox) checkbox.checked = true;
+});
+const accountFilterLabel = document.querySelector('.checkbox-filter[data-name="account"] .checkbox-filter-label');
+accountFilterLabel.textContent = `${accountFilterLabel.textContent.trim()} (${selectedAccounts.size})`;
+renderPatientList();
+
 /* ---------------- Status filter ---------------- */
 const statusMenu = document.getElementById("statusMenu");
 statusMenu.innerHTML = statusOptions
