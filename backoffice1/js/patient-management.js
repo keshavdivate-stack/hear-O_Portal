@@ -80,7 +80,7 @@ function renderPatients() {
       (p) => `
       <tr>
         <td><a class="bo-name-link" href="patient-health-dashboard.html?patient=${p.username}">${p.username}</a></td>
-        <td>${p.algo || "—"}</td>
+        <td><input type="checkbox" class="bo-table-checkbox" ${p.algo ? "checked" : ""} disabled aria-label="Algo enabled" /></td>
         <td>${p.lang}</td>
         <td>${p.tag}</td>
         <td>${p.creationDate || "—"}</td>

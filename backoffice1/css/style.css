@@ -24,11 +24,21 @@
   --gray-text: #57626D;
   --gray-border: #E7EAEE;
   --field-border: #C9CFD6;
+  /* Accessible (AA, 4.5:1+) text colors for use on the *-light tint
+     backgrounds above -- the base hues (--blue, --green, etc.) are tuned
+     for icons/borders/links on white and don't pass contrast as small
+     bold badge text on their own -light tint. */
+  --blue-text: #0E5C99;
+  --green-text: #197A4E;
+  --red-text: #B3261E;
+  --orange-text: #9A4A0F;
+  --yellow-text: #7A5900;
+  --purple-text: #6438C2;
   --bg: #F4F7FA;
   --ink: #1B2430;
   --transition: 180ms ease;
-  --btn-bg: #7DD3FC;
-  --btn-bg-hover: #5EC2F5;
+  --btn-bg: #3b82f6;
+  --btn-bg-hover: #2563eb;
   --btn-text: #0C4A6E;
 }
 
@@ -125,11 +135,11 @@ a { color: inherit; }
 .bo-nav-caret { margin-left: -1px; color: var(--gray); flex-shrink: 0; }
 
 .bo-nav-link.active {
-  background: var(--btn-bg);
-  color: var(--btn-text);
+  background: #7DD3FC;
+  color: #0C4A6E;
 }
 
-.bo-nav-link.active .bo-nav-caret { color: var(--btn-text); }
+.bo-nav-link.active .bo-nav-caret { color: #0C4A6E; }
 
 .bo-nav-actions {
   display: flex;
@@ -513,12 +523,12 @@ a { color: inherit; }
   position: sticky;
   top: 0;
   z-index: 2;
-  background: #fff;
+  background: var(--bg);
   text-align: left;
   color: var(--gray-text);
   font-weight: 600;
   font-size: 12px;
-  padding: 0 8px 8px 0;
+  padding: 8px 8px 8px 0;
   border-bottom: 1px solid var(--gray-border);
 }
 
@@ -532,14 +542,14 @@ a { color: inherit; }
 .bo-table tbody tr:last-child td { border-bottom: none; }
 .bo-table tbody tr.bo-row-highlight td { background: var(--blue-light); }
 
-.bo-status-pill { font-weight: 700; }
-.bo-status-pill.priority { background: var(--red-light); color: var(--red); }
-.bo-status-pill.unmonitored { background: var(--blue-light); color: var(--blue); }
-.bo-status-pill.paused { background: var(--bg); color: var(--gray); }
-.bo-status-pill.active { background: var(--green-light); color: var(--green); }
-.bo-status-pill.registered { background: var(--blue-light); color: var(--blue); }
+.bo-status-pill.priority { background: var(--red-light); color: var(--red-text); }
+.bo-status-pill.unmonitored { background: var(--orange-light); color: var(--orange-text); }
+.bo-status-pill.paused { background: var(--bg); color: var(--gray-text); }
+.bo-status-pill.active { background: var(--green-light); color: var(--green-text); }
+.bo-status-pill.registered { background: var(--blue-light); color: var(--blue-text); }
 .bo-status-pill.baseline { background: var(--navy-light); color: var(--navy); }
-.bo-status-pill.insufficient { background: var(--orange-light); color: var(--orange); }
+.bo-status-pill.insufficient { background: var(--orange-light); color: var(--orange-text); }
+.bo-status-pill.discontinued { background: var(--bg); color: var(--gray-text); }
 
 /* Activity Feed */
 .bo-activity-panel { padding-bottom: 8px; }
@@ -686,8 +696,8 @@ a { color: inherit; }
   font-weight: 700;
 }
 
-.bo-trend-chip.up { background: var(--green-light); color: var(--green); }
-.bo-trend-chip.down { background: var(--red-light); color: var(--red); }
+.bo-trend-chip.up { background: var(--green-light); color: var(--green-text); }
+.bo-trend-chip.down { background: var(--red-light); color: var(--red-text); }
 .bo-trend-chip.flat { background: var(--bg); color: var(--gray-text); }
 
 /* Compliance panel col */
@@ -741,7 +751,7 @@ a { color: inherit; }
   padding: 4px 2px;
   font-size: 13px;
   font-weight: 700;
-  color: var(--blue);
+  color: var(--blue-text);
   -moz-appearance: textfield;
 }
 
@@ -794,7 +804,7 @@ a { color: inherit; }
   flex-wrap: wrap;
 }
 
-.bo-mini-num { font-size: 28px; font-weight: 800; color: var(--blue); margin: 0; }
+.bo-mini-num { font-size: 28px; font-weight: 800; color: var(--blue-text); margin: 0; }
 .bo-mini-unit { font-size: 14px; font-weight: 600; color: var(--ink); margin-left: 4px; }
 
 .bo-usable-compliance-card { text-align: center; padding-top: 14px; padding-bottom: 18px; }
@@ -886,7 +896,7 @@ body.bo-page-scroll .bo-page { overflow-y: auto; overflow-x: hidden; }
   align-items: center;
   gap: 8px;
   background: var(--btn-bg);
-  color: var(--btn-text);
+  color: #fff;
   border: none;
   border-radius: 10px;
   padding: 11px 20px;
@@ -929,7 +939,7 @@ body.bo-page-scroll .bo-page { overflow-y: auto; overflow-x: hidden; }
   position: sticky;
   top: 0;
   z-index: 5;
-  background: #fff;
+  background: var(--bg);
   text-align: left;
   font-size: 11.5px;
   font-weight: 700;
@@ -1002,7 +1012,7 @@ body.bo-page-scroll .bo-page { overflow-y: auto; overflow-x: hidden; }
 
 .bo-list-table tbody td.mono { color: var(--gray-text); }
 
-.bo-name-link { color: var(--blue); font-weight: 700; text-decoration: none; }
+.bo-name-link { color: var(--blue-text); font-weight: 700; text-decoration: none; }
 .bo-name-link:hover { text-decoration: underline; }
 
 .bo-cell-checkbox {
@@ -1031,7 +1041,7 @@ body.bo-page-scroll .bo-page { overflow-y: auto; overflow-x: hidden; }
   top: 0px;
   width: 5px;
   height: 9px;
-  border: solid var(--btn-text);
+  border: solid #fff;
   border-width: 0 2px 2px 0;
   transform: rotate(45deg);
 }
@@ -1117,7 +1127,7 @@ body.bo-page-scroll .bo-page { overflow-y: auto; overflow-x: hidden; }
 }
 
 .bo-row-menu-item:hover { background: var(--bg); }
-.bo-row-menu-item.danger { color: var(--red); }
+.bo-row-menu-item.danger { color: var(--red-text); }
 
 /* Switch toggle (e.g. HMO on/off) */
 .bo-switch-field {
@@ -1555,7 +1565,7 @@ label.bo-date-field { cursor: text; }
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  gap: 24px;
+  gap: 10px;
   padding: 16px 26px;
   border-top: 1px solid var(--gray-border);
   border-radius: 0 0 16px 16px;
@@ -1575,8 +1585,8 @@ label.bo-date-field { cursor: text; }
   align-items: center;
   gap: 8px;
   background: #fff;
-  color: var(--blue);
-  border: 1.5px solid var(--blue);
+  color: var(--ink);
+  border: 1.5px solid var(--field-border);
   border-radius: 10px;
   padding: 10px 20px;
   font-size: 13.5px;
@@ -1586,21 +1596,28 @@ label.bo-date-field { cursor: text; }
   white-space: nowrap;
 }
 
-.bo-btn-secondary:hover { background: var(--blue-light); }
+.bo-btn-secondary:hover { background: var(--bg); border-color: var(--gray); }
 a.bo-btn-secondary { text-decoration: none; }
 
 .bo-btn-text {
-  background: none;
-  border: none;
-  color: var(--blue);
-  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #fff;
+  color: var(--ink);
+  border: 1.5px solid var(--field-border);
+  border-radius: 10px;
+  padding: 10px 20px;
+  font-size: 13.5px;
   font-weight: 700;
   cursor: pointer;
   font-family: inherit;
+  white-space: nowrap;
 }
 
-.bo-btn-text:hover { text-decoration: underline; }
-.bo-btn-text.danger { color: var(--red); }
+.bo-btn-text:hover { background: var(--bg); border-color: var(--gray); }
+.bo-btn-text.danger { color: var(--red); border-color: var(--red); }
+.bo-btn-text.danger:hover { background: var(--red-light); }
 
 .bo-modal-field select {
   width: 100%;
@@ -2192,6 +2209,18 @@ a.bo-btn-secondary { text-decoration: none; }
 }
 
 /* ---------------- Checkbox row (modal fields) ---------------- */
+/* Read-only status checkbox inside a table cell (e.g. Patient Management's
+   Algo column) -- disabled so it can't be mistaken for an inline edit
+   control, but kept at full opacity since it's showing data, not an
+   unavailable action. */
+.bo-table-checkbox {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--blue);
+  opacity: 1;
+  cursor: default;
+}
+
 .bo-checkbox-row { display: flex; align-items: center; gap: 22px; flex-wrap: wrap; }
 
 .bo-checkbox-item {
@@ -2494,29 +2523,58 @@ a.bo-btn-secondary { text-decoration: none; }
   color: var(--ink);
 }
 
+/* Status-dot badge: reserved for lifecycle/state columns (e.g. a
+   "Status" column) so a status reads as a state, not a category. */
 .bo-status-pill {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   padding: 4px 12px;
   border-radius: 999px;
   font-size: 12px;
   font-weight: 700;
 }
 
-.bo-status-active { background: var(--green-light); color: var(--green); }
-.bo-status-inactive { background: var(--red-light); color: var(--red); }
+.bo-status-pill::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  flex-shrink: 0;
+}
 
-/* Status Change table badges (Previous / Changed to) */
+.bo-status-active { background: var(--green-light); color: var(--green-text); }
+.bo-status-inactive { background: var(--red-light); color: var(--red-text); }
+
+/* Status Change table badges (Previous / Changed to) -- same status-dot
+   language as .bo-status-pill, since these are also lifecycle states. */
 .bo-sc-badge {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   padding: 4px 12px;
   border-radius: 999px;
   font-size: 12px;
   font-weight: 700;
 }
-.bo-sc-badge.active { background: var(--green-light); color: var(--green); }
-.bo-sc-badge.priority { background: var(--red-light); color: var(--red); }
-.bo-sc-badge.registered { background: var(--blue-light); color: var(--blue); }
+.bo-sc-badge::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  flex-shrink: 0;
+}
+.bo-sc-badge.active { background: var(--green-light); color: var(--green-text); }
+.bo-sc-badge.priority { background: var(--red-light); color: var(--red-text); }
+.bo-sc-badge.registered { background: var(--blue-light); color: var(--blue-text); }
 .bo-sc-badge.baseline { background: var(--bg); color: var(--gray-text); }
+.bo-sc-badge.monitored { background: var(--green-light); color: var(--green-text); }
+.bo-sc-badge.unmonitored { background: var(--orange-light); color: var(--orange-text); }
+.bo-sc-badge.enabled { background: var(--green-light); color: var(--green-text); }
+.bo-sc-badge.paused { background: var(--bg); color: var(--gray-text); }
+.bo-sc-badge.discontinued { background: var(--bg); color: var(--gray-text); }
 
 /* EHR Connections cell (Organizations table) */
 .bo-ehr-tags {
@@ -2525,18 +2583,19 @@ a.bo-btn-secondary { text-decoration: none; }
   gap: 6px;
 }
 
+/* Source/vendor label, not a status -- neutral gray-bordered so it never
+   reads as a warning (orange) or a health signal (green) for a given EHR. */
 .bo-ehr-tag {
   display: inline-block;
-  padding: 3px 10px;
-  border-radius: 999px;
+  padding: 2px 9px;
+  border-radius: 6px;
+  border: 1px solid var(--gray-border);
+  background: #fff;
+  color: var(--gray-text);
   font-size: 11.5px;
   font-weight: 700;
   white-space: nowrap;
 }
-
-.bo-ehr-tag.athena { background: var(--green-light); color: var(--green); }
-.bo-ehr-tag.ecw { background: var(--orange-light); color: var(--orange); }
-.bo-ehr-tag.epic { background: var(--blue-light); color: var(--blue); }
 
 .bo-ehr-none { color: var(--gray); }
 
@@ -2605,7 +2664,7 @@ a.bo-btn-secondary { text-decoration: none; }
 .mkt-head-stat.alert .mkt-head-stat-icon { background: var(--orange-light); color: var(--orange); }
 
 .mkt-head-stat-num { display: block; font-size: 17px; font-weight: 800; color: var(--ink); line-height: 1.2; }
-.mkt-head-stat.alert .mkt-head-stat-num { color: var(--orange); }
+.mkt-head-stat.alert .mkt-head-stat-num { color: var(--orange-text); }
 .mkt-head-stat-label { display: block; font-size: 11.5px; font-weight: 600; color: var(--gray-text); white-space: nowrap; }
 
 .mkt-hero-row {
@@ -2907,7 +2966,7 @@ a.bo-btn-secondary { text-decoration: none; }
   border-bottom: 1px solid var(--gray-border);
 }
 
-.mkt-compliance-pct { font-size: 21px; font-weight: 800; color: var(--blue); }
+.mkt-compliance-pct { font-size: 21px; font-weight: 800; color: var(--blue-text); }
 
 .mkt-bins-tabs {
   display: flex;
@@ -3219,7 +3278,7 @@ a.bo-btn-secondary { text-decoration: none; }
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  gap: 24px;
+  gap: 10px;
   margin-top: 4px;
 }
 
@@ -3352,14 +3411,14 @@ a.bo-health-card:hover { border-color: var(--field-border); }
 }
 
 .bo-severity-pill .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
-.bo-severity-pill.critical { background: var(--red-light); color: var(--red); }
-.bo-severity-pill.high { background: var(--orange-light); color: var(--orange); }
-.bo-severity-pill.medium { background: var(--yellow-light); color: var(--yellow); }
+.bo-severity-pill.critical { background: var(--red-light); color: var(--red-text); }
+.bo-severity-pill.high { background: var(--orange-light); color: var(--orange-text); }
+.bo-severity-pill.medium { background: var(--yellow-light); color: var(--yellow-text); }
 .bo-severity-pill.low { background: var(--bg); color: var(--gray-text); }
-.bo-severity-pill.warning { background: var(--orange-light); color: var(--orange); }
-.bo-severity-pill.healthy { background: var(--green-light); color: var(--green); }
+.bo-severity-pill.warning { background: var(--orange-light); color: var(--orange-text); }
+.bo-severity-pill.healthy { background: var(--green-light); color: var(--green-text); }
 .bo-severity-pill.escalated { background: var(--navy-light); color: var(--navy); }
-.bo-severity-pill.info { background: var(--blue-light); color: var(--blue); }
+.bo-severity-pill.info { background: var(--blue-light); color: var(--blue-text); }
 .bo-severity-pill.neutral { background: var(--bg); color: var(--gray-text); }
 
 .bo-two-col {
@@ -3441,7 +3500,7 @@ a.bo-health-card:hover { border-color: var(--field-border); }
 .bo-entity-name { font-size: 19px; font-weight: 800; margin: 0; }
 .bo-entity-sub { font-size: 12.5px; color: var(--gray-text); margin: 2px 0 0; }
 
-.bo-row-link { color: var(--blue); font-weight: 700; text-decoration: none; cursor: pointer; }
+.bo-row-link { color: var(--blue-text); font-weight: 700; text-decoration: none; cursor: pointer; }
 .bo-row-link:hover { text-decoration: underline; }
 
 .bo-select-inline {
@@ -3756,7 +3815,7 @@ a.bo-alert-row:hover { background: var(--gray-border); }
 .bo-alert-body { flex: 1; min-width: 0; }
 .bo-alert-title { display: flex; align-items: center; gap: 10px; font-size: 13.5px; font-weight: 700; color: var(--ink); }
 .bo-alert-meta { font-size: 12px; color: var(--gray-text); margin-top: 2px; }
-.bo-alert-meta a { color: var(--blue); font-weight: 600; }
+.bo-alert-meta a { color: var(--blue-text); font-weight: 600; }
 
 /* Organization health card grid (replaces the plain All Organizations table) */
 .bo-org-card-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
@@ -3814,8 +3873,8 @@ a.bo-org-card:hover { border-color: var(--field-border); box-shadow: 0 4px 16px 
 .bo-mini-stat-cell .num { display: block; font-size: 19px; font-weight: 800; }
 .bo-mini-stat-cell .lbl { display: block; font-size: 11px; font-weight: 600; color: var(--gray-text); margin-top: 2px; }
 .bo-mini-stat-cell .delta { display: inline-flex; align-items: center; gap: 2px; font-size: 10.5px; font-weight: 700; margin-top: 3px; }
-.bo-mini-stat-cell .delta.up { color: var(--red); }
-.bo-mini-stat-cell .delta.down { color: var(--green); }
+.bo-mini-stat-cell .delta.bad { color: var(--red-text); }
+.bo-mini-stat-cell .delta.good { color: var(--green-text); }
 a.bo-mini-stat-cell:hover { background: var(--bg); }
 
 .bo-crit-issue-list { display: flex; flex-direction: column; gap: 4px; }
@@ -3901,7 +3960,7 @@ a.bo-donut-legend-row:hover { background: var(--bg); }
 }
 
 .bo-org-mini-row:last-child { border-bottom: none; }
-a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue); }
+a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
 
 .bo-org-mini-row .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
 .bo-org-mini-name { flex: 1; min-width: 0; font-size: 13px; font-weight: 600; color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -4021,29 +4080,66 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue); }
   white-space: nowrap;
 }
 
-.bo-pill-status-open { background: var(--blue-light); color: var(--blue); }
-.bo-pill-status-inprogress { background: var(--orange-light); color: var(--orange); }
-.bo-pill-status-escalated { background: var(--red-light); color: var(--red); }
-.bo-pill-status-resolved { background: var(--green-light); color: var(--green); }
+/* Lifecycle/state columns (Ticket & Incident "Status") -- full pill +
+   status dot, so state reads differently from a plain category label. */
+.bo-pill-status-open,
+.bo-pill-status-inprogress,
+.bo-pill-status-escalated,
+.bo-pill-status-resolved {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.bo-pill-status-open::before,
+.bo-pill-status-inprogress::before,
+.bo-pill-status-escalated::before,
+.bo-pill-status-resolved::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  flex-shrink: 0;
+}
+.bo-pill-status-open { background: var(--blue-light); color: var(--blue-text); }
+.bo-pill-status-inprogress { background: var(--orange-light); color: var(--orange-text); }
+.bo-pill-status-escalated { background: var(--red-light); color: var(--red-text); }
+.bo-pill-status-resolved { background: var(--green-light); color: var(--green-text); }
 
-.bo-pill-severity-critical { background: var(--red-light); color: var(--red); }
-.bo-pill-severity-high { background: var(--orange-light); color: var(--orange); }
-.bo-pill-severity-medium { background: var(--yellow-light); color: var(--yellow); }
+/* Severity/priority columns -- smaller corner radius distinguishes a
+   rating from the full-pill lifecycle Status badges above. */
+.bo-pill-severity-critical,
+.bo-pill-severity-high,
+.bo-pill-severity-medium,
+.bo-pill-severity-low {
+  border-radius: 6px;
+}
+.bo-pill-severity-critical { background: var(--red-light); color: var(--red-text); }
+.bo-pill-severity-high { background: var(--orange-light); color: var(--orange-text); }
+.bo-pill-severity-medium { background: var(--yellow-light); color: var(--yellow-text); }
 .bo-pill-severity-low { background: var(--bg); color: var(--gray-text); }
 
 .bo-pill-origin-system { background: var(--navy-light); color: var(--navy); }
-.bo-pill-origin-user { background: var(--blue-light); color: var(--blue); }
+.bo-pill-origin-user { background: var(--blue-light); color: var(--blue-text); }
 
-.bo-pill-tag { background: var(--bg); color: var(--gray-text); }
+/* Category/tag columns -- simple gray-bordered badge, deliberately the
+   quietest style so it never competes with Status or Severity. */
+.bo-pill-tag {
+  background: #fff;
+  border: 1px solid var(--gray-border);
+  color: var(--gray-text);
+  border-radius: 6px;
+  padding: 3px 11px;
+}
 
 .bo-pill-tier { background: var(--navy-light); color: var(--navy); }
 
 .bo-pill-type-patient { background: var(--cyan-light); color: #1B8FA8; }
-.bo-pill-type-clinic { background: var(--purple-light); color: var(--purple); }
+.bo-pill-type-clinic { background: var(--purple-light); color: var(--purple-text); }
 
 .bo-pill-channel-notification { background: var(--navy-light); color: var(--navy); }
-.bo-pill-channel-email { background: var(--blue-light); color: var(--blue); }
-.bo-pill-channel-sms { background: var(--purple-light); color: var(--purple); }
+.bo-pill-channel-email { background: var(--blue-light); color: var(--blue-text); }
+.bo-pill-channel-sms { background: var(--purple-light); color: var(--purple-text); }
 
 .bo-ticket-source-icon {
   display: inline-flex;
@@ -4154,12 +4250,35 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue); }
 
 /* Status / delivery-result pills — same visual language as the Support
    module's pills (color + text, never color alone). */
-.bo-pill-active { background: var(--green-light); color: var(--green); }
+.bo-pill-active,
+.bo-pill-paused,
+.bo-pill-delivered,
+.bo-pill-failed,
+.bo-pill-partial,
+.bo-pill-processing {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.bo-pill-active::before,
+.bo-pill-paused::before,
+.bo-pill-delivered::before,
+.bo-pill-failed::before,
+.bo-pill-partial::before,
+.bo-pill-processing::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  flex-shrink: 0;
+}
+.bo-pill-active { background: var(--green-light); color: var(--green-text); }
 .bo-pill-paused { background: var(--bg); color: var(--gray-text); }
-.bo-pill-delivered { background: var(--green-light); color: var(--green); }
-.bo-pill-failed { background: var(--red-light); color: var(--red); }
-.bo-pill-partial { background: var(--orange-light); color: var(--orange); }
-.bo-pill-processing { background: var(--blue-light); color: var(--blue); }
+.bo-pill-delivered { background: var(--green-light); color: var(--green-text); }
+.bo-pill-failed { background: var(--red-light); color: var(--red-text); }
+.bo-pill-partial { background: var(--orange-light); color: var(--orange-text); }
+.bo-pill-processing { background: var(--blue-light); color: var(--blue-text); }
 
 /* Empty state (no schedules yet / no rows match the current filters) */
 .bo-empty-state {
@@ -4322,25 +4441,50 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue); }
 .bo-incident-kpi-label { font-size: 12px; font-weight: 700; color: var(--gray-text); }
 .bo-incident-kpi-value { font-size: 23px; font-weight: 800; color: var(--ink); line-height: 1.2; }
 .bo-incident-kpi-sub { font-size: 11.5px; color: var(--gray-text); font-weight: 600; }
-.bo-incident-kpi-sub.trend-good { color: var(--green); }
+.bo-incident-kpi-sub.trend-good { color: var(--green-text); }
 
 @media (max-width: 1400px) {
   .bo-incident-kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 /* Severity badges — SEV-1 is solid so it visually outranks the lighter tints
-   used for SEV-2/3/4, without heavily coloring the rest of the row. */
+   used for SEV-2/3/4, without heavily coloring the rest of the row. Smaller
+   radius matches the Severity/priority badge style used elsewhere. */
+.bo-pill-sev1,
+.bo-pill-sev2,
+.bo-pill-sev3,
+.bo-pill-sev4 {
+  border-radius: 6px;
+}
 .bo-pill-sev1 { background: var(--red); color: #fff; }
-.bo-pill-sev2 { background: var(--orange-light); color: var(--orange); }
-.bo-pill-sev3 { background: var(--yellow-light); color: var(--yellow); }
+.bo-pill-sev2 { background: var(--orange-light); color: var(--orange-text); }
+.bo-pill-sev3 { background: var(--yellow-light); color: var(--yellow-text); }
 .bo-pill-sev4 { background: var(--bg); color: var(--gray-text); }
 
 /* Incident lifecycle status — distinct from Ticket statuses (Open/In
    Progress/Escalated/Resolved); Resolved intentionally reuses the same
-   green as Ticket Resolved so "done" reads identically across the module. */
-.bo-pill-incident-active { background: var(--orange-light); color: var(--orange); }
-.bo-pill-incident-escalated { background: var(--red-light); color: var(--red); }
-.bo-pill-incident-resolved { background: var(--green-light); color: var(--green); }
+   green as Ticket Resolved so "done" reads identically across the module.
+   Full pill + status dot, same status-badge language as Ticket Status. */
+.bo-pill-incident-active,
+.bo-pill-incident-escalated,
+.bo-pill-incident-resolved {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.bo-pill-incident-active::before,
+.bo-pill-incident-escalated::before,
+.bo-pill-incident-resolved::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  flex-shrink: 0;
+}
+.bo-pill-incident-active { background: var(--orange-light); color: var(--orange-text); }
+.bo-pill-incident-escalated { background: var(--red-light); color: var(--red-text); }
+.bo-pill-incident-resolved { background: var(--green-light); color: var(--green-text); }
 
 .bo-incident-title { font-weight: 700; color: var(--ink); }
 .bo-incident-source-label { display: block; font-size: 11.5px; color: var(--gray-text); margin-top: 2px; font-weight: 500; }
@@ -4359,7 +4503,8 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue); }
 }
 .bo-related-ticket-link:hover { background: var(--blue-light); }
 
-.bo-related-tickets-list { display: flex; flex-wrap: wrap; gap: 4px 10px; }
+.bo-related-tickets-list { display: block; }
+.bo-related-tickets-sep { color: var(--gray-text); margin-right: 6px; }
 
 /* Impact column: one compact clickable cell instead of separate org/patient columns */
 .bo-impact-link {
@@ -4369,7 +4514,7 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue); }
   font-family: inherit;
   font-size: 13.5px;
   font-weight: 600;
-  color: var(--blue);
+  color: var(--blue-text);
   cursor: pointer;
   text-align: left;
 }
@@ -4420,7 +4565,7 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue); }
   cursor: pointer;
 }
 .bo-task-progress.clickable:hover { text-decoration: underline; }
-.bo-task-progress-open { font-size: 11px; font-weight: 600; color: var(--orange); margin-left: 6px; }
+.bo-task-progress-open { font-size: 11px; font-weight: 600; color: var(--orange-text); margin-left: 6px; }
 
 .bo-incident-tag {
   display: inline-flex;
@@ -4457,9 +4602,26 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue); }
 .bo-task-card-title { font-size: 13.5px; font-weight: 700; color: var(--ink); margin-bottom: 3px; }
 .bo-task-card-meta { font-size: 12px; color: var(--gray-text); display: flex; align-items: center; gap: 8px; }
 
-.bo-pill-task-open { background: var(--blue-light); color: var(--blue); }
-.bo-pill-task-inprogress { background: var(--orange-light); color: var(--orange); }
-.bo-pill-task-completed { background: var(--green-light); color: var(--green); }
+.bo-pill-task-open,
+.bo-pill-task-inprogress,
+.bo-pill-task-completed {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.bo-pill-task-open::before,
+.bo-pill-task-inprogress::before,
+.bo-pill-task-completed::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  flex-shrink: 0;
+}
+.bo-pill-task-open { background: var(--blue-light); color: var(--blue-text); }
+.bo-pill-task-inprogress { background: var(--orange-light); color: var(--orange-text); }
+.bo-pill-task-completed { background: var(--green-light); color: var(--green-text); }
 
 .bo-incident-badges { display: flex; align-items: center; gap: 8px; }
 
@@ -4674,7 +4836,7 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue); }
   flex-shrink: 0;
 }
 
-.chat-send { background: var(--btn-bg); color: var(--btn-text); }
+.chat-send { background: var(--btn-bg); color: #fff; }
 .chat-attach { width: 38px; height: 38px; background: #fff; border: 1px solid var(--gray-border); color: var(--gray-text); }
 
 .chat-plus-wrap { position: relative; flex-shrink: 0; }

@@ -20,7 +20,7 @@ const ovAllOrgsHealthStats = [
   { num: Object.keys(orgHealthData).length, label: "Total Organizations", color: "var(--navy)", icon: `<rect width="16" height="18" x="4" y="3" rx="1"/><path d="M9 8h1"/><path d="M14 8h1"/><path d="M9 12h1"/><path d="M14 12h1"/><path d="M9 16h1"/><path d="M14 16h1"/><path d="M10 21v-3a2 2 0 0 1 4 0v3"/>`, delta: 0, deltaDir: "flat" },
   { num: ovAffectedOrgCount, label: "Organizations Affected", color: "var(--blue)", icon: `<rect width="16" height="18" x="4" y="3" rx="1"/><path d="M9 8h1"/><path d="M14 8h1"/><path d="M9 12h1"/><path d="M14 12h1"/>`, delta: 1, deltaDir: "up" },
   { num: ovPatientsAffectedCount, label: "Patients Affected", color: "var(--purple)", icon: `<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>`, delta: 23, deltaDir: "up" },
-  { num: ovOpenIssuesCount, label: "Open Issues Requiring Action", color: "var(--green)", icon: `<path d="M4 12L9 17L20 6"/>`, delta: 2, deltaDir: "down" },
+  { num: ovOpenIssuesCount, label: "Open Issues Requiring Action", color: "var(--orange)", icon: `<path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.73 3h16.9a2 2 0 0 0 1.73-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/>`, delta: 2, deltaDir: "down" },
 ];
 
 const ovDeltaArrow = { up: `<path d="M12 19V5"/><path d="m5 12 7-7 7 7"/>`, down: `<path d="M12 5v14"/><path d="m5 12 7 7 7-7"/>`, flat: `<path d="M5 12h14"/>` };
@@ -34,7 +34,7 @@ function ovHealthStatsFor(orgId) {
     { num: 1, label: "Organization", color: "var(--navy)", icon: `<rect width="16" height="18" x="4" y="3" rx="1"/><path d="M9 8h1"/><path d="M14 8h1"/><path d="M9 12h1"/><path d="M14 12h1"/><path d="M9 16h1"/><path d="M14 16h1"/><path d="M10 21v-3a2 2 0 0 1 4 0v3"/>`, delta: 0, deltaDir: "flat" },
     { num: o.providers, label: "Providers", color: "var(--blue)", icon: `<rect width="16" height="18" x="4" y="3" rx="1"/><path d="M9 8h1"/><path d="M14 8h1"/><path d="M9 12h1"/><path d="M14 12h1"/>`, delta: 0, deltaDir: "flat" },
     { num: o.patientsAffected.length, label: "Patients Affected", color: "var(--purple)", icon: `<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>`, delta: 0, deltaDir: "flat" },
-    { num: o.openIssues, label: "Open Issues Requiring Action", color: "var(--green)", icon: `<path d="M4 12L9 17L20 6"/>`, delta: 0, deltaDir: "flat" },
+    { num: o.openIssues, label: "Open Issues Requiring Action", color: "var(--orange)", icon: `<path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.73 3h16.9a2 2 0 0 0 1.73-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/>`, delta: 0, deltaDir: "flat" },
   ];
 }
 
@@ -64,7 +64,7 @@ function renderOvHealthGrid(orgId) {
    since it was never defined anywhere on the dashboard. Series are drawn
    low-to-high so Critical renders on top, the level that matters most. */
 const ovTrendSeriesMeta = [
-  { key: "low", label: "Low", color: "var(--blue)" },
+  { key: "low", label: "Low", color: "var(--gray)" },
   { key: "medium", label: "Medium", color: "var(--yellow)" },
   { key: "high", label: "High", color: "var(--orange)" },
   { key: "critical", label: "Critical", color: "var(--red)" },
@@ -203,12 +203,16 @@ function renderOvTrendFooter() {
   const sum = (arr) => arr.reduce((a, b) => a + b, 0);
   const isSingleDay = ovTrendRangeKey === "24h";
 
+  /* badWhen: the arrow direction that's an unwelcome trend for this metric --
+     more Critical/High/Medium/Low is bad news (badWhen "up"), more Resolved
+     is good news (badWhen "down"), so the delta color reflects what the
+     number *means*, not just which way the arrow points. */
   const footer = [
-    { num: sum(dataset.series.critical), label: "Critical", color: "var(--red)", delta: 8, dir: "up", param: "severity=Critical" },
-    { num: sum(dataset.series.high), label: "High", color: "var(--orange)", delta: 6, dir: "up", param: "severity=High" },
-    { num: sum(dataset.series.medium), label: "Medium", color: "var(--yellow)", delta: 3, dir: "down", param: "severity=Medium" },
-    { num: sum(dataset.series.low), label: "Low", color: "var(--blue)", delta: 2, dir: "down", param: "severity=Low" },
-    { num: dataset.resolved, label: "Resolved", color: "var(--green)", delta: 15, dir: "up", param: "status=Resolved" },
+    { num: sum(dataset.series.critical), label: "Critical", color: "var(--red-text)", delta: 8, dir: "up", badWhen: "up", param: "severity=Critical" },
+    { num: sum(dataset.series.high), label: "High", color: "var(--orange-text)", delta: 6, dir: "up", badWhen: "up", param: "severity=High" },
+    { num: sum(dataset.series.medium), label: "Medium", color: "var(--yellow-text)", delta: 3, dir: "down", badWhen: "up", param: "severity=Medium" },
+    { num: sum(dataset.series.low), label: "Low", color: "var(--gray-text)", delta: 2, dir: "down", badWhen: "up", param: "severity=Low" },
+    { num: dataset.resolved, label: "Resolved", color: "var(--green-text)", delta: 15, dir: "up", badWhen: "down", param: "status=Resolved" },
   ];
 
   document.getElementById("ovTrendFooter").innerHTML = footer
@@ -219,7 +223,7 @@ function renderOvTrendFooter() {
       <span class="lbl">${f.label}</span>
       ${
         isSingleDay
-          ? `<span class="delta ${f.dir}">
+          ? `<span class="delta ${f.dir === f.badWhen ? "bad" : "good"}">
         <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">${ovDeltaArrow[f.dir]}</svg>
         ${f.delta} vs yesterday
       </span>`

@@ -115,7 +115,7 @@ if (orgHealthIssueContext) {
         <td>${p.issue}</td>
         <td><span class="bo-severity-pill ${p.severity}"><span class="dot"></span>${p.severity === "critical" ? "Critical" : "Warning"}</span></td>
         <td>${p.lastRecording}</td>
-        <td><span class="bo-severity-pill ${p.status === "Escalated" ? "escalated" : p.status === "Open" ? "critical" : "info"}">${p.status}</span></td>
+        <td><span class="bo-severity-pill ${p.status === "Escalated" ? "critical" : p.status === "Investigating" ? "warning" : "info"}">${p.status}</span></td>
       </tr>`
         )
         .join("")
@@ -130,7 +130,7 @@ if (orgHealthIssueContext) {
         <td>${p.issue}</td>
         <td><span class="bo-severity-pill ${p.severity}"><span class="dot"></span>${p.severity === "critical" ? "Critical" : "Warning"}</span></td>
         <td>${p.lastRecording}</td>
-        <td><span class="bo-severity-pill ${p.status === "Escalated" ? "escalated" : p.status === "Open" ? "critical" : "info"}">${p.status}</span></td>
+        <td><span class="bo-severity-pill ${p.status === "Escalated" ? "critical" : p.status === "Investigating" ? "warning" : "info"}">${p.status}</span></td>
       </tr>`
         )
         .join("")

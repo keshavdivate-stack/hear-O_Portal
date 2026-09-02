@@ -191,9 +191,7 @@ function scStatusClass(status) {
 
 function scCell(type, value) {
   if (!value) return "";
-  return type === "Status"
-    ? `<span class="bo-sc-badge ${scStatusClass(value)}">${value}</span>`
-    : value;
+  return `<span class="bo-sc-badge ${scStatusClass(value)}">${value}</span>`;
 }
 
 function renderStatusChanges() {

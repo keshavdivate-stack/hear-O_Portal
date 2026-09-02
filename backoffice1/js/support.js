@@ -417,9 +417,8 @@ newTicketForm.addEventListener("submit", (e) => {
 });
 
 /* ---------------- Rules table ---------------- */
-const channelPillClass = { "Notification": "bo-pill-channel-notification", "Email": "bo-pill-channel-email", "SMS": "bo-pill-channel-sms" };
 const channelPillLabel = { "Notification": "In App", "Email": "Email", "SMS": "SMS" };
-const channelPills = (channels) => channels.map((c) => `<span class="bo-pill ${channelPillClass[c] || ""}">${channelPillLabel[c] || c}</span>`).join(" ");
+const channelPills = (channels) => channels.map((c) => channelPillLabel[c] || c).join(", ");
 
 function renderRules() {
   document.getElementById("ruleRows").innerHTML = alertRules
@@ -664,12 +663,16 @@ newRuleDrawerOverlay.querySelector('.bo-select[data-name="newRuleAppliesTo"] inp
 function validateNewRuleForm() {
   const nameFilled = document.getElementById("newRuleNameInput").value.trim() !== "";
   const conditionFilled = document.getElementById("newRuleConditionInput").value.trim() !== "";
+  const responseTimeFilled = document.getElementById("newRuleResponseTimeInput").value.trim() !== "";
+  const resolveTimeFilled = document.getElementById("newRuleResolveTimeInput").value.trim() !== "";
   const selectFilled = (name) => newRuleDrawerOverlay.querySelector(`.bo-select[data-name="${name}"] input[type=hidden]`).value !== "";
   const appliesTo = newRuleDrawerOverlay.querySelector('.bo-select[data-name="newRuleAppliesTo"] input[type=hidden]').value;
   const orgsFilled = appliesTo !== "Per organisation" || newRuleOrgsMultiSelect.getSelected().length > 0;
   saveNewRuleBtn.disabled = !(
     nameFilled &&
     conditionFilled &&
+    responseTimeFilled &&
+    resolveTimeFilled &&
     selectFilled("newRuleCategory") &&
     selectFilled("newRuleSeverity") &&
     selectFilled("newRuleTier") &&
@@ -678,6 +681,16 @@ function validateNewRuleForm() {
     newRuleSendByMultiSelect.getSelected().length > 0
   );
 }
+
+/* Picking a severity prefills the standard SLA times for that severity --
+   left editable in case this rule needs a different SLA than the default. */
+newRuleDrawerOverlay.querySelector('.bo-select[data-name="newRuleSeverity"] input[type=hidden]').addEventListener("change", (e) => {
+  const sla = SEVERITY_DEFAULT_SLA[e.target.value];
+  if (sla) {
+    document.getElementById("newRuleResponseTimeInput").value = sla.response;
+    document.getElementById("newRuleResolveTimeInput").value = sla.resolve;
+  }
+});
 
 function openNewRuleDrawer() {
   newRuleForm.reset();
@@ -708,7 +721,6 @@ newRuleForm.addEventListener("submit", (e) => {
   const selectValue = (name) => newRuleDrawerOverlay.querySelector(`.bo-select[data-name="${name}"] input[type=hidden]`).value;
   const severity = selectValue("newRuleSeverity");
   const appliesTo = selectValue("newRuleAppliesTo");
-  const sla = SEVERITY_DEFAULT_SLA[severity] || { response: "—", resolve: "—" };
 
   const nextId = alertRules.length ? Math.max(...alertRules.map((r) => r.id)) + 1 : 0;
   alertRules.unshift({
@@ -718,8 +730,8 @@ newRuleForm.addEventListener("submit", (e) => {
     condition: document.getElementById("newRuleConditionInput").value.trim(),
     severity,
     tier: selectValue("newRuleTier"),
-    slaResponse: sla.response,
-    slaResolve: sla.resolve,
+    slaResponse: document.getElementById("newRuleResponseTimeInput").value.trim(),
+    slaResolve: document.getElementById("newRuleResolveTimeInput").value.trim(),
     channels: newRuleSendByMultiSelect.getSelected().map((label) => NOTIFICATION_CHANNEL_VALUE[label]),
     autoCreateTicket: false,
     appliesTo,

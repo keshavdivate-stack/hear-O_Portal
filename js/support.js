@@ -392,9 +392,16 @@ const saveCreateTicketBtn = document.getElementById("saveCreateTicket");
 const createTicketCategorySelect = document.querySelector('#createTicketOverlay .custom-select[data-name="category"]');
 const createTicketIssueSelect = document.querySelector('#createTicketOverlay .custom-select[data-name="issueType"]');
 const createTicketSeveritySelect = document.querySelector('#createTicketOverlay .custom-select[data-name="severity"]');
+const createTicketRaisedBySelect = document.querySelector('#createTicketOverlay .custom-select[data-name="raisedBy"]');
+
+/* Same clinic-staff roster used elsewhere in the app (e.g. Care Team) --
+   picking from a known list instead of free text keeps "Raised By" consistent
+   with how existing Clinic tickets already record who raised them. */
+const RAISED_BY_OPTIONS = ["Dr. Sarah Mitchell", "Ariel Fox", "Omer Peretz", "Amanda Lee, RN", "Ayelet Er, NP"];
 
 createTicketCategorySelect.querySelector(".custom-select-menu").innerHTML = buildCustomSelectOptions(ticketCategories.map((c) => c.label));
 createTicketSeveritySelect.querySelector(".custom-select-menu").innerHTML = buildCustomSelectOptions(ticketSeverities.map((s) => s.label));
+createTicketRaisedBySelect.querySelector(".custom-select-menu").innerHTML = buildCustomSelectOptions(RAISED_BY_OPTIONS);
 
 function resetCreateTicketIssueSelect() {
   const trigger = createTicketIssueSelect.querySelector(".custom-select-trigger");

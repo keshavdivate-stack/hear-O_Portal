@@ -352,7 +352,14 @@
         <div class="form-grid">
           <div class="form-field">
             <label>Raised By<span class="required-star">*</span></label>
-            <input type="text" name="raisedBy" placeholder="Enter your name" required />
+            <div class="custom-select" data-name="raisedBy">
+              <button type="button" class="custom-select-trigger">
+                <span class="custom-select-value placeholder">Choose your name</span>
+                <svg class="custom-select-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="custom-select-menu"></div>
+              <input type="hidden" name="raisedBy" required />
+            </div>
           </div>
           <div class="form-field">
             <label>Category<span class="required-star">*</span></label>
