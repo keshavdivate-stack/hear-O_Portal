@@ -176,6 +176,10 @@ addVitalsBtn.addEventListener("click", () => {
     <div class="reg-field">
       <label>Blood pressure</label>
       <input type="text" name="bloodPressure" placeholder="e.g. 120/80" />
+    </div>
+    <div class="reg-field">
+      <label>Saturation (%)</label>
+      <input type="number" name="saturation" placeholder="Saturation" />
     </div>`;
 
   addVitalsBtn.insertAdjacentElement("afterend", vitalsGrid);

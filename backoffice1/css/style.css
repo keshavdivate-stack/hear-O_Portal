@@ -2738,7 +2738,7 @@ a.bo-btn-secondary { text-decoration: none; }
 .mkt-hero-card--compact .mkt-compliance-row,
 .mkt-hero-card--compact .mkt-compliance-tabs { justify-content: center; }
 
-.mkt-hero-card--compact .mkt-gauge-wrap { width: 140px; height: 140px; }
+.mkt-hero-card--compact .mkt-gauge-wrap { width: 140px; height: 140px; margin: 22px 0; }
 .mkt-hero-card--compact .mkt-tick-top { top: -22px; }
 .mkt-hero-card--compact .mkt-tick-bottom { bottom: -22px; }
 .mkt-hero-card--compact .mkt-gauge-center { font-size: 18px; }
@@ -3548,6 +3548,8 @@ a.bo-health-card:hover { border-color: var(--field-border); }
 
 .mkt-org-ms-panel {
   display: none;
+  flex-direction: column;
+  gap: 2px;
   position: absolute;
   top: calc(100% + 8px);
   right: 0;
@@ -3559,7 +3561,7 @@ a.bo-health-card:hover { border-color: var(--field-border); }
   z-index: 200;
 }
 
-.mkt-org-ms.open .mkt-org-ms-panel { display: block; }
+.mkt-org-ms.open .mkt-org-ms-panel { display: flex; }
 
 .mkt-org-ms-item {
   display: flex;

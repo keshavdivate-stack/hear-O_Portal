@@ -16,8 +16,8 @@ const patientList = [
   { name: "Annie Zaplin",     username: "ABC-1222", mrn: "854125632", phone: "054-857 15423", account: "Enabled", status: "active", since: "Since: 3d | 01.07.2028", monitoring: "monitored", compliance: 45, gender: "F", team: "Remote Monitoring Team", teamMember: "Sandy Kohl, RN", careTeam: ["Sandy Kohl, RN", "Dr. Emily Chen"] },
   { name: "Nathan Norash",    username: "ABC-1222", mrn: "854125632", phone: "054-857 15423", account: "Paused", status: "active", since: "Since: 3d | 01.07.2028", monitoring: "monitored", compliance: 63, gender: "M", careStatus: "recommended", careTitle: "Confirm Lisinopril adherence", team: "Heart Failure Team", teamMember: "Dr. Michael Reyes", careTeam: ["Dr. Michael Reyes"] },
   { name: "Henry Fisher",     username: "ABC-1220", mrn: "965412589", phone: "054-857 15423", account: "Enabled", status: "registered", since: "Since: 3d | 01.07.2028", monitoring: "none", compliance: 12, gender: "M", team: "Post-Discharge Team", teamMember: "Emily Carter", careTeam: ["Emily Carter", "Ayelet Er, NP"] },
-  { name: "Josh Ericson",     username: "ABC-1222", mrn: "854125632", phone: "054-857 15423", account: "Discontinued", status: "baseline", since: "Since: 3d | 01.07.2028", monitoring: "monitored", monInfo: true, compliance: 79, gender: "Other", careStatus: "completed", team: "Remote Monitoring Team", teamMember: "Dr. Emily Chen", careTeam: ["Dr. Emily Chen", "Amanda Lee, RN", "Sandy Kohl, RN"] },
-  { name: "Jack Harris",      username: "ABC-1221", mrn: "854125698", phone: "054-857 15423", account: "Discontinued", status: "none", monitoring: "unmonitored", monSince: "Since: 5d | 01.05.2028", compliance: 24, gender: "M", team: "Heart Failure Team", teamMember: "Dr. Sarah Mitchell", careTeam: ["Dr. Sarah Mitchell"] },
+  { name: "Josh Ericson",     username: "ABC-1222", mrn: "854125632", phone: "054-857 15423", account: "Discontinued", discontinuedDate: "01.05.2028", status: "baseline", since: "Since: 3d | 01.07.2028", monitoring: "monitored", monInfo: true, compliance: 79, gender: "Other", careStatus: "completed", team: "Remote Monitoring Team", teamMember: "Dr. Emily Chen", careTeam: ["Dr. Emily Chen", "Amanda Lee, RN", "Sandy Kohl, RN"] },
+  { name: "Jack Harris",      username: "ABC-1221", mrn: "854125698", phone: "054-857 15423", account: "Discontinued", discontinuedDate: "12.29.2027", status: "none", monitoring: "unmonitored", monSince: "Since: 5d | 01.05.2028", compliance: 24, gender: "M", team: "Heart Failure Team", teamMember: "Dr. Sarah Mitchell", careTeam: ["Dr. Sarah Mitchell"] },
 ];
 
 /* Current logged-in clinician (matches the "EC" topbar avatar), used by the
@@ -219,8 +219,9 @@ function genderLabel(gender) {
    open the nurse view; everyone else opens the standard patient chart.
    Kept as separate pages/portals -- see ehr-integration/. */
 function patientChartHref(p) {
-  if (p.chartView === "nurse") return "nurse-view.html";
-  return p.ehrOrg ? "ehr-integration/patient-data.html" : "patient-data.html";
+  const base = p.chartView === "nurse" ? "nurse-view.html" : p.ehrOrg ? "ehr-integration/patient-data.html" : "patient-data.html";
+  if (p.account !== "Discontinued") return base;
+  return `${base}?discontinued=1&discontinuedDate=${encodeURIComponent(p.discontinuedDate || "")}`;
 }
 
 function filteredPatientList() {
@@ -645,7 +646,7 @@ const registerManualForm = document.getElementById("registerManualForm");
 const registerManualFormWrap = document.getElementById("registerManualFormWrap");
 const registerManualSuccessWrap = document.getElementById("registerManualSuccessWrap");
 const saveRegisterManual = document.getElementById("saveRegisterManual");
-const registerManualRequired = ["firstName", "lastName", "email", "emailLanguage"];
+const registerManualRequired = ["firstName", "lastName", "dob", "email", "emailLanguage"];
 
 function validateRegisterManualForm() {
   const valid = registerManualRequired.every((name) => registerManualForm[name].value.trim() !== "");
@@ -655,6 +656,14 @@ function validateRegisterManualForm() {
 
 registerManualForm.addEventListener("input", validateRegisterManualForm);
 registerManualForm.addEventListener("change", validateRegisterManualForm);
+
+/* Care team automatically assigned when no care team is explicitly chosen
+   (Register Patient) or when there's no picker at all (Import Patient). */
+const DEFAULT_CARE_TEAM = ["Dr. Sarah Mitchell", "Amanda Lee, RN"];
+
+function careTeamChipsHtml(names) {
+  return names.map((name) => `<span class="care-team-chip">${name}</span>`).join("");
+}
 
 /* ---------------- Care Team multiselect (Register Patient) ---------------- */
 const careTeamField = registerManualForm.querySelector('.care-team-field[data-name="careTeam"]');
@@ -715,6 +724,10 @@ addInitialVitalsModalBtn.addEventListener("click", () => {
     <div class="form-field">
       <label>Blood pressure</label>
       <input type="text" name="bloodPressure" placeholder="e.g. 120/80" />
+    </div>
+    <div class="form-field">
+      <label>Saturation (%)</label>
+      <input type="number" name="saturation" placeholder="Saturation" />
     </div>`;
 
   addInitialVitalsModalBtn.insertAdjacentElement("afterend", vitalsGrid);
@@ -745,6 +758,13 @@ registerManualForm.addEventListener("submit", (e) => {
   if (saveRegisterManual.disabled) return;
   registerManualFormWrap.style.display = "none";
   registerManualSuccessWrap.style.display = "block";
+
+  const chosenCareTeam = selectedCareTeam.size ? [...selectedCareTeam] : DEFAULT_CARE_TEAM;
+  document.getElementById("registerCareTeamTitle").textContent = selectedCareTeam.size ? "Care team assigned" : "Default care team assigned";
+  document.getElementById("registerCareTeamDesc").textContent = selectedCareTeam.size
+    ? "This patient has been assigned to the selected care team."
+    : "No care team was selected, so the organization's default care team was assigned automatically.";
+  document.getElementById("registerCareTeamChips").innerHTML = careTeamChipsHtml(chosenCareTeam);
 });
 
 document.getElementById("closeRegisterManualSuccess").addEventListener("click", closeRegisterManualModal);
@@ -864,6 +884,7 @@ importPatientBtn.addEventListener("click", () => {
   if (importPatientBtn.disabled) return;
   importPatientFormWrap.style.display = "none";
   importPatientSuccessWrap.style.display = "block";
+  document.getElementById("importCareTeamChips").innerHTML = careTeamChipsHtml(DEFAULT_CARE_TEAM);
 });
 
 document.getElementById("closeImportPatientSuccess").addEventListener("click", closeImportPatientModal);

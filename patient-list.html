@@ -122,11 +122,6 @@
                 <span class="radio-dot"></span>
                 Español
               </label>
-              <label class="org-radio-item">
-                <input type="radio" name="lang" value="hi" />
-                <span class="radio-dot"></span>
-                हिन्दी
-              </label>
             </div>
           </div>
           <div class="topbar-item">
@@ -306,9 +301,13 @@
               <input type="text" name="lastName" placeholder="Enter last name" required />
             </div>
             <div class="form-field">
-              <label>Date of birth</label>
+              <label>Patient ID/Insurance ID</label>
+              <input type="text" name="patientInsuranceId" placeholder="Enter patient ID or insurance ID" />
+            </div>
+            <div class="form-field">
+              <label>Date of birth<span class="required-star">*</span></label>
               <div class="reg-date-field">
-                <input type="text" name="dob" placeholder="mm/dd/yyyy" onfocus="(this.type='date')" onblur="if(!this.value) this.type='text'" />
+                <input type="text" name="dob" placeholder="mm/dd/yyyy" onfocus="(this.type='date')" onblur="if(!this.value) this.type='text'" required />
                 <svg class="reg-date-icon" width="17" height="17" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="17" rx="2" stroke="#6B7684" stroke-width="1.8"/><path d="M3 9H21" stroke="#6B7684" stroke-width="1.8"/><path d="M8 2V6" stroke="#6B7684" stroke-width="1.8" stroke-linecap="round"/><path d="M16 2V6" stroke="#6B7684" stroke-width="1.8" stroke-linecap="round"/></svg>
               </div>
             </div>
@@ -494,6 +493,16 @@
             </div>
             <div class="reg-success-row">
               <span class="reg-success-icon-sm">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--gray-text)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              </span>
+              <div>
+                <div class="reg-success-row-title" id="registerCareTeamTitle">Default care team assigned</div>
+                <div class="reg-success-row-desc" id="registerCareTeamDesc">No care team was selected, so the organization's default care team was assigned automatically.</div>
+                <div class="care-team-chip-list" id="registerCareTeamChips"></div>
+              </div>
+            </div>
+            <div class="reg-success-row">
+              <span class="reg-success-icon-sm">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--gray-text)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6H20"/><path d="M9 12H20"/><path d="M9 18H20"/><path d="M4 6L5 7L7 5"/><path d="M4 12L5 13L7 11"/><path d="M4 18L5 19L7 17"/></svg>
               </span>
               <div>
@@ -628,6 +637,16 @@
               <div>
                 <div class="reg-success-row-title">EHR-linked</div>
                 <div class="reg-success-row-desc">Patient record was matched and linked to the connected EHR.</div>
+              </div>
+            </div>
+            <div class="reg-success-row">
+              <span class="reg-success-icon-sm">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--gray-text)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              </span>
+              <div>
+                <div class="reg-success-row-title">Default care team assigned</div>
+                <div class="reg-success-row-desc">The organization's default care team is automatically assigned to patients imported from the EHR.</div>
+                <div class="care-team-chip-list" id="importCareTeamChips"></div>
               </div>
             </div>
             <div class="reg-success-row">

@@ -15,6 +15,7 @@ const users = Array.from({ length: 32 }, (_, i) => {
     dateCreated: "02/08/2026",
     mfa: i % 5 === 0 ? "On" : "Off",
     blocked: i % 11 === 0 ? "Yes" : "No",
+    ehrInvite: i % 3 === 0 ? "Sent" : "Not Sent",
   };
 });
 
@@ -23,6 +24,7 @@ const PAGE_SIZE = 20;
 let currentPage = 1;
 let sortDir = "asc";
 let searchTerm = "";
+const selectedUserIds = new Set();
 
 function filteredUsers() {
   if (!searchTerm) return users;
@@ -45,6 +47,29 @@ function sortedUsers() {
 /* ---------------- Render ---------------- */
 const kebabIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="1.7" fill="currentColor"/><circle cx="12" cy="12" r="1.7" fill="currentColor"/><circle cx="12" cy="19" r="1.7" fill="currentColor"/></svg>`;
 
+/* Declared here (ahead of the first renderUsers() call below) because
+   renderUsers() calls updateSelectAllState()/updateBulkActionsBar(), which
+   read these elements -- referencing a `const` before its declaration runs
+   throws, which previously aborted the whole script before any event
+   listener (search, sort, Add User, bulk actions, ...) got attached. */
+const bulkActionsBar = document.getElementById("bulkActionsBar");
+const bulkSelectedCount = document.getElementById("bulkSelectedCount");
+const selectAllUsers = document.getElementById("selectAllUsers");
+const openAddUserBtn = document.getElementById("openAddUserBtn");
+
+function updateBulkActionsBar() {
+  const count = selectedUserIds.size;
+  bulkActionsBar.classList.toggle("open", count > 0);
+  openAddUserBtn.style.display = count > 0 ? "none" : "";
+  bulkSelectedCount.textContent = `${count} selected`;
+}
+
+function updateSelectAllState(pageItems) {
+  const selectedOnPage = pageItems.filter((u) => selectedUserIds.has(u.id)).length;
+  selectAllUsers.checked = pageItems.length > 0 && selectedOnPage === pageItems.length;
+  selectAllUsers.indeterminate = selectedOnPage > 0 && selectedOnPage < pageItems.length;
+}
+
 function renderUsers() {
   const list = sortedUsers();
   const total = list.length;
@@ -58,6 +83,7 @@ function renderUsers() {
     .map(
       (u) => `
       <tr>
+        <td class="td-checkbox"><input type="checkbox" class="row-checkbox" data-id="${u.id}" ${selectedUserIds.has(u.id) ? "checked" : ""} /></td>
         <td>${u.username}</td>
         <td>${u.first}</td>
         <td>${u.last}</td>
@@ -67,6 +93,7 @@ function renderUsers() {
         <td>${u.dateCreated}</td>
         <td>${u.mfa}</td>
         <td>${u.blocked}</td>
+        <td><span class="ehr-pill ${u.ehrInvite === "Sent" ? "ehr-pill-sent" : "ehr-pill-notsent"}">${u.ehrInvite}</span></td>
         <td>
           <button class="action-icon kebab row-menu-trigger" data-id="${u.id}" aria-label="Row actions">${kebabIcon}</button>
         </td>
@@ -82,6 +109,9 @@ function renderUsers() {
   document.getElementById("userPrevPage").disabled = currentPage === 1;
   document.getElementById("userNextPage").disabled = currentPage === totalPages;
   document.getElementById("userLastPage").disabled = currentPage === totalPages;
+
+  updateSelectAllState(pageItems);
+  updateBulkActionsBar();
 }
 
 renderUsers();
@@ -286,6 +316,49 @@ function validateEhrInviteForm() {
 
 ehrOrgSelect.addEventListener("change", validateEhrInviteForm);
 ehrTypeSelect.addEventListener("change", validateEhrInviteForm);
-sendEhrInviteBtn.addEventListener("click", () => { if (!sendEhrInviteBtn.disabled) closeEhrInviteModal(); });
 document.getElementById("cancelEhrInvite").addEventListener("click", closeEhrInviteModal);
 ehrInviteOverlay.addEventListener("click", (e) => { if (e.target === ehrInviteOverlay) closeEhrInviteModal(); });
+
+sendEhrInviteBtn.addEventListener("click", () => {
+  if (sendEhrInviteBtn.disabled) return;
+  if (selectedUserIds.size) {
+    users.forEach((u) => { if (selectedUserIds.has(u.id)) u.ehrInvite = "Sent"; });
+    selectedUserIds.clear();
+    renderUsers();
+  }
+  closeEhrInviteModal();
+});
+
+/* ---------------- Bulk selection ---------------- */
+document.getElementById("usersRows").addEventListener("change", (e) => {
+  const checkbox = e.target.closest(".row-checkbox");
+  if (!checkbox) return;
+  const id = Number(checkbox.dataset.id);
+  if (checkbox.checked) selectedUserIds.add(id);
+  else selectedUserIds.delete(id);
+  const start = (currentPage - 1) * PAGE_SIZE;
+  updateSelectAllState(sortedUsers().slice(start, start + PAGE_SIZE));
+  updateBulkActionsBar();
+});
+
+selectAllUsers.addEventListener("change", () => {
+  const start = (currentPage - 1) * PAGE_SIZE;
+  const pageItems = sortedUsers().slice(start, start + PAGE_SIZE);
+  if (selectAllUsers.checked) pageItems.forEach((u) => selectedUserIds.add(u.id));
+  else pageItems.forEach((u) => selectedUserIds.delete(u.id));
+  renderUsers();
+});
+
+document.getElementById("bulkDeleteBtn").addEventListener("click", () => {
+  if (!selectedUserIds.size) return;
+  for (let i = users.length - 1; i >= 0; i -= 1) {
+    if (selectedUserIds.has(users[i].id)) users.splice(i, 1);
+  }
+  selectedUserIds.clear();
+  renderUsers();
+});
+
+document.getElementById("bulkInviteBtn").addEventListener("click", () => {
+  if (!selectedUserIds.size) return;
+  openEhrInviteModal();
+});

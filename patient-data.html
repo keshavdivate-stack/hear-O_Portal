@@ -126,11 +126,6 @@
                 <span class="radio-dot"></span>
                 Español
               </label>
-              <label class="org-radio-item">
-                <input type="radio" name="lang" value="hi" />
-                <span class="radio-dot"></span>
-                हिन्दी
-              </label>
             </div>
           </div>
           <div class="topbar-item">
@@ -167,6 +162,12 @@
 
       <!-- CONTENT -->
       <div class="data-content">
+
+        <!-- Discontinued account banner -->
+        <div class="discontinued-banner" id="discontinuedBanner" style="display:none;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#B23B3B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8V13"/><circle cx="12" cy="16" r="1" fill="#B23B3B" stroke="none"/></svg>
+          <span>This patient's account was discontinued on <strong id="discontinuedBannerDate"></strong>.</span>
+        </div>
 
         <!-- Patient header card -->
         <div class="patient-card">
@@ -359,8 +360,12 @@
                 Clinical
                 <svg class="chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
               </button>
+              <button class="data-tab" data-tab="info">
+                Patient Information
+                <svg class="chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
             </div>
-            <div class="range-toggle">
+            <div class="range-toggle" id="dataRangeToggle">
               <span data-range="week">Week</span>
               <span class="active" data-range="month">Month</span>
             </div>
@@ -680,6 +685,42 @@
               </div>
             </div>
           </div>
+
+          <!-- Patient Information panel -->
+          <div class="data-tab-panel" data-panel="info">
+            <div class="subtab-row">
+              <div class="subtabs">
+                <span class="subtab active" data-subtab="patient-details">Patient Details</span>
+                <span class="subtab" data-subtab="emergency-contact">Emergency Contact</span>
+              </div>
+            </div>
+
+            <!-- Patient Details -->
+            <div class="subtab-panel open" data-subpanel="patient-details">
+              <div class="compliance-box" style="margin-top:0;">
+                <div class="compliance-detail-grid">
+                  <div class="compliance-detail-item"><span class="compliance-detail-label">Patient ID / Insurance ID</span><span class="compliance-detail-value">INS-48213</span></div>
+                  <div class="compliance-detail-item"><span class="compliance-detail-label">Date of Birth</span><span class="compliance-detail-value">03/14/1954</span></div>
+                  <div class="compliance-detail-item"><span class="compliance-detail-label">Gender</span><span class="compliance-detail-value">Female</span></div>
+                  <div class="compliance-detail-item"><span class="compliance-detail-label">Preferred Language</span><span class="compliance-detail-value">English</span></div>
+                  <div class="compliance-detail-item"><span class="compliance-detail-label">Mobile Number</span><span class="compliance-detail-value">+1 (415) 555-0132</span></div>
+                  <div class="compliance-detail-item"><span class="compliance-detail-label">Email</span><span class="compliance-detail-value">sarah.white@email.com</span></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Emergency Contact -->
+            <div class="subtab-panel" data-subpanel="emergency-contact">
+              <div class="compliance-box" style="margin-top:0;">
+                <div class="compliance-detail-grid">
+                  <div class="compliance-detail-item"><span class="compliance-detail-label">Relationship</span><span class="compliance-detail-value">Spouse</span></div>
+                  <div class="compliance-detail-item"><span class="compliance-detail-label">Name</span><span class="compliance-detail-value">Robert White</span></div>
+                  <div class="compliance-detail-item"><span class="compliance-detail-label">Phone</span><span class="compliance-detail-value">+1 (415) 555-0198</span></div>
+                  <div class="compliance-detail-item"><span class="compliance-detail-label">Email</span><span class="compliance-detail-value">robert.white@email.com</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
         <!-- History Events -->
@@ -699,6 +740,7 @@
             <span data-tab="account">Account</span>
             <span data-tab="status">Status</span>
             <span data-tab="monitoring">Monitoring</span>
+            <span data-tab="medication">Medication</span>
             <span data-tab="other">Other</span>
           </div>
           <div class="history-table-scroll">
@@ -734,6 +776,7 @@
               <div class="custom-select-option" data-value="account">Account<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
               <div class="custom-select-option" data-value="status">Status<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
               <div class="custom-select-option" data-value="monitoring">Monitoring<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              <div class="custom-select-option" data-value="medication">Medication<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
               <div class="custom-select-option" data-value="other">Other<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
             </div>
             <input type="hidden" name="category" required />
@@ -741,11 +784,15 @@
         </div>
         <div class="form-field">
           <label>Event<span class="required-star">*</span></label>
-          <input type="text" name="label" placeholder="e.g. Message sent to patient" required />
+          <input type="text" name="label" placeholder="e.g. Medication taken: Furosemide 40 mg" required />
         </div>
         <div class="form-field">
           <label>Date<span class="required-star">*</span></label>
           <input type="date" name="date" required />
+        </div>
+        <div class="form-field">
+          <label>Time</label>
+          <input type="time" name="time" />
         </div>
         <div class="form-field">
           <label>Note</label>
@@ -926,9 +973,9 @@
               <input type="hidden" name="route" />
             </div>
           </div>
-          <div class="form-field">
+          <div class="form-field full">
             <label>Directions</label>
-            <input type="text" name="sig" placeholder="e.g. Take one tablet by mouth daily" />
+            <textarea name="sig" rows="3" placeholder="e.g. Take one tablet by mouth daily"></textarea>
           </div>
         </div>
         <div class="modal-actions">
@@ -1054,9 +1101,9 @@
               <input type="hidden" name="route" />
             </div>
           </div>
-          <div class="form-field">
+          <div class="form-field full">
             <label>Directions</label>
-            <input type="text" name="sig" placeholder="e.g. Take one tablet by mouth daily" />
+            <textarea name="sig" rows="3" placeholder="e.g. Take one tablet by mouth daily"></textarea>
           </div>
         </div>
         <div class="modal-actions">

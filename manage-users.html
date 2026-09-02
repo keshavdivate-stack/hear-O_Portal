@@ -122,11 +122,6 @@
                 <span class="radio-dot"></span>
                 Español
               </label>
-              <label class="org-radio-item">
-                <input type="radio" name="lang" value="hi" />
-                <span class="radio-dot"></span>
-                हिन्दी
-              </label>
             </div>
           </div>
           <div class="topbar-item">
@@ -170,6 +165,19 @@
             <input type="text" id="userSearchInput" placeholder="Search User" />
           </div>
           <span class="filters-spacer"></span>
+
+          <div class="bulk-actions-bar" id="bulkActionsBar">
+            <span class="bulk-actions-count" id="bulkSelectedCount">0 selected</span>
+            <button type="button" class="btn-bulk btn-bulk-invite" id="bulkInviteBtn">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 5.5C4 4.4 4.9 3.5 6 3.5H18C19.1 3.5 20 4.4 20 5.5V14.5C20 15.6 19.1 16.5 18 16.5H9L5 20V16.5H6C4.9 16.5 4 15.6 4 14.5V5.5Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+              Send EHR Invite
+            </button>
+            <button type="button" class="btn-bulk btn-bulk-delete" id="bulkDeleteBtn">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 7H20M9 7V4.5C9 3.9 9.4 3.5 10 3.5H14C14.6 3.5 15 3.9 15 4.5V7M18 7L17.3 18.5C17.2 19.6 16.3 20.5 15.2 20.5H8.8C7.7 20.5 6.8 19.6 6.7 18.5L6 7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Delete User
+            </button>
+          </div>
+
           <button class="btn-add-user" id="openAddUserBtn">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
             Add User
@@ -181,6 +189,7 @@
             <table class="list-table users-mgmt-table">
               <thead>
                 <tr>
+                  <th class="th-checkbox"><input type="checkbox" id="selectAllUsers" aria-label="Select all users" /></th>
                   <th class="sortable">USERNAME <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#23272E" stroke-width="2.4" stroke-linecap="round"><path d="M12 19V5M6 11L12 5L18 11"/></svg></th>
                   <th>FIRST NAME</th>
                   <th>LAST NAME</th>
@@ -190,6 +199,7 @@
                   <th>DATE CREATED</th>
                   <th>MFA</th>
                   <th>BLOCKED</th>
+                  <th>EHR INVITE</th>
                   <th></th>
                 </tr>
               </thead>

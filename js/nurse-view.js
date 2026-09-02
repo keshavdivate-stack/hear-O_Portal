@@ -1,3 +1,11 @@
+/* ---------------- Discontinued account banner ---------------- */
+(() => {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get("discontinued") !== "1") return;
+  document.getElementById("discontinuedBannerDate").textContent = params.get("discontinuedDate") || "an earlier date";
+  document.getElementById("discontinuedBanner").style.display = "flex";
+})();
+
 /* ---------------- Care Team popover ---------------- */
 wireTopbarToggle("careTeamTrigger", "careTeamPopover");
 
@@ -1094,6 +1102,13 @@ let history = [
   { category: "monitoring", color: "dot-teal", label: "Baseline phase monitoring", date: "12.01.2025" },
   { category: "monitoring", color: "dot-teal", label: "Patient is Monitored", date: "12.01.2025" },
 
+  // Medication
+  { category: "medication", color: "dot-purple", label: "Medication taken: Furosemide 40 mg", date: "01.09.2026", note: "Acknowledged at 08:15 AM" },
+  { category: "medication", color: "dot-purple", label: "Medication taken: Carvedilol 12.5 mg", date: "01.09.2026", note: "Acknowledged at 08:16 AM" },
+  { category: "medication", color: "dot-red", label: "Medication missed: Furosemide 40 mg", date: "01.08.2026", note: "No acknowledgement received by end of day" },
+  { category: "medication", color: "dot-purple", label: "Medication taken: Furosemide 40 mg", date: "01.07.2026", note: "Acknowledged at 08:02 AM" },
+  { category: "medication", color: "dot-purple", label: "Medication taken: Carvedilol 12.5 mg", date: "01.07.2026", note: "Acknowledged at 08:05 AM" },
+
   // Other
   { category: "other", color: "dot-blue", label: "Care recommendation created: Increase Furosemide dose", date: "01.09.2026", note: "Dr. Sarah Mitchell: 2.1 kg weight gain over 3 days with rising respiration rate" },
   { category: "other", color: "dot-blue", label: "Care recommendation action taken: Patient contacted", date: "01.03.2026", note: "Amanda Lee, RN: Reviewed Carvedilol tolerance; mild dizziness reported, no other symptoms" },
@@ -1169,7 +1184,14 @@ const addEventOverlay = document.getElementById("addEventOverlay");
 const addEventForm = document.getElementById("addEventForm");
 const saveAddEvent = document.getElementById("saveAddEvent");
 
-const CATEGORY_DOT = { account: "dot-blue", status: "dot-green", monitoring: "dot-teal", other: "dot-blue" };
+const CATEGORY_DOT = { account: "dot-blue", status: "dot-green", monitoring: "dot-teal", medication: "dot-purple", other: "dot-blue" };
+
+function formatTimeLabel(hhmm) {
+  const [h, m] = hhmm.split(":").map(Number);
+  const period = h >= 12 ? "PM" : "AM";
+  const hour12 = h % 12 || 12;
+  return `${hour12}:${String(m).padStart(2, "0")} ${period}`;
+}
 
 function validateAddEventForm() {
   const valid = addEventForm.category.value !== "" && addEventForm.label.value.trim() !== "" && addEventForm.date.value !== "";
@@ -1196,12 +1218,15 @@ addEventForm.addEventListener("submit", (e) => {
   if (saveAddEvent.disabled) return;
 
   const [y, m, d] = addEventForm.date.value.split("-");
+  const note = addEventForm.note.value.trim();
+  const timeNote = addEventForm.time.value ? `Acknowledged at ${formatTimeLabel(addEventForm.time.value)}` : "";
+
   history.unshift({
     category: addEventForm.category.value,
     color: CATEGORY_DOT[addEventForm.category.value],
     label: addEventForm.label.value.trim(),
     date: `${m}.${d}.${y}`,
-    note: addEventForm.note.value.trim() || undefined,
+    note: [timeNote, note].filter(Boolean).join(" — ") || undefined,
   });
 
   closeAddEventModal();
