@@ -119,13 +119,6 @@
       <span class="bo-list-toolbar-spacer"></span>
 
       <label class="bo-switch-field">
-        HMO
-        <span class="bo-switch">
-          <input type="checkbox" id="hmoToggle" />
-          <span class="bo-switch-track"></span>
-        </span>
-      </label>
-      <label class="bo-switch-field">
         All Patients
         <span class="bo-switch">
           <input type="checkbox" id="allPatientsToggle" checked />
@@ -143,6 +136,14 @@
 
     <p class="bo-filter-row-label">Filters:</p>
     <div class="bo-filter-row">
+      <div class="bo-filter-field">
+        <select class="bo-filter-select" id="orgTypeFilter">
+          <option value="">Organization type</option>
+          <option value="Commercial">Commercial</option>
+          <option value="R&D">R&D</option>
+          <option value="Study">Study</option>
+        </select>
+      </div>
       <div class="bo-filter-field">
         <select class="bo-filter-select" id="clinicalSiteFilter">
           <option value="">Clinical site</option>

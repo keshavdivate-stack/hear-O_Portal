@@ -16,3 +16,11 @@ patients.forEach((p, i) => (p.id = i));
 
 const PATIENT_TAGS = ["CUR", "NEW"];
 const PATIENT_LANGUAGES = ["EN", "HE", "AR", "RU"];
+
+/* Organization type replaces the old binary HMO/Non-HMO classification with
+   three values -- Commercial, R&D, Study -- per client feedback. Keyed by
+   the clinical site code (the prefix of a patient's username). */
+const SITE_ORG_TYPE = { "120": "Commercial", "121": "Study", "122": "R&D" };
+function patientOrgType(p) {
+  return SITE_ORG_TYPE[p.username.split("-")[0]] || "Commercial";
+}

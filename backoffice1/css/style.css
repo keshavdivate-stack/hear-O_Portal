@@ -1583,6 +1583,7 @@ label.bo-date-field { cursor: text; }
 }
 
 .bo-btn-secondary:hover { background: var(--blue-light); }
+a.bo-btn-secondary { text-decoration: none; }
 
 .bo-btn-text {
   background: none;
@@ -3086,6 +3087,22 @@ label.bo-date-field { cursor: text; }
 .patient-log-line .msg { color: var(--ink); }
 
 .patient-log-history-actions { display: flex; align-items: center; gap: 10px; }
+.patient-log-history-actions .bo-select { width: 190px; flex-shrink: 0; }
+
+/* This select sits inside .patient-log-history-title (a section-title
+   header), which sets bold/uppercase text for its own label -- without this
+   reset that styling leaks into the select's trigger and menu options too
+   (its menu is a DOM descendant even though it renders elsewhere via
+   position: fixed). */
+.patient-log-history-title .bo-select-trigger,
+.patient-log-history-title .bo-select-option {
+  text-transform: none;
+  letter-spacing: normal;
+}
+.patient-log-history-title .bo-select-trigger,
+.patient-log-history-title .bo-select-option:not(.selected) {
+  font-weight: 400;
+}
 
 .patient-log-download-wrap { position: relative; }
 
@@ -3093,7 +3110,7 @@ label.bo-date-field { cursor: text; }
   position: absolute;
   top: calc(100% + 8px);
   right: 0;
-  width: 300px;
+  width: 320px;
   background: #fff;
   border-radius: 12px;
   box-shadow: 0 12px 32px rgba(20, 30, 50, 0.18);
@@ -3105,11 +3122,79 @@ label.bo-date-field { cursor: text; }
 .patient-log-download-popover-title { font-size: 13px; font-weight: 700; color: var(--ink); margin: 0 0 10px; }
 
 .patient-log-download-popover-row { display: flex; align-items: center; gap: 8px; }
-.patient-log-download-popover-row .bo-date-field { min-width: 0; flex: 1; }
+.patient-log-download-popover-row .bo-date-field { min-width: 0; flex: 1; padding: 9px 10px; gap: 6px; }
+.patient-log-download-popover-row .bo-date-field-value { font-size: 12.5px; }
+.patient-log-download-popover-row .bo-date-field svg { width: 13px; height: 13px; }
 
 .patient-log-download-popover-hint { font-size: 12px; color: var(--gray-text); margin: 8px 0 0; }
 
 .patient-log-download-popover-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 14px; }
+
+/* Custom date-field trigger button -- replaces native <input type="date">
+   so only one calendar glyph shows and clicking opens .bo-mini-calendar
+   instead of the browser/OS date picker. */
+.bo-date-field-trigger { cursor: pointer; font-family: inherit; text-align: left; }
+.bo-date-field-trigger:hover { border-color: var(--gray); }
+.bo-date-field-value { flex: 1; min-width: 0; font-size: 13.5px; font-weight: 600; color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bo-date-field-trigger.placeholder .bo-date-field-value { color: var(--gray-text); }
+.bo-date-field-trigger.active { border-color: var(--blue); }
+
+.bo-mini-calendar {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  top: 62px;
+  background: #fff;
+  border: 1px solid var(--field-border);
+  border-radius: 10px;
+  box-shadow: 0 14px 34px rgba(20, 30, 50, 0.18);
+  padding: 12px;
+  z-index: 10;
+}
+.bo-mini-calendar[hidden] { display: none; }
+
+.bo-mini-calendar-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.bo-mini-calendar-month { font-size: 13px; font-weight: 700; color: var(--ink); }
+.bo-mini-calendar-nav { display: flex; gap: 2px; }
+.bo-mini-calendar-nav button {
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: var(--gray-text);
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+}
+.bo-mini-calendar-nav button:hover { background: var(--bg); color: var(--ink); }
+
+.bo-mini-calendar-weekdays,
+.bo-mini-calendar-days { display: grid; grid-template-columns: repeat(7, 1fr); }
+.bo-mini-calendar-weekdays { margin-bottom: 4px; }
+.bo-mini-calendar-weekdays span { text-align: center; font-size: 10px; font-weight: 700; color: var(--gray-text); }
+
+.bo-mini-calendar-day {
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--ink);
+  padding: 6px 0;
+  border-radius: 7px;
+  font-family: inherit;
+}
+.bo-mini-calendar-day:hover { background: var(--bg); }
+.bo-mini-calendar-day.muted { color: var(--gray); }
+.bo-mini-calendar-day.in-range { background: var(--blue-light); border-radius: 0; }
+.bo-mini-calendar-day.range-start { border-radius: 7px 0 0 7px; }
+.bo-mini-calendar-day.range-end { border-radius: 0 7px 7px 0; }
+.bo-mini-calendar-day.selected { background: var(--blue); color: #fff; font-weight: 700; }
+
+.bo-mini-calendar-footer { display: flex; justify-content: space-between; margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--bg); }
+.bo-mini-calendar-footer button { border: none; background: none; color: var(--blue); font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; }
+.bo-mini-calendar-footer button:hover { text-decoration: underline; }
 
 .bo-modal-subtitle {
   font-size: 13px;
@@ -3319,9 +3404,14 @@ a.bo-health-card:hover { border-color: var(--field-border); }
   display: flex;
   align-items: center;
   gap: 14px;
-  margin-bottom: 16px;
+  margin: 0 -28px 16px;
+  padding: 14px 28px;
   flex-shrink: 0;
   flex-wrap: wrap;
+  position: sticky;
+  top: -14px;
+  z-index: 20;
+  background: var(--bg);
 }
 
 .bo-entity-avatar {
@@ -4236,7 +4326,12 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue); }
 .bo-incident-title { font-weight: 700; color: var(--ink); }
 .bo-incident-source-label { display: block; font-size: 11.5px; color: var(--gray-text); margin-top: 2px; font-weight: 500; }
 
-.bo-related-ticket-link { display: block; font-size: 11.5px; font-weight: 700; margin-top: 6px; }
+.bo-related-ticket-link { display: inline-block; font-size: 11.5px; font-weight: 700; margin-left: 10px; white-space: nowrap; }
+
+table:has(#incidentRows) th:nth-child(5),
+table:has(#incidentRows) td:nth-child(5) { min-width: 210px; white-space: nowrap; }
+
+.bo-related-tickets-list { display: flex; flex-wrap: wrap; gap: 4px 10px; }
 
 /* Impact column: one compact clickable cell instead of separate org/patient columns */
 .bo-impact-link {

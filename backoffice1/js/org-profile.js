@@ -1,6 +1,14 @@
 /* ---------------- Resolve current org from ?id= ---------------- */
-const orgProfileId = Number(new URLSearchParams(location.search).get("id"));
+const orgProfileParams = new URLSearchParams(location.search);
+const orgProfileId = Number(orgProfileParams.get("id"));
 const org = orgs.find((o) => o.id === orgProfileId) || orgs[0];
+
+/* An explicit ?return= (e.g. from a Ticket's "View Organization Profile"
+   action) sends back there instead of the generic Organizations list. */
+const orgProfileReturnTo = orgProfileParams.get("return");
+if (orgProfileReturnTo) {
+  document.getElementById("orgProfileBackLink").href = decodeURIComponent(orgProfileReturnTo);
+}
 
 /* ---------------- Header ---------------- */
 document.getElementById("orgProfileName").textContent = org.name;

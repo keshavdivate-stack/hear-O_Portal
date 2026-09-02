@@ -106,7 +106,7 @@ document.getElementById("incidentRows").addEventListener("click", (e) => {
   e.stopPropagation();
   activeIncidentId = trigger.dataset.id;
   const incident = findIncident(activeIncidentId);
-  incidentRowMenuViewTicketBtn.hidden = !incident || !incident.relatedTicket;
+  incidentRowMenuViewTicketBtn.hidden = !incident || !(incident.relatedTickets && incident.relatedTickets.length);
   const rect = trigger.getBoundingClientRect();
   incidentRowMenu.style.top = `${rect.bottom + 6}px`;
   incidentRowMenu.style.left = `${rect.right - 190}px`;
@@ -127,7 +127,7 @@ incidentRowMenu.addEventListener("click", (e) => {
   incidentRowMenu.classList.remove("open");
 
   if (action === "createTask") openAddTaskDrawer(incident);
-  if (action === "viewTicket" && incident.relatedTicket) location.href = incTicketHref(incident.relatedTicket);
+  if (action === "viewTicket" && incident.relatedTickets && incident.relatedTickets.length) location.href = incTicketHref(incident.relatedTickets[0]);
 });
 
 /* ---------------- Create Support Task drawer ---------------- */

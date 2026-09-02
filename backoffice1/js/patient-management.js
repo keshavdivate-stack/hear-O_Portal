@@ -4,6 +4,7 @@ let patientCurrentPage = 1;
 let patientSortDir = "asc";
 let patientSearchTerm = "";
 let patientStatusFilter = "";
+let patientOrgTypeFilter = "";
 let patientSiteFilter = "";
 let patientTagFilter = "";
 let patientLanguageFilter = "";
@@ -37,6 +38,7 @@ function dmyToIso(s) {
 
 function filteredPatients() {
   return patients.filter((p) => {
+    if (patientOrgTypeFilter && patientOrgType(p) !== patientOrgTypeFilter) return false;
     if (patientScope === "active" && !p.active) return false;
     if (patientEnvScope === "current" && p.environment !== CURRENT_ENVIRONMENT) return false;
     if (patientSiteFilter && !p.username.startsWith(patientSiteFilter)) return false;
@@ -118,6 +120,7 @@ document.querySelectorAll(".bo-filter-select").forEach((select) => {
 });
 
 document.getElementById("patientApplyBtn").addEventListener("click", () => {
+  patientOrgTypeFilter = document.getElementById("orgTypeFilter").value;
   patientSiteFilter = document.getElementById("clinicalSiteFilter").value;
   patientTagFilter = document.getElementById("tagFilter").value;
   patientLanguageFilter = document.getElementById("languageFilter").value;
@@ -127,15 +130,6 @@ document.getElementById("patientApplyBtn").addEventListener("click", () => {
   patientPhoneModelFilter = document.getElementById("phoneModelFilter").value.trim().toLowerCase();
   patientLastSessionUpTo = document.getElementById("lastSessionUpToFilter").value;
   patientSearchTerm = document.getElementById("patientSearchInput").value.trim().toLowerCase();
-  patientCurrentPage = 1;
-  renderPatients();
-});
-
-document.getElementById("hmoToggle").addEventListener("change", (e) => {
-  patientSiteFilter = "";
-  const siteSelect = document.getElementById("clinicalSiteFilter");
-  siteSelect.value = "";
-  syncFilterSelectStyle(siteSelect);
   patientCurrentPage = 1;
   renderPatients();
 });

@@ -20,12 +20,16 @@ if (!ticket) {
   function renderBody() {
     const alreadyResolved = ticket.state === "Resolved";
 
-    ticketDetailBody.innerHTML = `
+    const summaryCard = `
       <div class="ticket-detail-card">
         <h2>Ticket Info</h2>
         <div class="ticket-detail-grid">
           <div class="ticket-detail-field"><label>Organization</label><span>${ticket.organization}</span></div>
-          <div class="ticket-detail-field"><label>${ticket.type === "Patient" ? "Patient" : "Raised By"}</label><span>${ticket.who}</span></div>
+          <div class="ticket-detail-field"><label>${ticket.type === "Patient" ? "Patient" : "Raised By"}</label><span>${
+            ticket.type === "Patient"
+              ? `<a class="ticket-view-link" href="patient-data.html">${ticket.patientName || ticket.who}</a>`
+              : ticket.who
+          }</span></div>
           <div class="ticket-detail-field"><label>Origin</label><span>${ticket.origin}</span></div>
           <div class="ticket-detail-field"><label>Assigned To</label><span>${ticket.assignedTo}</span></div>
           <div class="ticket-detail-field"><label>Created</label><span>${ticket.created}</span></div>
@@ -46,7 +50,10 @@ if (!ticket) {
         <div class="ticket-history" style="margin-top:14px;">
           ${ticket.history.map((h) => `<div class="ticket-history-item"><b>${h.date}</b> — ${h.text}</div>`).join("")}
         </div>
-      </div>
+      </div>`;
+
+    ticketDetailBody.innerHTML = `
+      ${summaryCard}
 
       <div class="ticket-detail-card">
         <h2>Resolution</h2>

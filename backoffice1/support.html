@@ -371,12 +371,12 @@
       <div class="bo-drawer-body">
         <div class="bo-modal-grid">
           <div class="bo-modal-field full">
-            <label>Condition / threshold:</label>
+            <label>Condition / threshold:<span class="required-star">*</span></label>
             <input type="text" id="ruleConditionInput" placeholder="e.g. No sensor data for &ge; 3 consecutive days" />
           </div>
 
           <div class="bo-modal-field">
-            <label>Severity:</label>
+            <label>Severity:<span class="required-star">*</span></label>
             <div class="bo-select" data-name="ruleSeverity">
               <button type="button" class="bo-select-trigger">
                 <span class="bo-select-value placeholder">Severity</span>
@@ -388,7 +388,7 @@
           </div>
 
           <div class="bo-modal-field">
-            <label>Routed tier:</label>
+            <label>Routed tier:<span class="required-star">*</span></label>
             <div class="bo-select" data-name="ruleTier">
               <button type="button" class="bo-select-trigger">
                 <span class="bo-select-value placeholder">Level</span>
@@ -410,7 +410,7 @@
           </div>
 
           <div class="bo-modal-field full">
-            <label>Channels:</label>
+            <label>Channels:<span class="required-star">*</span></label>
             <div class="bo-checkbox-row">
               <label class="bo-checkbox-item"><input type="checkbox" name="ruleChannel" value="Notification" /> Notification</label>
               <label class="bo-checkbox-item"><input type="checkbox" name="ruleChannel" value="Email" /> Email</label>
@@ -419,7 +419,7 @@
           </div>
 
           <div class="bo-modal-field full">
-            <label>Applies to:</label>
+            <label>Applies to:<span class="required-star">*</span></label>
             <input type="text" id="ruleAppliesToInput" placeholder="e.g. All organisations" />
           </div>
         </div>
@@ -455,12 +455,12 @@
       <div class="bo-drawer-body">
         <div class="bo-modal-grid">
           <div class="bo-modal-field">
-            <label>Rule name</label>
+            <label>Rule name<span class="required-star">*</span></label>
             <input type="text" id="newRuleNameInput" placeholder="e.g. Missing sensor data" />
           </div>
 
           <div class="bo-modal-field">
-            <label>Category</label>
+            <label>Category<span class="required-star">*</span></label>
             <div class="bo-select" data-name="newRuleCategory">
               <button type="button" class="bo-select-trigger">
                 <span class="bo-select-value placeholder">Select category</span>
@@ -472,12 +472,12 @@
           </div>
 
           <div class="bo-modal-field full">
-            <label>Condition</label>
+            <label>Condition<span class="required-star">*</span></label>
             <input type="text" id="newRuleConditionInput" placeholder="e.g. No sensor data for &ge; 3 consecutive days" />
           </div>
 
           <div class="bo-modal-field">
-            <label>Severity</label>
+            <label>Severity<span class="required-star">*</span></label>
             <div class="bo-select" data-name="newRuleSeverity">
               <button type="button" class="bo-select-trigger">
                 <span class="bo-select-value placeholder">Select severity</span>
@@ -490,7 +490,7 @@
 
           <div class="bo-modal-field">
             <label class="bo-field-label-row">
-              Start the ticket at
+              Start the ticket at<span class="required-star">*</span>
               <span class="bo-info-tip" tabindex="0">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9.5" stroke="currentColor" stroke-width="1.8"/><path d="M12 11v5.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="8" r="1.1" fill="currentColor"/></svg>
                 <span class="bo-info-tip-panel">
@@ -511,7 +511,7 @@
           </div>
 
           <div class="bo-modal-field">
-            <label>Applies to</label>
+            <label>Applies to<span class="required-star">*</span></label>
             <div class="bo-select" data-name="newRuleAppliesTo">
               <button type="button" class="bo-select-trigger">
                 <span class="bo-select-value placeholder">Select scope</span>
@@ -523,7 +523,7 @@
           </div>
 
           <div class="bo-modal-field" id="newRuleOrgsFieldWrap" hidden>
-            <label>Organisations</label>
+            <label>Organisations<span class="required-star">*</span></label>
             <div class="bo-multiselect" id="newRuleOrgsSelect">
               <button type="button" class="bo-multiselect-trigger">
                 <span class="bo-multiselect-value placeholder">Select organisations</span>
@@ -534,7 +534,7 @@
           </div>
 
           <div class="bo-modal-field">
-            <label>Notification preference</label>
+            <label>Notification preference<span class="required-star">*</span></label>
             <div class="bo-multiselect" id="newRuleSendBySelect">
               <button type="button" class="bo-multiselect-trigger">
                 <span class="bo-multiselect-value placeholder">Select channels</span>
@@ -556,6 +556,7 @@
   <!-- Row action dropdown -->
   <div class="bo-row-menu" id="ticketRowMenu">
     <button class="bo-row-menu-item" data-action="view">View Ticket</button>
+    <button class="bo-row-menu-item" data-action="viewProfile" id="ticketRowMenuProfileBtn">View Patient Profile</button>
   </div>
 
   <!-- New ticket drawer -->
@@ -797,6 +798,7 @@
 <script src="js/bo-table-scroll.js"></script>
 <script src="js/bo-pagination.js"></script>
 <script src="js/support-data.js"></script>
+<script src="js/orgs-data.js"></script>
 <script src="js/support-tickets-common.js"></script>
 <script src="js/notifications.js"></script>
 <script src="js/support.js"></script>

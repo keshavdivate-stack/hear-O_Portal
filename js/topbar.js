@@ -109,6 +109,7 @@ if (notifTabsEl) {
    already on. Requires js/support-data.js (ticketList) loaded before this
    file. */
 (function initSupportTicketFab() {
+  return; // Disabled for now -- remove this line to bring the FAB back.
   if (typeof ticketList === "undefined") return;
   if (document.getElementById("supportTicketFab")) return;
   const page = location.pathname.split("/").pop();

@@ -52,7 +52,12 @@ const incidents = [
     severity: "SEV-2",
     status: "Escalated",
     owner: "Maya Chen",
-    relatedTicket: { ticketNo: "TCK-2018", source: "clinic" },
+    relatedTickets: [
+      { ticketNo: "TCK-2018", source: "clinic" },
+      { ticketNo: "TCK-2011", source: "clinic" },
+      { ticketNo: "TCK-1041", source: "patient" },
+      { ticketNo: "TCK-1038", source: "patient" },
+    ],
     detectedAt: "Aug 19, 2026 · 10:42 AM",
     duration: "1h 05m",
     orgs: orgsForCount(12, 0),

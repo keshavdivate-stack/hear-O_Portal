@@ -120,8 +120,10 @@ function incTicketHref(relatedTicket) {
   return `ticket-detail.html?ticket=${encodeURIComponent(relatedTicket.ticketNo)}&source=${encodeURIComponent(relatedTicket.source)}`;
 }
 function incRelatedTicketLink(incident) {
-  if (!incident.relatedTicket) return "";
-  return `<a class="bo-name-link bo-related-ticket-link" href="${incTicketHref(incident.relatedTicket)}" title="${incident.relatedTicket.ticketNo}">Support Ticket</a>`;
+  const tickets = incident.relatedTickets || [];
+  if (!tickets.length) return "";
+  const label = tickets.length > 1 ? "Support Tickets" : "Support Ticket";
+  return `<a class="bo-name-link bo-related-ticket-link" href="${incTicketHref(tickets[0])}" title="${tickets.map((t) => t.ticketNo).join(", ")}">${label}</a>`;
 }
 
 function incImpactChips(list) {

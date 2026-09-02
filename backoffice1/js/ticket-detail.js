@@ -52,6 +52,13 @@ function populateTicketDetailAssignees(tier) {
   menu.innerHTML = buildAgentSelectOptions(TIER_AGENTS[tier] || SUPPORT_AGENTS);
 }
 
+/* Every ticket routes to a level, and every level has people on it (TIER_AGENTS) --
+   so Assigned To should never sit empty. Falls back to the tier's first agent
+   whenever the stored assignee isn't actually on the currently selected tier. */
+function defaultAssigneeForTier(tier) {
+  return (TIER_AGENTS[tier] || SUPPORT_AGENTS)[0] || "";
+}
+
 /* Resolved tickets no longer need routing info -- hide Level/Severity/
    Assigned To rather than asking for values that don't matter anymore. */
 function applyTicketDetailStatusVisibility(status) {
@@ -70,19 +77,30 @@ function validateTicketDetailForm() {
 
 function renderTicketHeader() {
   document.getElementById("ticketDetailTitle").textContent = currentTicket.ticketNo;
-  document.getElementById("ticketDetailBadges").innerHTML = [
-    typePill(currentSource === "patient" ? "Patient" : "Clinic"),
-    statusPill(currentTicket.status),
-    severityPill(currentTicket.severity),
-  ].join("");
+  document.getElementById("ticketDetailBadges").innerHTML = typePill(currentSource === "patient" ? "Patient" : "Clinic");
   document.title = `HearO Backoffice | ${currentTicket.ticketNo}`;
+
+  const viewProfileBtn = document.getElementById("ticketDetailViewProfileBtn");
+  const returnTo = encodeURIComponent(location.href);
+  if (currentSource === "patient") {
+    viewProfileBtn.textContent = "View Patient Profile";
+    viewProfileBtn.href = `patient-health-dashboard.html?patient=${encodeURIComponent(currentTicket.patientId)}&return=${returnTo}`;
+  } else {
+    const org = orgs.find((o) => o.name === currentTicket.organization);
+    viewProfileBtn.textContent = "View Organization Profile";
+    viewProfileBtn.href = org ? `org-profile.html?id=${org.id}&return=${returnTo}` : "#";
+  }
 }
 
 function renderTicketInfo() {
   document.getElementById("ticketDetailSource").textContent = currentSource === "patient" ? "Patient" : "Clinic";
+  document.getElementById("ticketDetailStatusKv").innerHTML = statusPill(currentTicket.status);
+  document.getElementById("ticketDetailSeverityKv").innerHTML = severityPill(currentTicket.severity);
   document.getElementById("ticketDetailWhoLabel").textContent = currentSource === "patient" ? "Patient ID" : "Raised By";
   document.getElementById("ticketDetailWho").textContent = currentSource === "patient" ? currentTicket.patientId : currentTicket.raisedBy;
   document.getElementById("ticketDetailOrg").textContent = currentTicket.organization;
+  const ticketOrgRecord = orgs.find((o) => o.name === currentTicket.organization);
+  document.getElementById("ticketDetailOrgContact").textContent = (ticketOrgRecord && ticketOrgRecord.phone) || "—";
   document.getElementById("ticketDetailOrigin").textContent = currentTicket.origin;
   document.getElementById("ticketDetailScope").textContent = currentTicket.scope;
   document.getElementById("ticketDetailCreated").textContent = currentTicket.createdDate;
@@ -201,7 +219,9 @@ function renderTicketHandling() {
   setBoSelectValue(document.querySelector('.bo-select[data-name="ticketLevel"]'), currentTicket.tier, { silent: true });
   setBoSelectValue(document.querySelector('.bo-select[data-name="ticketSeverityHandling"]'), currentTicket.severity, { silent: true });
   populateTicketDetailAssignees(currentTicket.tier);
-  setBoSelectValue(document.querySelector('.bo-select[data-name="ticketAssignedTo"]'), currentTicket.assignedTo || "", { silent: true });
+  const tierAgents = TIER_AGENTS[currentTicket.tier] || SUPPORT_AGENTS;
+  const assignee = tierAgents.includes(currentTicket.assignedTo) ? currentTicket.assignedTo : defaultAssigneeForTier(currentTicket.tier);
+  setBoSelectValue(document.querySelector('.bo-select[data-name="ticketAssignedTo"]'), assignee, { silent: true });
   validateTicketDetailForm();
 }
 
@@ -248,28 +268,143 @@ function renderPatientLog() {
   renderPatientLogSection("patientLogPermissions", currentPatientLog.permissions);
 
   const sessionSelect = document.getElementById("patientLogSessionSelect");
-  sessionSelect.innerHTML = currentPatientLog.sessions
-    .map((s, i) => `<option value="${s.id}">${s.date}${i === 0 ? " (latest)" : ""}</option>`)
+  sessionSelect.querySelector(".bo-select-menu").innerHTML = currentPatientLog.sessions
+    .map(
+      (s, i) => `
+      <div class="bo-select-option" data-value="${s.id}">${s.date}${i === 0 ? " (latest)" : ""}
+        <svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>`
+    )
     .join("");
   currentPatientLogSessionId = currentPatientLog.sessions[0].id;
-  sessionSelect.value = currentPatientLogSessionId;
+  setBoSelectValue(sessionSelect, currentPatientLogSessionId, { silent: true });
   renderPatientLogHistory("patientLogHistory", currentSession().lines);
 
   const sessionDates = currentPatientLog.sessions.map((s) => s.dateObj).sort((a, b) => a - b);
-  document.getElementById("patientLogDownloadFrom").value = toIsoDate(sessionDates[0]);
-  document.getElementById("patientLogDownloadTo").value = toIsoDate(sessionDates[sessionDates.length - 1]);
+  patientLogFromDate = sessionDates[0];
+  patientLogToDate = sessionDates[sessionDates.length - 1];
+  updatePatientLogDateFieldDisplay("from");
+  updatePatientLogDateFieldDisplay("to");
 }
 
-document.getElementById("patientLogSessionSelect").addEventListener("change", (e) => {
+document.querySelector('#patientLogSessionSelect input[type=hidden]').addEventListener("change", (e) => {
   currentPatientLogSessionId = e.target.value;
   const session = currentSession();
   if (session) renderPatientLogHistory("patientLogHistory", session.lines);
 });
 
-/* ---------------- Download Log (date-range picker) ---------------- */
+/* ---------------- Download Log (date-range picker) ----------------
+   A small self-contained calendar replaces native <input type="date">
+   here -- that had two calendar glyphs stacked (the browser's own
+   picker-indicator plus our SVG) and opened the OS/browser's own date
+   picker, which looked out of place next to the rest of the app's UI. */
 function toIsoDate(d) {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
+function formatDisplayDate(d) {
+  return d ? `${String(d.getDate()).padStart(2, "0")}-${String(d.getMonth() + 1).padStart(2, "0")}-${d.getFullYear()}` : "—";
+}
+function sameDay(a, b) {
+  return !!a && !!b && a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+}
+
+let patientLogFromDate = null;
+let patientLogToDate = null;
+let patientLogCalendarField = null;
+let patientLogCalendarViewDate = new Date();
+
+function updatePatientLogDateFieldDisplay(field) {
+  const date = field === "from" ? patientLogFromDate : patientLogToDate;
+  document.getElementById(field === "from" ? "patientLogDownloadFromValue" : "patientLogDownloadToValue").textContent = formatDisplayDate(date);
+  document.getElementById(field === "from" ? "patientLogDownloadFromField" : "patientLogDownloadToField").classList.toggle("placeholder", !date);
+}
+
+const patientLogCalendarEl = document.getElementById("patientLogDownloadCalendar");
+
+function renderPatientLogCalendar() {
+  const viewYear = patientLogCalendarViewDate.getFullYear();
+  const viewMonth = patientLogCalendarViewDate.getMonth();
+  document.getElementById("patientLogCalendarMonthLabel").textContent = patientLogCalendarViewDate.toLocaleDateString("en-US", { month: "long", year: "numeric" });
+
+  const firstOfMonth = new Date(viewYear, viewMonth, 1);
+  const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
+  const cells = [];
+  for (let i = 0; i < firstOfMonth.getDay(); i++) cells.push({ date: new Date(viewYear, viewMonth, i - firstOfMonth.getDay() + 1), muted: true });
+  for (let d = 1; d <= daysInMonth; d++) cells.push({ date: new Date(viewYear, viewMonth, d), muted: false });
+  while (cells.length % 7 !== 0) {
+    const last = cells[cells.length - 1].date;
+    cells.push({ date: new Date(last.getFullYear(), last.getMonth(), last.getDate() + 1), muted: true });
+  }
+
+  document.getElementById("patientLogCalendarDays").innerHTML = cells
+    .map(({ date, muted }) => {
+      const classes = ["bo-mini-calendar-day"];
+      if (muted) classes.push("muted");
+      const isFrom = sameDay(date, patientLogFromDate);
+      const isTo = sameDay(date, patientLogToDate);
+      if (isFrom || isTo) classes.push("selected");
+      else if (patientLogFromDate && patientLogToDate && date > patientLogFromDate && date < patientLogToDate) classes.push("in-range");
+      if (isFrom && patientLogToDate) classes.push("range-start");
+      if (isTo && patientLogFromDate) classes.push("range-end");
+      return `<button type="button" class="${classes.join(" ")}" data-time="${date.getTime()}">${date.getDate()}</button>`;
+    })
+    .join("");
+}
+
+function openPatientLogCalendar(field) {
+  patientLogCalendarField = field;
+  const date = field === "from" ? patientLogFromDate : patientLogToDate;
+  patientLogCalendarViewDate = date ? new Date(date.getFullYear(), date.getMonth(), 1) : new Date();
+  document.getElementById("patientLogDownloadFromField").classList.toggle("active", field === "from");
+  document.getElementById("patientLogDownloadToField").classList.toggle("active", field === "to");
+  patientLogCalendarEl.hidden = false;
+  renderPatientLogCalendar();
+}
+function closePatientLogCalendar() {
+  patientLogCalendarField = null;
+  document.getElementById("patientLogDownloadFromField").classList.remove("active");
+  document.getElementById("patientLogDownloadToField").classList.remove("active");
+  patientLogCalendarEl.hidden = true;
+}
+
+document.getElementById("patientLogDownloadFromField").addEventListener("click", (e) => { e.stopPropagation(); openPatientLogCalendar("from"); });
+document.getElementById("patientLogDownloadToField").addEventListener("click", (e) => { e.stopPropagation(); openPatientLogCalendar("to"); });
+document.getElementById("patientLogCalendarPrev").addEventListener("click", (e) => {
+  e.stopPropagation();
+  patientLogCalendarViewDate = new Date(patientLogCalendarViewDate.getFullYear(), patientLogCalendarViewDate.getMonth() - 1, 1);
+  renderPatientLogCalendar();
+});
+document.getElementById("patientLogCalendarNext").addEventListener("click", (e) => {
+  e.stopPropagation();
+  patientLogCalendarViewDate = new Date(patientLogCalendarViewDate.getFullYear(), patientLogCalendarViewDate.getMonth() + 1, 1);
+  renderPatientLogCalendar();
+});
+document.getElementById("patientLogCalendarDays").addEventListener("click", (e) => {
+  e.stopPropagation();
+  const btn = e.target.closest(".bo-mini-calendar-day");
+  if (!btn || !patientLogCalendarField) return;
+  const picked = new Date(Number(btn.dataset.time));
+  if (patientLogCalendarField === "from") patientLogFromDate = picked;
+  else patientLogToDate = picked;
+  updatePatientLogDateFieldDisplay(patientLogCalendarField);
+  closePatientLogCalendar();
+});
+document.getElementById("patientLogCalendarClear").addEventListener("click", (e) => {
+  e.stopPropagation();
+  if (patientLogCalendarField === "from") patientLogFromDate = null;
+  else if (patientLogCalendarField === "to") patientLogToDate = null;
+  updatePatientLogDateFieldDisplay(patientLogCalendarField);
+  renderPatientLogCalendar();
+});
+document.getElementById("patientLogCalendarToday").addEventListener("click", (e) => {
+  e.stopPropagation();
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  if (patientLogCalendarField === "from") patientLogFromDate = today;
+  else if (patientLogCalendarField === "to") patientLogToDate = today;
+  updatePatientLogDateFieldDisplay(patientLogCalendarField);
+  closePatientLogCalendar();
+});
 
 const patientLogDownloadPopover = document.getElementById("patientLogDownloadPopover");
 
@@ -279,6 +414,7 @@ function openPatientLogDownloadPopover() {
 }
 function closePatientLogDownloadPopover() {
   patientLogDownloadPopover.hidden = true;
+  closePatientLogCalendar();
 }
 
 document.getElementById("downloadPatientLogBtn").addEventListener("click", (e) => {
@@ -290,19 +426,18 @@ document.getElementById("downloadPatientLogBtn").addEventListener("click", (e) =
 document.getElementById("patientLogDownloadCancel").addEventListener("click", closePatientLogDownloadPopover);
 document.addEventListener("click", (e) => {
   if (!patientLogDownloadPopover.hidden && !e.target.closest(".patient-log-download-wrap")) closePatientLogDownloadPopover();
+  else if (!patientLogCalendarEl.hidden && !e.target.closest(".bo-mini-calendar") && !e.target.closest(".bo-date-field-trigger")) closePatientLogCalendar();
 });
 
 document.getElementById("patientLogDownloadConfirm").addEventListener("click", () => {
   if (!currentPatientLog) return;
-  const fromValue = document.getElementById("patientLogDownloadFrom").value;
-  const toValue = document.getElementById("patientLogDownloadTo").value;
   const hint = document.getElementById("patientLogDownloadHint");
-  if (!fromValue || !toValue) {
+  if (!patientLogFromDate || !patientLogToDate) {
     hint.textContent = "Pick both a from and to date.";
     return;
   }
-  const from = new Date(fromValue);
-  const to = new Date(toValue);
+  const from = patientLogFromDate;
+  const to = patientLogToDate;
   if (from > to) {
     hint.textContent = "From date must be before the to date.";
     return;
@@ -444,8 +579,9 @@ if (currentSource === "patient") {
 
 /* ---------------- Handling form wiring ---------------- */
 document.querySelector('.bo-select[data-name="ticketLevel"] input[type=hidden]').addEventListener("change", (e) => {
-  populateTicketDetailAssignees(e.target.value);
-  resetBoSelect(document.querySelector('.bo-select[data-name="ticketAssignedTo"]'));
+  const tier = e.target.value;
+  populateTicketDetailAssignees(tier);
+  setBoSelectValue(document.querySelector('.bo-select[data-name="ticketAssignedTo"]'), defaultAssigneeForTier(tier), { silent: true });
   validateTicketDetailForm();
 });
 
@@ -484,6 +620,7 @@ ticketDetailForm.addEventListener("submit", (e) => {
   currentTicket.status = nextStatus;
 
   renderTicketHeader();
+  renderTicketInfo();
   renderTicketHandling();
   renderTicketHistory();
 });

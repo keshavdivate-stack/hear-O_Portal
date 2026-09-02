@@ -16,7 +16,7 @@ function filteredTicketList() {
     if (selectedOrigins.size && !selectedOrigins.has(t.origin)) return false;
     if (selectedSeverities.size && !selectedSeverities.has(t.severity)) return false;
     if (selectedStates.size && !selectedStates.has(t.state)) return false;
-    if (term && !`${t.ticketId} ${t.who} ${t.organization}`.toLowerCase().includes(term)) return false;
+    if (term && !`${t.ticketId} ${t.who} ${t.patientName || ""} ${t.organization}`.toLowerCase().includes(term)) return false;
     return true;
   });
 }
@@ -33,7 +33,11 @@ function renderTicketList() {
         <td><b>${t.ticketId}</b></td>
         <td>${t.organization}</td>
         <td><span class="ticket-pill ${typeCellClass(t.type)}">${t.type}</span></td>
-        <td>${t.who}</td>
+        <td>${
+          t.type === "Patient"
+            ? `<a class="ticket-view-link" href="patient-data.html">${t.patientName || t.who}</a><span class="ticket-who-id">${t.who}</span>`
+            : t.who
+        }</td>
         <td><span class="ticket-pill ticket-pill-category">${t.category}</span></td>
         <td>${t.issueType}</td>
         <td><span class="ticket-pill ${originCellClass(t.origin)}">${t.origin}</span></td>
@@ -182,4 +186,298 @@ document.getElementById("clearTicketFilters").addEventListener("click", () => {
     document.querySelector(`.checkbox-filter[data-name="${name}"] .checkbox-filter-label`).textContent = label;
   });
   renderTicketList();
+});
+
+/* ---------------- Tabs: Raised by Clinic / Assigned to Clinic ---------------- */
+document.querySelectorAll("#supportTicketTabs .page-tab").forEach((tab) => {
+  tab.addEventListener("click", () => {
+    document.querySelectorAll("#supportTicketTabs .page-tab").forEach((t) => t.classList.remove("active"));
+    document.querySelectorAll(".tab-panel").forEach((p) => p.classList.remove("active"));
+    tab.classList.add("active");
+    document.querySelector(`.tab-panel[data-tab-panel="${tab.dataset.tab}"]`).classList.add("active");
+  });
+});
+
+/* ---------------- Raised by Clinic ----------------
+   Mirrors the "Support Ticket" floating button's own definition of "this
+   clinic's tickets" (js/topbar.js) -- Clinic-type tickets scoped to the
+   org currently selected in the topbar switcher. */
+function currentOrg() {
+  const checked = document.querySelector('input[name="org"]:checked');
+  return (checked ? checked.value : "b01").toUpperCase();
+}
+
+let raisedTicketSearchTerm = "";
+const selectedRaisedCategories = new Set();
+const selectedRaisedIssueTypes = new Set();
+const selectedRaisedSeverities = new Set();
+const selectedRaisedStates = new Set();
+
+function raisedTicketList() {
+  const term = raisedTicketSearchTerm.trim().toLowerCase();
+  const org = currentOrg();
+  return ticketList.filter((t) => {
+    if (t.type !== "Clinic" || t.organization.toUpperCase() !== org) return false;
+    if (selectedRaisedCategories.size && !selectedRaisedCategories.has(t.category)) return false;
+    if (selectedRaisedIssueTypes.size && !selectedRaisedIssueTypes.has(t.issueType)) return false;
+    if (selectedRaisedSeverities.size && !selectedRaisedSeverities.has(t.severity)) return false;
+    if (selectedRaisedStates.size && !selectedRaisedStates.has(t.state)) return false;
+    if (term && !`${t.ticketId} ${t.who} ${t.issueType}`.toLowerCase().includes(term)) return false;
+    return true;
+  });
+}
+
+const raisedTicketRows = document.getElementById("raisedTicketRows");
+const raisedTicketRangeLabel = document.getElementById("raisedTicketRangeLabel");
+
+function renderRaisedTicketList() {
+  const list = raisedTicketList();
+  raisedTicketRows.innerHTML = list
+    .map(
+      (t) => `
+      <tr>
+        <td><b>${t.ticketId}</b></td>
+        <td>${t.organization}</td>
+        <td>${t.who}</td>
+        <td><span class="ticket-pill ticket-pill-category">${t.category}</span></td>
+        <td>${t.issueType}</td>
+        <td><span class="ticket-pill ${severityCellClass(t.severity)}">${t.severity}</span></td>
+        <td><span class="ticket-pill ${stateCellClass(t.state)}">${t.state}</span></td>
+        <td>${t.created}</td>
+        <td><a class="ticket-view-link" href="ticket-detail.html?id=${t.id}">View</a></td>
+      </tr>`
+    )
+    .join("");
+  raisedTicketRangeLabel.textContent = list.length ? `1-${list.length} of ${list.length}` : "";
+  if (!list.length) {
+    raisedTicketRows.innerHTML = `<tr><td colspan="9" style="text-align:center; color:var(--gray-text); padding:24px;">No tickets raised by this clinic yet.</td></tr>`;
+  }
+}
+renderRaisedTicketList();
+
+document.getElementById("raisedTicketSearchInput").addEventListener("input", (e) => {
+  raisedTicketSearchTerm = e.target.value;
+  renderRaisedTicketList();
+});
+document.querySelectorAll('input[name="org"]').forEach((radio) => radio.addEventListener("change", renderRaisedTicketList));
+
+/* ---------------- Raised by Clinic: filters ---------------- */
+const raisedCategoryMenu = document.getElementById("raisedCategoryMenu");
+raisedCategoryMenu.innerHTML = buildOptionsHtml(ticketCategories);
+wireCheckboxFilter(document.querySelector('.checkbox-filter[data-name="raisedCategory"]'), raisedCategoryMenu, selectedRaisedCategories, renderRaisedTicketList);
+
+const raisedIssueTypeMenu = document.getElementById("raisedIssueTypeMenu");
+raisedIssueTypeMenu.innerHTML = buildOptionsHtml(allIssueTypes);
+wireCheckboxFilter(document.querySelector('.checkbox-filter[data-name="raisedIssueType"]'), raisedIssueTypeMenu, selectedRaisedIssueTypes, renderRaisedTicketList);
+
+const raisedSeverityMenu = document.getElementById("raisedSeverityMenu");
+raisedSeverityMenu.innerHTML = buildOptionsHtml(ticketSeverities);
+wireCheckboxFilter(document.querySelector('.checkbox-filter[data-name="raisedSeverity"]'), raisedSeverityMenu, selectedRaisedSeverities, renderRaisedTicketList);
+
+const raisedStateMenu = document.getElementById("raisedStateMenu");
+raisedStateMenu.innerHTML = buildOptionsHtml(ticketStates);
+wireCheckboxFilter(document.querySelector('.checkbox-filter[data-name="raisedState"]'), raisedStateMenu, selectedRaisedStates, renderRaisedTicketList);
+
+const clearableRaisedTicketFilters = [
+  { name: "raisedCategory", menu: raisedCategoryMenu, set: selectedRaisedCategories, label: "Category" },
+  { name: "raisedIssueType", menu: raisedIssueTypeMenu, set: selectedRaisedIssueTypes, label: "Issue Type" },
+  { name: "raisedSeverity", menu: raisedSeverityMenu, set: selectedRaisedSeverities, label: "Severity" },
+  { name: "raisedState", menu: raisedStateMenu, set: selectedRaisedStates, label: "State" },
+];
+
+document.getElementById("clearRaisedTicketFilters").addEventListener("click", () => {
+  document.getElementById("raisedTicketSearchInput").value = "";
+  raisedTicketSearchTerm = "";
+  clearableRaisedTicketFilters.forEach(({ name, menu, set, label }) => {
+    set.clear();
+    menu.querySelectorAll('input[type="checkbox"]').forEach((cb) => (cb.checked = false));
+    document.querySelector(`.checkbox-filter[data-name="${name}"] .checkbox-filter-label`).textContent = label;
+  });
+  renderRaisedTicketList();
+});
+
+/* ---------------- Custom dropdowns (Create Ticket modal) ---------------- */
+function setCustomSelectValue(select, value, { silent = false } = {}) {
+  const hiddenInput = select.querySelector("input[type=hidden]");
+  const trigger = select.querySelector(".custom-select-value");
+  const option = select.querySelector(`.custom-select-option[data-value="${CSS.escape(value)}"]`);
+
+  select.querySelectorAll(".custom-select-option").forEach((o) => o.classList.remove("selected"));
+
+  if (option) {
+    option.classList.add("selected");
+    trigger.textContent = option.textContent.trim();
+    trigger.classList.remove("placeholder");
+  } else {
+    trigger.textContent = trigger.dataset.placeholder || trigger.textContent;
+    trigger.classList.add("placeholder");
+  }
+
+  hiddenInput.value = value || "";
+  if (!silent) hiddenInput.dispatchEvent(new Event("change", { bubbles: true }));
+}
+
+function positionCustomSelectMenu(select) {
+  const trigger = select.querySelector(".custom-select-trigger");
+  const menu = select.querySelector(".custom-select-menu");
+  const rect = trigger.getBoundingClientRect();
+  const menuHeight = Math.min(menu.scrollHeight, 220) + 12;
+  const spaceBelow = window.innerHeight - rect.bottom;
+  const openUpward = spaceBelow < menuHeight && rect.top > menuHeight;
+
+  menu.style.position = "fixed";
+  menu.style.left = `${rect.left}px`;
+  menu.style.width = `${rect.width}px`;
+  menu.style.top = openUpward ? "auto" : `${rect.bottom + 6}px`;
+  menu.style.bottom = openUpward ? `${window.innerHeight - rect.top + 6}px` : "auto";
+}
+
+function resetCustomSelect(select) {
+  const hiddenInput = select.querySelector("input[type=hidden]");
+  setCustomSelectValue(select, hiddenInput.dataset.default || "", { silent: true });
+}
+
+function initCustomSelects() {
+  document.querySelectorAll(".custom-select").forEach((select) => {
+    const trigger = select.querySelector(".custom-select-trigger");
+    const valueEl = select.querySelector(".custom-select-value");
+    const hiddenInput = select.querySelector("input[type=hidden]");
+
+    valueEl.dataset.placeholder = valueEl.textContent.trim();
+    hiddenInput.dataset.default = hiddenInput.value;
+
+    trigger.addEventListener("click", (e) => {
+      e.stopPropagation();
+      if (trigger.disabled) return;
+      const willOpen = !select.classList.contains("open");
+      document.querySelectorAll(".custom-select.open").forEach((s) => s.classList.remove("open"));
+      if (willOpen) positionCustomSelectMenu(select);
+      select.classList.toggle("open", willOpen);
+    });
+
+    select.addEventListener("click", (e) => {
+      const option = e.target.closest(".custom-select-option");
+      if (!option) return;
+      setCustomSelectValue(select, option.dataset.value);
+      select.classList.remove("open");
+    });
+  });
+
+  document.addEventListener("click", closeAllCustomSelects);
+  document.addEventListener("scroll", closeAllCustomSelects, true);
+  window.addEventListener("resize", closeAllCustomSelects);
+}
+
+function closeAllCustomSelects() {
+  document.querySelectorAll(".custom-select.open").forEach((s) => s.classList.remove("open"));
+}
+
+initCustomSelects();
+
+function buildCustomSelectOptions(values) {
+  return values
+    .map(
+      (v) => `
+      <div class="custom-select-option" data-value="${v}">${v}
+        <svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>`
+    )
+    .join("");
+}
+
+/* ---------------- Create Ticket modal ---------------- */
+const createTicketOverlay = document.getElementById("createTicketOverlay");
+const createTicketForm = document.getElementById("createTicketForm");
+const saveCreateTicketBtn = document.getElementById("saveCreateTicket");
+const createTicketCategorySelect = document.querySelector('#createTicketOverlay .custom-select[data-name="category"]');
+const createTicketIssueSelect = document.querySelector('#createTicketOverlay .custom-select[data-name="issueType"]');
+const createTicketSeveritySelect = document.querySelector('#createTicketOverlay .custom-select[data-name="severity"]');
+
+createTicketCategorySelect.querySelector(".custom-select-menu").innerHTML = buildCustomSelectOptions(ticketCategories.map((c) => c.label));
+createTicketSeveritySelect.querySelector(".custom-select-menu").innerHTML = buildCustomSelectOptions(ticketSeverities.map((s) => s.label));
+
+function resetCreateTicketIssueSelect() {
+  const trigger = createTicketIssueSelect.querySelector(".custom-select-trigger");
+  const valueEl = createTicketIssueSelect.querySelector(".custom-select-value");
+  createTicketIssueSelect.querySelector(".custom-select-menu").innerHTML = "";
+  resetCustomSelect(createTicketIssueSelect);
+  trigger.disabled = true;
+  valueEl.dataset.placeholder = "Choose category first";
+  valueEl.textContent = "Choose category first";
+  valueEl.classList.add("placeholder");
+}
+
+createTicketCategorySelect.querySelector("input[type=hidden]").addEventListener("change", (e) => {
+  const category = e.target.value;
+  const issues = issueTypesByCategory[category] || [];
+  const trigger = createTicketIssueSelect.querySelector(".custom-select-trigger");
+  const valueEl = createTicketIssueSelect.querySelector(".custom-select-value");
+  createTicketIssueSelect.querySelector(".custom-select-menu").innerHTML = buildCustomSelectOptions(issues);
+  resetCustomSelect(createTicketIssueSelect);
+  trigger.disabled = !issues.length;
+  valueEl.dataset.placeholder = issues.length ? "Choose issue type" : "Choose category first";
+  valueEl.textContent = valueEl.dataset.placeholder;
+  valueEl.classList.add("placeholder");
+  validateCreateTicketForm();
+});
+
+function openCreateTicketModal() {
+  createTicketForm.reset();
+  createTicketForm.querySelectorAll(".custom-select").forEach(resetCustomSelect);
+  resetCreateTicketIssueSelect();
+  validateCreateTicketForm();
+  createTicketOverlay.classList.add("open");
+}
+function closeCreateTicketModal() {
+  createTicketOverlay.classList.remove("open");
+}
+
+document.getElementById("openCreateTicketBtn").addEventListener("click", openCreateTicketModal);
+document.getElementById("cancelCreateTicket").addEventListener("click", closeCreateTicketModal);
+createTicketOverlay.addEventListener("click", (e) => { if (e.target === createTicketOverlay) closeCreateTicketModal(); });
+
+function validateCreateTicketForm() {
+  const categoryValue = createTicketCategorySelect.querySelector("input[type=hidden]").value;
+  const issueValue = createTicketIssueSelect.querySelector("input[type=hidden]").value;
+  const severityValue = createTicketSeveritySelect.querySelector("input[type=hidden]").value;
+  const valid =
+    createTicketForm.raisedBy.value.trim() !== "" &&
+    categoryValue !== "" &&
+    issueValue !== "" &&
+    severityValue !== "" &&
+    createTicketForm.description.value.trim() !== "";
+  saveCreateTicketBtn.disabled = !valid;
+}
+createTicketForm.addEventListener("input", validateCreateTicketForm);
+createTicketForm.addEventListener("change", validateCreateTicketForm);
+
+createTicketForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  const categoryValue = createTicketCategorySelect.querySelector("input[type=hidden]").value;
+  const issueValue = createTicketIssueSelect.querySelector("input[type=hidden]").value;
+  const severityValue = createTicketSeveritySelect.querySelector("input[type=hidden]").value;
+  const today = new Date();
+  const created = `${String(today.getDate()).padStart(2, "0")}.${String(today.getMonth() + 1).padStart(2, "0")}.${today.getFullYear()}`;
+
+  const newTicket = {
+    ticketId: `TCK-${1000 + ticketList.length + 1}`,
+    organization: currentOrg(),
+    type: "Clinic",
+    who: createTicketForm.raisedBy.value.trim(),
+    category: categoryValue,
+    issueType: issueValue,
+    origin: "User Created",
+    severity: severityValue,
+    state: "Open",
+    assignedTo: "Unassigned",
+    created,
+    description: createTicketForm.description.value.trim(),
+  };
+  newTicket.id = ticketList.length;
+  newTicket.history = [{ date: created, text: "Ticket created (User Created)." }];
+  ticketList.push(newTicket);
+
+  renderRaisedTicketList();
+  renderTicketList();
+  closeCreateTicketModal();
 });

@@ -9,10 +9,16 @@ document.getElementById("patientSub").textContent = `${ph.org} · ${ph.langName}
 
 /* If the patient was opened by drilling down from an organization's
    health dashboard, "back" should return there (preserving that
-   investigation context) instead of the generic patient list. */
+   investigation context) instead of the generic patient list. Any explicit
+   ?return= (e.g. from a Ticket's "View Patient Profile" action) wins over
+   both, so back always lands wherever the user actually came from. */
 const phOrgContext = phParams.get("org");
+const phReturnTo = phParams.get("return");
 if (phOrgContext) {
   document.getElementById("patientBackLink").href = `org-health-dashboard.html?org=${phOrgContext}`;
+}
+if (phReturnTo) {
+  document.getElementById("patientBackLink").href = decodeURIComponent(phReturnTo);
 }
 
 const phStatusClass = { Active: "healthy", Registered: "info", Priority: "critical", Paused: "neutral" };
