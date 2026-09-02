@@ -3653,11 +3653,16 @@ body {
 
 #addMeasurementForm .unit-input input { width: 140px; background: #fff; }
 
-.rec-create-form .unit-input { width: 100%; }
-.rec-create-form .unit-input input {
+.rec-create-form .unit-input,
+#editRecForm .unit-input { width: 100%; }
+.rec-create-form .unit-input input,
+#editRecForm .unit-input input {
   width: 100%;
   min-width: 0;
   flex: 1;
+}
+.rec-create-form .unit-input input:not(:disabled),
+#editRecForm .unit-input input:not(:disabled) {
   background: #fff;
 }
 
