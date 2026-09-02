@@ -656,13 +656,19 @@
       <form id="addEventForm">
         <div class="form-field">
           <label>Category<span class="required-star">*</span></label>
-          <select class="select-input" name="category" required>
-            <option value="" disabled selected>Select category</option>
-            <option value="account">Account</option>
-            <option value="status">Status</option>
-            <option value="monitoring">Monitoring</option>
-            <option value="other">Other</option>
-          </select>
+          <div class="custom-select" id="addEventCategorySelect" data-name="category">
+            <button type="button" class="custom-select-trigger">
+              <span class="custom-select-value placeholder">Select category</span>
+              <svg class="custom-select-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="custom-select-menu">
+              <div class="custom-select-option" data-value="account">Account<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              <div class="custom-select-option" data-value="status">Status<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              <div class="custom-select-option" data-value="monitoring">Monitoring<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              <div class="custom-select-option" data-value="other">Other<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            </div>
+            <input type="hidden" name="category" required />
+          </div>
         </div>
         <div class="form-field">
           <label>Event<span class="required-star">*</span></label>

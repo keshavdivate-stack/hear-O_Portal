@@ -818,13 +818,19 @@
       <form id="addActionForm">
         <div class="form-field">
           <label>Action Type</label>
-          <select class="select-input" name="actionType">
-            <option value="" disabled selected>Choose action type</option>
-            <option value="contacted">Contacted</option>
-            <option value="invite">Invite to clinic</option>
-            <option value="hospital">Send to hospital</option>
-            <option value="other">Other</option>
-          </select>
+          <div class="custom-select" id="actionTypeSelect" data-name="actionType">
+            <button type="button" class="custom-select-trigger">
+              <span class="custom-select-value placeholder">Choose action type</span>
+              <svg class="custom-select-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="custom-select-menu">
+              <div class="custom-select-option" data-value="contacted">Contacted<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              <div class="custom-select-option" data-value="invite">Invite to clinic<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              <div class="custom-select-option" data-value="hospital">Send to hospital<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              <div class="custom-select-option" data-value="other">Other<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            </div>
+            <input type="hidden" name="actionType" />
+          </div>
         </div>
         <div class="form-field">
           <label>Date</label>

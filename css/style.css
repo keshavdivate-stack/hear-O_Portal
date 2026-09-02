@@ -13,6 +13,17 @@
   --btn-bg: #7DD3FC;
   --btn-bg-hover: #5EC2F5;
   --btn-text: #0C4A6E;
+  /* Accessible (AA, 4.5:1+) text colors for use on the *-light tint
+     backgrounds, or as plain colored text on white -- the base hues
+     (--blue, --red, --green, and the raw orange/yellow/purple hexes used
+     around the app) are tuned for icons/borders on white and don't pass
+     contrast as small bold badge/link text on their own. */
+  --blue-text: #0E5C99;
+  --green-text: #197A4E;
+  --red-text: #B3261E;
+  --orange-text: #9A4A0F;
+  --yellow-text: #7A5900;
+  --purple-text: #6438C2;
 }
 
 * { box-sizing: border-box; }
@@ -319,8 +330,8 @@ body {
 
 .stat-list li { display: flex; align-items: center; gap: 10px; }
 .stat-list b { font-weight: 700; min-width: 26px; }
-.stat-list .green { color: var(--green); }
-.stat-list .red { color: var(--red); }
+.stat-list .green { color: var(--green-text); }
+.stat-list .red { color: var(--red-text); }
 
 .dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
 .dot-gray { background: #C9CFD6; }
@@ -341,8 +352,8 @@ body {
   box-shadow: 0 4px 20px rgba(20, 30, 50, 0.05);
 }
 
-.acc-card--red { --acc-from: #FF8695; --acc-to: #F9576F; --acc-shadow: rgba(249, 87, 111, 0.55); --acc-accent: var(--red); }
-.acc-card--blue { --acc-from: #35C7E6; --acc-to: #1AA6C9; --acc-shadow: rgba(26, 166, 201, 0.5); --acc-accent: var(--blue); }
+.acc-card--red { --acc-from: #FF8695; --acc-to: #F9576F; --acc-shadow: rgba(249, 87, 111, 0.55); --acc-accent: var(--red-text); }
+.acc-card--blue { --acc-from: #35C7E6; --acc-to: #1AA6C9; --acc-shadow: rgba(26, 166, 201, 0.5); --acc-accent: var(--blue-text); }
 
 .acc-toggle {
   display: block;
@@ -534,8 +545,8 @@ body {
   padding: 5px 0;
 }
 
-.p-detail-pos { color: var(--green); font-weight: 600; }
-.p-detail-neg { color: var(--red); font-weight: 600; }
+.p-detail-pos { color: var(--green-text); font-weight: 600; }
+.p-detail-neg { color: var(--red-text); font-weight: 600; }
 
 .unmon-table tr:nth-child(odd) td { background: #F2FAFD; }
 .unmon-table tr:nth-child(odd) td:first-child { padding-left: 16px; border-radius: 12px 0 0 12px; }
@@ -580,8 +591,8 @@ body {
 
 .insight-head.two { justify-content: flex-start; gap: 18px; }
 .ih-group { display: flex; align-items: center; gap: 6px; }
-.ih-group .red { color: var(--red); }
-.ih-group .blue { color: var(--blue); }
+.ih-group .red { color: var(--red-text); }
+.ih-group .blue { color: var(--blue-text); }
 
 .insight-count {
   font-size: 24px;
@@ -602,7 +613,7 @@ body {
   text-align: right;
   font-size: 13px;
   font-weight: 600;
-  color: var(--blue);
+  color: var(--blue-text);
   text-decoration: none;
 }
 .view-link:hover { text-decoration: underline; }
@@ -731,7 +742,7 @@ body {
 }
 
 .filter-tab:hover { color: #23272E; }
-.filter-tab.active { background: var(--blue-light); color: var(--blue); }
+.filter-tab.active { background: var(--blue-light); color: var(--blue-text); }
 
 .clear-filters:hover { color: #23272E; }
 
@@ -873,7 +884,7 @@ body {
 
 .calendar-day:hover { background: var(--bg); }
 .calendar-day.muted { visibility: hidden; cursor: default; }
-.calendar-day.selected { background: var(--blue-light); color: var(--blue); }
+.calendar-day.selected { background: var(--blue-light); color: var(--blue-text); }
 .calendar-day.today:not(.selected) { box-shadow: inset 0 0 0 1.5px var(--blue); }
 .calendar-day.disabled { color: #D5DAE0; cursor: not-allowed; }
 .calendar-day.disabled:hover { background: none; }
@@ -890,7 +901,7 @@ body {
 .calendar-footer-btn {
   background: none;
   border: none;
-  color: var(--blue);
+  color: var(--blue-text);
   font-size: 13px;
   font-weight: 700;
   cursor: pointer;
@@ -955,7 +966,7 @@ body {
 }
 
 /* -- Provider filter (single-select: "All Patients" or one provider) -- */
-.provider-option.selected { background: var(--blue-light); color: var(--blue); font-weight: 600; }
+.provider-option.selected { background: var(--blue-light); color: var(--blue-text); font-weight: 600; }
 .provider-option:first-child { font-weight: 700; border-bottom: 1px solid var(--gray-border); border-radius: 8px 8px 0 0; margin-bottom: 4px; padding-bottom: 10px; }
 .provider-option:first-child.selected { border-radius: 8px; }
 
@@ -1073,8 +1084,8 @@ body {
   font-size: 13.5px;
 }
 .status-line svg { flex-shrink: 0; }
-.status-priority { color: var(--red); }
-.status-active { color: var(--green); }
+.status-priority { color: var(--red-text); }
+.status-active { color: var(--green-text); }
 .status-muted { color: #7E8993; font-weight: 600; }
 .status-since {
   display: block;
@@ -1091,10 +1102,10 @@ body {
   gap: 6px;
   font-weight: 600;
 }
-.mon-unmonitored { color: var(--blue); }
+.mon-unmonitored { color: var(--blue-text); }
 .mon-monitored { color: #363B42; }
 .mon-none { color: #7E8993; }
-.mon-progress { color: #C77B22; }
+.mon-progress { color: var(--orange-text); }
 
 .care-indicator-trigger {
   background: none;
@@ -1113,7 +1124,7 @@ body {
   font-weight: 700;
 }
 
-.care-indicator-trigger .mon-line.mon-unmonitored { background: var(--blue-light); color: var(--blue); }
+.care-indicator-trigger .mon-line.mon-unmonitored { background: var(--blue-light); color: var(--blue-text); }
 .care-indicator-trigger .mon-line.mon-progress { background: #FDF3E7; }
 .care-indicator-trigger .mon-line.status-active { background: #E7F8EF; }
 
@@ -1146,7 +1157,7 @@ body {
   display: inline-block;
   font-size: 13px;
   font-weight: 700;
-  color: var(--blue);
+  color: var(--blue-text);
   text-decoration: none;
 }
 
@@ -1179,7 +1190,7 @@ body {
   border: 0;
   border-radius: 999px;
   background: var(--blue-light);
-  color: var(--blue);
+  color: var(--blue-text);
   font-size: 11.5px;
   font-weight: 700;
   cursor: pointer;
@@ -1393,7 +1404,7 @@ body {
 .care-app-chip:focus-within {
   background: var(--blue-light);
   border-color: var(--blue);
-  color: var(--blue);
+  color: var(--blue-text);
 }
 
 .care-app-chip svg:not(.chip-chevron) { width: 13px; height: 13px; }
@@ -1436,7 +1447,7 @@ body {
   padding: 0 6px;
   border-radius: 999px;
   background: var(--blue-light);
-  color: var(--blue);
+  color: var(--blue-text);
   font-size: 11.5px;
   font-weight: 700;
 }
@@ -1774,7 +1785,7 @@ body {
   min-width: 24px;
   border: 1.5px solid var(--blue);
   border-radius: 999px;
-  color: var(--blue);
+  color: var(--blue-text);
   font-weight: 700;
   padding: 1px 2px;
 }
@@ -1841,7 +1852,7 @@ body {
 .sensor-tab.active {
   border-color: var(--blue);
   background: var(--blue-light);
-  color: var(--blue);
+  color: var(--blue-text);
 }
 
 .sensor-toolbar {
@@ -2079,7 +2090,7 @@ body {
 .dot-blue { background: var(--blue); }
 
 .add-note-link {
-  color: var(--blue);
+  color: var(--blue-text);
   font-size: 13px;
   font-weight: 600;
   text-decoration: none;
@@ -2120,7 +2131,7 @@ body {
 .history-load-more-btn {
   background: none;
   border: none;
-  color: var(--blue);
+  color: var(--blue-text);
   font-size: 13.5px;
   font-weight: 700;
   cursor: pointer;
@@ -2414,7 +2425,7 @@ body {
 .data-tab .chevron { transition: transform 150ms ease; flex-shrink: 0; }
 .data-tab.open {
   background: var(--blue-light);
-  color: var(--blue);
+  color: var(--blue-text);
 }
 .data-tab.open .chevron { transform: rotate(180deg); }
 .data-tab.open:hover { background: var(--blue-light); }
@@ -2532,7 +2543,7 @@ body {
 }
 
 .subtab.active {
-  color: var(--blue);
+  color: var(--blue-text);
   font-weight: 700;
   border-bottom-color: var(--blue);
 }
@@ -2687,7 +2698,7 @@ body {
   padding: 0 6px;
   border-radius: 999px;
   background: var(--blue-light);
-  color: var(--blue);
+  color: var(--blue-text);
   font-size: 12.5px;
   font-weight: 700;
 }
@@ -2696,7 +2707,7 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  color: var(--blue);
+  color: var(--blue-text);
   font-size: 13.5px;
   font-weight: 700;
   text-decoration: none;
@@ -2767,9 +2778,10 @@ body {
   white-space: nowrap;
 }
 
-.rec-status-recommended { background: var(--blue-light); color: var(--blue); }
-.rec-status-progress { background: #FEF3E8; color: #C97A2B; }
-.rec-status-completed { background: var(--green-light, #E9FBF3); color: #2E9A66; }
+.rec-status-recommended { background: var(--blue-light); color: var(--blue-text); }
+.rec-status-progress { background: #FEF3E8; color: var(--orange-text); }
+.rec-status-completed { background: var(--green-light, #E9FBF3); color: var(--green-text); }
+.rec-status-archived { background: var(--bg); color: var(--gray-text); }
 
 .rec-latest { display: flex; flex-direction: column; gap: 1px; }
 .rec-latest-primary { font-size: 13.5px; font-weight: 600; color: #23272E; }
@@ -2923,11 +2935,11 @@ body {
   font-weight: 700;
 }
 
-.pill-hf { background: #FDEDED; color: var(--red); }
+.pill-hf { background: #FDEDED; color: var(--red-text); }
 .pill-dot { width: 8px; height: 8px; border-radius: 2px; background: var(--red); display: inline-block; }
-.pill-pending { background: #FDF3E7; color: #C77B22; }
-.pill-recommended { background: var(--blue-light); color: var(--blue); }
-.pill-completed { background: #E7F8EF; color: var(--green); }
+.pill-pending { background: #FDF3E7; color: var(--orange-text); }
+.pill-recommended { background: var(--blue-light); color: var(--blue-text); }
+.pill-completed { background: #E7F8EF; color: var(--green-text); }
 .pill-none { background: var(--bg); color: #7E8993; }
 
 .med-filters-row { display: flex; gap: 10px; margin-bottom: 18px; flex-wrap: wrap; }
@@ -3028,7 +3040,7 @@ body {
   align-items: center;
   gap: 5px;
   font-size: 12px;
-  color: #C77B22;
+  color: var(--orange-text);
   margin-top: 6px;
   font-weight: 600;
   white-space: nowrap;
@@ -3045,15 +3057,15 @@ body {
 .adherence-count { font-size: 12px; color: var(--gray-text); margin-top: 6px; }
 
 .source-badge { display: inline-flex; padding: 5px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; white-space: nowrap; }
-.src-carerec { background: var(--blue-light); color: var(--blue); }
+.src-carerec { background: var(--blue-light); color: var(--blue-text); }
 .src-clinic { background: #EEF0F3; color: #57626D; }
-.src-patient { background: #FDF0DE; color: #C77B22; }
+.src-patient { background: #FDF0DE; color: var(--orange-text); }
 
 .ehr-badge { display: inline-flex; align-items: center; gap: 5px; padding: 5px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; white-space: nowrap; border: 1px solid transparent; }
 .ehr-badge::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
-.ehr-epic { background: #F0EAFB; color: #7C4FD1; }
-.ehr-athena { background: #E7F7F0; color: #22916A; }
-.ehr-ecw { background: #FDEDED; color: #E0555E; }
+.ehr-epic { background: #F0EAFB; color: var(--purple-text); }
+.ehr-athena { background: #E7F7F0; color: var(--green-text); }
+.ehr-ecw { background: #FDEDED; color: var(--red-text); }
 .ehr-manual { background: #F1F2F4; color: #7E8993; }
 
 /* -- Medications: per-drug scrollable adherence timeline -- */
@@ -3178,9 +3190,9 @@ body {
   white-space: nowrap;
 }
 
-.badge-ontrack { background: var(--blue-light); color: var(--blue); }
-.badge-atrisk { background: #FDF0DE; color: #C77B22; }
-.badge-achieved { background: #E7F8EF; color: var(--green); }
+.badge-ontrack { background: var(--blue-light); color: var(--blue-text); }
+.badge-atrisk { background: #FDF0DE; color: var(--orange-text); }
+.badge-achieved { background: #E7F8EF; color: var(--green-text); }
 
 .goal-progress-track {
   height: 8px;
@@ -3471,7 +3483,7 @@ body {
 }
 
 .row-menu-item:hover { background: var(--bg); }
-.row-menu-item.danger { color: var(--red); }
+.row-menu-item.danger { color: var(--red-text); }
 
 /* ============================================================
    MODALS
@@ -3758,7 +3770,7 @@ label.checkbox-field {
 .btn-text {
   background: none;
   border: none;
-  color: var(--blue);
+  color: var(--blue-text);
   font-size: 14.5px;
   font-weight: 700;
   cursor: pointer;
@@ -4123,7 +4135,7 @@ label.checkbox-field {
 
 .custom-select-option.selected {
   background: var(--blue-light);
-  color: var(--blue);
+  color: var(--blue-text);
   font-weight: 600;
 }
 
@@ -4177,7 +4189,7 @@ label.checkbox-field {
   transform: rotate(45deg);
 }
 
-.lt-name.org-name { color: var(--blue); }
+.lt-name.org-name { color: var(--blue-text); }
 
 .list-table tbody td.mono { color: #57626D; }
 
@@ -4391,7 +4403,7 @@ label.checkbox-field {
   gap: 8px;
   background: none;
   border: none;
-  color: var(--blue);
+  color: var(--blue-text);
   font-size: 14.5px;
   font-weight: 600;
   cursor: pointer;
@@ -4491,7 +4503,7 @@ label.checkbox-field {
   margin-top: 18px;
   font-size: 13.5px;
   font-weight: 600;
-  color: var(--blue);
+  color: var(--blue-text);
   text-decoration: none;
 }
 
@@ -4527,7 +4539,7 @@ label.checkbox-field {
   padding: 10px 20px;
   font-size: 14.5px;
   font-weight: 700;
-  color: var(--blue);
+  color: var(--blue-text);
   cursor: pointer;
 }
 
@@ -4603,7 +4615,7 @@ label.checkbox-field {
   font-size: 13.5px;
 }
 
-.elig-eligible { color: var(--green); }
+.elig-eligible { color: var(--green-text); }
 .elig-not { color: #7E8993; }
 .elig-pending { color: #7E8993; font-weight: 600; }
 
@@ -4624,7 +4636,7 @@ label.checkbox-field {
   max-width: 90px;
 }
 
-.bill-status-ready { color: var(--green); }
+.bill-status-ready { color: var(--green-text); }
 .bill-status-not { color: #7E8993; }
 
 /* ============================================================
@@ -4696,7 +4708,7 @@ label.checkbox-field {
 }
 
 .auth-user-chip svg { flex-shrink: 0; color: var(--gray-text); }
-.auth-user-chip .auth-change-link { margin-left: auto; color: var(--blue); font-weight: 700; text-decoration: none; font-size: 12.5px; }
+.auth-user-chip .auth-change-link { margin-left: auto; color: var(--blue-text); font-weight: 700; text-decoration: none; font-size: 12.5px; }
 .auth-user-chip .auth-change-link:hover { text-decoration: underline; }
 
 .auth-btn {
@@ -4728,7 +4740,7 @@ label.checkbox-field {
 
 .auth-btn-ghost:hover { background: var(--bg); }
 
-.auth-link { display: inline-block; margin-top: 18px; font-size: 13px; color: var(--blue); text-decoration: none; font-weight: 600; }
+.auth-link { display: inline-block; margin-top: 18px; font-size: 13px; color: var(--blue-text); text-decoration: none; font-weight: 600; }
 .auth-link:hover { text-decoration: underline; }
 
 .auth-footer { margin-top: 22px; display: flex; align-items: center; justify-content: center; gap: 8px; }
@@ -5063,9 +5075,9 @@ label.checkbox-field {
 }
 
 .compliance-value { font-weight: 700; }
-.compliance-value.compliance-good { color: var(--green); }
-.compliance-value.compliance-fair { color: #C9862A; }
-.compliance-value.compliance-poor { color: var(--red); }
+.compliance-value.compliance-good { color: var(--green-text); }
+.compliance-value.compliance-fair { color: var(--orange-text); }
+.compliance-value.compliance-poor { color: var(--red-text); }
 
 .report-empty-state {
   display: flex;
@@ -5321,7 +5333,7 @@ label.checkbox-field {
   border-top: none;
 }
 
-.rec-tab.active { color: var(--blue); border-bottom-color: var(--blue); }
+.rec-tab.active { color: var(--blue-text); border-bottom-color: var(--blue); }
 
 .rec-tab-panel { display: none; }
 .rec-tab-panel.open {
@@ -5375,7 +5387,7 @@ label.checkbox-field {
 .rec-alert-tag {
   display: inline-block;
   background: #fff;
-  color: var(--red);
+  color: var(--red-text);
   border: 1px solid rgba(241, 108, 108, 0.4);
   border-radius: 6px;
   padding: 2px 8px;
@@ -5385,7 +5397,7 @@ label.checkbox-field {
   letter-spacing: 0.3px;
 }
 
-.rec-alert-tag-condition { color: #C77B22; border-color: rgba(199, 123, 34, 0.4); }
+.rec-alert-tag-condition { color: var(--orange-text); border-color: rgba(199, 123, 34, 0.4); }
 
 /* -- Summary tab: Relevant Patient Information cards -- */
 .rec-info-cards-grid {
@@ -5408,7 +5420,7 @@ label.checkbox-field {
   border-color: rgba(42, 169, 224, 0.3);
 }
 
-.rec-info-card-highlight .rec-info-card-title { color: var(--blue); }
+.rec-info-card-highlight .rec-info-card-title { color: var(--blue-text); }
 .rec-info-card-highlight .rec-info-card-list li { color: #0C4A6E; }
 
 .rec-info-card-title {
@@ -5516,7 +5528,7 @@ label.checkbox-field {
   padding: 2px 9px;
   border-radius: 999px;
   background: var(--blue-light);
-  color: var(--blue);
+  color: var(--blue-text);
   font-size: 11px;
   font-weight: 700;
   white-space: nowrap;
@@ -5611,26 +5623,55 @@ label.checkbox-field {
   white-space: nowrap;
 }
 
-.ticket-pill-type-patient { background: var(--blue-light); color: var(--blue); }
-.ticket-pill-type-clinic { background: #F1EAFB; color: #7C4DDB; }
+.ticket-pill-type-patient { background: var(--blue-light); color: var(--blue-text); }
+.ticket-pill-type-clinic { background: #F1EAFB; color: var(--purple-text); }
 
+/* Category is a classification, not a status/severity -- kept as the
+   quietest style so it never competes with the pills below. */
 .ticket-pill-category { background: #F1F3F5; color: var(--gray-text); font-weight: 600; }
 
 .ticket-pill-origin-system { background: #E7EBFB; color: #4B5FC7; }
-.ticket-pill-origin-user { background: var(--blue-light); color: var(--blue); }
+.ticket-pill-origin-user { background: var(--blue-light); color: var(--blue-text); }
 
-.ticket-pill-severity-critical { background: var(--red-light); color: var(--red); }
-.ticket-pill-severity-high { background: #FDF3E7; color: #C77B22; }
-.ticket-pill-severity-medium { background: #FCF6DA; color: #A68B0A; }
+/* Severity/priority -- smaller corner radius distinguishes a rating from
+   the full-pill lifecycle State pills below. */
+.ticket-pill-severity-critical,
+.ticket-pill-severity-high,
+.ticket-pill-severity-medium,
+.ticket-pill-severity-low {
+  border-radius: 6px;
+}
+.ticket-pill-severity-critical { background: var(--red-light); color: var(--red-text); }
+.ticket-pill-severity-high { background: #FDF3E7; color: var(--orange-text); }
+.ticket-pill-severity-medium { background: #FCF6DA; color: var(--yellow-text); }
 .ticket-pill-severity-low { background: #F1F3F5; color: var(--gray-text); }
 
-.ticket-pill-state-open { background: var(--blue-light); color: var(--blue); }
-.ticket-pill-state-inprogress { background: #FDF3E7; color: #C77B22; }
-.ticket-pill-state-escalated { background: var(--red-light); color: var(--red); }
-.ticket-pill-state-resolved { background: #E7F8EF; color: var(--green); }
+/* Lifecycle state -- full pill + status dot, so state reads differently
+   from a plain category/severity label. */
+.ticket-pill-state-open,
+.ticket-pill-state-inprogress,
+.ticket-pill-state-escalated,
+.ticket-pill-state-resolved {
+  gap: 6px;
+}
+.ticket-pill-state-open::before,
+.ticket-pill-state-inprogress::before,
+.ticket-pill-state-escalated::before,
+.ticket-pill-state-resolved::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  flex-shrink: 0;
+}
+.ticket-pill-state-open { background: var(--blue-light); color: var(--blue-text); }
+.ticket-pill-state-inprogress { background: #FDF3E7; color: var(--orange-text); }
+.ticket-pill-state-escalated { background: var(--red-light); color: var(--red-text); }
+.ticket-pill-state-resolved { background: #E7F8EF; color: var(--green-text); }
 
 .ticket-view-link {
-  color: var(--blue);
+  color: var(--blue-text);
   font-weight: 700;
   font-size: 13px;
   background: none;
@@ -5796,7 +5837,7 @@ label.checkbox-field {
   color: #23272E;
 }
 
-.support-fab-panel-head a { font-size: 12.5px; font-weight: 700; color: var(--blue); text-decoration: none; }
+.support-fab-panel-head a { font-size: 12.5px; font-weight: 700; color: var(--blue-text); text-decoration: none; }
 .support-fab-panel-head a:hover { text-decoration: underline; }
 
 .support-fab-panel-list { max-height: 320px; overflow-y: auto; padding: 8px; }

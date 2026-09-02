@@ -1096,13 +1096,15 @@ document.getElementById("confirmResetPassword").addEventListener("click", closeR
 /* ---------------- Add Action modal ---------------- */
 const addActionOverlay = document.getElementById("addActionOverlay");
 const addActionForm = document.getElementById("addActionForm");
+const actionTypeSelect = document.getElementById("actionTypeSelect");
 let activeActionPatientId = null;
 
 function openAddActionModal(patient) {
   activeActionPatientId = patient.id;
   addActionForm.reset();
+  resetCustomSelectsIn(addActionForm);
   if (patient.action) {
-    addActionForm.actionType.value = patient.action.type;
+    setCustomSelectValue(actionTypeSelect, patient.action.type);
     addActionForm.actionDate.value = patient.action.date || "";
     addActionForm.actionNote.value = patient.action.note || "";
   }

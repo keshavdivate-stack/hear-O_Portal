@@ -1717,6 +1717,7 @@ addEventForm.addEventListener("change", validateAddEventForm);
 
 document.getElementById("openAddEventBtn").addEventListener("click", () => {
   addEventForm.reset();
+  resetCustomSelectsIn(addEventForm);
   validateAddEventForm();
   addEventOverlay.classList.add("open");
 });
