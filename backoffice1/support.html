@@ -28,6 +28,7 @@
           <a href="overview-dashboard.html" class="bo-popover-item">System Health Overview</a>
           <a href="mkt-study.html" class="bo-popover-item">Study</a>
           <a href="mkt-summary.html" class="bo-popover-item">Summary</a>
+          <a href="support-dashboard.html" class="bo-popover-item">Support Dashboard</a>
         </div>
       </div>
       <a href="organizations.html" class="bo-nav-link">
@@ -115,12 +116,12 @@
 
     <div class="bo-list-toolbar">
       <div class="bo-tabs bo-seg-toggle" id="supportTabs">
-        <button class="bo-tab bo-seg-btn active" data-tab="tickets">Tickets</button>
-        <button class="bo-tab bo-seg-btn" data-tab="incidents">Incidents</button>
+        <button class="bo-tab bo-seg-btn active" data-tab="incidents">Incidents</button>
+        <button class="bo-tab bo-seg-btn" data-tab="tickets">Tickets</button>
         <button class="bo-tab bo-seg-btn" data-tab="rules">Rules</button>
       </div>
       <span class="bo-list-toolbar-spacer"></span>
-      <button class="bo-btn-primary" id="openNewTicketBtn" data-tab-btn="tickets">
+      <button class="bo-btn-primary" id="openNewTicketBtn" data-tab-btn="tickets" hidden>
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
         New Ticket
       </button>
@@ -131,7 +132,7 @@
     </div>
 
     <!-- TICKETS -->
-    <div class="bo-tab-panel active" id="tab-tickets">
+    <div class="bo-tab-panel" id="tab-tickets">
 
       <div class="bo-incident-kpi-grid">
         <div class="bo-incident-kpi-card">
@@ -234,7 +235,7 @@
     </div>
 
     <!-- INCIDENTS -->
-    <div class="bo-tab-panel" id="tab-incidents">
+    <div class="bo-tab-panel active" id="tab-incidents">
 
       <div class="bo-incident-kpi-grid">
         <div class="bo-incident-kpi-card">
@@ -412,7 +413,7 @@
           <div class="bo-modal-field full">
             <label>Channels:<span class="required-star">*</span></label>
             <div class="bo-checkbox-row">
-              <label class="bo-checkbox-item"><input type="checkbox" name="ruleChannel" value="Notification" /> Notification</label>
+              <label class="bo-checkbox-item"><input type="checkbox" name="ruleChannel" value="Notification" /> In App</label>
               <label class="bo-checkbox-item"><input type="checkbox" name="ruleChannel" value="Email" /> Email</label>
               <label class="bo-checkbox-item"><input type="checkbox" name="ruleChannel" value="SMS" /> SMS</label>
             </div>
@@ -534,7 +535,7 @@
           </div>
 
           <div class="bo-modal-field">
-            <label>Notification preference<span class="required-star">*</span></label>
+            <label>Notification channel<span class="required-star">*</span></label>
             <div class="bo-multiselect" id="newRuleSendBySelect">
               <button type="button" class="bo-multiselect-trigger">
                 <span class="bo-multiselect-value placeholder">Select channels</span>
@@ -556,7 +557,6 @@
   <!-- Row action dropdown -->
   <div class="bo-row-menu" id="ticketRowMenu">
     <button class="bo-row-menu-item" data-action="view">View Ticket</button>
-    <button class="bo-row-menu-item" data-action="viewProfile" id="ticketRowMenuProfileBtn">View Patient Profile</button>
   </div>
 
   <!-- New ticket drawer -->
@@ -798,7 +798,6 @@
 <script src="js/bo-table-scroll.js"></script>
 <script src="js/bo-pagination.js"></script>
 <script src="js/support-data.js"></script>
-<script src="js/orgs-data.js"></script>
 <script src="js/support-tickets-common.js"></script>
 <script src="js/notifications.js"></script>
 <script src="js/support.js"></script>

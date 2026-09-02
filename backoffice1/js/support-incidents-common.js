@@ -119,11 +119,16 @@ function incImpactLabel(incident) {
 function incTicketHref(relatedTicket) {
   return `ticket-detail.html?ticket=${encodeURIComponent(relatedTicket.ticketNo)}&source=${encodeURIComponent(relatedTicket.source)}`;
 }
+/* Icon-only (not a text label) so it sits next to the status pill without
+   fighting it for width in the compact STATUS column -- the ticket number(s)
+   show as a native tooltip on hover instead. */
 function incRelatedTicketLink(incident) {
   const tickets = incident.relatedTickets || [];
   if (!tickets.length) return "";
-  const label = tickets.length > 1 ? "Support Tickets" : "Support Ticket";
-  return `<a class="bo-name-link bo-related-ticket-link" href="${incTicketHref(tickets[0])}" title="${tickets.map((t) => t.ticketNo).join(", ")}">${label}</a>`;
+  const tooltip = tickets.length > 1 ? `Related tickets: ${tickets.map((t) => t.ticketNo).join(", ")}` : `Related ticket: ${tickets[0].ticketNo}`;
+  return `<a class="bo-related-ticket-link" href="${incTicketHref(tickets[0])}" title="${tooltip}" aria-label="${tooltip}">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3h7v7"/><path d="M10 14 21 3"/><path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5"/></svg>
+  </a>`;
 }
 
 function incImpactChips(list) {

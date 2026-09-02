@@ -28,6 +28,7 @@
           <a href="overview-dashboard.html" class="bo-popover-item">System Health Overview</a>
           <a href="mkt-study.html" class="bo-popover-item">Study</a>
           <a href="mkt-summary.html" class="bo-popover-item">Summary</a>
+          <a href="support-dashboard.html" class="bo-popover-item">Support Dashboard</a>
         </div>
       </div>
       <a href="organizations.html" class="bo-nav-link">
@@ -119,16 +120,23 @@
       <span class="bo-list-toolbar-spacer"></span>
 
       <label class="bo-switch-field">
-        All Patients
+        Study
         <span class="bo-switch">
-          <input type="checkbox" id="allPatientsToggle" checked />
+          <input type="checkbox" id="studyOrgTypeToggle" data-org-type="Study" />
           <span class="bo-switch-track"></span>
         </span>
       </label>
       <label class="bo-switch-field">
-        All Environments
+        Commercial
         <span class="bo-switch">
-          <input type="checkbox" id="allEnvironmentsToggle" checked />
+          <input type="checkbox" id="commercialOrgTypeToggle" data-org-type="Commercial" />
+          <span class="bo-switch-track"></span>
+        </span>
+      </label>
+      <label class="bo-switch-field">
+        R&amp;D
+        <span class="bo-switch">
+          <input type="checkbox" id="rdOrgTypeToggle" data-org-type="R&D" />
           <span class="bo-switch-track"></span>
         </span>
       </label>
@@ -136,14 +144,6 @@
 
     <p class="bo-filter-row-label">Filters:</p>
     <div class="bo-filter-row">
-      <div class="bo-filter-field">
-        <select class="bo-filter-select" id="orgTypeFilter">
-          <option value="">Organization type</option>
-          <option value="Commercial">Commercial</option>
-          <option value="R&D">R&D</option>
-          <option value="Study">Study</option>
-        </select>
-      </div>
       <div class="bo-filter-field">
         <select class="bo-filter-select" id="clinicalSiteFilter">
           <option value="">Clinical site</option>
@@ -198,11 +198,20 @@
           <thead>
             <tr>
               <th class="sortable">USERNAME <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 19V5M6 11L12 5L18 11"/></svg></th>
+              <th>ALGO</th>
               <th>LANG</th>
               <th>TAG</th>
+              <th>CREATION DATE</th>
+              <th>START DATE</th>
+              <th>BASELINE COMPLETED DATE</th>
+              <th>FOLLOW UP DATE</th>
+              <th>LEAVING DATE</th>
               <th>STATUS</th>
               <th>STATUS START DATE</th>
+              <th>LAST APP VERSION</th>
+              <th>LAST PHONE MODEL</th>
               <th>LAST SESSION DATE</th>
+              <th>LAST SIGN IN</th>
               <th>USABLE COMPLIANCE</th>
               <th>COMPLIANCE</th>
               <th></th>
@@ -235,13 +244,9 @@
   </main>
 
   <!-- Row action dropdown -->
-  <div class="bo-row-menu bo-row-menu-icons" id="patientRowMenu">
-    <button class="bo-row-menu-icon-btn" data-action="notify" aria-label="Notify Patient" title="Notify Patient">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 4.6 1.2 6.9 2.1 8.1.3.4 0 .9-.5.9H4.4c-.5 0-.8-.5-.5-.9C4.8 14.9 6 12.6 6 8Z"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
-    </button>
-    <button class="bo-row-menu-icon-btn" data-action="edit" aria-label="Edit Patient" title="Edit Patient">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
-    </button>
+  <div class="bo-row-menu" id="patientRowMenu">
+    <button class="bo-row-menu-item" data-action="notify">Notify Patient</button>
+    <button class="bo-row-menu-item" data-action="edit">Edit Patient</button>
   </div>
 
 <script src="js/dashboard-nav.js"></script>

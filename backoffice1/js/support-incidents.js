@@ -141,6 +141,11 @@ document.querySelector('#addTaskOverlay .bo-select[data-name="taskLevel"] .bo-se
 document.querySelector('#addTaskOverlay .bo-select[data-name="taskAssignee"] .bo-select-menu').innerHTML = buildSelectOptions(SUPPORT_TEAM);
 document.querySelector('#addTaskOverlay .bo-select[data-name="taskPriority"] .bo-select-menu').innerHTML = buildSelectOptions(Object.values(INC_SEVERITY_LABEL));
 
+/* Level defaults from the incident's own severity instead of always
+   starting blank -- a Critical incident should escalate straight to
+   Level 3, not make the support agent re-derive that manually every time. */
+const INC_SEVERITY_TO_LEVEL = { "SEV-1": "Level 3", "SEV-2": "Level 2", "SEV-3": "Level 2", "SEV-4": "Level 1" };
+
 function validateAddTaskForm() {
   const titleFilled = addTaskForm.taskTitle.value.trim() !== "";
   const teamFilled = addTaskOverlay.querySelector('.bo-select[data-name="taskTeam"] input[type=hidden]').value !== "";
@@ -160,6 +165,8 @@ function openAddTaskDrawer(incident) {
   document.querySelector('#addTaskOverlay .bo-select[data-name="taskOrg"] .bo-select-menu').innerHTML = buildFilterSelectOptions(incident.orgs, "Optional");
   document.querySelector('#addTaskOverlay .bo-select[data-name="taskPatient"] .bo-select-menu').innerHTML = buildFilterSelectOptions(incident.patients, "Optional");
   addTaskOverlay.querySelectorAll(".bo-select").forEach(resetBoSelect);
+  setBoSelectValue(addTaskOverlay.querySelector('.bo-select[data-name="taskLevel"]'), INC_SEVERITY_TO_LEVEL[incident.severity] || "Level 1", { silent: true });
+  setBoSelectValue(addTaskOverlay.querySelector('.bo-select[data-name="taskPriority"]'), INC_SEVERITY_LABEL[incident.severity] || "", { silent: true });
   taskAttachmentName.textContent = "Click to attach a file";
   document.getElementById("addTaskIncidentTag").textContent = `Incident: ${incident.id}`;
   validateAddTaskForm();
@@ -199,10 +206,37 @@ addTaskForm.addEventListener("submit", (e) => {
   refreshIncidentTable();
 });
 
-/* ---------------- Deep link: support.html?tab=incidents ---------------- */
+/* ---------------- Deep link: support.html?tab=incidents&severity=<Critical|High|Medium|Low>&status=<...>&q=<search text>
+   Lets other screens (e.g. the Overview dashboard's System Health Trend /
+   Issues panels) land here on the Incidents tab with the relevant
+   filter/search already applied. `severity` arrives as the human label
+   used elsewhere (Critical/High/Medium/Low) rather than the raw SEV-1..4
+   key incidents are stored under, so it's translated via INC_SEVERITY_LABEL. */
 (function openIncidentsTabFromUrl() {
   const params = new URLSearchParams(location.search);
   if (params.get("tab") !== "incidents") return;
+
+  const severityLabel = params.get("severity");
+  const status = params.get("status");
+  const q = params.get("q");
+
+  if (severityLabel) {
+    const sevKey = INC_SEVERITIES.find((key) => INC_SEVERITY_LABEL[key] === severityLabel);
+    if (sevKey) {
+      incSeverityValue = sevKey;
+      setBoSelectValue(document.querySelector('.bo-select[data-name="incSeverity"]'), sevKey, { silent: true });
+    }
+  }
+  if (status && INC_STATUSES.includes(status)) {
+    incStatusValue = status;
+    setBoSelectValue(document.querySelector('.bo-select[data-name="incStatus"]'), status, { silent: true });
+  }
+  if (q) {
+    incSearchTerm = q.trim().toLowerCase();
+    document.getElementById("incSearchInput").value = q;
+  }
+  refreshIncidentTable();
+
   const tabBtn = document.querySelector('#supportTabs .bo-tab[data-tab="incidents"]');
   if (tabBtn) tabBtn.click();
 })();

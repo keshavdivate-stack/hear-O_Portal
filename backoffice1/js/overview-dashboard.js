@@ -214,7 +214,7 @@ function renderOvTrendFooter() {
   document.getElementById("ovTrendFooter").innerHTML = footer
     .map(
       (f) => `
-    <a class="bo-mini-stat-cell" href="support.html?${f.param}">
+    <a class="bo-mini-stat-cell" href="support.html?tab=incidents&${f.param}">
       <span class="num" style="color:${f.color};">${f.num}</span>
       <span class="lbl">${f.label}</span>
       ${
@@ -272,7 +272,7 @@ function renderOvCritIssues(orgId) {
 
   const viewAllLink = document.getElementById("ovCritViewAllLink");
   if (viewAllLink) {
-    viewAllLink.href = orgId === "all" ? "support.html" : `support.html?q=${encodeURIComponent(orgHealthData[orgId].name)}`;
+    viewAllLink.href = orgId === "all" ? "support.html?tab=incidents" : `support.html?tab=incidents&q=${encodeURIComponent(orgHealthData[orgId].name)}`;
   }
 
   const issues =

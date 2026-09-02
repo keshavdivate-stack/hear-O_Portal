@@ -9,6 +9,16 @@ document.querySelectorAll("#supportTabs .bo-tab").forEach((tab) => {
   });
 });
 
+/* Deep link: ?tab=<tickets|incidents|rules> -- lets the Support Dashboard's
+   "View All Tickets"/"View All Incidents" links land here on the right tab
+   instead of always defaulting to Tickets. */
+(function applyIncomingTab() {
+  const tab = new URLSearchParams(location.search).get("tab");
+  if (!tab) return;
+  const tabBtn = document.querySelector(`#supportTabs .bo-tab[data-tab="${tab}"]`);
+  if (tabBtn) tabBtn.click();
+})();
+
 /* ---------------- Filter option lists ---------------- */
 document.getElementById("ticketStatusFilterMenu").innerHTML = buildFilterSelectOptions(STATUSES, "All statuses");
 document.getElementById("ticketSeverityFilterMenu").innerHTML = buildFilterSelectOptions(SEVERITIES, "All severities");
@@ -260,23 +270,6 @@ function goToTicketDetail(source, id) {
   location.href = `ticket-detail.html?source=${source}&id=${id}`;
 }
 
-/* Patient tickets link back to that patient's health dashboard; Clinic
-   tickets link to the organization's profile -- same destinations the
-   Patient Management and Organizations tables already link to. */
-function goToTicketRelatedProfile(source, id) {
-  const ticket = allTickets.find((t) => t.source === source && t.id === id);
-  if (!ticket) return;
-  const returnTo = encodeURIComponent(location.href);
-  if (source === "patient") {
-    location.href = `patient-health-dashboard.html?patient=${encodeURIComponent(ticket.patientId)}&return=${returnTo}`;
-  } else {
-    const org = orgs.find((o) => o.name === ticket.organization);
-    if (org) location.href = `org-profile.html?id=${org.id}&return=${returnTo}`;
-  }
-}
-
-const ticketRowMenuProfileBtn = document.getElementById("ticketRowMenuProfileBtn");
-
 function wireTicketRowMenu(rowsId) {
   const rowsEl = document.getElementById(rowsId);
 
@@ -286,7 +279,6 @@ function wireTicketRowMenu(rowsId) {
     e.stopPropagation();
     activeTicketSource = trigger.dataset.source;
     activeTicketId = Number(trigger.dataset.id);
-    ticketRowMenuProfileBtn.textContent = activeTicketSource === "patient" ? "View Patient Profile" : "View Organization Profile";
     const rect = trigger.getBoundingClientRect();
     ticketRowMenu.style.top = `${rect.bottom + 6}px`;
     ticketRowMenu.style.left = `${rect.right - 190}px`;
@@ -313,7 +305,6 @@ ticketRowMenu.addEventListener("click", (e) => {
   if (!item || activeTicketId === null) return;
   ticketRowMenu.classList.remove("open");
   if (item.dataset.action === "view") goToTicketDetail(activeTicketSource, activeTicketId);
-  else if (item.dataset.action === "viewProfile") goToTicketRelatedProfile(activeTicketSource, activeTicketId);
 });
 
 /* ---------------- New ticket drawer ---------------- */
@@ -427,7 +418,8 @@ newTicketForm.addEventListener("submit", (e) => {
 
 /* ---------------- Rules table ---------------- */
 const channelPillClass = { "Notification": "bo-pill-channel-notification", "Email": "bo-pill-channel-email", "SMS": "bo-pill-channel-sms" };
-const channelPills = (channels) => channels.map((c) => `<span class="bo-pill ${channelPillClass[c] || ""}">${c}</span>`).join(" ");
+const channelPillLabel = { "Notification": "In App", "Email": "Email", "SMS": "SMS" };
+const channelPills = (channels) => channels.map((c) => `<span class="bo-pill ${channelPillClass[c] || ""}">${channelPillLabel[c] || c}</span>`).join(" ");
 
 function renderRules() {
   document.getElementById("ruleRows").innerHTML = alertRules
@@ -534,12 +526,12 @@ ruleDrawerForm.addEventListener("submit", (e) => {
 
 /* ---------------- New Rule drawer ---------------- */
 const RULE_APPLIES_TO = ["All organisations", "All Commercial orgs", "Per organisation", "System-wide"];
-/* Notification preference: which channels a matching rule notifies through.
+/* Notification channel: which channels a matching rule notifies through.
    Stored/checkbox value stays "Notification" (matches the Edit Rule drawer's
-   Channels checkboxes) while the field itself shows the friendlier "In-app"
+   Channels checkboxes) while the field itself shows the friendlier "In App"
    label. */
-const NOTIFICATION_CHANNEL_OPTIONS = ["In-app", "SMS", "Email"];
-const NOTIFICATION_CHANNEL_VALUE = { "In-app": "Notification", SMS: "SMS", Email: "Email" };
+const NOTIFICATION_CHANNEL_OPTIONS = ["In App", "SMS", "Email"];
+const NOTIFICATION_CHANNEL_VALUE = { "In App": "Notification", SMS: "SMS", Email: "Email" };
 /* New rules don't collect SLA targets directly (the form keeps them out to stay
    short) -- default from severity using the same response/resolve pairing the
    hand-authored rules already follow. */

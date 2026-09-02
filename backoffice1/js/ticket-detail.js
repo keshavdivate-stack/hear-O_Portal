@@ -79,17 +79,6 @@ function renderTicketHeader() {
   document.getElementById("ticketDetailTitle").textContent = currentTicket.ticketNo;
   document.getElementById("ticketDetailBadges").innerHTML = typePill(currentSource === "patient" ? "Patient" : "Clinic");
   document.title = `HearO Backoffice | ${currentTicket.ticketNo}`;
-
-  const viewProfileBtn = document.getElementById("ticketDetailViewProfileBtn");
-  const returnTo = encodeURIComponent(location.href);
-  if (currentSource === "patient") {
-    viewProfileBtn.textContent = "View Patient Profile";
-    viewProfileBtn.href = `patient-health-dashboard.html?patient=${encodeURIComponent(currentTicket.patientId)}&return=${returnTo}`;
-  } else {
-    const org = orgs.find((o) => o.name === currentTicket.organization);
-    viewProfileBtn.textContent = "View Organization Profile";
-    viewProfileBtn.href = org ? `org-profile.html?id=${org.id}&return=${returnTo}` : "#";
-  }
 }
 
 function renderTicketInfo() {

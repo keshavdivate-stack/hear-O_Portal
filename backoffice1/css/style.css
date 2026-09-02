@@ -533,13 +533,13 @@ a { color: inherit; }
 .bo-table tbody tr.bo-row-highlight td { background: var(--blue-light); }
 
 .bo-status-pill { font-weight: 700; }
-.bo-status-pill.priority { color: var(--red); }
-.bo-status-pill.unmonitored { color: var(--blue); }
-.bo-status-pill.paused { color: var(--gray); }
-.bo-status-pill.active { color: var(--green); }
-.bo-status-pill.registered { color: var(--blue); }
-.bo-status-pill.baseline { color: var(--navy); }
-.bo-status-pill.insufficient { color: var(--orange); }
+.bo-status-pill.priority { background: var(--red-light); color: var(--red); }
+.bo-status-pill.unmonitored { background: var(--blue-light); color: var(--blue); }
+.bo-status-pill.paused { background: var(--bg); color: var(--gray); }
+.bo-status-pill.active { background: var(--green-light); color: var(--green); }
+.bo-status-pill.registered { background: var(--blue-light); color: var(--blue); }
+.bo-status-pill.baseline { background: var(--navy-light); color: var(--navy); }
+.bo-status-pill.insufficient { background: var(--orange-light); color: var(--orange); }
 
 /* Activity Feed */
 .bo-activity-panel { padding-bottom: 8px; }
@@ -614,6 +614,37 @@ a { color: inherit; }
 }
 .bo-trend-tooltip .dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 5px; vertical-align: middle; }
 .bo-area-svg { width: 100%; height: 100%; display: block; }
+
+/* Mini bar-sparkline pair (Support Dashboard's Volume Trend -- Tickets vs
+   Incidents run at very different scales, so each gets its own bar chart
+   rather than sharing one y-axis). Gridlines + a baseline + headroom above
+   the tallest bar (heights are capped below 100%) so it reads as a chart
+   instead of a row of solid full-height blocks. */
+.bo-mini-bar-group { display: flex; gap: 32px; height: 100%; }
+.bo-mini-bar-col { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+.bo-mini-bar-head { display: flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--gray-text); font-weight: 600; margin-bottom: 14px; }
+.bo-mini-bar-head .dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.bo-mini-bar-head b { color: var(--ink); font-size: 13px; margin-left: auto; }
+
+.bo-mini-bar-plot { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+
+.bo-mini-bar-row {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  padding-top: 8px;
+  border-bottom: 1.5px solid var(--gray-border);
+  background-image: repeating-linear-gradient(to top, var(--gray-border) 0, var(--gray-border) 1px, transparent 1px, transparent 25%);
+}
+
+.bo-mini-bar-item { flex: 1; height: 100%; display: flex; align-items: flex-end; min-width: 0; }
+.bo-mini-bar-fill { width: 100%; max-width: 34px; margin: 0 auto; border-radius: 5px 5px 0 0; transition: height 0.15s ease; opacity: 0.88; }
+.bo-mini-bar-item:hover .bo-mini-bar-fill { opacity: 1; }
+
+.bo-mini-bar-xaxis { display: flex; gap: 10px; margin-top: 6px; }
+.bo-mini-bar-xaxis span { flex: 1; text-align: center; font-size: 10px; color: var(--gray-text); font-weight: 600; }
 
 .bo-legend-row {
   display: flex;
@@ -3869,6 +3900,15 @@ a.bo-crit-issue-row:hover { background: var(--bg); }
 .bo-donut-legend-row .val { font-weight: 700; flex-shrink: 0; }
 a.bo-donut-legend-row:hover { background: var(--bg); }
 
+/* Horizontal bar breakdown (category/source counts) -- a scannable bar
+   instead of a bare number-only row so relative share reads at a glance. */
+.bo-hbar-list { display: flex; flex-direction: column; gap: 12px; }
+.bo-hbar-row { display: flex; align-items: center; gap: 10px; }
+.bo-hbar-label { width: 150px; flex-shrink: 0; font-size: 12.5px; color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bo-hbar-track { flex: 1; height: 8px; border-radius: 5px; background: var(--bg); overflow: hidden; }
+.bo-hbar-fill { height: 100%; border-radius: 5px; }
+.bo-hbar-count { width: 26px; flex-shrink: 0; text-align: right; font-size: 12.5px; font-weight: 700; color: var(--ink); }
+
 .bo-org-mini-list { display: flex; flex-direction: column; gap: 4px; }
 
 .bo-org-mini-row {
@@ -4326,10 +4366,19 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue); }
 .bo-incident-title { font-weight: 700; color: var(--ink); }
 .bo-incident-source-label { display: block; font-size: 11.5px; color: var(--gray-text); margin-top: 2px; font-weight: 500; }
 
-.bo-related-ticket-link { display: inline-block; font-size: 11.5px; font-weight: 700; margin-left: 10px; white-space: nowrap; }
-
-table:has(#incidentRows) th:nth-child(5),
-table:has(#incidentRows) td:nth-child(5) { min-width: 210px; white-space: nowrap; }
+.bo-related-ticket-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  margin-left: 6px;
+  border-radius: 6px;
+  color: var(--blue);
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+.bo-related-ticket-link:hover { background: var(--blue-light); }
 
 .bo-related-tickets-list { display: flex; flex-wrap: wrap; gap: 4px 10px; }
 
