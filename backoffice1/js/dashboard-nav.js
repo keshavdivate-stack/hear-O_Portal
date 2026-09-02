@@ -68,3 +68,59 @@ document.querySelectorAll(".bo-popover-item[data-val]").forEach((item) => {
     }
   });
 });
+
+/* ---------------- "View Version" modal (avatar menu) ----------------
+   Built once and appended to <body> here (rather than duplicated into
+   every page's HTML) since every backoffice page loads this same script. */
+(function initViewVersionModal() {
+  const trigger = document.getElementById("viewVersionBtn");
+  if (!trigger) return;
+
+  const VERSIONS = [
+    { label: "Client", value: "2.0.62.11" },
+    { label: "Server", value: "2.0.203.9" },
+    { label: "Report Microservice", value: "2.0.37.21" },
+    { label: "Statistic Microservice", value: "1.0.39.2" },
+    { label: "Audit Log Microservice", value: "2.0.3.2" },
+    { label: "Settings Service", value: "1.0.35.5" },
+    { label: "Session Recording Service", value: "1.0.22.10" },
+    { label: "Engine Service", value: "2.0.33.19" },
+    { label: "ASR", value: "1.1.0.51" },
+    { label: "Voice Engine", value: "3.0.0.0" },
+    { label: "Comm Microservice", value: "1.0.1.31" },
+    { label: "Clinic Microservice", value: "1.0.0.24" },
+    { label: "Sensors Microservice", value: "1.1.0.1" },
+  ];
+
+  const overlay = document.createElement("div");
+  overlay.className = "bo-center-modal-overlay";
+  overlay.id = "viewVersionOverlay";
+  overlay.innerHTML = `
+    <div class="bo-center-modal">
+      <h2>Versions</h2>
+      <div class="bo-version-list">
+        ${VERSIONS.map((v) => `<div class="bo-version-row"><span>${v.label}</span><span>${v.value}</span></div>`).join("")}
+      </div>
+      <div class="bo-center-modal-foot">
+        <button type="button" class="bo-btn-primary" id="closeViewVersionModal">Close</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+
+  function openModal() {
+    document.querySelectorAll(".bo-popover.open").forEach((p) => p.classList.remove("open"));
+    overlay.classList.add("open");
+  }
+  function closeModal() {
+    overlay.classList.remove("open");
+  }
+
+  trigger.addEventListener("click", (e) => {
+    e.stopPropagation();
+    openModal();
+  });
+  overlay.addEventListener("click", (e) => {
+    if (e.target === overlay) closeModal();
+  });
+  document.getElementById("closeViewVersionModal").addEventListener("click", closeModal);
+})();

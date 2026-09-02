@@ -11,9 +11,10 @@ let patientActiveFilter = "";
 let patientAppVersionFilter = "";
 let patientPhoneModelFilter = "";
 let patientLastSessionUpTo = "";
-let patientScope = "all"; // "all" | "active" -- Active Only / All Patients
-let patientEnvScope = "all"; // "all" | "current" -- This Environment / All Environments
-const CURRENT_ENVIRONMENT = "Production";
+/* Study / Commercial / R&D toggles -- multiple can be on at once (e.g. Study
+   + Commercial together); none checked means no org-type filter is applied
+   at all, same "off = unfiltered" behavior the old scope toggles had. */
+const patientOrgTypeToggles = new Set();
 
 /* ---------------- Filter options ---------------- */
 const siteCodes = [...new Set(patients.map((p) => p.username.split("-")[0]))];
@@ -37,8 +38,7 @@ function dmyToIso(s) {
 
 function filteredPatients() {
   return patients.filter((p) => {
-    if (patientScope === "active" && !p.active) return false;
-    if (patientEnvScope === "current" && p.environment !== CURRENT_ENVIRONMENT) return false;
+    if (patientOrgTypeToggles.size && !patientOrgTypeToggles.has(patientOrgType(p))) return false;
     if (patientSiteFilter && !p.username.startsWith(patientSiteFilter)) return false;
     if (patientTagFilter && p.tag !== patientTagFilter) return false;
     if (patientLanguageFilter && p.lang !== patientLanguageFilter) return false;
@@ -80,11 +80,20 @@ function renderPatients() {
       (p) => `
       <tr>
         <td><a class="bo-name-link" href="patient-health-dashboard.html?patient=${p.username}">${p.username}</a></td>
+        <td>${p.algo || "—"}</td>
         <td>${p.lang}</td>
         <td>${p.tag}</td>
+        <td>${p.creationDate || "—"}</td>
+        <td>${p.startDate || "—"}</td>
+        <td>${p.baselineCompletedDate || "—"}</td>
+        <td>${p.followUpDate || "—"}</td>
+        <td>${p.leavingDate || "—"}</td>
         <td><span class="bo-status-pill ${statusClass(p.status)}">${p.status}</span></td>
         <td>${p.statusStart}</td>
+        <td>${p.lastAppVersion || "—"}</td>
+        <td>${p.lastPhoneModel || "—"}</td>
         <td>${p.lastSession}</td>
+        <td>${p.lastSignIn || "—"}</td>
         <td>${pct(p.usableCompliance)}</td>
         <td>${pct(p.compliance)}</td>
         <td>
@@ -131,26 +140,14 @@ document.getElementById("patientApplyBtn").addEventListener("click", () => {
   renderPatients();
 });
 
-document.getElementById("hmoToggle").addEventListener("change", (e) => {
-  patientSiteFilter = "";
-  const siteSelect = document.getElementById("clinicalSiteFilter");
-  siteSelect.value = "";
-  syncFilterSelectStyle(siteSelect);
-  patientCurrentPage = 1;
-  renderPatients();
-});
-
-/* ---------------- Scope toggles (apply immediately) ---------------- */
-document.getElementById("allPatientsToggle").addEventListener("change", (e) => {
-  patientScope = e.target.checked ? "all" : "active";
-  patientCurrentPage = 1;
-  renderPatients();
-});
-
-document.getElementById("allEnvironmentsToggle").addEventListener("change", (e) => {
-  patientEnvScope = e.target.checked ? "all" : "current";
-  patientCurrentPage = 1;
-  renderPatients();
+/* ---------------- Organization type toggles (apply immediately) ---------------- */
+document.querySelectorAll("[data-org-type]").forEach((toggle) => {
+  toggle.addEventListener("change", (e) => {
+    if (e.target.checked) patientOrgTypeToggles.add(toggle.dataset.orgType);
+    else patientOrgTypeToggles.delete(toggle.dataset.orgType);
+    patientCurrentPage = 1;
+    renderPatients();
+  });
 });
 
 /* ---------------- Sort ---------------- */

@@ -28,6 +28,7 @@
           <a href="overview-dashboard.html" class="bo-popover-item">System Health Overview</a>
           <a href="mkt-study.html" class="bo-popover-item">Study</a>
           <a href="mkt-summary.html" class="bo-popover-item">Summary</a>
+          <a href="support-dashboard.html" class="bo-popover-item">Support Dashboard</a>
         </div>
       </div>
       <a href="organizations.html" class="bo-nav-link">
@@ -103,8 +104,9 @@
         </button>
         <div class="bo-popover" id="avatarPopover" style="right:0; min-width:200px;">
           <div class="bo-popover-item" style="font-weight:700; pointer-events:none; color:var(--gray-text);">emily.carter@cordio-med.com</div>
-          <div class="bo-popover-item">Account settings</div>
-          <div class="bo-popover-item">Sign out</div>
+          <div class="bo-popover-item" id="viewVersionBtn">View Version</div>
+          <div class="bo-popover-item">Change Password</div>
+          <div class="bo-popover-item">Logout</div>
         </div>
       </div>
     </div>
@@ -129,7 +131,7 @@
         </select>
       </div>
       <div class="bo-filter-field">
-        <input type="text" id="alDescriptionFilter" placeholder="Description" />
+        <input type="text" id="alDescriptionFilter" placeholder="Enter description" />
       </div>
       <div class="bo-filter-field">
         <input type="text" id="alUserFilter" placeholder="User" />
@@ -148,11 +150,11 @@
         <input type="text" id="alUsercodeFilter" placeholder="Patient Usercode" />
       </div>
       <div class="bo-date-field">
-        <input type="text" id="alFromDate" placeholder="From Date" onfocus="(this.type='date')" onblur="if(!this.value)this.type='text'" />
+        <input type="text" id="alFromDate" placeholder="mm/dd/yyyy" onfocus="(this.type='date')" onblur="if(!this.value)this.type='text'" />
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="17" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3 9H21" stroke="currentColor" stroke-width="1.8"/></svg>
       </div>
       <div class="bo-date-field">
-        <input type="text" id="alToDate" placeholder="To Date" onfocus="(this.type='date')" onblur="if(!this.value)this.type='text'" />
+        <input type="text" id="alToDate" placeholder="mm/dd/yyyy" onfocus="(this.type='date')" onblur="if(!this.value)this.type='text'" />
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="17" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3 9H21" stroke="currentColor" stroke-width="1.8"/></svg>
       </div>
       <button class="bo-btn-secondary" id="alApplyBtn">Apply</button>

@@ -276,8 +276,8 @@ function bodySentences() {
 function bodyQuestions() {
   const tabs = ["Questions", "HealthQuestions"];
   const tabsHtml = `
-    <div class="bo-tabs bo-seg-toggle" style="margin:16px 0;">
-      ${tabs.map((t) => `<button type="button" class="bo-tab bo-seg-btn bo-question-subtab ${state.questionsActiveTab === t ? "active" : ""}" data-sub="${t}">${t}</button>`).join("")}
+    <div class="bo-secondary-tabs" style="margin:16px 0;">
+      ${tabs.map((t) => `<button type="button" class="bo-secondary-tab bo-question-subtab ${state.questionsActiveTab === t ? "active" : ""}" data-sub="${t}">${t}</button>`).join("")}
     </div>`;
   const active = state.questionsActiveTab;
   const items = state.questionsLists[active]

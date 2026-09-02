@@ -126,6 +126,17 @@ const TIER_AGENTS = {
   "Level 3": ["Liat Peretz"],
 };
 
+/* Reverse lookup so any support agent's name can carry its level wherever
+   it's displayed (ticket lists, Ticket Detail's Assigned To), matching each
+   agent's level to the tier they were defined under above. */
+const AGENT_LEVEL = {};
+Object.entries(TIER_AGENTS).forEach(([level, names]) => names.forEach((name) => { AGENT_LEVEL[name] = level; }));
+
+function agentLabel(name) {
+  const level = AGENT_LEVEL[name];
+  return name && level ? `${name} (${level})` : name || "";
+}
+
 /* ---------------- Sample tickets raised by patients ---------------- */
 const patientTickets = [
   { id: 0, ticketNo: "TCK-1042", patientId: "120-2001", organization: "120", issueType: "Missing ASR Results", scope: "Patient", tier: "Level 1", severity: "Critical", status: "Open", origin: "User Created", assignedTo: "Sarah Cohen", createdDate: "02/08/2026 09:14", description: "Patient's recordings aren't producing ASR results -- the app freezes a few seconds into every attempt and no audio file is saved." },
@@ -136,6 +147,7 @@ const patientTickets = [
   { id: 5, ticketNo: "TCK-1027", patientId: "122-2001", organization: "122", issueType: "Signed In Not Uploaded", scope: "Patient", tier: "Level 1", severity: "Low", status: "Resolved", origin: "System Generated", assignedTo: "Sarah Cohen", createdDate: "22/07/2026 10:10", description: "Single recording stuck in upload queue for 3 days; cleared after patient reinstalled the app." },
   { id: 6, ticketNo: "TCK-1019", patientId: "B01-6004", organization: "B01", issueType: "Other / Manual Report", scope: "Patient", tier: "Level 2", severity: "High", status: "In Progress", origin: "System Generated", assignedTo: "Daniel Avraham", createdDate: "18/07/2026 13:47", description: "App crashes immediately on launch on patient's older Android device; logs point to a memory issue." },
   { id: 7, ticketNo: "TCK-1012", patientId: "ATP-7002", organization: "ATP", issueType: "Other / Manual Report", scope: "Patient", tier: "Level 1", severity: "Low", status: "Open", origin: "User Created", assignedTo: "Maya Gold", createdDate: "14/07/2026 09:30", description: "Patient can't find the 'measurements' tab after the latest release; menu appears reordered." },
+  { id: 8, ticketNo: "TCK-1050", patientId: "121-2010", organization: "121", issueType: "Missing ASR Results", scope: "Patient", tier: "Level 1", severity: "Critical", status: "Open", origin: "User Created", assignedTo: "Sarah Cohen", createdDate: "28/12/2026 09:15", description: "Patient's latest recording uploaded but never produced ASR results; the voice engine pipeline appears stuck." },
 ];
 
 /* ---------------- Sample tickets raised by clinics ---------------- */
@@ -238,12 +250,12 @@ topUpTickets(clinicTickets, "clinic", "Open", 32, 144);
 const RULE_CHANNELS = ["Notification", "Email", "SMS"];
 
 const alertRules = [
-  { id: 0, name: "Missing sensor data", condition: "No sensor data for ≥ 3 consecutive days", severity: "High", tier: "Level 2", slaResponse: "2h", slaResolve: "24h", channels: ["Notification", "Email"], autoCreateTicket: true, appliesTo: "All Commercial orgs" },
-  { id: 1, name: "Recording failure", condition: "≥ 3 failed sessions in 24h for one patient", severity: "Medium", tier: "Level 1", slaResponse: "8h", slaResolve: "3d", channels: ["Notification"], autoCreateTicket: false, appliesTo: "All organisations" },
-  { id: 2, name: "Compliance drop", condition: "Patient compliance < 60% over 14 days", severity: "High", tier: "Level 1", slaResponse: "2h", slaResolve: "24h", channels: ["Notification", "Email"], autoCreateTicket: true, appliesTo: "All Commercial orgs" },
-  { id: 3, name: "Health permission off", condition: "HealthKit / Health Connect permission revoked", severity: "Medium", tier: "Level 1", slaResponse: "8h", slaResolve: "3d", channels: ["Notification"], autoCreateTicket: false, appliesTo: "All organisations" },
-  { id: 4, name: "Voice engine degradation", condition: "ASR error rate > 10% over 2h", severity: "Critical", tier: "Level 2", slaResponse: "30m", slaResolve: "4h", channels: ["Notification", "Email", "SMS"], autoCreateTicket: true, appliesTo: "System-wide" },
-  { id: 5, name: "Sync failure", condition: "Upload queue stalled > 12h", severity: "High", tier: "Level 2", slaResponse: "2h", slaResolve: "24h", channels: ["Notification", "Email"], autoCreateTicket: true, appliesTo: "System-wide" },
-  { id: 6, name: "EHR connection failure", condition: "FHIR / HL7 endpoint unreachable > 30 min", severity: "Critical", tier: "Level 3", slaResponse: "30m", slaResolve: "4h", channels: ["Notification", "Email", "SMS"], autoCreateTicket: true, appliesTo: "Per organisation" },
-  { id: 7, name: "System downtime", condition: "Availability below SLO beyond allowed limit", severity: "Critical", tier: "Level 3", slaResponse: "15m", slaResolve: "2h", channels: ["Notification", "Email", "SMS"], autoCreateTicket: true, appliesTo: "System-wide" },
+  { id: 0, name: "Missing sensor data", category: "Sensors", condition: "No sensor data for ≥ 3 consecutive days", severity: "High", tier: "Level 2", slaResponse: "2h", slaResolve: "24h", channels: ["Notification", "Email"], autoCreateTicket: true, appliesTo: "All Commercial orgs" },
+  { id: 1, name: "Recording failure", category: "Voice Engine", condition: "≥ 3 failed sessions in 24h for one patient", severity: "Medium", tier: "Level 1", slaResponse: "8h", slaResolve: "3d", channels: ["Notification"], autoCreateTicket: false, appliesTo: "All organisations" },
+  { id: 2, name: "Compliance drop", category: "Compliance", condition: "Patient compliance < 60% over 14 days", severity: "High", tier: "Level 1", slaResponse: "2h", slaResolve: "24h", channels: ["Notification", "Email"], autoCreateTicket: true, appliesTo: "All Commercial orgs" },
+  { id: 3, name: "Health permission off", category: "Patient (Mobile/Web)", condition: "HealthKit / Health Connect permission revoked", severity: "Medium", tier: "Level 1", slaResponse: "8h", slaResolve: "3d", channels: ["Notification"], autoCreateTicket: false, appliesTo: "All organisations" },
+  { id: 4, name: "Voice engine degradation", category: "Voice Engine", condition: "ASR error rate > 10% over 2h", severity: "Critical", tier: "Level 2", slaResponse: "30m", slaResolve: "4h", channels: ["Notification", "Email", "SMS"], autoCreateTicket: true, appliesTo: "System-wide" },
+  { id: 5, name: "Sync failure", category: "Patient (Mobile/Web)", condition: "Upload queue stalled > 12h", severity: "High", tier: "Level 2", slaResponse: "2h", slaResolve: "24h", channels: ["Notification", "Email"], autoCreateTicket: true, appliesTo: "System-wide" },
+  { id: 6, name: "EHR connection failure", category: "System Schedule Engine", condition: "FHIR / HL7 endpoint unreachable > 30 min", severity: "Critical", tier: "Level 3", slaResponse: "30m", slaResolve: "4h", channels: ["Notification", "Email", "SMS"], autoCreateTicket: true, appliesTo: "Per organisation" },
+  { id: 7, name: "System downtime", category: "System Schedule Engine", condition: "Availability below SLO beyond allowed limit", severity: "Critical", tier: "Level 3", slaResponse: "15m", slaResolve: "2h", channels: ["Notification", "Email", "SMS"], autoCreateTicket: true, appliesTo: "System-wide" },
 ];

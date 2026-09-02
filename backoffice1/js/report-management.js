@@ -448,8 +448,45 @@ rmScheduleRowMenu.addEventListener("click", (e) => {
 
   if (item.dataset.action === "view") openScheduleDetails(id);
   else if (item.dataset.action === "edit") openWizardForEdit(id);
+  else if (item.dataset.action === "export") openExportReport(id);
   else if (item.dataset.action === "toggle") rmToggleScheduleStatus(id);
   else if (item.dataset.action === "delete") rmDeleteSchedule(id);
+});
+
+/* ---------------- Export Report ---------------- */
+const rmExportOverlay = document.getElementById("rmExportOverlay");
+const rmExportForm = document.getElementById("rmExportForm");
+const rmExportBtn = document.getElementById("rmExportBtn");
+let rmExportScheduleId = null;
+
+function openExportReport(id) {
+  const s = rmSchedules.find((x) => x.id === id);
+  if (!s) return;
+  rmExportScheduleId = id;
+  rmExportForm.reset();
+  document.getElementById("rmExportReportName").value = s.name;
+  rmExportBtn.disabled = true;
+  rmExportOverlay.classList.add("open");
+}
+
+function closeExportReport() {
+  rmExportOverlay.classList.remove("open");
+  rmExportScheduleId = null;
+}
+
+function validateExportForm() {
+  rmExportBtn.disabled = !(rmExportForm.fromDate.value && rmExportForm.toDate.value);
+}
+
+rmExportForm.addEventListener("input", validateExportForm);
+rmExportForm.addEventListener("change", validateExportForm);
+document.getElementById("rmCancelExport").addEventListener("click", closeExportReport);
+rmExportOverlay.addEventListener("click", (e) => { if (e.target === rmExportOverlay) closeExportReport(); });
+
+rmExportForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  if (rmExportBtn.disabled || rmExportScheduleId === null) return;
+  closeExportReport();
 });
 
 const rmDetailsOverlay = document.getElementById("rmDetailsDrawerOverlay");

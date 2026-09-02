@@ -59,6 +59,12 @@
           </span>
           <span class="nav-label">Manage Users</span>
         </a>
+        <a href="support.html" class="nav-item">
+          <span class="nav-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H3v-7a9 9 0 0 1 18 0v7h-3a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"/><path d="M21 16v2a4 4 0 0 1-4 4h-5"/></svg>
+          </span>
+          <span class="nav-label">Support</span>
+        </a>
       </nav>
     </aside>
 
@@ -187,7 +193,8 @@
             </div>
           </div>
 
-          <div class="patient-contact">
+          <div class="patient-contact-wrap">
+            <div class="patient-contact">
             <div class="contact-item">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><path d="M8 12H16M8 8H16M8 16H12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
               857 152 365
@@ -212,11 +219,13 @@
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="5" stroke="currentColor" stroke-width="1.7"/><path d="M12 13V21M8 17H16" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
               Female
             </div>
-            <div class="contact-item">
+            </div>
+            <div class="care-app-row">
+            <div class="care-app-chip">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.7"/><path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M9 21v-4M15 21v-4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
               Dr. Sarah Mitchell (Doctor)
             </div>
-            <div class="contact-item care-team-item" id="careTeamTrigger">
+            <div class="care-app-chip" id="careTeamTrigger">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="9" cy="8" r="3.2" stroke="currentColor" stroke-width="1.7"/><path d="M2.5 20C2.5 16.5 5.5 14 9 14C12.5 14 15.5 16.5 15.5 20" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><circle cx="17" cy="8.5" r="2.6" stroke="currentColor" stroke-width="1.5"/><path d="M15.5 20C15.5 17 17.8 15 20.5 15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
               Nurse Amanda Lee (Care Team)
               <span class="care-team-more">+2</span>
@@ -235,6 +244,7 @@
                   <span class="care-team-popover-role">Nurse · Care Team</span>
                 </div>
               </div>
+            </div>
             </div>
           </div>
 
@@ -599,72 +609,6 @@
                   <tbody id="careRecTableBody"></tbody>
                 </table>
               </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Compliance -->
-        <div class="compliance-card">
-          <div class="section-title-row" style="margin-top:0;">
-            <h2 class="section-title" style="margin:0;">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#23272E" stroke-width="1.8"/><path d="M8.5 12.3L10.6 14.4L15.5 9.3" stroke="#23272E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              Compliance
-            </h2>
-          </div>
-
-          <!-- Compliance Summary -->
-          <div class="compliance-summary-grid">
-            <div class="compliance-metric">
-              <div class="compliance-metric-top">
-                <span class="compliance-metric-label">Total Compliance</span>
-                <span class="goal-badge badge-ontrack">69%</span>
-              </div>
-              <div class="goal-progress-track"><div class="goal-progress-fill fill-blue" style="width:69%;"></div></div>
-            </div>
-            <div class="compliance-metric">
-              <div class="compliance-metric-top">
-                <span class="compliance-metric-label">Justified Compliance</span>
-                <span class="goal-badge badge-achieved">76%</span>
-              </div>
-              <div class="goal-progress-track"><div class="goal-progress-fill fill-green" style="width:76%;"></div></div>
-            </div>
-            <div class="compliance-metric">
-              <div class="compliance-metric-top">
-                <span class="compliance-metric-label">Usable Compliance</span>
-                <span class="goal-badge badge-atrisk">59%</span>
-              </div>
-              <div class="goal-progress-track"><div class="goal-progress-fill fill-orange" style="width:59%;"></div></div>
-            </div>
-          </div>
-
-          <!-- Usage Data -->
-          <div class="compliance-group">
-            <h3 class="compliance-group-title">Usage Data</h3>
-            <div class="compliance-detail-grid">
-              <div class="compliance-detail-item"><span class="compliance-detail-label">Phone / Device</span><span class="compliance-detail-value">+972-50-123-4567 &middot; SMA346E</span></div>
-              <div class="compliance-detail-item"><span class="compliance-detail-label">App Version</span><span class="compliance-detail-value">1.0.1.0</span></div>
-              <div class="compliance-detail-item"><span class="compliance-detail-label">Language</span><span class="compliance-detail-value">English</span></div>
-              <div class="compliance-detail-item"><span class="compliance-detail-label">Type of Trial</span><span class="compliance-detail-value">Current</span></div>
-              <div class="compliance-detail-item"><span class="compliance-detail-label">Reminder Mode</span><span class="compliance-detail-value">Auto</span></div>
-              <div class="compliance-detail-item"><span class="compliance-detail-label">Auto / Manual Time</span><span class="compliance-detail-value">06:23 / 06:00</span></div>
-            </div>
-          </div>
-
-          <!-- Compliance Details -->
-          <div class="compliance-group">
-            <h3 class="compliance-group-title">Compliance Details</h3>
-            <div class="compliance-detail-grid">
-              <div class="compliance-detail-item"><span class="compliance-detail-label">First Sign In Date</span><span class="compliance-detail-value">01/11/2025</span></div>
-              <div class="compliance-detail-item"><span class="compliance-detail-label">Last Sign In Date</span><span class="compliance-detail-value">08/01/2026</span></div>
-              <div class="compliance-detail-item"><span class="compliance-detail-label">Last Session Date</span><span class="compliance-detail-value">08/01/2026</span></div>
-              <div class="compliance-detail-item"><span class="compliance-detail-label">Start Date</span><span class="compliance-detail-value">11/12/2025</span></div>
-              <div class="compliance-detail-item"><span class="compliance-detail-label">Baseline Complete Date</span><span class="compliance-detail-value">18/12/2025</span></div>
-              <div class="compliance-detail-item"><span class="compliance-detail-label">Leaving Date</span><span class="compliance-detail-value">--</span></div>
-              <div class="compliance-detail-item"><span class="compliance-detail-label">Total Available Days</span><span class="compliance-detail-value">29</span></div>
-              <div class="compliance-detail-item"><span class="compliance-detail-label">Total Recorded Days</span><span class="compliance-detail-value">20</span></div>
-              <div class="compliance-detail-item"><span class="compliance-detail-label">Un-recorded Days</span><span class="compliance-detail-value">9</span></div>
-              <div class="compliance-detail-item"><span class="compliance-detail-label">Non-valid ASR Days</span><span class="compliance-detail-value">3</span></div>
-              <div class="compliance-detail-item"><span class="compliance-detail-label">Days with Justification</span><span class="compliance-detail-value">2</span></div>
             </div>
           </div>
         </div>
@@ -1164,6 +1108,7 @@
     </div>
   </div>
 
+<script src="js/support-data.js"></script>
 <script src="js/topbar.js"></script>
 <script src="js/table-scroll.js"></script>
 <script src="js/nurse-view.js"></script>

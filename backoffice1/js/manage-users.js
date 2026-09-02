@@ -96,22 +96,15 @@ document.getElementById("userLastPage").addEventListener("click", () => {
   renderUsers();
 });
 
-/* ---------------- Row action dropdown (lock / edit / delete) ---------------- */
+/* ---------------- Row action dropdown (reset password / edit / delete) ---------------- */
 const userRowMenu = document.getElementById("userRowMenu");
 let activeUserRowId = null;
-
-function refreshUserRowMenuLabel() {
-  const user = boUsers.find((u) => u.id === activeUserRowId);
-  const lockItem = userRowMenu.querySelector('[data-action="lock"]');
-  if (user && lockItem) lockItem.textContent = user.locked ? "Unlock User" : "Lock User";
-}
 
 document.getElementById("usersRows").addEventListener("click", (e) => {
   const trigger = e.target.closest(".row-menu-trigger");
   if (!trigger) return;
   e.stopPropagation();
   activeUserRowId = Number(trigger.dataset.id);
-  refreshUserRowMenuLabel();
   const rect = trigger.getBoundingClientRect();
   userRowMenu.style.top = `${rect.bottom + 6}px`;
   userRowMenu.style.left = `${rect.right - 190}px`;
@@ -130,15 +123,13 @@ userRowMenu.addEventListener("click", (e) => {
   const user = boUsers.find((u) => u.id === activeUserRowId);
   if (!user) return;
 
-  if (item.dataset.action === "lock") {
-    user.locked = !user.locked;
-    renderUsers();
-  } else if (item.dataset.action === "delete") {
+  if (item.dataset.action === "delete") {
     boUsers.splice(boUsers.indexOf(user), 1);
     renderUsers();
   } else if (item.dataset.action === "edit") {
     openAddUserModal();
   }
+  // "reset" (Reset Password) has no wired behavior in this preview.
 });
 
 /* ---------------- Custom selects (used inside the Create user drawer) ---------------- */
@@ -288,12 +279,43 @@ const addUserOverlay = document.getElementById("addUserOverlay");
 const addUserForm = document.getElementById("addUserForm");
 const saveAddUserBtn = document.getElementById("saveAddUser");
 
+/* Level and the recording/log view permissions only apply to Support
+   users -- everyone else is a clinic-side role that doesn't touch tickets
+   or patient recordings, so those fields stay hidden until Support is picked. */
+const levelFieldWrap = document.getElementById("levelFieldWrap");
+const viewRecordingsFieldWrap = document.getElementById("viewRecordingsFieldWrap");
+const viewLogsFieldWrap = document.getElementById("viewLogsFieldWrap");
+
+function updateSupportFieldsVisibility() {
+  const roleValue = addUserForm.querySelector('.bo-select[data-name="role"] input[type=hidden]').value;
+  const isSupport = roleValue === "SUPPORT";
+  levelFieldWrap.hidden = !isSupport;
+  viewRecordingsFieldWrap.hidden = !isSupport;
+  viewLogsFieldWrap.hidden = !isSupport;
+  const levelSelect = addUserForm.querySelector('.bo-select[data-name="level"]');
+  if (isSupport) {
+    /* Default new Support users to Level 1 -- per the onboarding rules
+       discussion, everything starts at Level 1 until routing is defined
+       more granularly, rather than forcing a level choice up front. */
+    if (levelSelect.querySelector("input[type=hidden]").value === "") {
+      setBoSelectValue(levelSelect, "Level 1", { silent: true });
+    }
+  } else {
+    setBoSelectValue(levelSelect, "", { silent: true });
+    addUserForm.canViewRecordings.checked = false;
+    addUserForm.canViewLogs.checked = false;
+  }
+}
+
+addUserForm.querySelector('.bo-select[data-name="role"] input[type=hidden]').addEventListener("change", updateSupportFieldsVisibility);
+
 function openAddUserModal() {
   addUserForm.reset();
   addUserForm.querySelectorAll(".bo-select").forEach(resetBoSelect);
   setBoSelectValue(addUserForm.querySelector('.bo-select[data-name="countryCode"]'), "+91", { silent: true });
   setBoSelectValue(addUserForm.querySelector('.bo-select[data-name="language"]'), "English", { silent: true });
   resetOrgRows();
+  updateSupportFieldsVisibility();
   validateAddUserForm();
   addUserOverlay.classList.add("open");
 }
@@ -304,7 +326,9 @@ function closeAddUserModal() {
 
 function validateAddUserForm() {
   const roleValue = addUserForm.querySelector('.bo-select[data-name="role"] input[type=hidden]').value;
-  saveAddUserBtn.disabled = addUserForm.username.value.trim() === "" || addUserForm.email.value.trim() === "" || roleValue === "";
+  const levelValue = addUserForm.querySelector('.bo-select[data-name="level"] input[type=hidden]').value;
+  const levelMissing = roleValue === "SUPPORT" && levelValue === "";
+  saveAddUserBtn.disabled = addUserForm.username.value.trim() === "" || addUserForm.email.value.trim() === "" || roleValue === "" || levelMissing;
 }
 
 addUserForm.addEventListener("input", validateAddUserForm);
@@ -315,6 +339,8 @@ addUserForm.addEventListener("submit", (e) => {
   if (saveAddUserBtn.disabled) return;
 
   const roleValue = addUserForm.querySelector('.bo-select[data-name="role"] input[type=hidden]').value;
+  const levelValue = addUserForm.querySelector('.bo-select[data-name="level"] input[type=hidden]').value;
+  const commPrefValue = addUserForm.querySelector('.bo-select[data-name="commPref"] input[type=hidden]').value;
   const countryCode = addUserForm.querySelector('.bo-select[data-name="countryCode"] input[type=hidden]').value;
   const orgValues = Array.from(orgRowsWrap.parentElement.querySelectorAll('[data-org-row] input[type=hidden]'))
     .map((i) => i.value)
@@ -328,10 +354,14 @@ addUserForm.addEventListener("submit", (e) => {
     email: addUserForm.email.value.trim(),
     phone: addUserForm.mobile.value.trim() ? `${countryCode}-${addUserForm.mobile.value.trim()}` : "",
     role: roleValue,
+    level: levelValue,
+    commPreference: commPrefValue,
     dateCreated: new Date().toLocaleDateString("en-GB"),
     allowedOrgs: orgValues.length ? orgValues.join(", ") : "—",
     mfa: addUserForm.mfa.checked,
     locked: false,
+    canViewRecordings: roleValue === "SUPPORT" ? addUserForm.canViewRecordings.checked : false,
+    canViewLogs: roleValue === "SUPPORT" ? addUserForm.canViewLogs.checked : false,
   });
 
   closeAddUserModal();

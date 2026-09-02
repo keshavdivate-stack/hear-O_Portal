@@ -59,6 +59,12 @@
           </span>
           <span class="nav-label">Manage Users</span>
         </a>
+        <a href="support.html" class="nav-item">
+          <span class="nav-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H3v-7a9 9 0 0 1 18 0v7h-3a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"/><path d="M21 16v2a4 4 0 0 1-4 4h-5"/></svg>
+          </span>
+          <span class="nav-label">Support</span>
+        </a>
       </nav>
     </aside>
 
@@ -258,6 +264,7 @@
                   <th><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9AA5B1" stroke-width="1.8"><path d="M4 19V13M10 19V9M16 19V5M20 19V11"/></svg>MONITORING</th>
                   <th><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9AA5B1" stroke-width="1.8"><path d="M4 19V13M10 19V9M16 19V5M20 19V11"/></svg>COMPLIANCE</th>
                   <th><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9AA5B1" stroke-width="1.8"><path d="M9 18H15M10 21H14M12 3C8.5 3 6 5.6 6 9C6 11.2 7 12.6 8 13.8C8.7 14.6 9 15.2 9 16H15C15 15.2 15.3 14.6 16 13.8C17 12.6 18 11.2 18 9C18 5.6 15.5 3 12 3Z"/></svg>CARE RECOMMENDATION</th>
+                  <th><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9AA5B1" stroke-width="1.8"><circle cx="9" cy="8" r="3.2"/><path d="M2.5 20C2.5 16.5 5.5 14 9 14C12.5 14 15.5 16.5 15.5 20"/><circle cx="17" cy="8.5" r="2.6"/><path d="M15.5 20C15.5 17 17.8 15 20.5 15"/></svg>CARE TEAM</th>
                   <th class="th-action"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9AA5B1" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/></svg>ACTION</th>
                 </tr>
               </thead>
@@ -292,22 +299,22 @@
           <div class="form-grid">
             <div class="form-field">
               <label>First Name<span class="required-star">*</span></label>
-              <input type="text" name="firstName" placeholder="First Name" required />
+              <input type="text" name="firstName" placeholder="Enter first name" required />
             </div>
             <div class="form-field">
               <label>Last Name<span class="required-star">*</span></label>
-              <input type="text" name="lastName" placeholder="Last Name" required />
+              <input type="text" name="lastName" placeholder="Enter last name" required />
             </div>
             <div class="form-field">
               <label>Date of birth</label>
               <div class="reg-date-field">
-                <input type="text" name="dob" placeholder="Date of birth" onfocus="(this.type='date')" onblur="if(!this.value) this.type='text'" />
+                <input type="text" name="dob" placeholder="mm/dd/yyyy" onfocus="(this.type='date')" onblur="if(!this.value) this.type='text'" />
                 <svg class="reg-date-icon" width="17" height="17" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="17" rx="2" stroke="#6B7684" stroke-width="1.8"/><path d="M3 9H21" stroke="#6B7684" stroke-width="1.8"/><path d="M8 2V6" stroke="#6B7684" stroke-width="1.8" stroke-linecap="round"/><path d="M16 2V6" stroke="#6B7684" stroke-width="1.8" stroke-linecap="round"/></svg>
               </div>
             </div>
             <div class="form-field">
               <label>Email<span class="required-star">*</span></label>
-              <input type="email" name="email" placeholder="Email" required />
+              <input type="email" name="email" placeholder="you@email.com" required />
             </div>
             <div class="form-field">
               <label>Email language<span class="required-star">*</span></label>
@@ -335,12 +342,14 @@
                   </button>
                   <div class="custom-select-menu">
                     <div class="custom-select-option" data-value="+1">+1<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    <div class="custom-select-option" data-value="+91">+91<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
                     <div class="custom-select-option selected" data-value="+972">+972<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
                     <div class="custom-select-option" data-value="+44">+44<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    <div class="custom-select-option" data-value="+380">+380<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
                   </div>
                   <input type="hidden" name="countryCode" value="+972" />
                 </div>
-                <input type="text" name="mobile" placeholder="Mobile number" />
+                <input type="text" name="mobile" placeholder="Enter mobile number" />
               </div>
             </div>
             <div class="form-field">
@@ -405,11 +414,11 @@
             </div>
             <div class="form-field">
               <label>First name</label>
-              <input type="text" name="ecFirstName" placeholder="First name" />
+              <input type="text" name="ecFirstName" placeholder="Enter first name" />
             </div>
             <div class="form-field">
               <label>Last name</label>
-              <input type="text" name="ecLastName" placeholder="Last name" />
+              <input type="text" name="ecLastName" placeholder="Enter last name" />
             </div>
             <div class="form-field">
               <label>Email</label>
@@ -417,7 +426,23 @@
             </div>
             <div class="form-field">
               <label>Phone</label>
-              <input type="tel" name="ecPhone" placeholder="(904) 555-0123" />
+              <div class="phone-field">
+                <div class="custom-select country-select" data-name="ecCountryCode">
+                  <button type="button" class="custom-select-trigger">
+                    <span class="custom-select-value">+972</span>
+                    <svg class="custom-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                  </button>
+                  <div class="custom-select-menu">
+                    <div class="custom-select-option" data-value="+1">+1<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    <div class="custom-select-option" data-value="+91">+91<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    <div class="custom-select-option selected" data-value="+972">+972<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    <div class="custom-select-option" data-value="+44">+44<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    <div class="custom-select-option" data-value="+380">+380<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                  </div>
+                  <input type="hidden" name="ecCountryCode" value="+972" />
+                </div>
+                <input type="tel" name="ecPhone" placeholder="Enter phone number" />
+              </div>
             </div>
           </div>
 
@@ -504,20 +529,20 @@
         <div class="form-grid">
           <div class="form-field">
             <label>Patient ID</label>
-            <input type="text" id="importMrn" placeholder="MRN/ID" />
+            <input type="text" id="importMrn" placeholder="Enter MRN or patient ID" />
           </div>
           <div class="form-field">
             <label>First Name</label>
-            <input type="text" id="importFirstName" placeholder="First Name" />
+            <input type="text" id="importFirstName" placeholder="Enter first name" />
           </div>
           <div class="form-field">
             <label>Last Name</label>
-            <input type="text" id="importLastName" placeholder="Last Name" />
+            <input type="text" id="importLastName" placeholder="Enter last name" />
           </div>
           <div class="form-field">
             <label>Date of birth</label>
             <div class="reg-date-field">
-              <input type="text" id="importDob" placeholder="Date of birth" onfocus="(this.type='date')" onblur="if(!this.value) this.type='text'" />
+              <input type="text" id="importDob" placeholder="mm/dd/yyyy" onfocus="(this.type='date')" onblur="if(!this.value) this.type='text'" />
               <svg class="reg-date-icon" width="17" height="17" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="17" rx="2" stroke="#6B7684" stroke-width="1.8"/><path d="M3 9H21" stroke="#6B7684" stroke-width="1.8"/><path d="M8 2V6" stroke="#6B7684" stroke-width="1.8" stroke-linecap="round"/><path d="M16 2V6" stroke="#6B7684" stroke-width="1.8" stroke-linecap="round"/></svg>
             </div>
           </div>
@@ -635,6 +660,9 @@
   <!-- Care indicator popover -->
   <div class="care-indicator-popover" id="careIndicatorPopover"></div>
 
+  <!-- Care Team list popover -->
+  <div class="care-indicator-popover" id="careTeamListPopover"></div>
+
   <!-- Edit Patient modal -->
   <div class="modal-overlay" id="editPatientOverlay">
     <div class="modal modal-wide">
@@ -643,19 +671,19 @@
         <div class="form-grid">
           <div class="form-field">
             <label>First Name<span class="required-star">*</span></label>
-            <input type="text" name="firstName" placeholder="First Name" required />
+            <input type="text" name="firstName" placeholder="Enter first name" required />
           </div>
           <div class="form-field">
             <label>Last Name<span class="required-star">*</span></label>
-            <input type="text" name="lastName" placeholder="Last Name" required />
+            <input type="text" name="lastName" placeholder="Enter last name" required />
           </div>
           <div class="form-field">
             <label>MRN/ID<span class="required-star">*</span></label>
-            <input type="text" name="mrn" placeholder="MRN/ID" required />
+            <input type="text" name="mrn" placeholder="Enter MRN or patient ID" required />
           </div>
           <div class="form-field">
             <label>Email<span class="required-star">*</span></label>
-            <input type="email" name="email" placeholder="Email" required />
+            <input type="email" name="email" placeholder="you@email.com" required />
           </div>
           <div class="form-field">
             <label>Mobile number</label>
@@ -667,12 +695,14 @@
                 </button>
                 <div class="custom-select-menu">
                   <div class="custom-select-option" data-value="+1">+1<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                  <div class="custom-select-option" data-value="+91">+91<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
                   <div class="custom-select-option selected" data-value="+972">+972<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
                   <div class="custom-select-option" data-value="+44">+44<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                  <div class="custom-select-option" data-value="+380">+380<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
                 </div>
                 <input type="hidden" name="editCountryCode" value="+972" />
               </div>
-              <input type="text" name="mobile" placeholder="Mobile number" />
+              <input type="text" name="mobile" placeholder="Enter mobile number" />
             </div>
           </div>
           <div class="form-field">
@@ -812,6 +842,7 @@
     </div>
   </div>
 
+<script src="js/support-data.js"></script>
 <script src="js/topbar.js"></script>
 <script src="js/table-scroll.js"></script>
 <script src="js/patient-list.js"></script>

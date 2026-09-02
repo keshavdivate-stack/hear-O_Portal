@@ -533,13 +533,13 @@ a { color: inherit; }
 .bo-table tbody tr.bo-row-highlight td { background: var(--blue-light); }
 
 .bo-status-pill { font-weight: 700; }
-.bo-status-pill.priority { color: var(--red); }
-.bo-status-pill.unmonitored { color: var(--blue); }
-.bo-status-pill.paused { color: var(--gray); }
-.bo-status-pill.active { color: var(--green); }
-.bo-status-pill.registered { color: var(--blue); }
-.bo-status-pill.baseline { color: var(--navy); }
-.bo-status-pill.insufficient { color: var(--orange); }
+.bo-status-pill.priority { background: var(--red-light); color: var(--red); }
+.bo-status-pill.unmonitored { background: var(--blue-light); color: var(--blue); }
+.bo-status-pill.paused { background: var(--bg); color: var(--gray); }
+.bo-status-pill.active { background: var(--green-light); color: var(--green); }
+.bo-status-pill.registered { background: var(--blue-light); color: var(--blue); }
+.bo-status-pill.baseline { background: var(--navy-light); color: var(--navy); }
+.bo-status-pill.insufficient { background: var(--orange-light); color: var(--orange); }
 
 /* Activity Feed */
 .bo-activity-panel { padding-bottom: 8px; }
@@ -614,6 +614,37 @@ a { color: inherit; }
 }
 .bo-trend-tooltip .dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 5px; vertical-align: middle; }
 .bo-area-svg { width: 100%; height: 100%; display: block; }
+
+/* Mini bar-sparkline pair (Support Dashboard's Volume Trend -- Tickets vs
+   Incidents run at very different scales, so each gets its own bar chart
+   rather than sharing one y-axis). Gridlines + a baseline + headroom above
+   the tallest bar (heights are capped below 100%) so it reads as a chart
+   instead of a row of solid full-height blocks. */
+.bo-mini-bar-group { display: flex; gap: 32px; height: 100%; }
+.bo-mini-bar-col { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+.bo-mini-bar-head { display: flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--gray-text); font-weight: 600; margin-bottom: 14px; }
+.bo-mini-bar-head .dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.bo-mini-bar-head b { color: var(--ink); font-size: 13px; margin-left: auto; }
+
+.bo-mini-bar-plot { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+
+.bo-mini-bar-row {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  padding-top: 8px;
+  border-bottom: 1.5px solid var(--gray-border);
+  background-image: repeating-linear-gradient(to top, var(--gray-border) 0, var(--gray-border) 1px, transparent 1px, transparent 25%);
+}
+
+.bo-mini-bar-item { flex: 1; height: 100%; display: flex; align-items: flex-end; min-width: 0; }
+.bo-mini-bar-fill { width: 100%; max-width: 34px; margin: 0 auto; border-radius: 5px 5px 0 0; transition: height 0.15s ease; opacity: 0.88; }
+.bo-mini-bar-item:hover .bo-mini-bar-fill { opacity: 1; }
+
+.bo-mini-bar-xaxis { display: flex; gap: 10px; margin-top: 6px; }
+.bo-mini-bar-xaxis span { flex: 1; text-align: center; font-size: 10px; color: var(--gray-text); font-weight: 600; }
 
 .bo-legend-row {
   display: flex;
@@ -765,6 +796,10 @@ a { color: inherit; }
 
 .bo-mini-num { font-size: 28px; font-weight: 800; color: var(--blue); margin: 0; }
 .bo-mini-unit { font-size: 14px; font-weight: 600; color: var(--ink); margin-left: 4px; }
+
+.bo-usable-compliance-card { text-align: center; padding-top: 14px; padding-bottom: 18px; }
+.bo-usable-compliance-card .bo-panel-head { text-align: left; }
+.bo-usable-compliance-pct { font-size: 34px; font-weight: 800; color: #2E1C8C; margin: 8px 0 0; }
 
 @media (max-width: 1400px) {
   .bo-stat-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
@@ -1508,6 +1543,7 @@ label.bo-date-field { cursor: text; }
 }
 
 .bo-modal-toggle-field.full { grid-column: 1 / -1; }
+.bo-modal-toggle-field[hidden] { display: none; }
 
 .bo-modal-toggle-field label {
   font-size: 13.5px;
@@ -1551,6 +1587,7 @@ label.bo-date-field { cursor: text; }
 }
 
 .bo-btn-secondary:hover { background: var(--blue-light); }
+a.bo-btn-secondary { text-decoration: none; }
 
 .bo-btn-text {
   background: none;
@@ -2245,6 +2282,64 @@ label.bo-date-field { cursor: text; }
   background: var(--blue);
 }
 
+/* Waveform variant of the audio player track (ticket-detail Recording section) --
+   two stacked identical bar rows, the top one colored and width-clipped to the
+   playback position, so the underlying gray bars are revealed as "unplayed". */
+.bo-waveform {
+  position: relative;
+  flex: 1;
+  min-width: 80px;
+  height: 26px;
+}
+
+.bo-waveform-bars {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  height: 100%;
+}
+
+.bo-waveform-bars .bar {
+  flex: 0 0 3px;
+  width: 3px;
+  min-height: 3px;
+  border-radius: 2px;
+  background: var(--gray-border);
+}
+
+.bo-waveform-progress {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 0%;
+  overflow: hidden;
+  transition: width 0.2s linear;
+}
+
+.bo-waveform-progress .bar { background: var(--blue); }
+
+/* Root-cause callout shown on Voice Engine tickets when the patient log
+   reports Microphone permission as Denied -- surfaces the most common
+   cause of a failed recording right where the agent is already looking,
+   instead of leaving it buried in the Patient Log's Permissions Info. */
+.bo-permission-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: var(--red-light);
+  color: var(--red);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.4;
+  margin-bottom: 14px;
+}
+
+.bo-permission-alert svg { flex-shrink: 0; margin-top: 1px; }
+.bo-permission-alert b { font-weight: 800; }
+
 /* ==========================================================
    ORGANIZATION PROFILE PAGE
    ========================================================== */
@@ -2909,6 +3004,12 @@ label.bo-date-field { cursor: text; }
 .bo-center-modal-wide { width: 520px; }
 .bo-center-modal-xl { width: 760px; }
 
+/* "View Version" modal (avatar menu) */
+.bo-version-list { display: flex; flex-direction: column; gap: 14px; max-height: 60vh; overflow-y: auto; padding-right: 4px; }
+.bo-version-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; font-size: 14px; color: var(--ink); }
+.bo-version-row span:first-child { color: var(--gray-text); }
+.bo-version-row span:last-child { font-weight: 700; }
+
 /* Patient log modal: compact device snapshot + scrollable log history */
 .patient-log-modal {
   display: flex;
@@ -2994,6 +3095,116 @@ label.bo-date-field { cursor: text; }
 
 .patient-log-line .ts { color: var(--gray-text); flex-shrink: 0; }
 .patient-log-line .msg { color: var(--ink); }
+
+.patient-log-history-actions { display: flex; align-items: center; gap: 10px; }
+.patient-log-history-actions .bo-select { width: 190px; flex-shrink: 0; }
+
+/* This select sits inside .patient-log-history-title (a section-title
+   header), which sets bold/uppercase text for its own label -- without this
+   reset that styling leaks into the select's trigger and menu options too
+   (its menu is a DOM descendant even though it renders elsewhere via
+   position: fixed). */
+.patient-log-history-title .bo-select-trigger,
+.patient-log-history-title .bo-select-option {
+  text-transform: none;
+  letter-spacing: normal;
+}
+.patient-log-history-title .bo-select-trigger,
+.patient-log-history-title .bo-select-option:not(.selected) {
+  font-weight: 400;
+}
+
+.patient-log-download-wrap { position: relative; }
+
+.patient-log-download-popover {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 320px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 12px 32px rgba(20, 30, 50, 0.18);
+  padding: 16px;
+  z-index: 300;
+}
+.patient-log-download-popover[hidden] { display: none; }
+
+.patient-log-download-popover-title { font-size: 13px; font-weight: 700; color: var(--ink); margin: 0 0 10px; }
+
+.patient-log-download-popover-row { display: flex; align-items: center; gap: 8px; }
+.patient-log-download-popover-row .bo-date-field { min-width: 0; flex: 1; padding: 9px 10px; gap: 6px; }
+.patient-log-download-popover-row .bo-date-field-value { font-size: 12.5px; }
+.patient-log-download-popover-row .bo-date-field svg { width: 13px; height: 13px; }
+
+.patient-log-download-popover-hint { font-size: 12px; color: var(--gray-text); margin: 8px 0 0; }
+
+.patient-log-download-popover-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 14px; }
+
+/* Custom date-field trigger button -- replaces native <input type="date">
+   so only one calendar glyph shows and clicking opens .bo-mini-calendar
+   instead of the browser/OS date picker. */
+.bo-date-field-trigger { cursor: pointer; font-family: inherit; text-align: left; }
+.bo-date-field-trigger:hover { border-color: var(--gray); }
+.bo-date-field-value { flex: 1; min-width: 0; font-size: 13.5px; font-weight: 600; color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bo-date-field-trigger.placeholder .bo-date-field-value { color: var(--gray-text); }
+.bo-date-field-trigger.active { border-color: var(--blue); }
+
+.bo-mini-calendar {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  top: 62px;
+  background: #fff;
+  border: 1px solid var(--field-border);
+  border-radius: 10px;
+  box-shadow: 0 14px 34px rgba(20, 30, 50, 0.18);
+  padding: 12px;
+  z-index: 10;
+}
+.bo-mini-calendar[hidden] { display: none; }
+
+.bo-mini-calendar-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.bo-mini-calendar-month { font-size: 13px; font-weight: 700; color: var(--ink); }
+.bo-mini-calendar-nav { display: flex; gap: 2px; }
+.bo-mini-calendar-nav button {
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: var(--gray-text);
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+}
+.bo-mini-calendar-nav button:hover { background: var(--bg); color: var(--ink); }
+
+.bo-mini-calendar-weekdays,
+.bo-mini-calendar-days { display: grid; grid-template-columns: repeat(7, 1fr); }
+.bo-mini-calendar-weekdays { margin-bottom: 4px; }
+.bo-mini-calendar-weekdays span { text-align: center; font-size: 10px; font-weight: 700; color: var(--gray-text); }
+
+.bo-mini-calendar-day {
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--ink);
+  padding: 6px 0;
+  border-radius: 7px;
+  font-family: inherit;
+}
+.bo-mini-calendar-day:hover { background: var(--bg); }
+.bo-mini-calendar-day.muted { color: var(--gray); }
+.bo-mini-calendar-day.in-range { background: var(--blue-light); border-radius: 0; }
+.bo-mini-calendar-day.range-start { border-radius: 7px 0 0 7px; }
+.bo-mini-calendar-day.range-end { border-radius: 0 7px 7px 0; }
+.bo-mini-calendar-day.selected { background: var(--blue); color: #fff; font-weight: 700; }
+
+.bo-mini-calendar-footer { display: flex; justify-content: space-between; margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--bg); }
+.bo-mini-calendar-footer button { border: none; background: none; color: var(--blue); font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; }
+.bo-mini-calendar-footer button:hover { text-decoration: underline; }
 
 .bo-modal-subtitle {
   font-size: 13px;
@@ -3203,9 +3414,14 @@ a.bo-health-card:hover { border-color: var(--field-border); }
   display: flex;
   align-items: center;
   gap: 14px;
-  margin-bottom: 16px;
+  margin: 0 -28px 16px;
+  padding: 14px 28px;
   flex-shrink: 0;
   flex-wrap: wrap;
+  position: sticky;
+  top: -14px;
+  z-index: 20;
+  background: var(--bg);
 }
 
 .bo-entity-avatar {
@@ -3505,6 +3721,8 @@ a.bo-health-card:hover { border-color: var(--field-border); }
 
 .bo-health-grid--5 { grid-template-columns: repeat(5, minmax(0, 1fr)); }
 
+.bo-health-card--accent { background: var(--red-light); border-color: #F6C9C9; }
+
 /* Alert feed row (replaces plain table rows for Critical Issues) */
 .bo-alert-list { display: flex; flex-direction: column; gap: 8px; }
 
@@ -3660,6 +3878,15 @@ a.bo-crit-issue-row:hover { background: var(--bg); }
 .bo-donut-legend-row .name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .bo-donut-legend-row .val { font-weight: 700; flex-shrink: 0; }
 a.bo-donut-legend-row:hover { background: var(--bg); }
+
+/* Horizontal bar breakdown (category/source counts) -- a scannable bar
+   instead of a bare number-only row so relative share reads at a glance. */
+.bo-hbar-list { display: flex; flex-direction: column; gap: 12px; }
+.bo-hbar-row { display: flex; align-items: center; gap: 10px; }
+.bo-hbar-label { width: 150px; flex-shrink: 0; font-size: 12.5px; color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bo-hbar-track { flex: 1; height: 8px; border-radius: 5px; background: var(--bg); overflow: hidden; }
+.bo-hbar-fill { height: 100%; border-radius: 5px; }
+.bo-hbar-count { width: 26px; flex-shrink: 0; text-align: right; font-size: 12.5px; font-weight: 700; color: var(--ink); }
 
 .bo-org-mini-list { display: flex; flex-direction: column; gap: 4px; }
 
@@ -4112,11 +4339,27 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue); }
    Progress/Escalated/Resolved); Resolved intentionally reuses the same
    green as Ticket Resolved so "done" reads identically across the module. */
 .bo-pill-incident-active { background: var(--orange-light); color: var(--orange); }
-.bo-pill-incident-monitoring { background: var(--blue-light); color: var(--blue); }
+.bo-pill-incident-escalated { background: var(--red-light); color: var(--red); }
 .bo-pill-incident-resolved { background: var(--green-light); color: var(--green); }
 
 .bo-incident-title { font-weight: 700; color: var(--ink); }
 .bo-incident-source-label { display: block; font-size: 11.5px; color: var(--gray-text); margin-top: 2px; font-weight: 500; }
+
+.bo-related-ticket-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  margin-left: 6px;
+  border-radius: 6px;
+  color: var(--blue);
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+.bo-related-ticket-link:hover { background: var(--blue-light); }
+
+.bo-related-tickets-list { display: flex; flex-wrap: wrap; gap: 4px 10px; }
 
 /* Impact column: one compact clickable cell instead of separate org/patient columns */
 .bo-impact-link {

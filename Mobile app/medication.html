@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
+<script src="font-scale.js"></script>
 </head>
 <body>
 
@@ -65,7 +66,7 @@
   // Acknowledging the Furosemide dose change (on medication-update-detail.html)
   // sends the patient back here with ?ack=furosemide, which unlocks its row.
   const params = new URLSearchParams(window.location.search);
-  const acknowledgedMed = params.get("ack");
+  const acknowledgedMed = params.get("ack") || (localStorage.getItem("med_ack_furosemide") ? "furosemide" : null);
 
   // A dose is either taken or, by default, simply not taken yet — there's no
   // separate "missed" action for the patient to make; anything not marked

@@ -6,18 +6,18 @@ const pencilIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none">
 const kebabIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="1.7" fill="currentColor"/><circle cx="12" cy="12" r="1.7" fill="currentColor"/><circle cx="12" cy="19" r="1.7" fill="currentColor"/></svg>`;
 
 const patientList = [
-  { name: "Alexander White", username: "ABC-1254", mrn: "857452365", phone: "054-857 15423", account: "Enabled", status: "priority", flag: true, since: "Since: 2d | 01.08.2028", monitoring: "monitored", compliance: 92, gender: "M", careStatus: "in_progress", careTitle: "Review Carvedilol titration", careAssignee: "Amanda Lee, RN", team: "Heart Failure Team", teamMember: "Dr. Sarah Mitchell" },
-  { name: "Dan Volex",        username: "ABC-1252", mrn: "854745856", phone: "054-857 15423", account: "Enabled", status: "priority", flag: false, since: "Since: 2d | 01.08.2028", monitoring: "monitored", compliance: 68, gender: "M", action: { type: "contacted", date: "", note: "" }, careStatus: "completed", team: "Remote Monitoring Team", teamMember: "Amanda Lee, RN", ehrOrg: true },
-  { name: "Mike Brown",       username: "ABC-1251", mrn: "854125632", phone: "054-857 15423", account: "Enabled", status: "priority", flag: false, since: "Since: 2d | 01.08.2028", monitoring: "unmonitored", monSince: "Since: 1d | 01.09.2028", compliance: 34, gender: "M", team: "Heart Failure Team", teamMember: "Dr. James Carter" },
-  { name: "Ariel Fox",        username: "ABC-1238", mrn: "854123658", phone: "054-857 15423", account: "Enabled", status: "priority", flag: false, since: "Since: 3d | 01.07.2028", monitoring: "monitored", compliance: 81, gender: "F", action: { type: "invite", date: "", note: "" }, careStatus: "recommended", careTitle: "Increase Furosemide dose", team: "Post-Discharge Team", teamMember: "Emily Carter" },
-  { name: "Jeff Frank",       username: "ABC-1242", mrn: "854123658", phone: "054-857 15423", account: "Enabled", status: "priority", flag: false, since: "Since: 4d | 01.06.2028", monitoring: "monitored", compliance: 57, gender: "M", team: "Remote Monitoring Team", teamMember: "Ayelet Er, NP" },
-  { name: "Aric Snow",        username: "ABC-1283", mrn: "854125632", phone: "054-857 15423", account: "Enabled", status: "priority", flag: false, since: "Since: 8d | 01.02.2028", monitoring: "monitored", compliance: 76, gender: "M", careStatus: "in_progress", careTitle: "Review Metoprolol tolerance", careAssignee: "Ayelet Er, NP", team: "Heart Failure Team", teamMember: "Ayelet Er, NP" },
-  { name: "Abe Lol",          username: "ABC-1222", mrn: "854125632", phone: "054-857 15423", account: "Enabled", status: "active", since: "Since: 3d | 01.07.2028", monitoring: "monitored", compliance: 88, gender: "M", careStatus: "completed", team: "Post-Discharge Team", teamMember: "Emily Carter" },
-  { name: "Annie Zaplin",     username: "ABC-1222", mrn: "854125632", phone: "054-857 15423", account: "Enabled", status: "active", since: "Since: 3d | 01.07.2028", monitoring: "monitored", compliance: 45, gender: "F", team: "Remote Monitoring Team", teamMember: "Sandy Kohl, RN" },
-  { name: "Nathan Norash",    username: "ABC-1222", mrn: "854125632", phone: "054-857 15423", account: "Paused", status: "active", since: "Since: 3d | 01.07.2028", monitoring: "monitored", compliance: 63, gender: "M", careStatus: "recommended", careTitle: "Confirm Lisinopril adherence", team: "Heart Failure Team", teamMember: "Dr. Michael Reyes" },
-  { name: "Henry Fisher",     username: "ABC-1220", mrn: "965412589", phone: "054-857 15423", account: "Enabled", status: "registered", since: "Since: 3d | 01.07.2028", monitoring: "none", compliance: 12, gender: "M", team: "Post-Discharge Team", teamMember: "Emily Carter" },
-  { name: "Josh Ericson",     username: "ABC-1222", mrn: "854125632", phone: "054-857 15423", account: "Discontinued", status: "baseline", since: "Since: 3d | 01.07.2028", monitoring: "monitored", monInfo: true, compliance: 79, gender: "Other", careStatus: "completed", team: "Remote Monitoring Team", teamMember: "Dr. Emily Chen" },
-  { name: "Jack Harris",      username: "ABC-1221", mrn: "854125698", phone: "054-857 15423", account: "Discontinued", status: "none", monitoring: "unmonitored", monSince: "Since: 5d | 01.05.2028", compliance: 24, gender: "M", team: "Heart Failure Team", teamMember: "Dr. Sarah Mitchell" },
+  { name: "Alexander White", username: "ABC-1254", mrn: "857452365", phone: "054-857 15423", account: "Enabled", status: "priority", flag: true, since: "Since: 2d | 01.08.2028", monitoring: "monitored", compliance: 92, gender: "M", careStatus: "in_progress", careTitle: "Review Carvedilol titration", careAssignee: "Amanda Lee, RN", team: "Heart Failure Team", teamMember: "Dr. Sarah Mitchell", careTeam: ["Dr. Sarah Mitchell", "Amanda Lee, RN", "Ayelet Er, NP"] },
+  { name: "Dan Volex",        username: "ABC-1252", mrn: "854745856", phone: "054-857 15423", account: "Enabled", status: "priority", flag: false, since: "Since: 2d | 01.08.2028", monitoring: "monitored", compliance: 68, gender: "M", action: { type: "contacted", date: "", note: "" }, careStatus: "completed", team: "Remote Monitoring Team", teamMember: "Amanda Lee, RN", ehrOrg: true, careTeam: ["Amanda Lee, RN", "Dr. James Carter"] },
+  { name: "Mike Brown",       username: "ABC-1251", mrn: "854125632", phone: "054-857 15423", account: "Enabled", status: "priority", flag: false, since: "Since: 2d | 01.08.2028", monitoring: "unmonitored", monSince: "Since: 1d | 01.09.2028", compliance: 34, gender: "M", team: "Heart Failure Team", teamMember: "Dr. James Carter", chartView: "nurse", careTeam: ["Dr. James Carter"] },
+  { name: "Ariel Fox",        username: "ABC-1238", mrn: "854123658", phone: "054-857 15423", account: "Enabled", status: "priority", flag: false, since: "Since: 3d | 01.07.2028", monitoring: "monitored", compliance: 81, gender: "F", action: { type: "invite", date: "", note: "" }, careStatus: "recommended", careTitle: "Increase Furosemide dose", team: "Post-Discharge Team", teamMember: "Emily Carter", careTeam: ["Emily Carter", "Sandy Kohl, RN", "Dr. Michael Reyes"] },
+  { name: "Jeff Frank",       username: "ABC-1242", mrn: "854123658", phone: "054-857 15423", account: "Enabled", status: "priority", flag: false, since: "Since: 4d | 01.06.2028", monitoring: "monitored", compliance: 57, gender: "M", team: "Remote Monitoring Team", teamMember: "Ayelet Er, NP", careTeam: ["Ayelet Er, NP", "Amanda Lee, RN"] },
+  { name: "Aric Snow",        username: "ABC-1283", mrn: "854125632", phone: "054-857 15423", account: "Enabled", status: "priority", flag: false, since: "Since: 8d | 01.02.2028", monitoring: "monitored", compliance: 76, gender: "M", careStatus: "in_progress", careTitle: "Review Metoprolol tolerance", careAssignee: "Ayelet Er, NP", team: "Heart Failure Team", teamMember: "Ayelet Er, NP", careTeam: ["Ayelet Er, NP", "Dr. Sarah Mitchell", "Sandy Kohl, RN", "Emily Carter"] },
+  { name: "Abe Lol",          username: "ABC-1222", mrn: "854125632", phone: "054-857 15423", account: "Enabled", status: "active", since: "Since: 3d | 01.07.2028", monitoring: "monitored", compliance: 88, gender: "M", careStatus: "completed", team: "Post-Discharge Team", teamMember: "Emily Carter", careTeam: ["Emily Carter"] },
+  { name: "Annie Zaplin",     username: "ABC-1222", mrn: "854125632", phone: "054-857 15423", account: "Enabled", status: "active", since: "Since: 3d | 01.07.2028", monitoring: "monitored", compliance: 45, gender: "F", team: "Remote Monitoring Team", teamMember: "Sandy Kohl, RN", careTeam: ["Sandy Kohl, RN", "Dr. Emily Chen"] },
+  { name: "Nathan Norash",    username: "ABC-1222", mrn: "854125632", phone: "054-857 15423", account: "Paused", status: "active", since: "Since: 3d | 01.07.2028", monitoring: "monitored", compliance: 63, gender: "M", careStatus: "recommended", careTitle: "Confirm Lisinopril adherence", team: "Heart Failure Team", teamMember: "Dr. Michael Reyes", careTeam: ["Dr. Michael Reyes"] },
+  { name: "Henry Fisher",     username: "ABC-1220", mrn: "965412589", phone: "054-857 15423", account: "Enabled", status: "registered", since: "Since: 3d | 01.07.2028", monitoring: "none", compliance: 12, gender: "M", team: "Post-Discharge Team", teamMember: "Emily Carter", careTeam: ["Emily Carter", "Ayelet Er, NP"] },
+  { name: "Josh Ericson",     username: "ABC-1222", mrn: "854125632", phone: "054-857 15423", account: "Discontinued", status: "baseline", since: "Since: 3d | 01.07.2028", monitoring: "monitored", monInfo: true, compliance: 79, gender: "Other", careStatus: "completed", team: "Remote Monitoring Team", teamMember: "Dr. Emily Chen", careTeam: ["Dr. Emily Chen", "Amanda Lee, RN", "Sandy Kohl, RN"] },
+  { name: "Jack Harris",      username: "ABC-1221", mrn: "854125698", phone: "054-857 15423", account: "Discontinued", status: "none", monitoring: "unmonitored", monSince: "Since: 5d | 01.05.2028", compliance: 24, gender: "M", team: "Heart Failure Team", teamMember: "Dr. Sarah Mitchell", careTeam: ["Dr. Sarah Mitchell"] },
 ];
 
 /* Current logged-in clinician (matches the "EC" topbar avatar), used by the
@@ -137,11 +137,11 @@ const actionTypeLabels = {
 
 function actionCell(p) {
   const label = p.action ? actionTypeLabels[p.action.type] || "" : "";
+  const pencilTitle = label || "Add action";
   return `
     <div class="action-cell">
-      ${label ? `<span class="action-label">${label}</span>` : "<span></span>"}
       <div class="action-icon-group">
-        <button class="action-icon" aria-label="Add action" data-id="${p.id}" data-act="addAction">${pencilIcon}</button>
+        <button class="action-icon" aria-label="${pencilTitle}" title="${pencilTitle}" data-id="${p.id}" data-act="addAction">${pencilIcon}</button>
         <button class="action-icon kebab row-menu-trigger" aria-label="More" data-id="${p.id}">${kebabIcon}</button>
       </div>
     </div>`;
@@ -180,6 +180,28 @@ function careIndicatorPopoverHtml(p) {
     <a class="care-indicator-popover-link" href="${patientChartHref(p)}">View patient chart &rarr;</a>`;
 }
 
+function patientCareTeam(p) {
+  return p.careTeam && p.careTeam.length ? p.careTeam : p.teamMember ? [p.teamMember] : [];
+}
+
+function careTeamCell(p) {
+  const team = patientCareTeam(p);
+  if (!team.length) return `<div class="mon-cell"><span class="mon-line mon-none">—</span></div>`;
+  const extra = team.length - 1;
+  return `
+    <div class="care-team-list-cell">
+      <span class="care-team-list-name">${team[0]}</span>
+      ${extra > 0 ? `<button type="button" class="care-team-list-more" data-id="${p.id}">+${extra}</button>` : ""}
+    </div>`;
+}
+
+function careTeamListPopoverHtml(p) {
+  const team = patientCareTeam(p);
+  return `
+    <div class="care-indicator-popover-title">Care Team</div>
+    ${team.map((name) => `<div class="care-team-popover-item"><span class="care-team-popover-name">${name}</span></div>`).join("")}`;
+}
+
 function complianceInRange(value) {
   if (!selectedComplianceRanges.size) return true;
   return [...selectedComplianceRanges].some((key) => {
@@ -193,9 +215,11 @@ function genderLabel(gender) {
 }
 
 /* Patients from an EHR-connected organization open the EHR patient chart
-   (ehr-integration/patient-data.html); everyone else opens the standard
-   patient chart. Kept as separate pages/portals -- see ehr-integration/. */
+   (ehr-integration/patient-data.html); patients flagged chartView: "nurse"
+   open the nurse view; everyone else opens the standard patient chart.
+   Kept as separate pages/portals -- see ehr-integration/. */
 function patientChartHref(p) {
+  if (p.chartView === "nurse") return "nurse-view.html";
   return p.ehrOrg ? "ehr-integration/patient-data.html" : "patient-data.html";
 }
 
@@ -207,7 +231,7 @@ function filteredPatientList() {
       (!selectedAccounts.size || selectedAccounts.has(p.account)) &&
       (!selectedStatuses.size || selectedStatuses.has(p.status)) &&
       (!selectedMonitorings.size || selectedMonitorings.has(p.monitoring)) &&
-      (!selectedCareTeams.size || selectedCareTeams.has(p.teamMember)) &&
+      (!selectedCareTeams.size || patientCareTeam(p).some((name) => selectedCareTeams.has(name))) &&
       (patientScope === "all" || p.teamMember === CURRENT_TEAM_MEMBER)
   );
 }
@@ -228,6 +252,7 @@ function renderPatientList() {
         <td>${monitoringCell(p)}</td>
         <td>${complianceCell(p)}</td>
         <td>${careCell(p)}</td>
+        <td>${careTeamCell(p)}</td>
         <td>${actionCell(p)}</td>
       </tr>`
     )
@@ -857,6 +882,19 @@ function openCareIndicatorFor(id, trigger) {
   careIndicatorPopover.classList.add("open");
 }
 
+/* ---------------- Care Team list popover ---------------- */
+const careTeamListPopover = document.getElementById("careTeamListPopover");
+
+function openCareTeamListFor(id, trigger) {
+  const patient = patientList.find((p) => p.id === id);
+  if (!patient) return;
+  careTeamListPopover.innerHTML = careTeamListPopoverHtml(patient);
+  const rect = trigger.getBoundingClientRect();
+  careTeamListPopover.style.top = `${rect.bottom + 6}px`;
+  careTeamListPopover.style.left = `${rect.left}px`;
+  careTeamListPopover.classList.add("open");
+}
+
 rows.addEventListener("click", (e) => {
   const addActionBtn = e.target.closest('.action-icon[data-act="addAction"]');
   if (addActionBtn) {
@@ -869,7 +907,17 @@ rows.addEventListener("click", (e) => {
   if (careTrigger) {
     e.stopPropagation();
     patientRowMenu.classList.remove("open");
+    careTeamListPopover.classList.remove("open");
     openCareIndicatorFor(Number(careTrigger.dataset.id), careTrigger);
+    return;
+  }
+
+  const careTeamMoreBtn = e.target.closest(".care-team-list-more");
+  if (careTeamMoreBtn) {
+    e.stopPropagation();
+    patientRowMenu.classList.remove("open");
+    careIndicatorPopover.classList.remove("open");
+    openCareTeamListFor(Number(careTeamMoreBtn.dataset.id), careTeamMoreBtn);
     return;
   }
 
@@ -877,6 +925,7 @@ rows.addEventListener("click", (e) => {
   if (!trigger) return;
   e.stopPropagation();
   careIndicatorPopover.classList.remove("open");
+  careTeamListPopover.classList.remove("open");
   openRowMenuFor(Number(trigger.dataset.id), trigger);
 });
 
@@ -884,6 +933,9 @@ document.addEventListener("click", (e) => {
   if (!patientRowMenu.contains(e.target)) patientRowMenu.classList.remove("open");
   if (!careIndicatorPopover.contains(e.target) && !e.target.closest(".care-indicator-trigger")) {
     careIndicatorPopover.classList.remove("open");
+  }
+  if (!careTeamListPopover.contains(e.target) && !e.target.closest(".care-team-list-more")) {
+    careTeamListPopover.classList.remove("open");
   }
 });
 
@@ -1007,7 +1059,14 @@ saveUpdateAccount.addEventListener("click", () => {
     const today = new Date();
     const dateLabel = `${String(today.getMonth() + 1).padStart(2, "0")}.${String(today.getDate()).padStart(2, "0")}.${today.getFullYear()}`;
     const dotColor = selected.value === "Discontinued" ? "dot-black" : "dot-slate";
-    const entry = { category: "account", color: dotColor, label: `Account changed to ${selected.value}`, date: dateLabel };
+
+    let note = `Changed by ${CURRENT_TEAM_MEMBER}`;
+    if (selected.value === "Discontinued") {
+      const reason = discontinueReasonInput.value === "Other" ? discontinueReasonOther.value.trim() : discontinueReasonInput.value;
+      if (reason) note += ` · Reason: ${reason}`;
+    }
+
+    const entry = { category: "account", color: dotColor, label: `Account changed to ${selected.value}`, date: dateLabel, note };
 
     const stored = JSON.parse(localStorage.getItem("hearoAccountHistory") || "[]");
     stored.unshift(entry);

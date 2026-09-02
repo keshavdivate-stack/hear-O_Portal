@@ -9,10 +9,16 @@ document.getElementById("patientSub").textContent = `${ph.org} · ${ph.langName}
 
 /* If the patient was opened by drilling down from an organization's
    health dashboard, "back" should return there (preserving that
-   investigation context) instead of the generic patient list. */
+   investigation context) instead of the generic patient list. Any explicit
+   ?return= (e.g. from a Ticket's "View Patient Profile" action) wins over
+   both, so back always lands wherever the user actually came from. */
 const phOrgContext = phParams.get("org");
+const phReturnTo = phParams.get("return");
 if (phOrgContext) {
   document.getElementById("patientBackLink").href = `org-health-dashboard.html?org=${phOrgContext}`;
+}
+if (phReturnTo) {
+  document.getElementById("patientBackLink").href = decodeURIComponent(phReturnTo);
 }
 
 const phStatusClass = { Active: "healthy", Registered: "info", Priority: "critical", Paused: "neutral" };
@@ -71,6 +77,8 @@ document.getElementById("patientComplianceInfoList").innerHTML = [
   boKv("Total Compliance", `${ph.complianceInfo.totalCompliance}%`),
   boKv("Usable Compliance", `${ph.usableCompliance}%`),
 ].join("");
+
+document.getElementById("patientUsableCompliancePct").textContent = `${ph.usableCompliance}%`;
 
 /* ---------------- Calendar widget ---------------- */
 const PH_CAL_MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
@@ -156,13 +164,22 @@ function renderPatientComplianceChart() {
   const padB = 22;
   const plotW = width - padL - padR;
   const plotH = height - padT - padB;
-  const yMin = 40;
-  const yMax = 100;
-  const gridStep = 20;
 
   const months = ph.monthlyCompliance.map((m) => m.month);
   const complianceSeries = ph.monthlyCompliance.map((m) => m.compliance);
   const usableSeries = ph.monthlyCompliance.map((m) => m.usable);
+  const justifiedSeries = ph.monthlyCompliance.map((m) => m.justified);
+
+  /* Range the y-axis to the data actually in view (rounded to the nearest
+     10, with a little breathing room) instead of a fixed 40-100 -- these
+     series usually sit in a tight high band (e.g. 84-100), which against a
+     fixed 40-100 axis crams every line up against the top of the chart. */
+  const gridStep = 10;
+  const allValues = [...complianceSeries, ...usableSeries, ...justifiedSeries];
+  const dataMin = Math.min(...allValues);
+  const dataMax = Math.max(...allValues);
+  const yMin = Math.max(0, Math.floor((dataMin - gridStep) / gridStep) * gridStep);
+  const yMax = Math.min(100, Math.ceil((dataMax + gridStep) / gridStep) * gridStep);
 
   const xAt = (i) => padL + (plotW * i) / (months.length - 1);
   const yAt = (v) => padT + plotH - ((v - yMin) / (yMax - yMin)) * plotH;
@@ -190,6 +207,7 @@ function renderPatientComplianceChart() {
     <svg viewBox="0 0 ${width} ${height}" class="bo-area-svg" preserveAspectRatio="none">
       ${gridLines.join("")}
       ${buildLine(complianceSeries, "#1F3C73")}
+      ${buildLine(justifiedSeries, "#0FA3B1")}
       ${buildLine(usableSeries, "#F2994A")}
       ${xLabels}
     </svg>`;
@@ -510,15 +528,12 @@ document.getElementById("patientCloseMessageDrawerX").addEventListener("click", 
 patientMessageDrawerOverlay.addEventListener("click", (e) => { if (e.target === patientMessageDrawerOverlay) closePatientMessageDrawer(); });
 
 /* ---------------- Tabs ---------------- */
-const eventsTabActions = document.getElementById("eventsTabActions");
-
 document.querySelectorAll("#patientTabs .bo-tab").forEach((tab) => {
   tab.addEventListener("click", () => {
     document.querySelectorAll("#patientTabs .bo-tab").forEach((t) => t.classList.remove("active"));
     document.querySelectorAll(".bo-tab-panel").forEach((p) => p.classList.remove("active"));
     tab.classList.add("active");
     document.getElementById(`tab-${tab.dataset.tab}`).classList.add("active");
-    eventsTabActions.hidden = tab.dataset.tab !== "events";
     if (tab.dataset.tab === "summary") renderPatientComplianceChart();
   });
 });

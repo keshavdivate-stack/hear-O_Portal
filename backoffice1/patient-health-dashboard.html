@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -28,6 +28,7 @@
           <a href="overview-dashboard.html" class="bo-popover-item">System Health Overview</a>
           <a href="mkt-study.html" class="bo-popover-item">Study</a>
           <a href="mkt-summary.html" class="bo-popover-item">Summary</a>
+          <a href="support-dashboard.html" class="bo-popover-item">Support Dashboard</a>
         </div>
       </div>
       <a href="organizations.html" class="bo-nav-link">
@@ -103,8 +104,9 @@
         </button>
         <div class="bo-popover" id="avatarPopover" style="right:0; min-width:200px;">
           <div class="bo-popover-item" style="font-weight:700; pointer-events:none; color:var(--gray-text);">emily.carter@cordio-med.com</div>
-          <div class="bo-popover-item">Account settings</div>
-          <div class="bo-popover-item">Sign out</div>
+          <div class="bo-popover-item" id="viewVersionBtn">View Version</div>
+          <div class="bo-popover-item">Change Password</div>
+          <div class="bo-popover-item">Logout</div>
         </div>
       </div>
     </div>
@@ -129,22 +131,19 @@
         <button class="bo-tab bo-seg-btn" data-tab="compliance">Compliance</button>
         <button class="bo-tab bo-seg-btn" data-tab="events">Events</button>
       </div>
-      <div class="bo-profile-topbar-actions" id="eventsTabActions" hidden>
-        <button type="button" class="bo-btn-primary" id="patientAddMessageBtn">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-          Message
-        </button>
-        <button type="button" class="bo-btn-primary" id="patientAddEventBtn">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-          Event
-        </button>
-      </div>
     </div>
 
     <!-- SUMMARY -->
     <div class="bo-tab-panel active" id="tab-summary">
       <div class="bo-two-col" style="grid-template-columns: 300px 1fr 460px;">
         <div class="bo-panel-col">
+          <section class="bo-card bo-panel bo-panel--static bo-usable-compliance-card">
+            <div class="bo-panel-head" style="margin-bottom:4px;">
+              <h3 class="bo-panel-title" style="margin:0;">Usable Compliance</h3>
+              <div class="bo-days-row" style="margin:0;">Last <input type="number" class="bo-days-input" id="patientUsableDaysInput" value="31" min="1" /> days</div>
+            </div>
+            <p class="bo-usable-compliance-pct" id="patientUsableCompliancePct">0%</p>
+          </section>
           <section class="bo-card bo-panel bo-panel--fill">
             <h3 class="bo-panel-title">Registration Data</h3>
             <div class="bo-kv-grid bo-kv-grid--scroll" id="patientRegistrationList"></div>
@@ -161,6 +160,7 @@
               <h3 class="bo-panel-title" style="margin:0;">Monthly Compliance %</h3>
               <div class="bo-legend-row" style="margin:0;">
                 <span><span class="dot" style="background:var(--navy)"></span>Compliance</span>
+                <span><span class="dot" style="background:#0FA3B1"></span>Justified</span>
                 <span><span class="dot" style="background:var(--orange)"></span>Usable Compliance</span>
               </div>
             </div>
@@ -206,16 +206,14 @@
     <div class="bo-tab-panel" id="tab-sessions">
       <div class="bo-filter-row" style="align-items:flex-end;">
         <div class="bo-filter-block">
-          <label>From Date:</label>
           <div class="bo-date-field bo-date-field-lg">
-            <input type="text" id="patientSessionsFromDate" placeholder="From Date" onfocus="(this.type='date')" onblur="if(!this.value)this.type='text'" />
+            <input type="text" id="patientSessionsFromDate" placeholder="mm/dd/yyyy" onfocus="(this.type='date')" onblur="if(!this.value)this.type='text'" />
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="17" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3 9H21" stroke="currentColor" stroke-width="1.8"/></svg>
           </div>
         </div>
         <div class="bo-filter-block">
-          <label>To Date:</label>
           <div class="bo-date-field bo-date-field-lg">
-            <input type="text" id="patientSessionsToDate" placeholder="To Date" onfocus="(this.type='date')" onblur="if(!this.value)this.type='text'" />
+            <input type="text" id="patientSessionsToDate" placeholder="mm/dd/yyyy" onfocus="(this.type='date')" onblur="if(!this.value)this.type='text'" />
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="17" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3 9H21" stroke="currentColor" stroke-width="1.8"/></svg>
           </div>
         </div>
@@ -232,28 +230,25 @@
 
     <!-- COMPLIANCE -->
     <div class="bo-tab-panel" id="tab-compliance">
-      <div class="bo-filter-row" style="align-items:flex-end; justify-content:space-between;">
-        <div style="display:flex; gap:16px; flex-wrap:wrap;">
-          <div class="bo-filter-block">
-            <label>From Date:</label>
-            <div class="bo-date-field bo-date-field-lg">
-              <input type="text" id="patientComplianceFromDate" placeholder="From Date" onfocus="(this.type='date')" onblur="if(!this.value)this.type='text'" />
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="17" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3 9H21" stroke="currentColor" stroke-width="1.8"/></svg>
-            </div>
-          </div>
-          <div class="bo-filter-block">
-            <label>To Date:</label>
-            <div class="bo-date-field bo-date-field-lg">
-              <input type="text" id="patientComplianceToDate" placeholder="To Date" onfocus="(this.type='date')" onblur="if(!this.value)this.type='text'" />
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="17" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3 9H21" stroke="currentColor" stroke-width="1.8"/></svg>
-            </div>
+      <div class="bo-filter-row" style="align-items:flex-end;">
+        <div class="bo-filter-block">
+          <div class="bo-date-field bo-date-field-lg">
+            <input type="text" id="patientComplianceFromDate" placeholder="mm/dd/yyyy" onfocus="(this.type='date')" onblur="if(!this.value)this.type='text'" />
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="17" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3 9H21" stroke="currentColor" stroke-width="1.8"/></svg>
           </div>
         </div>
-        <div style="display:flex; align-items:center; gap:12px;">
-          <button type="button" class="bo-btn-icon-square" id="patientCompliancePdfBtn" title="Export PDF">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
-          </button>
+        <div class="bo-filter-block">
+          <div class="bo-date-field bo-date-field-lg">
+            <input type="text" id="patientComplianceToDate" placeholder="mm/dd/yyyy" onfocus="(this.type='date')" onblur="if(!this.value)this.type='text'" />
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="17" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3 9H21" stroke="currentColor" stroke-width="1.8"/></svg>
+          </div>
         </div>
+      </div>
+
+      <div style="display:flex; justify-content:flex-end; align-items:center; gap:12px; margin-top:12px;">
+        <button type="button" class="bo-btn-icon-square" id="patientCompliancePdfBtn" title="Export PDF">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+        </button>
       </div>
 
       <div class="bo-two-col" style="grid-template-columns: 1fr 1fr 1fr; margin-top:6px;">
@@ -282,6 +277,16 @@
 
     <!-- EVENTS -->
     <div class="bo-tab-panel" id="tab-events">
+      <div style="display:flex; justify-content:flex-end; align-items:center; gap:12px; margin-bottom:12px;">
+        <button type="button" class="bo-btn-primary" id="patientAddMessageBtn">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          Message
+        </button>
+        <button type="button" class="bo-btn-primary" id="patientAddEventBtn">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          Event
+        </button>
+      </div>
       <div class="bo-table-card">
         <div class="bo-table-scroll">
           <table class="bo-list-table">
@@ -333,11 +338,11 @@
               </div>
               <div class="bo-modal-field">
                 <label>Description:</label>
-                <input type="text" name="description" placeholder="Description" />
+                <input type="text" name="description" placeholder="Enter description" />
               </div>
               <div class="bo-modal-field">
                 <label>Reported by:</label>
-                <input type="text" name="reportedBy" placeholder="Reported By" />
+                <input type="text" name="reportedBy" placeholder="Enter reporter name" />
               </div>
               <div class="bo-modal-field">
                 <label>Reported via:</label>

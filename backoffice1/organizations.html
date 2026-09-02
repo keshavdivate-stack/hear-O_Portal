@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -28,6 +28,7 @@
           <a href="overview-dashboard.html" class="bo-popover-item">System Health Overview</a>
           <a href="mkt-study.html" class="bo-popover-item">Study</a>
           <a href="mkt-summary.html" class="bo-popover-item">Summary</a>
+          <a href="support-dashboard.html" class="bo-popover-item">Support Dashboard</a>
         </div>
       </div>
       <a href="organizations.html" class="bo-nav-link active">
@@ -103,8 +104,9 @@
         </button>
         <div class="bo-popover" id="avatarPopover" style="right:0; min-width:200px;">
           <div class="bo-popover-item" style="font-weight:700; pointer-events:none; color:var(--gray-text);">emily.carter@cordio-med.com</div>
-          <div class="bo-popover-item">Account settings</div>
-          <div class="bo-popover-item">Sign out</div>
+          <div class="bo-popover-item" id="viewVersionBtn">View Version</div>
+          <div class="bo-popover-item">Change Password</div>
+          <div class="bo-popover-item">Logout</div>
         </div>
       </div>
     </div>
@@ -178,9 +180,11 @@
   <!-- Row action dropdown -->
   <div class="bo-row-menu" id="orgRowMenu">
     <button class="bo-row-menu-item" data-action="send">Send Update</button>
+    <button class="bo-row-menu-item" data-action="sendEmail">Send Email</button>
     <button class="bo-row-menu-item" data-action="edit">Edit Organization</button>
     <button class="bo-row-menu-item" data-action="ehr" id="orgRowMenuEhrBtn">Add EHR Connection</button>
     <button class="bo-row-menu-item" data-action="view">View Details</button>
+    <button class="bo-row-menu-item" data-action="terms">Terms &amp; Conditions</button>
   </div>
 
   <!-- Add Organization full-screen panel (sits under the top nav, not a separate page) -->
@@ -231,7 +235,7 @@
             <div class="bo-modal-grid">
               <div class="bo-modal-field">
                 <label>Name<span class="required-star">*</span></label>
-                <input type="text" name="name" placeholder="Name" required />
+                <input type="text" name="name" placeholder="Enter organization name" required />
               </div>
               <div class="bo-modal-field">
                 <label>Organization Displayed Name</label>
@@ -324,8 +328,9 @@
                     <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
                   </button>
                   <div class="bo-select-menu">
-                    <div class="bo-select-option" data-value="Not HMO">Not HMO<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                    <div class="bo-select-option" data-value="HMO">HMO<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    <div class="bo-select-option" data-value="Commercial">Commercial<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    <div class="bo-select-option" data-value="R&D">R&amp;D<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    <div class="bo-select-option" data-value="Study">Study<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
                   </div>
                   <input type="hidden" name="type" />
                 </div>
@@ -415,11 +420,43 @@
             <div class="bo-modal-grid">
               <div class="bo-modal-field">
                 <label>Phone Number 1</label>
-                <input type="text" name="phone1" placeholder="+xxx xx xxx xxxx" />
+                <div class="bo-phone-field">
+                  <div class="bo-select" data-name="phone1CountryCode">
+                    <button type="button" class="bo-select-trigger">
+                      <span class="bo-select-value">+91</span>
+                      <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                    </button>
+                    <div class="bo-select-menu">
+                      <div class="bo-select-option selected" data-value="+91">+91<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                      <div class="bo-select-option" data-value="+1">+1<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                      <div class="bo-select-option" data-value="+972">+972<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                      <div class="bo-select-option" data-value="+44">+44<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                      <div class="bo-select-option" data-value="+380">+380<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    </div>
+                    <input type="hidden" name="phone1CountryCode" value="+91" />
+                  </div>
+                  <input type="text" name="phone1" placeholder="Enter phone number" />
+                </div>
               </div>
               <div class="bo-modal-field">
                 <label>Phone Number 2</label>
-                <input type="text" name="phone2" placeholder="+xxx xx xxx xxxx" />
+                <div class="bo-phone-field">
+                  <div class="bo-select" data-name="phone2CountryCode">
+                    <button type="button" class="bo-select-trigger">
+                      <span class="bo-select-value">+91</span>
+                      <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                    </button>
+                    <div class="bo-select-menu">
+                      <div class="bo-select-option selected" data-value="+91">+91<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                      <div class="bo-select-option" data-value="+1">+1<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                      <div class="bo-select-option" data-value="+972">+972<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                      <div class="bo-select-option" data-value="+44">+44<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                      <div class="bo-select-option" data-value="+380">+380<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    </div>
+                    <input type="hidden" name="phone2CountryCode" value="+91" />
+                  </div>
+                  <input type="text" name="phone2" placeholder="Enter phone number" />
+                </div>
               </div>
               <div class="bo-modal-field">
                 <label>Location Latitude</label>
@@ -431,7 +468,7 @@
               </div>
               <div class="bo-modal-field full">
                 <label>Consent Folder Path</label>
-                <input type="text" name="consentPath" placeholder="Consent folder path" />
+                <input type="text" name="consentPath" placeholder="Enter consent folder path" />
               </div>
             </div>
           </div>
@@ -514,7 +551,7 @@
     </div>
   </div>
 
-  <!-- EHR Connection drawer (row-menu action — the "EHR Connection Details" step shown on its own, no stepper) -->
+  <!-- EHR Connection drawer (row-menu action â€” the "EHR Connection Details" step shown on its own, no stepper) -->
   <div class="bo-drawer-overlay" id="ehrConnDrawerOverlay">
     <div class="bo-drawer">
       <div class="bo-drawer-head">

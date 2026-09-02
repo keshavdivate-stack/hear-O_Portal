@@ -30,6 +30,7 @@ document.getElementById("allocLangFilter").insertAdjacentHTML(
 
 /* ---------------- Current patients ---------------- */
 const ALLOC_PAGE_SIZE = 10;
+const allocKebabIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="1.7" fill="currentColor"/><circle cx="12" cy="12" r="1.7" fill="currentColor"/><circle cx="12" cy="19" r="1.7" fill="currentColor"/></svg>`;
 
 const currentPatients = [
   { id: 0, username: "120-2001", language: "HE", creationDate: "31/10/2023", startDate: "31/10/2023", appConfig: "Main New8 no HQ Sensors Train 4.0 Zaza", lastModified: "09/02/2025 21:20:14" },
@@ -72,8 +73,13 @@ const allocCurrentPager = boCreatePager(
       <td>${e.r.startDate}</td>
       <td>${e.r.appConfig}</td>
       <td>${e.r.lastModified}</td>
+      <td>
+        <div class="bo-row-actions">
+          <button class="bo-action-icon row-menu-trigger" data-id="${e.r.id}" aria-label="Row actions">${allocKebabIcon}</button>
+        </div>
+      </td>
     </tr>`,
-  { pageSize: ALLOC_PAGE_SIZE, emptyColspan: 6, emptyText: "No patients found." }
+  { pageSize: ALLOC_PAGE_SIZE, emptyColspan: 7, emptyText: "No patients found." }
 );
 allocCurrentPager();
 
@@ -102,8 +108,6 @@ document.getElementById("allocSearchInput").addEventListener("input", (e) => {
 });
 
 /* ---------------- Future patients ---------------- */
-const allocKebabIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="1.7" fill="currentColor"/><circle cx="12" cy="12" r="1.7" fill="currentColor"/><circle cx="12" cy="19" r="1.7" fill="currentColor"/></svg>`;
-
 const futurePatients = [
   { id: 0, name: "MKT", isHmo: false, dateCreated: "14/08/2019", appConfig: "Main New8 no HQ Sensors Train 4.0 Zaza", lastModified: "09/02/2025 21:20:14" },
   { id: 1, name: "120", isHmo: true, dateCreated: "06/06/2023", appConfig: "Main New8 HQ Sensors Train 4.0", lastModified: "12/03/2025 10:05:22" },
@@ -150,7 +154,7 @@ document.getElementById("allocFutureRows").addEventListener("change", (e) => {
 const allocRowMenu = document.getElementById("allocRowMenu");
 let activeAllocRowId = null;
 
-document.getElementById("allocFutureRows").addEventListener("click", (e) => {
+function openAllocRowMenu(e) {
   const trigger = e.target.closest(".row-menu-trigger");
   if (!trigger) return;
   e.stopPropagation();
@@ -159,7 +163,10 @@ document.getElementById("allocFutureRows").addEventListener("click", (e) => {
   allocRowMenu.style.top = `${rect.bottom + 6}px`;
   allocRowMenu.style.left = `${rect.right - 190}px`;
   allocRowMenu.classList.add("open");
-});
+}
+
+document.getElementById("allocCurrentRows").addEventListener("click", openAllocRowMenu);
+document.getElementById("allocFutureRows").addEventListener("click", openAllocRowMenu);
 
 document.addEventListener("click", (e) => {
   if (!allocRowMenu.contains(e.target)) allocRowMenu.classList.remove("open");

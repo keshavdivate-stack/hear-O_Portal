@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -28,6 +28,7 @@
           <a href="overview-dashboard.html" class="bo-popover-item">System Health Overview</a>
           <a href="mkt-study.html" class="bo-popover-item">Study</a>
           <a href="mkt-summary.html" class="bo-popover-item">Summary</a>
+          <a href="support-dashboard.html" class="bo-popover-item">Support Dashboard</a>
         </div>
       </div>
       <a href="organizations.html" class="bo-nav-link">
@@ -103,8 +104,9 @@
         </button>
         <div class="bo-popover" id="avatarPopover" style="right:0; min-width:200px;">
           <div class="bo-popover-item" style="font-weight:700; pointer-events:none; color:var(--gray-text);">emily.carter@cordio-med.com</div>
-          <div class="bo-popover-item">Account settings</div>
-          <div class="bo-popover-item">Sign out</div>
+          <div class="bo-popover-item" id="viewVersionBtn">View Version</div>
+          <div class="bo-popover-item">Change Password</div>
+          <div class="bo-popover-item">Logout</div>
         </div>
       </div>
     </div>
@@ -119,23 +121,23 @@
       <span class="bo-list-toolbar-spacer"></span>
 
       <label class="bo-switch-field">
-        HMO
+        Study
         <span class="bo-switch">
-          <input type="checkbox" id="hmoToggle" />
+          <input type="checkbox" id="studyOrgTypeToggle" data-org-type="Study" />
           <span class="bo-switch-track"></span>
         </span>
       </label>
       <label class="bo-switch-field">
-        All Patients
+        Commercial
         <span class="bo-switch">
-          <input type="checkbox" id="allPatientsToggle" checked />
+          <input type="checkbox" id="commercialOrgTypeToggle" data-org-type="Commercial" />
           <span class="bo-switch-track"></span>
         </span>
       </label>
       <label class="bo-switch-field">
-        All Environments
+        R&amp;D
         <span class="bo-switch">
-          <input type="checkbox" id="allEnvironmentsToggle" checked />
+          <input type="checkbox" id="rdOrgTypeToggle" data-org-type="R&D" />
           <span class="bo-switch-track"></span>
         </span>
       </label>
@@ -197,11 +199,20 @@
           <thead>
             <tr>
               <th class="sortable">USERNAME <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 19V5M6 11L12 5L18 11"/></svg></th>
+              <th>ALGO</th>
               <th>LANG</th>
               <th>TAG</th>
+              <th>CREATION DATE</th>
+              <th>START DATE</th>
+              <th>BASELINE COMPLETED DATE</th>
+              <th>FOLLOW UP DATE</th>
+              <th>LEAVING DATE</th>
               <th>STATUS</th>
               <th>STATUS START DATE</th>
+              <th>LAST APP VERSION</th>
+              <th>LAST PHONE MODEL</th>
               <th>LAST SESSION DATE</th>
+              <th>LAST SIGN IN</th>
               <th>USABLE COMPLIANCE</th>
               <th>COMPLIANCE</th>
               <th></th>

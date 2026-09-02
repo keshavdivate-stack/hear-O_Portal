@@ -9,6 +9,16 @@ document.querySelectorAll("#supportTabs .bo-tab").forEach((tab) => {
   });
 });
 
+/* Deep link: ?tab=<tickets|incidents|rules> -- lets the Support Dashboard's
+   "View All Tickets"/"View All Incidents" links land here on the right tab
+   instead of always defaulting to Tickets. */
+(function applyIncomingTab() {
+  const tab = new URLSearchParams(location.search).get("tab");
+  if (!tab) return;
+  const tabBtn = document.querySelector(`#supportTabs .bo-tab[data-tab="${tab}"]`);
+  if (tabBtn) tabBtn.click();
+})();
+
 /* ---------------- Filter option lists ---------------- */
 document.getElementById("ticketStatusFilterMenu").innerHTML = buildFilterSelectOptions(STATUSES, "All statuses");
 document.getElementById("ticketSeverityFilterMenu").innerHTML = buildFilterSelectOptions(SEVERITIES, "All severities");
@@ -138,7 +148,7 @@ const ticketPager = boCreatePager(
       <td>${tierPill(t.tier)}</td>
       <td>${severityPill(t.severity)}</td>
       <td>${statusPill(t.status)}</td>
-      <td>${t.assignedTo || "&mdash;"}</td>
+      <td>${t.assignedTo ? agentLabel(t.assignedTo) : "&mdash;"}</td>
       <td>${t.createdDate}</td>
       <td>
         <div class="bo-row-actions">
@@ -408,7 +418,8 @@ newTicketForm.addEventListener("submit", (e) => {
 
 /* ---------------- Rules table ---------------- */
 const channelPillClass = { "Notification": "bo-pill-channel-notification", "Email": "bo-pill-channel-email", "SMS": "bo-pill-channel-sms" };
-const channelPills = (channels) => channels.map((c) => `<span class="bo-pill ${channelPillClass[c] || ""}">${c}</span>`).join(" ");
+const channelPillLabel = { "Notification": "In App", "Email": "Email", "SMS": "SMS" };
+const channelPills = (channels) => channels.map((c) => `<span class="bo-pill ${channelPillClass[c] || ""}">${channelPillLabel[c] || c}</span>`).join(" ");
 
 function renderRules() {
   document.getElementById("ruleRows").innerHTML = alertRules
@@ -416,6 +427,7 @@ function renderRules() {
       (r) => `
       <tr>
         <td><b>${r.name}</b></td>
+        <td>${r.category}</td>
         <td>${r.condition}</td>
         <td>${severityPill(r.severity)}</td>
         <td>${tierPill(r.tier)}</td>
@@ -515,13 +527,12 @@ ruleDrawerForm.addEventListener("submit", (e) => {
 
 /* ---------------- New Rule drawer ---------------- */
 const RULE_APPLIES_TO = ["All organisations", "All Commercial orgs", "Per organisation", "System-wide"];
-const SEND_BY_OPTIONS = ["In-app only", "In-app + Email", "In-app + SMS", "All channels"];
-const SEND_BY_CHANNELS = {
-  "In-app only": ["Notification"],
-  "In-app + Email": ["Notification", "Email"],
-  "In-app + SMS": ["Notification", "SMS"],
-  "All channels": ["Notification", "Email", "SMS"],
-};
+/* Notification channel: which channels a matching rule notifies through.
+   Stored/checkbox value stays "Notification" (matches the Edit Rule drawer's
+   Channels checkboxes) while the field itself shows the friendlier "In App"
+   label. */
+const NOTIFICATION_CHANNEL_OPTIONS = ["In App", "SMS", "Email"];
+const NOTIFICATION_CHANNEL_VALUE = { "In App": "Notification", SMS: "SMS", Email: "Email" };
 /* New rules don't collect SLA targets directly (the form keeps them out to stay
    short) -- default from severity using the same response/resolve pairing the
    hand-authored rules already follow. */
@@ -536,16 +547,126 @@ document.querySelector('#newRuleDrawerOverlay .bo-select[data-name="newRuleCateg
 document.querySelector('#newRuleDrawerOverlay .bo-select[data-name="newRuleSeverity"] .bo-select-menu').innerHTML = buildSelectOptions(SEVERITIES);
 document.querySelector('#newRuleDrawerOverlay .bo-select[data-name="newRuleTier"] .bo-select-menu').innerHTML = buildSelectOptions(TIERS);
 document.querySelector('#newRuleDrawerOverlay .bo-select[data-name="newRuleAppliesTo"] .bo-select-menu').innerHTML = buildSelectOptions(RULE_APPLIES_TO);
-document.querySelector('#newRuleDrawerOverlay .bo-select[data-name="newRuleSendBy"] .bo-select-menu').innerHTML = buildSelectOptions(SEND_BY_OPTIONS);
+
+/* Checkbox multiselect for form fields (as opposed to wireMultiSelect's filter-bar
+   variant, this one starts empty -- picking nothing should mean "not set yet",
+   not "everything", since these are form inputs rather than list filters). */
+const boFormMultiselectCheckIcon = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+
+/* Positions the dropdown with `position: fixed` at computed screen
+   coordinates, same as positionBoSelectMenu -- this field lives inside
+   .bo-drawer-body, which scrolls, so a plain `position: absolute` menu
+   would get clipped instead of floating above the drawer's other fields. */
+function positionBoMultiselectMenu(container) {
+  const trigger = container.querySelector(".bo-multiselect-trigger");
+  const menu = container.querySelector(".bo-multiselect-menu");
+  const rect = trigger.getBoundingClientRect();
+  const menuHeight = Math.min(menu.scrollHeight, 260) + 12;
+  const spaceBelow = window.innerHeight - rect.bottom;
+  const openUpward = spaceBelow < menuHeight && rect.top > menuHeight;
+
+  menu.style.position = "fixed";
+  menu.style.left = `${rect.left}px`;
+  menu.style.width = `${rect.width}px`;
+  menu.style.top = openUpward ? "auto" : `${rect.bottom + 6}px`;
+  menu.style.bottom = openUpward ? `${window.innerHeight - rect.top + 6}px` : "auto";
+}
+
+function wireFormMultiSelect(containerId, values) {
+  const container = document.getElementById(containerId);
+  const trigger = container.querySelector(".bo-multiselect-trigger");
+  const valueEl = container.querySelector(".bo-multiselect-value");
+  const menu = container.querySelector(".bo-multiselect-menu");
+  const placeholderText = valueEl.textContent.trim();
+  const selected = new Set();
+
+  function renderMenu() {
+    menu.innerHTML = values
+      .map(
+        (v) => `<label class="bo-multiselect-option${selected.has(v) ? " checked" : ""}" data-value="${v}">
+          <span class="bo-multiselect-checkbox">${boFormMultiselectCheckIcon}</span> ${v}
+        </label>`
+      )
+      .join("");
+  }
+
+  function renderTrigger() {
+    if (selected.size === 0) {
+      valueEl.textContent = placeholderText;
+      valueEl.classList.add("placeholder");
+    } else {
+      valueEl.textContent = values.filter((v) => selected.has(v)).join(", ");
+      valueEl.classList.remove("placeholder");
+    }
+  }
+
+  renderMenu();
+  renderTrigger();
+
+  trigger.addEventListener("click", (e) => {
+    e.stopPropagation();
+    const willOpen = !container.classList.contains("open");
+    document.querySelectorAll(".bo-multiselect.open").forEach((el) => el.classList.remove("open"));
+    if (willOpen) {
+      positionBoMultiselectMenu(container);
+      container.classList.add("open");
+    }
+  });
+
+  menu.addEventListener("click", (e) => {
+    const option = e.target.closest(".bo-multiselect-option");
+    if (!option) return;
+    e.stopPropagation();
+    const v = option.dataset.value;
+    if (selected.has(v)) selected.delete(v);
+    else selected.add(v);
+    renderMenu();
+    renderTrigger();
+    positionBoMultiselectMenu(container);
+    container.dispatchEvent(new Event("change", { bubbles: true }));
+  });
+
+  return {
+    getSelected: () => Array.from(selected),
+    clear: () => { selected.clear(); renderMenu(); renderTrigger(); },
+  };
+}
+
+function closeAllBoMultiselects() {
+  document.querySelectorAll(".bo-multiselect.open").forEach((el) => el.classList.remove("open"));
+}
+document.addEventListener("click", (e) => {
+  if (!e.target.closest(".bo-multiselect")) closeAllBoMultiselects();
+});
+document.addEventListener("scroll", closeAllBoMultiselects, true);
+
+const newRuleSendByMultiSelect = wireFormMultiSelect("newRuleSendBySelect", NOTIFICATION_CHANNEL_OPTIONS);
+const newRuleOrgsMultiSelect = wireFormMultiSelect("newRuleOrgsSelect", SUPPORT_ORG_CODES);
 
 const newRuleDrawerOverlay = document.getElementById("newRuleDrawerOverlay");
 const newRuleForm = document.getElementById("newRuleForm");
 const saveNewRuleBtn = document.getElementById("saveNewRuleDrawer");
+const newRuleOrgsFieldWrap = document.getElementById("newRuleOrgsFieldWrap");
+
+/* Organisations only makes sense when the rule is scoped to specific orgs --
+   for "System-wide"/"All organisations"/"All Commercial orgs" it's implied. */
+function updateNewRuleOrgsVisibility() {
+  const appliesTo = newRuleDrawerOverlay.querySelector('.bo-select[data-name="newRuleAppliesTo"] input[type=hidden]').value;
+  const showOrgs = appliesTo === "Per organisation";
+  newRuleOrgsFieldWrap.hidden = !showOrgs;
+  if (!showOrgs) newRuleOrgsMultiSelect.clear();
+}
+newRuleDrawerOverlay.querySelector('.bo-select[data-name="newRuleAppliesTo"] input[type=hidden]').addEventListener("change", () => {
+  updateNewRuleOrgsVisibility();
+  validateNewRuleForm();
+});
 
 function validateNewRuleForm() {
   const nameFilled = document.getElementById("newRuleNameInput").value.trim() !== "";
   const conditionFilled = document.getElementById("newRuleConditionInput").value.trim() !== "";
   const selectFilled = (name) => newRuleDrawerOverlay.querySelector(`.bo-select[data-name="${name}"] input[type=hidden]`).value !== "";
+  const appliesTo = newRuleDrawerOverlay.querySelector('.bo-select[data-name="newRuleAppliesTo"] input[type=hidden]').value;
+  const orgsFilled = appliesTo !== "Per organisation" || newRuleOrgsMultiSelect.getSelected().length > 0;
   saveNewRuleBtn.disabled = !(
     nameFilled &&
     conditionFilled &&
@@ -553,13 +674,17 @@ function validateNewRuleForm() {
     selectFilled("newRuleSeverity") &&
     selectFilled("newRuleTier") &&
     selectFilled("newRuleAppliesTo") &&
-    selectFilled("newRuleSendBy")
+    orgsFilled &&
+    newRuleSendByMultiSelect.getSelected().length > 0
   );
 }
 
 function openNewRuleDrawer() {
   newRuleForm.reset();
   newRuleDrawerOverlay.querySelectorAll(".bo-select").forEach(resetBoSelect);
+  newRuleSendByMultiSelect.clear();
+  newRuleOrgsMultiSelect.clear();
+  updateNewRuleOrgsVisibility();
   validateNewRuleForm();
   newRuleDrawerOverlay.classList.add("open");
 }
@@ -582,7 +707,7 @@ newRuleForm.addEventListener("submit", (e) => {
 
   const selectValue = (name) => newRuleDrawerOverlay.querySelector(`.bo-select[data-name="${name}"] input[type=hidden]`).value;
   const severity = selectValue("newRuleSeverity");
-  const sendBy = selectValue("newRuleSendBy");
+  const appliesTo = selectValue("newRuleAppliesTo");
   const sla = SEVERITY_DEFAULT_SLA[severity] || { response: "—", resolve: "—" };
 
   const nextId = alertRules.length ? Math.max(...alertRules.map((r) => r.id)) + 1 : 0;
@@ -595,9 +720,10 @@ newRuleForm.addEventListener("submit", (e) => {
     tier: selectValue("newRuleTier"),
     slaResponse: sla.response,
     slaResolve: sla.resolve,
-    channels: SEND_BY_CHANNELS[sendBy] || [],
+    channels: newRuleSendByMultiSelect.getSelected().map((label) => NOTIFICATION_CHANNEL_VALUE[label]),
     autoCreateTicket: false,
-    appliesTo: selectValue("newRuleAppliesTo"),
+    appliesTo,
+    organisations: appliesTo === "Per organisation" ? newRuleOrgsMultiSelect.getSelected() : [],
   });
 
   closeNewRuleDrawer();

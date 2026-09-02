@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
+<script src="font-scale.js"></script>
 </head>
 <body>
 
@@ -45,8 +46,20 @@
         </div>
       </div>
 
-      <button type="button" class="login-btn med-update-ack-btn" onclick="window.location.href='medication.html?ack=furosemide'">
-        Acknowledge
+      <div class="med-update-instructions">
+        <p class="med-update-instructions-title">Doctor Instructions</p>
+        <div class="med-update-instruction-row">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#2f6fed" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.5 3.5 3.5 10.5a4.95 4.95 0 0 0 7 7l7-7a4.95 4.95 0 0 0-7-7z"/><path d="M7 7l7 7"/></svg>
+          <span>Take 2 pills (40 mg) once daily.</span>
+        </div>
+        <div class="med-update-instruction-row">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#b3781a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.73 3h16.9a2 2 0 0 0 1.73-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+          <span>Weight gain, dizziness, or swelling? Tell your care team.</span>
+        </div>
+      </div>
+
+      <button type="button" class="login-btn med-update-ack-btn" onclick="localStorage.setItem('med_ack_furosemide','1'); window.location.href='medication.html?ack=furosemide'">
+        Okay
       </button>
     </div>
   </div>

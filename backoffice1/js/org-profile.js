@@ -1,6 +1,14 @@
 /* ---------------- Resolve current org from ?id= ---------------- */
-const orgProfileId = Number(new URLSearchParams(location.search).get("id"));
+const orgProfileParams = new URLSearchParams(location.search);
+const orgProfileId = Number(orgProfileParams.get("id"));
 const org = orgs.find((o) => o.id === orgProfileId) || orgs[0];
+
+/* An explicit ?return= (e.g. from a Ticket's "View Organization Profile"
+   action) sends back there instead of the generic Organizations list. */
+const orgProfileReturnTo = orgProfileParams.get("return");
+if (orgProfileReturnTo) {
+  document.getElementById("orgProfileBackLink").href = decodeURIComponent(orgProfileReturnTo);
+}
 
 /* ---------------- Header ---------------- */
 document.getElementById("orgProfileName").textContent = org.name;
@@ -147,22 +155,15 @@ document.getElementById("orgUserLastPage").addEventListener("click", () => {
   renderUsers();
 });
 
-/* ---------------- Row action dropdown (lock / edit / delete) ---------------- */
+/* ---------------- Row action dropdown (reset password / edit / delete) ---------------- */
 const userRowMenu = document.getElementById("userRowMenu");
 let activeUserId = null;
-
-function refreshUserRowMenuLabel() {
-  const user = boUsers.find((u) => u.id === activeUserId);
-  const lockItem = userRowMenu.querySelector('[data-action="lock"]');
-  if (user && lockItem) lockItem.textContent = user.locked ? "Unlock User" : "Lock User";
-}
 
 document.getElementById("orgUsersRows").addEventListener("click", (e) => {
   const trigger = e.target.closest(".row-menu-trigger");
   if (!trigger) return;
   e.stopPropagation();
   activeUserId = Number(trigger.dataset.id);
-  refreshUserRowMenuLabel();
   const rect = trigger.getBoundingClientRect();
   userRowMenu.style.top = `${rect.bottom + 6}px`;
   userRowMenu.style.left = `${rect.right - 190}px`;
@@ -181,15 +182,13 @@ userRowMenu.addEventListener("click", (e) => {
   const user = boUsers.find((u) => u.id === activeUserId);
   if (!user) return;
 
-  if (item.dataset.action === "lock") {
-    user.locked = !user.locked;
-    renderUsers();
-  } else if (item.dataset.action === "delete") {
+  if (item.dataset.action === "delete") {
     boUsers.splice(boUsers.indexOf(user), 1);
     renderUsers();
   } else if (item.dataset.action === "edit") {
     openUserDrawer(user);
   }
+  // "reset" (Reset Password) has no wired behavior in this preview.
 });
 
 /* ---------------- Custom selects (role) ---------------- */

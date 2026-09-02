@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
+<script src="font-scale.js"></script>
 </head>
 <body>
 
@@ -28,30 +29,221 @@
       <h1>My Recordings</h1>
     </div>
 
-    <div class="list-body">
-      <div class="list-item">
-        <div class="list-item-left">
-          <span class="list-item-value">Morning recording</span>
-          <span class="list-item-sub">Today, 8:15 AM &middot; 0:04</span>
-        </div>
-        <span class="list-status-badge">Complete</span>
-      </div>
-      <div class="list-item">
-        <div class="list-item-left">
-          <span class="list-item-value">Morning recording</span>
-          <span class="list-item-sub">Yesterday, 8:48 AM &middot; 0:03</span>
-        </div>
-        <span class="list-status-badge">Complete</span>
-      </div>
-      <div class="list-item">
-        <div class="list-item-left">
-          <span class="list-item-value">Morning recording</span>
-          <span class="list-item-sub">2 days ago, 8:22 AM &middot; 0:04</span>
-        </div>
-        <span class="list-status-badge">Complete</span>
-      </div>
+    <div id="banner"></div>
+
+    <div class="week-nav">
+      <button type="button" class="week-nav-btn" onclick="shiftWeek(-1)">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M10 3L5 8L10 13" stroke="#444" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <span class="week-nav-label" id="weekLabel">17-23 Apr</span>
+      <button type="button" class="week-nav-btn" onclick="shiftWeek(1)">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M6 3L11 8L6 13" stroke="#444" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
     </div>
+
+    <div class="day-strip-section">
+      <p class="day-strip-label">Recording</p>
+      <div class="day-strip" id="dayStrip"></div>
+    </div>
+
+    <div id="historyArea"></div>
   </div>
 
+<script>
+  const STATE = new URLSearchParams(window.location.search).get("state") || "complete";
+  const LABELS = ["S", "M", "T", "W", "T", "F", "S"];
+
+  // Each screen state = today's status + the past few days on the strip + any
+  // playable recordings captured so far this week (todo state drives the banner).
+  const STATE_DATA = {
+    complete: {
+      banner: { type: "success", title: "Today's recording complete" },
+      days: ["complete", "warning", "muted", "today-complete", "empty", "empty", "empty"],
+      recordings: [
+        { title: "Morning recording", day: "W", time: "Today, 8:15 AM", duration: "0:04", status: "complete" },
+        { title: "Morning recording", day: "M", time: "Monday, 8:48 AM", duration: "0:03", status: "warning" },
+        { title: "Morning recording", day: "S", time: "Sunday, 8:22 AM", duration: "0:04", status: "complete" },
+      ],
+    },
+    "upload-fail": {
+      banner: {
+        type: "info",
+        title: "Today's recording wasn't uploaded",
+        sub: "Please check your internet connection. If the problem persists, contact technical support",
+      },
+      days: ["complete", "warning", "muted", "today-warning", "empty", "empty", "empty"],
+      recordings: [
+        { title: "Morning recording", day: "M", time: "Monday, 8:48 AM", duration: "0:03", status: "warning" },
+        { title: "Morning recording", day: "S", time: "Sunday, 8:22 AM", duration: "0:04", status: "complete" },
+      ],
+    },
+    "no-hear": {
+      banner: {
+        type: "error",
+        title: "We couldn't hear you well today",
+        sub: "Recording again will help monitor you better",
+        button: "Record again",
+      },
+      days: ["complete", "warning", "complete", "today-warning", "empty", "empty", "empty"],
+      recordings: [
+        { title: "Morning recording", day: "T", time: "Tuesday, 8:10 AM", duration: "0:04", status: "complete" },
+        { title: "Morning recording", day: "M", time: "Monday, 8:48 AM", duration: "0:03", status: "warning" },
+        { title: "Morning recording", day: "S", time: "Sunday, 8:22 AM", duration: "0:04", status: "complete" },
+      ],
+    },
+    empty: {
+      banner: { type: "empty", title: "No recordings yet" },
+      days: ["muted", "muted", "muted", "today-muted", "empty", "empty", "empty"],
+      recordings: [],
+    },
+  };
+
+  const ICONS = {
+    check: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 12.5L9.5 18L20 6" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    bang: '<svg width="4" height="14" viewBox="0 0 4 14" fill="none"><rect x="0" y="0" width="4" height="9" rx="2" fill="#fff"/><circle cx="2" cy="12.5" r="1.5" fill="#fff"/></svg>',
+    wifi: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 18.5C12.6 18.5 13.1 18 13.1 17.4C13.1 16.8 12.6 16.3 12 16.3C11.4 16.3 10.9 16.8 10.9 17.4C10.9 18 11.4 18.5 12 18.5Z" fill="#7a4a12"/><path d="M8.5 14.3C9.5 13.4 10.7 13 12 13C13.3 13 14.5 13.4 15.5 14.3" stroke="#7a4a12" stroke-width="1.8" stroke-linecap="round"/><path d="M5.5 11C7.3 9.4 9.6 8.5 12 8.5C14.4 8.5 16.7 9.4 18.5 11" stroke="#7a4a12" stroke-width="1.8" stroke-linecap="round"/></svg>',
+    alert: '<svg width="4" height="16" viewBox="0 0 4 16" fill="none"><rect x="0" y="0" width="4" height="10" rx="2" fill="#fff"/><circle cx="2" cy="14" r="2" fill="#fff"/></svg>',
+    empty: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="3.5" y="4.5" width="17" height="16" rx="2" stroke="#8a8f97" stroke-width="1.6"/><line x1="3.5" y1="9" x2="20.5" y2="9" stroke="#8a8f97" stroke-width="1.6"/></svg>',
+    play: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 4L20 12L6 20V4Z" fill="currentColor"/></svg>',
+    pause: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="5" y="4" width="5" height="16" rx="1.5" fill="currentColor"/><rect x="14" y="4" width="5" height="16" rx="1.5" fill="currentColor"/></svg>',
+  };
+
+  function renderBanner(b) {
+    const el = document.getElementById("banner");
+    if (b.type === "empty") {
+      el.innerHTML = `<div class="rec-banner empty"><p class="rec-banner-title">${b.title}</p></div>`;
+      return;
+    }
+    const iconMap = { success: ICONS.check, info: ICONS.wifi, error: ICONS.alert };
+    const btn = b.button
+      ? `<button type="button" class="rec-banner-btn" onclick="window.location.href='record-prompt.html'">${b.button}</button>`
+      : "";
+    el.innerHTML = `
+      <div class="rec-banner ${b.type}">
+        <div class="rec-banner-icon">${iconMap[b.type]}</div>
+        <div class="rec-banner-text">
+          <p class="rec-banner-title">${b.title}</p>
+          ${b.sub ? `<p class="rec-banner-sub">${b.sub}</p>` : ""}
+          ${btn}
+        </div>
+      </div>`;
+  }
+
+  function renderDayStrip(days) {
+    const el = document.getElementById("dayStrip");
+    el.innerHTML = days
+      .map((status, i) => {
+        const isToday = status.startsWith("today");
+        const base = isToday ? status.replace("today-", "") : status;
+        const dotClass = `day-dot is-${base}${isToday ? " is-today" : ""}`;
+        const icon = base === "complete" ? ICONS.check : base === "warning" ? ICONS.bang : "";
+        return `
+          <div class="day-cell${isToday ? " is-today" : ""}">
+            <div class="${dotClass}">${icon}</div>
+            <span class="day-cell-label">${LABELS[i]}</span>
+          </div>`;
+      })
+      .join("");
+  }
+
+  function renderHistory(recordings) {
+    const el = document.getElementById("historyArea");
+    if (!recordings.length) {
+      el.innerHTML = `
+        <div class="rec-empty-state">
+          <div class="rec-empty-icon">${ICONS.empty}</div>
+          <p class="rec-empty-text">No recordings yet</p>
+        </div>`;
+      return;
+    }
+    el.innerHTML = `
+      <div class="rec-history-section">
+        <p class="rec-history-label">Previous recordings</p>
+        ${recordings
+          .map(
+            (r, i) => `
+          <div class="rec-item" id="rec-${i}">
+            <button type="button" class="rec-play-btn" onclick="togglePlay(${i}, '${r.duration}')" aria-label="Play ${r.title}">
+              <span id="rec-icon-${i}">${ICONS.play}</span>
+            </button>
+            <div class="rec-item-body">
+              <div class="rec-item-top">
+                <div>
+                  <p class="rec-item-title">${r.title}</p>
+                  <p class="rec-item-sub">${r.time} &middot; <span id="rec-time-${i}">${r.duration}</span></p>
+                </div>
+                <div class="rec-item-status is-${r.status}">${r.status === "complete" ? ICONS.check : ICONS.bang}</div>
+              </div>
+              <div class="rec-progress-track"><div class="rec-progress-fill" id="rec-fill-${i}"></div></div>
+            </div>
+          </div>`
+          )
+          .join("")}
+      </div>`;
+  }
+
+  function durationToSeconds(d) {
+    const [m, s] = d.split(":").map(Number);
+    return m * 60 + s;
+  }
+
+  const players = {};
+
+  function togglePlay(i, duration) {
+    const totalSeconds = durationToSeconds(duration);
+    const iconEl = document.getElementById(`rec-icon-${i}`);
+    const fillEl = document.getElementById(`rec-fill-${i}`);
+    const btnEl = document.getElementById(`rec-${i}`).querySelector(".rec-play-btn");
+    const timeEl = document.getElementById(`rec-time-${i}`);
+
+    Object.keys(players).forEach((key) => {
+      if (Number(key) !== i) stopPlayback(Number(key), duration, true);
+    });
+
+    if (players[i]) {
+      stopPlayback(i, duration, false);
+      return;
+    }
+
+    let elapsed = 0;
+    iconEl.innerHTML = ICONS.pause;
+    btnEl.classList.add("is-playing");
+    players[i] = setInterval(() => {
+      elapsed += 0.1;
+      const pct = Math.min(100, (elapsed / totalSeconds) * 100);
+      fillEl.style.width = pct + "%";
+      const remaining = Math.max(0, totalSeconds - elapsed);
+      const m = String(Math.floor(remaining / 60)).padStart(2, "0");
+      const s = String(Math.floor(remaining % 60)).padStart(2, "0");
+      timeEl.textContent = `${m}:${s}`;
+      if (elapsed >= totalSeconds) {
+        stopPlayback(i, duration, true);
+      }
+    }, 100);
+  }
+
+  function stopPlayback(i, duration, resetToStart) {
+    clearInterval(players[i]);
+    delete players[i];
+    const iconEl = document.getElementById(`rec-icon-${i}`);
+    const fillEl = document.getElementById(`rec-fill-${i}`);
+    const btnEl = document.getElementById(`rec-${i}`).querySelector(".rec-play-btn");
+    const timeEl = document.getElementById(`rec-time-${i}`);
+    if (!iconEl) return;
+    iconEl.innerHTML = ICONS.play;
+    btnEl.classList.remove("is-playing");
+    fillEl.style.width = resetToStart ? "0%" : fillEl.style.width;
+    timeEl.textContent = duration;
+  }
+
+  function shiftWeek() {
+    // Weekly navigation is illustrative in this mock; the current week always renders.
+  }
+
+  const data = STATE_DATA[STATE] || STATE_DATA.complete;
+  renderBanner(data.banner);
+  renderDayStrip(data.days);
+  renderHistory(data.recordings);
+</script>
 </body>
 </html>

@@ -32,6 +32,10 @@ function buildPatientProfile(username) {
     month: m,
     compliance: Math.max(50, Math.min(100, Math.round(compliance + Math.sin((seed + i) / 2) * 8))),
     usable: Math.max(45, Math.min(100, Math.round(usableCompliance + Math.cos((seed + i) / 2) * 8))),
+    /* Justified = compliance plus days excused for a documented reason
+       (hospitalization, device issue, etc.) -- always at or above the raw
+       compliance line since it only adds excused days back in. */
+    justified: Math.max(55, Math.min(100, Math.round(compliance + Math.sin((seed + i) / 2) * 8 + 6 + (seed % 5)))),
   }));
 
   const sessions = Array.from({ length: 6 }, (_, i) => {
