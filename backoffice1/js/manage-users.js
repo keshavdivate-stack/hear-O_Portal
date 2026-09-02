@@ -116,7 +116,7 @@ document.addEventListener("click", (e) => {
 });
 
 userRowMenu.addEventListener("click", (e) => {
-  const item = e.target.closest(".bo-row-menu-icon-btn");
+  const item = e.target.closest(".bo-row-menu-item");
   if (!item || activeUserRowId === null) return;
   userRowMenu.classList.remove("open");
 

@@ -208,13 +208,9 @@
   </main>
 
   <!-- Row action dropdown (Patient Events) -->
-  <div class="bo-row-menu bo-row-menu-icons" id="peRowMenu">
-    <button class="bo-row-menu-icon-btn" data-action="edit" aria-label="Edit Event" title="Edit Event">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
-    </button>
-    <button class="bo-row-menu-icon-btn danger" data-action="delete" aria-label="Delete Event" title="Delete Event">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
-    </button>
+  <div class="bo-row-menu" id="peRowMenu">
+    <button class="bo-row-menu-item" data-action="edit">Edit Event</button>
+    <button class="bo-row-menu-item danger" data-action="delete">Delete Event</button>
   </div>
 
   <!-- Add / Update Event drawer -->

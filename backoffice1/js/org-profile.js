@@ -175,7 +175,7 @@ document.addEventListener("click", (e) => {
 });
 
 userRowMenu.addEventListener("click", (e) => {
-  const item = e.target.closest(".bo-row-menu-icon-btn");
+  const item = e.target.closest(".bo-row-menu-item");
   if (!item || activeUserId === null) return;
   userRowMenu.classList.remove("open");
 
@@ -466,7 +466,7 @@ document.addEventListener("click", (e) => {
 });
 
 orgPatientRowMenu.addEventListener("click", (e) => {
-  const item = e.target.closest(".bo-row-menu-icon-btn");
+  const item = e.target.closest(".bo-row-menu-item");
   if (!item) return;
   orgPatientRowMenu.classList.remove("open");
 });

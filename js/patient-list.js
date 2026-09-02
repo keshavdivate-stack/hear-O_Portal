@@ -137,11 +137,11 @@ const actionTypeLabels = {
 
 function actionCell(p) {
   const label = p.action ? actionTypeLabels[p.action.type] || "" : "";
+  const pencilTitle = label || "Add action";
   return `
     <div class="action-cell">
-      ${label ? `<span class="action-label">${label}</span>` : "<span></span>"}
       <div class="action-icon-group">
-        <button class="action-icon" aria-label="Add action" data-id="${p.id}" data-act="addAction">${pencilIcon}</button>
+        <button class="action-icon" aria-label="${pencilTitle}" title="${pencilTitle}" data-id="${p.id}" data-act="addAction">${pencilIcon}</button>
         <button class="action-icon kebab row-menu-trigger" aria-label="More" data-id="${p.id}">${kebabIcon}</button>
       </div>
     </div>`;

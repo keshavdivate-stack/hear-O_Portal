@@ -1211,8 +1211,6 @@ body {
 
 .action-icon.kebab { color: #7E8993; }
 
-.action-label { font-size: 13px; color: #23272E; white-space: nowrap; }
-
 .list-footer {
   display: flex;
   align-items: center;

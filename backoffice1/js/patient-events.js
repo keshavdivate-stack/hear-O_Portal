@@ -171,7 +171,7 @@ document.addEventListener("click", (e) => {
 });
 
 peRowMenu.addEventListener("click", (e) => {
-  const item = e.target.closest(".bo-row-menu-icon-btn");
+  const item = e.target.closest(".bo-row-menu-item");
   if (!item || activePeRowId === null) return;
   peRowMenu.classList.remove("open");
 
