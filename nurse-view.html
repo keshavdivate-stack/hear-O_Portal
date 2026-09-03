@@ -333,6 +333,10 @@
                 Clinical
                 <svg class="chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
               </button>
+              <button class="data-tab" data-tab="questionnaire">
+                Questionnaire
+                <svg class="chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
             </div>
             <div class="range-toggle">
               <span data-range="week">Week</span>
@@ -611,6 +615,16 @@
                 </table>
               </div>
             </div>
+          </div>
+
+          <!-- Questionnaire panel -->
+          <div class="data-tab-panel" data-panel="questionnaire">
+            <div class="quest-legend">
+              <span><span class="quest-dot quest-dot-yes"></span> Yes</span>
+              <span><span class="quest-dot quest-dot-no"></span> No</span>
+              <span class="quest-legend-note">Sent to the patient once a week</span>
+            </div>
+            <div class="quest-list" id="questList"></div>
           </div>
         </div>
 

@@ -924,8 +924,24 @@ function renderMeds() {
   const list = filteredMeds();
   document.getElementById("medCount").textContent = medications.length;
   document.getElementById("medList").innerHTML = list
-    .map(
-      (m, mi) => `
+    .map((m, mi) => {
+      const days = visibleDays();
+      const adh = sliceForRange(m.adherence);
+
+      const iconsHtml = days
+        .map(
+          (d, i) => `
+        <div class="med-adh-day">
+          <span class="med-adh-icon ${adh[i] ? "med-adh-taken" : "med-adh-missed"}">${adh[i] ? adhCheckIcon : adhDashIcon}</span>
+        </div>`
+        )
+        .join("");
+
+      const dayScaleHtml = days
+        .map((d) => `<span>${d.today ? `<span class="today">${d.label}</span>` : d.label}</span>`)
+        .join("");
+
+      return `
       <div class="med-block">
         <div class="med-block-head">
           <div>
@@ -952,36 +968,15 @@ function renderMeds() {
         </div>
 
         <div class="med-adherence-row">
-          <button class="chart-arrow med-adh-prev" data-med="${mi}" aria-label="Previous month"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15 6L9 12L15 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-          <div class="med-adh-scroll" id="medAdh${mi}">
-            ${(() => {
-              const days = visibleDays();
-              const adh = sliceForRange(m.adherence);
-              return days
-                .map(
-                  (d, i) => `
-                <div class="med-adh-day">
-                  <span class="med-adh-icon ${adh[i] ? "med-adh-taken" : "med-adh-missed"}">${adh[i] ? adhCheckIcon : adhDashIcon}</span>
-                  <span class="med-adh-day-label">${d.label}</span>
-                </div>`
-                )
-                .join("");
-            })()}
-          </div>
-          <button class="chart-arrow med-adh-next" data-med="${mi}" aria-label="Next month"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 6L15 12L9 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+          <div class="med-adh-scroll" id="medAdh${mi}">${iconsHtml}</div>
         </div>
-        <div class="chart-month-row" style="padding:0 40px;">${monthRowHtml(visibleDays())}</div>
-      </div>`
-    )
+        <div class="med-day-scale-wrap">
+          <div class="chart-day-scale">${dayScaleHtml}</div>
+          <div class="chart-month-row">${monthRowHtml(days)}</div>
+        </div>
+      </div>`;
+    })
     .join("") || `<p class="empty-state-text">No medications match the selected filters.</p>`;
-
-  document.querySelectorAll(".med-adh-prev, .med-adh-next").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const row = document.getElementById(`medAdh${btn.dataset.med}`);
-      const dir = btn.classList.contains("med-adh-next") ? 1 : -1;
-      row.scrollBy({ left: dir * 320, behavior: "smooth" });
-    });
-  });
 
   document.querySelectorAll(".med-info-btn").forEach((btn) => {
     btn.addEventListener("click", (e) => {
@@ -1015,6 +1010,73 @@ document.getElementById("medStatusFilter").addEventListener("change", (e) => {
   medStatusFilter = e.target.value;
   renderMeds();
 });
+
+/* ---------------- Clinical: Questionnaire ----------------
+   The questionnaire is sent to the patient once a week, so most days have no
+   answer -- weeklyAnswers() only fills in the chartDays indices the patient
+   was actually asked, leaving every other day as null (rendered as an empty
+   dot, not a "missed" one -- there was nothing to answer that day). */
+const questXIcon = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M6 6L18 18M18 6L6 18" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/></svg>`;
+
+function weeklyAnswers(answersByDayIndex) {
+  return chartDays.map((d, i) => (i in answersByDayIndex ? answersByDayIndex[i] : null));
+}
+
+const questions = [
+  {
+    label: "Q1",
+    text: "Have you experienced any shortness of breath this week?",
+    answers: weeklyAnswers({ 4: true, 11: true, 18: false, 25: true }),
+  },
+  {
+    label: "Q2",
+    text: "Have you noticed any swelling in your legs or ankles this week?",
+    answers: weeklyAnswers({ 4: true, 11: false, 18: true, 25: true }),
+  },
+];
+
+function renderQuestionnaire() {
+  const days = visibleDays();
+  document.getElementById("questList").innerHTML = questions
+    .map((q, qi) => {
+      const ans = sliceForRange(q.answers);
+
+      const iconsHtml = days
+        .map((d, i) => {
+          const a = ans[i];
+          const cls = a === true ? "quest-ans-yes" : a === false ? "quest-ans-no" : "quest-ans-none";
+          const icon = a === true ? adhCheckIcon : a === false ? questXIcon : "";
+          return `
+        <div class="med-adh-day">
+          <span class="quest-ans-icon ${cls}">${icon}</span>
+        </div>`;
+        })
+        .join("");
+
+      const dayScaleHtml = days
+        .map((d) => `<span>${d.today ? `<span class="today">${d.label}</span>` : d.label}</span>`)
+        .join("");
+
+      return `
+      <div class="med-block">
+        <div class="quest-block-head">
+          <span class="quest-label">${q.label}</span>
+          <span class="quest-text">${q.text}</span>
+        </div>
+
+        <div class="med-adherence-row">
+          <div class="med-adh-scroll" id="questAdh${qi}">${iconsHtml}</div>
+        </div>
+        <div class="med-day-scale-wrap">
+          <div class="chart-day-scale">${dayScaleHtml}</div>
+          <div class="chart-month-row">${monthRowHtml(days)}</div>
+        </div>
+      </div>`;
+    })
+    .join("");
+}
+
+renderQuestionnaire();
 
 /* ---------------- Tabs: Recordings / Health Data / Clinical ---------------- */
 document.querySelectorAll(".data-tab").forEach((tab) => {
@@ -1063,6 +1125,7 @@ function rebuildRangedCharts() {
   buildOxygenChart();
   buildRespirationChart();
   renderMeds();
+  renderQuestionnaire();
 }
 
 document.querySelectorAll(".range-toggle span").forEach((r) => {

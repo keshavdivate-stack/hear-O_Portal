@@ -16,8 +16,8 @@ const patientList = [
   { name: "Annie Zaplin",     username: "ABC-1222", mrn: "854125632", phone: "054-857 15423", account: "Enabled", status: "active", since: "Since: 3d | 01.07.2028", monitoring: "monitored", compliance: 45, gender: "F", team: "Remote Monitoring Team", teamMember: "Sandy Kohl, RN", careTeam: ["Sandy Kohl, RN", "Dr. Emily Chen"] },
   { name: "Nathan Norash",    username: "ABC-1222", mrn: "854125632", phone: "054-857 15423", account: "Paused", status: "active", since: "Since: 3d | 01.07.2028", monitoring: "monitored", compliance: 63, gender: "M", careStatus: "recommended", careTitle: "Confirm Lisinopril adherence", team: "Heart Failure Team", teamMember: "Dr. Michael Reyes", careTeam: ["Dr. Michael Reyes"] },
   { name: "Henry Fisher",     username: "ABC-1220", mrn: "965412589", phone: "054-857 15423", account: "Enabled", status: "registered", since: "Since: 3d | 01.07.2028", monitoring: "none", compliance: 12, gender: "M", team: "Post-Discharge Team", teamMember: "Emily Carter", careTeam: ["Emily Carter", "Ayelet Er, NP"] },
-  { name: "Josh Ericson",     username: "ABC-1222", mrn: "854125632", phone: "054-857 15423", account: "Discontinued", discontinuedDate: "01.05.2028", status: "baseline", since: "Since: 3d | 01.07.2028", monitoring: "monitored", monInfo: true, compliance: 79, gender: "Other", careStatus: "completed", team: "Remote Monitoring Team", teamMember: "Dr. Emily Chen", careTeam: ["Dr. Emily Chen", "Amanda Lee, RN", "Sandy Kohl, RN"] },
-  { name: "Jack Harris",      username: "ABC-1221", mrn: "854125698", phone: "054-857 15423", account: "Discontinued", discontinuedDate: "12.29.2027", status: "none", monitoring: "unmonitored", monSince: "Since: 5d | 01.05.2028", compliance: 24, gender: "M", team: "Heart Failure Team", teamMember: "Dr. Sarah Mitchell", careTeam: ["Dr. Sarah Mitchell"] },
+  { name: "Josh Ericson",     username: "ABC-1222", mrn: "854125632", phone: "054-857 15423", account: "Discontinued", discontinuedDate: "01.05.2028", discontinuedReason: "Patient relocated out of service area", status: "baseline", since: "Since: 3d | 01.07.2028", monitoring: "monitored", monInfo: true, compliance: 79, gender: "Other", careStatus: "completed", team: "Remote Monitoring Team", teamMember: "Dr. Emily Chen", careTeam: ["Dr. Emily Chen", "Amanda Lee, RN", "Sandy Kohl, RN"] },
+  { name: "Jack Harris",      username: "ABC-1221", mrn: "854125698", phone: "054-857 15423", account: "Discontinued", discontinuedDate: "12.29.2027", discontinuedReason: "Patient requested to stop monitoring", status: "none", monitoring: "unmonitored", monSince: "Since: 5d | 01.05.2028", compliance: 24, gender: "M", team: "Heart Failure Team", teamMember: "Dr. Sarah Mitchell", careTeam: ["Dr. Sarah Mitchell"] },
 ];
 
 /* Current logged-in clinician (matches the "EC" topbar avatar), used by the
@@ -221,7 +221,7 @@ function genderLabel(gender) {
 function patientChartHref(p) {
   const base = p.chartView === "nurse" ? "nurse-view.html" : p.ehrOrg ? "ehr-integration/patient-data.html" : "patient-data.html";
   if (p.account !== "Discontinued") return base;
-  return `${base}?discontinued=1&discontinuedDate=${encodeURIComponent(p.discontinuedDate || "")}`;
+  return `${base}?discontinued=1&discontinuedDate=${encodeURIComponent(p.discontinuedDate || "")}&discontinuedReason=${encodeURIComponent(p.discontinuedReason || "")}`;
 }
 
 function filteredPatientList() {
@@ -646,7 +646,7 @@ const registerManualForm = document.getElementById("registerManualForm");
 const registerManualFormWrap = document.getElementById("registerManualFormWrap");
 const registerManualSuccessWrap = document.getElementById("registerManualSuccessWrap");
 const saveRegisterManual = document.getElementById("saveRegisterManual");
-const registerManualRequired = ["firstName", "lastName", "dob", "email", "emailLanguage"];
+const registerManualRequired = ["firstName", "lastName", "patientInsuranceId", "dob", "email", "emailLanguage"];
 
 function validateRegisterManualForm() {
   const valid = registerManualRequired.every((name) => registerManualForm[name].value.trim() !== "");

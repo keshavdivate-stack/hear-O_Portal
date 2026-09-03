@@ -166,7 +166,10 @@
         <!-- Discontinued account banner -->
         <div class="discontinued-banner" id="discontinuedBanner" style="display:none;">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#B23B3B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8V13"/><circle cx="12" cy="16" r="1" fill="#B23B3B" stroke="none"/></svg>
-          <span>This patient's account was discontinued on <strong id="discontinuedBannerDate"></strong>.</span>
+          <span>
+            This patient's account was discontinued on <strong id="discontinuedBannerDate"></strong>.
+            <span id="discontinuedBannerReason" style="display:none;">&nbsp;Reason: <strong id="discontinuedBannerReasonText"></strong></span>
+          </span>
         </div>
 
         <!-- Patient header card -->
@@ -358,6 +361,10 @@
               </button>
               <button class="data-tab" data-tab="clinical">
                 Clinical
+                <svg class="chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <button class="data-tab" data-tab="questionnaire">
+                Questionnaire
                 <svg class="chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
               </button>
               <button class="data-tab" data-tab="info">
@@ -684,6 +691,16 @@
                 </table>
               </div>
             </div>
+          </div>
+
+          <!-- Questionnaire panel -->
+          <div class="data-tab-panel" data-panel="questionnaire">
+            <div class="quest-legend">
+              <span><span class="quest-dot quest-dot-yes"></span> Yes</span>
+              <span><span class="quest-dot quest-dot-no"></span> No</span>
+              <span class="quest-legend-note">Sent to the patient once a week</span>
+            </div>
+            <div class="quest-list" id="questList"></div>
           </div>
 
           <!-- Patient Information panel -->

@@ -3131,10 +3131,15 @@ body {
   gap: 8px;
 }
 
+/* No side padding/gap here -- .med-adh-day's columns must start and end at
+   exactly the same x-offsets as .chart-day-scale's below (both sit directly
+   inside .med-block's 20px padding with nothing else in the row), otherwise
+   each answer/adherence dot drifts further from its date the further right
+   it is in the row. */
 .med-adh-scroll {
   display: flex;
   flex: 1;
-  padding: 2px 2px 4px;
+  padding: 2px 0 4px;
 }
 
 /* Each column stretches to fill an even share of the row -- matching the
@@ -3160,10 +3165,49 @@ body {
 .med-adh-taken { background: var(--blue); color: #fff; }
 .med-adh-missed { background: #E7EAEE; color: #7E8993; }
 
-/* Undoes .med-block's own 20px padding so this day-scale spans the same
-   width (and the same 28px card inset) as .chart-day-scale in the HearO
-   overview chart above, keeping the two date rows on the same columns. */
-.med-day-scale-wrap { margin: 0 -20px; }
+/* Sits in the same unpadded position as .med-adh-scroll above it (both
+   inside .med-block's 20px padding, nothing else in either row) so each
+   date lines up under its own adherence/answer dot. */
+.med-day-scale-wrap { margin: 0; }
+
+/* -- Clinical: Questionnaire -- */
+.quest-legend {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  font-size: 13px;
+  color: #363B42;
+  margin-bottom: 18px;
+}
+
+.quest-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 6px;
+  vertical-align: -1px;
+}
+
+.quest-dot-yes { background: var(--blue); }
+.quest-dot-no { background: #F2994A; }
+
+.quest-legend-note { color: var(--gray-text); }
+
+.quest-list { display: flex; flex-direction: column; }
+
+.quest-block-head { margin-bottom: 4px; }
+.quest-label { font-size: 15px; font-weight: 700; color: #23272E; margin-right: 8px; }
+.quest-text { font-size: 13.5px; color: var(--gray-text); }
+
+/* Answer icons reuse .med-adh-day/.med-adh-scroll's per-column layout so the
+   week/month axis stays aligned with the other Clinical/Health Data charts;
+   an unanswered day (question wasn't due that week) renders no dot at all. */
+.quest-ans-icon { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.quest-ans-yes { background: var(--blue); color: #fff; }
+.quest-ans-no { background: #F2994A; color: #fff; }
+.quest-ans-none { background: transparent; }
 
 /* -- Care Plan & Goals -- */
 .goals-list { display: flex; flex-direction: column; gap: 16px; }
@@ -5440,6 +5484,34 @@ label.checkbox-field {
   font-size: 14px;
   font-weight: 600;
   color: #7A2E2E;
+}
+
+/* Discontinued patient: wash the profile card to read as disabled, but keep the
+   kebab menu clickable so staff can still reactivate the account or reset the password. */
+.patient-card.is-discontinued {
+  position: relative;
+}
+
+.patient-card.is-discontinued::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(246, 248, 250, 0.7);
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.patient-card.is-discontinued .action-icon.kebab,
+.patient-card.is-discontinued .row-menu {
+  position: relative;
+  z-index: 6;
+}
+
+.patient-card.is-discontinued .btn-care,
+.patient-card.is-discontinued .care-app-chip {
+  pointer-events: none;
+  filter: grayscale(1);
 }
 
 /* -- Summary tab: Allergies / Critical Alerts -- */
