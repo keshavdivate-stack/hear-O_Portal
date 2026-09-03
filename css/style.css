@@ -652,7 +652,7 @@ body {
   white-space: nowrap;
 }
 
-.priority-row-actions .priority-flag {
+.priority-row-actions .priority-flag-btn {
   margin-right: 14px;
   vertical-align: middle;
 }
@@ -661,7 +661,20 @@ body {
   vertical-align: middle;
 }
 
-.priority-flag { display: inline-flex; }
+.priority-flag-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  padding: 2px;
+  cursor: pointer;
+  border-radius: 4px;
+  opacity: 0.35;
+}
+
+.priority-flag-btn:hover { opacity: 0.7; background: #FBEAEA; }
+.priority-flag-btn.active { opacity: 1; }
 
 .priority-ack-row { margin-top: 12px; }
 
@@ -1239,6 +1252,33 @@ body {
 .mon-none { color: #7E8993; }
 .mon-progress { color: var(--orange-text); }
 
+.ehr-connected-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  background: var(--blue-light);
+  color: var(--blue-text);
+}
+
+.ehr-not-connected { font-size: 13px; color: #9AA5B1; }
+
+.source-outline-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--gray-border);
+  background: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  color: #363B42;
+  white-space: nowrap;
+}
+
 .care-indicator-trigger {
   background: none;
   border: none;
@@ -1353,6 +1393,31 @@ body {
 }
 
 .action-icon.kebab { color: #7E8993; }
+
+.action-icon-wrap { position: relative; display: inline-flex; }
+
+.action-icon-with-label { gap: 6px; }
+
+.action-icon-label { font-size: 13px; font-weight: 600; color: var(--blue); white-space: nowrap; }
+
+.action-tooltip {
+  display: none;
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  min-width: 200px;
+  background: #fff;
+  border: 1px solid var(--gray-border);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 12.5px;
+  line-height: 1.4;
+  color: #23272E;
+  box-shadow: 0 8px 20px rgba(20, 30, 50, 0.14);
+  z-index: 60;
+}
+
+.action-icon-wrap:hover .action-tooltip { display: block; }
 
 .list-footer {
   display: flex;
@@ -2917,18 +2982,15 @@ body {
 .rec-title-cell { font-weight: 600; color: #23272E; }
 
 .rec-status-chip {
-  display: inline-block;
-  padding: 5px 12px;
-  border-radius: 999px;
   font-size: 12px;
   font-weight: 700;
   white-space: nowrap;
 }
 
-.rec-status-recommended { background: var(--blue-light); color: var(--blue-text); }
-.rec-status-progress { background: #FEF3E8; color: var(--orange-text); }
-.rec-status-completed { background: var(--green-light, #E9FBF3); color: var(--green-text); }
-.rec-status-archived { background: var(--bg); color: var(--gray-text); }
+.rec-status-recommended { color: var(--blue-text); }
+.rec-status-progress { color: var(--orange-text); }
+.rec-status-completed { color: var(--green-text); }
+.rec-status-archived { color: var(--gray-text); }
 
 .rec-latest { display: flex; flex-direction: column; gap: 1px; }
 .rec-latest-primary { font-size: 13.5px; font-weight: 600; color: #23272E; }
@@ -3337,7 +3399,8 @@ body {
 }
 
 .quest-dot-yes { background: var(--blue); }
-.quest-dot-no { background: #F2994A; }
+.quest-dot-no { background: var(--blue); display: inline-flex; align-items: center; justify-content: center; }
+.quest-dot-no svg { width: 8px; height: 8px; }
 
 .quest-legend-note { color: var(--gray-text); }
 
@@ -3349,11 +3412,34 @@ body {
 
 /* Answer icons reuse .med-adh-day/.med-adh-scroll's per-column layout so the
    week/month axis stays aligned with the other Clinical/Health Data charts;
-   an unanswered day (question wasn't due that week) renders no dot at all. */
-.quest-ans-icon { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+   an unanswered day (question wasn't due that week) renders no dot at all.
+   Yes and No share the same blue fill -- only the check/cross icon tells
+   them apart -- so a weight-gain tooltip on a "Yes" answer reads as one
+   consistent color family instead of switching to an alert color. */
+.quest-ans-icon { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; position: relative; }
 .quest-ans-yes { background: var(--blue); color: #fff; }
-.quest-ans-no { background: #F2994A; color: #fff; }
+.quest-ans-no { background: var(--blue); color: #fff; }
 .quest-ans-none { background: transparent; }
+
+.quest-weight-tooltip {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: #fff;
+  border: 1px solid var(--gray-border);
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(20,30,50,0.14);
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #23272E;
+  white-space: nowrap;
+  display: none;
+  z-index: 5;
+}
+
+.quest-ans-icon:hover .quest-weight-tooltip { display: block; }
 
 /* -- Care Plan & Goals -- */
 .goals-list { display: flex; flex-direction: column; gap: 16px; }
@@ -3516,11 +3602,15 @@ body {
 
 .compliance-detail-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 20px 24px;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1100px) {
+  .compliance-detail-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (max-width: 700px) {
   .compliance-detail-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
@@ -3649,25 +3739,12 @@ body {
 .th-checkbox input, .td-checkbox input { width: 16px; height: 16px; cursor: pointer; accent-color: var(--blue-text); }
 
 .ehr-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px 10px;
-  border-radius: 999px;
   font-size: 12px;
   font-weight: 700;
   white-space: nowrap;
 }
-.ehr-pill::before {
-  content: "";
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: currentColor;
-  flex-shrink: 0;
-}
-.ehr-pill-sent { background: #E7F8EF; color: var(--green-text); }
-.ehr-pill-notsent { background: var(--bg); color: #7E8993; }
+.ehr-pill-sent { color: var(--green-text); }
+.ehr-pill-notsent { color: #7E8993; }
 
 /* -- Bulk actions bar (replaces Add User once one or more rows are checked) -- */
 .bulk-actions-bar {
@@ -5667,6 +5744,27 @@ label.checkbox-field {
   filter: grayscale(1);
 }
 
+/* Discontinued patient: no action anywhere on the page below the profile
+   card either -- adding/editing recordings, medications, events, notes, or
+   messaging the patient are all blocked. Viewing tabs, history and the
+   Overview chart stays available. The main header kebab is exempt so staff
+   can still reactivate the account via Update account / reset the password. */
+body.patient-discontinued .data-content .btn-care,
+body.patient-discontinued .data-content .care-app-chip,
+body.patient-discontinued .data-content .btn-add-vitals,
+body.patient-discontinued .data-content .btn-edit,
+body.patient-discontinued .data-content .add-note-link,
+body.patient-discontinued .data-content .row-menu-trigger,
+body.patient-discontinued .data-content .action-icon.kebab:not(#patientHeaderKebab),
+body.patient-discontinued .data-content #openAddEventBtn,
+body.patient-discontinued .data-content .clinical-add-link,
+body.patient-discontinued #chatOpenBtn {
+  pointer-events: none;
+  opacity: 0.45;
+  filter: grayscale(1);
+  cursor: not-allowed;
+}
+
 /* -- Summary tab: Allergies / Critical Alerts -- */
 .rec-alert-banner {
   background: var(--red-light);
@@ -5967,29 +6065,20 @@ label.checkbox-field {
 .ticket-pill-severity-medium { background: #FCF6DA; color: var(--yellow-text); }
 .ticket-pill-severity-low { background: #F1F3F5; color: var(--gray-text); }
 
-/* Lifecycle state -- full pill + status dot, so state reads differently
-   from a plain category/severity label. */
+/* Lifecycle state -- plain colored text, no pill/dot. */
 .ticket-pill-state-open,
 .ticket-pill-state-inprogress,
 .ticket-pill-state-escalated,
 .ticket-pill-state-resolved {
-  gap: 6px;
+  display: inline;
+  background: none;
+  padding: 0;
+  border-radius: 0;
 }
-.ticket-pill-state-open::before,
-.ticket-pill-state-inprogress::before,
-.ticket-pill-state-escalated::before,
-.ticket-pill-state-resolved::before {
-  content: "";
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: currentColor;
-  flex-shrink: 0;
-}
-.ticket-pill-state-open { background: var(--blue-light); color: var(--blue-text); }
-.ticket-pill-state-inprogress { background: #FDF3E7; color: var(--orange-text); }
-.ticket-pill-state-escalated { background: var(--red-light); color: var(--red-text); }
-.ticket-pill-state-resolved { background: #E7F8EF; color: var(--green-text); }
+.ticket-pill-state-open { color: var(--blue-text); }
+.ticket-pill-state-inprogress { color: var(--orange-text); }
+.ticket-pill-state-escalated { color: var(--red-text); }
+.ticket-pill-state-resolved { color: var(--green-text); }
 
 .ticket-view-link {
   color: var(--blue-text);

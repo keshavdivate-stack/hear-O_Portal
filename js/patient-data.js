@@ -12,6 +12,25 @@
 
   document.getElementById("discontinuedBanner").style.display = "flex";
   document.querySelector(".patient-card").classList.add("is-discontinued");
+  /* Discontinued patients are read-only everywhere on this page, not just the
+     profile card -- staff can still view history, but every action that would
+     create/edit/message/reassign something for this patient is blocked. The
+     header kebab (Edit patient / Update account / Reset password) stays live
+     since "Update account" is how staff reactivate the record. */
+  document.body.classList.add("patient-discontinued");
+})();
+
+/* ---------------- Forward per-patient care-recommendation flags ----------------
+   patient-data.html itself is a static demo chart, but the Care Recommendation
+   links need to carry patient-specific form customizations (currently just
+   "hide the Medication Details section" for one patient) through to
+   care-recommendation.html. */
+(() => {
+  const hideMedDetails = new URLSearchParams(window.location.search).get("hideMedDetails");
+  if (hideMedDetails !== "1") return;
+  document.querySelectorAll('a[href="care-recommendation.html"]').forEach((a) => {
+    a.href = "care-recommendation.html?hideMedDetails=1";
+  });
 })();
 
 /* ---------------- Care Team popover ---------------- */
@@ -693,7 +712,6 @@ buildRespirationChart();
 /* ---------------- Clinical: Care Recommendations ---------------- */
 const CARE_REC_STATUS = {
   recommended: { label: "Recommended", cls: "rec-status-recommended" },
-  "in-progress": { label: "In Progress", cls: "rec-status-progress" },
   completed: { label: "Completed", cls: "rec-status-completed" },
   archived: { label: "Archived", cls: "rec-status-archived" },
 };
@@ -825,7 +843,7 @@ function newCareRec(fields, createdBy = "Dr. Sarah Mitchell") {
   };
 }
 
-let careRecFilter = "all"; // all | recommended | in-progress | completed
+let careRecFilter = "all"; // all | recommended | completed
 let activeRecId = null;
 
 function careRecLatest(rec) {
@@ -840,7 +858,7 @@ function careRecMatchesFilter(rec) {
 }
 
 function hasActiveCareRec() {
-  return careRecs.some((r) => r.status === "recommended" || r.status === "in-progress");
+  return careRecs.some((r) => r.status === "recommended");
 }
 
 function updateCareRecTriggers() {
@@ -871,7 +889,7 @@ document.getElementById("openCareRecBtn").addEventListener("click", (e) => {
   e.preventDefault();
   e.stopImmediatePropagation();
   goToCareRecList();
-  const activeRec = careRecs.find((r) => r.status === "in-progress") || careRecs.find((r) => r.status === "recommended");
+  const activeRec = careRecs.find((r) => r.status === "recommended");
   if (activeRec) openRecDrawer(activeRec.id);
 });
 
@@ -1371,6 +1389,14 @@ const questions = [
     text: "Have you noticed any swelling in your legs or ankles this week?",
     answers: weeklyAnswers({ 4: true, 11: false, 18: true, 25: true }),
   },
+  {
+    label: "Q3",
+    text: "Have you gained any weight this week?",
+    answers: weeklyAnswers({ 4: true, 11: false, 18: true, 25: true }),
+    /* Only "Yes" answers carry a gain amount -- shown as a hover tooltip on
+       the icon instead of a permanent extra field. */
+    weightGain: weeklyAnswers({ 4: "1.8 lbs", 18: "3.2 lbs", 25: "2.1 lbs" }),
+  },
 ];
 
 function renderQuestionnaire() {
@@ -1378,15 +1404,20 @@ function renderQuestionnaire() {
   document.getElementById("questList").innerHTML = questions
     .map((q, qi) => {
       const ans = sliceForRange(q.answers);
+      const gain = q.weightGain ? sliceForRange(q.weightGain) : null;
 
       const iconsHtml = days
         .map((d, i) => {
           const a = ans[i];
           const cls = a === true ? "quest-ans-yes" : a === false ? "quest-ans-no" : "quest-ans-none";
           const icon = a === true ? adhCheckIcon : a === false ? questXIcon : "";
+          const gainVal = gain ? gain[i] : null;
+          const tooltip = gainVal
+            ? `<span class="quest-weight-tooltip">Weight gained: ${gainVal}</span>`
+            : "";
           return `
         <div class="med-adh-day">
-          <span class="quest-ans-icon ${cls}">${icon}</span>
+          <span class="quest-ans-icon ${cls}">${icon}${tooltip}</span>
         </div>`;
         })
         .join("");

@@ -1278,6 +1278,46 @@ function renderCareTeamProfile() {
 }
 renderCareTeamProfile();
 
+/* ---------------- Patient Profile: Documents ---------------- */
+const viewDocIcon = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12C3.7 7.5 7.5 4.5 12 4.5C16.5 4.5 20.3 7.5 22 12C20.3 16.5 16.5 19.5 12 19.5C7.5 19.5 3.7 16.5 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>`;
+const downloadDocIcon = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3V15"/><path d="M7 10L12 15L17 10"/><path d="M4 19H20"/></svg>`;
+
+const patientDocuments = [
+  { id: 1, name: "Discharge Summary — HF Admission", type: "Discharge Summary", date: "01/08/2026", source: "Epic" },
+  { id: 2, name: "Echocardiogram Report", type: "Diagnostic Report", date: "22/07/2026", source: "Epic" },
+  { id: 3, name: "Signed Consent Form", type: "Consent Form", date: "12/01/2025", source: "Manual entry" },
+];
+
+function renderDocuments() {
+  document.getElementById("documentsTableBody").innerHTML = patientDocuments.length
+    ? patientDocuments
+        .map(
+          (d) => `
+      <tr>
+        <td><span class="rec-title-cell">${d.name}</span></td>
+        <td>${d.type}</td>
+        <td>${d.date}</td>
+        <td>${ehrSourceCell(d.source)}</td>
+        <td class="rec-table-actions">
+          <button type="button" class="action-icon" data-doc-id="${d.id}" data-doc-act="view" aria-label="View ${d.name}" title="View">${viewDocIcon}</button>
+          <button type="button" class="action-icon" data-doc-id="${d.id}" data-doc-act="download" aria-label="Download ${d.name}" title="Download">${downloadDocIcon}</button>
+        </td>
+      </tr>`
+        )
+        .join("")
+    : `<tr><td colspan="5" class="rec-empty">No documents on file.</td></tr>`;
+}
+renderDocuments();
+
+document.getElementById("documentsTableBody").addEventListener("click", (e) => {
+  const btn = e.target.closest("[data-doc-act]");
+  if (!btn) return;
+  const doc = patientDocuments.find((d) => d.id === Number(btn.dataset.docId));
+  if (!doc) return;
+  if (btn.dataset.docAct === "view") alert(`Viewing "${doc.name}"`);
+  if (btn.dataset.docAct === "download") alert(`Downloading "${doc.name}"`);
+});
+
 /* ---------------- Clinical: Medications ---------------- */
 function dailyAdherence(missedIdx) {
   return chartDays.map((d, i) => !missedIdx.includes(i));

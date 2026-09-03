@@ -1,5 +1,17 @@
 /* ---------------- Care Recommendation — full-screen page ---------------- */
 
+/* Per-patient form customization: patient-data.html forwards this flag for
+   the one patient whose Care Recommendation form should skip Medication
+   Details entirely. Fields inside are un-required so the rest of the form
+   can still be submitted without them. */
+(() => {
+  if (new URLSearchParams(window.location.search).get("hideMedDetails") !== "1") return;
+  const section = document.getElementById("medicationDetailsSection");
+  if (!section) return;
+  section.style.display = "none";
+  section.querySelectorAll("[required]").forEach((el) => el.removeAttribute("required"));
+})();
+
 const CARE_REC_STATUS = {
   recommended: { label: "Recommended", cls: "rec-status-recommended" },
   "in-progress": { label: "In Progress", cls: "rec-status-progress" },

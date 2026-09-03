@@ -4,18 +4,22 @@ const selectedIssueTypes = new Set();
 const selectedOrigins = new Set();
 const selectedSeverities = new Set();
 const selectedStates = new Set();
+/* Assigned Ticket used to be hard-locked to CURRENT_ASSIGNEE's own tickets;
+   now it defaults to "just mine" via this filter (pre-checked below) but can
+   be widened to see what's assigned to any teammate. */
+const selectedAssignees = new Set([CURRENT_ASSIGNEE]);
 let ticketSearchTerm = "";
 
 function filteredTicketList() {
   const term = ticketSearchTerm.trim().toLowerCase();
   return ticketList.filter((t) => {
-    if (t.assignedTo !== CURRENT_ASSIGNEE) return false;
     if (selectedTypes.size && !selectedTypes.has(t.type)) return false;
     if (selectedCategories.size && !selectedCategories.has(t.category)) return false;
     if (selectedIssueTypes.size && !selectedIssueTypes.has(t.issueType)) return false;
     if (selectedOrigins.size && !selectedOrigins.has(t.origin)) return false;
     if (selectedSeverities.size && !selectedSeverities.has(t.severity)) return false;
     if (selectedStates.size && !selectedStates.has(t.state)) return false;
+    if (selectedAssignees.size && !selectedAssignees.has(t.assignedTo)) return false;
     if (term && !`${t.ticketId} ${t.who} ${t.patientName || ""} ${t.organization}`.toLowerCase().includes(term)) return false;
     return true;
   });
@@ -31,7 +35,6 @@ function renderTicketList() {
       (t) => `
       <tr>
         <td><b>${t.ticketId}</b></td>
-        <td>${t.organization}</td>
         <td><span class="ticket-pill ${typeCellClass(t.type)}">${t.type}</span></td>
         <td>${
           t.type === "Patient"
@@ -40,17 +43,17 @@ function renderTicketList() {
         }</td>
         <td><span class="ticket-pill ticket-pill-category">${t.category}</span></td>
         <td>${t.issueType}</td>
-        <td><span class="ticket-pill ${originCellClass(t.origin)}">${t.origin}</span></td>
         <td><span class="ticket-pill ${severityCellClass(t.severity)}">${t.severity}</span></td>
         <td><span class="ticket-pill ${stateCellClass(t.state)}">${t.state}</span></td>
         <td>${t.created}</td>
+        <td>${t.assignedTo}</td>
         <td><a class="ticket-view-link" href="ticket-detail.html?id=${t.id}">View</a></td>
       </tr>`
     )
     .join("");
   ticketRangeLabel.textContent = list.length ? `1-${list.length} of ${list.length}` : "";
   if (!list.length) {
-    ticketRows.innerHTML = `<tr><td colspan="11" style="text-align:center; color:var(--gray-text); padding:24px;">No tickets match the current filters.</td></tr>`;
+    ticketRows.innerHTML = `<tr><td colspan="10" style="text-align:center; color:var(--gray-text); padding:24px;">No tickets match the current filters.</td></tr>`;
   }
 }
 
@@ -161,6 +164,17 @@ const ticketStateMenu = document.getElementById("ticketStateMenu");
 ticketStateMenu.innerHTML = buildOptionsHtml(ticketStates);
 wireCheckboxFilter(document.querySelector('.checkbox-filter[data-name="state"]'), ticketStateMenu, selectedStates, renderTicketList);
 
+const allAssignees = [...new Set(ticketList.map((t) => t.assignedTo))].map((v) => ({ key: v, label: v }));
+const ticketAssignedToMenu = document.getElementById("ticketAssignedToMenu");
+ticketAssignedToMenu.innerHTML = allAssignees
+  .map((o) => `<label class="checkbox-filter-option"><input type="checkbox" value="${o.key}" ${selectedAssignees.has(o.key) ? "checked" : ""} />${o.label}</label>`)
+  .join("");
+{
+  const assignedToFilterWrap = document.querySelector('.checkbox-filter[data-name="assignedTo"]');
+  assignedToFilterWrap.querySelector(".checkbox-filter-label").textContent = `Assigned To (${selectedAssignees.size})`;
+  wireCheckboxFilter(assignedToFilterWrap, ticketAssignedToMenu, selectedAssignees, renderTicketList);
+}
+
 /* ---------------- Search ---------------- */
 document.getElementById("ticketSearchInput").addEventListener("input", (e) => {
   ticketSearchTerm = e.target.value;
@@ -175,6 +189,7 @@ const clearableTicketFilters = [
   { name: "origin", menu: ticketOriginMenu, set: selectedOrigins, label: "Origin" },
   { name: "severity", menu: ticketSeverityMenu, set: selectedSeverities, label: "Severity" },
   { name: "state", menu: ticketStateMenu, set: selectedStates, label: "State" },
+  { name: "assignedTo", menu: ticketAssignedToMenu, set: selectedAssignees, label: "Assigned To" },
 ];
 
 document.getElementById("clearTicketFilters").addEventListener("click", () => {
@@ -237,7 +252,6 @@ function renderRaisedTicketList() {
       (t) => `
       <tr>
         <td><b>${t.ticketId}</b></td>
-        <td>${t.organization}</td>
         <td>${t.who}</td>
         <td><span class="ticket-pill ticket-pill-category">${t.category}</span></td>
         <td>${t.issueType}</td>
@@ -250,7 +264,7 @@ function renderRaisedTicketList() {
     .join("");
   raisedTicketRangeLabel.textContent = list.length ? `1-${list.length} of ${list.length}` : "";
   if (!list.length) {
-    raisedTicketRows.innerHTML = `<tr><td colspan="9" style="text-align:center; color:var(--gray-text); padding:24px;">No tickets raised by this clinic yet.</td></tr>`;
+    raisedTicketRows.innerHTML = `<tr><td colspan="8" style="text-align:center; color:var(--gray-text); padding:24px;">No tickets raised by this clinic yet.</td></tr>`;
   }
 }
 renderRaisedTicketList();
@@ -392,16 +406,17 @@ const saveCreateTicketBtn = document.getElementById("saveCreateTicket");
 const createTicketCategorySelect = document.querySelector('#createTicketOverlay .custom-select[data-name="category"]');
 const createTicketIssueSelect = document.querySelector('#createTicketOverlay .custom-select[data-name="issueType"]');
 const createTicketSeveritySelect = document.querySelector('#createTicketOverlay .custom-select[data-name="severity"]');
-const createTicketRaisedBySelect = document.querySelector('#createTicketOverlay .custom-select[data-name="raisedBy"]');
+const createTicketLevelSelect = document.querySelector('#createTicketOverlay .custom-select[data-name="level"]');
+const createTicketAssignedToSelect = document.querySelector('#createTicketOverlay .custom-select[data-name="assignedTo"]');
 
-/* Same clinic-staff roster used elsewhere in the app (e.g. Care Team) --
-   picking from a known list instead of free text keeps "Raised By" consistent
-   with how existing Clinic tickets already record who raised them. */
-const RAISED_BY_OPTIONS = ["Dr. Sarah Mitchell", "Ariel Fox", "Omer Peretz", "Amanda Lee, RN", "Ayelet Er, NP"];
+/* The logged-in clinic user (avatar "EC" in the topbar) raises the ticket --
+   no need to ask them to pick their own name from a list. */
+const CURRENT_USER = "Emily Carter";
 
 createTicketCategorySelect.querySelector(".custom-select-menu").innerHTML = buildCustomSelectOptions(ticketCategories.map((c) => c.label));
 createTicketSeveritySelect.querySelector(".custom-select-menu").innerHTML = buildCustomSelectOptions(ticketSeverities.map((s) => s.label));
-createTicketRaisedBySelect.querySelector(".custom-select-menu").innerHTML = buildCustomSelectOptions(RAISED_BY_OPTIONS);
+createTicketLevelSelect.querySelector(".custom-select-menu").innerHTML = buildCustomSelectOptions(ticketLevels.map((l) => l.label));
+createTicketAssignedToSelect.querySelector(".custom-select-menu").innerHTML = buildCustomSelectOptions(SUPPORT_TEAM_MEMBERS);
 
 function resetCreateTicketIssueSelect() {
   const trigger = createTicketIssueSelect.querySelector(".custom-select-trigger");
@@ -447,11 +462,14 @@ function validateCreateTicketForm() {
   const categoryValue = createTicketCategorySelect.querySelector("input[type=hidden]").value;
   const issueValue = createTicketIssueSelect.querySelector("input[type=hidden]").value;
   const severityValue = createTicketSeveritySelect.querySelector("input[type=hidden]").value;
+  const levelValue = createTicketLevelSelect.querySelector("input[type=hidden]").value;
+  const assignedToValue = createTicketAssignedToSelect.querySelector("input[type=hidden]").value;
   const valid =
-    createTicketForm.raisedBy.value.trim() !== "" &&
     categoryValue !== "" &&
     issueValue !== "" &&
     severityValue !== "" &&
+    levelValue !== "" &&
+    assignedToValue !== "" &&
     createTicketForm.description.value.trim() !== "";
   saveCreateTicketBtn.disabled = !valid;
 }
@@ -463,6 +481,8 @@ createTicketForm.addEventListener("submit", (e) => {
   const categoryValue = createTicketCategorySelect.querySelector("input[type=hidden]").value;
   const issueValue = createTicketIssueSelect.querySelector("input[type=hidden]").value;
   const severityValue = createTicketSeveritySelect.querySelector("input[type=hidden]").value;
+  const levelValue = createTicketLevelSelect.querySelector("input[type=hidden]").value;
+  const assignedToValue = createTicketAssignedToSelect.querySelector("input[type=hidden]").value;
   const today = new Date();
   const created = `${String(today.getDate()).padStart(2, "0")}.${String(today.getMonth() + 1).padStart(2, "0")}.${today.getFullYear()}`;
 
@@ -470,13 +490,14 @@ createTicketForm.addEventListener("submit", (e) => {
     ticketId: `TCK-${1000 + ticketList.length + 1}`,
     organization: currentOrg(),
     type: "Clinic",
-    who: createTicketForm.raisedBy.value.trim(),
+    who: CURRENT_USER,
     category: categoryValue,
     issueType: issueValue,
     origin: "User Created",
     severity: severityValue,
+    level: levelValue,
     state: "Open",
-    assignedTo: "Unassigned",
+    assignedTo: assignedToValue,
     created,
     description: createTicketForm.description.value.trim(),
   };

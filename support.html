@@ -222,7 +222,6 @@
                 <thead>
                   <tr>
                     <th>TICKET ID</th>
-                    <th>ORGANIZATION</th>
                     <th>RAISED BY</th>
                     <th>CATEGORY</th>
                     <th>ISSUE TYPE</th>
@@ -304,6 +303,15 @@
             <div class="checkbox-filter-menu" id="ticketStateMenu"></div>
           </div>
 
+          <div class="checkbox-filter" data-name="assignedTo">
+            <button type="button" class="filter-btn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="#6B7684" stroke-width="1.5"/><path d="M4 20C4 15.6 7.6 12 12 12C16.4 12 20 15.6 20 20" stroke="#6B7684" stroke-width="1.5"/></svg>
+              <span class="checkbox-filter-label">Assigned To</span>
+              <svg class="caret" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#6B7684" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="checkbox-filter-menu" id="ticketAssignedToMenu"></div>
+          </div>
+
           <button class="clear-filters" id="clearTicketFilters">Clear all filters</button>
         </div>
 
@@ -313,15 +321,14 @@
               <thead>
                 <tr>
                   <th>TICKET ID</th>
-                  <th>ORGANIZATION</th>
                   <th>TYPE</th>
                   <th>PATIENT / RAISED BY</th>
                   <th>CATEGORY</th>
                   <th>ISSUE TYPE</th>
-                  <th>ORIGIN</th>
                   <th>SEVERITY</th>
                   <th>STATE</th>
                   <th>CREATED</th>
+                  <th>ASSIGNED TO</th>
                   <th class="th-action">ACTION</th>
                 </tr>
               </thead>
@@ -345,17 +352,6 @@
       <h2>Raise Ticket</h2>
       <form id="createTicketForm">
         <div class="form-grid">
-          <div class="form-field">
-            <label>Raised By<span class="required-star">*</span></label>
-            <div class="custom-select" data-name="raisedBy">
-              <button type="button" class="custom-select-trigger">
-                <span class="custom-select-value placeholder">Choose your name</span>
-                <svg class="custom-select-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </button>
-              <div class="custom-select-menu"></div>
-              <input type="hidden" name="raisedBy" required />
-            </div>
-          </div>
           <div class="form-field">
             <label>Category<span class="required-star">*</span></label>
             <div class="custom-select" data-name="category">
@@ -387,6 +383,28 @@
               </button>
               <div class="custom-select-menu"></div>
               <input type="hidden" name="severity" required />
+            </div>
+          </div>
+          <div class="form-field">
+            <label>Level<span class="required-star">*</span></label>
+            <div class="custom-select" data-name="level">
+              <button type="button" class="custom-select-trigger">
+                <span class="custom-select-value placeholder">Choose level</span>
+                <svg class="custom-select-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="custom-select-menu"></div>
+              <input type="hidden" name="level" required />
+            </div>
+          </div>
+          <div class="form-field">
+            <label>Assigned To<span class="required-star">*</span></label>
+            <div class="custom-select" data-name="assignedTo">
+              <button type="button" class="custom-select-trigger">
+                <span class="custom-select-value placeholder">Select user</span>
+                <svg class="custom-select-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="custom-select-menu"></div>
+              <input type="hidden" name="assignedTo" required />
             </div>
           </div>
           <div class="form-field" style="grid-column: 1 / -1;">

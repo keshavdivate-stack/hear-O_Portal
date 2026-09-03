@@ -185,7 +185,6 @@
 
             <ul class="stat-list">
               <li><span class="dot dot-gray"></span><b>21</b> Baseline</li>
-              <li><span class="dot dot-gray-l"></span><b>3</b> Baseline On Hold</li>
               <li><span class="dot dot-green"></span><b class="green">156</b> Active</li>
               <li><span class="dot dot-red"></span><b class="red">38</b> Priority</li>
             </ul>
@@ -195,7 +194,7 @@
         <!-- MIDDLE: priority + unmonitored -->
         <div class="col col-mid">
           <div class="card acc-card acc-card--red">
-            <button type="button" class="acc-toggle" id="priorityToggleBtn" aria-expanded="false" aria-controls="priorityPanel">
+            <button type="button" class="acc-toggle" id="priorityToggleBtn" aria-expanded="true" aria-controls="priorityPanel">
               <div class="acc-collapsed-row">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="var(--red)"><path d="M12 21C12 21 4 15.5 4 9.8C4 6.6 6.5 4.5 9.2 4.5C10.6 4.5 11.6 5.1 12 5.7C12.4 5.1 13.4 4.5 14.8 4.5C17.5 4.5 20 6.6 20 9.8C20 15.5 12 21 12 21Z"/></svg>
                 <span class="acc-count">38</span>
@@ -214,7 +213,7 @@
               </div>
             </button>
 
-            <div class="acc-panel" id="priorityPanel" hidden>
+            <div class="acc-panel" id="priorityPanel">
               <div class="table-wrap">
                 <div class="patient-table-scroll" id="priorityTableScroll">
                   <table class="patient-table priority-table">
@@ -223,7 +222,6 @@
                         <th><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="#9AA5B1" stroke-width="1.8"/><path d="M4 20C4 15.6 7.6 12 12 12C16.4 12 20 15.6 20 20" stroke="#9AA5B1" stroke-width="1.8" stroke-linecap="round"/></svg> NAME</th>
                         <th><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="17" rx="2" stroke="#9AA5B1" stroke-width="1.8"/><path d="M3 9H21" stroke="#9AA5B1" stroke-width="1.8"/></svg> PRIORITY SINCE</th>
                         <th>CARE TEAM</th>
-                        <th>HANDLING</th>
                         <th></th>
                       </tr>
                     </thead>
@@ -243,7 +241,7 @@
           </div>
 
           <div class="card acc-card acc-card--blue">
-            <button type="button" class="acc-toggle" id="unmonToggleBtn" aria-expanded="true" aria-controls="unmonPanel">
+            <button type="button" class="acc-toggle" id="unmonToggleBtn" aria-expanded="false" aria-controls="unmonPanel">
               <div class="acc-collapsed-row">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="var(--blue)"/><rect x="11" y="7" width="2" height="7" rx="1" fill="#fff"/><rect x="11" y="15.5" width="2" height="2" rx="1" fill="#fff"/></svg>
                 <span class="acc-count">6</span>
@@ -262,7 +260,7 @@
               </div>
             </button>
 
-            <div class="acc-panel" id="unmonPanel">
+            <div class="acc-panel" id="unmonPanel" hidden>
               <div class="table-wrap">
                 <div class="patient-table-scroll" id="unmonTableScroll">
                   <table class="patient-table unmon-table">

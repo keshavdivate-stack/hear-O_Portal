@@ -85,6 +85,32 @@
           <div class="bo-popover-item">Terms &amp; Conditions</div>
         </div>
       </div>
+      <div class="bo-nav-item">
+        <button type="button" class="bo-nav-link" id="clinicPillBtn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="18" x="4" y="3" rx="1"/><path d="M9 8h1"/><path d="M14 8h1"/><path d="M9 12h1"/><path d="M14 12h1"/><path d="M9 16h1"/><path d="M14 16h1"/><path d="M10 21v-3a2 2 0 0 1 4 0v3"/></svg>
+          CLINIC
+          <svg class="bo-nav-caret" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="bo-popover bo-nav-popover" id="clinicPillPopover">
+          <a href="../index.html?org=120" class="bo-popover-item">120</a>
+          <a href="../index.html?org=240" class="bo-popover-item">240</a>
+          <a href="../index.html?org=242" class="bo-popover-item">242</a>
+          <a href="../index.html?org=244" class="bo-popover-item">244</a>
+          <a href="../index.html?org=ATP" class="bo-popover-item">ATP</a>
+          <a href="../index.html?org=B01" class="bo-popover-item">B01</a>
+          <a href="../index.html?org=BSM" class="bo-popover-item">BSM</a>
+          <a href="../index.html?org=COR" class="bo-popover-item">COR</a>
+          <a href="../index.html?org=DEV" class="bo-popover-item">DEV</a>
+          <a href="../index.html?org=HSK" class="bo-popover-item">HSK</a>
+          <a href="../index.html?org=IGO" class="bo-popover-item">IGO</a>
+          <a href="../index.html?org=IND" class="bo-popover-item">IND</a>
+          <a href="../index.html?org=MKT" class="bo-popover-item">MKT</a>
+          <a href="../index.html?org=NTS" class="bo-popover-item">NTS</a>
+          <a href="../index.html?org=TMK" class="bo-popover-item">TMK</a>
+          <a href="../index.html?org=TSS" class="bo-popover-item">TSS</a>
+          <a href="../index.html?org=ZQX" class="bo-popover-item">ZQX</a>
+        </div>
+      </div>
     </nav>
 
     <div class="bo-nav-actions">
@@ -191,6 +217,13 @@
         <input type="text" id="patientSearchInput" placeholder="Search by username, MRN or ID" />
       </div>
       <button class="bo-btn-primary" id="patientApplyBtn">Apply</button>
+      <div class="bo-select" data-name="patientColumns" id="patientColumnsField">
+        <button type="button" class="bo-btn-secondary" id="patientColumnsBtn">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="7" height="16" rx="1"/><rect x="14" y="4" width="7" height="16" rx="1"/></svg>
+          Columns
+        </button>
+        <div class="bo-popover" id="patientColumnsMenu" style="right:0; padding:6px; min-width:220px; max-height:320px; overflow-y:auto;"></div>
+      </div>
     </div>
 
     <div class="bo-table-card">
@@ -198,24 +231,26 @@
         <table class="bo-list-table bo-list-table--compact" id="patientTable">
           <thead>
             <tr>
-              <th class="sortable">USERNAME <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 19V5M6 11L12 5L18 11"/></svg></th>
-              <th>ALGO</th>
-              <th>LANG</th>
-              <th>TAG</th>
-              <th>CREATION DATE</th>
-              <th>START DATE</th>
-              <th>BASELINE COMPLETED DATE</th>
-              <th>FOLLOW UP DATE</th>
-              <th>LEAVING DATE</th>
-              <th>STATUS</th>
-              <th>STATUS START DATE</th>
-              <th>LAST APP VERSION</th>
-              <th>LAST PHONE MODEL</th>
-              <th>LAST SESSION DATE</th>
-              <th>LAST SIGN IN</th>
-              <th>USABLE COMPLIANCE</th>
-              <th>COMPLIANCE</th>
-              <th></th>
+              <th class="sortable" data-col="username">USERNAME <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 19V5M6 11L12 5L18 11"/></svg></th>
+              <th data-col="algo">ALGO</th>
+              <th data-col="lang">LANG</th>
+              <th data-col="tag">TAG</th>
+              <th data-col="creationDate">CREATION DATE</th>
+              <th data-col="startDate">START DATE</th>
+              <th data-col="baselineCompletedDate">BASELINE COMPLETED DATE</th>
+              <th data-col="followUpDate">FOLLOW UP DATE</th>
+              <th data-col="leavingDate">LEAVING DATE</th>
+              <th data-col="account">ACCOUNT</th>
+              <th data-col="status">STATUS</th>
+              <th data-col="monitoring">MONITORING</th>
+              <th data-col="statusStart">STATUS START DATE</th>
+              <th data-col="lastAppVersion">LAST APP VERSION</th>
+              <th data-col="lastPhoneModel">LAST PHONE MODEL</th>
+              <th data-col="lastSession">LAST SESSION DATE</th>
+              <th data-col="lastSignIn">LAST SIGN IN</th>
+              <th data-col="usableCompliance">USABLE COMPLIANCE</th>
+              <th data-col="compliance">COMPLIANCE</th>
+              <th data-col="actions"></th>
             </tr>
           </thead>
           <tbody id="patientRows"></tbody>

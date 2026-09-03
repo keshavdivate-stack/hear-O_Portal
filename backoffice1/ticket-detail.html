@@ -85,6 +85,32 @@
           <div class="bo-popover-item">Terms &amp; Conditions</div>
         </div>
       </div>
+      <div class="bo-nav-item">
+        <button type="button" class="bo-nav-link" id="clinicPillBtn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="18" x="4" y="3" rx="1"/><path d="M9 8h1"/><path d="M14 8h1"/><path d="M9 12h1"/><path d="M14 12h1"/><path d="M9 16h1"/><path d="M14 16h1"/><path d="M10 21v-3a2 2 0 0 1 4 0v3"/></svg>
+          CLINIC
+          <svg class="bo-nav-caret" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="bo-popover bo-nav-popover" id="clinicPillPopover">
+          <a href="../index.html?org=120" class="bo-popover-item">120</a>
+          <a href="../index.html?org=240" class="bo-popover-item">240</a>
+          <a href="../index.html?org=242" class="bo-popover-item">242</a>
+          <a href="../index.html?org=244" class="bo-popover-item">244</a>
+          <a href="../index.html?org=ATP" class="bo-popover-item">ATP</a>
+          <a href="../index.html?org=B01" class="bo-popover-item">B01</a>
+          <a href="../index.html?org=BSM" class="bo-popover-item">BSM</a>
+          <a href="../index.html?org=COR" class="bo-popover-item">COR</a>
+          <a href="../index.html?org=DEV" class="bo-popover-item">DEV</a>
+          <a href="../index.html?org=HSK" class="bo-popover-item">HSK</a>
+          <a href="../index.html?org=IGO" class="bo-popover-item">IGO</a>
+          <a href="../index.html?org=IND" class="bo-popover-item">IND</a>
+          <a href="../index.html?org=MKT" class="bo-popover-item">MKT</a>
+          <a href="../index.html?org=NTS" class="bo-popover-item">NTS</a>
+          <a href="../index.html?org=TMK" class="bo-popover-item">TMK</a>
+          <a href="../index.html?org=TSS" class="bo-popover-item">TSS</a>
+          <a href="../index.html?org=ZQX" class="bo-popover-item">ZQX</a>
+        </div>
+      </div>
     </nav>
 
     <div class="bo-nav-actions">
@@ -140,7 +166,6 @@
           <div class="bo-kv-cell"><span class="k">Status</span><span class="v" id="ticketDetailStatusKv">Ã¢â‚¬â€</span></div>
           <div class="bo-kv-cell"><span class="k">Severity</span><span class="v" id="ticketDetailSeverityKv">Ã¢â‚¬â€</span></div>
           <div class="bo-kv-cell"><span class="k">Organization</span><span class="v" id="ticketDetailOrg">Ã¢â‚¬â€</span></div>
-          <div class="bo-kv-cell"><span class="k">Organization Contact</span><span class="v" id="ticketDetailOrgContact">Ã¢â‚¬â€</span></div>
           <div class="bo-kv-cell"><span class="k" id="ticketDetailWhoLabel">Patient ID</span><span class="v" id="ticketDetailWho">Ã¢â‚¬â€</span></div>
           <div class="bo-kv-cell"><span class="k">Origin</span><span class="v" id="ticketDetailOrigin">Ã¢â‚¬â€</span></div>
           <div class="bo-kv-cell"><span class="k">Scope</span><span class="v" id="ticketDetailScope">Ã¢â‚¬â€</span></div>
@@ -223,6 +248,17 @@
                   <input type="hidden" />
                 </div>
               </div>
+              <div class="bo-modal-field" id="ticketDetailOrgField" hidden>
+                <label>Organization<span class="required-star">*</span></label>
+                <div class="bo-select" data-name="ticketOrgHandling">
+                  <button type="button" class="bo-select-trigger">
+                    <span class="bo-select-value placeholder">Select organization</span>
+                    <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                  </button>
+                  <div class="bo-select-menu"></div>
+                  <input type="hidden" />
+                </div>
+              </div>
               <div class="bo-modal-field" id="ticketDetailAssignedToField">
                 <label>Assigned To<span class="required-star">*</span></label>
                 <div class="bo-select" data-name="ticketAssignedTo">
@@ -233,6 +269,7 @@
                   <div class="bo-select-menu"></div>
                   <input type="hidden" />
                 </div>
+                <div class="bo-assigned-org-note" id="ticketDetailAssignedOrgNote" hidden></div>
               </div>
             </div>
           </div>

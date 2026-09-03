@@ -45,6 +45,16 @@ const ticketTypes = [
   { key: "Clinic", label: "Clinic" },
 ];
 
+const ticketLevels = [
+  { key: "Level 1", label: "Level 1" },
+  { key: "Level 2", label: "Level 2" },
+  { key: "Level 3", label: "Level 3" },
+];
+
+/* Support team members a new ticket can be assigned to -- matches the
+   assignedTo values already used across ticketList below. */
+const SUPPORT_TEAM_MEMBERS = ["Emily Carter", "Daniel Roy", "Maya Cohen", "Tomer Levi", "Sarah Cline"];
+
 function issueType(category, index) {
   return issueTypesByCategory[category][index % issueTypesByCategory[category].length];
 }

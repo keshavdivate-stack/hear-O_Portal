@@ -168,14 +168,13 @@ function renderPatientComplianceChart() {
   const months = ph.monthlyCompliance.map((m) => m.month);
   const complianceSeries = ph.monthlyCompliance.map((m) => m.compliance);
   const usableSeries = ph.monthlyCompliance.map((m) => m.usable);
-  const justifiedSeries = ph.monthlyCompliance.map((m) => m.justified);
 
   /* Range the y-axis to the data actually in view (rounded to the nearest
      10, with a little breathing room) instead of a fixed 40-100 -- these
      series usually sit in a tight high band (e.g. 84-100), which against a
      fixed 40-100 axis crams every line up against the top of the chart. */
   const gridStep = 10;
-  const allValues = [...complianceSeries, ...usableSeries, ...justifiedSeries];
+  const allValues = [...complianceSeries, ...usableSeries];
   const dataMin = Math.min(...allValues);
   const dataMax = Math.max(...allValues);
   const yMin = Math.max(0, Math.floor((dataMin - gridStep) / gridStep) * gridStep);
@@ -207,7 +206,6 @@ function renderPatientComplianceChart() {
     <svg viewBox="0 0 ${width} ${height}" class="bo-area-svg" preserveAspectRatio="none">
       ${gridLines.join("")}
       ${buildLine(complianceSeries, "#1F3C73")}
-      ${buildLine(justifiedSeries, "#0FA3B1")}
       ${buildLine(usableSeries, "#F2994A")}
       ${xLabels}
     </svg>`;

@@ -43,6 +43,7 @@ let { source: currentSource, ticket: currentTicket } = resolveTicketFromUrl();
 document.querySelector('.bo-select[data-name="ticketLevel"] .bo-select-menu').innerHTML = buildSelectOptions(TIERS);
 document.querySelector('.bo-select[data-name="ticketSeverityHandling"] .bo-select-menu').innerHTML = buildSelectOptions(SEVERITIES);
 document.querySelector('.bo-select[data-name="ticketStatus"] .bo-select-menu').innerHTML = buildSelectOptions(STATUSES);
+document.querySelector('.bo-select[data-name="ticketOrgHandling"] .bo-select-menu').innerHTML = buildSelectOptions(orgs.map((o) => o.name));
 
 /* Assignee choices narrow to whichever tier is currently selected in the
    Level field, so a ticket always lands on someone who actually works
@@ -66,13 +67,26 @@ function applyTicketDetailStatusVisibility(status) {
   document.getElementById("ticketDetailLevelField").hidden = resolved;
   document.getElementById("ticketDetailSeverityField").hidden = resolved;
   document.getElementById("ticketDetailAssignedToField").hidden = resolved;
+  const tier = document.querySelector('.bo-select[data-name="ticketLevel"] input[type=hidden]').value;
+  document.getElementById("ticketDetailOrgField").hidden = resolved || tier !== "Level 3";
+}
+
+/* Shows which organization a Level 3 escalation belongs to right under the
+   Assigned To field, so the reviewer doesn't have to look back up at the
+   Organization dropdown to see who they're assigning within. */
+function updateAssignedOrgNote(orgName) {
+  const note = document.getElementById("ticketDetailAssignedOrgNote");
+  note.textContent = orgName ? `Organization: ${orgName}` : "";
+  note.hidden = !orgName;
 }
 
 function validateTicketDetailForm() {
   const status = document.querySelector('.bo-select[data-name="ticketStatus"] input[type=hidden]').value;
   applyTicketDetailStatusVisibility(status);
+  const orgFieldVisible = !document.getElementById("ticketDetailOrgField").hidden;
+  const orgFilled = !orgFieldVisible || document.querySelector('.bo-select[data-name="ticketOrgHandling"] input[type=hidden]').value !== "";
   const assigneeFilled = status === "Resolved" || document.querySelector('.bo-select[data-name="ticketAssignedTo"] input[type=hidden]').value !== "";
-  document.getElementById("saveTicketDetail").disabled = !assigneeFilled;
+  document.getElementById("saveTicketDetail").disabled = !assigneeFilled || !orgFilled;
 }
 
 function renderTicketHeader() {
@@ -88,8 +102,6 @@ function renderTicketInfo() {
   document.getElementById("ticketDetailWhoLabel").textContent = currentSource === "patient" ? "Patient ID" : "Raised By";
   document.getElementById("ticketDetailWho").textContent = currentSource === "patient" ? currentTicket.patientId : currentTicket.raisedBy;
   document.getElementById("ticketDetailOrg").textContent = currentTicket.organization;
-  const ticketOrgRecord = orgs.find((o) => o.name === currentTicket.organization);
-  document.getElementById("ticketDetailOrgContact").textContent = (ticketOrgRecord && ticketOrgRecord.phone) || "—";
   document.getElementById("ticketDetailOrigin").textContent = currentTicket.origin;
   document.getElementById("ticketDetailScope").textContent = currentTicket.scope;
   document.getElementById("ticketDetailCreated").textContent = currentTicket.createdDate;
@@ -211,6 +223,12 @@ function renderTicketHandling() {
   const tierAgents = TIER_AGENTS[currentTicket.tier] || SUPPORT_AGENTS;
   const assignee = tierAgents.includes(currentTicket.assignedTo) ? currentTicket.assignedTo : defaultAssigneeForTier(currentTicket.tier);
   setBoSelectValue(document.querySelector('.bo-select[data-name="ticketAssignedTo"]'), assignee, { silent: true });
+  if (currentTicket.tier === "Level 3") {
+    setBoSelectValue(document.querySelector('.bo-select[data-name="ticketOrgHandling"]'), currentTicket.organization, { silent: true });
+    updateAssignedOrgNote(currentTicket.organization);
+  } else {
+    updateAssignedOrgNote("");
+  }
   validateTicketDetailForm();
 }
 
@@ -571,6 +589,20 @@ document.querySelector('.bo-select[data-name="ticketLevel"] input[type=hidden]')
   const tier = e.target.value;
   populateTicketDetailAssignees(tier);
   setBoSelectValue(document.querySelector('.bo-select[data-name="ticketAssignedTo"]'), defaultAssigneeForTier(tier), { silent: true });
+  if (tier === "Level 3") {
+    setBoSelectValue(document.querySelector('.bo-select[data-name="ticketOrgHandling"]'), currentTicket.organization, { silent: true });
+    updateAssignedOrgNote(currentTicket.organization);
+  } else {
+    resetBoSelect(document.querySelector('.bo-select[data-name="ticketOrgHandling"]'));
+    updateAssignedOrgNote("");
+  }
+  validateTicketDetailForm();
+});
+
+/* Reassigning the Level 3 escalation to a different organization keeps the
+   note under Assigned To in sync with whatever was just picked. */
+document.querySelector('.bo-select[data-name="ticketOrgHandling"] input[type=hidden]').addEventListener("change", (e) => {
+  updateAssignedOrgNote(e.target.value);
   validateTicketDetailForm();
 });
 

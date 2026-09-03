@@ -104,13 +104,6 @@ function careAvatarsHtml(p) {
     </div>`;
 }
 
-function handlingCellHtml(p) {
-  if (!p.handling) return "";
-  return `
-    <span class="handling-status-pill">${p.handling.status}</span>
-    <div class="handling-meta">${p.handling.name} &middot; since ${p.handling.since}</div>`;
-}
-
 function priorityDetailRowHtml(p, i) {
   const mine = p.careTeam.find((m) => m.name === CURRENT_USER);
   const iAcknowledged = mine && mine.acknowledged;
@@ -151,14 +144,13 @@ function renderPriorityRows(elId, items) {
         </td>
         <td class="p-since">${p.since}</td>
         <td>${careAvatarsHtml(p)}</td>
-        <td>${handlingCellHtml(p)}</td>
         <td class="priority-row-actions">
-          ${p.flag ? `<span class="priority-flag" title="Flagged for follow-up">${flagIcon}</span>` : ""}
+          <button type="button" class="priority-flag-btn ${p.flag ? "active" : ""}" data-idx="${i}" title="${p.flag ? "Remove flag" : "Flag for follow-up"}" aria-pressed="${p.flag}">${flagIcon}</button>
           <button type="button" class="action-icon kebab priority-row-menu-trigger" data-idx="${i}" aria-label="Row actions">${kebabIcon}</button>
         </td>
       </tr>
       <tr class="p-detail-row" data-idx="${i}" ${openPriorityIdx.has(i) ? "" : "hidden"}>
-        <td colspan="5">${priorityDetailRowHtml(p, i)}</td>
+        <td colspan="4">${priorityDetailRowHtml(p, i)}</td>
       </tr>`
     )
     .join("");
@@ -203,6 +195,14 @@ document.getElementById("priorityRows").addEventListener("click", (e) => {
   const ackBtn = e.target.closest(".priority-acknowledge-btn");
   if (ackBtn) {
     acknowledgePriority(Number(ackBtn.dataset.idx));
+    return;
+  }
+
+  const flagBtn = e.target.closest(".priority-flag-btn");
+  if (flagBtn) {
+    const i = Number(flagBtn.dataset.idx);
+    priorityPatients[i].flag = !priorityPatients[i].flag;
+    renderPriorityRows("priorityRows", priorityPatients);
     return;
   }
 

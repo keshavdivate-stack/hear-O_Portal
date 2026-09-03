@@ -542,14 +542,16 @@ a { color: inherit; }
 .bo-table tbody tr:last-child td { border-bottom: none; }
 .bo-table tbody tr.bo-row-highlight td { background: var(--blue-light); }
 
-.bo-status-pill.priority { background: var(--red-light); color: var(--red-text); }
-.bo-status-pill.unmonitored { background: var(--orange-light); color: var(--orange-text); }
-.bo-status-pill.paused { background: var(--bg); color: var(--gray-text); }
-.bo-status-pill.active { background: var(--green-light); color: var(--green-text); }
-.bo-status-pill.registered { background: var(--blue-light); color: var(--blue-text); }
-.bo-status-pill.baseline { background: var(--navy-light); color: var(--navy); }
-.bo-status-pill.insufficient { background: var(--orange-light); color: var(--orange-text); }
-.bo-status-pill.discontinued { background: var(--bg); color: var(--gray-text); }
+.bo-status-pill.priority { color: var(--red-text); }
+.bo-status-pill.unmonitored { color: var(--orange-text); }
+.bo-status-pill.paused { color: var(--gray-text); }
+.bo-status-pill.active { color: var(--green-text); }
+.bo-status-pill.registered { color: var(--blue-text); }
+.bo-status-pill.baseline { color: var(--navy); }
+.bo-status-pill.insufficient { color: var(--orange-text); }
+.bo-status-pill.discontinued { color: var(--gray-text); }
+.bo-status-pill.enabled { color: var(--green-text); }
+.bo-status-pill.monitored { color: var(--green-text); }
 
 /* Activity Feed */
 .bo-activity-panel { padding-bottom: 8px; }
@@ -1928,6 +1930,9 @@ a.bo-btn-secondary { text-decoration: none; }
 
 .required-star { color: var(--red); margin-left: 2px; }
 
+.bo-assigned-org-note { font-size: 12px; color: #6B7280; margin-top: 2px; }
+.bo-assigned-org-note[hidden] { display: none; }
+
 /* ---------------- Mobile number field (country code + number) ---------------- */
 .bo-phone-field {
   display: flex;
@@ -2528,58 +2533,31 @@ a.bo-btn-secondary { text-decoration: none; }
   color: var(--ink);
 }
 
-/* Status-dot badge: reserved for lifecycle/state columns (e.g. a
-   "Status" column) so a status reads as a state, not a category. */
+/* Status text: lifecycle/state columns (e.g. a "Status" column) render
+   as plain colored text, no pill/dot. */
 .bo-status-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px 12px;
-  border-radius: 999px;
   font-size: 12px;
   font-weight: 700;
 }
 
-.bo-status-pill::before {
-  content: "";
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: currentColor;
-  flex-shrink: 0;
-}
+.bo-status-active { color: var(--green-text); }
+.bo-status-inactive { color: var(--red-text); }
 
-.bo-status-active { background: var(--green-light); color: var(--green-text); }
-.bo-status-inactive { background: var(--red-light); color: var(--red-text); }
-
-/* Status Change table badges (Previous / Changed to) -- same status-dot
-   language as .bo-status-pill, since these are also lifecycle states. */
+/* Status Change table (Previous / Changed to) -- same plain-text language
+   as .bo-status-pill, since these are also lifecycle states. */
 .bo-sc-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px 12px;
-  border-radius: 999px;
   font-size: 12px;
   font-weight: 700;
 }
-.bo-sc-badge::before {
-  content: "";
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: currentColor;
-  flex-shrink: 0;
-}
-.bo-sc-badge.active { background: var(--green-light); color: var(--green-text); }
-.bo-sc-badge.priority { background: var(--red-light); color: var(--red-text); }
-.bo-sc-badge.registered { background: var(--blue-light); color: var(--blue-text); }
-.bo-sc-badge.baseline { background: var(--bg); color: var(--gray-text); }
-.bo-sc-badge.monitored { background: var(--green-light); color: var(--green-text); }
-.bo-sc-badge.unmonitored { background: var(--orange-light); color: var(--orange-text); }
-.bo-sc-badge.enabled { background: var(--green-light); color: var(--green-text); }
-.bo-sc-badge.paused { background: var(--bg); color: var(--gray-text); }
-.bo-sc-badge.discontinued { background: var(--bg); color: var(--gray-text); }
+.bo-sc-badge.active { color: var(--green-text); }
+.bo-sc-badge.priority { color: var(--red-text); }
+.bo-sc-badge.registered { color: var(--blue-text); }
+.bo-sc-badge.baseline { color: var(--gray-text); }
+.bo-sc-badge.monitored { color: var(--green-text); }
+.bo-sc-badge.unmonitored { color: var(--orange-text); }
+.bo-sc-badge.enabled { color: var(--green-text); }
+.bo-sc-badge.paused { color: var(--gray-text); }
+.bo-sc-badge.discontinued { color: var(--gray-text); }
 
 /* EHR Connections cell (Organizations table) */
 .bo-ehr-tags {
@@ -4087,31 +4065,21 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
   white-space: nowrap;
 }
 
-/* Lifecycle/state columns (Ticket & Incident "Status") -- full pill +
-   status dot, so state reads differently from a plain category label. */
+/* Lifecycle/state columns (Ticket & Incident "Status") -- plain colored
+   text, no pill/dot. */
 .bo-pill-status-open,
 .bo-pill-status-inprogress,
 .bo-pill-status-escalated,
 .bo-pill-status-resolved {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
+  display: inline;
+  background: none;
+  padding: 0;
+  border-radius: 0;
 }
-.bo-pill-status-open::before,
-.bo-pill-status-inprogress::before,
-.bo-pill-status-escalated::before,
-.bo-pill-status-resolved::before {
-  content: "";
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: currentColor;
-  flex-shrink: 0;
-}
-.bo-pill-status-open { background: var(--blue-light); color: var(--blue-text); }
-.bo-pill-status-inprogress { background: var(--orange-light); color: var(--orange-text); }
-.bo-pill-status-escalated { background: var(--red-light); color: var(--red-text); }
-.bo-pill-status-resolved { background: var(--green-light); color: var(--green-text); }
+.bo-pill-status-open { color: var(--blue-text); }
+.bo-pill-status-inprogress { color: var(--orange-text); }
+.bo-pill-status-escalated { color: var(--red-text); }
+.bo-pill-status-resolved { color: var(--green-text); }
 
 /* Severity/priority columns -- smaller corner radius distinguishes a
    rating from the full-pill lifecycle Status badges above. */
@@ -4255,37 +4223,24 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
 
 .bo-recipients-chip svg { color: var(--gray-text); flex-shrink: 0; }
 
-/* Status / delivery-result pills — same visual language as the Support
-   module's pills (color + text, never color alone). */
+/* Status / delivery-result columns — plain colored text, no pill/dot. */
 .bo-pill-active,
 .bo-pill-paused,
 .bo-pill-delivered,
 .bo-pill-failed,
 .bo-pill-partial,
 .bo-pill-processing {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
+  display: inline;
+  background: none;
+  padding: 0;
+  border-radius: 0;
 }
-.bo-pill-active::before,
-.bo-pill-paused::before,
-.bo-pill-delivered::before,
-.bo-pill-failed::before,
-.bo-pill-partial::before,
-.bo-pill-processing::before {
-  content: "";
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: currentColor;
-  flex-shrink: 0;
-}
-.bo-pill-active { background: var(--green-light); color: var(--green-text); }
-.bo-pill-paused { background: var(--bg); color: var(--gray-text); }
-.bo-pill-delivered { background: var(--green-light); color: var(--green-text); }
-.bo-pill-failed { background: var(--red-light); color: var(--red-text); }
-.bo-pill-partial { background: var(--orange-light); color: var(--orange-text); }
-.bo-pill-processing { background: var(--blue-light); color: var(--blue-text); }
+.bo-pill-active { color: var(--green-text); }
+.bo-pill-paused { color: var(--gray-text); }
+.bo-pill-delivered { color: var(--green-text); }
+.bo-pill-failed { color: var(--red-text); }
+.bo-pill-partial { color: var(--orange-text); }
+.bo-pill-processing { color: var(--blue-text); }
 
 /* Empty state (no schedules yet / no rows match the current filters) */
 .bo-empty-state {
@@ -4471,27 +4426,18 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
 /* Incident lifecycle status — distinct from Ticket statuses (Open/In
    Progress/Escalated/Resolved); Resolved intentionally reuses the same
    green as Ticket Resolved so "done" reads identically across the module.
-   Full pill + status dot, same status-badge language as Ticket Status. */
+   Plain colored text, no pill/dot. */
 .bo-pill-incident-active,
 .bo-pill-incident-escalated,
 .bo-pill-incident-resolved {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
+  display: inline;
+  background: none;
+  padding: 0;
+  border-radius: 0;
 }
-.bo-pill-incident-active::before,
-.bo-pill-incident-escalated::before,
-.bo-pill-incident-resolved::before {
-  content: "";
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: currentColor;
-  flex-shrink: 0;
-}
-.bo-pill-incident-active { background: var(--orange-light); color: var(--orange-text); }
-.bo-pill-incident-escalated { background: var(--red-light); color: var(--red-text); }
-.bo-pill-incident-resolved { background: var(--green-light); color: var(--green-text); }
+.bo-pill-incident-active { color: var(--orange-text); }
+.bo-pill-incident-escalated { color: var(--red-text); }
+.bo-pill-incident-resolved { color: var(--green-text); }
 
 .bo-incident-title { font-weight: 700; color: var(--ink); }
 .bo-incident-source-label { display: block; font-size: 11.5px; color: var(--gray-text); margin-top: 2px; font-weight: 500; }
@@ -4612,23 +4558,14 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
 .bo-pill-task-open,
 .bo-pill-task-inprogress,
 .bo-pill-task-completed {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
+  display: inline;
+  background: none;
+  padding: 0;
+  border-radius: 0;
 }
-.bo-pill-task-open::before,
-.bo-pill-task-inprogress::before,
-.bo-pill-task-completed::before {
-  content: "";
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: currentColor;
-  flex-shrink: 0;
-}
-.bo-pill-task-open { background: var(--blue-light); color: var(--blue-text); }
-.bo-pill-task-inprogress { background: var(--orange-light); color: var(--orange-text); }
-.bo-pill-task-completed { background: var(--green-light); color: var(--green-text); }
+.bo-pill-task-open { color: var(--blue-text); }
+.bo-pill-task-inprogress { color: var(--orange-text); }
+.bo-pill-task-completed { color: var(--green-text); }
 
 .bo-incident-badges { display: flex; align-items: center; gap: 8px; }
 

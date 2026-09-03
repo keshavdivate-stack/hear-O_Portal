@@ -79,24 +79,26 @@ function renderPatients() {
     .map(
       (p) => `
       <tr>
-        <td><a class="bo-name-link" href="patient-health-dashboard.html?patient=${p.username}">${p.username}</a></td>
-        <td><input type="checkbox" class="bo-table-checkbox" ${p.algo ? "checked" : ""} disabled aria-label="Algo enabled" /></td>
-        <td>${p.lang}</td>
-        <td>${p.tag}</td>
-        <td>${p.creationDate || "—"}</td>
-        <td>${p.startDate || "—"}</td>
-        <td>${p.baselineCompletedDate || "—"}</td>
-        <td>${p.followUpDate || "—"}</td>
-        <td>${p.leavingDate || "—"}</td>
-        <td><span class="bo-status-pill ${statusClass(p.status)}">${p.status}</span></td>
-        <td>${p.statusStart}</td>
-        <td>${p.lastAppVersion || "—"}</td>
-        <td>${p.lastPhoneModel || "—"}</td>
-        <td>${p.lastSession}</td>
-        <td>${p.lastSignIn || "—"}</td>
-        <td>${pct(p.usableCompliance)}</td>
-        <td>${pct(p.compliance)}</td>
-        <td>
+        <td data-col="username"><a class="bo-name-link" href="patient-health-dashboard.html?patient=${p.username}">${p.username}</a></td>
+        <td data-col="algo"><input type="checkbox" class="bo-table-checkbox" ${p.algo ? "checked" : ""} disabled aria-label="Algo enabled" /></td>
+        <td data-col="lang">${p.lang}</td>
+        <td data-col="tag">${p.tag}</td>
+        <td data-col="creationDate">${p.creationDate || "—"}</td>
+        <td data-col="startDate">${p.startDate || "—"}</td>
+        <td data-col="baselineCompletedDate">${p.baselineCompletedDate || "—"}</td>
+        <td data-col="followUpDate">${p.followUpDate || "—"}</td>
+        <td data-col="leavingDate">${p.leavingDate || "—"}</td>
+        <td data-col="account"><span class="bo-status-pill ${statusClass(p.account)}">${p.account}</span></td>
+        <td data-col="status"><span class="bo-status-pill ${statusClass(p.status)}">${p.status}</span></td>
+        <td data-col="monitoring"><span class="bo-status-pill ${statusClass(p.monitoring)}">${p.monitoring}</span></td>
+        <td data-col="statusStart">${p.statusStart}</td>
+        <td data-col="lastAppVersion">${p.lastAppVersion || "—"}</td>
+        <td data-col="lastPhoneModel">${p.lastPhoneModel || "—"}</td>
+        <td data-col="lastSession">${p.lastSession}</td>
+        <td data-col="lastSignIn">${p.lastSignIn || "—"}</td>
+        <td data-col="usableCompliance">${pct(p.usableCompliance)}</td>
+        <td data-col="compliance">${pct(p.compliance)}</td>
+        <td data-col="actions">
           <div class="bo-row-actions">
             <button class="bo-action-icon row-menu-trigger" data-id="${p.id}" aria-label="Row actions">${patientKebabIcon}</button>
           </div>
@@ -113,7 +115,42 @@ function renderPatients() {
   document.getElementById("patientPrevPage").disabled = patientCurrentPage === 1;
   document.getElementById("patientNextPage").disabled = patientCurrentPage === totalPages;
   document.getElementById("patientLastPage").disabled = patientCurrentPage === totalPages;
+
+  applyColumnVisibility();
 }
+
+/* ---------------- Column visibility ---------------- */
+/* Built from the table's own data-col headers, so this list never drifts
+   out of sync with whatever columns actually exist. All columns start
+   visible; unchecking one hides both its header cell and every row's cell
+   for that column. */
+const patientColumnDefs = Array.from(document.querySelectorAll('#patientTable thead th[data-col]'))
+  .map((th) => ({ key: th.dataset.col, label: th.textContent.trim() }))
+  .filter((c) => c.key !== "actions");
+const hiddenPatientColumns = new Set();
+
+const patientColumnsMenu = document.getElementById("patientColumnsMenu");
+patientColumnsMenu.innerHTML = patientColumnDefs
+  .map((c) => `<label class="bo-popover-item"><input type="checkbox" checked data-col-toggle="${c.key}" />${c.label}</label>`)
+  .join("");
+
+function applyColumnVisibility() {
+  document.querySelectorAll("#patientTable [data-col]").forEach((cell) => {
+    cell.style.display = hiddenPatientColumns.has(cell.dataset.col) ? "none" : "";
+  });
+}
+
+patientColumnsMenu.addEventListener("click", (e) => e.stopPropagation());
+patientColumnsMenu.addEventListener("change", (e) => {
+  const checkbox = e.target.closest('input[type="checkbox"]');
+  if (!checkbox) return;
+  const key = checkbox.dataset.colToggle;
+  if (checkbox.checked) hiddenPatientColumns.delete(key);
+  else hiddenPatientColumns.add(key);
+  applyColumnVisibility();
+});
+
+wirePopover("patientColumnsBtn", "patientColumnsMenu");
 
 renderPatients();
 

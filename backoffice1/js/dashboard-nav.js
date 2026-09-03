@@ -17,6 +17,7 @@ wirePopover("dashboardNavBtn", "dashboardPopover");
 wirePopover("settingsNavBtn", "settingsPopover");
 wirePopover("reportsNavBtn", "reportsPopover");
 wirePopover("patientsNavBtn", "patientsPopover");
+wirePopover("clinicPillBtn", "clinicPillPopover");
 document.addEventListener("click", () => {
   document.querySelectorAll(".bo-popover.open").forEach((p) => p.classList.remove("open"));
 });
