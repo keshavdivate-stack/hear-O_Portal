@@ -822,10 +822,9 @@ function renderCareRecs() {
             </td>
             <td>${rec.updatedAt}</td>
             <td>
-              <div class="rec-row-actions">
-                <button type="button" class="btn-open rec-view-btn" data-rec-id="${rec.id}">View</button>
-                <button type="button" class="btn-open rec-edit-btn" data-rec-id="${rec.id}">Edit</button>
-              </div>
+              <button type="button" class="action-icon kebab row-menu-trigger" data-rec-id="${rec.id}" aria-label="Care recommendation actions">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="1.7" fill="currentColor"/><circle cx="12" cy="12" r="1.7" fill="currentColor"/><circle cx="12" cy="19" r="1.7" fill="currentColor"/></svg>
+              </button>
             </td>
           </tr>`;
         })
@@ -913,16 +912,54 @@ document.getElementById("recDrawerOverlay").addEventListener("click", (e) => {
   if (e.target.id === "recDrawerOverlay") closeRecDrawer();
 });
 
-document.getElementById("careRecTableBody").addEventListener("click", (e) => {
-  const viewBtn = e.target.closest(".rec-view-btn");
-  if (viewBtn) {
-    openRecDrawer(Number(viewBtn.dataset.recId));
-    return;
-  }
+/* ---------------- Care Recommendation row menu (View / Edit / Archive) ---------------- */
+const careRecRowMenu = document.getElementById("careRecRowMenu");
+let activeCareRecRowId = null;
 
-  const editBtn = e.target.closest(".rec-edit-btn");
-  if (editBtn) {
-    openEditRecModal(Number(editBtn.dataset.recId));
+document.getElementById("careRecTableBody").addEventListener("click", (e) => {
+  const trigger = e.target.closest(".row-menu-trigger");
+  if (!trigger) return;
+  e.stopPropagation();
+
+  const rec = careRecs.find((r) => r.id === Number(trigger.dataset.recId));
+  if (!rec) return;
+  activeCareRecRowId = rec.id;
+
+  careRecRowMenu.innerHTML = `
+    <button class="row-menu-item" data-action="view">View</button>
+    <button class="row-menu-item" data-action="edit">Edit</button>
+    <button class="row-menu-item" data-action="${rec.status === "archived" ? "unarchive" : "archive"}">${rec.status === "archived" ? "Unarchive" : "Archive"}</button>
+  `;
+
+  const rect = trigger.getBoundingClientRect();
+  careRecRowMenu.style.top = `${rect.bottom + 6}px`;
+  careRecRowMenu.style.left = `${rect.right - 190}px`;
+  careRecRowMenu.classList.add("open");
+});
+
+document.addEventListener("click", (e) => {
+  if (!careRecRowMenu.contains(e.target)) careRecRowMenu.classList.remove("open");
+});
+
+careRecRowMenu.addEventListener("click", (e) => {
+  const item = e.target.closest(".row-menu-item");
+  if (!item) return;
+  careRecRowMenu.classList.remove("open");
+
+  const rec = careRecs.find((r) => r.id === activeCareRecRowId);
+  if (!rec) return;
+
+  if (item.dataset.action === "view") openRecDrawer(rec.id);
+  if (item.dataset.action === "edit") openEditRecModal(rec.id);
+  if (item.dataset.action === "archive") {
+    rec.statusBeforeArchive = rec.status;
+    rec.status = "archived";
+    renderCareRecs();
+  }
+  if (item.dataset.action === "unarchive") {
+    rec.status = rec.statusBeforeArchive || "completed";
+    delete rec.statusBeforeArchive;
+    renderCareRecs();
   }
 });
 
@@ -1541,6 +1578,78 @@ document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeAllMe
 
 renderMeds();
 
+/* ---------------- Clinical: Questionnaire ----------------
+   The questionnaire is sent to the patient once a week, so most days have no
+   answer -- weeklyAnswers() only fills in the chartDays indices the patient
+   was actually asked, leaving every other day as null (rendered as an empty
+   dot, not a "missed" one -- there was nothing to answer that day). */
+const questXIcon = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M6 6L18 18M18 6L6 18" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/></svg>`;
+
+function weeklyAnswers(answersByDayIndex) {
+  return chartDays.map((d, i) => (i in answersByDayIndex ? answersByDayIndex[i] : null));
+}
+
+const questions = [
+  {
+    label: "Q1",
+    text: "Have you experienced any shortness of breath this week?",
+    answers: weeklyAnswers({ 4: true, 11: true, 18: false, 25: true }),
+  },
+  {
+    label: "Q2",
+    text: "Have you noticed any swelling in your legs or ankles this week?",
+    answers: weeklyAnswers({ 4: true, 11: false, 18: true, 25: true }),
+  },
+];
+
+function renderQuestionnaire() {
+  const days = visibleDays();
+  document.getElementById("questList").innerHTML = questions
+    .map(
+      (q, qi) => `
+      <div class="med-block">
+        <div class="quest-block-head">
+          <span class="quest-label">${q.label}</span>
+          <span class="quest-text">${q.text}</span>
+        </div>
+
+        <div class="med-adherence-row">
+          <button class="chart-arrow quest-adh-prev" data-quest="${qi}" aria-label="Previous month"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15 6L9 12L15 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+          <div class="med-adh-scroll" id="questAdh${qi}">
+            ${(() => {
+              const ans = sliceForRange(q.answers);
+              return days
+                .map((d, i) => {
+                  const a = ans[i];
+                  const cls = a === true ? "quest-ans-yes" : a === false ? "quest-ans-no" : "quest-ans-none";
+                  const icon = a === true ? adhCheckIcon : a === false ? questXIcon : "";
+                  return `
+                <div class="med-adh-day">
+                  <span class="quest-ans-icon ${cls}">${icon}</span>
+                  <span class="med-adh-day-label">${d.label}</span>
+                </div>`;
+                })
+                .join("");
+            })()}
+          </div>
+          <button class="chart-arrow quest-adh-next" data-quest="${qi}" aria-label="Next month"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 6L15 12L9 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        </div>
+        <div class="chart-month-row" style="padding:0 40px;">${monthRowHtml(days)}</div>
+      </div>`
+    )
+    .join("");
+
+  document.querySelectorAll(".quest-adh-prev, .quest-adh-next").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const row = document.getElementById(`questAdh${btn.dataset.quest}`);
+      const dir = btn.classList.contains("quest-adh-next") ? 1 : -1;
+      row.scrollBy({ left: dir * 320, behavior: "smooth" });
+    });
+  });
+}
+
+renderQuestionnaire();
+
 document.getElementById("medStatusFilter").addEventListener("change", (e) => {
   medStatusFilter = e.target.value;
   renderMeds();
@@ -1590,6 +1699,7 @@ function rebuildRangedCharts() {
   buildOxygenChart();
   buildRespirationChart();
   renderMeds();
+  renderQuestionnaire();
 }
 
 document.querySelectorAll(".range-toggle span").forEach((r) => {
@@ -1852,6 +1962,45 @@ chatPlusMenu.addEventListener("click", (e) => {
   chatPlusMenu.classList.remove("open");
   const label = item.dataset.request === "image" ? "Requested an image" : "Requested a video";
   addOutgoingChatMessage(label);
+});
+
+/* ---------------- Export Chat ---------------- */
+const exportChatOverlay = document.getElementById("exportChatOverlay");
+const exportChatFrom = document.getElementById("exportChatFrom");
+const exportChatTo = document.getElementById("exportChatTo");
+
+document.getElementById("chatExportBtn").addEventListener("click", () => {
+  const today = new Date().toISOString().slice(0, 10);
+  exportChatFrom.value = "";
+  exportChatTo.value = today;
+  exportChatOverlay.classList.add("open");
+});
+
+document.getElementById("cancelExportChat").addEventListener("click", () => exportChatOverlay.classList.remove("open"));
+exportChatOverlay.addEventListener("click", (e) => { if (e.target === exportChatOverlay) exportChatOverlay.classList.remove("open"); });
+
+document.getElementById("confirmExportChat").addEventListener("click", () => {
+  const from = exportChatFrom.value;
+  const to = exportChatTo.value;
+
+  const lines = chatMessages.map((m) => {
+    if (m.type === "sep") return `-- ${m.label} --`;
+    const who = m.name || "Patient";
+    return `[${m.time}] ${who}: ${m.text}`;
+  });
+
+  const rangeLabel = from && to ? `${from}_to_${to}` : "full-history";
+  const blob = new Blob([lines.join("\n")], { type: "text/plain" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `chat-export_${rangeLabel}.txt`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+
+  exportChatOverlay.classList.remove("open");
 });
 
 /* ---------------- Clinical: Add Medication / Recommendation modals ---------------- */

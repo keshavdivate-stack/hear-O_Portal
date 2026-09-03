@@ -721,19 +721,20 @@ const careRecs = [
     instructionsPatient: "Take with breakfast. Weigh yourself each morning and record it in the app.",
     instructionsCareTeam: "Titrate Furosemide up and monitor the patient for tolerability and any signs of dehydration or low blood pressure.",
     invitePatient: false,
-    status: "in-progress",
+    status: "completed",
     createdBy: "Dr. Sarah Mitchell",
     createdAt: "05 Aug 2026, 09:10 AM",
     updatedAt: "06 Aug 2026, 10:05 AM",
     pickedUpBy: "Amanda Lee, RN",
     actionTaken: "Contacted patient to confirm the new dose is tolerated; monitoring for dizziness and weight changes over the next few days.",
-    completedBy: null,
-    completedOn: null,
-    patientAcknowledgedAt: null,
+    completedBy: "Amanda Lee, RN",
+    completedOn: "06 Aug 2026, 10:05 AM",
+    patientAcknowledgedAt: "06 Aug 2026, 09:20 AM",
     activity: [
       { who: "Dr. Sarah Mitchell", when: "05 Aug · 09:10 AM", text: "Created care recommendation." },
       { who: "Amanda Lee, RN", when: "05 Aug · 09:40 AM", text: "Picked up recommendation." },
       { who: "Amanda Lee, RN", when: "06 Aug · 10:05 AM", label: "Action taken: Patient contacted", short: "Patient contacted", note: "Confirmed new dose is tolerated so far; monitoring for dizziness and weight changes over the next few days." },
+      { who: "Amanda Lee, RN", when: "06 Aug · 10:05 AM", label: "Marked recommendation as Completed.", short: "Completed" },
     ],
   },
   {
@@ -905,10 +906,9 @@ function renderCareRecs() {
             </td>
             <td>${rec.updatedAt}</td>
             <td>
-              <div class="rec-row-actions">
-                <button type="button" class="btn-open rec-view-btn" data-rec-id="${rec.id}">View</button>
-                <button type="button" class="btn-open rec-edit-btn" data-rec-id="${rec.id}">Edit</button>
-              </div>
+              <button type="button" class="action-icon kebab row-menu-trigger" data-rec-id="${rec.id}" aria-label="Care recommendation actions">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="1.7" fill="currentColor"/><circle cx="12" cy="12" r="1.7" fill="currentColor"/><circle cx="12" cy="19" r="1.7" fill="currentColor"/></svg>
+              </button>
             </td>
           </tr>`;
         })
@@ -996,16 +996,54 @@ document.getElementById("recDrawerOverlay").addEventListener("click", (e) => {
   if (e.target.id === "recDrawerOverlay") closeRecDrawer();
 });
 
-document.getElementById("careRecTableBody").addEventListener("click", (e) => {
-  const viewBtn = e.target.closest(".rec-view-btn");
-  if (viewBtn) {
-    openRecDrawer(Number(viewBtn.dataset.recId));
-    return;
-  }
+/* ---------------- Care Recommendation row menu (View / Edit / Archive) ---------------- */
+const careRecRowMenu = document.getElementById("careRecRowMenu");
+let activeCareRecRowId = null;
 
-  const editBtn = e.target.closest(".rec-edit-btn");
-  if (editBtn) {
-    openEditRecModal(Number(editBtn.dataset.recId));
+document.getElementById("careRecTableBody").addEventListener("click", (e) => {
+  const trigger = e.target.closest(".row-menu-trigger");
+  if (!trigger) return;
+  e.stopPropagation();
+
+  const rec = careRecs.find((r) => r.id === Number(trigger.dataset.recId));
+  if (!rec) return;
+  activeCareRecRowId = rec.id;
+
+  careRecRowMenu.innerHTML = `
+    <button class="row-menu-item" data-action="view">View</button>
+    <button class="row-menu-item" data-action="edit">Edit</button>
+    <button class="row-menu-item" data-action="${rec.status === "archived" ? "unarchive" : "archive"}">${rec.status === "archived" ? "Unarchive" : "Archive"}</button>
+  `;
+
+  const rect = trigger.getBoundingClientRect();
+  careRecRowMenu.style.top = `${rect.bottom + 6}px`;
+  careRecRowMenu.style.left = `${rect.right - 190}px`;
+  careRecRowMenu.classList.add("open");
+});
+
+document.addEventListener("click", (e) => {
+  if (!careRecRowMenu.contains(e.target)) careRecRowMenu.classList.remove("open");
+});
+
+careRecRowMenu.addEventListener("click", (e) => {
+  const item = e.target.closest(".row-menu-item");
+  if (!item) return;
+  careRecRowMenu.classList.remove("open");
+
+  const rec = careRecs.find((r) => r.id === activeCareRecRowId);
+  if (!rec) return;
+
+  if (item.dataset.action === "view") openRecDrawer(rec.id);
+  if (item.dataset.action === "edit") openEditRecModal(rec.id);
+  if (item.dataset.action === "archive") {
+    rec.statusBeforeArchive = rec.status;
+    rec.status = "archived";
+    renderCareRecs();
+  }
+  if (item.dataset.action === "unarchive") {
+    rec.status = rec.statusBeforeArchive || "completed";
+    delete rec.statusBeforeArchive;
+    renderCareRecs();
   }
 });
 
@@ -1218,6 +1256,7 @@ function medInfoPopover(m, mi) {
       ${medInfoRow("Dose", m.dose)}
       ${medInfoRow("Route", m.route)}
       ${medInfoRow("Sig / Directions", m.sig)}
+      ${medInfoRow("Note", m.note)}
       ${medInfoRow("Status Reason", m.statusReason)}
       ${medInfoRow("Lot Number", m.lotNumber)}
       ${medInfoRow("Expiry Date", medInfoDate(m.expiryDate))}
@@ -1713,6 +1752,45 @@ chatPlusMenu.addEventListener("click", (e) => {
   addOutgoingChatMessage(label);
 });
 
+/* ---------------- Export Chat ---------------- */
+const exportChatOverlay = document.getElementById("exportChatOverlay");
+const exportChatFrom = document.getElementById("exportChatFrom");
+const exportChatTo = document.getElementById("exportChatTo");
+
+document.getElementById("chatExportBtn").addEventListener("click", () => {
+  const today = new Date().toISOString().slice(0, 10);
+  exportChatFrom.value = "";
+  exportChatTo.value = today;
+  exportChatOverlay.classList.add("open");
+});
+
+document.getElementById("cancelExportChat").addEventListener("click", () => exportChatOverlay.classList.remove("open"));
+exportChatOverlay.addEventListener("click", (e) => { if (e.target === exportChatOverlay) exportChatOverlay.classList.remove("open"); });
+
+document.getElementById("confirmExportChat").addEventListener("click", () => {
+  const from = exportChatFrom.value;
+  const to = exportChatTo.value;
+
+  const lines = chatMessages.map((m) => {
+    if (m.type === "sep") return `-- ${m.label} --`;
+    const who = m.name || "Patient";
+    return `[${m.time}] ${who}: ${m.text}`;
+  });
+
+  const rangeLabel = from && to ? `${from}_to_${to}` : "full-history";
+  const blob = new Blob([lines.join("\n")], { type: "text/plain" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `chat-export_${rangeLabel}.txt`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+
+  exportChatOverlay.classList.remove("open");
+});
+
 /* ---------------- Clinical: Add Medication / Recommendation modals ---------------- */
 /* ---------------- Custom dropdowns (same pattern as Registration) ---------------- */
 function setCustomSelectValue(select, value, { silent = false } = {}) {
@@ -1842,6 +1920,7 @@ wireAddModal("addMedOverlay", "addMedForm", "cancelAddMed", "openAddMedBtn", (fd
     effectiveDateTime: fd.get("effectiveDateTime"),
     route: fd.get("route"),
     sig: fd.get("sig"),
+    note: fd.get("note"),
     drugCodeType: fd.get("drugCodeType"),
     drugCodeValue: fd.get("drugCodeValue"),
   });
@@ -1876,6 +1955,7 @@ function openEditMedModal(id) {
   editMedForm.effectiveDateTime.value = m.effectiveDateTime || "";
   editMedForm.dose.value = m.dose || "";
   editMedForm.sig.value = m.sig || "";
+  editMedForm.note.value = m.note || "";
 
   setCustomSelectValue(editMedForm.querySelector('.custom-select[data-name="drugCodeType"]'), m.drugCodeType || "RxNorm", { silent: true });
   editMedForm.drugCodeValue.value = m.drugCodeValue || "";
@@ -1921,6 +2001,7 @@ editMedForm.addEventListener("submit", (e) => {
   m.freq = fd.get("frequency") || m.freq;
   m.route = fd.get("route");
   m.sig = fd.get("sig");
+  m.note = fd.get("note");
   m.schedule = fd.get("sig") || m.schedule;
   m.drugCodeType = fd.get("drugCodeType");
   m.drugCodeValue = fd.get("drugCodeValue");

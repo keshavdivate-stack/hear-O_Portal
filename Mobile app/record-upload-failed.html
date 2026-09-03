@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HearO - Sending</title>
+<title>HearO - Upload Failed</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -22,30 +22,24 @@
       </div>
     </div>
 
-    <div class="status-content">
-      <p class="status-text">Sending, Please hold...</p>
-      <div class="progress-ring" id="ring">0%</div>
+    <div class="record-content">
+      <div class="retry-icon">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 18.5C12.6 18.5 13.1 18 13.1 17.4C13.1 16.8 12.6 16.3 12 16.3C11.4 16.3 10.9 16.8 10.9 17.4C10.9 18 11.4 18.5 12 18.5Z" fill="#f5a623"/>
+          <path d="M8.5 14.3C9.5 13.4 10.7 13 12 13C13.3 13 14.5 13.4 15.5 14.3" stroke="#f5a623" stroke-width="1.8" stroke-linecap="round"/>
+          <path d="M5.5 11C7.3 9.4 9.6 8.5 12 8.5C14.4 8.5 16.7 9.4 18.5 11" stroke="#f5a623" stroke-width="1.8" stroke-linecap="round"/>
+          <path d="M2.5 7.7C5.5 5.2 8.6 4 12 4C15.4 4 18.5 5.2 21.5 7.7" stroke="#f5a623" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <h1 class="retry-title">Today's recording wasn't uploaded</h1>
+      <p class="retry-message">Please check your internet connection. If the problem persists, contact technical support</p>
+
+      <div class="retry-footer">
+        <button type="button" class="login-btn" onclick="window.location.href='record-sending.html'">Retry Upload</button>
+        <button type="button" class="btn-outline" onclick="window.location.href='contact-us.html'">Contact Support</button>
+      </div>
     </div>
   </div>
 
-<script>
-  const ring = document.getElementById("ring");
-  const outcome = new URLSearchParams(window.location.search).get("outcome") || "success";
-  const destinations = {
-    success: "record-saved.html",
-    "upload-fail": "record-upload-failed.html",
-    "no-hear": "record-retry.html",
-  };
-
-  let pct = 0;
-  const interval = setInterval(() => {
-    pct += 10;
-    ring.textContent = pct + "%";
-    if (pct >= 100) {
-      clearInterval(interval);
-      setTimeout(() => { window.location.href = destinations[outcome] || destinations.success; }, 500);
-    }
-  }, 150);
-</script>
 </body>
 </html>

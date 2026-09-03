@@ -44,6 +44,7 @@
     <div class="day-strip-section">
       <p class="day-strip-label">Recording</p>
       <div class="day-strip" id="dayStrip"></div>
+      <div id="dayDetailCard"></div>
     </div>
 
     <div id="historyArea"></div>
@@ -52,6 +53,9 @@
 <script>
   const STATE = new URLSearchParams(window.location.search).get("state") || "complete";
   const LABELS = ["S", "M", "T", "W", "T", "F", "S"];
+  const WEEKDAY_FULL = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  const WEEK_DATE_NUMS = [17, 18, 19, 20, 21, 22, 23];
+  const DAY_STATUS_LABEL = { complete: "Recording complete", warning: "Low quality recording", muted: "Did not record" };
 
   // Each screen state = today's status + the past few days on the strip + any
   // playable recordings captured so far this week (todo state drives the banner).
@@ -61,7 +65,7 @@
       days: ["complete", "warning", "muted", "today-complete", "empty", "empty", "empty"],
       recordings: [
         { title: "Morning recording", day: "W", time: "Today, 8:15 AM", duration: "0:04", status: "complete" },
-        { title: "Morning recording", day: "M", time: "Monday, 8:48 AM", duration: "0:03", status: "warning" },
+        { title: "Morning recording", day: "M", time: "Monday, 8:48 AM", duration: "0:03", status: "warning", note: "Audio wasn't clear enough to analyze" },
         { title: "Morning recording", day: "S", time: "Sunday, 8:22 AM", duration: "0:04", status: "complete" },
       ],
     },
@@ -73,7 +77,7 @@
       },
       days: ["complete", "warning", "muted", "today-warning", "empty", "empty", "empty"],
       recordings: [
-        { title: "Morning recording", day: "M", time: "Monday, 8:48 AM", duration: "0:03", status: "warning" },
+        { title: "Morning recording", day: "M", time: "Monday, 8:48 AM", duration: "0:03", status: "warning", note: "Audio wasn't clear enough to analyze" },
         { title: "Morning recording", day: "S", time: "Sunday, 8:22 AM", duration: "0:04", status: "complete" },
       ],
     },
@@ -87,7 +91,7 @@
       days: ["complete", "warning", "complete", "today-warning", "empty", "empty", "empty"],
       recordings: [
         { title: "Morning recording", day: "T", time: "Tuesday, 8:10 AM", duration: "0:04", status: "complete" },
-        { title: "Morning recording", day: "M", time: "Monday, 8:48 AM", duration: "0:03", status: "warning" },
+        { title: "Morning recording", day: "M", time: "Monday, 8:48 AM", duration: "0:03", status: "warning", note: "Audio wasn't clear enough to analyze" },
         { title: "Morning recording", day: "S", time: "Sunday, 8:22 AM", duration: "0:04", status: "complete" },
       ],
     },
@@ -129,21 +133,44 @@
       </div>`;
   }
 
+  let currentDays = [];
+
   function renderDayStrip(days) {
+    currentDays = days;
     const el = document.getElementById("dayStrip");
     el.innerHTML = days
       .map((status, i) => {
         const isToday = status.startsWith("today");
         const base = isToday ? status.replace("today-", "") : status;
-        const dotClass = `day-dot is-${base}${isToday ? " is-today" : ""}`;
+        const isClickable = base !== "empty";
+        const dotClass = `day-dot is-${base}${isToday ? " is-today" : ""}${isClickable ? " is-clickable" : ""}`;
         const icon = base === "complete" ? ICONS.check : base === "warning" ? ICONS.bang : "";
+        const click = isClickable ? ` onclick="showDayDetail(${i})"` : "";
         return `
           <div class="day-cell${isToday ? " is-today" : ""}">
-            <div class="${dotClass}">${icon}</div>
+            <div class="${dotClass}"${click}>${icon}</div>
             <span class="day-cell-label">${LABELS[i]}</span>
           </div>`;
       })
       .join("");
+    document.getElementById("dayDetailCard").innerHTML = "";
+  }
+
+  function showDayDetail(i) {
+    const status = currentDays[i];
+    const isToday = status.startsWith("today");
+    const base = isToday ? status.replace("today-", "") : status;
+    const icon = base === "complete" ? ICONS.check : base === "warning" ? ICONS.bang : "";
+    const dateLabel = isToday ? `Today, Apr ${WEEK_DATE_NUMS[i]}` : `${WEEKDAY_FULL[i]}, Apr ${WEEK_DATE_NUMS[i]}`;
+
+    document.getElementById("dayDetailCard").innerHTML = `
+      <div class="day-detail-card">
+        <div class="day-detail-icon is-${base}">${icon}</div>
+        <div class="day-detail-text">
+          <p class="day-detail-date">${dateLabel}</p>
+          <p class="day-detail-status">${DAY_STATUS_LABEL[base]}</p>
+        </div>
+      </div>`;
   }
 
   function renderHistory(recordings) {
@@ -171,6 +198,7 @@
                 <div>
                   <p class="rec-item-title">${r.title}</p>
                   <p class="rec-item-sub">${r.time} &middot; <span id="rec-time-${i}">${r.duration}</span></p>
+                  ${r.note ? `<p class="rec-item-note">${r.note}</p>` : ""}
                 </div>
                 <div class="rec-item-status is-${r.status}">${r.status === "complete" ? ICONS.check : ICONS.bang}</div>
               </div>

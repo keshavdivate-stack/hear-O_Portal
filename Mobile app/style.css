@@ -659,6 +659,9 @@ input[type="password"]:focus {
 .retry-footer {
   margin-top: auto;
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
 }
 
 /* Success / ready screen */
@@ -2408,6 +2411,44 @@ input[type="password"]:focus {
   box-shadow: 0 0 0 2px #fff, 0 0 0 3.5px #2f6fed;
 }
 
+.day-dot.is-clickable { cursor: pointer; }
+
+.day-detail-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 18px;
+  padding: 14px 16px;
+  border: 1px solid #eceef1;
+  border-radius: 14px;
+}
+
+.day-detail-icon {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.day-detail-icon.is-complete { background: #2f9e73; }
+.day-detail-icon.is-warning { background: #f5a623; }
+.day-detail-icon.is-muted { background: #c9cdd3; }
+
+.day-detail-date {
+  font-size: calc(16px * var(--font-scale, 1));
+  font-weight: 700;
+  color: #1c1c1c;
+}
+
+.day-detail-status {
+  font-size: calc(14px * var(--font-scale, 1));
+  color: #7a7f87;
+  margin-top: 2px;
+}
+
 .day-cell-label {
   font-size: calc(13px * var(--font-scale, 1));
   color: #8a8f97;
@@ -2477,6 +2518,13 @@ input[type="password"]:focus {
   font-size: calc(13px * var(--font-scale, 1));
   color: #7a7f87;
   margin-top: 2px;
+}
+
+.rec-item-note {
+  font-size: calc(13px * var(--font-scale, 1));
+  color: #c99a4a;
+  font-weight: 600;
+  margin-top: 4px;
 }
 
 .rec-item-status {

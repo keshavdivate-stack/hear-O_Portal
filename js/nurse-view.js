@@ -592,7 +592,7 @@ const careRecs = [
   },
 ];
 
-let careRecFilter = "all"; // all | recommended | in-progress | completed
+let careRecFilter = "all"; // all | recommended | in-progress | completed | archived
 let activeRecId = null;
 
 function careRecLatest(rec) {
@@ -602,7 +602,6 @@ function careRecLatest(rec) {
 }
 
 function careRecMatchesFilter(rec) {
-  if (rec.status === "archived") return false;
   if (careRecFilter === "all") return true;
   return rec.status === careRecFilter;
 }
@@ -631,17 +630,18 @@ document.getElementById("openCareRecBtn").addEventListener("click", (e) => {
 });
 
 function renderCareRecs() {
-  const visible = careRecs.filter((r) => r.status !== "archived");
-  document.getElementById("careRecCount").textContent = visible.length;
+  document.getElementById("careRecCount").textContent = careRecs.filter((r) => r.status !== "archived").length;
   updateCareRecTriggers();
 
-  const list = visible.filter(careRecMatchesFilter);
+  const list = careRecs
+    .filter(careRecMatchesFilter)
+    .slice()
+    .sort((a, b) => (a.status === "archived") - (b.status === "archived"));
   document.getElementById("careRecTableBody").innerHTML = list.length
     ? list
         .map((rec) => {
           const meta = CARE_REC_STATUS[rec.status];
           const latest = careRecLatest(rec);
-          const editable = rec.status !== "completed" && rec.status !== "archived";
           return `
           <tr>
             <td><span class="rec-title-cell">${rec.title}</span></td>
@@ -654,7 +654,11 @@ function renderCareRecs() {
               </div>
             </td>
             <td>${rec.updatedAt}</td>
-            <td><button type="button" class="btn-open rec-open-btn" data-rec-id="${rec.id}">${editable ? "Open" : "View"}</button></td>
+            <td>
+              <button type="button" class="action-icon kebab row-menu-trigger" data-rec-id="${rec.id}" aria-label="Care recommendation actions">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="1.7" fill="currentColor"/><circle cx="12" cy="12" r="1.7" fill="currentColor"/><circle cx="12" cy="19" r="1.7" fill="currentColor"/></svg>
+              </button>
+            </td>
           </tr>`;
         })
         .join("")
@@ -761,10 +765,54 @@ document.getElementById("recDrawerOverlay").addEventListener("click", (e) => {
   if (e.target.id === "recDrawerOverlay") closeRecDrawer();
 });
 
+/* ---------------- Care Recommendation row menu (View / Archive) ----------------
+   Nurses can view and archive/unarchive a recommendation, but never edit one. */
+const careRecRowMenu = document.getElementById("careRecRowMenu");
+let activeCareRecRowId = null;
+
 document.getElementById("careRecTableBody").addEventListener("click", (e) => {
-  const btn = e.target.closest(".rec-open-btn");
-  if (!btn) return;
-  openRecDrawer(Number(btn.dataset.recId));
+  const trigger = e.target.closest(".row-menu-trigger");
+  if (!trigger) return;
+  e.stopPropagation();
+
+  const rec = careRecs.find((r) => r.id === Number(trigger.dataset.recId));
+  if (!rec) return;
+  activeCareRecRowId = rec.id;
+
+  careRecRowMenu.innerHTML = `
+    <button class="row-menu-item" data-action="view">View</button>
+    <button class="row-menu-item" data-action="${rec.status === "archived" ? "unarchive" : "archive"}">${rec.status === "archived" ? "Unarchive" : "Archive"}</button>
+  `;
+
+  const rect = trigger.getBoundingClientRect();
+  careRecRowMenu.style.top = `${rect.bottom + 6}px`;
+  careRecRowMenu.style.left = `${rect.right - 190}px`;
+  careRecRowMenu.classList.add("open");
+});
+
+document.addEventListener("click", (e) => {
+  if (!careRecRowMenu.contains(e.target)) careRecRowMenu.classList.remove("open");
+});
+
+careRecRowMenu.addEventListener("click", (e) => {
+  const item = e.target.closest(".row-menu-item");
+  if (!item) return;
+  careRecRowMenu.classList.remove("open");
+
+  const rec = careRecs.find((r) => r.id === activeCareRecRowId);
+  if (!rec) return;
+
+  if (item.dataset.action === "view") openRecDrawer(rec.id);
+  if (item.dataset.action === "archive") {
+    rec.statusBeforeArchive = rec.status;
+    rec.status = "archived";
+    renderCareRecs();
+  }
+  if (item.dataset.action === "unarchive") {
+    rec.status = rec.statusBeforeArchive || "completed";
+    delete rec.statusBeforeArchive;
+    renderCareRecs();
+  }
 });
 
 document.getElementById("recDrawerFooter").addEventListener("click", (e) => {
@@ -1341,21 +1389,110 @@ const chatMessages = [
   { type: "in", time: "11:25 AM", text: "I'm having a little trouble breathing" },
 ];
 
-document.getElementById("chatMessages").innerHTML = chatMessages
-  .map((m) => {
-    if (m.type === "sep") return `<div class="chat-day-sep">${m.label}</div>`;
-    return `
-      <div class="chat-msg ${m.type}">
-        <div class="chat-msg-meta">${m.name ? `<b>${m.name}</b> &middot; ` : ""}${m.time}</div>
-        <div class="chat-bubble">${m.text}</div>
-        ${m.seen ? `<div class="chat-seen">${m.seen}</div>` : ""}
-      </div>`;
-  })
-  .join("");
+const chatMessagesEl = document.getElementById("chatMessages");
+const chatEmptyStateEl = document.getElementById("chatEmptyState");
+
+function renderChatMessages() {
+  chatEmptyStateEl.hidden = chatMessages.length > 0;
+  chatMessagesEl.hidden = chatMessages.length === 0;
+  chatMessagesEl.innerHTML = chatMessages
+    .map((m) => {
+      if (m.type === "sep") return `<div class="chat-day-sep">${m.label}</div>`;
+      return `
+        <div class="chat-msg ${m.type}">
+          <div class="chat-msg-meta">${m.name ? `<b>${m.name}</b> &middot; ` : ""}${m.time}</div>
+          <div class="chat-bubble">${m.text}</div>
+          ${m.seen ? `<div class="chat-seen">${m.seen}</div>` : ""}
+        </div>`;
+    })
+    .join("");
+  chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight;
+}
+
+renderChatMessages();
 
 const chatPanel = document.getElementById("chatPanel");
 document.getElementById("chatOpenBtn").addEventListener("click", () => chatPanel.classList.add("open"));
 document.getElementById("chatCloseBtn").addEventListener("click", () => chatPanel.classList.remove("open"));
+
+function chatNowTime() {
+  return new Date().toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+}
+
+function addOutgoingChatMessage(text) {
+  chatMessages.push({ type: "out", name: "Dr. Alex Sholl", time: chatNowTime(), text });
+  renderChatMessages();
+}
+
+const chatInputField = document.getElementById("chatInputField");
+document.getElementById("chatSendBtn").addEventListener("click", () => {
+  const text = chatInputField.value.trim();
+  if (!text) return;
+  addOutgoingChatMessage(text);
+  chatInputField.value = "";
+});
+chatInputField.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    document.getElementById("chatSendBtn").click();
+  }
+});
+
+const chatPlusBtn = document.getElementById("chatPlusBtn");
+const chatPlusMenu = document.getElementById("chatPlusMenu");
+chatPlusBtn.addEventListener("click", (e) => {
+  e.stopPropagation();
+  chatPlusMenu.classList.toggle("open");
+});
+document.addEventListener("click", (e) => {
+  if (!chatPlusMenu.contains(e.target) && e.target !== chatPlusBtn) chatPlusMenu.classList.remove("open");
+});
+chatPlusMenu.addEventListener("click", (e) => {
+  const item = e.target.closest(".chat-plus-menu-item");
+  if (!item) return;
+  chatPlusMenu.classList.remove("open");
+  const label = item.dataset.request === "image" ? "Requested an image" : "Requested a video";
+  addOutgoingChatMessage(label);
+});
+
+/* ---------------- Export Chat ---------------- */
+const exportChatOverlay = document.getElementById("exportChatOverlay");
+const exportChatFrom = document.getElementById("exportChatFrom");
+const exportChatTo = document.getElementById("exportChatTo");
+
+document.getElementById("chatExportBtn").addEventListener("click", () => {
+  const today = new Date().toISOString().slice(0, 10);
+  exportChatFrom.value = "";
+  exportChatTo.value = today;
+  exportChatOverlay.classList.add("open");
+});
+
+document.getElementById("cancelExportChat").addEventListener("click", () => exportChatOverlay.classList.remove("open"));
+exportChatOverlay.addEventListener("click", (e) => { if (e.target === exportChatOverlay) exportChatOverlay.classList.remove("open"); });
+
+document.getElementById("confirmExportChat").addEventListener("click", () => {
+  const from = exportChatFrom.value;
+  const to = exportChatTo.value;
+
+  const lines = chatMessages.map((m) => {
+    if (m.type === "sep") return `-- ${m.label} --`;
+    const who = m.name || "Patient";
+    return `[${m.time}] ${who}: ${m.text}`;
+  });
+
+  const rangeLabel = from && to ? `${from}_to_${to}` : "full-history";
+  const blob = new Blob([lines.join("\n")], { type: "text/plain" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `chat-export_${rangeLabel}.txt`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+
+  exportChatOverlay.classList.remove("open");
+});
 
 /* ---------------- Clinical: Add Medication / Recommendation modals ---------------- */
 /* ---------------- Custom dropdowns (same pattern as Registration) ---------------- */
