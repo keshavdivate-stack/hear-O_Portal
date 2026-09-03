@@ -6272,4 +6272,229 @@ body.patient-discontinued #chatOpenBtn {
 
 .support-fab-empty { padding: 18px; text-align: center; font-size: 13px; color: var(--gray-text); margin: 0; }
 
+/* ==========================================================
+   TICKET DETAIL -- Handling / Patient Log / Recording / Chat
+   (clinic-scoped ports of backoffice1's ticket-detail.html sections;
+   class names here are independent of backoffice's bo-* classes so the two
+   portals' CSS never have to change in lockstep)
+   ========================================================== */
+.ticket-detail-actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+
+.ticket-detail-section-title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  color: var(--gray-text);
+  margin: 18px 0 14px;
+  padding-top: 18px;
+  border-top: 1px solid var(--gray-border);
+}
+.ticket-detail-card > .ticket-detail-section-title:first-of-type { margin-top: 0; }
+
+.ticket-handling-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-top: 14px;
+}
+@media (max-width: 1180px) {
+  .ticket-handling-row { grid-template-columns: repeat(2, 1fr); }
+}
+
+.ticket-assigned-org-note { font-size: 12px; color: var(--gray-text); margin-top: 2px; }
+.ticket-assigned-org-note[hidden] { display: none; }
+
+/* ---------------- Recording player (Voice Engine tickets) ---------------- */
+.ticket-mic-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: var(--red-light);
+  color: var(--red-text);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.4;
+  margin-bottom: 14px;
+}
+.ticket-mic-alert svg { flex-shrink: 0; margin-top: 1px; }
+.ticket-mic-alert b { font-weight: 800; }
+
+.ticket-audio-player {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 220px;
+}
+
+.ticket-audio-play {
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: none;
+  background: var(--bg);
+  color: #23272E;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.ticket-audio-play:hover { background: var(--blue-light); color: var(--blue-text); }
+.ticket-audio-play.playing { background: var(--blue); color: #fff; }
+
+.ticket-audio-time { flex-shrink: 0; font-size: 12.5px; color: var(--gray-text); white-space: nowrap; }
+
+.ticket-waveform { position: relative; flex: 1; min-width: 80px; height: 26px; }
+.ticket-waveform-bars { display: flex; align-items: center; gap: 2px; height: 100%; }
+.ticket-waveform-bars .bar { flex: 0 0 3px; width: 3px; min-height: 3px; border-radius: 2px; background: var(--gray-border); }
+.ticket-waveform-progress { position: absolute; left: 0; top: 0; height: 100%; width: 0%; overflow: hidden; transition: width 0.2s linear; }
+.ticket-waveform-progress .bar { background: var(--blue); }
+
+/* ---------------- Patient Log ---------------- */
+.patient-log-snapshot { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 18px; }
+
+.patient-log-snapshot-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1 1 200px;
+  min-width: 180px;
+  background: #F7F9FA;
+  border-radius: 14px;
+  padding: 14px 16px;
+}
+.patient-log-snapshot-group .ticket-detail-section-title { margin: 0; padding-top: 0; border-top: none; }
+
+.patient-log-chip-row { display: flex; flex-wrap: wrap; gap: 10px 20px; }
+.patient-log-chip { display: flex; flex-direction: column; gap: 2px; }
+.patient-log-chip .label { font-size: 10.5px; font-weight: 700; letter-spacing: 0.3px; text-transform: uppercase; color: var(--gray-text); }
+.patient-log-chip .value { font-size: 13px; font-weight: 700; color: #23272E; }
+
+.patient-log-history { display: flex; flex-direction: column; }
+.patient-log-history-title { display: flex; align-items: center; justify-content: space-between; border-top: none; padding-top: 0; margin-top: 0; }
+.patient-log-history-actions { display: flex; align-items: center; gap: 10px; }
+.patient-log-history-actions .custom-select { width: 190px; flex-shrink: 0; }
+.patient-log-history-title .custom-select-trigger,
+.patient-log-history-title .custom-select-option {
+  text-transform: none;
+  letter-spacing: normal;
+  font-weight: 400;
+}
+
+.patient-log-console {
+  min-height: 220px;
+  max-height: 360px;
+  overflow-y: auto;
+  background: #F4F5F7;
+  border: 1px solid var(--gray-border);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-size: 12px;
+  line-height: 1.7;
+}
+.patient-log-line { display: flex; gap: 10px; padding: 2px 0; white-space: pre-wrap; word-break: break-word; }
+.patient-log-line .ts { color: var(--gray-text); flex-shrink: 0; }
+.patient-log-line .msg { color: #23272E; }
+
+.patient-log-download-wrap { position: relative; }
+
+.patient-log-download-popover {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 320px;
+  background: #fff;
+  border: 1px solid var(--gray-border);
+  border-radius: 12px;
+  box-shadow: 0 12px 32px rgba(20, 30, 50, 0.18);
+  padding: 16px;
+  z-index: 300;
+}
+.patient-log-download-popover[hidden] { display: none; }
+.patient-log-download-popover-title { font-size: 13px; font-weight: 700; color: #23272E; margin: 0 0 10px; }
+.patient-log-download-popover-row { display: flex; align-items: center; gap: 8px; }
+.patient-log-download-popover-row .ticket-date-field { min-width: 0; flex: 1; padding: 9px 10px; gap: 6px; }
+.patient-log-download-popover-row .ticket-date-field-value { font-size: 12.5px; }
+.patient-log-download-popover-hint { font-size: 12px; color: var(--gray-text); margin: 8px 0 0; }
+.patient-log-download-popover-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 14px; }
+
+/* Custom date-field trigger button -- replaces native <input type="date">
+   so clicking opens .ticket-mini-calendar instead of the browser/OS picker. */
+.ticket-date-field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--gray-border);
+  border-radius: 8px;
+  background: #fff;
+  font-family: inherit;
+  cursor: pointer;
+  text-align: left;
+  color: #23272E;
+}
+.ticket-date-field:hover { border-color: #C9CFD6; }
+.ticket-date-field.active { border-color: var(--blue); }
+.ticket-date-field svg { flex-shrink: 0; color: var(--gray-text); }
+.ticket-date-field-value { flex: 1; min-width: 0; font-size: 13.5px; font-weight: 600; color: #23272E; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ticket-date-field.placeholder .ticket-date-field-value { color: var(--gray-text); }
+
+.ticket-mini-calendar {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  top: 62px;
+  background: #fff;
+  border: 1px solid var(--gray-border);
+  border-radius: 10px;
+  box-shadow: 0 14px 34px rgba(20, 30, 50, 0.18);
+  padding: 12px;
+  z-index: 10;
+}
+.ticket-mini-calendar[hidden] { display: none; }
+.ticket-mini-calendar-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.ticket-mini-calendar-month { font-size: 13px; font-weight: 700; color: #23272E; }
+.ticket-mini-calendar-nav { display: flex; gap: 2px; }
+.ticket-mini-calendar-nav button {
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: var(--gray-text);
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+}
+.ticket-mini-calendar-nav button:hover { background: var(--bg); color: #23272E; }
+.ticket-mini-calendar-weekdays,
+.ticket-mini-calendar-days { display: grid; grid-template-columns: repeat(7, 1fr); }
+.ticket-mini-calendar-weekdays { margin-bottom: 4px; }
+.ticket-mini-calendar-weekdays span { text-align: center; font-size: 10px; font-weight: 700; color: var(--gray-text); }
+.ticket-mini-calendar-day {
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 12px;
+  color: #23272E;
+  padding: 6px 0;
+  border-radius: 7px;
+  font-family: inherit;
+}
+.ticket-mini-calendar-day:hover { background: var(--bg); }
+.ticket-mini-calendar-day.muted { color: #C1C7CF; }
+.ticket-mini-calendar-day.in-range { background: var(--blue-light); border-radius: 0; }
+.ticket-mini-calendar-day.range-start { border-radius: 7px 0 0 7px; }
+.ticket-mini-calendar-day.range-end { border-radius: 0 7px 7px 0; }
+.ticket-mini-calendar-day.selected { background: var(--blue); color: #fff; font-weight: 700; }
+.ticket-mini-calendar-footer { display: flex; justify-content: space-between; margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--bg); }
+.ticket-mini-calendar-footer button { border: none; background: none; color: var(--blue-text); font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; }
+.ticket-mini-calendar-footer button:hover { text-decoration: underline; }
+
 

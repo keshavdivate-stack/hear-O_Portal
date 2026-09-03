@@ -55,6 +55,27 @@ const ticketLevels = [
    assignedTo values already used across ticketList below. */
 const SUPPORT_TEAM_MEMBERS = ["Emily Carter", "Daniel Roy", "Maya Cohen", "Tomer Levi", "Sarah Cline"];
 
+/* Who a ticket can be transferred to, grouped by the Level it's being routed
+   to -- mirrors backoffice's TIER_AGENTS (backoffice1/js/support-data.js), so
+   picking a Level on the Ticket Detail Handling form narrows Assigned To to
+   that Level's people, same as backoffice does. */
+const TIER_AGENTS = {
+  "Level 1": ["Emily Carter", "Daniel Roy"],
+  "Level 2": ["Maya Cohen", "Tomer Levi"],
+  "Level 3": ["Sarah Cline"],
+};
+
+/* Reverse lookup so any support team member's name can carry their level
+   wherever it's displayed (Ticket Detail's Assigned To select), matching
+   backoffice's AGENT_LEVEL/agentLabel. */
+const AGENT_LEVEL = {};
+Object.entries(TIER_AGENTS).forEach(([level, names]) => names.forEach((name) => { AGENT_LEVEL[name] = level; }));
+
+function agentLabel(name) {
+  const level = AGENT_LEVEL[name];
+  return name && level ? `${name} (${level})` : name || "";
+}
+
 function issueType(category, index) {
   return issueTypesByCategory[category][index % issueTypesByCategory[category].length];
 }

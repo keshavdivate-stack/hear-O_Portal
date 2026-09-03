@@ -167,6 +167,9 @@
             <h1 class="ticket-detail-title" id="ticketDetailTitle"></h1>
             <div id="ticketDetailPills" style="display:flex; gap:8px;"></div>
           </div>
+          <div class="ticket-detail-actions" id="ticketDetailActions" hidden>
+            <button type="submit" form="ticketDetailForm" class="btn-save" id="saveTicketDetailBtn" disabled>Save Changes</button>
+          </div>
         </div>
 
         <div id="ticketDetailBody"></div>
@@ -175,8 +178,48 @@
     </div>
   </div>
 
+  <!-- Chat with Patient (patient-sourced tickets only) -- lives outside
+       #ticketDetailBody (which gets rebuilt wholesale on every Save Changes /
+       Resolve) so the open/closed panel state and message thread survive a
+       re-render. Same chat-panel/chat-tab markup pattern as the clinic
+       portal's own patient-data.html. -->
+  <button class="chat-tab" id="chatOpenBtn" hidden><span class="dot-live"></span>Chat</button>
+
+  <aside class="chat-panel" id="chatPanel">
+    <div class="chat-panel-header">
+      Chat with Patient
+      <button class="chat-close" id="chatCloseBtn" aria-label="Close chat">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M6 6L18 18M18 6L6 18" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div class="chat-messages" id="chatMessages"></div>
+    <div class="chat-empty-state" id="chatEmptyState" hidden>
+      <p class="chat-empty-title">No messages yet</p>
+      <p class="chat-empty-sub">Start a conversation by sending a message below</p>
+    </div>
+    <div class="chat-input-row">
+      <div class="chat-input-wrap">
+        <input type="text" id="chatInputField" placeholder="Type a message..." />
+      </div>
+      <button class="chat-send" id="chatSendBtn" aria-label="Send">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12H19M19 12L13 6M19 12L13 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <div class="chat-plus-wrap">
+        <button type="button" class="chat-plus" id="chatPlusBtn" aria-label="Add attachment">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </button>
+        <div class="chat-plus-menu" id="chatPlusMenu">
+          <button type="button" class="chat-plus-menu-item" data-request="image">Request an image</button>
+          <button type="button" class="chat-plus-menu-item" data-request="video">Request a video</button>
+        </div>
+      </div>
+    </div>
+  </aside>
+
 <script src="js/topbar.js"></script>
 <script src="js/support-data.js"></script>
+<script src="js/support-tickets-common.js"></script>
+<script src="js/custom-select.js"></script>
 <script src="js/ticket-detail.js"></script>
 </body>
 </html>
