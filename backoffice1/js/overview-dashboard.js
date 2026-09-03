@@ -246,30 +246,14 @@ renderOvTrendFooter();
    three disconnected numbers. Org/patient counts and "started" times are
    read from the real per-org records rather than invented separately. */
 const ovCritIssues = [
-  { title: "Compliance drops", desc: "Active-patient compliance falling below threshold", severity: "Critical", started: "2 hrs ago", orgs: 1, patients: 3, color: "var(--red)", category: "Compliance", icon: `<path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/><path d="M12 2v3"/><path d="M12 19v3"/><path d="M4.2 4.2l2.1 2.1"/><path d="M17.7 17.7l2.1 2.1"/>` },
-  { title: "Voice engine errors", desc: "High error rate in voice processing", severity: "Critical", started: "20 min ago", orgs: 1, patients: 2, color: "var(--red)", category: "Voice Engine", icon: `<path d="M12 2a10 10 0 1 0 10 10"/><path d="M12 6v6l4 2"/>` },
-  { title: "Missing run: Billing Calc", desc: "The Billing Calc job did not run yesterday", severity: "High", started: "3 hrs ago", orgs: 2, patients: 3, color: "var(--orange)", category: "System Schedule Engine", icon: `<rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9H21"/><path d="M8 2v4"/><path d="M16 2v4"/>` },
-  { title: "Sensor data delays", desc: "Sensor data delayed or missing", severity: "Medium", started: "6 hrs ago", orgs: 3, patients: 3, color: "var(--yellow)", category: "Sensors", icon: `<circle cx="12" cy="12" r="9"/><path d="M12 8v4"/><path d="M12 16h.01"/>` },
-  { title: "Patients stuck in Registered", desc: "Patients have been stuck in Registered status longer than expected", severity: "Low", started: "1 day ago", orgs: 1, patients: 1, color: "var(--blue)", category: "Patient (Mobile/Web)", icon: `<circle cx="12" cy="12" r="9"/><path d="M12 7v5l4 2"/>` },
+  { title: "Compliance drops", desc: "Active-patient compliance falling below threshold", severity: "Critical", started: "2 hrs ago", orgs: 1, patients: 3, color: "var(--red)", category: "Compliance", incidentId: "INC-2026-0044", icon: `<path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/><path d="M12 2v3"/><path d="M12 19v3"/><path d="M4.2 4.2l2.1 2.1"/><path d="M17.7 17.7l2.1 2.1"/>` },
+  { title: "Voice engine errors", desc: "High error rate in voice processing", severity: "Critical", started: "20 min ago", orgs: 1, patients: 2, color: "var(--red)", category: "Voice Engine", incidentId: "INC-2026-0043", icon: `<path d="M12 2a10 10 0 1 0 10 10"/><path d="M12 6v6l4 2"/>` },
+  { title: "Missing run: Billing Calc", desc: "The Billing Calc job did not run yesterday", severity: "High", started: "3 hrs ago", orgs: 2, patients: 3, color: "var(--orange)", category: "System Schedule Engine", incidentId: "INC-2026-0046", icon: `<rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9H21"/><path d="M8 2v4"/><path d="M16 2v4"/>` },
+  { title: "Sensor data delays", desc: "Sensor data delayed or missing", severity: "Medium", started: "6 hrs ago", orgs: 3, patients: 3, color: "var(--yellow)", category: "Sensors", incidentId: "INC-2026-0041", icon: `<circle cx="12" cy="12" r="9"/><path d="M12 8v4"/><path d="M12 16h.01"/>` },
+  { title: "Patients stuck in Registered", desc: "Patients have been stuck in Registered status longer than expected", severity: "Low", started: "1 day ago", orgs: 1, patients: 1, color: "var(--blue)", category: "Patient (Mobile/Web)", incidentId: "INC-2026-0045", icon: `<circle cx="12" cy="12" r="9"/><path d="M12 7v5l4 2"/>` },
 ];
 
 const ovSeverityPillClass = { Critical: "critical", High: "high", Medium: "medium", Low: "low" };
-
-/* Route each issue to the organization currently most affected by that
-   category, so clicking an issue drops the user straight into the
-   relevant org instead of a generic default. */
-function topOrgForCategory(category) {
-  let bestId = null;
-  let bestCount = -1;
-  Object.entries(orgHealthData).forEach(([id, o]) => {
-    const cat = o.categories.find((c) => c.label === category);
-    if (cat && cat.count > bestCount) {
-      bestCount = cat.count;
-      bestId = id;
-    }
-  });
-  return bestId;
-}
 
 function renderOvCritIssues(orgId) {
   const listEl = document.getElementById("ovCritIssueList");
@@ -294,8 +278,11 @@ function renderOvCritIssues(orgId) {
 
   listEl.innerHTML = issues
     .map((i) => {
-      const targetOrgId = orgId === "all" ? topOrgForCategory(i.category) : orgId;
-      const href = `org-health-dashboard.html?issue=${encodeURIComponent(i.category)}${targetOrgId ? `&org=${targetOrgId}` : ""}`;
+      /* Clicking a Recent Incident row goes straight to that incident's own
+         detail page, not the org drill-down -- an incident is a system
+         event with its own timeline/impact/resolution, and the org context
+         it happened in is one click away from there if needed. */
+      const href = `incident-detail.html?id=${encodeURIComponent(i.incidentId)}`;
       return `
     <a class="bo-crit-issue-row" href="${href}">
       <span class="bo-crit-issue-icon" style="background:${i.color};">

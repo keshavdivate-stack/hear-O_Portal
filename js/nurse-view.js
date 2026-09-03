@@ -1081,6 +1081,14 @@ const questions = [
     text: "Have you noticed any swelling in your legs or ankles this week?",
     answers: weeklyAnswers({ 4: true, 11: false, 18: true, 25: true }),
   },
+  {
+    label: "Q3",
+    text: "Have you gained any weight this week?",
+    answers: weeklyAnswers({ 4: true, 11: false, 18: true, 25: true }),
+    /* Only "Yes" answers carry a gain amount -- shown as a hover tooltip on
+       the icon instead of a permanent extra field. */
+    weightGain: weeklyAnswers({ 4: "1.8 lbs", 18: "3.2 lbs", 25: "2.1 lbs" }),
+  },
 ];
 
 function renderQuestionnaire() {
@@ -1088,15 +1096,20 @@ function renderQuestionnaire() {
   document.getElementById("questList").innerHTML = questions
     .map((q, qi) => {
       const ans = sliceForRange(q.answers);
+      const gain = q.weightGain ? sliceForRange(q.weightGain) : null;
 
       const iconsHtml = days
         .map((d, i) => {
           const a = ans[i];
           const cls = a === true ? "quest-ans-yes" : a === false ? "quest-ans-no" : "quest-ans-none";
           const icon = a === true ? adhCheckIcon : a === false ? questXIcon : "";
+          const gainVal = gain ? gain[i] : null;
+          const tooltip = gainVal
+            ? `<span class="quest-weight-tooltip">Weight gained: ${gainVal}</span>`
+            : "";
           return `
         <div class="med-adh-day">
-          <span class="quest-ans-icon ${cls}">${icon}</span>
+          <span class="quest-ans-icon ${cls}">${icon}${tooltip}</span>
         </div>`;
         })
         .join("");

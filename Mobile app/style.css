@@ -1666,9 +1666,6 @@ input[type="password"]:focus {
 .list-status-badge {
   font-size: calc(13px * var(--font-scale, 1));
   font-weight: 600;
-  padding: 5px 12px;
-  border-radius: 12px;
-  background: #e4efe9;
   color: #2f9e73;
 }
 
@@ -2100,13 +2097,11 @@ input[type="password"]:focus {
 .med-hist-status-pill {
   font-size: calc(14px * var(--font-scale, 1));
   font-weight: 700;
-  padding: 6px 13px;
-  border-radius: 10px;
   flex-shrink: 0;
 }
 
-.med-hist-status-pill.taken { background: #e4efe9; color: #2f9e73; }
-.med-hist-status-pill.missed { background: #fdeeea; color: #e0562a; }
+.med-hist-status-pill.taken { color: #2f9e73; }
+.med-hist-status-pill.missed { color: #e0562a; }
 
 .fab-add-btn {
   position: absolute;

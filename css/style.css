@@ -665,16 +665,19 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  width: 30px;
+  height: 30px;
   background: none;
   border: none;
-  padding: 2px;
+  padding: 4px;
   cursor: pointer;
-  border-radius: 4px;
-  opacity: 0.35;
+  border-radius: 6px;
+  color: #B7BFC9;
 }
 
-.priority-flag-btn:hover { opacity: 0.7; background: #FBEAEA; }
-.priority-flag-btn.active { opacity: 1; }
+.priority-flag-btn:hover { background: #EEF1F5; color: #7E8993; }
+.priority-flag-btn.active { color: #F16C6C; }
+.priority-flag-btn.active:hover { background: #FBEAEA; color: #F16C6C; }
 
 .priority-ack-row { margin-top: 12px; }
 

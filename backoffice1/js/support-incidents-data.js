@@ -21,7 +21,7 @@ const INC_SOURCE_CATEGORY = {
   "System Health": "Platform / Infra",
   "Other": "Other",
 };
-const INC_CATEGORIES = ["System Schedule Engine", "Voice Engine", "Sensors", "Integrations", "Patient (Mobile/Web)", "Platform / Infra", "Localization", "Other"];
+const INC_CATEGORIES = ["System Schedule Engine", "Voice Engine", "Sensors", "Integrations", "Patient (Mobile/Web)", "Compliance", "Platform / Infra", "Localization", "Other"];
 
 /* Dedicated Support Team — distinct from SUPPORT_AGENTS (Ticket assignees) so
    the Incident Owner is never confused with who a Ticket is assigned to. */
@@ -168,6 +168,82 @@ const incidents = [
       fixDeployed: true,
       verificationCompleted: true,
     },
+  },
+  {
+    id: "INC-2026-0044",
+    title: "Active-patient compliance dropped below threshold",
+    source: "System Health",
+    category: "Compliance",
+    severity: "SEV-1",
+    status: "Active",
+    owner: "Jordan Lee",
+    detectedAt: "Aug 19, 2026 · 12:35 PM",
+    duration: "2h 00m",
+    orgs: orgsForCount(1, 5),
+    patients: patientsForOrgs(orgsForCount(1, 5), 3, 500).slice(0, 3),
+    scheduledRunsAffected: 0,
+    summary: "Active-patient compliance has fallen below the configured threshold for one organization, driven by a run of missed recordings.",
+    rootCause: "Not identified",
+    tasks: [
+      { id: 1, title: "Confirm affected patients' recording status", assignee: "Jordan Lee", status: "In Progress" },
+      { id: 2, title: "Notify care team of compliance drop", assignee: "Maya Chen", status: "Open" },
+    ],
+    timeline: [
+      { time: "12:35 PM", text: "Incident detected automatically" },
+      { time: "12:37 PM", text: "SEV-1 escalation triggered" },
+      { time: "12:44 PM", text: "Jordan Lee acknowledged incident" },
+    ],
+    resolution: null,
+  },
+  {
+    id: "INC-2026-0045",
+    title: "Patients stuck in Registered status",
+    source: "Patient Monitoring",
+    category: "Patient (Mobile/Web)",
+    severity: "SEV-4",
+    status: "Active",
+    owner: "Priya Nair",
+    detectedAt: "Aug 18, 2026 · 2:35 PM",
+    duration: "24h 10m",
+    orgs: orgsForCount(1, 9),
+    patients: patientsForOrgs(orgsForCount(1, 9), 1, 600).slice(0, 1),
+    scheduledRunsAffected: 0,
+    summary: "One or more patients have remained in Registered status longer than expected, suggesting onboarding did not complete.",
+    rootCause: "Not identified",
+    tasks: [
+      { id: 1, title: "Check onboarding completion for affected patients", assignee: "Priya Nair", status: "Open" },
+    ],
+    timeline: [
+      { time: "2:35 PM", text: "Incident detected automatically" },
+      { time: "2:40 PM", text: "SEV-4 escalation triggered" },
+    ],
+    resolution: null,
+  },
+  {
+    id: "INC-2026-0046",
+    title: "Billing Calc job did not run",
+    source: "System Scheduler",
+    category: "System Schedule Engine",
+    severity: "SEV-2",
+    status: "Active",
+    owner: "Sarah Collins",
+    detectedAt: "Aug 19, 2026 · 11:15 AM",
+    duration: "3h 00m",
+    orgs: orgsForCount(2, 2),
+    patients: patientsForOrgs(orgsForCount(2, 2), 2, 700).slice(0, 3),
+    scheduledRunsAffected: 2,
+    summary: "The Billing Calc scheduled job did not run yesterday for two organizations, delaying their billing reports.",
+    rootCause: "Not identified",
+    tasks: [
+      { id: 1, title: "Manually trigger the missed Billing Calc run", assignee: "Sarah Collins", status: "In Progress" },
+      { id: 2, title: "Confirm billing reports regenerate correctly", assignee: "Daniel Adams", status: "Open" },
+    ],
+    timeline: [
+      { time: "11:15 AM", text: "Incident detected automatically" },
+      { time: "11:18 AM", text: "SEV-2 escalation triggered" },
+      { time: "11:30 AM", text: "Sarah Collins acknowledged incident" },
+    ],
+    resolution: null,
   },
 ];
 
