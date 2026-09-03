@@ -24,6 +24,9 @@ if (!ticket) {
       <div class="ticket-detail-card">
         <h2>Ticket Info</h2>
         <div class="ticket-detail-grid">
+          <div class="ticket-detail-field"><label>Source</label><span>${ticket.type}</span></div>
+          <div class="ticket-detail-field"><label>Status</label><span class="ticket-pill ${stateCellClass(ticket.state)}">${ticket.state}</span></div>
+          <div class="ticket-detail-field"><label>Severity</label><span class="ticket-pill ${severityCellClass(ticket.severity)}">${ticket.severity}</span></div>
           <div class="ticket-detail-field"><label>Organization</label><span>${ticket.organization}</span></div>
           <div class="ticket-detail-field"><label>${ticket.type === "Patient" ? "Patient" : "Raised By"}</label><span>${
             ticket.type === "Patient"
@@ -31,6 +34,7 @@ if (!ticket) {
               : ticket.who
           }</span></div>
           <div class="ticket-detail-field"><label>Origin</label><span>${ticket.origin}</span></div>
+          <div class="ticket-detail-field"><label>Scope</label><span>${ticket.scope}</span></div>
           <div class="ticket-detail-field"><label>Assigned To</label><span>${ticket.assignedTo}</span></div>
           <div class="ticket-detail-field"><label>Created</label><span>${ticket.created}</span></div>
         </div>
