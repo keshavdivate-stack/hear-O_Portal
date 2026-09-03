@@ -268,7 +268,7 @@ function renderPatientList() {
         <td>${p.phone}</td>
         <td>${p.account}</td>
         <td>${p.enrolledDate || "—"}</td>
-        <td>${p.ehrSystem ? `<span class="ehr-connected-pill">${p.ehrSystem}</span>` : `<span class="ehr-not-connected">Manual User</span>`}</td>
+        <td>${p.ehrSystem ? `<span class="ehr-connected-pill">${p.ehrSystem}</span>` : "—"}</td>
         <td>${p.source === "EHR Imported" ? `<span class="source-outline-badge">EHR</span>` : `<span class="source-outline-badge">Manual</span>`}</td>
         <td>${statusCell(p)}</td>
         <td>${monitoringCell(p)}</td>

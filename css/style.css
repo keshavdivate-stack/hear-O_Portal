@@ -1267,8 +1267,6 @@ body {
   color: var(--blue-text);
 }
 
-.ehr-not-connected { font-size: 13px; color: #9AA5B1; }
-
 .source-outline-badge {
   display: inline-flex;
   align-items: center;
@@ -2430,15 +2428,21 @@ body {
 }
 
 .chat-export-btn {
-  background: none;
-  border: none;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.6);
+  border-radius: 999px;
   color: #fff;
   cursor: pointer;
   display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  font-size: 12.5px;
+  font-weight: 600;
   opacity: 0.9;
 }
 
-.chat-export-btn:hover { opacity: 1; }
+.chat-export-btn:hover { opacity: 1; background: rgba(255,255,255,0.12); border-color: #fff; }
 
 .chat-messages {
   flex: 1;
@@ -3741,13 +3745,9 @@ body {
 .th-checkbox, .td-checkbox { width: 40px; }
 .th-checkbox input, .td-checkbox input { width: 16px; height: 16px; cursor: pointer; accent-color: var(--blue-text); }
 
-.ehr-pill {
-  font-size: 12px;
-  font-weight: 700;
-  white-space: nowrap;
-}
-.ehr-pill-sent { color: var(--green-text); }
-.ehr-pill-notsent { color: #7E8993; }
+.ehr-pill { display: inline-flex; padding: 5px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; white-space: nowrap; }
+.ehr-pill-sent { background: #E7F7F0; color: var(--green-text); }
+.ehr-pill-notsent { background: #EEF0F3; color: #57626D; }
 
 /* -- Bulk actions bar (replaces Add User once one or more rows are checked) -- */
 .bulk-actions-bar {
