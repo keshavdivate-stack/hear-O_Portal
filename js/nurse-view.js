@@ -1235,11 +1235,11 @@ let history = [
   { category: "monitoring", color: "dot-teal", label: "Patient is Monitored", date: "12.01.2025" },
 
   // Medication
-  { category: "medication", color: "dot-purple", label: "Medication taken: Furosemide 40 mg", date: "01.09.2026", note: "Acknowledged at 08:15 AM" },
-  { category: "medication", color: "dot-purple", label: "Medication taken: Carvedilol 12.5 mg", date: "01.09.2026", note: "Acknowledged at 08:16 AM" },
+  { category: "medication", color: "dot-purple", label: "Medication acknowledged: Furosemide 40 mg", date: "01.09.2026", note: "Acknowledged at 08:15 AM" },
+  { category: "medication", color: "dot-purple", label: "Medication acknowledged: Carvedilol 12.5 mg", date: "01.09.2026", note: "Acknowledged at 08:16 AM" },
   { category: "medication", color: "dot-red", label: "Medication missed: Furosemide 40 mg", date: "01.08.2026", note: "No acknowledgement received by end of day" },
-  { category: "medication", color: "dot-purple", label: "Medication taken: Furosemide 40 mg", date: "01.07.2026", note: "Acknowledged at 08:02 AM" },
-  { category: "medication", color: "dot-purple", label: "Medication taken: Carvedilol 12.5 mg", date: "01.07.2026", note: "Acknowledged at 08:05 AM" },
+  { category: "medication", color: "dot-purple", label: "Medication acknowledged: Furosemide 40 mg", date: "01.07.2026", note: "Acknowledged at 08:02 AM" },
+  { category: "medication", color: "dot-purple", label: "Medication acknowledged: Carvedilol 12.5 mg", date: "01.07.2026", note: "Acknowledged at 08:05 AM" },
 
   // Other
   { category: "other", color: "dot-blue", label: "Care recommendation created: Increase Furosemide dose", date: "01.09.2026", note: "Dr. Sarah Mitchell: 2.1 kg weight gain over 3 days with rising respiration rate" },
