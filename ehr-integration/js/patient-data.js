@@ -1288,8 +1288,8 @@ const patientDocuments = [
   { id: 3, name: "Signed Consent Form", type: "Consent Form", date: "12/01/2025", source: "Manual entry" },
 ];
 
-function renderDocuments() {
-  document.getElementById("documentsTableBody").innerHTML = patientDocuments.length
+function renderPatientProfileDocuments() {
+  document.getElementById("patientProfileDocumentsTableBody").innerHTML = patientDocuments.length
     ? patientDocuments
         .map(
           (d) => `
@@ -1307,9 +1307,9 @@ function renderDocuments() {
         .join("")
     : `<tr><td colspan="5" class="rec-empty">No documents on file.</td></tr>`;
 }
-renderDocuments();
+renderPatientProfileDocuments();
 
-document.getElementById("documentsTableBody").addEventListener("click", (e) => {
+document.getElementById("patientProfileDocumentsTableBody").addEventListener("click", (e) => {
   const btn = e.target.closest("[data-doc-act]");
   if (!btn) return;
   const doc = patientDocuments.find((d) => d.id === Number(btn.dataset.docId));
