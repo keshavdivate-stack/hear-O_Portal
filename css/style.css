@@ -590,16 +590,17 @@ button, input, select, textarea, optgroup {
 /* -- Priority table column layout --
    .patient-table's border-spacing has no horizontal component (only a
    vertical gap between rows), which was invisible with the original 2-column
-   Name/Since layout but packs Care Team/Handling/actions edge-to-edge with
-   no breathing room now that there are 5. Give each column a fixed width and
-   right padding as its gap to the next column instead. */
+   Name/Since layout but packs Name/Since/Care Team edge-to-edge with no
+   breathing room now that there are 3. Give each column a fixed width and
+   right padding as its gap to the next column instead. Care Team is last and
+   widest (rather than the narrow middle column it used to be, back when an
+   Actions column followed it) so "Acknowledged by <name>" has room to sit on
+   its own line instead of overflowing the card's right edge. */
 .priority-table { table-layout: fixed; }
 
 .priority-table th:nth-child(1), .priority-table td:nth-child(1) { width: auto; }
 .priority-table th:nth-child(2), .priority-table td:nth-child(2) { width: 150px; }
-.priority-table th:nth-child(3), .priority-table td:nth-child(3) { width: 90px; }
-.priority-table th:nth-child(4), .priority-table td:nth-child(4) { width: 190px; }
-.priority-table th:nth-child(5), .priority-table td:nth-child(5) { width: 70px; }
+.priority-table th:nth-child(3), .priority-table td:nth-child(3) { width: 220px; }
 
 .priority-table th, .priority-table td { padding-right: 14px; }
 .priority-table th:last-child, .priority-table td:last-child { padding-right: 0; }
@@ -631,7 +632,7 @@ button, input, select, textarea, optgroup {
 
 .care-team-avatars { display: flex; }
 
-.care-team-ack-names { font-size: 11.5px; color: var(--blue-text); font-weight: 600; white-space: nowrap; }
+.care-team-ack-names { font-size: 11.5px; color: var(--blue-text); font-weight: 600; }
 
 .care-avatar-sm {
   width: 26px;
@@ -661,42 +662,6 @@ button, input, select, textarea, optgroup {
 }
 
 .handling-meta { font-size: 12px; color: var(--gray-text); margin-top: 4px; }
-
-/* Kept as a normal table-cell (not flex -- see the Name-cell fix above for
-   why) so this cell's height and rounded right corner stay in sync with the
-   rest of its row; text-align + inline-flex on the small icons inside gets
-   the same right-aligned, evenly-spaced look without flexing the <td>. */
-.priority-row-actions {
-  text-align: right;
-  white-space: nowrap;
-}
-
-.priority-row-actions .priority-flag-btn {
-  margin-right: 14px;
-  vertical-align: middle;
-}
-
-.priority-row-actions .action-icon.kebab {
-  vertical-align: middle;
-}
-
-.priority-flag-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 30px;
-  height: 30px;
-  background: none;
-  border: none;
-  padding: 4px;
-  cursor: pointer;
-  border-radius: 6px;
-  color: #B7BFC9;
-}
-
-.priority-flag-btn:hover { background: #EEF1F5; color: #7E8993; }
-.priority-flag-btn.active { color: #F16C6C; }
-.priority-flag-btn.active:hover { background: #FBEAEA; color: #F16C6C; }
 
 .priority-ack-row { margin-top: 12px; }
 
