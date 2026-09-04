@@ -1684,13 +1684,29 @@ function weeklyAnswers(answersByDayIndex) {
 const questions = [
   {
     label: "Q1",
-    text: "Have you experienced any shortness of breath this week?",
+    text: "Do you feel more short of breath than usual?",
     answers: weeklyAnswers({ 4: true, 11: true, 18: false, 25: true }),
   },
   {
     label: "Q2",
-    text: "Have you noticed any swelling in your legs or ankles this week?",
+    text: "Have you noticed any swelling in your legs or ankles?",
     answers: weeklyAnswers({ 4: true, 11: false, 18: true, 25: true }),
+  },
+  {
+    label: "Q3",
+    text: "Do you use more pillows to sleep than usual?",
+    answers: weeklyAnswers({ 4: false, 11: true, 18: false, 25: true }),
+    /* Only "Yes" answers carry a value -- shown as a hover tooltip on the
+       icon instead of a permanent extra field. */
+    valueLabel: "Pillows used",
+    values: weeklyAnswers({ 11: "3 pillows", 25: "2 pillows" }),
+  },
+  {
+    label: "Q4",
+    text: "Did you gain more than 2 kg / 4.5 lbs in the past few days?",
+    answers: weeklyAnswers({ 4: true, 11: false, 18: true, 25: true }),
+    valueLabel: "Weight gained",
+    values: weeklyAnswers({ 4: "1.8 lbs", 18: "3.2 lbs", 25: "2.1 lbs" }),
   },
 ];
 
@@ -1710,14 +1726,19 @@ function renderQuestionnaire() {
           <div class="med-adh-scroll" id="questAdh${qi}">
             ${(() => {
               const ans = sliceForRange(q.answers);
+              const vals = q.values ? sliceForRange(q.values) : null;
               return days
                 .map((d, i) => {
                   const a = ans[i];
                   const cls = a === true ? "quest-ans-yes" : a === false ? "quest-ans-no" : "quest-ans-none";
                   const icon = a === true ? adhCheckIcon : a === false ? questXIcon : "";
+                  const val = vals ? vals[i] : null;
+                  const tooltip = val
+                    ? `<span class="quest-weight-tooltip">${q.valueLabel}: ${val}</span>`
+                    : "";
                   return `
                 <div class="med-adh-day">
-                  <span class="quest-ans-icon ${cls}">${icon}</span>
+                  <span class="quest-ans-icon ${cls}">${icon}${tooltip}</span>
                   <span class="med-adh-day-label">${d.label}</span>
                 </div>`;
                 })

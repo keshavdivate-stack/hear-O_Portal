@@ -3235,7 +3235,8 @@ body {
 }
 
 .quest-dot-yes { background: var(--blue); }
-.quest-dot-no { background: #F2994A; }
+.quest-dot-no { background: var(--blue); display: inline-flex; align-items: center; justify-content: center; }
+.quest-dot-no svg { width: 8px; height: 8px; }
 
 .quest-legend-note { color: var(--gray-text); }
 
@@ -3247,11 +3248,34 @@ body {
 
 /* Answer icons reuse .med-adh-day/.med-adh-scroll's per-column layout so the
    week/month axis stays aligned with the other Clinical/Health Data charts;
-   an unanswered day (question wasn't due that week) renders no dot at all. */
-.quest-ans-icon { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+   an unanswered day (question wasn't due that week) renders no dot at all.
+   Yes and No share the same blue fill -- only the check/cross icon tells
+   them apart -- so a weight-gain tooltip on a "Yes" answer reads as one
+   consistent color family instead of switching to an alert color. */
+.quest-ans-icon { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; position: relative; }
 .quest-ans-yes { background: var(--blue); color: #fff; }
-.quest-ans-no { background: #F2994A; color: #fff; }
+.quest-ans-no { background: var(--blue); color: #fff; }
 .quest-ans-none { background: transparent; }
+
+.quest-weight-tooltip {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: #fff;
+  border: 1px solid var(--gray-border);
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(20,30,50,0.14);
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #23272E;
+  white-space: nowrap;
+  display: none;
+  z-index: 5;
+}
+
+.quest-ans-icon:hover .quest-weight-tooltip { display: block; }
 
 /* -- Care Plan & Goals -- */
 .goals-list { display: flex; flex-direction: column; gap: 16px; }
