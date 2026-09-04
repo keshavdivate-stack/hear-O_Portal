@@ -6542,7 +6542,7 @@ body.patient-discontinued #chatOpenBtn {
 
 .b01-right-stack { display: flex; flex-direction: column; gap: 16px; }
 .b01-card-title { margin: 0; font-size: 15px; }
-.b01-donut-big .donut-num { font-size: 30px; }
+.b01-donut-big .donut-num { font-size: 24px; }
 .b01-donut-compact { width: 160px; height: 160px; }
 
 /* Card header: icon badge + title (+ optional muted count) + a right-aligned

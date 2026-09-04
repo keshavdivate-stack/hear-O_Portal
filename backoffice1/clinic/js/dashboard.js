@@ -1,6 +1,5 @@
 /* ---------------- B01 Clinic Portal: Dashboard ---------------- */
 document.getElementById("clinicOrgLabel").textContent = new URLSearchParams(location.search).get("org") || "B01";
-document.getElementById("clinicHeaderDate").textContent = clinicFmtHeaderDate(new Date());
 
 /* "Monitored" = patients actively being tracked through the program:
    Priority, Active, Baseline and On Hold (excludes Registered, which hasn't

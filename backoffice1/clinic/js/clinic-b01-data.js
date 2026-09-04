@@ -143,8 +143,6 @@ const CLINIC_PATIENTS = (() => {
   return rows;
 })();
 
-const CLINIC_MONTH_ABBR = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-
 function clinicFmtDMY2(date) {
   if (!date) return "&ndash;";
   const d = String(date.getDate()).padStart(2, "0");
@@ -158,10 +156,6 @@ function clinicFmtDMY4(date) {
   const d = String(date.getDate()).padStart(2, "0");
   const m = String(date.getMonth() + 1).padStart(2, "0");
   return `${d}/${m}/${date.getFullYear()}`;
-}
-
-function clinicFmtHeaderDate(date) {
-  return `${date.getDate()} ${CLINIC_MONTH_ABBR[date.getMonth()]}, ${date.getFullYear()}`;
 }
 
 function clinicPatientsByStatus(status) {
