@@ -137,6 +137,13 @@ orgRowMenu.addEventListener("click", (e) => {
   orgRowMenu.classList.remove("open");
   if (item.dataset.action === "ehr") openEhrConnDrawer(activeOrgRowId);
   if (item.dataset.action === "view") window.location.href = `org-profile.html?id=${activeOrgRowId}`;
+  if (item.dataset.action === "delete") {
+    const org = orgs.find((o) => o.id === activeOrgRowId);
+    if (!org) return;
+    if (!confirm(`Delete organization "${org.name}"? This cannot be undone.`)) return;
+    orgs.splice(orgs.indexOf(org), 1);
+    renderOrgs();
+  }
 });
 
 /* ---------------- Custom selects (used inside the Add Organization drawer) ---------------- */
