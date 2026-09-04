@@ -255,6 +255,14 @@ const ovCritIssues = [
 
 const ovSeverityPillClass = { Critical: "critical", High: "high", Medium: "medium", Low: "low" };
 
+/* Shows the incident's own title (same field the Incidents list and
+   incident-detail.html use) instead of a separately-worded blurb, so the
+   row reads as the exact same incident you land on after clicking it. */
+function ovIncidentTitle(i) {
+  const incident = incidents.find((x) => x.id === i.incidentId);
+  return incident ? incident.title : i.title;
+}
+
 function renderOvCritIssues(orgId) {
   const listEl = document.getElementById("ovCritIssueList");
 
@@ -289,7 +297,7 @@ function renderOvCritIssues(orgId) {
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${i.icon}</svg>
       </span>
       <span class="bo-crit-issue-body">
-        <span class="bo-crit-issue-title">${i.title}</span>
+        <span class="bo-crit-issue-title">${ovIncidentTitle(i)}</span>
         <span class="bo-crit-issue-desc">${i.desc}</span>
         <span class="bo-crit-issue-meta">Started ${i.started} &middot; ${i.orgs} Organization${i.orgs === 1 ? "" : "s"} &middot; ${i.patients} Patients</span>
       </span>
