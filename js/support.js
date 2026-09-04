@@ -417,7 +417,7 @@ createTicketForm.addEventListener("submit", (e) => {
     description: createTicketForm.description.value.trim(),
   };
   newTicket.id = ticketList.length;
-  newTicket.history = [{ date: created, text: "Ticket created (User Created)." }];
+  newTicket.history = [{ date: created, title: "Ticket Created" }];
   ticketList.push(newTicket);
 
   renderRaisedTicketList();

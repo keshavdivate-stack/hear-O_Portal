@@ -15,7 +15,7 @@
    uses, in case a ticket is ever added without history attached. */
 function ensureTicketHistory(ticket) {
   if (!ticket.history) {
-    ticket.history = [{ date: ticket.created, title: "Ticket Created", detail: `Ticket raised via ${ticket.origin}.` }];
+    ticket.history = [{ date: ticket.created, title: "Ticket Created" }];
   }
   return ticket.history;
 }

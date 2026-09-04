@@ -156,7 +156,7 @@ function ensureTicketHistory(ticket) {
     const previousAssignee = SUPPORT_AGENTS.find((name) => name !== ticket.assignedTo) || ticket.assignedTo;
     const note = TICKET_HANDOFF_NOTES[ticket.id % TICKET_HANDOFF_NOTES.length];
     ticket.history = [
-      { title: "Ticket Created", detail: `Ticket raised via ${ticket.origin}.`, date: ticket.createdDate },
+      { title: "Ticket Created", date: ticket.createdDate },
       { title: `Ticket Transferred to ${ticket.assignedTo}`, detail: `Reassigned from ${previousAssignee} to ${ticket.assignedTo}. Note: ${note}`, date: ticket.createdDate },
     ];
   }

@@ -241,7 +241,7 @@ function renderTicketHistory() {
       (h) => `
       <div class="bo-ticket-history-item">
         <span class="bo-history-title">${h.title}</span>
-        <div class="bo-history-detail">${h.detail}</div>
+        ${h.detail ? `<div class="bo-history-detail">${h.detail}</div>` : ""}
         <span class="bo-history-date">${h.date}</span>
       </div>`
     )

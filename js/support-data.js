@@ -121,7 +121,7 @@ const TICKET_HANDOFF_NOTES = [
 ticketList.forEach((t, i) => {
   const previousAssignee = SUPPORT_TEAM_MEMBERS.find((name) => name !== t.assignedTo) || t.assignedTo;
   t.history = [
-    { date: t.created, title: "Ticket Created", detail: `Ticket raised via ${t.origin}.` },
+    { date: t.created, title: "Ticket Created" },
     { date: t.created, title: `Ticket Transferred to ${t.assignedTo}`, detail: `Reassigned from ${previousAssignee} to ${t.assignedTo}. Note: ${TICKET_HANDOFF_NOTES[i % TICKET_HANDOFF_NOTES.length]}` },
   ];
 });

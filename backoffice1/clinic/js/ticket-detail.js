@@ -630,7 +630,7 @@ if (!ticket) {
               (h) => `
               <div class="ticket-history-item">
                 <div class="ticket-history-title">${h.title}</div>
-                <div class="ticket-history-detail">${h.detail}</div>
+                ${h.detail ? `<div class="ticket-history-detail">${h.detail}</div>` : ""}
                 <div class="ticket-history-date">${h.date}</div>
               </div>`
             )
