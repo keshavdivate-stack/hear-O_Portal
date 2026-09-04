@@ -6543,7 +6543,7 @@ body.patient-discontinued #chatOpenBtn {
 .b01-right-stack { display: flex; flex-direction: column; gap: 16px; }
 .b01-card-title { margin: 0; font-size: 15px; }
 .b01-donut-big .donut-num { font-size: 24px; }
-.b01-donut-compact { width: 160px; height: 160px; }
+.b01-donut-compact { width: 170px; height: 170px; }
 
 /* Card header: icon badge + title (+ optional muted count) + a right-aligned
    "View details" link -- shared by all three B01 dashboard cards so their
@@ -6578,11 +6578,11 @@ body.patient-discontinued #chatOpenBtn {
 }
 .b01-view-link:hover { text-decoration: underline; }
 
-/* Monitored Patients: donut beside a column of clickable, tinted status rows. */
-.b01-monitored-body { display: flex; align-items: center; gap: 22px; }
-.b01-monitored-body .donut-wrap { margin-bottom: 0; flex-shrink: 0; }
+/* Monitored Patients: donut on top, clickable tinted status rows below. */
+.b01-monitored-body { display: flex; flex-direction: column; align-items: center; gap: 22px; }
+.b01-monitored-body .donut-wrap { margin-bottom: 0; }
 
-.b01-stat-pills { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; flex: 1; min-width: 0; }
+.b01-stat-pills { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; width: 100%; }
 .b01-stat-pill {
   display: flex;
   align-items: center;
