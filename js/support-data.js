@@ -109,13 +109,15 @@ ticketList.forEach((t, i) => (t.id = i));
 /* Every ticket is seeded with its creation entry plus one prior handoff --
    a reassignment to who's currently on it, carrying the note that handoff
    was made with -- so History always shows the "transferred + note" pattern
-   the ticket detail's Handling form produces, not just a bare creation line. */
+   the ticket detail's Handling form produces, not just a bare creation line.
+   Notes read like a real handoff: what the previous owner already tried,
+   and why they're passing it on instead of just describing the issue. */
 const TICKET_HANDOFF_NOTES = [
-  "Escalating -- please review the linked device/session logs before reaching out to the patient.",
-  "Reassigning to keep this within the same care team; flagged as time-sensitive.",
-  "Handing off after initial triage -- root cause still needs confirmation.",
-  "Transferring per on-call rotation; full context is in the ticket description.",
-  "Escalated per policy given the severity of this issue.",
+  "Tried re-syncing the device and clearing the local cache, but the issue is still happening -- passing this along for a deeper look.",
+  "Walked the patient through a reinstall and re-authentication, but they're still seeing the same failure. Escalating for further troubleshooting.",
+  "Checked the logs and retried the failed job manually -- it still didn't go through, so this needs another set of eyes.",
+  "Reached out to the patient and confirmed the steps were followed correctly, but the problem persists. Handing off for further investigation.",
+  "Attempted the standard fix for this issue but it didn't resolve it -- transferring so it can be looked at with fresh eyes.",
 ];
 
 ticketList.forEach((t, i) => {

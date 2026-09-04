@@ -142,13 +142,15 @@ function initBoSelects() {
    ticket is opened: a "Created" entry plus one prior handoff (a reassignment
    to whoever currently owns it, carrying the note that handoff was made
    with), so History always shows the "transferred + note" pattern instead
-   of just a bare creation line. */
+   of just a bare creation line. Notes read like a real handoff: what the
+   previous owner already tried, and why they're passing it on instead of
+   just describing the issue. */
 const TICKET_HANDOFF_NOTES = [
-  "Escalating -- please review the linked device/session logs before reaching out to the patient.",
-  "Reassigning to keep this within the same tier's team; flagged as time-sensitive.",
-  "Handing off after initial triage -- root cause still needs confirmation.",
-  "Transferring per on-call rotation; full context is in the ticket description.",
-  "Escalated per policy given the severity of this issue.",
+  "Tried re-syncing the device and clearing the local cache, but the issue is still happening -- passing this along for a deeper look.",
+  "Walked the patient through a reinstall and re-authentication, but they're still seeing the same failure. Escalating for further troubleshooting.",
+  "Checked the logs and retried the failed job manually -- it still didn't go through, so this needs another set of eyes.",
+  "Reached out to the patient and confirmed the steps were followed correctly, but the problem persists. Handing off for further investigation.",
+  "Attempted the standard fix for this issue but it didn't resolve it -- transferring so it can be looked at with fresh eyes.",
 ];
 
 function ensureTicketHistory(ticket) {
