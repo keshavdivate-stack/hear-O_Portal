@@ -1494,6 +1494,46 @@
     </div>
   </div>
 
+  <!-- Document Viewer modal -->
+  <div class="modal-overlay" id="docViewerOverlay">
+    <div class="modal modal-wide">
+      <div class="drawer-header">
+        <h2 id="docViewerTitle">&nbsp;</h2>
+        <button type="button" class="modal-close-x" id="closeDocViewer" aria-label="Close">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6L18 18M6 18L18 6"/></svg>
+        </button>
+      </div>
+
+      <div class="doc-viewer-preview">
+        <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/></svg>
+        <div class="doc-viewer-preview-lines">
+          <span></span><span></span><span></span><span class="short"></span>
+        </div>
+        <p class="doc-viewer-preview-note">Preview not available in this demo &mdash; use Download to save a copy.</p>
+      </div>
+
+      <div class="drawer-section rec-info-grid">
+        <div>
+          <div class="drawer-label">Type</div>
+          <div class="rec-info-value" id="docViewerType"></div>
+        </div>
+        <div>
+          <div class="drawer-label">Date</div>
+          <div class="rec-info-value" id="docViewerDate"></div>
+        </div>
+        <div>
+          <div class="drawer-label">Source</div>
+          <div class="rec-info-value" id="docViewerSource"></div>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" id="closeDocViewerBtn">Close</button>
+        <button type="button" class="btn-save enabled" id="docViewerDownloadBtn">Download</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Edit Care Recommendation modal -->
   <div class="modal-overlay" id="editRecOverlay">
     <div class="modal modal-wide">

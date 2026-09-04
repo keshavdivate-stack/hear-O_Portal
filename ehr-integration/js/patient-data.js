@@ -1309,13 +1309,65 @@ function renderPatientProfileDocuments() {
 }
 renderPatientProfileDocuments();
 
+/* ---------------- Document Viewer / Download ----------------
+   These are demo records with no real file behind them, so "View" opens a
+   placeholder preview (same drawer-style modal pattern as the Care
+   Recommendation detail modal) instead of trying to render a document that
+   doesn't exist, and "Download" generates a plain-text stand-in file client
+   side rather than silently doing nothing. */
+const docViewerOverlay = document.getElementById("docViewerOverlay");
+let activeDocId = null;
+
+function downloadPatientDocument(doc) {
+  const text = [
+    doc.name,
+    `Type: ${doc.type}`,
+    `Date: ${doc.date}`,
+    `Source: ${doc.source}`,
+    "",
+    "This is a placeholder file generated for demo purposes -- no real document content is attached to this record.",
+  ].join("\n");
+  const blob = new Blob([text], { type: "text/plain" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `${doc.name}.txt`;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+}
+
+function openDocViewer(doc) {
+  activeDocId = doc.id;
+  document.getElementById("docViewerTitle").textContent = doc.name;
+  document.getElementById("docViewerType").textContent = doc.type;
+  document.getElementById("docViewerDate").textContent = doc.date;
+  document.getElementById("docViewerSource").textContent = doc.source;
+  docViewerOverlay.classList.add("open");
+}
+
+function closeDocViewer() {
+  docViewerOverlay.classList.remove("open");
+  activeDocId = null;
+}
+
+document.getElementById("closeDocViewer").addEventListener("click", closeDocViewer);
+document.getElementById("closeDocViewerBtn").addEventListener("click", closeDocViewer);
+docViewerOverlay.addEventListener("click", (e) => { if (e.target === docViewerOverlay) closeDocViewer(); });
+
+document.getElementById("docViewerDownloadBtn").addEventListener("click", () => {
+  const doc = patientDocuments.find((d) => d.id === activeDocId);
+  if (doc) downloadPatientDocument(doc);
+});
+
 document.getElementById("patientProfileDocumentsTableBody").addEventListener("click", (e) => {
   const btn = e.target.closest("[data-doc-act]");
   if (!btn) return;
   const doc = patientDocuments.find((d) => d.id === Number(btn.dataset.docId));
   if (!doc) return;
-  if (btn.dataset.docAct === "view") alert(`Viewing "${doc.name}"`);
-  if (btn.dataset.docAct === "download") alert(`Downloading "${doc.name}"`);
+  if (btn.dataset.docAct === "view") openDocViewer(doc);
+  if (btn.dataset.docAct === "download") downloadPatientDocument(doc);
 });
 
 /* ---------------- Clinical: Medications ---------------- */
