@@ -1759,6 +1759,31 @@ function renderQuestionnaire() {
       row.scrollBy({ left: dir * 320, behavior: "smooth" });
     });
   });
+
+  wireQuestTooltips();
+}
+
+/* .med-adh-scroll's overflow-x: auto clips a plain CSS :hover position:absolute
+   tooltip (the same overflow-x forces overflow-y to auto too, hiding anything
+   that pops up past the row's own box) -- position the tooltip fixed instead
+   and place it here in JS, using the hovered icon's real screen position, so
+   it renders above everything instead of getting clipped by the scroll row. */
+function wireQuestTooltips() {
+  document.querySelectorAll("#questList .quest-ans-icon").forEach((icon) => {
+    const tip = icon.querySelector(".quest-weight-tooltip");
+    if (!tip) return;
+    icon.addEventListener("mouseenter", () => {
+      tip.classList.add("show");
+      const iconRect = icon.getBoundingClientRect();
+      const tipRect = tip.getBoundingClientRect();
+      const left = Math.max(4, Math.min(iconRect.left + iconRect.width / 2 - tipRect.width / 2, window.innerWidth - tipRect.width - 4));
+      tip.style.left = `${left}px`;
+      tip.style.top = `${iconRect.top - tipRect.height - 8}px`;
+    });
+    icon.addEventListener("mouseleave", () => {
+      tip.classList.remove("show");
+    });
+  });
 }
 
 renderQuestionnaire();

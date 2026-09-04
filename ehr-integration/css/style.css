@@ -3263,11 +3263,13 @@ body {
 .quest-ans-no { background: var(--blue); color: #fff; }
 .quest-ans-none { background: transparent; }
 
+/* .med-adh-scroll (the horizontal-scrolling row these icons sit in) has
+   overflow-x: auto -- per the CSS spec that forces overflow-y to auto too,
+   which silently clips a plain position:absolute tooltip popping up above
+   the icon. Positioned fixed + placed in JS (see wireQuestTooltips in
+   js/patient-data.js) so it escapes that clipping instead. */
 .quest-weight-tooltip {
-  position: absolute;
-  bottom: calc(100% + 8px);
-  left: 50%;
-  transform: translateX(-50%);
+  position: fixed;
   background: #fff;
   border: 1px solid var(--gray-border);
   border-radius: 10px;
@@ -3278,10 +3280,10 @@ body {
   color: #23272E;
   white-space: nowrap;
   display: none;
-  z-index: 5;
+  z-index: 500;
 }
 
-.quest-ans-icon:hover .quest-weight-tooltip { display: block; }
+.quest-weight-tooltip.show { display: block; }
 
 /* -- Care Plan & Goals -- */
 .goals-list { display: flex; flex-direction: column; gap: 16px; }
