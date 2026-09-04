@@ -237,7 +237,14 @@ function renderTicketHistory() {
   document.getElementById("ticketDetailHistory").innerHTML = entries
     .slice()
     .reverse()
-    .map((h) => `<div class="bo-ticket-history-item"><span class="text">${h.text}</span><span class="meta">${h.date}</span></div>`)
+    .map(
+      (h) => `
+      <div class="bo-ticket-history-item">
+        <span class="bo-history-title">${h.title}</span>
+        <div class="bo-history-detail">${h.detail}</div>
+        <span class="bo-history-date">${h.date}</span>
+      </div>`
+    )
     .join("");
 }
 
@@ -632,21 +639,40 @@ ticketDetailForm.addEventListener("submit", (e) => {
      status) is folded into a single history entry instead of one line per
      field -- so a ticket transfer and the note explaining it always land
      together, and whoever picks the ticket up next sees the note attached
-     directly to the transfer instead of buried in a separate line. */
+     directly to the transfer instead of buried in a separate line. The
+     entry's title headlines whichever change is most significant
+     (reassignment > level > status > severity); everything that changed,
+     plus the free-text note, goes in the boxed detail underneath. */
   const isReassignment = nextAssignee !== (currentTicket.assignedTo || "");
   const changeParts = [];
-  if (isReassignment) changeParts.push(`Reassigned from ${currentTicket.assignedTo || "Unassigned"} to ${nextAssignee}`);
-  if (nextTier !== currentTicket.tier) changeParts.push(`Level changed from ${currentTicket.tier} to ${nextTier}`);
-  if (nextSeverity !== currentTicket.severity) changeParts.push(`Severity changed from ${currentTicket.severity} to ${nextSeverity}`);
-  if (nextStatus !== currentTicket.status) changeParts.push(`Status changed from ${currentTicket.status} to ${nextStatus}`);
+  let title = "";
+  if (isReassignment) {
+    changeParts.push(`Reassigned from ${currentTicket.assignedTo || "Unassigned"} to ${nextAssignee}`);
+    title = `Ticket Transferred to ${nextAssignee}`;
+  }
+  if (nextTier !== currentTicket.tier) {
+    changeParts.push(`Level changed from ${currentTicket.tier} to ${nextTier}`);
+    title = title || `Ticket Escalated to ${nextTier}`;
+  }
+  if (nextStatus !== currentTicket.status) {
+    changeParts.push(`Status changed from ${currentTicket.status} to ${nextStatus}`);
+    title = title || `Status Changed to ${nextStatus}`;
+  }
+  if (nextSeverity !== currentTicket.severity) {
+    changeParts.push(`Severity changed from ${currentTicket.severity} to ${nextSeverity}`);
+    title = title || `Severity Changed to ${nextSeverity}`;
+  }
 
   const noteChanged = rootCause !== (currentTicket.rootCause || "");
-  if (!changeParts.length && noteChanged) changeParts.push("Note updated");
+  if (!changeParts.length && noteChanged) {
+    changeParts.push("Note updated");
+    title = "Note Updated";
+  }
 
   if (changeParts.length) {
-    let text = changeParts.join("; ");
-    if (rootCause) text += ` — Note: ${rootCause}`;
-    history.push({ text, date: changeDate });
+    let detail = `${changeParts.join("; ")}.`;
+    if (rootCause) detail += ` Note: ${rootCause}`;
+    history.push({ title, detail, date: changeDate });
   }
 
   currentTicket.rootCause = rootCause;

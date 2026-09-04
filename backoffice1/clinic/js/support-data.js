@@ -96,9 +96,26 @@ const ticketList = [
 ];
 
 ticketList.forEach((t, i) => (t.id = i));
-ticketList.forEach((t) => (t.history = [
-  { date: t.created, text: `Ticket created (${t.origin}).` },
-]));
+
+/* Every ticket is seeded with its creation entry plus one prior handoff --
+   a reassignment to who's currently on it, carrying the note that handoff
+   was made with -- so History always shows the "transferred + note" pattern
+   the ticket detail's Handling form produces, not just a bare creation line. */
+const TICKET_HANDOFF_NOTES = [
+  "Escalating -- please review the linked device/session logs before reaching out to the patient.",
+  "Reassigning to keep this within the same care team; flagged as time-sensitive.",
+  "Handing off after initial triage -- root cause still needs confirmation.",
+  "Transferring per on-call rotation; full context is in the ticket description.",
+  "Escalated per policy given the severity of this issue.",
+];
+
+ticketList.forEach((t, i) => {
+  const previousAssignee = SUPPORT_TEAM_MEMBERS.find((name) => name !== t.assignedTo) || t.assignedTo;
+  t.history = [
+    { date: t.created, title: "Ticket Created", detail: `Ticket raised via ${t.origin}.` },
+    { date: t.created, title: `Ticket Transferred to ${t.assignedTo}`, detail: `Reassigned from ${previousAssignee} to ${t.assignedTo}. Note: ${TICKET_HANDOFF_NOTES[i % TICKET_HANDOFF_NOTES.length]}` },
+  ];
+});
 
 function stateCellClass(state) {
   return { Open: "ticket-pill-state-open", "In Progress": "ticket-pill-state-inprogress", Escalated: "ticket-pill-state-escalated", Resolved: "ticket-pill-state-resolved" }[state];

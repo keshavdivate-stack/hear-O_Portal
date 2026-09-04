@@ -4171,7 +4171,7 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
   display: flex;
   flex-direction: column;
   gap: 2px;
-  max-height: 220px;
+  max-height: 320px;
   overflow-y: auto;
 }
 
@@ -4180,7 +4180,7 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
   display: flex;
   flex-direction: column;
   gap: 2px;
-  padding: 0 0 16px 20px;
+  padding: 0 0 18px 20px;
 }
 
 .bo-ticket-history-item::before {
@@ -4209,6 +4209,22 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
 
 .bo-ticket-history-item .text { font-size: 13px; font-weight: 600; color: var(--ink); }
 .bo-ticket-history-item .meta { font-size: 11.5px; color: var(--gray-text); }
+
+/* Ticket transfer/handling entries: title -> boxed description/note -> date,
+   so a reassignment note reads as its own callout instead of running into
+   the summary line (the plain .text/.meta pair above still styles the
+   Incidents timeline, which doesn't use this heading+box shape). */
+.bo-history-title { font-size: 13px; font-weight: 700; color: var(--ink); }
+.bo-history-detail {
+  font-size: 12.5px;
+  color: var(--gray-text);
+  line-height: 1.5;
+  background: #F7F9FA;
+  border-radius: 8px;
+  padding: 8px 10px;
+  margin: 6px 0;
+}
+.bo-history-date { font-size: 11.5px; color: var(--gray-text); }
 
 /* ==========================================================
    REPORT MANAGEMENT PAGE

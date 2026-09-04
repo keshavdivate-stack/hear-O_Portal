@@ -138,12 +138,27 @@ function initBoSelects() {
 }
 
 /* ---------------- Ticket history ---------------- */
-/* Tickets are seeded without a history log -- back-fill a single "Created"
-   entry the first time a ticket is opened, so every ticket shows at least
-   its origin instead of an empty timeline. */
+/* Tickets are seeded without a history log -- back-fill it the first time a
+   ticket is opened: a "Created" entry plus one prior handoff (a reassignment
+   to whoever currently owns it, carrying the note that handoff was made
+   with), so History always shows the "transferred + note" pattern instead
+   of just a bare creation line. */
+const TICKET_HANDOFF_NOTES = [
+  "Escalating -- please review the linked device/session logs before reaching out to the patient.",
+  "Reassigning to keep this within the same tier's team; flagged as time-sensitive.",
+  "Handing off after initial triage -- root cause still needs confirmation.",
+  "Transferring per on-call rotation; full context is in the ticket description.",
+  "Escalated per policy given the severity of this issue.",
+];
+
 function ensureTicketHistory(ticket) {
   if (!ticket.history) {
-    ticket.history = [{ text: `Ticket created (${ticket.origin})`, date: ticket.createdDate }];
+    const previousAssignee = SUPPORT_AGENTS.find((name) => name !== ticket.assignedTo) || ticket.assignedTo;
+    const note = TICKET_HANDOFF_NOTES[ticket.id % TICKET_HANDOFF_NOTES.length];
+    ticket.history = [
+      { title: "Ticket Created", detail: `Ticket raised via ${ticket.origin}.`, date: ticket.createdDate },
+      { title: `Ticket Transferred to ${ticket.assignedTo}`, detail: `Reassigned from ${previousAssignee} to ${ticket.assignedTo}. Note: ${note}`, date: ticket.createdDate },
+    ];
   }
   return ticket.history;
 }

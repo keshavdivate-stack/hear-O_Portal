@@ -308,17 +308,45 @@ if (!ticket) {
       const nextSeverity = document.querySelector('.custom-select[data-name="ticketSeverityHandling"] input[type=hidden]').value || ticket.severity;
       const nextStatus = document.querySelector('.custom-select[data-name="ticketStatus"] input[type=hidden]').value || ticket.state;
 
+      /* Every field a Save touches (reassignment, level/tier transfer, severity,
+         status) is folded into a single history entry instead of one line per
+         field -- so a ticket transfer and the note explaining it always land
+         together, and whoever picks the ticket up next sees the note attached
+         directly to the transfer instead of buried in a separate line. The
+         entry's title headlines whichever change is most significant
+         (reassignment > level > status > severity); everything that changed,
+         plus the free-text note, goes in the boxed detail underneath. */
       const isReassignment = nextAssignee && nextAssignee !== (ticket.assignedTo || "");
+      const changeParts = [];
+      let title = "";
       if (isReassignment) {
-        let reassignText = `Reassigned from ${ticket.assignedTo || "Unassigned"} to ${nextAssignee}.`;
-        if (rootCause) reassignText += ` Note: ${rootCause}`;
-        ticket.history.push({ date: changeDate, text: reassignText });
-      } else if (rootCause !== (ticket.rootCause || "")) {
-        ticket.history.push({ date: changeDate, text: `Root cause recorded: ${rootCause}` });
+        changeParts.push(`Reassigned from ${ticket.assignedTo || "Unassigned"} to ${nextAssignee}`);
+        title = `Ticket Transferred to ${nextAssignee}`;
       }
-      if (nextTier !== ticket.tier) ticket.history.push({ date: changeDate, text: `Level changed from ${ticket.tier} to ${nextTier}.` });
-      if (nextSeverity !== ticket.severity) ticket.history.push({ date: changeDate, text: `Severity changed from ${ticket.severity} to ${nextSeverity}.` });
-      if (nextStatus !== ticket.state) ticket.history.push({ date: changeDate, text: `Status changed from ${ticket.state} to ${nextStatus}.` });
+      if (nextTier !== ticket.tier) {
+        changeParts.push(`Level changed from ${ticket.tier} to ${nextTier}`);
+        title = title || `Ticket Escalated to ${nextTier}`;
+      }
+      if (nextStatus !== ticket.state) {
+        changeParts.push(`Status changed from ${ticket.state} to ${nextStatus}`);
+        title = title || `Status Changed to ${nextStatus}`;
+      }
+      if (nextSeverity !== ticket.severity) {
+        changeParts.push(`Severity changed from ${ticket.severity} to ${nextSeverity}`);
+        title = title || `Severity Changed to ${nextSeverity}`;
+      }
+
+      const noteChanged = rootCause !== (ticket.rootCause || "");
+      if (!changeParts.length && noteChanged) {
+        changeParts.push("Note updated");
+        title = "Note Updated";
+      }
+
+      if (changeParts.length) {
+        let detail = `${changeParts.join("; ")}.`;
+        if (rootCause) detail += ` Note: ${rootCause}`;
+        ticket.history.push({ date: changeDate, title, detail });
+      }
 
       ticket.rootCause = rootCause;
       if (nextAssignee) ticket.assignedTo = nextAssignee;
@@ -686,7 +714,18 @@ if (!ticket) {
       <div class="ticket-detail-card">
         <h2>History</h2>
         <div class="ticket-history" style="margin-top:14px;">
-          ${ticket.history.map((h) => `<div class="ticket-history-item"><b>${h.date}</b> &mdash; ${h.text}</div>`).join("")}
+          ${ticket.history
+            .slice()
+            .reverse()
+            .map(
+              (h) => `
+              <div class="ticket-history-item">
+                <div class="ticket-history-title">${h.title}</div>
+                <div class="ticket-history-detail">${h.detail}</div>
+                <div class="ticket-history-date">${h.date}</div>
+              </div>`
+            )
+            .join("")}
         </div>
       </div>`;
 
@@ -723,7 +762,7 @@ if (!ticket) {
         const text = note.value.trim();
         if (!text || resolveBtn.disabled) return;
         ticket.state = "Resolved";
-        ticket.history.push({ date: "Today", text: `Resolved: ${text}` });
+        ticket.history.push({ date: "Today", title: "Ticket Resolved", detail: text });
         renderAll();
       });
     }

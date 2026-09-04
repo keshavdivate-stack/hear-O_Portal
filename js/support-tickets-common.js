@@ -8,14 +8,14 @@
    "dd.mm.yyyy", not backoffice's "dd/mm/yyyy hh:mm"). */
 
 /* ---------------- Ticket history ----------------
-   Clinic's ticketList already seeds t.history = [{ date, text }] for every
-   ticket at load time (see js/support-data.js), so unlike backoffice this
-   never needs to be back-filled lazily -- this helper just gives
-   ticket-detail.js the same call shape backoffice's ticket-detail.js uses,
-   in case a ticket is ever added without history attached. */
+   Clinic's ticketList already seeds t.history = [{ date, title, detail }]
+   for every ticket at load time (see js/support-data.js), so unlike
+   backoffice this never needs to be back-filled lazily -- this helper just
+   gives ticket-detail.js the same call shape backoffice's ticket-detail.js
+   uses, in case a ticket is ever added without history attached. */
 function ensureTicketHistory(ticket) {
   if (!ticket.history) {
-    ticket.history = [{ date: ticket.created, text: `Ticket created (${ticket.origin}).` }];
+    ticket.history = [{ date: ticket.created, title: "Ticket Created", detail: `Ticket raised via ${ticket.origin}.` }];
   }
   return ticket.history;
 }
