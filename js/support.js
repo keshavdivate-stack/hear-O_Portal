@@ -203,112 +203,13 @@ document.getElementById("clearTicketFilters").addEventListener("click", () => {
   renderTicketList();
 });
 
-/* ---------------- Tabs: Raised by Clinic / Assigned to Clinic ---------------- */
-document.querySelectorAll("#supportTicketTabs .page-tab").forEach((tab) => {
-  tab.addEventListener("click", () => {
-    document.querySelectorAll("#supportTicketTabs .page-tab").forEach((t) => t.classList.remove("active"));
-    document.querySelectorAll(".tab-panel").forEach((p) => p.classList.remove("active"));
-    tab.classList.add("active");
-    document.querySelector(`.tab-panel[data-tab-panel="${tab.dataset.tab}"]`).classList.add("active");
-  });
-});
-
-/* ---------------- Raised by Clinic ----------------
-   Mirrors the "Support Ticket" floating button's own definition of "this
-   clinic's tickets" (js/topbar.js) -- Clinic-type tickets scoped to the
-   org currently selected in the topbar switcher. */
+/* Mirrors the "Support Ticket" floating button's own definition of "this
+   clinic's tickets" (js/topbar.js) -- used to stamp a newly-raised ticket
+   with the org currently selected in the topbar switcher. */
 function currentOrg() {
   const checked = document.querySelector('input[name="org"]:checked');
   return (checked ? checked.value : "b01").toUpperCase();
 }
-
-let raisedTicketSearchTerm = "";
-const selectedRaisedCategories = new Set();
-const selectedRaisedIssueTypes = new Set();
-const selectedRaisedSeverities = new Set();
-const selectedRaisedStates = new Set();
-
-function raisedTicketList() {
-  const term = raisedTicketSearchTerm.trim().toLowerCase();
-  const org = currentOrg();
-  return ticketList.filter((t) => {
-    if (t.type !== "Clinic" || t.organization.toUpperCase() !== org) return false;
-    if (selectedRaisedCategories.size && !selectedRaisedCategories.has(t.category)) return false;
-    if (selectedRaisedIssueTypes.size && !selectedRaisedIssueTypes.has(t.issueType)) return false;
-    if (selectedRaisedSeverities.size && !selectedRaisedSeverities.has(t.severity)) return false;
-    if (selectedRaisedStates.size && !selectedRaisedStates.has(t.state)) return false;
-    if (term && !`${t.ticketId} ${t.who} ${t.issueType}`.toLowerCase().includes(term)) return false;
-    return true;
-  });
-}
-
-const raisedTicketRows = document.getElementById("raisedTicketRows");
-const raisedTicketRangeLabel = document.getElementById("raisedTicketRangeLabel");
-
-function renderRaisedTicketList() {
-  const list = raisedTicketList();
-  raisedTicketRows.innerHTML = list
-    .map(
-      (t) => `
-      <tr>
-        <td><b>${t.ticketId}</b></td>
-        <td>${t.who}</td>
-        <td><span class="ticket-pill ticket-pill-category">${t.category}</span></td>
-        <td>${t.issueType}</td>
-        <td><span class="ticket-pill ${severityCellClass(t.severity)}">${t.severity}</span></td>
-        <td><span class="ticket-pill ${stateCellClass(t.state)}">${t.state}</span></td>
-        <td>${t.created}</td>
-        <td><a class="ticket-view-link" href="ticket-detail.html?id=${t.id}">View</a></td>
-      </tr>`
-    )
-    .join("");
-  raisedTicketRangeLabel.textContent = list.length ? `1-${list.length} of ${list.length}` : "";
-  if (!list.length) {
-    raisedTicketRows.innerHTML = `<tr><td colspan="8" style="text-align:center; color:var(--gray-text); padding:24px;">No tickets raised by this clinic yet.</td></tr>`;
-  }
-}
-renderRaisedTicketList();
-
-document.getElementById("raisedTicketSearchInput").addEventListener("input", (e) => {
-  raisedTicketSearchTerm = e.target.value;
-  renderRaisedTicketList();
-});
-document.querySelectorAll('input[name="org"]').forEach((radio) => radio.addEventListener("change", renderRaisedTicketList));
-
-/* ---------------- Raised by Clinic: filters ---------------- */
-const raisedCategoryMenu = document.getElementById("raisedCategoryMenu");
-raisedCategoryMenu.innerHTML = buildOptionsHtml(ticketCategories);
-wireCheckboxFilter(document.querySelector('.checkbox-filter[data-name="raisedCategory"]'), raisedCategoryMenu, selectedRaisedCategories, renderRaisedTicketList);
-
-const raisedIssueTypeMenu = document.getElementById("raisedIssueTypeMenu");
-raisedIssueTypeMenu.innerHTML = buildOptionsHtml(allIssueTypes);
-wireCheckboxFilter(document.querySelector('.checkbox-filter[data-name="raisedIssueType"]'), raisedIssueTypeMenu, selectedRaisedIssueTypes, renderRaisedTicketList);
-
-const raisedSeverityMenu = document.getElementById("raisedSeverityMenu");
-raisedSeverityMenu.innerHTML = buildOptionsHtml(ticketSeverities);
-wireCheckboxFilter(document.querySelector('.checkbox-filter[data-name="raisedSeverity"]'), raisedSeverityMenu, selectedRaisedSeverities, renderRaisedTicketList);
-
-const raisedStateMenu = document.getElementById("raisedStateMenu");
-raisedStateMenu.innerHTML = buildOptionsHtml(ticketStates);
-wireCheckboxFilter(document.querySelector('.checkbox-filter[data-name="raisedState"]'), raisedStateMenu, selectedRaisedStates, renderRaisedTicketList);
-
-const clearableRaisedTicketFilters = [
-  { name: "raisedCategory", menu: raisedCategoryMenu, set: selectedRaisedCategories, label: "Category" },
-  { name: "raisedIssueType", menu: raisedIssueTypeMenu, set: selectedRaisedIssueTypes, label: "Issue Type" },
-  { name: "raisedSeverity", menu: raisedSeverityMenu, set: selectedRaisedSeverities, label: "Severity" },
-  { name: "raisedState", menu: raisedStateMenu, set: selectedRaisedStates, label: "State" },
-];
-
-document.getElementById("clearRaisedTicketFilters").addEventListener("click", () => {
-  document.getElementById("raisedTicketSearchInput").value = "";
-  raisedTicketSearchTerm = "";
-  clearableRaisedTicketFilters.forEach(({ name, menu, set, label }) => {
-    set.clear();
-    menu.querySelectorAll('input[type="checkbox"]').forEach((cb) => (cb.checked = false));
-    document.querySelector(`.checkbox-filter[data-name="${name}"] .checkbox-filter-label`).textContent = label;
-  });
-  renderRaisedTicketList();
-});
 
 /* ---------------- Custom dropdowns (Create Ticket modal) ----------------
    The .custom-select engine itself (setCustomSelectValue, initCustomSelects,
@@ -420,7 +321,6 @@ createTicketForm.addEventListener("submit", (e) => {
   newTicket.history = [{ date: created, title: "Ticket Created" }];
   ticketList.push(newTicket);
 
-  renderRaisedTicketList();
   renderTicketList();
   closeCreateTicketModal();
 });
