@@ -33,8 +33,6 @@ function renderStatusTable() {
     )
     .join("");
 
-  document.getElementById("statusTotalLabel").textContent = `Total: ${clinicPatientsByStatus(statusActiveTab).length} patients`;
-
   const rangeEnd = total === 0 ? 0 : Math.min(start + STATUS_PAGE_SIZE, total);
   const rangeStart = total === 0 ? 0 : start + 1;
   document.getElementById("statusPageRangeLabel").textContent = `${rangeStart} – ${rangeEnd} of ${total}`;

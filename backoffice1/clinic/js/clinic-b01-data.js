@@ -139,7 +139,7 @@ const CLINIC_PATIENTS = (() => {
 const CLINIC_MONTH_ABBR = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
 function clinicFmtDMY2(date) {
-  if (!date) return "";
+  if (!date) return "&ndash;";
   const d = String(date.getDate()).padStart(2, "0");
   const m = String(date.getMonth() + 1).padStart(2, "0");
   const y = String(date.getFullYear()).slice(-2);
@@ -147,7 +147,7 @@ function clinicFmtDMY2(date) {
 }
 
 function clinicFmtDMY4(date) {
-  if (!date) return "";
+  if (!date) return "&ndash;";
   const d = String(date.getDate()).padStart(2, "0");
   const m = String(date.getMonth() + 1).padStart(2, "0");
   return `${d}/${m}/${date.getFullYear()}`;

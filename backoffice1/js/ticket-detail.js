@@ -628,17 +628,26 @@ ticketDetailForm.addEventListener("submit", (e) => {
   const nextSeverity = document.querySelector('.bo-select[data-name="ticketSeverityHandling"] input[type=hidden]').value || currentTicket.severity;
   const nextStatus = document.querySelector('.bo-select[data-name="ticketStatus"] input[type=hidden]').value || currentTicket.status;
 
+  /* Every field a Save touches (reassignment, level/tier transfer, severity,
+     status) is folded into a single history entry instead of one line per
+     field -- so a ticket transfer and the note explaining it always land
+     together, and whoever picks the ticket up next sees the note attached
+     directly to the transfer instead of buried in a separate line. */
   const isReassignment = nextAssignee !== (currentTicket.assignedTo || "");
-  if (isReassignment) {
-    let reassignText = `Reassigned from ${currentTicket.assignedTo || "Unassigned"} to ${nextAssignee}`;
-    if (rootCause) reassignText += ` — Note: ${rootCause}`;
-    history.push({ text: reassignText, date: changeDate });
-  } else if (rootCause !== (currentTicket.rootCause || "")) {
-    history.push({ text: `Root cause recorded: ${rootCause}`, date: changeDate });
+  const changeParts = [];
+  if (isReassignment) changeParts.push(`Reassigned from ${currentTicket.assignedTo || "Unassigned"} to ${nextAssignee}`);
+  if (nextTier !== currentTicket.tier) changeParts.push(`Level changed from ${currentTicket.tier} to ${nextTier}`);
+  if (nextSeverity !== currentTicket.severity) changeParts.push(`Severity changed from ${currentTicket.severity} to ${nextSeverity}`);
+  if (nextStatus !== currentTicket.status) changeParts.push(`Status changed from ${currentTicket.status} to ${nextStatus}`);
+
+  const noteChanged = rootCause !== (currentTicket.rootCause || "");
+  if (!changeParts.length && noteChanged) changeParts.push("Note updated");
+
+  if (changeParts.length) {
+    let text = changeParts.join("; ");
+    if (rootCause) text += ` — Note: ${rootCause}`;
+    history.push({ text, date: changeDate });
   }
-  if (nextTier !== currentTicket.tier) history.push({ text: `Level changed from ${currentTicket.tier} to ${nextTier}`, date: changeDate });
-  if (nextSeverity !== currentTicket.severity) history.push({ text: `Severity changed from ${currentTicket.severity} to ${nextSeverity}`, date: changeDate });
-  if (nextStatus !== currentTicket.status) history.push({ text: `Status changed from ${currentTicket.status} to ${nextStatus}`, date: changeDate });
 
   currentTicket.rootCause = rootCause;
   currentTicket.assignedTo = nextAssignee;

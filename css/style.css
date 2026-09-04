@@ -288,6 +288,13 @@ button, input, select, textarea, optgroup {
   justify-content: center;
 }
 
+.avatar-btn {
+  border: none;
+  padding: 0;
+  font-family: inherit;
+  cursor: pointer;
+}
+
 /* ---------------- CONTENT ---------------- */
 .content {
   display: grid;
@@ -2372,29 +2379,35 @@ button, input, select, textarea, optgroup {
 /* ============================================================
    CHAT PANEL
    ============================================================ */
-.chat-tab {
+.chat-fab {
   position: fixed;
-  top: 140px;
-  right: 0;
+  right: 28px;
+  bottom: 28px;
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  border: none;
   background: var(--blue);
   color: #fff;
-  border: none;
-  border-radius: 10px 0 0 10px;
-  padding: 14px 10px;
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  writing-mode: vertical-rl;
-  cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 8px;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 10px 24px rgba(42, 169, 224, 0.4);
   z-index: 60;
 }
 
-.chat-tab .dot-live {
-  width: 7px; height: 7px; border-radius: 50%; background: #fff;
-  writing-mode: horizontal-tb;
+.chat-fab:hover { background: #1c86b3; }
+
+.chat-fab .dot-live {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: #3DD598;
+  border: 2px solid #fff;
 }
 
 .chat-panel {
@@ -6526,7 +6539,7 @@ body.patient-discontinued #chatOpenBtn {
 .ticket-mini-calendar-footer button:hover { text-decoration: underline; }
 
 /* ---------------- B01 Clinic Portal (Backoffice): Dashboard / Status / Patient Management ---------------- */
-.clinic-section-tabs { margin-bottom: 22px; }
+.clinic-section-tabs { margin: 0; }
 .clinic-section-tabs .filter-tab { text-decoration: none; display: inline-block; }
 
 .b01-greeting { margin-bottom: 22px; }
@@ -6559,7 +6572,6 @@ body.patient-discontinued #chatOpenBtn {
   margin-bottom: 18px;
 }
 
-.b01-status-total { font-size: 13.5px; color: var(--gray-text); white-space: nowrap; }
 
 .b01-status-icon { vertical-align: -2px; margin-left: 6px; }
 
@@ -6657,5 +6669,94 @@ body.patient-discontinued #chatOpenBtn {
 .ctm-load-tag.load-low { color: var(--green-text); }
 .ctm-load-tag.load-moderate { color: var(--orange-text); }
 .ctm-load-tag.load-high { color: var(--red-text); }
+
+/* ---------------- Study Material ---------------- */
+.study-intro { color: var(--gray-text); font-size: 14px; max-width: 640px; margin: 0 0 28px; }
+
+.study-section { margin-bottom: 30px; }
+.study-section-title { font-size: 16px; font-weight: 700; margin: 0 0 14px; color: #23272E; }
+
+.study-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.study-card {
+  background: #fff;
+  border: 1px solid var(--gray-border);
+  border-radius: 14px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.study-card-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--blue-light);
+  color: var(--blue-text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 4px;
+}
+
+.study-card-title { font-size: 14.5px; font-weight: 700; color: #23272E; margin: 0; }
+.study-card-desc { font-size: 13px; color: var(--gray-text); line-height: 1.5; margin: 0; }
+.study-card-body { font-size: 13px; color: #363B42; line-height: 1.6; margin: 2px 0 0; padding-top: 10px; border-top: 1px solid var(--gray-border); }
+
+.study-card-link {
+  align-self: flex-start;
+  margin-top: 6px;
+  border: none;
+  background: none;
+  padding: 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--blue-text);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.study-card-link:hover { text-decoration: underline; }
+.study-card-chevron { transition: transform 0.2s ease; }
+.study-card-link.open .study-card-chevron { transform: rotate(180deg); }
+
+.study-tutorial-thumb {
+  width: 100%;
+  height: 108px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #EAF6FC, #DCEFFA);
+  color: var(--blue-text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.study-tutorial-duration { font-size: 12.5px; font-weight: 700; }
+
+.study-video-placeholder {
+  width: 100%;
+  height: 200px;
+  border-radius: 12px;
+  background: var(--bg);
+  color: var(--gray-text);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.study-video-placeholder-label { font-size: 13px; }
+.study-modal-duration { font-size: 12.5px; color: var(--gray-text); margin: -10px 0 14px; }
 
 

@@ -25,6 +25,7 @@ wireTopbarToggle("orgSwitchBtn", "orgPopover");
 wireTopbarToggle("notifBtn", "notifPopover");
 wireTopbarToggle("langBtn", "langPopover");
 wireTopbarToggle("moreBtn", "morePopover");
+wireTopbarToggle("profileBtn", "profilePopover");
 
 const langPopoverEl = document.getElementById("langPopover");
 if (langPopoverEl) {
