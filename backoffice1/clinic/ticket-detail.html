@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>HearO | Ticket Detail (Backoffice)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../css/style.css" />
+</head>
+<body>
+<!-- Backoffice-safe fork of ../../ticket-detail.html. Forked to
+     js/ticket-detail.js: the Recording player (Voice Engine tickets -- an
+     actual patient voice recording) and the Chat-with-Patient panel are
+     dropped entirely; the Patient field shows the ticket's existing `who`
+     identifier instead of a name. js/support-tickets-common.js (the seeded
+     Patient Log generator + Handling defaults) and js/custom-select.js are
+     reused unmodified via relative links -- neither embeds a patient name,
+     the Patient Log's device/permissions/app-log data is operational, not
+     clinical. -->
+  <a href="../overview-dashboard.html" class="clinic-backoffice-back-link" style="display:flex;align-items:center;gap:8px;padding:10px 18px;background:#23272E;color:#fff;font-family:'Exo 2',sans-serif;font-size:13px;font-weight:600;text-decoration:none;">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19L5 12L12 5"/></svg>
+    Back to Backoffice
+  </a>
+
+  <div class="app">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="logo">
+          <img src="https://web.dev3.cordiomed.com/assets/new-screen-assets/components/Side%20menu%20icon.svg" alt="HearO" class="logo-mark logo-mark-collapsed" />
+          <img src="https://web.dev3.cordiomed.com/assets/icons/logo.svg" alt="HearO" class="logo-mark logo-mark-expanded" />
+        </div>
+      </div>
+
+      <nav class="nav-list">
+        <a href="index.html" class="nav-item">
+          <span class="nav-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+          </span>
+          <span class="nav-label">Dashboard</span>
+        </a>
+        <a href="patient-list.html" class="nav-item">
+          <span class="nav-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><path d="M16 3.128a4 4 0 0 1 0 7.744"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><circle cx="9" cy="7" r="4"/></svg>
+          </span>
+          <span class="nav-label">Patient List</span>
+        </a>
+        <a href="reports.html" class="nav-item">
+          <span class="nav-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>
+          </span>
+          <span class="nav-label">Reports</span>
+        </a>
+        <a href="billing.html" class="nav-item">
+          <span class="nav-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
+          </span>
+          <span class="nav-label">Billing</span>
+        </a>
+        <a href="audit-trail.html" class="nav-item">
+          <span class="nav-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg>
+          </span>
+          <span class="nav-label">Audit Trail</span>
+        </a>
+        <a href="manage-users.html" class="nav-item">
+          <span class="nav-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 15H6a4 4 0 0 0-4 4v2"/><path d="m14.305 16.53.923-.382"/><path d="m15.228 13.852-.923-.383"/><path d="m16.852 12.228-.383-.923"/><path d="m16.852 17.772-.383.924"/><path d="m19.148 12.228.383-.923"/><path d="m19.53 18.696-.382-.924"/><path d="m20.772 13.852.924-.383"/><path d="m20.772 16.148.924.383"/><circle cx="18" cy="15" r="3"/><circle cx="9" cy="7" r="4"/></svg>
+          </span>
+          <span class="nav-label">Manage Users</span>
+        </a>
+        <a href="support.html" class="nav-item active">
+          <span class="nav-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H3v-7a9 9 0 0 1 18 0v7h-3a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"/><path d="M21 16v2a4 4 0 0 1-4 4h-5"/></svg>
+          </span>
+          <span class="nav-label">Support</span>
+        </a>
+      </nav>
+    </aside>
+
+    <!-- MAIN -->
+    <div class="main" id="main">
+
+      <!-- TOPBAR -->
+      <header class="topbar">
+        <h1 class="page-title">Support</h1>
+        <div class="topbar-actions">
+          <div class="topbar-item">
+            <button class="icon-btn" aria-label="Add" id="orgSwitchBtn">
+              <svg width="19" height="19" viewBox="0 0 24 24" fill="none"><path d="M10 3H14C14.55 3 15 3.45 15 4V9H20C20.55 9 21 9.45 21 10V14C21 14.55 20.55 15 20 15H15V20C15 20.55 14.55 21 14 21H10C9.45 21 9 20.55 9 20V15H4C3.45 15 3 14.55 3 14V10C3 9.45 3.45 9 4 9H9V4C9 3.45 9.45 3 10 3Z" stroke="#6B7684" stroke-width="1.6" stroke-linejoin="round"/></svg>
+            </button>
+            <div class="topbar-popover org-popover" id="orgPopover">
+              <label class="org-radio-item">
+                <input type="radio" name="org" value="b01" checked />
+                <span class="radio-dot"></span>
+                B01
+              </label>
+              <label class="org-radio-item">
+                <input type="radio" name="org" value="101" />
+                <span class="radio-dot"></span>
+                101
+              </label>
+              <label class="org-radio-item">
+                <input type="radio" name="org" value="104" />
+                <span class="radio-dot"></span>
+                104
+              </label>
+              <label class="org-radio-item">
+                <input type="radio" name="org" value="b03" />
+                <span class="radio-dot"></span>
+                B03
+              </label>
+              <label class="org-radio-item">
+                <input type="radio" name="org" value="105" />
+                <span class="radio-dot"></span>
+                105
+              </label>
+            </div>
+          </div>
+          <div class="topbar-item">
+            <button class="icon-btn" aria-label="Language" id="langBtn">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#6B7684" stroke-width="1.8"/><path d="M3 12H21" stroke="#6B7684" stroke-width="1.8"/><path d="M12 3C14.5 5.7 15.8 8.8 15.8 12C15.8 15.2 14.5 18.3 12 21C9.5 18.3 8.2 15.2 8.2 12C8.2 8.8 9.5 5.7 12 3Z" stroke="#6B7684" stroke-width="1.8"/></svg>
+            </button>
+            <div class="topbar-popover org-popover" id="langPopover">
+              <label class="org-radio-item">
+                <input type="radio" name="lang" value="en" checked />
+                <span class="radio-dot"></span>
+                English
+              </label>
+              <label class="org-radio-item">
+                <input type="radio" name="lang" value="es" />
+                <span class="radio-dot"></span>
+                Español
+              </label>
+            </div>
+          </div>
+          <div class="topbar-item">
+            <button class="icon-btn badge" aria-label="Notifications" data-count="2" id="notifBtn">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M18 9.5C18 7.7 17.3 6 16 4.8C14.7 3.6 13 3 11.3 3.1C8.1 3.3 5.6 6.1 5.6 9.4V12.5C5.6 13.1 5.4 13.7 5 14.2L4 15.5C3.4 16.3 4 17.5 5 17.5H19C20 17.5 20.6 16.3 20 15.5L19 14.2C18.6 13.7 18.4 13.1 18.4 12.5" stroke="#6B7684" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M9.5 20.5C10 21.3 10.9 21.8 12 21.8C13.1 21.8 14 21.3 14.5 20.5" stroke="#6B7684" stroke-width="1.6" stroke-linecap="round"/></svg>
+            </button>
+            <div class="topbar-popover notif-popover" id="notifPopover">
+              <h3 class="notif-title">Notifications</h3>
+              <div class="notif-tabs" id="notifTabs">
+                <button class="notif-tab" data-tab="team">Team</button>
+                <button class="notif-tab active" data-tab="foryou">For you</button>
+              </div>
+              <div class="notif-list" id="notifList"></div>
+              <a href="#" class="notif-view-more">View more</a>
+            </div>
+          </div>
+          <button class="icon-btn badge" aria-label="Messages" data-count="1">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 5.5C4 4.4 4.9 3.5 6 3.5H18C19.1 3.5 20 4.4 20 5.5V14.5C20 15.6 19.1 16.5 18 16.5H9L5 20V16.5H6C4.9 16.5 4 15.6 4 14.5V5.5Z" stroke="#6B7684" stroke-width="1.6" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="avatar">EC</div>
+          <div class="topbar-item">
+            <button class="icon-btn" aria-label="More" id="moreBtn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="1.6" fill="#6B7684"/><circle cx="12" cy="12" r="1.6" fill="#6B7684"/><circle cx="12" cy="19" r="1.6" fill="#6B7684"/></svg>
+            </button>
+            <div class="topbar-popover more-popover" id="morePopover">
+              <a href="../index.html" class="more-menu-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="7" rx="1.5" stroke="#6B7684" stroke-width="1.6"/><rect x="14" y="3" width="7" height="7" rx="1.5" stroke="#6B7684" stroke-width="1.6"/><rect x="3" y="14" width="7" height="7" rx="1.5" stroke="#6B7684" stroke-width="1.6"/><rect x="14" y="14" width="7" height="7" rx="1.5" stroke="#6B7684" stroke-width="1.6"/></svg>
+                Back to Backoffice
+              </a>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- CONTENT -->
+      <div class="list-content">
+
+        <div class="ticket-detail-topbar-row">
+          <div class="ticket-detail-title-group">
+            <a href="support.html" class="ticket-detail-back" aria-label="Back to Support">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6L9 12L15 18"/></svg>
+            </a>
+            <h1 class="ticket-detail-title" id="ticketDetailTitle"></h1>
+            <div id="ticketDetailPills" style="display:flex; gap:8px;"></div>
+          </div>
+          <div class="ticket-detail-actions" id="ticketDetailActions" hidden>
+            <button type="submit" form="ticketDetailForm" class="btn-save" id="saveTicketDetailBtn" disabled>Save Changes</button>
+          </div>
+        </div>
+
+        <div id="ticketDetailBody"></div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Chat with Patient panel removed entirely -- patient-clinician
+       conversation content is core PHI, same policy as patient-data.html's
+       Chat tab in phase 1. See js/ticket-detail.js for the corresponding JS
+       removal. -->
+
+<script src="js/topbar.js"></script>
+<script src="js/support-data.js"></script>
+<script src="../../js/support-tickets-common.js"></script>
+<script src="../../js/custom-select.js"></script>
+<script src="js/ticket-detail.js"></script>
+</body>
+</html>

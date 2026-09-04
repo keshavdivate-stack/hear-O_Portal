@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>HearO | Manage Users (Backoffice)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../css/style.css" />
+</head>
+<body>
+<!-- Backoffice-safe copy of ../../manage-users.html. This page is clinic
+     *staff* user administration (doctors/nurses), not patient data -- no
+     redaction needed. js/manage-users.js is reused unmodified via a relative
+     link (../../js/manage-users.js); only this markup is forked, to relink
+     the stylesheet, drop the real-portal-only nav items, and add the
+     back-to-Backoffice link. -->
+  <a href="../overview-dashboard.html" class="clinic-backoffice-back-link" style="display:flex;align-items:center;gap:8px;padding:10px 18px;background:#23272E;color:#fff;font-family:'Exo 2',sans-serif;font-size:13px;font-weight:600;text-decoration:none;">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19L5 12L12 5"/></svg>
+    Back to Backoffice
+  </a>
+
+  <div class="app">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="logo">
+          <img src="https://web.dev3.cordiomed.com/assets/new-screen-assets/components/Side%20menu%20icon.svg" alt="HearO" class="logo-mark logo-mark-collapsed" />
+          <img src="https://web.dev3.cordiomed.com/assets/icons/logo.svg" alt="HearO" class="logo-mark logo-mark-expanded" />
+        </div>
+      </div>
+
+      <nav class="nav-list">
+        <a href="index.html" class="nav-item">
+          <span class="nav-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+          </span>
+          <span class="nav-label">Dashboard</span>
+        </a>
+        <a href="patient-list.html" class="nav-item">
+          <span class="nav-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><path d="M16 3.128a4 4 0 0 1 0 7.744"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><circle cx="9" cy="7" r="4"/></svg>
+          </span>
+          <span class="nav-label">Patient List</span>
+        </a>
+        <a href="reports.html" class="nav-item">
+          <span class="nav-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>
+          </span>
+          <span class="nav-label">Reports</span>
+        </a>
+        <a href="billing.html" class="nav-item">
+          <span class="nav-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
+          </span>
+          <span class="nav-label">Billing</span>
+        </a>
+        <a href="audit-trail.html" class="nav-item">
+          <span class="nav-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg>
+          </span>
+          <span class="nav-label">Audit Trail</span>
+        </a>
+        <a href="manage-users.html" class="nav-item active">
+          <span class="nav-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 15H6a4 4 0 0 0-4 4v2"/><path d="m14.305 16.53.923-.382"/><path d="m15.228 13.852-.923-.383"/><path d="m16.852 12.228-.383-.923"/><path d="m16.852 17.772-.383.924"/><path d="m19.148 12.228.383-.923"/><path d="m19.53 18.696-.382-.924"/><path d="m20.772 13.852.924-.383"/><path d="m20.772 16.148.924.383"/><circle cx="18" cy="15" r="3"/><circle cx="9" cy="7" r="4"/></svg>
+          </span>
+          <span class="nav-label">Manage Users</span>
+        </a>
+        <a href="support.html" class="nav-item">
+          <span class="nav-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H3v-7a9 9 0 0 1 18 0v7h-3a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"/><path d="M21 16v2a4 4 0 0 1-4 4h-5"/></svg>
+          </span>
+          <span class="nav-label">Support</span>
+        </a>
+      </nav>
+    </aside>
+
+    <!-- MAIN -->
+    <div class="main" id="main">
+
+      <!-- TOPBAR -->
+      <header class="topbar">
+        <h1 class="page-title">Manage Users</h1>
+        <div class="topbar-actions">
+          <div class="topbar-item">
+            <button class="icon-btn" aria-label="Add" id="orgSwitchBtn">
+              <svg width="19" height="19" viewBox="0 0 24 24" fill="none"><path d="M10 3H14C14.55 3 15 3.45 15 4V9H20C20.55 9 21 9.45 21 10V14C21 14.55 20.55 15 20 15H15V20C15 20.55 14.55 21 14 21H10C9.45 21 9 20.55 9 20V15H4C3.45 15 3 14.55 3 14V10C3 9.45 3.45 9 4 9H9V4C9 3.45 9.45 3 10 3Z" stroke="#6B7684" stroke-width="1.6" stroke-linejoin="round"/></svg>
+            </button>
+            <div class="topbar-popover org-popover" id="orgPopover">
+              <label class="org-radio-item">
+                <input type="radio" name="org" value="b01" checked />
+                <span class="radio-dot"></span>
+                B01
+              </label>
+              <label class="org-radio-item">
+                <input type="radio" name="org" value="101" />
+                <span class="radio-dot"></span>
+                101
+              </label>
+              <label class="org-radio-item">
+                <input type="radio" name="org" value="104" />
+                <span class="radio-dot"></span>
+                104
+              </label>
+              <label class="org-radio-item">
+                <input type="radio" name="org" value="b03" />
+                <span class="radio-dot"></span>
+                B03
+              </label>
+              <label class="org-radio-item">
+                <input type="radio" name="org" value="105" />
+                <span class="radio-dot"></span>
+                105
+              </label>
+            </div>
+          </div>
+          <div class="topbar-item">
+            <button class="icon-btn" aria-label="Language" id="langBtn">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#6B7684" stroke-width="1.8"/><path d="M3 12H21" stroke="#6B7684" stroke-width="1.8"/><path d="M12 3C14.5 5.7 15.8 8.8 15.8 12C15.8 15.2 14.5 18.3 12 21C9.5 18.3 8.2 15.2 8.2 12C8.2 8.8 9.5 5.7 12 3Z" stroke="#6B7684" stroke-width="1.8"/></svg>
+            </button>
+            <div class="topbar-popover org-popover" id="langPopover">
+              <label class="org-radio-item">
+                <input type="radio" name="lang" value="en" checked />
+                <span class="radio-dot"></span>
+                English
+              </label>
+              <label class="org-radio-item">
+                <input type="radio" name="lang" value="es" />
+                <span class="radio-dot"></span>
+                Español
+              </label>
+            </div>
+          </div>
+          <div class="topbar-item">
+            <button class="icon-btn badge" aria-label="Notifications" data-count="2" id="notifBtn">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M18 9.5C18 7.7 17.3 6 16 4.8C14.7 3.6 13 3 11.3 3.1C8.1 3.3 5.6 6.1 5.6 9.4V12.5C5.6 13.1 5.4 13.7 5 14.2L4 15.5C3.4 16.3 4 17.5 5 17.5H19C20 17.5 20.6 16.3 20 15.5L19 14.2C18.6 13.7 18.4 13.1 18.4 12.5" stroke="#6B7684" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M9.5 20.5C10 21.3 10.9 21.8 12 21.8C13.1 21.8 14 21.3 14.5 20.5" stroke="#6B7684" stroke-width="1.6" stroke-linecap="round"/></svg>
+            </button>
+            <div class="topbar-popover notif-popover" id="notifPopover">
+              <h3 class="notif-title">Notifications</h3>
+              <div class="notif-tabs" id="notifTabs">
+                <button class="notif-tab" data-tab="team">Team</button>
+                <button class="notif-tab active" data-tab="foryou">For you</button>
+              </div>
+              <div class="notif-list" id="notifList"></div>
+              <a href="#" class="notif-view-more">View more</a>
+            </div>
+          </div>
+          <button class="icon-btn badge" aria-label="Messages" data-count="1">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 5.5C4 4.4 4.9 3.5 6 3.5H18C19.1 3.5 20 4.4 20 5.5V14.5C20 15.6 19.1 16.5 18 16.5H9L5 20V16.5H6C4.9 16.5 4 15.6 4 14.5V5.5Z" stroke="#6B7684" stroke-width="1.6" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="avatar">EC</div>
+          <div class="topbar-item">
+            <button class="icon-btn" aria-label="More" id="moreBtn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="1.6" fill="#6B7684"/><circle cx="12" cy="12" r="1.6" fill="#6B7684"/><circle cx="12" cy="19" r="1.6" fill="#6B7684"/></svg>
+            </button>
+            <div class="topbar-popover more-popover" id="morePopover">
+              <a href="../index.html" class="more-menu-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="7" rx="1.5" stroke="#6B7684" stroke-width="1.6"/><rect x="14" y="3" width="7" height="7" rx="1.5" stroke="#6B7684" stroke-width="1.6"/><rect x="3" y="14" width="7" height="7" rx="1.5" stroke="#6B7684" stroke-width="1.6"/><rect x="14" y="14" width="7" height="7" rx="1.5" stroke="#6B7684" stroke-width="1.6"/></svg>
+                Back to Backoffice
+              </a>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- CONTENT -->
+      <div class="list-content">
+
+        <div class="filters-bar">
+          <div class="search-pill" style="flex:1; max-width:420px;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#9AA5B1" stroke-width="1.8"/><path d="M21 21L16.5 16.5" stroke="#9AA5B1" stroke-width="1.8" stroke-linecap="round"/></svg>
+            <input type="text" id="userSearchInput" placeholder="Search User" />
+          </div>
+          <span class="filters-spacer"></span>
+
+          <div class="bulk-actions-bar" id="bulkActionsBar">
+            <span class="bulk-actions-count" id="bulkSelectedCount">0 selected</span>
+            <button type="button" class="btn-bulk btn-bulk-invite" id="bulkInviteBtn">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 5.5C4 4.4 4.9 3.5 6 3.5H18C19.1 3.5 20 4.4 20 5.5V14.5C20 15.6 19.1 16.5 18 16.5H9L5 20V16.5H6C4.9 16.5 4 15.6 4 14.5V5.5Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+              Send EHR Invite
+            </button>
+            <button type="button" class="btn-bulk btn-bulk-delete" id="bulkDeleteBtn">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 7H20M9 7V4.5C9 3.9 9.4 3.5 10 3.5H14C14.6 3.5 15 3.9 15 4.5V7M18 7L17.3 18.5C17.2 19.6 16.3 20.5 15.2 20.5H8.8C7.7 20.5 6.8 19.6 6.7 18.5L6 7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Deactivate User
+            </button>
+          </div>
+
+          <button class="btn-add-user" id="openAddUserBtn">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            Add User
+          </button>
+        </div>
+
+        <div class="table-card">
+          <div class="table-scroll">
+            <table class="list-table users-mgmt-table">
+              <thead>
+                <tr>
+                  <th class="th-checkbox"><input type="checkbox" id="selectAllUsers" aria-label="Select all users" /></th>
+                  <th class="sortable">USERNAME <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#23272E" stroke-width="2.4" stroke-linecap="round"><path d="M12 19V5M6 11L12 5L18 11"/></svg></th>
+                  <th>FIRST NAME</th>
+                  <th>LAST NAME</th>
+                  <th>EMAIL</th>
+                  <th>PHONE NO.</th>
+                  <th>ROLE</th>
+                  <th>DATE CREATED</th>
+                  <th>MFA</th>
+                  <th>BLOCKED</th>
+                  <th>EHR INVITE</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="usersRows"></tbody>
+            </table>
+          </div>
+
+          <div class="list-footer">
+            <span class="items-per-page">Items per page: <b id="pageSizeLabel">20</b></span>
+            <span id="userPageRangeLabel">1 &ndash; 20 of 32</span>
+            <div class="list-pager">
+              <button class="pager-btn" id="userFirstPage" aria-label="First page">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M18 6L12 12L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M11 6L5 12L11 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+              <button class="pager-btn" id="userPrevPage" aria-label="Previous page">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15 6L9 12L15 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+              <button class="pager-btn" id="userNextPage" aria-label="Next page">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 6L15 12L9 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+              <button class="pager-btn" id="userLastPage" aria-label="Last page">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 6L12 12L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M13 6L19 12L13 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Row action dropdown -->
+  <div class="row-menu" id="rowMenu">
+    <button class="row-menu-item" data-action="edit">Edit</button>
+    <button class="row-menu-item" data-action="invite">Send EHR Invite</button>
+    <button class="row-menu-item" data-action="reset">Reset Password</button>
+    <button class="row-menu-item danger" data-action="delete">Deactivate User</button>
+  </div>
+
+  <!-- Add User modal -->
+  <div class="modal-overlay" id="addUserOverlay">
+    <div class="modal modal-wide">
+      <h2>Add User</h2>
+      <form id="addUserForm">
+        <div class="form-grid">
+          <div class="form-field">
+            <label>First name<span class="required-star">*</span></label>
+            <input type="text" name="firstName" placeholder="Enter first name" required />
+          </div>
+          <div class="form-field">
+            <label>Last name<span class="required-star">*</span></label>
+            <input type="text" name="lastName" placeholder="Enter last name" required />
+          </div>
+          <div class="form-field">
+            <label>Username<span class="required-star">*</span></label>
+            <input type="text" name="username" placeholder="Enter username" required />
+          </div>
+
+          <div class="form-field">
+            <label>Mobile number<span class="required-star">*</span></label>
+            <div class="phone-field">
+              <div class="custom-select country-select" data-name="countryCode">
+                <button type="button" class="custom-select-trigger">
+                  <span class="custom-select-value">+1</span>
+                  <svg class="custom-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
+                <div class="custom-select-menu">
+                  <div class="custom-select-option selected" data-value="+1">+1<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                  <div class="custom-select-option" data-value="+91">+91<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                  <div class="custom-select-option" data-value="+972">+972<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                  <div class="custom-select-option" data-value="+44">+44<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                  <div class="custom-select-option" data-value="+380">+380<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                </div>
+                <input type="hidden" name="countryCode" value="+1" />
+              </div>
+              <input type="text" name="mobile" placeholder="Enter mobile number" required />
+            </div>
+          </div>
+          <div class="form-field">
+            <label>Email<span class="required-star">*</span></label>
+            <input type="email" name="email" placeholder="Enter email" required />
+          </div>
+          <div class="form-field">
+            <label>Role<span class="required-star">*</span></label>
+            <div class="custom-select" data-name="role">
+              <button type="button" class="custom-select-trigger">
+                <span class="custom-select-value placeholder">Choose role</span>
+                <svg class="custom-select-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="custom-select-menu">
+                <div class="custom-select-option" data-value="clinic_doctor">Clinic Doctor<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="clinic_user">Clinic User<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="supervisor">Supervisor<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="admin">Admin<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              </div>
+              <input type="hidden" name="role" required />
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label>Language</label>
+            <div class="custom-select" data-name="language">
+              <button type="button" class="custom-select-trigger">
+                <span class="custom-select-value">English</span>
+                <svg class="custom-select-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="custom-select-menu">
+                <div class="custom-select-option selected" data-value="English">English<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Spanish">Spanish<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Hebrew">Hebrew<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              </div>
+              <input type="hidden" name="language" value="English" />
+            </div>
+          </div>
+          <div class="form-field">
+            <label>MFA</label>
+            <div class="custom-select" data-name="mfa">
+              <button type="button" class="custom-select-trigger">
+                <span class="custom-select-value">Off</span>
+                <svg class="custom-select-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="custom-select-menu">
+                <div class="custom-select-option selected" data-value="Off">Off<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="On">On<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              </div>
+              <input type="hidden" name="mfa" value="Off" />
+            </div>
+          </div>
+          <div class="form-field">
+            <label>MFA Method</label>
+            <div class="custom-select" data-name="mfaMethod">
+              <button type="button" class="custom-select-trigger">
+                <span class="custom-select-value">Sms</span>
+                <svg class="custom-select-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="custom-select-menu">
+                <div class="custom-select-option selected" data-value="Sms">Sms<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Email">Email<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Authenticator app">Authenticator app<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              </div>
+              <input type="hidden" name="mfaMethod" value="Sms" />
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn-text" id="cancelAddUser">Cancel</button>
+          <button type="submit" class="btn-save" id="saveAddUser" disabled>Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Send EHR Invite modal -->
+  <div class="modal-overlay" id="ehrInviteOverlay">
+    <div class="modal">
+      <h2>Send EHR Invite</h2>
+      <div class="form-field">
+        <label>Organization</label>
+        <div class="custom-select" data-name="ehrOrg">
+          <button type="button" class="custom-select-trigger">
+            <span class="custom-select-value placeholder">Choose Organization</span>
+            <svg class="custom-select-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="custom-select-menu">
+            <div class="custom-select-option" data-value="Cordio Medical">Cordio Medical<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="custom-select-option" data-value="North Clinic Group">North Clinic Group<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="custom-select-option" data-value="Lakeside Cardiology">Lakeside Cardiology<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          </div>
+          <input type="hidden" id="ehrOrgSelect" />
+        </div>
+      </div>
+      <div class="form-field">
+        <label>Ehr</label>
+        <div class="custom-select" data-name="ehrType">
+          <button type="button" class="custom-select-trigger">
+            <span class="custom-select-value placeholder">Choose Ehr</span>
+            <svg class="custom-select-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="custom-select-menu">
+            <div class="custom-select-option" data-value="Epic">Epic<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="custom-select-option" data-value="Cerner">Cerner<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="custom-select-option" data-value="Athenahealth">Athenahealth<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          </div>
+          <input type="hidden" id="ehrTypeSelect" />
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn-text" id="cancelEhrInvite">Cancel</button>
+        <button type="button" class="btn-save" id="sendEhrInvite" disabled>Send</button>
+      </div>
+    </div>
+  </div>
+
+
+<script src="js/topbar.js"></script><!--FORKED-->
+<script src="../../js/table-scroll.js"></script>
+<script src="../../js/manage-users.js"></script>
+
+</body>
+</html>

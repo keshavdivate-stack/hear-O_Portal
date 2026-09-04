@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>HearO | Nurse View (Backoffice)</title>
+<!--
+  Backoffice consolidation decision (not a missing feature): root's
+  nurse-view.html is a near-duplicate of root's patient-data.html -- same
+  tabs (Recordings/Health Data/Clinical/Questionnaire/Patient Information),
+  same modals (Add/Edit Medication, Care Recommendation drawer, Chat), and
+  the same redaction policy would apply to both. Re-forking it here would
+  recreate the exact "two copies of the same screen drift apart" problem
+  this backoffice/clinic effort already fixed once this session (the
+  ehr-integration/ duplicate pages). Since every real patient identifier in
+  this backoffice copy is already reduced to a Patient ID with no per-source
+  distinction, there is nothing nurse-view.html would show differently from
+  the already-redacted patient-data.html -- so every link that would have
+  pointed here (patient-list.js's chartView: "nurse" patients, in the root
+  app) already resolves to this folder's patient-data.html instead (see
+  js/patient-list.js's patientChartHref()). This file exists purely so a
+  stray link typed as "nurse-view.html" still lands somewhere real, instead
+  of 404ing.
+-->
+<meta http-equiv="refresh" content="0; url=patient-data.html" />
+</head>
+<body>
+<p style="font-family:'Segoe UI',sans-serif; padding:24px;">
+  Redirecting to <a href="patient-data.html">Patient Data</a>&hellip;
+</p>
+<script>window.location.replace("patient-data.html");</script>
+</body>
+</html>

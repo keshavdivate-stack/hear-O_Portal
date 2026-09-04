@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>HearO | Patient Data (Backoffice)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<!-- Reuses the real clinic portal's stylesheet unmodified -- same design system, no fork. -->
+<link rel="stylesheet" href="../../css/style.css" />
+</head>
+<body>
+
+  <a href="../overview-dashboard.html" class="clinic-backoffice-back-link" style="display:flex;align-items:center;gap:8px;padding:10px 18px;background:#23272E;color:#fff;font-family:'Exo 2',sans-serif;font-size:13px;font-weight:600;text-decoration:none;">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19L5 12L12 5"/></svg>
+    Back to Backoffice
+  </a>
+
+  <div class="app">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="logo">
+          <img src="https://web.dev3.cordiomed.com/assets/new-screen-assets/components/Side%20menu%20icon.svg" alt="HearO" class="logo-mark logo-mark-collapsed" />
+          <img src="https://web.dev3.cordiomed.com/assets/icons/logo.svg" alt="HearO" class="logo-mark logo-mark-expanded" />
+        </div>
+      </div>
+
+      <nav class="nav-list">
+        <a href="index.html" class="nav-item">
+          <span class="nav-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+          </span>
+          <span class="nav-label">Dashboard</span>
+        </a>
+        <a href="patient-list.html" class="nav-item active">
+          <span class="nav-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><path d="M16 3.128a4 4 0 0 1 0 7.744"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><circle cx="9" cy="7" r="4"/></svg>
+          </span>
+          <span class="nav-label">Patient List</span>
+        </a>
+        <!-- Reports / Billing / Audit Trail / Manage Users / Support: now built as their own backoffice-safe pages in this folder (phase 2). -->
+        <a href="reports.html" class="nav-item">
+          <span class="nav-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>
+          </span>
+          <span class="nav-label">Reports</span>
+        </a>
+        <a href="billing.html" class="nav-item">
+          <span class="nav-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
+          </span>
+          <span class="nav-label">Billing</span>
+        </a>
+        <a href="audit-trail.html" class="nav-item">
+          <span class="nav-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg>
+          </span>
+          <span class="nav-label">Audit Trail</span>
+        </a>
+        <a href="manage-users.html" class="nav-item">
+          <span class="nav-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 15H6a4 4 0 0 0-4 4v2"/><path d="m14.305 16.53.923-.382"/><path d="m15.228 13.852-.923-.383"/><path d="m16.852 12.228-.383-.923"/><path d="m16.852 17.772-.383.924"/><path d="m19.148 12.228.383-.923"/><path d="m19.53 18.696-.382-.924"/><path d="m20.772 13.852.924-.383"/><path d="m20.772 16.148.924.383"/><circle cx="18" cy="15" r="3"/><circle cx="9" cy="7" r="4"/></svg>
+          </span>
+          <span class="nav-label">Manage Users</span>
+        </a>
+        <a href="support.html" class="nav-item">
+          <span class="nav-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H3v-7a9 9 0 0 1 18 0v7h-3a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"/><path d="M21 16v2a4 4 0 0 1-4 4h-5"/></svg>
+          </span>
+          <span class="nav-label">Support</span>
+        </a>
+      </nav>
+    </aside>
+
+    <!-- MAIN -->
+    <div class="main" id="main">
+
+      <!-- TOPBAR -->
+      <header class="topbar">
+        <h1 class="page-title">Patient Data</h1>
+        <div class="search">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#9AA5B1" stroke-width="1.8"/><path d="M21 21L16.5 16.5" stroke="#9AA5B1" stroke-width="1.8" stroke-linecap="round"/></svg>
+          <input type="text" placeholder="Search for a patient by Patient ID" />
+        </div>
+        <div class="topbar-actions">
+          <div class="topbar-item">
+            <button class="icon-btn" aria-label="Add" id="orgSwitchBtn">
+              <svg width="19" height="19" viewBox="0 0 24 24" fill="none"><path d="M10 3H14C14.55 3 15 3.45 15 4V9H20C20.55 9 21 9.45 21 10V14C21 14.55 20.55 15 20 15H15V20C15 20.55 14.55 21 14 21H10C9.45 21 9 20.55 9 20V15H4C3.45 15 3 14.55 3 14V10C3 9.45 3.45 9 4 9H9V4C9 3.45 9.45 3 10 3Z" stroke="#6B7684" stroke-width="1.6" stroke-linejoin="round"/></svg>
+            </button>
+            <div class="topbar-popover org-popover" id="orgPopover">
+              <label class="org-radio-item">
+                <input type="radio" name="org" value="b01" checked />
+                <span class="radio-dot"></span>
+                B01
+              </label>
+              <label class="org-radio-item">
+                <input type="radio" name="org" value="101" />
+                <span class="radio-dot"></span>
+                101
+              </label>
+            </div>
+          </div>
+          <div class="topbar-item">
+            <button class="icon-btn" aria-label="Language" id="langBtn">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#6B7684" stroke-width="1.8"/><path d="M3 12H21" stroke="#6B7684" stroke-width="1.8"/><path d="M12 3C14.5 5.7 15.8 8.8 15.8 12C15.8 15.2 14.5 18.3 12 21C9.5 18.3 8.2 15.2 8.2 12C8.2 8.8 9.5 5.7 12 3Z" stroke="#6B7684" stroke-width="1.8"/></svg>
+            </button>
+            <div class="topbar-popover org-popover" id="langPopover">
+              <label class="org-radio-item">
+                <input type="radio" name="lang" value="en" checked />
+                <span class="radio-dot"></span>
+                English
+              </label>
+              <label class="org-radio-item">
+                <input type="radio" name="lang" value="es" />
+                <span class="radio-dot"></span>
+                Español
+              </label>
+            </div>
+          </div>
+          <div class="topbar-item">
+            <button class="icon-btn badge" aria-label="Notifications" data-count="2" id="notifBtn">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M18 9.5C18 7.7 17.3 6 16 4.8C14.7 3.6 13 3 11.3 3.1C8.1 3.3 5.6 6.1 5.6 9.4V12.5C5.6 13.1 5.4 13.7 5 14.2L4 15.5C3.4 16.3 4 17.5 5 17.5H19C20 17.5 20.6 16.3 20 15.5L19 14.2C18.6 13.7 18.4 13.1 18.4 12.5" stroke="#6B7684" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M9.5 20.5C10 21.3 10.9 21.8 12 21.8C13.1 21.8 14 21.3 14.5 20.5" stroke="#6B7684" stroke-width="1.6" stroke-linecap="round"/></svg>
+            </button>
+            <div class="topbar-popover notif-popover" id="notifPopover">
+              <h3 class="notif-title">Notifications</h3>
+              <div class="notif-tabs" id="notifTabs">
+                <button class="notif-tab" data-tab="team">Team</button>
+                <button class="notif-tab active" data-tab="foryou">For you</button>
+              </div>
+              <div class="notif-list" id="notifList"></div>
+            </div>
+          </div>
+          <div class="avatar">BO</div>
+        </div>
+      </header>
+
+      <!-- CONTENT -->
+      <div class="data-content">
+
+        <!-- Discontinued account banner -->
+        <div class="discontinued-banner" id="discontinuedBanner" style="display:none;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#B23B3B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8V13"/><circle cx="12" cy="16" r="1" fill="#B23B3B" stroke="none"/></svg>
+          <span>
+            This patient's account was discontinued on <strong id="discontinuedBannerDate"></strong>.
+            <span id="discontinuedBannerReason" style="display:none;">&nbsp;Reason: <strong id="discontinuedBannerReasonText"></strong></span>
+          </span>
+        </div>
+
+        <!-- Patient header card -->
+        <div class="patient-card">
+          <div class="patient-identity">
+            <div class="patient-avatar-row">
+              <div class="patient-avatar">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.8"/><path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+              </div>
+              <div>
+                <div class="patient-name" id="patientIdHeading">ABC-123</div>
+              </div>
+              <button class="action-icon kebab" style="margin-left:10px;" aria-label="More options" id="patientHeaderKebab">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="1.7" fill="currentColor"/><circle cx="12" cy="12" r="1.7" fill="currentColor"/><circle cx="12" cy="19" r="1.7" fill="currentColor"/></svg>
+              </button>
+              <!-- Edit patient removed: it would expose/collect real name, mobile, gender -- out of scope. -->
+              <div class="row-menu" id="patientHeaderMenu">
+                <button class="row-menu-item" data-action="account">Update account</button>
+                <button class="row-menu-item" data-action="reset">Reset password</button>
+              </div>
+            </div>
+            <div class="patient-priority-row">
+              <span class="priority-tag">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="#F16C6C"><path d="M12 21C12 21 4 15.5 4 9.8C4 6.6 6.5 4.5 9.2 4.5C10.6 4.5 11.6 5.1 12 5.7C12.4 5.1 13.4 4.5 14.8 4.5C17.5 4.5 20 6.6 20 9.8C20 15.5 12 21 12 21Z"/></svg>
+                Priority
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M5 21V4" stroke="#F16C6C" stroke-width="1.8" stroke-linecap="round"/><path d="M5 4H16L13.5 8L16 12H5" stroke="#F16C6C" stroke-width="1.8" stroke-linejoin="round"/></svg>
+              </span>
+              <!-- Care Recommendation button removed: the whole flow is out of scope for Backoffice (see care-recommendation.html, an access-restricted stub, not a real form). -->
+            </div>
+          </div>
+
+          <div class="patient-contact-wrap">
+            <div class="patient-contact">
+              <!-- Phone numbers removed (Contact Information / re-identifying PHI). -->
+              <div class="contact-item" title="Onboarding 12.01.2025">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="17" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3 9H21" stroke="currentColor" stroke-width="1.8"/></svg>
+                <span class="contact-item-text">Onboarding 12.01.2025</span>
+              </div>
+              <div class="contact-item" title="English">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><path d="M3 12H21" stroke="currentColor" stroke-width="1.8"/><path d="M12 3C14.5 5.7 15.8 8.8 15.8 12C15.8 15.2 14.5 18.3 12 21C9.5 18.3 8.2 15.2 8.2 12C8.2 8.8 9.5 5.7 12 3Z" stroke="currentColor" stroke-width="1.8"/></svg>
+                <span class="contact-item-text">English</span>
+              </div>
+              <div class="contact-item" title="71 Years Old">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 4L4 8V13C4 17 7.5 20.4 12 21C16.5 20.4 20 17 20 13V8L12 4Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>
+                <span class="contact-item-text">71 Years Old</span>
+              </div>
+              <div class="contact-item" title="Female">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="5" stroke="currentColor" stroke-width="1.7"/><path d="M12 13V21M8 17H16" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+                <span class="contact-item-text">Female</span>
+              </div>
+            </div>
+
+            <div class="care-app-row">
+              <div class="care-app-chip" id="careTeamTrigger">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="9" cy="8" r="3.2" stroke="currentColor" stroke-width="1.7"/><path d="M2.5 20C2.5 16.5 5.5 14 9 14C12.5 14 15.5 16.5 15.5 20" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><circle cx="17" cy="8.5" r="2.6" stroke="currentColor" stroke-width="1.5"/><path d="M15.5 20C15.5 17 17.8 15 20.5 15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                <span class="contact-item-text">Care Team</span>
+                <span class="care-team-more">4</span>
+                <svg class="chip-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                <div class="topbar-popover care-team-popover" id="careTeamPopover">
+                  <div class="care-team-popover-title">Care Team</div>
+                  <div class="care-team-popover-item">
+                    <span class="care-team-popover-name">Dr. Sarah Mitchell</span>
+                    <span class="care-team-popover-role">Doctor · Provider</span>
+                  </div>
+                  <div class="care-team-popover-item">
+                    <span class="care-team-popover-name">Amanda Lee</span>
+                    <span class="care-team-popover-role">Nurse · Care Team</span>
+                  </div>
+                  <div class="care-team-popover-item">
+                    <span class="care-team-popover-name">Ayelet Er</span>
+                    <span class="care-team-popover-role">Nurse · Care Team</span>
+                  </div>
+                  <div class="care-team-popover-item">
+                    <span class="care-team-popover-name">Sandy Kohl</span>
+                    <span class="care-team-popover-role">Nurse · Care Team</span>
+                  </div>
+                </div>
+              </div>
+              <div class="care-app-chip" id="appDeviceTrigger">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="4" y="2" width="16" height="20" rx="3" stroke="currentColor" stroke-width="1.7"/><circle cx="12" cy="18" r="1" fill="currentColor"/></svg>
+                <span class="contact-item-text">App &amp; Device Info</span>
+                <svg class="chip-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                <!-- Device phone-number-style identifier removed from this popover (re-identifying); model + app version + last-active kept as operational. -->
+                <div class="topbar-popover care-team-popover" id="appDevicePopover">
+                  <div class="care-team-popover-title">App &amp; Device Info</div>
+                  <div class="care-team-popover-item">
+                    <span class="care-team-popover-name">Device</span>
+                    <span class="care-team-popover-role">SMA346E</span>
+                  </div>
+                  <div class="care-team-popover-item">
+                    <span class="care-team-popover-name">App Version</span>
+                    <span class="care-team-popover-role">v1.0.1.0</span>
+                  </div>
+                  <div class="care-team-popover-item">
+                    <span class="care-team-popover-name">Last Active</span>
+                    <span class="care-team-popover-role">08/01/2026</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="patient-stats">
+            <div>
+              <div class="stat-row-head">
+                <span>MONTHLY MONITORING TIME</span>
+                <span>03 Minutes in January</span>
+              </div>
+              <div class="stat-bar-track">
+                <span class="stat-bar-num">0</span>
+                <div class="stat-bar"><div class="stat-bar-fill" style="width:15%"></div></div>
+                <span class="stat-bar-num">20</span>
+              </div>
+            </div>
+            <div>
+              <div class="stat-row-head">
+                <span>PATIENT MONTHLY COMPLIANCE</span>
+                <span>08 Days in January</span>
+              </div>
+              <div class="stat-bar-track">
+                <span class="stat-bar-num">0</span>
+                <div class="stat-bar"><div class="stat-bar-fill" style="width:50%"></div></div>
+                <span class="stat-bar-num">16</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Overview (status trend, not clinical values) -->
+        <div class="section-title-row">
+          <h2 class="section-title">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 17L9 11L13 15L21 7" stroke="#23272E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M15 7H21V13" stroke="#23272E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Overview
+          </h2>
+          <div class="date-pill">
+            <span class="date-label">Date</span> 01.10.2026
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="17" rx="2" stroke="#6B7684" stroke-width="1.8"/><path d="M3 9H21" stroke="#6B7684" stroke-width="1.8"/></svg>
+          </div>
+        </div>
+
+        <div class="overview-card">
+          <div class="overview-head-row">
+            <h3 class="overview-heading">HearO</h3>
+            <div class="overview-legend">
+              <div class="legend-group">
+                <span class="legend-group-label">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 21C12 21 4 15.5 4 9.8C4 6.6 6.5 4.5 9.2 4.5C10.6 4.5 11.6 5.1 12 5.7C12.4 5.1 13.4 4.5 14.8 4.5C17.5 4.5 20 6.6 20 9.8C20 15.5 12 21 12 21Z" stroke="#23272E" stroke-width="1.7"/></svg>
+                  Status:
+                </span>
+                <span class="legend-chip"><span class="dot-outline"></span> Active</span>
+                <span class="legend-chip"><span class="dot-fill-red"></span> Priority</span>
+                <span class="legend-chip"><span class="dot-square-gray"></span> Baseline</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="chart-nav">
+            <button class="chart-arrow" aria-label="Earlier">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M15 6L9 12L15 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <div class="chart-wrap" id="overviewChartWrap"></div>
+            <button class="chart-arrow" aria-label="Later">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M9 6L15 12L9 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+          </div>
+
+          <div class="chart-day-scale" id="chartDayScale"></div>
+          <div class="chart-month-row"><span>Dec</span><span>Jan</span></div>
+        </div>
+
+        <!-- Recordings: the only remaining data tab. Health Data (vitals charts),
+             Clinical (Medication + Care Recommendations), Questionnaire (answers),
+             and Patient Information (Contact/Emergency Contact PHI) tabs are
+             removed entirely per the redaction policy -- not hidden placeholders,
+             just not present. -->
+        <div class="data-tabs-card">
+          <div class="data-tab-row">
+            <div class="data-tab-group">
+              <button class="data-tab open" data-tab="recordings">
+                Recordings
+              </button>
+            </div>
+            <div class="range-toggle" id="dataRangeToggle">
+              <span data-range="week">Week</span>
+              <span class="active" data-range="month">Month</span>
+            </div>
+          </div>
+
+          <!-- Recordings panel: presence/absence only, never recording content -->
+          <div class="data-tab-panel open" data-panel="recordings">
+            <div class="recordings-row">
+              <button class="chart-arrow" aria-label="Earlier"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15 6L9 12L15 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+              <div class="rec-scroll" id="recordingsRow"></div>
+              <button class="chart-arrow" aria-label="Later"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 6L15 12L9 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+            </div>
+            <div class="chart-month-row" id="recMonthRow"><span>Dec</span><span>Jan</span></div>
+            <div class="rec-legend">
+              <span><span class="dot rec-none"></span> Did not record</span>
+              <span><span class="dot rec-valid"><svg width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span> Valid recording</span>
+              <span><span class="dot rec-low">!</span> Low quality</span>
+            </div>
+
+            <!-- Compliance: aggregate operational numbers, not clinical content -->
+            <div class="compliance-card compliance-card-inline">
+              <div class="section-title-row" style="margin-top:0;">
+                <h2 class="section-title" style="margin:0;">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#23272E" stroke-width="1.8"/><path d="M8.5 12.3L10.6 14.4L15.5 9.3" stroke="#23272E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  Compliance
+                </h2>
+              </div>
+
+              <div class="compliance-box">
+                <div class="compliance-highlight-grid">
+                  <div class="compliance-highlight compliance-highlight-blue">
+                    <span class="compliance-highlight-label">Total Compliance</span>
+                    <span class="compliance-highlight-value">69%</span>
+                    <div class="goal-progress-track"><div class="goal-progress-fill fill-blue" style="width:69%;"></div></div>
+                  </div>
+                  <div class="compliance-highlight compliance-highlight-orange">
+                    <span class="compliance-highlight-label">Usable Compliance</span>
+                    <span class="compliance-highlight-value">59%</span>
+                    <div class="goal-progress-track"><div class="goal-progress-fill fill-orange" style="width:59%;"></div></div>
+                  </div>
+                </div>
+
+                <div class="compliance-group">
+                  <h3 class="compliance-group-title">Compliance Details</h3>
+                  <div class="compliance-detail-grid">
+                    <div class="compliance-detail-item"><span class="compliance-detail-label">Monitoring Start Date</span><span class="compliance-detail-value">11/12/2025</span></div>
+                    <div class="compliance-detail-item"><span class="compliance-detail-label">Total Available Days</span><span class="compliance-detail-value">29</span></div>
+                    <div class="compliance-detail-item"><span class="compliance-detail-label">Total Recorded Days</span><span class="compliance-detail-value">20</span></div>
+                    <div class="compliance-detail-item"><span class="compliance-detail-label">Un-recorded / Missed Days</span><span class="compliance-detail-value">9</span></div>
+                    <div class="compliance-detail-item"><span class="compliance-detail-label">Non-valid ASR Days</span><span class="compliance-detail-value">3</span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- History Events: administrative categories only (Account/Status/Monitoring/Other).
+             Medication category and its tab are dropped entirely; any note text
+             naming a person or describing clinical specifics is stripped -- see
+             js/patient-data.js. -->
+        <div class="history-card">
+          <div class="section-title-row">
+            <h2 class="section-title" style="margin:0;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="17" rx="2" stroke="#23272E" stroke-width="1.8"/><path d="M3 9H21" stroke="#23272E" stroke-width="1.8"/></svg>
+              History Events
+            </h2>
+            <button type="button" class="history-add-event-btn" id="openAddEventBtn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
+              Add Event
+            </button>
+          </div>
+          <div class="history-tabs" id="historyTabs">
+            <span data-tab="all" class="active">All</span>
+            <span data-tab="account">Account</span>
+            <span data-tab="status">Status</span>
+            <span data-tab="monitoring">Monitoring</span>
+            <span data-tab="other">Other</span>
+          </div>
+          <div class="history-table-scroll">
+            <table class="history-table">
+              <thead>
+                <tr><th>EVENT</th><th>DATE</th><th>NOTE</th></tr>
+              </thead>
+              <tbody id="historyRows"></tbody>
+            </table>
+          </div>
+          <div class="history-load-more-row" id="historyLoadMoreRow" style="display:none;">
+            <button type="button" class="history-load-more-btn" id="historyLoadMoreBtn">Load more</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Event modal (Medication category dropped -- no medication events shown here) -->
+  <div class="modal-overlay" id="addEventOverlay">
+    <div class="modal">
+      <h2>Add Event</h2>
+      <form id="addEventForm">
+        <div class="form-field">
+          <label>Category<span class="required-star">*</span></label>
+          <div class="custom-select" id="addEventCategorySelect" data-name="category">
+            <button type="button" class="custom-select-trigger">
+              <span class="custom-select-value placeholder">Select category</span>
+              <svg class="custom-select-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="custom-select-menu">
+              <div class="custom-select-option" data-value="account">Account<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              <div class="custom-select-option" data-value="status">Status<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              <div class="custom-select-option" data-value="monitoring">Monitoring<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              <div class="custom-select-option" data-value="other">Other<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            </div>
+            <input type="hidden" name="category" required />
+          </div>
+        </div>
+        <div class="form-field">
+          <label>Event<span class="required-star">*</span></label>
+          <input type="text" name="label" placeholder="e.g. Account changed to Enabled" required />
+        </div>
+        <div class="form-field">
+          <label>Date<span class="required-star">*</span></label>
+          <input type="date" name="date" required />
+        </div>
+        <div class="form-field">
+          <label>Time</label>
+          <input type="time" name="time" />
+        </div>
+        <div class="form-field">
+          <label>Note</label>
+          <textarea name="note" placeholder="Optional note"></textarea>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-text" id="cancelAddEvent">Cancel</button>
+          <button type="submit" class="btn-save" id="saveAddEvent" disabled>Add Event</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Add Note modal -->
+  <div class="modal-overlay" id="addNoteOverlay">
+    <div class="modal">
+      <h2>Add Note</h2>
+      <p class="account-modal-subtitle" id="addNoteEventLabel">&nbsp;</p>
+      <form id="addNoteForm">
+        <div class="form-field">
+          <label>Note<span class="required-star">*</span></label>
+          <textarea name="note" placeholder="Add a note for this event" required></textarea>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-text" id="cancelAddNote">Cancel</button>
+          <button type="submit" class="btn-save" id="saveAddNote" disabled>Save Note</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Update Account modal -->
+  <div class="modal-overlay" id="updateAccountOverlay">
+    <div class="modal">
+      <h2>Update Account</h2>
+      <p class="account-modal-subtitle" id="updateAccountSubtitle">&nbsp;</p>
+
+      <div class="account-radio-list">
+        <label class="account-radio-item">
+          <input type="radio" name="accountAction" value="Paused" />
+          <span class="radio-dot"></span>
+          Move to Paused
+        </label>
+        <label class="account-radio-item">
+          <input type="radio" name="accountAction" value="Discontinued" />
+          <span class="radio-dot"></span>
+          Move to Discontinued
+        </label>
+      </div>
+
+      <div class="form-field account-discontinue-reason" id="discontinueReasonField" style="display:none;">
+        <label>Reason for discontinuation<span class="required-star">*</span></label>
+        <div class="custom-select" id="discontinueReasonSelect" data-name="discontinueReason">
+          <button type="button" class="custom-select-trigger">
+            <span class="custom-select-value placeholder">Select a reason</span>
+            <svg class="custom-select-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="custom-select-menu">
+            <div class="custom-select-option" data-value="Clinical improvement">Clinical improvement<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="custom-select-option" data-value="Patient request">Patient request<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="custom-select-option" data-value="Non-compliance">Non-compliance<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="custom-select-option" data-value="Transferred to another provider">Transferred to another provider<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="custom-select-option" data-value="Deceased">Deceased<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="custom-select-option" data-value="Other">Other<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          </div>
+          <input type="hidden" name="discontinueReason" />
+        </div>
+      </div>
+
+      <div class="form-field account-discontinue-reason" id="discontinueReasonOtherField" style="display:none;">
+        <label>Please specify<span class="required-star">*</span></label>
+        <textarea id="discontinueReasonOther" placeholder="Explain why this patient's account is being discontinued"></textarea>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn-text" id="cancelUpdateAccount">Cancel</button>
+        <button type="button" class="btn-save" id="saveUpdateAccount" disabled>Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reset Password modal -->
+  <div class="modal-overlay" id="resetPasswordOverlay">
+    <div class="modal">
+      <h2>Send Reset Link</h2>
+      <p class="account-modal-subtitle" style="margin-bottom:22px;">
+        Are you sure you want to send a password reset link to this patient?
+      </p>
+
+      <div class="modal-actions">
+        <button type="button" class="btn-text" id="cancelResetPassword">Cancel</button>
+        <button type="button" class="btn-save enabled" id="confirmResetPassword">Send</button>
+      </div>
+    </div>
+  </div>
+
+<!-- Reused unmodified from the root clinic portal: pure layout/table-fit helper, no patient data or PHI. -->
+<script src="../../js/table-scroll.js"></script>
+<!-- Forked: redacted notifications feed. -->
+<script src="js/topbar.js"></script>
+<!-- Forked: redacted patient chart data + rendering (root js/patient-data.js mixes patient PHI into render logic; whole Health Data/Clinical/Questionnaire/Patient Information/Chat features are dropped here). -->
+<script src="js/patient-data.js"></script>
+</body>
+</html>
