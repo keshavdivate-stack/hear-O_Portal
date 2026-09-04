@@ -22,7 +22,10 @@ const CLINIC_PATIENT_COUNT = Object.values(CLINIC_STATUS_TARGETS).reduce((a, b) 
 function clinicPad4(n) { return String(n).padStart(4, "0"); }
 function clinicPatientId(n) { return `B01-${clinicPad4(n)}`; }
 
-/* Rows confirmed from the reference screens; every other patient below is generated. */
+/* Rows confirmed from the reference screens; every other patient below is generated.
+   enrollmentDate: null means "not hardcoded from a screenshot" -- the builder below
+   fills in a synthesized date before that row's statusSince, same as every
+   generated (non-override) patient, so every row gets a real Enrollment Date. */
 const CLINIC_PATIENT_OVERRIDES = {
   1: { enrollmentDate: new Date(2024, 5, 29), status: "Baseline", statusSince: new Date(2024, 11, 6) },
   2: { enrollmentDate: new Date(2024, 5, 29), status: "Baseline", statusSince: new Date(2025, 10, 16) },
@@ -98,6 +101,15 @@ function clinicBuildFillQueue() {
   return queue;
 }
 
+/* Enrollment always precedes statusSince by 10-210 days -- used both for
+   generated (non-override) patients and to backfill the overrides above that
+   didn't hardcode one (every patient gets a real Enrollment Date). */
+function clinicEnrollmentBefore(statusSince, rand) {
+  const enrollmentDate = new Date(statusSince);
+  enrollmentDate.setDate(enrollmentDate.getDate() - (10 + Math.floor(rand() * 200)));
+  return enrollmentDate;
+}
+
 function clinicSynthesizeDates(id, status, rand) {
   const today = new Date(2026, 8, 4);
   /* Priority is kept older than the hardcoded "recently turned Priority" rows
@@ -107,13 +119,7 @@ function clinicSynthesizeDates(id, status, rand) {
   const daysAgoSince = status === "Priority" ? 345 + Math.floor(rand() * 360) : 5 + Math.floor(rand() * 700);
   const statusSince = new Date(today);
   statusSince.setDate(statusSince.getDate() - daysAgoSince);
-
-  const needsEnrollment = status === "Baseline" || status === "Active" || status === "Discontinued";
-  let enrollmentDate = null;
-  if (needsEnrollment) {
-    enrollmentDate = new Date(statusSince);
-    enrollmentDate.setDate(enrollmentDate.getDate() - (10 + Math.floor(rand() * 200)));
-  }
+  const enrollmentDate = clinicEnrollmentBefore(statusSince, rand);
   return { enrollmentDate, statusSince };
 }
 
@@ -126,7 +132,8 @@ const CLINIC_PATIENTS = (() => {
   for (let n = 1; n <= CLINIC_PATIENT_COUNT; n++) {
     const override = CLINIC_PATIENT_OVERRIDES[n];
     if (override) {
-      rows.push({ id: clinicPatientId(n), n, status: override.status, enrollmentDate: override.enrollmentDate, statusSince: override.statusSince });
+      const enrollmentDate = override.enrollmentDate || clinicEnrollmentBefore(override.statusSince, rand);
+      rows.push({ id: clinicPatientId(n), n, status: override.status, enrollmentDate, statusSince: override.statusSince });
       continue;
     }
     const status = fillQueue[fillIdx++];
@@ -173,5 +180,5 @@ const CLINIC_STATUS_BADGE_META = {
 
 function clinicStatusBadgeHtml(status) {
   const meta = CLINIC_STATUS_BADGE_META[status] || { color: "#23272E", icon: "" };
-  return `<b style="color:${meta.color}; font-weight:700;">${status}</b>${meta.icon}`;
+  return `<b style="color:${meta.color}; font-weight:700;">${status}${meta.icon}</b>`;
 }
