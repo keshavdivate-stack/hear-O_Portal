@@ -150,6 +150,10 @@
         </div>
       </div>
       <div class="bo-profile-topbar-actions">
+        <button class="bo-btn-secondary" id="rmDownloadReportBtn">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3V15"/><path d="M7 10L12 15L17 10"/><path d="M4 19H20"/></svg>
+          Download Report
+        </button>
         <button class="bo-btn-secondary" id="rmSendReportBtn">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4 20-7Z"/></svg>
           Send Report
@@ -252,6 +256,14 @@
           <div class="bo-select-menu" id="rmHistStatusFilterMenu"></div>
           <input type="hidden" id="rmHistStatusFilter" />
         </div>
+        <div class="bo-select" data-name="rmHistDateRange">
+          <button type="button" class="bo-select-trigger">
+            <span class="bo-select-value">Last 7 days</span>
+            <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="bo-select-menu" id="rmHistDateRangeFilterMenu"></div>
+          <input type="hidden" id="rmHistDateRangeFilter" value="7" />
+        </div>
         <button class="bo-btn-secondary" id="rmClearHistoryFiltersBtn">Clear Filters</button>
       </div>
 
@@ -297,8 +309,15 @@
 
       <form id="rmExportForm">
         <div class="bo-modal-field">
-          <label>Report</label>
-          <input type="text" id="rmExportReportName" disabled />
+          <label>Report<span class="required-star">*</span></label>
+          <div class="bo-select" data-name="exportReport" id="rmExportReportSelect">
+            <button type="button" class="bo-select-trigger">
+              <span class="bo-select-value placeholder">Select report</span>
+              <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="bo-select-menu" id="rmExportReportMenu"></div>
+            <input type="hidden" />
+          </div>
         </div>
 
         <div class="bo-modal-field">

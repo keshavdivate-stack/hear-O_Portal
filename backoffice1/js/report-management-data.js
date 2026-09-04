@@ -125,13 +125,21 @@ let rmSchedules = [
   },
 ];
 
+/* `daysAgo` backs the Report History "Date Range" filter (Last 7/30/90 days,
+   All time) -- sentOn stays a display-only string since it's already
+   formatted the way each row should read ("Today", "Yesterday", a weekday,
+   or a short date), same as everywhere else in this file. */
 let rmHistorySeq = 0;
 const rmHistory = [
-  { id: rmHistorySeq++, reportKey: "missedRecordings", org: "HMO Clalit", sentOn: "Today, 10:22 AM", recipients: 3, status: "Delivered" },
-  { id: rmHistorySeq++, reportKey: "missedRecordings", org: "HMO Clalit", sentOn: "Today, 08:57 AM", recipients: 2, status: "Delivered" },
-  { id: rmHistorySeq++, reportKey: "clinicSummary", org: "Maccabi West", sentOn: "Fri, 04:00 PM", recipients: 1, status: "Failed", failureReason: "SMTP relay timed out after 3 retries." },
-  { id: rmHistorySeq++, reportKey: "clinicPriorityNotification", org: "B01 Pilot", sentOn: "Today, 12:15 PM", recipients: 2, status: "Failed", failureReason: "1 of 2 recipient addresses bounced." },
-  { id: rmHistorySeq++, reportKey: "qualityNotification", org: "Assuta Cardio", sentOn: "Mon, 09:00 AM", recipients: 1, status: "Delivered" },
-  { id: rmHistorySeq++, reportKey: "lowCompliance", org: "Clalit South", sentOn: "Aug 1, 09:00 AM", recipients: 2, status: "Delivered" },
-  { id: rmHistorySeq++, reportKey: "missedRecordings", org: "HMO Clalit", sentOn: "Yesterday, 10:22 AM", recipients: 3, status: "Processing" },
+  { id: rmHistorySeq++, reportKey: "missedRecordings", org: "HMO Clalit", sentOn: "Today, 10:22 AM", daysAgo: 0, recipients: 3, status: "Delivered" },
+  { id: rmHistorySeq++, reportKey: "missedRecordings", org: "HMO Clalit", sentOn: "Today, 08:57 AM", daysAgo: 0, recipients: 2, status: "Delivered" },
+  { id: rmHistorySeq++, reportKey: "clinicSummary", org: "Maccabi West", sentOn: "Fri, 04:00 PM", daysAgo: 3, recipients: 1, status: "Failed", failureReason: "SMTP relay timed out after 3 retries." },
+  { id: rmHistorySeq++, reportKey: "clinicPriorityNotification", org: "B01 Pilot", sentOn: "Today, 12:15 PM", daysAgo: 0, recipients: 2, status: "Failed", failureReason: "1 of 2 recipient addresses bounced." },
+  { id: rmHistorySeq++, reportKey: "qualityNotification", org: "Assuta Cardio", sentOn: "Mon, 09:00 AM", daysAgo: 5, recipients: 1, status: "Delivered" },
+  { id: rmHistorySeq++, reportKey: "lowCompliance", org: "Clalit South", sentOn: "Aug 1, 09:00 AM", daysAgo: 7, recipients: 2, status: "Delivered" },
+  { id: rmHistorySeq++, reportKey: "missedRecordings", org: "HMO Clalit", sentOn: "Yesterday, 10:22 AM", daysAgo: 1, recipients: 3, status: "Processing" },
+  { id: rmHistorySeq++, reportKey: "recordingErrors", org: "HMO Clalit", sentOn: "Jul 25, 11:40 AM", daysAgo: 14, recipients: 2, status: "Delivered" },
+  { id: rmHistorySeq++, reportKey: "clinicSummary", org: "Maccabi West", sentOn: "Jul 10, 04:00 PM", daysAgo: 29, recipients: 1, status: "Delivered" },
+  { id: rmHistorySeq++, reportKey: "qualityNotification", org: "Assuta Cardio", sentOn: "Jun 20, 09:00 AM", daysAgo: 49, recipients: 1, status: "Delivered" },
+  { id: rmHistorySeq++, reportKey: "lowCompliance", org: "Clalit South", sentOn: "May 5, 09:00 AM", daysAgo: 95, recipients: 2, status: "Delivered" },
 ];

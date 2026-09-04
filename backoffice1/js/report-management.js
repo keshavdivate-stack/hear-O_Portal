@@ -252,15 +252,36 @@ let rmHistReportFilter = "";
 let rmHistOrgFilter = "";
 let rmHistStatusFilter = "";
 
+/* Unlike the other history filters (blank = "no filter"), Date Range always
+   has a value -- it defaults to the last 7 days so the table doesn't dump a
+   long tail of old deliveries on first load, with Last 30/90 days and All
+   time available for anyone who needs to look further back. */
+const RM_DATE_RANGE_OPTIONS = [
+  { days: 7, label: "Last 7 days" },
+  { days: 30, label: "Last 30 days" },
+  { days: 90, label: "Last 90 days" },
+  { days: Infinity, label: "All time" },
+];
+let rmHistDateRangeFilter = 7;
+
 document.getElementById("rmHistReportFilterMenu").innerHTML = buildFilterSelectOptions(RM_REPORTS.map((r) => r.label), "All reports");
 document.getElementById("rmHistOrgFilterMenu").innerHTML = buildFilterSelectOptions(RM_ORGS, "All organisations");
 document.getElementById("rmHistStatusFilterMenu").innerHTML = buildFilterSelectOptions(RM_DELIVERY_STATUSES, "All delivery statuses");
+document.getElementById("rmHistDateRangeFilterMenu").innerHTML = RM_DATE_RANGE_OPTIONS
+  .map(
+    (o) => `
+      <div class="bo-select-option${o.days === rmHistDateRangeFilter ? " selected" : ""}" data-value="${o.days}">${o.label}
+        <svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>`
+  )
+  .join("");
 
 function rmFilteredHistory() {
   return rmHistory.filter((h) => {
     if (rmHistReportFilter && rmReportLabel(h.reportKey) !== rmHistReportFilter) return false;
     if (rmHistOrgFilter && h.org !== rmHistOrgFilter) return false;
     if (rmHistStatusFilter && h.status !== rmHistStatusFilter) return false;
+    if (h.daysAgo > rmHistDateRangeFilter) return false;
     return true;
   });
 }
@@ -293,7 +314,7 @@ const rmHistoryEmptyHtml = `
 const rmHistoryPager = boCreatePager("rmHistoryRows", () => rmFilteredHistory(), rmRenderHistoryRow, { pageSize: 8, emptyHtml: rmHistoryEmptyHtml });
 
 function rmHistoryFiltersActive() {
-  return !!(rmHistReportFilter || rmHistOrgFilter || rmHistStatusFilter);
+  return !!(rmHistReportFilter || rmHistOrgFilter || rmHistStatusFilter || rmHistDateRangeFilter !== 7);
 }
 
 function rmRefreshHistoryEmptyState() {
@@ -319,12 +340,15 @@ rmRenderHistory();
 document.getElementById("rmHistReportFilter").addEventListener("change", (e) => { rmHistReportFilter = e.target.value; rmHistoryPager.resetPage(); rmRenderHistory(); });
 document.getElementById("rmHistOrgFilter").addEventListener("change", (e) => { rmHistOrgFilter = e.target.value; rmHistoryPager.resetPage(); rmRenderHistory(); });
 document.getElementById("rmHistStatusFilter").addEventListener("change", (e) => { rmHistStatusFilter = e.target.value; rmHistoryPager.resetPage(); rmRenderHistory(); });
+document.getElementById("rmHistDateRangeFilter").addEventListener("change", (e) => { rmHistDateRangeFilter = Number(e.target.value); rmHistoryPager.resetPage(); rmRenderHistory(); });
 
 function rmClearHistoryFilters() {
   rmHistReportFilter = "";
   rmHistOrgFilter = "";
   rmHistStatusFilter = "";
-  document.querySelectorAll('#tab-history .bo-select').forEach(resetBoSelect);
+  rmHistDateRangeFilter = 7;
+  document.querySelectorAll('#tab-history .bo-select:not([data-name="rmHistDateRange"])').forEach(resetBoSelect);
+  setBoSelectValue(document.querySelector('#tab-history .bo-select[data-name="rmHistDateRange"]'), "7", { silent: true });
   rmHistoryPager.resetPage();
   rmRenderHistory();
 }
@@ -457,14 +481,30 @@ rmScheduleRowMenu.addEventListener("click", (e) => {
 const rmExportOverlay = document.getElementById("rmExportOverlay");
 const rmExportForm = document.getElementById("rmExportForm");
 const rmExportBtn = document.getElementById("rmExportBtn");
+const rmExportReportSelect = document.getElementById("rmExportReportSelect");
 let rmExportScheduleId = null;
 
+/* Reused for both entry points: a row's kebab "Export Report" (pre-selects
+   that row's report, dropdown still shown but locked in) and the page-level
+   "Download Report" button (opens with nothing selected so the admin picks
+   which scheduled report to export). */
+function rmExportOptionLabel(s) {
+  return `${rmReportLabel(s.reportKey)} — ${s.org} (${s.name})`;
+}
+
 function openExportReport(id) {
-  const s = rmSchedules.find((x) => x.id === id);
-  if (!s) return;
-  rmExportScheduleId = id;
   rmExportForm.reset();
-  document.getElementById("rmExportReportName").value = s.name;
+  document.getElementById("rmExportReportMenu").innerHTML = rmSchedules
+    .map((s) => `
+      <div class="bo-select-option" data-value="${s.id}">${rmEsc(rmExportOptionLabel(s))}
+        <svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>`)
+    .join("");
+
+  const s = rmSchedules.find((x) => x.id === id);
+  rmExportScheduleId = s ? id : null;
+  setBoSelectValue(rmExportReportSelect, s ? String(id) : "", { silent: true });
+
   rmExportBtn.disabled = true;
   rmExportOverlay.classList.add("open");
 }
@@ -475,13 +515,19 @@ function closeExportReport() {
 }
 
 function validateExportForm() {
-  rmExportBtn.disabled = !(rmExportForm.fromDate.value && rmExportForm.toDate.value);
+  const reportChosen = rmExportReportSelect.querySelector("input[type=hidden]").value !== "";
+  rmExportBtn.disabled = !(reportChosen && rmExportForm.fromDate.value && rmExportForm.toDate.value);
 }
 
+rmExportReportSelect.querySelector("input[type=hidden]").addEventListener("change", (e) => {
+  rmExportScheduleId = e.target.value ? Number(e.target.value) : null;
+  validateExportForm();
+});
 rmExportForm.addEventListener("input", validateExportForm);
 rmExportForm.addEventListener("change", validateExportForm);
 document.getElementById("rmCancelExport").addEventListener("click", closeExportReport);
 rmExportOverlay.addEventListener("click", (e) => { if (e.target === rmExportOverlay) closeExportReport(); });
+document.getElementById("rmDownloadReportBtn").addEventListener("click", () => openExportReport(null));
 
 rmExportForm.addEventListener("submit", (e) => {
   e.preventDefault();
