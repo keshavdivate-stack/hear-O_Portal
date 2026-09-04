@@ -188,3 +188,96 @@ if (notifTabsEl) {
 
   renderFab();
 })();
+
+/* ---------------- "More" menu info modals: View Version / Terms of Service /
+   Privacy Notice / Instructions for Use. Built once and appended to <body>
+   here (rather than duplicated into every page's HTML) since every clinic
+   portal page loads this same script. */
+(function initMoreMenuModals() {
+  function buildModal(id, title, bodyHtml) {
+    const overlay = document.createElement("div");
+    overlay.className = "info-modal-overlay";
+    overlay.id = id;
+    overlay.innerHTML = `
+      <div class="info-modal">
+        <h2>${title}</h2>
+        ${bodyHtml}
+        <div class="info-modal-foot">
+          <button type="button" class="btn-save enabled" data-close-info-modal>Close</button>
+        </div>
+      </div>`;
+    document.body.appendChild(overlay);
+    overlay.addEventListener("click", (e) => {
+      if (e.target === overlay || e.target.closest("[data-close-info-modal]")) overlay.classList.remove("open");
+    });
+    return overlay;
+  }
+
+  function wireInfoModal(triggerId, overlay) {
+    const trigger = document.getElementById(triggerId);
+    if (!trigger) return;
+    trigger.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      closeAllTopbarPopovers();
+      overlay.classList.add("open");
+    });
+  }
+
+  const VERSIONS = [
+    { label: "Client", value: "2.0.62.11" },
+    { label: "Server", value: "2.0.203.9" },
+    { label: "Report Microservice", value: "2.0.37.21" },
+    { label: "Statistic Microservice", value: "1.0.39.2" },
+    { label: "Audit Log Microservice", value: "2.0.3.2" },
+    { label: "Settings Service", value: "1.0.35.5" },
+    { label: "Session Recording Service", value: "1.0.22.10" },
+    { label: "Engine Service", value: "2.0.33.19" },
+    { label: "Clinic Microservice", value: "1.0.0.24" },
+  ];
+
+  wireInfoModal(
+    "viewVersionBtn",
+    buildModal(
+      "viewVersionOverlay",
+      "Versions",
+      `<div class="version-list">${VERSIONS.map((v) => `<div class="version-row"><span>${v.label}</span><span>${v.value}</span></div>`).join("")}</div>`
+    )
+  );
+
+  wireInfoModal(
+    "termsOfServiceBtn",
+    buildModal(
+      "termsOfServiceOverlay",
+      "Terms of Service",
+      `<div class="info-modal-body">
+        <p>By using the HearO clinic portal you agree to use it only for authorized patient care and administrative purposes, and to protect the confidentiality of any patient information you access.</p>
+        <p>Full terms are provided to your organization at onboarding and are available from your account administrator.</p>
+      </div>`
+    )
+  );
+
+  wireInfoModal(
+    "privacyNoticeBtn",
+    buildModal(
+      "privacyNoticeOverlay",
+      "Privacy Notice",
+      `<div class="info-modal-body">
+        <p>Patient data in this portal is collected and processed solely to support clinical monitoring and care coordination, in line with applicable healthcare privacy regulations.</p>
+        <p>Access is logged and limited to authorized care team members. Contact your privacy officer for the full policy.</p>
+      </div>`
+    )
+  );
+
+  wireInfoModal(
+    "instructionsForUseBtn",
+    buildModal(
+      "instructionsForUseOverlay",
+      "Instructions for Use",
+      `<div class="info-modal-body">
+        <p>Use the sidebar to navigate between the Dashboard, Patient List, Billing, Audit Trail, Manage Users, CTM and Support sections.</p>
+        <p>For step-by-step device setup and monitoring guidance, see the Patient Onboarding Guide from the profile menu.</p>
+      </div>`
+    )
+  );
+})();

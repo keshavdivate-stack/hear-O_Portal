@@ -149,18 +149,32 @@
           </button>
           <div class="topbar-item">
             <button class="avatar avatar-btn" aria-label="Profile" id="profileBtn">EC</button>
-            <div class="topbar-popover more-popover" id="profilePopover">
-              <a href="study-material.html" class="more-menu-item">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6C2 4.9 2.9 4 4 4H10C11.1 4 12 4.9 12 6V20C12 19.4 11.1 19 10 19H4C2.9 19 2 18.4 2 17.8V6Z"/><path d="M22 6C22 4.9 21.1 4 20 4H14C12.9 4 12 4.9 12 6V20C12 19.4 12.9 19 14 19H20C21.1 19 22 18.4 22 17.8V6Z"/></svg>
-                Patient Onboarding Guide
-              </a>
-            </div>
           </div>
           <div class="topbar-item">
             <button class="icon-btn" aria-label="More" id="moreBtn">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="1.6" fill="#6B7684"/><circle cx="12" cy="12" r="1.6" fill="#6B7684"/><circle cx="12" cy="19" r="1.6" fill="#6B7684"/></svg>
             </button>
             <div class="topbar-popover more-popover" id="morePopover">
+              <a href="study-material.html" class="more-menu-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6C2 4.9 2.9 4 4 4H10C11.1 4 12 4.9 12 6V20C12 19.4 11.1 19 10 19H4C2.9 19 2 18.4 2 17.8V6Z"/><path d="M22 6C22 4.9 21.1 4 20 4H14C12.9 4 12 4.9 12 6V20C12 19.4 12.9 19 14 19H20C21.1 19 22 18.4 22 17.8V6Z"/></svg>
+                Patient Onboarding Guide
+              </a>
+              <a href="#" class="more-menu-item" id="viewVersionBtn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16"/><circle cx="12" cy="7.5" r="1" fill="currentColor" stroke="none"/></svg>
+                View Version
+              </a>
+              <a href="#" class="more-menu-item" id="termsOfServiceBtn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3.5h9l5 5v12a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-16a1 1 0 0 1 1-1z"/><path d="M15 3.5v5h5"/><line x1="8.5" y1="13" x2="15.5" y2="13"/><line x1="8.5" y1="17" x2="15.5" y2="17"/></svg>
+                Terms of Service
+              </a>
+              <a href="#" class="more-menu-item" id="privacyNoticeBtn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3.2v5.3c0 4.6-3 8.6-7 9.8-4-1.2-7-5.2-7-9.8V6.2L12 3z"/><path d="M9 12l2 2 4-4"/></svg>
+                Privacy Notice
+              </a>
+              <a href="#" class="more-menu-item" id="instructionsForUseBtn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="12" height="17" rx="1.5"/><path d="M9 3.5h6a1 1 0 0 1 1 1V6H8V4.5a1 1 0 0 1 1-1z"/><line x1="9" y1="11" x2="15" y2="11"/><line x1="9" y1="14.5" x2="15" y2="14.5"/><line x1="9" y1="18" x2="13" y2="18"/></svg>
+                Instructions for Use
+              </a>
               <a href="backoffice1/index.html" class="more-menu-item">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="7" rx="1.5" stroke="#6B7684" stroke-width="1.6"/><rect x="14" y="3" width="7" height="7" rx="1.5" stroke="#6B7684" stroke-width="1.6"/><rect x="3" y="14" width="7" height="7" rx="1.5" stroke="#6B7684" stroke-width="1.6"/><rect x="14" y="14" width="7" height="7" rx="1.5" stroke="#6B7684" stroke-width="1.6"/></svg>
                 Backoffice Designs
@@ -186,11 +200,11 @@
                 <div class="app-preview-head">
                   <span class="app-preview-label">What the patient sees in the app</span>
                   <div class="app-preview-dots">
-                    <span class="app-preview-dot is-done">1</span>
-                    <span class="app-preview-dot is-done">2</span>
-                    <span class="app-preview-dot is-done">3</span>
-                    <span class="app-preview-dot is-done">4</span>
-                    <span class="app-preview-dot is-active">5</span>
+                    <span class="app-preview-dot">1</span>
+                    <span class="app-preview-dot">2</span>
+                    <span class="app-preview-dot">3</span>
+                    <span class="app-preview-dot">4</span>
+                    <span class="app-preview-dot">5</span>
                     <span class="app-preview-dot">6</span>
                   </div>
                 </div>
@@ -198,61 +212,33 @@
                 <div class="app-preview-row">
 
                   <div class="app-phone">
-                    <div class="app-phone-illus illus-seat">
-                      <svg viewBox="0 0 100 100" width="56" height="56">
-                        <circle cx="50" cy="50" r="46" fill="#FCE7D2"/>
-                        <rect x="30" y="52" width="26" height="6" rx="3" fill="#2FA88A"/>
-                        <rect x="32" y="56" width="4" height="20" rx="2" fill="#2FA88A"/>
-                        <rect x="52" y="56" width="4" height="20" rx="2" fill="#2FA88A"/>
-                        <rect x="30" y="30" width="26" height="24" rx="4" fill="#2FA88A"/>
-                        <circle cx="43" cy="34" r="7" fill="#F2C29B"/>
-                        <path d="M33 58 Q43 48 53 58 L53 66 Q43 72 33 66 Z" fill="#5FBEDD"/>
-                        <rect x="66" y="60" width="4" height="14" rx="2" fill="#8A5A3B"/>
-                        <circle cx="68" cy="52" r="10" fill="#3FBE84"/>
-                      </svg>
-                    </div>
-                    <p class="app-phone-caption">Find a quiet, comfortable place to sit</p>
+                    <div class="app-phone-screenshot"><img src="img/Onboarding_01.png" alt="App screen: find a quiet, comfortable place to sit" /></div>
+                    <p class="app-phone-caption">"Please find a quiet and comfortable place to sit before we begin"</p>
                   </div>
 
                   <div class="app-phone">
-                    <div class="app-phone-illus illus-hold">
-                      <svg viewBox="0 0 100 100" width="56" height="56">
-                        <circle cx="50" cy="50" r="46" fill="#EAF6FC"/>
-                        <rect x="38" y="24" width="24" height="42" rx="6" fill="#2AA9E0"/>
-                        <rect x="41" y="29" width="18" height="28" rx="2" fill="#FFFFFF"/>
-                        <path d="M30 74 Q42 62 54 70" stroke="#F2C29B" stroke-width="10" stroke-linecap="round" fill="none"/>
-                        <circle cx="70" cy="34" r="10" fill="#3FBE84"/>
-                        <path d="M65 34 L69 38 L76 30" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-                      </svg>
-                    </div>
-                    <p class="app-phone-caption">Hold the phone without blocking the mic</p>
+                    <div class="app-phone-screenshot"><img src="img/Onboarding_02.png" alt="App screen: hold the phone without blocking the microphone" /></div>
+                    <p class="app-phone-caption">"Hold the phone in a way that doesn't block the microphone"</p>
                   </div>
 
                   <div class="app-phone">
-                    <div class="app-phone-illus illus-distance">
-                      <svg viewBox="0 0 100 100" width="56" height="56">
-                        <circle cx="50" cy="50" r="46" fill="#F1F3F5"/>
-                        <circle cx="40" cy="34" r="8" fill="#F2C29B"/>
-                        <path d="M28 66 Q40 50 52 60 L50 78 Q40 84 30 78 Z" fill="#5FBEDD"/>
-                        <rect x="52" y="52" width="14" height="22" rx="3" fill="#23272E"/>
-                        <rect x="54.5" y="55.5" width="9" height="13" rx="1" fill="#7DD3FC"/>
-                      </svg>
-                    </div>
-                    <p class="app-phone-caption">Keep the phone at a comfortable distance</p>
+                    <div class="app-phone-screenshot"><img src="img/Onboarding_03.png" alt="App screen: keep the phone at a comfortable distance" /></div>
+                    <p class="app-phone-caption">"Keep the phone at a comfortable distance - not too close, not too far"</p>
                   </div>
 
                   <div class="app-phone">
-                    <div class="app-phone-illus illus-record">
-                      <svg viewBox="0 0 100 100" width="56" height="56">
-                        <circle cx="50" cy="50" r="46" fill="#F1F3F5"/>
-                        <rect x="34" y="18" width="32" height="58" rx="7" fill="#23272E"/>
-                        <rect x="38" y="24" width="24" height="38" rx="2" fill="#FFFFFF"/>
-                        <path d="M42 42 v6 M46 38 v14 M50 34 v22 M54 38 v14 M58 42 v6" stroke="#2AA9E0" stroke-width="2.4" stroke-linecap="round"/>
-                        <circle cx="50" cy="70" r="7" fill="#3FBE84"/>
-                        <rect x="47.5" y="67.5" width="5" height="5" rx="1" fill="#fff"/>
-                      </svg>
-                    </div>
-                    <p class="app-phone-caption">Press the green button when finished speaking</p>
+                    <div class="app-phone-screenshot"><img src="img/Onboarding_04.png" alt="App screen: tap the blue button to begin recording" /></div>
+                    <p class="app-phone-caption">"Get ready to record by reading the sentence on the screen. Press the blue button to begin recording"</p>
+                  </div>
+
+                  <div class="app-phone">
+                    <div class="app-phone-screenshot"><img src="img/Onboarding_05.png" alt="App screen: tap the green button when finished speaking" /></div>
+                    <p class="app-phone-caption">"Press the green button when you finish speaking"</p>
+                  </div>
+
+                  <div class="app-phone">
+                    <div class="app-phone-screenshot"><img src="img/Onboarding_6.png" alt="App screen: recording unclear, try again" /></div>
+                    <p class="app-phone-caption">"If the recording isn't clear enough, you may be asked to record again"</p>
                   </div>
 
                 </div>
