@@ -6638,7 +6638,11 @@ body.patient-discontinued #chatOpenBtn {
 .b01-priority-table tr[data-status="Baseline"] { --row-accent: var(--blue); }
 .b01-priority-table tr[data-status="On Hold"] { --row-accent: #23272E; }
 
-.b01-th-status, .b01-td-status { text-align: right; }
+/* Beats the table's own ".patient-table thead th { text-align: left }" on
+   specificity so the Status header actually lines up over its right-aligned
+   values instead of sitting back at the column's left edge. */
+.patient-table thead th.b01-th-status { text-align: right; }
+.b01-td-status { text-align: right; }
 
 .b01-empty-state { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 22px 0 6px; }
 .b01-empty-state svg { opacity: 0.5; }
