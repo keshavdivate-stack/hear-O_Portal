@@ -94,13 +94,17 @@ function renderPatientRows(elId, items, iconSvg) {
 const openPriorityIdx = new Set();
 
 function careAvatarsHtml(p) {
+  const acknowledgedNames = p.careTeam.filter((m) => m.acknowledged).map((m) => m.name);
   return `
-    <div class="care-team-avatars">
-      ${p.careTeam
-        .map(
-          (m) => `<span class="care-avatar-sm ${m.acknowledged ? "ack" : "pending"}" title="${m.name} · ${m.acknowledged ? "Acknowledged" : "Not yet acknowledged"}">${m.initials}</span>`
-        )
-        .join("")}
+    <div class="care-team-cell">
+      <div class="care-team-avatars">
+        ${p.careTeam
+          .map(
+            (m) => `<span class="care-avatar-sm ${m.acknowledged ? "ack" : "pending"}" title="${m.name} · ${m.acknowledged ? "Acknowledged" : "Not yet acknowledged"}">${m.initials}</span>`
+          )
+          .join("")}
+      </div>
+      ${acknowledgedNames.length ? `<div class="care-team-ack-names">Acknowledged by ${acknowledgedNames.join(", ")}</div>` : ""}
     </div>`;
 }
 

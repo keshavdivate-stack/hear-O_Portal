@@ -612,7 +612,11 @@ body {
   white-space: nowrap;
 }
 
+.care-team-cell { display: flex; flex-direction: column; gap: 4px; }
+
 .care-team-avatars { display: flex; }
+
+.care-team-ack-names { font-size: 11.5px; color: var(--blue-text); font-weight: 600; white-space: nowrap; }
 
 .care-avatar-sm {
   width: 26px;
