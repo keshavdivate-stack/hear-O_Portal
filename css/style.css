@@ -38,9 +38,17 @@
 
 body {
   margin: 0;
-  font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Arial, sans-serif;
+  font-family: 'Exo 2', 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Arial, sans-serif;
   background: var(--bg);
   color: #23272E;
+}
+
+/* Browsers give form controls their own default UI font instead of
+   inheriting the page's -- without this, buttons/inputs/selects/textareas
+   (filter buttons, search fields, dropdowns, etc.) silently render in the
+   system font while every plain text element correctly uses Exo 2. */
+button, input, select, textarea, optgroup {
+  font-family: inherit;
 }
 
 .app {
