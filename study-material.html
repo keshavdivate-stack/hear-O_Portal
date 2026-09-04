@@ -173,46 +173,166 @@
       <!-- CONTENT -->
       <div class="list-content">
 
-        <p class="study-intro">Read this before enrolling a new patient, then walk them through each step below in order.</p>
+        <p class="study-intro">Once the patient is registered and logged into the HearO app, walk them through each step below in order.</p>
 
         <ol class="onboarding-steps">
           <li class="onboarding-step">
             <span class="onboarding-step-num">1</span>
             <div class="onboarding-step-body">
-              <h3>Register the patient</h3>
-              <p>From Patient List, select "Add Patient" and either register the patient manually or search for and import them from a connected EHR. Enter their name, date of birth, MRN, phone number, and email as part of registration.</p>
+              <h3>Complete initial device setup</h3>
+              <p>Guide the patient through granting HealthKit/device permissions and recording their first baseline reading in the app. This step is required before the app will start tracking daily readings.</p>
+
+              <div class="app-preview">
+                <div class="app-preview-head">
+                  <span class="app-preview-label">What the patient sees in the app</span>
+                  <div class="app-preview-dots">
+                    <span class="app-preview-dot is-done">1</span>
+                    <span class="app-preview-dot is-done">2</span>
+                    <span class="app-preview-dot is-done">3</span>
+                    <span class="app-preview-dot is-done">4</span>
+                    <span class="app-preview-dot is-active">5</span>
+                    <span class="app-preview-dot">6</span>
+                  </div>
+                </div>
+
+                <div class="app-preview-row">
+
+                  <div class="app-phone">
+                    <div class="app-phone-illus illus-seat">
+                      <svg viewBox="0 0 100 100" width="56" height="56">
+                        <circle cx="50" cy="50" r="46" fill="#FCE7D2"/>
+                        <rect x="30" y="52" width="26" height="6" rx="3" fill="#2FA88A"/>
+                        <rect x="32" y="56" width="4" height="20" rx="2" fill="#2FA88A"/>
+                        <rect x="52" y="56" width="4" height="20" rx="2" fill="#2FA88A"/>
+                        <rect x="30" y="30" width="26" height="24" rx="4" fill="#2FA88A"/>
+                        <circle cx="43" cy="34" r="7" fill="#F2C29B"/>
+                        <path d="M33 58 Q43 48 53 58 L53 66 Q43 72 33 66 Z" fill="#5FBEDD"/>
+                        <rect x="66" y="60" width="4" height="14" rx="2" fill="#8A5A3B"/>
+                        <circle cx="68" cy="52" r="10" fill="#3FBE84"/>
+                      </svg>
+                    </div>
+                    <p class="app-phone-caption">Find a quiet, comfortable place to sit</p>
+                  </div>
+
+                  <div class="app-phone">
+                    <div class="app-phone-illus illus-hold">
+                      <svg viewBox="0 0 100 100" width="56" height="56">
+                        <circle cx="50" cy="50" r="46" fill="#EAF6FC"/>
+                        <rect x="38" y="24" width="24" height="42" rx="6" fill="#2AA9E0"/>
+                        <rect x="41" y="29" width="18" height="28" rx="2" fill="#FFFFFF"/>
+                        <path d="M30 74 Q42 62 54 70" stroke="#F2C29B" stroke-width="10" stroke-linecap="round" fill="none"/>
+                        <circle cx="70" cy="34" r="10" fill="#3FBE84"/>
+                        <path d="M65 34 L69 38 L76 30" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                      </svg>
+                    </div>
+                    <p class="app-phone-caption">Hold the phone without blocking the mic</p>
+                  </div>
+
+                  <div class="app-phone">
+                    <div class="app-phone-illus illus-distance">
+                      <svg viewBox="0 0 100 100" width="56" height="56">
+                        <circle cx="50" cy="50" r="46" fill="#F1F3F5"/>
+                        <circle cx="40" cy="34" r="8" fill="#F2C29B"/>
+                        <path d="M28 66 Q40 50 52 60 L50 78 Q40 84 30 78 Z" fill="#5FBEDD"/>
+                        <rect x="52" y="52" width="14" height="22" rx="3" fill="#23272E"/>
+                        <rect x="54.5" y="55.5" width="9" height="13" rx="1" fill="#7DD3FC"/>
+                      </svg>
+                    </div>
+                    <p class="app-phone-caption">Keep the phone at a comfortable distance</p>
+                  </div>
+
+                  <div class="app-phone">
+                    <div class="app-phone-illus illus-record">
+                      <svg viewBox="0 0 100 100" width="56" height="56">
+                        <circle cx="50" cy="50" r="46" fill="#F1F3F5"/>
+                        <rect x="34" y="18" width="32" height="58" rx="7" fill="#23272E"/>
+                        <rect x="38" y="24" width="24" height="38" rx="2" fill="#FFFFFF"/>
+                        <path d="M42 42 v6 M46 38 v14 M50 34 v22 M54 38 v14 M58 42 v6" stroke="#2AA9E0" stroke-width="2.4" stroke-linecap="round"/>
+                        <circle cx="50" cy="70" r="7" fill="#3FBE84"/>
+                        <rect x="47.5" y="67.5" width="5" height="5" rx="1" fill="#fff"/>
+                      </svg>
+                    </div>
+                    <p class="app-phone-caption">Press the green button when finished speaking</p>
+                  </div>
+
+                </div>
+
+                <div class="app-preview-head app-preview-head-sub">
+                  <span class="app-preview-label">Then a practice run, before the real recording</span>
+                </div>
+
+                <div class="app-preview-row">
+
+                  <div class="app-phone">
+                    <div class="app-phone-illus illus-practice">
+                      <svg viewBox="0 0 100 100" width="56" height="56">
+                        <circle cx="50" cy="50" r="46" fill="#EAF6FC"/>
+                        <circle cx="34" cy="42" r="7" fill="#AFD9F2"/>
+                        <path d="M31 42 L33.5 44.5 L38 39" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                        <circle cx="50" cy="42" r="7" fill="#AFD9F2"/>
+                        <path d="M47 42 L49.5 44.5 L54 39" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                        <circle cx="66" cy="42" r="7" fill="#AFD9F2"/>
+                        <path d="M63 42 L65.5 44.5 L70 39" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                        <rect x="30" y="62" width="40" height="12" rx="6" fill="#2AA9E0"/>
+                      </svg>
+                    </div>
+                    <p class="app-phone-caption">"Now let's try to record together" -- patient taps Let's practice</p>
+                  </div>
+
+                  <div class="app-phone">
+                    <div class="app-phone-illus illus-record">
+                      <svg viewBox="0 0 100 100" width="56" height="56">
+                        <circle cx="50" cy="50" r="46" fill="#F1F3F5"/>
+                        <rect x="34" y="18" width="32" height="58" rx="7" fill="#23272E"/>
+                        <rect x="38" y="24" width="24" height="38" rx="2" fill="#FFFFFF"/>
+                        <path d="M42 42 v6 M46 38 v14 M50 34 v22 M54 38 v14 M58 42 v6" stroke="#2AA9E0" stroke-width="2.4" stroke-linecap="round"/>
+                        <circle cx="50" cy="70" r="7" fill="#3FBE84"/>
+                        <rect x="47.5" y="67.5" width="5" height="5" rx="1" fill="#fff"/>
+                      </svg>
+                    </div>
+                    <p class="app-phone-caption">Reads a sample sentence aloud, then taps the green button to stop</p>
+                  </div>
+
+                  <div class="app-phone">
+                    <div class="app-phone-illus illus-retry">
+                      <svg viewBox="0 0 100 100" width="56" height="56">
+                        <circle cx="50" cy="50" r="46" fill="#FDF1DC"/>
+                        <circle cx="50" cy="42" r="17" fill="#FBE7BF"/>
+                        <rect x="45" y="32" width="10" height="16" rx="5" fill="none" stroke="#D98A1F" stroke-width="2.5"/>
+                        <path d="M40 44 a10 10 0 0 0 20 0" stroke="#D98A1F" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                        <line x1="50" y1="54" x2="50" y2="58" stroke="#D98A1F" stroke-width="2.5" stroke-linecap="round"/>
+                        <rect x="30" y="70" width="40" height="12" rx="6" fill="#2AA9E0"/>
+                      </svg>
+                    </div>
+                    <p class="app-phone-caption">If audio is unclear: "Let's try again" -- ask the patient to speak clearly in a quiet spot</p>
+                  </div>
+
+                  <div class="app-phone">
+                    <div class="app-phone-illus illus-ready">
+                      <svg viewBox="0 0 100 100" width="56" height="56">
+                        <circle cx="50" cy="50" r="46" fill="#F1F3F5"/>
+                        <circle cx="50" cy="40" r="17" fill="#FFFFFF" stroke="#E7EAEE" stroke-width="1.5"/>
+                        <path d="M42 40 L48 46 L59 33" stroke="#3FBE84" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                        <rect x="30" y="66" width="40" height="12" rx="6" fill="#2AA9E0"/>
+                        <rect x="30" y="82" width="40" height="10" rx="5" fill="none" stroke="#2AA9E0" stroke-width="1.6"/>
+                      </svg>
+                    </div>
+                    <p class="app-phone-caption">Once it sounds clear, patient taps Next to start the real recording</p>
+                  </div>
+
+                </div>
+              </div>
             </div>
           </li>
           <li class="onboarding-step">
             <span class="onboarding-step-num">2</span>
-            <div class="onboarding-step-body">
-              <h3>Confirm contact details &amp; language preference</h3>
-              <p>Double-check the patient's phone number, email, and preferred language before moving on -- these are what the HearO app uses to send login credentials, reminders, and notifications.</p>
-            </div>
-          </li>
-          <li class="onboarding-step">
-            <span class="onboarding-step-num">3</span>
-            <div class="onboarding-step-body">
-              <h3>Download and log in to the HearO app</h3>
-              <p>Have the patient download the HearO app from the App Store or Google Play on their phone, then walk them through logging in with the credentials sent to their email or phone number.</p>
-            </div>
-          </li>
-          <li class="onboarding-step">
-            <span class="onboarding-step-num">4</span>
-            <div class="onboarding-step-body">
-              <h3>Complete initial device setup</h3>
-              <p>Guide the patient through granting HealthKit/device permissions and recording their first baseline reading in the app. This step is required before the app will start tracking daily readings.</p>
-            </div>
-          </li>
-          <li class="onboarding-step">
-            <span class="onboarding-step-num">5</span>
             <div class="onboarding-step-body">
               <h3>Confirm daily check-in &amp; support contact</h3>
               <p>Make sure the patient knows how to complete their daily check-in in the app, and how to reach the care team through in-app Chat if they run into any questions or issues.</p>
             </div>
           </li>
           <li class="onboarding-step">
-            <span class="onboarding-step-num">6</span>
+            <span class="onboarding-step-num">3</span>
             <div class="onboarding-step-body">
               <h3>Confirm onboarding is complete</h3>
               <p>Once the patient begins sending readings, their status automatically moves from Registered to Baseline on Patient List -- confirm this has happened before ending the onboarding session.</p>
