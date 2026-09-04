@@ -4,8 +4,10 @@
   --blue: #2AA9E0;
   --blue-light: #EAF6FC;
   --green: #3FBE84;
+  --green-light: #EAFBF3;
   --red: #F16C6C;
   --red-light: #FDEDED;
+  --purple-light: #F1ECFC;
   --gray-text: #57626D;
   --gray-border: #E7EAEE;
   --bg: #F4F7FA;
@@ -347,6 +349,8 @@ button, input, select, textarea, optgroup {
 .stat-list b { font-weight: 700; min-width: 26px; }
 .stat-list .green { color: var(--green-text); }
 .stat-list .red { color: var(--red-text); }
+.stat-list a { display: flex; align-items: center; gap: 10px; text-decoration: none; color: inherit; width: 100%; }
+.stat-list a:hover b, .stat-list a:hover { color: var(--blue-text); }
 
 .dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
 .dot-gray { background: #C9CFD6; }
@@ -6527,18 +6531,118 @@ body.patient-discontinued #chatOpenBtn {
   display: grid;
   grid-template-columns: minmax(320px, 460px) minmax(320px, 1fr);
   gap: 20px;
-  align-items: start;
+  align-items: stretch;
 }
+
+.b01-card-monitored { display: flex; flex-direction: column; }
 
 @media (max-width: 900px) {
   .b01-dash-grid { grid-template-columns: 1fr; }
 }
 
-.b01-legend { display: flex; gap: 20px; margin-bottom: 18px; font-size: 13.5px; color: var(--gray-text); }
-.b01-legend-item { display: flex; align-items: center; gap: 6px; }
 .b01-right-stack { display: flex; flex-direction: column; gap: 16px; }
-.b01-card-title { margin: 0 0 12px; font-size: 15px; }
-.b01-donut-big .donut-num { font-size: 40px; }
+.b01-card-title { margin: 0; font-size: 15px; }
+.b01-donut-big .donut-num { font-size: 30px; }
+.b01-donut-compact { width: 160px; height: 160px; }
+
+/* Card header: icon badge + title (+ optional muted count) + a right-aligned
+   "View details" link -- shared by all three B01 dashboard cards so their
+   headers read as one consistent system. */
+.b01-card-head { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; }
+.b01-card-count { color: var(--gray-text); font-weight: 600; }
+
+.b01-icon-badge {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.b01-icon-badge svg { width: 18px; height: 18px; }
+.b01-icon-badge-blue { background: var(--blue-light); color: var(--blue-text); }
+.b01-icon-badge-red { background: var(--red-light); color: var(--red-text); }
+.b01-icon-badge-purple { background: var(--purple-light); color: var(--purple-text); }
+
+.b01-view-link {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--blue-text);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.b01-view-link:hover { text-decoration: underline; }
+
+/* Monitored Patients: donut beside a column of clickable, tinted status rows. */
+.b01-monitored-body { display: flex; align-items: center; gap: 22px; }
+.b01-monitored-body .donut-wrap { margin-bottom: 0; flex-shrink: 0; }
+
+.b01-stat-pills { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; flex: 1; min-width: 0; }
+.b01-stat-pill {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  text-decoration: none;
+  color: inherit;
+  font-size: 13.5px;
+}
+.b01-stat-pill b { font-weight: 800; min-width: 20px; color: #23272E; }
+.b01-stat-pill-label { flex: 1; color: var(--gray-text); }
+.b01-stat-pill-chev { color: var(--gray-text); opacity: 0.55; flex-shrink: 0; }
+.b01-stat-pill:hover .b01-stat-pill-chev { opacity: 1; }
+.b01-stat-pill-red { background: var(--red-light); }
+.b01-stat-pill-green { background: var(--green-light); }
+.b01-stat-pill-blue { background: var(--blue-light); }
+.b01-stat-pill-neutral { background: var(--bg); }
+
+/* Pushed to the bottom of .b01-card-monitored's flex column, so on a tall
+   viewport (where this card stretches to match the Priority/History stack
+   next to it) the footer anchors at the card's bottom edge instead of the
+   extra height just sitting there as dead space under the stat pills. */
+.b01-card-footer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: auto;
+  padding-top: 18px;
+  border-top: 1px solid var(--gray-border);
+  color: var(--gray-text);
+  font-size: 12.5px;
+  line-height: 1.4;
+}
+.b01-card-footer svg { flex-shrink: 0; opacity: 0.55; }
+
+/* Priority table: a colored left edge + a Status chip per row, driven by
+   each row's data-status (matches the same status colors as the donut/pills
+   above and the Status badges on the Status tab). */
+.b01-priority-table td:first-child { position: relative; padding-left: 14px; }
+.b01-priority-table td:first-child::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 4px;
+  bottom: 4px;
+  width: 3px;
+  border-radius: 3px;
+  background: var(--row-accent, var(--gray-border));
+}
+.b01-priority-table tr[data-status="Priority"] { --row-accent: var(--red); }
+.b01-priority-table tr[data-status="Active"] { --row-accent: var(--green); }
+.b01-priority-table tr[data-status="Baseline"] { --row-accent: var(--blue); }
+.b01-priority-table tr[data-status="On Hold"] { --row-accent: #23272E; }
+
+.b01-th-status, .b01-td-status { text-align: right; }
+
+.b01-empty-state { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 22px 0 6px; }
+.b01-empty-state svg { opacity: 0.5; }
+.b01-empty-state .empty-state-text { padding: 0; }
 
 .b01-status-row {
   display: flex;
@@ -6687,5 +6791,76 @@ body.patient-discontinued #chatOpenBtn {
 
 .onboarding-step-body h3 { font-size: 15px; font-weight: 700; margin: 3px 0 6px; color: #23272E; }
 .onboarding-step-body p { font-size: 13.5px; color: var(--gray-text); line-height: 1.6; margin: 0; }
+
+.app-preview {
+  margin-top: 16px;
+  padding: 16px;
+  background: var(--bg);
+  border: 1px solid var(--gray-border);
+  border-radius: 12px;
+}
+
+.app-preview-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.app-preview-head-sub { margin-top: 18px; padding-top: 16px; border-top: 1px dashed var(--gray-border); }
+
+.app-preview-label { font-size: 12px; font-weight: 700; color: #23272E; text-transform: uppercase; letter-spacing: 0.02em; }
+
+.app-preview-dots { display: flex; align-items: center; gap: 5px; }
+
+.app-preview-dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  border: 1.5px solid var(--gray-border);
+  color: var(--gray-text);
+  font-size: 9.5px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.app-preview-dot.is-done { background: var(--blue); border-color: var(--blue); color: #fff; }
+.app-preview-dot.is-active { background: #fff; border-color: var(--blue); color: var(--blue-text); }
+
+.app-preview-row {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.app-phone {
+  flex: 1 1 150px;
+  max-width: 170px;
+  background: #fff;
+  border: 1px solid var(--gray-border);
+  border-radius: 12px;
+  padding: 14px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 10px;
+}
+
+.app-phone-illus {
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.app-phone-illus svg { display: block; }
+
+.app-phone-caption { font-size: 12px; color: var(--gray-text); line-height: 1.5; margin: 0; }
 
 

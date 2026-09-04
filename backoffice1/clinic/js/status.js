@@ -2,9 +2,20 @@
 document.getElementById("clinicOrgLabel").textContent = new URLSearchParams(location.search).get("org") || "B01";
 
 const STATUS_PAGE_SIZE = 20;
-let statusActiveTab = "Priority";
+const statusRequestedTab = new URLSearchParams(location.search).get("status");
+const statusSubtabEls = document.querySelectorAll("#statusSubtabs .subtab");
+const statusRequestedTabEl = statusRequestedTab
+  ? Array.from(statusSubtabEls).find((t) => t.dataset.status === statusRequestedTab)
+  : null;
+
+let statusActiveTab = statusRequestedTabEl ? statusRequestedTabEl.dataset.status : "Priority";
 let statusSearchTerm = "";
 let statusCurrentPage = 1;
+
+if (statusRequestedTabEl) {
+  statusSubtabEls.forEach((t) => t.classList.remove("active"));
+  statusRequestedTabEl.classList.add("active");
+}
 
 function statusFilteredRows() {
   const rows = clinicPatientsByStatus(statusActiveTab);
