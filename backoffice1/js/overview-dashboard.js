@@ -7,7 +7,7 @@ let ovSelectedOrgId = "all";
    instead of drifting out of sync as a separately hand-maintained number. */
 const ovAffectedOrgCount = Object.values(orgHealthData).filter((o) => o.openIssues > 0).length;
 
-/* "Patients Affected" and "Open Issues Requiring Action" are summed from the
+/* "Patients Affected" and "Open Incidents Requiring Action" are summed from the
    same per-organization data (orgHealthData) that backs the Affected
    Organizations list and every org's own drill-down page -- so the
    all-organizations KPI row always agrees with what a viewer sees when they
@@ -20,7 +20,7 @@ const ovAllOrgsHealthStats = [
   { num: Object.keys(orgHealthData).length, label: "Total Organizations", color: "var(--navy)", icon: `<rect width="16" height="18" x="4" y="3" rx="1"/><path d="M9 8h1"/><path d="M14 8h1"/><path d="M9 12h1"/><path d="M14 12h1"/><path d="M9 16h1"/><path d="M14 16h1"/><path d="M10 21v-3a2 2 0 0 1 4 0v3"/>`, delta: 0, deltaDir: "flat" },
   { num: ovAffectedOrgCount, label: "Organizations Affected", color: "var(--blue)", icon: `<rect width="16" height="18" x="4" y="3" rx="1"/><path d="M9 8h1"/><path d="M14 8h1"/><path d="M9 12h1"/><path d="M14 12h1"/>`, delta: 1, deltaDir: "up" },
   { num: ovPatientsAffectedCount, label: "Patients Affected", color: "var(--purple)", icon: `<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>`, delta: 23, deltaDir: "up" },
-  { num: ovOpenIssuesCount, label: "Open Issues Requiring Action", color: "var(--orange)", icon: `<path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.73 3h16.9a2 2 0 0 0 1.73-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/>`, delta: 2, deltaDir: "down" },
+  { num: ovOpenIssuesCount, label: "Open Incidents Requiring Action", color: "var(--orange)", icon: `<path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.73 3h16.9a2 2 0 0 0 1.73-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/>`, delta: 2, deltaDir: "down" },
 ];
 
 const ovDeltaArrow = { up: `<path d="M12 19V5"/><path d="m5 12 7-7 7 7"/>`, down: `<path d="M12 5v14"/><path d="m5 12 7 7 7-7"/>`, flat: `<path d="M5 12h14"/>` };
@@ -34,7 +34,7 @@ function ovHealthStatsFor(orgId) {
     { num: 1, label: "Organization", color: "var(--navy)", icon: `<rect width="16" height="18" x="4" y="3" rx="1"/><path d="M9 8h1"/><path d="M14 8h1"/><path d="M9 12h1"/><path d="M14 12h1"/><path d="M9 16h1"/><path d="M14 16h1"/><path d="M10 21v-3a2 2 0 0 1 4 0v3"/>`, delta: 0, deltaDir: "flat" },
     { num: o.providers, label: "Providers", color: "var(--blue)", icon: `<rect width="16" height="18" x="4" y="3" rx="1"/><path d="M9 8h1"/><path d="M14 8h1"/><path d="M9 12h1"/><path d="M14 12h1"/>`, delta: 0, deltaDir: "flat" },
     { num: o.patientsAffected.length, label: "Patients Affected", color: "var(--purple)", icon: `<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>`, delta: 0, deltaDir: "flat" },
-    { num: o.openIssues, label: "Open Issues Requiring Action", color: "var(--orange)", icon: `<path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.73 3h16.9a2 2 0 0 0 1.73-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/>`, delta: 0, deltaDir: "flat" },
+    { num: o.openIssues, label: "Open Incidents Requiring Action", color: "var(--orange)", icon: `<path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.73 3h16.9a2 2 0 0 0 1.73-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/>`, delta: 0, deltaDir: "flat" },
   ];
 }
 
@@ -310,10 +310,10 @@ function renderOvCritIssues(orgId) {
     .join("");
 }
 
-/* ---------------- Issues by Category (donut) ---------------- */
+/* ---------------- Incidents by Category (donut) ---------------- */
 /* Aggregated from orgHealthData's per-org category breakdowns -- the same
    source ovOpenIssuesCount sums for the KPI row above -- so the donut's
-   total always equals "Open Issues Requiring Action" instead of being a
+   total always equals "Open Incidents Requiring Action" instead of being a
    separately maintained figure that can drift apart from it. */
 /* Mirrors the palette used for the same category names in js/support-dashboard.js
    (supDashCategoryColors) and js/org-health-data.js so a category reads as

@@ -3958,7 +3958,7 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
    day-toggle pattern used elsewhere, since this page's own date-range filter
    already covers the time dimension. */
 /* Patient Compliance panel reuses the donut + legend language already
-   established by "Issues by Category" above it, instead of a flat progress
+   established by "Incidents by Category" above it, instead of a flat progress
    bar, so the tier split reads as a proper chart. The legend is extended
    into a small grid so each row also carries its compliance/usable figures
    alongside the tier's share of the donut. */

@@ -56,8 +56,8 @@ let ticketTypeValue = "";
 let ticketSearchTerm = "";
 
 /* Deep link: ?issueType=<Issue Type>&category=<Category>&type=<Type>&q=<search text>
-   Lets other screens (e.g. the Overview dashboard's Issues by Category and
-   Critical Issues panels) land here with the relevant filter/search already
+   Lets other screens (e.g. the Overview dashboard's Incidents by Category and
+   Recent Incidents panels) land here with the relevant filter/search already
    applied, instead of dropping the user on an unfiltered list. */
 (function applyIncomingTicketFilters() {
   const params = new URLSearchParams(location.search);
