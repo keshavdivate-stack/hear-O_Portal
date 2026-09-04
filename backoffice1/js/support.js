@@ -324,7 +324,7 @@ function openNewTicketDrawer() {
   newTicketForm.reset();
   newTicketOverlay.querySelectorAll(".bo-select").forEach(resetBoSelect);
   setBoSelectValue(newTicketOverlay.querySelector('.bo-select[data-name="source"]'), "Patient", { silent: true });
-  document.getElementById("newTicketWhoLabel").textContent = "Patient ID";
+  document.getElementById("newTicketWhoLabel").textContent = "User ID";
   renderNewTicketWhoOptions();
   updateNewTicketSeverityLevelState();
   validateNewTicketForm();
@@ -341,7 +341,7 @@ document.getElementById("cancelNewTicket").addEventListener("click", closeNewTic
 newTicketOverlay.addEventListener("click", (e) => { if (e.target === newTicketOverlay) closeNewTicketDrawer(); });
 
 newTicketOverlay.querySelector('.bo-select[data-name="source"] input[type=hidden]').addEventListener("change", (e) => {
-  document.getElementById("newTicketWhoLabel").textContent = e.target.value === "Clinic" ? "Raised By" : "Patient ID";
+  document.getElementById("newTicketWhoLabel").textContent = e.target.value === "Clinic" ? "Raised By" : "User ID";
   resetBoSelect(newTicketOverlay.querySelector('.bo-select[data-name="ticketWho"]'));
   renderNewTicketWhoOptions();
 });

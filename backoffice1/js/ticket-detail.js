@@ -628,8 +628,14 @@ ticketDetailForm.addEventListener("submit", (e) => {
   const nextSeverity = document.querySelector('.bo-select[data-name="ticketSeverityHandling"] input[type=hidden]').value || currentTicket.severity;
   const nextStatus = document.querySelector('.bo-select[data-name="ticketStatus"] input[type=hidden]').value || currentTicket.status;
 
-  if (rootCause !== (currentTicket.rootCause || "")) history.push({ text: `Root cause recorded: ${rootCause}`, date: changeDate });
-  if (nextAssignee !== (currentTicket.assignedTo || "")) history.push({ text: `Reassigned from ${currentTicket.assignedTo || "Unassigned"} to ${nextAssignee}`, date: changeDate });
+  const isReassignment = nextAssignee !== (currentTicket.assignedTo || "");
+  if (isReassignment) {
+    let reassignText = `Reassigned from ${currentTicket.assignedTo || "Unassigned"} to ${nextAssignee}`;
+    if (rootCause) reassignText += ` — Note: ${rootCause}`;
+    history.push({ text: reassignText, date: changeDate });
+  } else if (rootCause !== (currentTicket.rootCause || "")) {
+    history.push({ text: `Root cause recorded: ${rootCause}`, date: changeDate });
+  }
   if (nextTier !== currentTicket.tier) history.push({ text: `Level changed from ${currentTicket.tier} to ${nextTier}`, date: changeDate });
   if (nextSeverity !== currentTicket.severity) history.push({ text: `Severity changed from ${currentTicket.severity} to ${nextSeverity}`, date: changeDate });
   if (nextStatus !== currentTicket.status) history.push({ text: `Status changed from ${currentTicket.status} to ${nextStatus}`, date: changeDate });

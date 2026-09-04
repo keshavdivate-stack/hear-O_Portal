@@ -59,6 +59,12 @@
           </span>
           <span class="nav-label">Manage Users</span>
         </a>
+        <a href="ctm.html" class="nav-item">
+          <span class="nav-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-2"/><path d="M9 12h6"/><path d="M9 16h6"/></svg>
+          </span>
+          <span class="nav-label">CTM</span>
+        </a>
         <a href="support.html" class="nav-item">
           <span class="nav-icon">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H3v-7a9 9 0 0 1 18 0v7h-3a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"/><path d="M21 16v2a4 4 0 0 1-4 4h-5"/></svg>
@@ -234,7 +240,7 @@
   <!-- Row action dropdown -->
   <div class="row-menu" id="rowMenu">
     <button class="row-menu-item" data-action="edit">Edit</button>
-    <button class="row-menu-item" data-action="invite">Send EHR Invite</button>
+    <button class="row-menu-item" id="rowMenuInviteItem" data-action="invite">Send EHR Invite</button>
     <button class="row-menu-item" data-action="reset">Reset Password</button>
     <button class="row-menu-item danger" data-action="delete">Deactivate User</button>
   </div>

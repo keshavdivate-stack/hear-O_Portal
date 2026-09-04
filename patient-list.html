@@ -59,6 +59,12 @@
           </span>
           <span class="nav-label">Manage Users</span>
         </a>
+        <a href="ctm.html" class="nav-item">
+          <span class="nav-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-2"/><path d="M9 12h6"/><path d="M9 16h6"/></svg>
+          </span>
+          <span class="nav-label">CTM</span>
+        </a>
         <a href="support.html" class="nav-item">
           <span class="nav-icon">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H3v-7a9 9 0 0 1 18 0v7h-3a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"/><path d="M21 16v2a4 4 0 0 1-4 4h-5"/></svg>
@@ -164,7 +170,11 @@
             <button type="button" class="filter-tab active" data-scope="all">All Patients</button>
             <button type="button" class="filter-tab" data-scope="mine">My Patients</button>
           </div>
-          <div class="topbar-item">
+          <div class="topbar-item" style="display:flex; gap:10px;">
+            <button class="btn-outline-gray" id="exportPatientListBtn">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 3V15M12 15L8 11M12 15L16 11" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 16V19C4 20.1 4.9 21 6 21H18C19.1 21 20 20.1 20 19V16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Export Report
+            </button>
             <button class="btn-add-user" id="openAddPatientBtn">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
               Add Patient
@@ -871,6 +881,38 @@
           <button type="submit" class="btn-save enabled" id="saveAddAction">Save</button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- Export Report modal -->
+  <div class="modal-overlay" id="exportReportOverlay">
+    <div class="modal">
+      <h2>Export Report</h2>
+
+      <div class="export-format-list">
+        <label class="export-format-option">
+          <input type="radio" name="exportFormat" value="CSV" checked />
+          <span class="radio-dot"></span>
+          <span class="export-format-option-label">CSV</span>
+        </label>
+        <label class="export-format-option">
+          <input type="radio" name="exportFormat" value="Excel" />
+          <span class="radio-dot"></span>
+          <span class="export-format-option-label">Excel</span>
+        </label>
+        <label class="export-format-option">
+          <input type="radio" name="exportFormat" value="PDF" />
+          <span class="radio-dot"></span>
+          <span class="export-format-option-label">PDF</span>
+        </label>
+      </div>
+
+      <div class="export-summary-box" id="exportSummaryBox"></div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn-text" id="cancelExportReport">Cancel</button>
+        <button type="button" class="btn-save enabled" id="confirmExportReport">Export</button>
+      </div>
     </div>
   </div>
 

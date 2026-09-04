@@ -150,7 +150,7 @@ if (!ticket) {
             </div>
           </div>
           <div class="form-field" style="margin-top:16px; margin-bottom:0;">
-            <label>Description</label>
+            <label>Note</label>
             <textarea id="ticketDetailRootCause" placeholder="What caused this issue? (optional)"></textarea>
           </div>
         </form>
@@ -218,8 +218,14 @@ if (!ticket) {
       const nextSeverity = document.querySelector('.custom-select[data-name="ticketSeverityHandling"] input[type=hidden]').value || ticket.severity;
       const nextStatus = document.querySelector('.custom-select[data-name="ticketStatus"] input[type=hidden]').value || ticket.state;
 
-      if (rootCause !== (ticket.rootCause || "")) ticket.history.push({ date: changeDate, text: `Root cause recorded: ${rootCause}` });
-      if (nextAssignee && nextAssignee !== (ticket.assignedTo || "")) ticket.history.push({ date: changeDate, text: `Reassigned from ${ticket.assignedTo || "Unassigned"} to ${nextAssignee}.` });
+      const isReassignment = nextAssignee && nextAssignee !== (ticket.assignedTo || "");
+      if (isReassignment) {
+        let reassignText = `Reassigned from ${ticket.assignedTo || "Unassigned"} to ${nextAssignee}.`;
+        if (rootCause) reassignText += ` Note: ${rootCause}`;
+        ticket.history.push({ date: changeDate, text: reassignText });
+      } else if (rootCause !== (ticket.rootCause || "")) {
+        ticket.history.push({ date: changeDate, text: `Root cause recorded: ${rootCause}` });
+      }
       if (nextTier !== ticket.tier) ticket.history.push({ date: changeDate, text: `Level changed from ${ticket.tier} to ${nextTier}.` });
       if (nextSeverity !== ticket.severity) ticket.history.push({ date: changeDate, text: `Severity changed from ${ticket.severity} to ${nextSeverity}.` });
       if (nextStatus !== ticket.state) ticket.history.push({ date: changeDate, text: `Status changed from ${ticket.state} to ${nextStatus}.` });

@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>HearO | Clinic Dashboard (Backoffice)</title>
+<title>HearO | Clinic Status (Backoffice)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-<!-- Root clinic portal stylesheet: only for the .card/.filter-tab/.donut/.table-card
+<!-- Root clinic portal stylesheet: only for the .filter-tab/.subtab/.table-card
      component classes this page's content is built from -- the page chrome below is
      the Backoffice's own bo-nav, not the clinic portal's sidebar+topbar, so this
      page intentionally does NOT load the clinic portal's .app/.sidebar/.topbar layout. -->
@@ -100,23 +100,23 @@
           <svg class="bo-nav-caret" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
         </button>
         <div class="bo-popover bo-nav-popover" id="clinicPillPopover">
-          <a href="index.html?org=120" class="bo-popover-item">120</a>
-          <a href="index.html?org=240" class="bo-popover-item">240</a>
-          <a href="index.html?org=242" class="bo-popover-item">242</a>
-          <a href="index.html?org=244" class="bo-popover-item">244</a>
-          <a href="index.html?org=ATP" class="bo-popover-item">ATP</a>
-          <a href="index.html?org=B01" class="bo-popover-item">B01</a>
-          <a href="index.html?org=BSM" class="bo-popover-item">BSM</a>
-          <a href="index.html?org=COR" class="bo-popover-item">COR</a>
-          <a href="index.html?org=DEV" class="bo-popover-item">DEV</a>
-          <a href="index.html?org=HSK" class="bo-popover-item">HSK</a>
-          <a href="index.html?org=IGO" class="bo-popover-item">IGO</a>
-          <a href="index.html?org=IND" class="bo-popover-item">IND</a>
-          <a href="index.html?org=MKT" class="bo-popover-item">MKT</a>
-          <a href="index.html?org=NTS" class="bo-popover-item">NTS</a>
-          <a href="index.html?org=TMK" class="bo-popover-item">TMK</a>
-          <a href="index.html?org=TSS" class="bo-popover-item">TSS</a>
-          <a href="index.html?org=ZQX" class="bo-popover-item">ZQX</a>
+          <a href="status.html?org=120" class="bo-popover-item">120</a>
+          <a href="status.html?org=240" class="bo-popover-item">240</a>
+          <a href="status.html?org=242" class="bo-popover-item">242</a>
+          <a href="status.html?org=244" class="bo-popover-item">244</a>
+          <a href="status.html?org=ATP" class="bo-popover-item">ATP</a>
+          <a href="status.html?org=B01" class="bo-popover-item">B01</a>
+          <a href="status.html?org=BSM" class="bo-popover-item">BSM</a>
+          <a href="status.html?org=COR" class="bo-popover-item">COR</a>
+          <a href="status.html?org=DEV" class="bo-popover-item">DEV</a>
+          <a href="status.html?org=HSK" class="bo-popover-item">HSK</a>
+          <a href="status.html?org=IGO" class="bo-popover-item">IGO</a>
+          <a href="status.html?org=IND" class="bo-popover-item">IND</a>
+          <a href="status.html?org=MKT" class="bo-popover-item">MKT</a>
+          <a href="status.html?org=NTS" class="bo-popover-item">NTS</a>
+          <a href="status.html?org=TMK" class="bo-popover-item">TMK</a>
+          <a href="status.html?org=TSS" class="bo-popover-item">TSS</a>
+          <a href="status.html?org=ZQX" class="bo-popover-item">ZQX</a>
         </div>
       </div>
     </nav>
@@ -155,52 +155,63 @@
     </div>
 
     <div class="filter-tabs clinic-section-tabs">
-      <a href="index.html" class="filter-tab active">Dashboard</a>
-      <a href="status.html" class="filter-tab">Status</a>
+      <a href="index.html" class="filter-tab">Dashboard</a>
+      <a href="status.html" class="filter-tab active">Status</a>
       <a href="patient-management.html" class="filter-tab">Patient Management</a>
     </div>
 
-    <div class="b01-greeting">
-      <h2>Prof. Zaza Iakobishvili</h2>
-      <span class="muted" id="clinicHeaderDate"></span>
+    <div class="b01-status-row">
+      <div class="subtabs" id="statusSubtabs">
+        <span class="subtab active" data-status="Priority">Priority</span>
+        <span class="subtab" data-status="Registered">Registered</span>
+        <span class="subtab" data-status="Baseline">Baseline</span>
+        <span class="subtab" data-status="Active">Active</span>
+        <span class="subtab" data-status="Insufficient Data">Insufficient Data</span>
+        <span class="subtab" data-status="On Hold">On Hold</span>
+        <span class="subtab" data-status="Discontinued">Discontinued</span>
+      </div>
+      <span class="b01-status-total" id="statusTotalLabel"></span>
     </div>
 
-    <div class="b01-dash-grid">
-      <div class="card">
-        <h2 class="b01-card-title">Monitored Patients (<span id="monitoredTotal"></span>)</h2>
-        <div class="b01-legend">
-          <span class="b01-legend-item"><span class="dot dot-red"></span>Priority</span>
-          <span class="b01-legend-item"><span class="dot dot-green"></span>Active</span>
-        </div>
-        <div class="donut-wrap">
-          <svg viewBox="0 0 120 120" class="donut b01-donut-big" id="monitoredDonut">
-            <circle cx="60" cy="60" r="50" fill="none" stroke="#E7EAEE" stroke-width="14"/>
-          </svg>
-        </div>
+    <div class="filters-bar">
+      <span class="filters-spacer"></span>
+      <div class="search-pill" style="width:260px;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#9AA5B1" stroke-width="1.8"/><path d="M21 21L16.5 16.5" stroke="#9AA5B1" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <input type="text" id="statusSearchInput" placeholder="Search" />
+      </div>
+    </div>
+
+    <div class="table-card">
+      <div class="table-scroll">
+        <table class="list-table">
+          <thead>
+            <tr>
+              <th>Username</th>
+              <th>Enrollment Date</th>
+              <th>Priority Status</th>
+              <th>Status since</th>
+            </tr>
+          </thead>
+          <tbody id="statusRows"></tbody>
+        </table>
       </div>
 
-      <div class="b01-right-stack">
-        <div class="card">
-          <h3 class="b01-card-title">Priority</h3>
-          <div class="table-wrap" style="padding:4px 0 0;">
-            <div class="patient-table-scroll" style="max-height:220px;">
-              <table class="patient-table">
-                <thead><tr><th>Username</th><th>Status From</th></tr></thead>
-                <tbody id="dashPriorityRows"></tbody>
-              </table>
-            </div>
-            <a href="status.html" class="view-details">View details</a>
-          </div>
-        </div>
-
-        <div class="card">
-          <h3 class="b01-card-title">Priority History (Last 31 days)</h3>
-          <p class="empty-state-text">No patients have been found</p>
-        </div>
-
-        <div class="card">
-          <h3 class="b01-card-title">Insufficient Data</h3>
-          <p class="empty-state-text">No patients have been found</p>
+      <div class="list-footer">
+        <span class="items-per-page">Items per page: <b id="statusPageSizeLabel">20</b></span>
+        <span id="statusPageRangeLabel"></span>
+        <div class="list-pager">
+          <button class="pager-btn" id="statusFirstPage" aria-label="First page">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M18 6L12 12L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M11 6L5 12L11 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <button class="pager-btn" id="statusPrevPage" aria-label="Previous page">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15 6L9 12L15 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <button class="pager-btn" id="statusNextPage" aria-label="Next page">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 6L15 12L9 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <button class="pager-btn" id="statusLastPage" aria-label="Last page">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 6L12 12L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M13 6L19 12L13 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
         </div>
       </div>
     </div>
@@ -213,6 +224,6 @@
 <script src="../js/notifications.js"></script>
 <!-- Shared B01 patient/status dataset backing Dashboard/Status/Patient Management. -->
 <script src="js/clinic-b01-data.js"></script>
-<script src="js/dashboard.js"></script>
+<script src="js/status.js"></script>
 </body>
 </html>

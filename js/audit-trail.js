@@ -56,6 +56,51 @@ const madeByOptions = [...new Set(auditTrail.map((a) => a.madeBy))].sort();
 renderCheckboxMenu(actionTypeMenu, auditActionTypeOptions, auditActionTypes);
 renderCheckboxMenu(madeByMenu, madeByOptions, auditMadeBySet);
 
+/* Filter menus live inside .filters-bar, which needs overflow-x:auto for narrow
+   viewports. That forces overflow-y to compute as auto too (CSS spec), clipping any
+   dropdown that pops out below it. Portal the open menu to <body> with fixed
+   positioning so it escapes that clipping. */
+const portaledFilterMenus = new Map();
+
+function positionFilterMenu(trigger, menu) {
+  const rect = trigger.getBoundingClientRect();
+  const menuHeight = Math.min(menu.scrollHeight || 280, 280) + 12;
+  const spaceBelow = window.innerHeight - rect.bottom;
+  const openUpward = spaceBelow < menuHeight && rect.top > menuHeight;
+
+  menu.style.position = "fixed";
+  menu.style.left = `${rect.left}px`;
+  menu.style.minWidth = `${rect.width}px`;
+  menu.style.top = openUpward ? "auto" : `${rect.bottom + 6}px`;
+  menu.style.bottom = openUpward ? `${window.innerHeight - rect.top + 6}px` : "auto";
+}
+
+function openFilterMenu(wrapEl, menuEl) {
+  if (!portaledFilterMenus.has(menuEl)) {
+    portaledFilterMenus.set(menuEl, { parent: menuEl.parentNode, next: menuEl.nextSibling });
+  }
+  document.body.appendChild(menuEl);
+  menuEl.classList.add("checkbox-filter-menu-portaled");
+  positionFilterMenu(wrapEl.querySelector(".filter-btn"), menuEl);
+}
+
+function closeFilterMenu(menuEl) {
+  const original = portaledFilterMenus.get(menuEl);
+  if (original && menuEl.parentNode === document.body) {
+    if (original.next && original.next.parentNode === original.parent) {
+      original.parent.insertBefore(menuEl, original.next);
+    } else {
+      original.parent.appendChild(menuEl);
+    }
+  }
+  menuEl.classList.remove("checkbox-filter-menu-portaled");
+  menuEl.style.position = "";
+  menuEl.style.left = "";
+  menuEl.style.top = "";
+  menuEl.style.bottom = "";
+  menuEl.style.minWidth = "";
+}
+
 function wireCheckboxFilter(wrapEl, menuEl, selectedSet) {
   const trigger = wrapEl.querySelector(".filter-btn");
   const label = wrapEl.querySelector(".checkbox-filter-label");
@@ -66,6 +111,7 @@ function wireCheckboxFilter(wrapEl, menuEl, selectedSet) {
     const willOpen = !wrapEl.classList.contains("open");
     closeAllFilterPopovers();
     wrapEl.classList.toggle("open", willOpen);
+    if (willOpen) openFilterMenu(wrapEl, menuEl);
   });
 
   menuEl.addEventListener("click", (e) => e.stopPropagation());
@@ -195,6 +241,7 @@ function setupDateFilter(wrapId, popoverId, labelId, baseLabel, { getMin, getMax
       setLabel(date);
       onChange(date);
       wrap.classList.remove("open");
+      closeFilterMenu(popover);
       if (onPicked) onPicked();
       draw();
     },
@@ -205,6 +252,7 @@ function setupDateFilter(wrapId, popoverId, labelId, baseLabel, { getMin, getMax
       setLabel(today);
       onChange(today);
       wrap.classList.remove("open");
+      closeFilterMenu(popover);
       if (onPicked) onPicked();
       draw();
     },
@@ -215,6 +263,7 @@ function setupDateFilter(wrapId, popoverId, labelId, baseLabel, { getMin, getMax
       setLabel(null);
       onChange(null);
       wrap.classList.remove("open");
+      closeFilterMenu(popover);
       draw();
     },
   });
@@ -224,7 +273,10 @@ function setupDateFilter(wrapId, popoverId, labelId, baseLabel, { getMin, getMax
     const willOpen = !wrap.classList.contains("open");
     closeAllFilterPopovers();
     wrap.classList.toggle("open", willOpen);
-    if (willOpen) draw();
+    if (willOpen) {
+      draw();
+      openFilterMenu(wrap, popover);
+    }
   });
 
   popover.addEventListener("click", (e) => e.stopPropagation());
@@ -267,6 +319,7 @@ function openDateFilter(wrapId) {
 
 function closeAllFilterPopovers() {
   document.querySelectorAll(".date-filter-btn.open, .checkbox-filter.open").forEach((el) => el.classList.remove("open"));
+  document.querySelectorAll(".checkbox-filter-menu-portaled").forEach((menuEl) => closeFilterMenu(menuEl));
 }
 
 document.addEventListener("click", closeAllFilterPopovers);

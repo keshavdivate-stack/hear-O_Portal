@@ -1045,6 +1045,102 @@ function validateEditPatientForm() {
 }
 
 editPatientForm.addEventListener("input", validateEditPatientForm);
+
+/* ---------------- Export Report ---------------- */
+const PATIENT_LIST_EXPORT_COLUMNS = [
+  { label: "Patient", value: (p) => p.name },
+  { label: "Patient ID", value: (p) => p.username },
+  { label: "MRN", value: (p) => p.mrn },
+  { label: "Phone", value: (p) => p.phone },
+  { label: "Account Status", value: (p) => p.account },
+  { label: "Enrolled Date", value: (p) => p.enrolledDate || "" },
+  { label: "EHR System", value: (p) => p.ehrSystem || "" },
+  { label: "Source", value: (p) => p.source },
+  { label: "Clinical Status", value: (p) => p.status },
+  { label: "Monitoring Status", value: (p) => p.monitoring },
+  { label: "Compliance %", value: (p) => p.compliance },
+  { label: "Care Team", value: (p) => patientCareTeam(p).join("; ") },
+];
+
+function describePatientListFilters() {
+  const parts = [];
+  if (patientScope === "mine") parts.push("My Patients");
+  if (selectedAccounts.size) parts.push(`Account = ${[...selectedAccounts].join(", ")}`);
+  if (selectedStatuses.size) {
+    parts.push(`Status = ${[...selectedStatuses].map((k) => statusOptions.find((o) => o.key === k)?.label || k).join(", ")}`);
+  }
+  if (selectedMonitorings.size) {
+    parts.push(`Monitoring = ${[...selectedMonitorings].map((k) => monitoringOptions.find((o) => o.key === k)?.label || k).join(", ")}`);
+  }
+  if (selectedComplianceRanges.size) {
+    parts.push(`Compliance = ${[...selectedComplianceRanges].map((k) => complianceRanges.find((r) => r.key === k)?.label || k).join(", ")}`);
+  }
+  if (selectedGenders.size) {
+    parts.push(`Gender = ${[...selectedGenders].map((k) => genderOptions.find((o) => o.key === k)?.label || k).join(", ")}`);
+  }
+  if (selectedCareTeams.size) parts.push(`Care Team = ${[...selectedCareTeams].join(", ")}`);
+  return parts.length ? parts.join(", ") : "None";
+}
+
+function csvEscape(value) {
+  const str = String(value ?? "");
+  return /[",\n]/.test(str) ? `"${str.replace(/"/g, '""')}"` : str;
+}
+
+function downloadCsv(prefix, columns, rowsData) {
+  const header = columns.map((c) => c.label);
+  const lines = [header.join(",")].concat(rowsData.map((r) => columns.map((c) => csvEscape(c.value(r))).join(",")));
+  const blob = new Blob([lines.join("\n")], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `${prefix}-${new Date().toISOString().slice(0, 10)}.csv`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
+
+const exportReportOverlay = document.getElementById("exportReportOverlay");
+let pendingPatientListExport = null;
+
+function openExportReportModal(context) {
+  pendingPatientListExport = context;
+  document.getElementById("exportSummaryBox").innerHTML = `
+    <div><b>Report:</b> ${context.reportLabel}</div>
+    <div><b>Filters:</b> ${context.filtersLabel}</div>
+    <div><b>${context.countLabel || "Records"}:</b> ${context.count}</div>
+  `;
+  exportReportOverlay.classList.add("open");
+}
+
+document.getElementById("cancelExportReport").addEventListener("click", () => exportReportOverlay.classList.remove("open"));
+exportReportOverlay.addEventListener("click", (e) => { if (e.target === exportReportOverlay) exportReportOverlay.classList.remove("open"); });
+
+document.getElementById("confirmExportReport").addEventListener("click", () => {
+  if (!pendingPatientListExport) return;
+  const format = document.querySelector('input[name="exportFormat"]:checked')?.value || "CSV";
+  if (format === "CSV") {
+    downloadCsv(pendingPatientListExport.filenamePrefix || "report", pendingPatientListExport.columns, pendingPatientListExport.rows);
+  } else {
+    alert(`${format} export is coming soon — please use CSV for now.`);
+    return;
+  }
+  exportReportOverlay.classList.remove("open");
+});
+
+document.getElementById("exportPatientListBtn").addEventListener("click", () => {
+  const list = filteredPatientList();
+  openExportReportModal({
+    reportLabel: "Patient List",
+    filtersLabel: describePatientListFilters(),
+    count: list.length,
+    countLabel: "Patients",
+    rows: list,
+    columns: PATIENT_LIST_EXPORT_COLUMNS,
+    filenamePrefix: "patient-list",
+  });
+});
 editPatientForm.addEventListener("change", validateEditPatientForm);
 
 function openEditPatientModal(patient) {

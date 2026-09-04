@@ -140,6 +140,7 @@ document.getElementById("userLastPage").addEventListener("click", () => {
 
 /* ---------------- Row action dropdown ---------------- */
 const rowMenu = document.getElementById("rowMenu");
+const rowMenuInviteItem = document.getElementById("rowMenuInviteItem");
 let activeRowUserId = null;
 
 document.getElementById("usersRows").addEventListener("click", (e) => {
@@ -147,6 +148,14 @@ document.getElementById("usersRows").addEventListener("click", (e) => {
   if (!trigger) return;
   e.stopPropagation();
   activeRowUserId = Number(trigger.dataset.id);
+  const user = users.find((u) => u.id === activeRowUserId);
+  if (user && user.ehrInvite === "Sent") {
+    rowMenuInviteItem.textContent = "Reauthenticate Your EHR";
+    rowMenuInviteItem.dataset.action = "reauthenticate";
+  } else {
+    rowMenuInviteItem.textContent = "Send EHR Invite";
+    rowMenuInviteItem.dataset.action = "invite";
+  }
   const rect = trigger.getBoundingClientRect();
   rowMenu.style.top = `${rect.bottom + 6}px`;
   rowMenu.style.left = `${rect.right - 190}px`;
@@ -165,6 +174,7 @@ rowMenu.addEventListener("click", (e) => {
 
   if (item.dataset.action === "edit") openAddUserModal(user);
   if (item.dataset.action === "invite") openEhrInviteModal();
+  // Reauthenticate Your EHR: triggers silently, no modal.
   // Reset Password / Delete User: no dedicated modal was provided in the design reference.
 });
 

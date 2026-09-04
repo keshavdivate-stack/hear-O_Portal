@@ -1,9 +1,17 @@
 /* ---------------- Data ---------------- */
 const auditActionTemplates = [
-  { type: "User Login", description: "User logged into the system", relatedPrefix: "User" },
-  { type: "User Logout", description: "User logged out of the system", relatedPrefix: "User" },
-  { type: "Patient Weight Manually Entered", description: "", relatedPrefix: "Patient" },
-  { type: "Patient Blood Pressure Manually Entered", description: "", relatedPrefix: "Patient" },
+  { type: "User Login", relatedPrefix: "User", describe: (madeBy) => `${madeBy} logged into the system` },
+  { type: "User Logout", relatedPrefix: "User", describe: (madeBy) => `${madeBy} logged out of the system` },
+  {
+    type: "Patient Weight Manually Entered",
+    relatedPrefix: "Patient",
+    describe: (madeBy, relatedName, i) => `${madeBy} manually entered a weight of ${120 + ((i * 3) % 60)} lbs for ${relatedName}`,
+  },
+  {
+    type: "Patient Blood Pressure Manually Entered",
+    relatedPrefix: "Patient",
+    describe: (madeBy, relatedName, i) => `${madeBy} manually entered a blood pressure of ${110 + (i % 30)}/${70 + (i % 15)} mmHg for ${relatedName}`,
+  },
 ];
 
 const auditUserPool = ["Shekhar Manwar", "pranali tanpure", "Pranali Tanpure", "Igor Minyaylo", "Yoni Bloch", "Ayelet Er"];
@@ -25,7 +33,7 @@ const auditTrail = Array.from({ length: 1629 }, (_, i) => {
   return {
     id: i,
     actionType: template.type,
-    description: template.description,
+    description: template.describe(madeBy, relatedName, i),
     relatedTo: related,
     relatedType: template.relatedPrefix,
     relatedName,
