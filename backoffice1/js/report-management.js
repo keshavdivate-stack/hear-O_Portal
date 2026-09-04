@@ -477,14 +477,14 @@ rmScheduleRowMenu.addEventListener("click", (e) => {
   else if (item.dataset.action === "delete") rmDeleteSchedule(id);
 });
 
-/* ---------------- Export Report ---------------- */
+/* ---------------- Download Report ---------------- */
 const rmExportOverlay = document.getElementById("rmExportOverlay");
 const rmExportForm = document.getElementById("rmExportForm");
 const rmExportBtn = document.getElementById("rmExportBtn");
 const rmExportReportSelect = document.getElementById("rmExportReportSelect");
 let rmExportScheduleId = null;
 
-/* Reused for both entry points: a row's kebab "Export Report" (pre-selects
+/* Reused for both entry points: a row's kebab "Download Report" (pre-selects
    that row's report, dropdown still shown but locked in) and the page-level
    "Download Report" button (opens with nothing selected so the admin picks
    which scheduled report to export). */
