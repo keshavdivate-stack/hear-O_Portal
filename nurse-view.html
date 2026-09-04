@@ -337,6 +337,10 @@
                 Questionnaire
                 <svg class="chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
               </button>
+              <button class="data-tab" data-tab="info">
+                Patient Information
+                <svg class="chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
             </div>
             <div class="range-toggle">
               <span data-range="week">Week</span>
@@ -626,6 +630,42 @@
               <span class="quest-legend-note">Sent to the patient once a week</span>
             </div>
             <div class="quest-list" id="questList"></div>
+          </div>
+
+          <!-- Patient Information panel -->
+          <div class="data-tab-panel" data-panel="info">
+            <div class="subtab-row">
+              <div class="subtabs">
+                <span class="subtab active" data-subtab="patient-details">Patient Details</span>
+                <span class="subtab" data-subtab="emergency-contact">Emergency Contact</span>
+              </div>
+            </div>
+
+            <!-- Patient Details -->
+            <div class="subtab-panel open" data-subpanel="patient-details">
+              <div class="compliance-box" style="margin-top:0;">
+                <div class="compliance-detail-grid">
+                  <div class="compliance-detail-item"><span class="compliance-detail-label">Patient ID / Insurance ID</span><span class="compliance-detail-value">INS-48213</span></div>
+                  <div class="compliance-detail-item"><span class="compliance-detail-label">Date of Birth</span><span class="compliance-detail-value">03/14/1954</span></div>
+                  <div class="compliance-detail-item"><span class="compliance-detail-label">Gender</span><span class="compliance-detail-value">Female</span></div>
+                  <div class="compliance-detail-item"><span class="compliance-detail-label">Preferred Language</span><span class="compliance-detail-value">English</span></div>
+                  <div class="compliance-detail-item"><span class="compliance-detail-label">Mobile Number</span><span class="compliance-detail-value">+1 (415) 555-0132</span></div>
+                  <div class="compliance-detail-item"><span class="compliance-detail-label">Email</span><span class="compliance-detail-value">sarah.white@email.com</span></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Emergency Contact -->
+            <div class="subtab-panel" data-subpanel="emergency-contact">
+              <div class="compliance-box" style="margin-top:0;">
+                <div class="compliance-detail-grid">
+                  <div class="compliance-detail-item"><span class="compliance-detail-label">Relationship</span><span class="compliance-detail-value">Spouse</span></div>
+                  <div class="compliance-detail-item"><span class="compliance-detail-label">Name</span><span class="compliance-detail-value">Robert White</span></div>
+                  <div class="compliance-detail-item"><span class="compliance-detail-label">Phone</span><span class="compliance-detail-value">+1 (415) 555-0198</span></div>
+                  <div class="compliance-detail-item"><span class="compliance-detail-label">Email</span><span class="compliance-detail-value">robert.white@email.com</span></div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
