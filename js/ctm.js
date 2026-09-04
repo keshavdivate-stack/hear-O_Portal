@@ -1,70 +1,64 @@
-/* ---------------- Patient Status list ---------------- */
-const statusLabels = {
-  priority: { text: "Priority", cls: "status-priority" },
-  active: { text: "Active", cls: "status-active" },
-  registered: { text: "Registered", cls: "status-muted" },
-  baseline: { text: "Baseline", cls: "status-muted" },
-};
-
-function ctmStatusCell(p) {
-  const s = statusLabels[p.status];
-  if (!s) return `<div class="status-cell"><span class="status-line status-muted">—</span></div>`;
-  return `
-    <div class="status-cell">
-      <span class="status-line ${s.cls}">${s.text}</span>
-      ${p.since ? `<span class="status-since">${p.since}</span>` : ""}
-    </div>`;
-}
-
-function ctmMonitoringCell(p) {
-  if (p.monitoring === "monitored") return `<div class="mon-cell"><span class="mon-line mon-monitored">Monitored</span></div>`;
-  if (p.monitoring === "unmonitored") return `<div class="mon-cell"><span class="mon-line mon-unmonitored">Unmonitored</span></div>`;
-  return `<div class="mon-cell"><span class="mon-line mon-none">None</span></div>`;
-}
-
-function ctmComplianceCell(p) {
-  const cls = p.compliance >= 76 ? "status-active" : p.compliance >= 51 ? "mon-unmonitored" : "status-priority";
-  return `<div class="mon-cell"><span class="mon-line ${cls}">${p.compliance}%</span></div>`;
+/* ---------------- Care Team Member roster (one row per member, counts of
+   their patients across status/account/monitoring) ---------------- */
+function memberInitials(name) {
+  const clean = name.replace(/^Dr\.\s*/, "").replace(/,\s*(RN|NP)$/, "");
+  const parts = clean.trim().split(/\s+/);
+  return ((parts[0] || "")[0] + (parts[parts.length - 1] || "")[0]).toUpperCase();
 }
 
 let ctmSearchTerm = "";
 const ctmSelectedMembers = new Set();
 
-function filteredCtmPatients() {
+function filteredCtmMembers() {
   const q = ctmSearchTerm.toLowerCase();
-  return ctmPatients.filter(
-    (p) =>
-      (!ctmSelectedMembers.size || ctmSelectedMembers.has(p.teamMember)) &&
-      (!q || p.name.toLowerCase().includes(q) || p.teamMember.toLowerCase().includes(q))
-  );
+  return ctmRoster.filter((m) => {
+    if (ctmSelectedMembers.size && !ctmSelectedMembers.has(m.name)) return false;
+    if (!q) return true;
+    if (m.name.toLowerCase().includes(q)) return true;
+    return ctmPatients.some((p) => p.teamMember === m.name && p.name.toLowerCase().includes(q));
+  });
 }
 
-function renderCtmPatients() {
-  const list = filteredCtmPatients();
-  document.getElementById("ctmPatientRows").innerHTML = list
-    .map(
-      (p) => `
+function renderCtmMembers() {
+  const list = filteredCtmMembers();
+  document.getElementById("ctmMemberRows").innerHTML = list
+    .map((m) => {
+      const patients = ctmPatients.filter((p) => p.teamMember === m.name);
+      const count = (pred) => patients.filter(pred).length;
+      return `
       <tr>
-        <td>${p.name}</td>
-        <td>${p.teamMember}</td>
-        <td>${p.team}</td>
-        <td>${ctmStatusCell(p)}</td>
-        <td>${ctmMonitoringCell(p)}</td>
-        <td>${ctmComplianceCell(p)}</td>
-      </tr>`
-    )
+        <td>
+          <div class="ctm-card-top">
+            <span class="ctm-card-avatar">${memberInitials(m.name)}</span>
+            <div>
+              <div class="ctm-card-name">${m.name}</div>
+              <div class="ctm-card-role">${m.role}</div>
+            </div>
+          </div>
+        </td>
+        <td class="ctm-count-col">${count((p) => p.status === "priority")}</td>
+        <td class="ctm-count-col">${count((p) => p.status === "active")}</td>
+        <td class="ctm-count-col">${count((p) => p.status === "registered")}</td>
+        <td class="ctm-count-col">${count((p) => p.status === "baseline")}</td>
+        <td class="ctm-count-col">${count((p) => p.account === "Enabled")}</td>
+        <td class="ctm-count-col">${count((p) => p.account === "Paused")}</td>
+        <td class="ctm-count-col">${count((p) => p.account === "Discontinued")}</td>
+        <td class="ctm-count-col">${count((p) => p.monitoring === "monitored")}</td>
+        <td class="ctm-count-col">${count((p) => p.monitoring === "unmonitored")}</td>
+      </tr>`;
+    })
     .join("");
 
   const total = list.length;
   document.getElementById("ctmPageRangeLabel").textContent = total ? `1 – ${total} of ${total}` : "0 of 0";
 }
 
-renderCtmPatients();
+renderCtmMembers();
 
 /* ---------------- Search ---------------- */
 document.getElementById("ctmSearchInput").addEventListener("input", (e) => {
   ctmSearchTerm = e.target.value.trim();
-  renderCtmPatients();
+  renderCtmMembers();
 });
 
 /* ---------------- Care Team Member filter (portaled checkbox menu, mirrors patient-list.js) ---------------- */
@@ -142,7 +136,7 @@ ctmTeamMemberMenu.addEventListener("change", (e) => {
   if (checkbox.checked) ctmSelectedMembers.add(checkbox.value);
   else ctmSelectedMembers.delete(checkbox.value);
   ctmTeamMemberLabel.textContent = ctmSelectedMembers.size ? `${ctmTeamMemberBaseLabel} (${ctmSelectedMembers.size})` : ctmTeamMemberBaseLabel;
-  renderCtmPatients();
+  renderCtmMembers();
 });
 
 document.getElementById("ctmClearFilters").addEventListener("click", () => {
@@ -151,5 +145,5 @@ document.getElementById("ctmClearFilters").addEventListener("click", () => {
   ctmSelectedMembers.clear();
   ctmTeamMemberMenu.querySelectorAll('input[type="checkbox"]').forEach((cb) => (cb.checked = false));
   ctmTeamMemberLabel.textContent = ctmTeamMemberBaseLabel;
-  renderCtmPatients();
+  renderCtmMembers();
 });

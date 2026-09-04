@@ -6670,93 +6670,45 @@ body.patient-discontinued #chatOpenBtn {
 .ctm-load-tag.load-moderate { color: var(--orange-text); }
 .ctm-load-tag.load-high { color: var(--red-text); }
 
-/* ---------------- Study Material ---------------- */
+.ctm-count-col { text-align: center; font-weight: 700; color: #23272E; }
+
+/* ---------------- Patient Onboarding Guide ---------------- */
 .study-intro { color: var(--gray-text); font-size: 14px; max-width: 640px; margin: 0 0 28px; }
 
-.study-section { margin-bottom: 30px; }
-.study-section-title { font-size: 16px; font-weight: 700; margin: 0 0 14px; color: #23272E; }
-
-.study-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 16px;
-}
-
-.study-card {
-  background: #fff;
-  border: 1px solid var(--gray-border);
-  border-radius: 14px;
-  padding: 18px;
+.onboarding-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-width: 720px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
 }
 
-.study-card-icon {
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
+.onboarding-step {
+  display: flex;
+  gap: 16px;
+  padding: 22px 0;
+  border-bottom: 1px solid var(--gray-border);
+}
+
+.onboarding-step:last-child { border-bottom: none; padding-bottom: 0; }
+.onboarding-step:first-child { padding-top: 0; }
+
+.onboarding-step-num {
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
   background: var(--blue-light);
   color: var(--blue-text);
+  font-size: 13.5px;
+  font-weight: 800;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 4px;
 }
 
-.study-card-title { font-size: 14.5px; font-weight: 700; color: #23272E; margin: 0; }
-.study-card-desc { font-size: 13px; color: var(--gray-text); line-height: 1.5; margin: 0; }
-.study-card-body { font-size: 13px; color: #363B42; line-height: 1.6; margin: 2px 0 0; padding-top: 10px; border-top: 1px solid var(--gray-border); }
-
-.study-card-link {
-  align-self: flex-start;
-  margin-top: 6px;
-  border: none;
-  background: none;
-  padding: 0;
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--blue-text);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-
-.study-card-link:hover { text-decoration: underline; }
-.study-card-chevron { transition: transform 0.2s ease; }
-.study-card-link.open .study-card-chevron { transform: rotate(180deg); }
-
-.study-tutorial-thumb {
-  width: 100%;
-  height: 108px;
-  border-radius: 10px;
-  background: linear-gradient(135deg, #EAF6FC, #DCEFFA);
-  color: var(--blue-text);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  margin-bottom: 4px;
-}
-
-.study-tutorial-duration { font-size: 12.5px; font-weight: 700; }
-
-.study-video-placeholder {
-  width: 100%;
-  height: 200px;
-  border-radius: 12px;
-  background: var(--bg);
-  color: var(--gray-text);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  margin-bottom: 16px;
-}
-
-.study-video-placeholder-label { font-size: 13px; }
-.study-modal-duration { font-size: 12.5px; color: var(--gray-text); margin: -10px 0 14px; }
+.onboarding-step-body h3 { font-size: 15px; font-weight: 700; margin: 3px 0 6px; color: #23272E; }
+.onboarding-step-body p { font-size: 13.5px; color: var(--gray-text); line-height: 1.6; margin: 0; }
 
 

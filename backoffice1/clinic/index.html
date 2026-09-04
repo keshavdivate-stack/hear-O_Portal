@@ -3,6 +3,13 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<!-- Vercel's cleanUrls serves this file at /backoffice1/clinic (no trailing
+     slash, no /index.html) -- without a hardcoded <base>, the browser treats
+     "clinic" as the current directory and resolves every relative href/src
+     below one level too shallow (e.g. "../css/style.css" lands on
+     /css/style.css instead of /backoffice1/css/style.css), which is why the
+     Backoffice chrome loses its styling only when deployed, never locally. -->
+<base href="/backoffice1/clinic/" />
 <title>HearO | Clinic Dashboard (Backoffice)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />

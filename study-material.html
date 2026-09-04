@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>HearO | Study Material</title>
+<title>HearO | Patient Onboarding Guide</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -79,7 +79,7 @@
 
       <!-- TOPBAR -->
       <header class="topbar">
-        <h1 class="page-title">Study Material</h1>
+        <h1 class="page-title">Patient Onboarding Guide</h1>
         <div class="topbar-actions">
           <div class="topbar-item">
             <button class="icon-btn" aria-label="Add" id="orgSwitchBtn">
@@ -152,7 +152,7 @@
             <div class="topbar-popover more-popover" id="profilePopover">
               <a href="study-material.html" class="more-menu-item">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6C2 4.9 2.9 4 4 4H10C11.1 4 12 4.9 12 6V20C12 19.4 11.1 19 10 19H4C2.9 19 2 18.4 2 17.8V6Z"/><path d="M22 6C22 4.9 21.1 4 20 4H14C12.9 4 12 4.9 12 6V20C12 19.4 12.9 19 14 19H20C21.1 19 22 18.4 22 17.8V6Z"/></svg>
-                Study Material
+                Patient Onboarding Guide
               </a>
             </div>
           </div>
@@ -173,12 +173,52 @@
       <!-- CONTENT -->
       <div class="list-content">
 
-        <p class="study-intro">Guides and short tutorials to help you get the most out of the HearO clinic portal.</p>
+        <p class="study-intro">Read this before enrolling a new patient, then walk them through each step below in order.</p>
 
-        <div class="study-section">
-          <h2 class="study-section-title">Application Guides</h2>
-          <div class="study-grid" id="studyGuideGrid"></div>
-        </div>
+        <ol class="onboarding-steps">
+          <li class="onboarding-step">
+            <span class="onboarding-step-num">1</span>
+            <div class="onboarding-step-body">
+              <h3>Register the patient</h3>
+              <p>From Patient List, select "Add Patient" and either register the patient manually or search for and import them from a connected EHR. Enter their name, date of birth, MRN, phone number, and email as part of registration.</p>
+            </div>
+          </li>
+          <li class="onboarding-step">
+            <span class="onboarding-step-num">2</span>
+            <div class="onboarding-step-body">
+              <h3>Confirm contact details &amp; language preference</h3>
+              <p>Double-check the patient's phone number, email, and preferred language before moving on -- these are what the HearO app uses to send login credentials, reminders, and notifications.</p>
+            </div>
+          </li>
+          <li class="onboarding-step">
+            <span class="onboarding-step-num">3</span>
+            <div class="onboarding-step-body">
+              <h3>Download and log in to the HearO app</h3>
+              <p>Have the patient download the HearO app from the App Store or Google Play on their phone, then walk them through logging in with the credentials sent to their email or phone number.</p>
+            </div>
+          </li>
+          <li class="onboarding-step">
+            <span class="onboarding-step-num">4</span>
+            <div class="onboarding-step-body">
+              <h3>Complete initial device setup</h3>
+              <p>Guide the patient through granting HealthKit/device permissions and recording their first baseline reading in the app. This step is required before the app will start tracking daily readings.</p>
+            </div>
+          </li>
+          <li class="onboarding-step">
+            <span class="onboarding-step-num">5</span>
+            <div class="onboarding-step-body">
+              <h3>Confirm daily check-in &amp; support contact</h3>
+              <p>Make sure the patient knows how to complete their daily check-in in the app, and how to reach the care team through in-app Chat if they run into any questions or issues.</p>
+            </div>
+          </li>
+          <li class="onboarding-step">
+            <span class="onboarding-step-num">6</span>
+            <div class="onboarding-step-body">
+              <h3>Confirm onboarding is complete</h3>
+              <p>Once the patient begins sending readings, their status automatically moves from Registered to Baseline on Patient List -- confirm this has happened before ending the onboarding session.</p>
+            </div>
+          </li>
+        </ol>
 
       </div>
     </div>
@@ -187,7 +227,5 @@
 <script src="js/support-data.js"></script>
 <script src="js/topbar.js"></script>
 <script src="js/table-scroll.js"></script>
-<script src="js/study-data.js"></script>
-<script src="js/study-material.js"></script>
 </body>
 </html>
