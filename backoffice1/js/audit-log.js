@@ -1,18 +1,9 @@
 /* ---------------- Audit Log ---------------- */
 const AL_PAGE_SIZE = 20;
 
-document.getElementById("alActionFilter").insertAdjacentHTML(
-  "beforeend",
-  AL_ACTIONS.map((a) => `<option value="${a}">${a}</option>`).join("")
-);
-document.getElementById("alRoleFilter").insertAdjacentHTML(
-  "beforeend",
-  AL_ROLES.map((r) => `<option value="${r}">${r}</option>`).join("")
-);
-document.getElementById("alOrgFilter").insertAdjacentHTML(
-  "beforeend",
-  AL_ORGS.map((o) => `<option value="${o}">${o}</option>`).join("")
-);
+document.getElementById("alActionFilterMenu").innerHTML = buildBoSelectOptions(AL_ACTIONS);
+document.getElementById("alRoleFilterMenu").innerHTML = buildBoSelectOptions(AL_ROLES);
+document.getElementById("alOrgFilterMenu").innerHTML = buildBoSelectOptions(AL_ORGS);
 
 let alActionFilter = "";
 let alDescriptionFilter = "";
@@ -60,19 +51,71 @@ const alPager = boCreatePager(
 );
 alPager();
 
-document.querySelectorAll(".bo-filter-select").forEach((select) => {
-  select.addEventListener("change", () => select.classList.toggle("has-value", select.value !== ""));
+/* Filters apply as soon as a field changes -- no Apply button to batch them. */
+document.getElementById("alActionFilter").addEventListener("change", (e) => {
+  alActionFilter = e.target.value;
+  alPager.resetPage();
+  alPager();
+});
+document.getElementById("alDescriptionFilter").addEventListener("input", (e) => {
+  alDescriptionFilter = e.target.value;
+  alPager.resetPage();
+  alPager();
+});
+document.getElementById("alUserFilter").addEventListener("input", (e) => {
+  alUserFilter = e.target.value;
+  alPager.resetPage();
+  alPager();
+});
+document.getElementById("alRoleFilter").addEventListener("change", (e) => {
+  alRoleFilter = e.target.value;
+  alPager.resetPage();
+  alPager();
+});
+document.getElementById("alOrgFilter").addEventListener("change", (e) => {
+  alOrgFilter = e.target.value;
+  alPager.resetPage();
+  alPager();
+});
+document.getElementById("alUsercodeFilter").addEventListener("input", (e) => {
+  alUsercodeFilter = e.target.value;
+  alPager.resetPage();
+  alPager();
+});
+document.getElementById("alFromDate").addEventListener("change", (e) => {
+  alFromDate = e.target.value;
+  alPager.resetPage();
+  alPager();
+});
+document.getElementById("alToDate").addEventListener("change", (e) => {
+  alToDate = e.target.value;
+  alPager.resetPage();
+  alPager();
 });
 
-document.getElementById("alApplyBtn").addEventListener("click", () => {
-  alActionFilter = document.getElementById("alActionFilter").value;
-  alDescriptionFilter = document.getElementById("alDescriptionFilter").value;
-  alUserFilter = document.getElementById("alUserFilter").value;
-  alRoleFilter = document.getElementById("alRoleFilter").value;
-  alOrgFilter = document.getElementById("alOrgFilter").value;
-  alUsercodeFilter = document.getElementById("alUsercodeFilter").value;
-  alFromDate = document.getElementById("alFromDate").value;
-  alToDate = document.getElementById("alToDate").value;
+document.getElementById("alClearFiltersBtn").addEventListener("click", () => {
+  alActionFilter = "";
+  alDescriptionFilter = "";
+  alUserFilter = "";
+  alRoleFilter = "";
+  alOrgFilter = "";
+  alUsercodeFilter = "";
+  alFromDate = "";
+  alToDate = "";
+
+  resetBoSelect(document.querySelector('.bo-select[data-name="alAction"]'));
+  document.getElementById("alDescriptionFilter").value = "";
+  document.getElementById("alUserFilter").value = "";
+  resetBoSelect(document.querySelector('.bo-select[data-name="alRole"]'));
+  resetBoSelect(document.querySelector('.bo-select[data-name="alOrg"]'));
+  document.getElementById("alUsercodeFilter").value = "";
+  const fromDateEl = document.getElementById("alFromDate");
+  const toDateEl = document.getElementById("alToDate");
+  fromDateEl.value = "";
+  fromDateEl.type = "text";
+  toDateEl.value = "";
+  toDateEl.type = "text";
+
   alPager.resetPage();
   alPager();
 });

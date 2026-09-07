@@ -211,6 +211,28 @@ document.getElementById("ticketSearchInput").addEventListener("input", (e) => {
   refreshTicketTables();
 });
 
+document.getElementById("ticketClearFiltersBtn").addEventListener("click", () => {
+  ticketStatusValue = "";
+  ticketSeverityValue = "";
+  ticketCategoryValue = "";
+  ticketIssueValue = "";
+  ticketOriginValue = "";
+  ticketTypeValue = "";
+  ticketAssignedToValue = "";
+  ticketSearchTerm = "";
+
+  resetBoSelect(document.querySelector('.bo-select[data-name="ticketStatus"]'));
+  resetBoSelect(document.querySelector('.bo-select[data-name="ticketSeverity"]'));
+  resetBoSelect(document.querySelector('.bo-select[data-name="ticketCategory"]'));
+  resetBoSelect(document.querySelector('.bo-select[data-name="ticketIssue"]'));
+  resetBoSelect(document.querySelector('.bo-select[data-name="ticketOrigin"]'));
+  resetBoSelect(document.querySelector('.bo-select[data-name="ticketType"]'));
+  resetBoSelect(document.querySelector('.bo-select[data-name="ticketAssignedTo"]'));
+  document.getElementById("ticketSearchInput").value = "";
+
+  refreshTicketTables();
+});
+
 /* ---------------- Custom selects (used inside the ticket drawers) ----------------
    Plumbing (setBoSelectValue/buildSelectOptions/initBoSelects/etc.) lives in
    support-tickets-common.js, shared with ticket-detail.html. */

@@ -18,18 +18,13 @@ const patientOrgTypeToggles = new Set();
 
 /* ---------------- Filter options ---------------- */
 const siteCodes = [...new Set(patients.map((p) => p.username.split("-")[0]))];
-document.getElementById("clinicalSiteFilter").insertAdjacentHTML(
-  "beforeend",
-  siteCodes.map((c) => `<option value="${c}">${c}</option>`).join("")
-);
-document.getElementById("tagFilter").insertAdjacentHTML(
-  "beforeend",
-  PATIENT_TAGS.map((t) => `<option value="${t}">${t}</option>`).join("")
-);
-document.getElementById("languageFilter").insertAdjacentHTML(
-  "beforeend",
-  PATIENT_LANGUAGES.map((l) => `<option value="${l}">${l}</option>`).join("")
-);
+document.getElementById("clinicalSiteFilterMenu").innerHTML = buildBoSelectOptions(siteCodes);
+document.getElementById("tagFilterMenu").innerHTML = buildBoSelectOptions(PATIENT_TAGS);
+document.getElementById("languageFilterMenu").innerHTML = buildBoSelectOptions(PATIENT_LANGUAGES);
+document.getElementById("statusFilterMenu").innerHTML = buildBoSelectOptions(["Registered", "Active", "Priority", "Paused"]);
+document.getElementById("activeFilterMenu").innerHTML =
+  `<div class="bo-select-option" data-value="yes">Yes<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>` +
+  `<div class="bo-select-option" data-value="no">No<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>`;
 
 function dmyToIso(s) {
   const [d, m, y] = s.split("/");
@@ -154,25 +149,48 @@ wirePopover("patientColumnsBtn", "patientColumnsMenu");
 
 renderPatients();
 
-/* ---------------- Filters (staged, applied on Apply click) ---------------- */
-function syncFilterSelectStyle(select) {
-  select.classList.toggle("has-value", select.value !== "");
+/* ---------------- Filters (apply as soon as a field changes) ---------------- */
+function applyPatientFilter(update) {
+  update();
+  patientCurrentPage = 1;
+  renderPatients();
 }
 
-document.querySelectorAll(".bo-filter-select").forEach((select) => {
-  select.addEventListener("change", () => syncFilterSelectStyle(select));
-});
+document.getElementById("clinicalSiteFilter").addEventListener("change", (e) => applyPatientFilter(() => { patientSiteFilter = e.target.value; }));
+document.getElementById("tagFilter").addEventListener("change", (e) => applyPatientFilter(() => { patientTagFilter = e.target.value; }));
+document.getElementById("languageFilter").addEventListener("change", (e) => applyPatientFilter(() => { patientLanguageFilter = e.target.value; }));
+document.getElementById("statusFilter").addEventListener("change", (e) => applyPatientFilter(() => { patientStatusFilter = e.target.value; }));
+document.getElementById("activeFilter").addEventListener("change", (e) => applyPatientFilter(() => { patientActiveFilter = e.target.value; }));
+document.getElementById("appVersionFilter").addEventListener("input", (e) => applyPatientFilter(() => { patientAppVersionFilter = e.target.value.trim().toLowerCase(); }));
+document.getElementById("phoneModelFilter").addEventListener("input", (e) => applyPatientFilter(() => { patientPhoneModelFilter = e.target.value.trim().toLowerCase(); }));
+document.getElementById("lastSessionUpToFilter").addEventListener("change", (e) => applyPatientFilter(() => { patientLastSessionUpTo = e.target.value; }));
+document.getElementById("patientSearchInput").addEventListener("input", (e) => applyPatientFilter(() => { patientSearchTerm = e.target.value.trim().toLowerCase(); }));
 
-document.getElementById("patientApplyBtn").addEventListener("click", () => {
-  patientSiteFilter = document.getElementById("clinicalSiteFilter").value;
-  patientTagFilter = document.getElementById("tagFilter").value;
-  patientLanguageFilter = document.getElementById("languageFilter").value;
-  patientStatusFilter = document.getElementById("statusFilter").value;
-  patientActiveFilter = document.getElementById("activeFilter").value;
-  patientAppVersionFilter = document.getElementById("appVersionFilter").value.trim().toLowerCase();
-  patientPhoneModelFilter = document.getElementById("phoneModelFilter").value.trim().toLowerCase();
-  patientLastSessionUpTo = document.getElementById("lastSessionUpToFilter").value;
-  patientSearchTerm = document.getElementById("patientSearchInput").value.trim().toLowerCase();
+document.getElementById("patientClearFiltersBtn").addEventListener("click", () => {
+  patientSiteFilter = "";
+  patientTagFilter = "";
+  patientLanguageFilter = "";
+  patientStatusFilter = "";
+  patientActiveFilter = "";
+  patientAppVersionFilter = "";
+  patientPhoneModelFilter = "";
+  patientLastSessionUpTo = "";
+  patientSearchTerm = "";
+  patientOrgTypeToggles.clear();
+
+  resetBoSelect(document.querySelector('.bo-select[data-name="clinicalSite"]'));
+  resetBoSelect(document.querySelector('.bo-select[data-name="tag"]'));
+  resetBoSelect(document.querySelector('.bo-select[data-name="language"]'));
+  resetBoSelect(document.querySelector('.bo-select[data-name="status"]'));
+  resetBoSelect(document.querySelector('.bo-select[data-name="active"]'));
+  document.getElementById("appVersionFilter").value = "";
+  document.getElementById("phoneModelFilter").value = "";
+  document.getElementById("patientSearchInput").value = "";
+  const lastSessionEl = document.getElementById("lastSessionUpToFilter");
+  lastSessionEl.value = "";
+  lastSessionEl.type = "text";
+  document.querySelectorAll("[data-org-type]").forEach((toggle) => { toggle.checked = false; });
+
   patientCurrentPage = 1;
   renderPatients();
 });

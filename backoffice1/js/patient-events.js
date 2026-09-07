@@ -7,10 +7,11 @@ const PE_APPROVED_OPTIONS = ["APPROVED", "DISAPPROVED"];
    the "All" row is just a shortcut that selects/clears every option at once. */
 const peCheckIcon = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 
-function wireMultiSelect(containerId, values) {
+function wireMultiSelect(containerId, values, onChange) {
   const container = document.getElementById(containerId);
   const trigger = container.querySelector(".bo-multiselect-trigger");
   const valueEl = container.querySelector(".bo-multiselect-value");
+  const placeholderLabel = valueEl.textContent.trim();
   const menu = container.querySelector(".bo-multiselect-menu");
   const selected = new Set(values);
 
@@ -31,9 +32,11 @@ function wireMultiSelect(containerId, values) {
 
   function renderTrigger() {
     if (selected.size === values.length || selected.size === 0) {
-      valueEl.textContent = "All";
+      valueEl.textContent = placeholderLabel;
+      valueEl.classList.add("placeholder");
     } else {
       valueEl.textContent = values.filter((v) => selected.has(v)).join(", ");
+      valueEl.classList.remove("placeholder");
     }
   }
 
@@ -63,9 +66,18 @@ function wireMultiSelect(containerId, values) {
 
     renderMenu();
     renderTrigger();
+    if (onChange) onChange(selected);
   });
 
-  return { getSelected: () => selected };
+  return {
+    getSelected: () => selected,
+    reset() {
+      selected.clear();
+      values.forEach((v) => selected.add(v));
+      renderMenu();
+      renderTrigger();
+    },
+  };
 }
 
 document.addEventListener("click", (e) => {
@@ -74,16 +86,29 @@ document.addEventListener("click", (e) => {
   }
 });
 
-const peSiteMultiSelect = wireMultiSelect("peSiteFilter", PE_SITES);
-const peEventTypeMultiSelect = wireMultiSelect("peEventTypeFilter", PE_EVENT_TYPES);
-const peApprovedMultiSelect = wireMultiSelect("peApprovedFilter", PE_APPROVED_OPTIONS);
-
 let peSiteFilter = new Set(PE_SITES);
 let peEventTypeFilter = new Set(PE_EVENT_TYPES);
 let peApprovedFilter = new Set(PE_APPROVED_OPTIONS);
 let pePatientFilter = "";
 let peAddedByFilter = "";
 let peReportedByFilter = "";
+
+/* Filters apply as soon as a value changes -- no Apply button to batch them. */
+const peSiteMultiSelect = wireMultiSelect("peSiteFilter", PE_SITES, (selected) => {
+  peSiteFilter = selected;
+  pePager.resetPage();
+  pePager();
+});
+const peEventTypeMultiSelect = wireMultiSelect("peEventTypeFilter", PE_EVENT_TYPES, (selected) => {
+  peEventTypeFilter = selected;
+  pePager.resetPage();
+  pePager();
+});
+const peApprovedMultiSelect = wireMultiSelect("peApprovedFilter", PE_APPROVED_OPTIONS, (selected) => {
+  peApprovedFilter = selected;
+  pePager.resetPage();
+  pePager();
+});
 
 function peFiltered() {
   return peEvents.filter((r) => {
@@ -187,13 +212,44 @@ peRowMenu.addEventListener("click", (e) => {
   }
 });
 
-document.getElementById("peApplyBtn").addEventListener("click", () => {
-  peSiteFilter = peSiteMultiSelect.getSelected();
-  peEventTypeFilter = peEventTypeMultiSelect.getSelected();
-  peApprovedFilter = peApprovedMultiSelect.getSelected();
-  pePatientFilter = document.getElementById("pePatientFilter").value;
-  peAddedByFilter = document.getElementById("peAddedByFilter").value;
-  peReportedByFilter = document.getElementById("peReportedByFilter").value;
+document.getElementById("pePatientFilter").addEventListener("input", (e) => {
+  pePatientFilter = e.target.value;
+  pePager.resetPage();
+  pePager();
+});
+document.getElementById("peAddedByFilter").addEventListener("input", (e) => {
+  peAddedByFilter = e.target.value;
+  pePager.resetPage();
+  pePager();
+});
+document.getElementById("peReportedByFilter").addEventListener("input", (e) => {
+  peReportedByFilter = e.target.value;
+  pePager.resetPage();
+  pePager();
+});
+
+document.getElementById("peClearFiltersBtn").addEventListener("click", () => {
+  peSiteMultiSelect.reset();
+  peEventTypeMultiSelect.reset();
+  peApprovedMultiSelect.reset();
+  peSiteFilter = new Set(PE_SITES);
+  peEventTypeFilter = new Set(PE_EVENT_TYPES);
+  peApprovedFilter = new Set(PE_APPROVED_OPTIONS);
+
+  pePatientFilter = "";
+  peAddedByFilter = "";
+  peReportedByFilter = "";
+  document.getElementById("pePatientFilter").value = "";
+  document.getElementById("peAddedByFilter").value = "";
+  document.getElementById("peReportedByFilter").value = "";
+
+  const fromDateEl = document.getElementById("peFromDate");
+  const toDateEl = document.getElementById("peToDate");
+  fromDateEl.value = "";
+  fromDateEl.type = "text";
+  toDateEl.value = "";
+  toDateEl.type = "text";
+
   pePager.resetPage();
   pePager();
 });

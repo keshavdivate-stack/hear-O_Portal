@@ -84,6 +84,28 @@ document.getElementById("incOwnerFilter").addEventListener("change", (e) => { in
 document.getElementById("incDateFilter").addEventListener("change", (e) => { incDateValue = e.target.value; refreshIncidentTable(); });
 document.getElementById("incSearchInput").addEventListener("input", (e) => { incSearchTerm = e.target.value.trim().toLowerCase(); refreshIncidentTable(); });
 
+document.getElementById("incClearFiltersBtn").addEventListener("click", () => {
+  incStatusValue = "";
+  incSeverityValue = "";
+  incSourceValue = "";
+  incCategoryValue = "";
+  incOwnerValue = "";
+  incDateValue = "";
+  incSearchTerm = "";
+
+  resetBoSelect(document.querySelector('.bo-select[data-name="incStatus"]'));
+  resetBoSelect(document.querySelector('.bo-select[data-name="incSeverity"]'));
+  resetBoSelect(document.querySelector('.bo-select[data-name="incSource"]'));
+  resetBoSelect(document.querySelector('.bo-select[data-name="incCategory"]'));
+  resetBoSelect(document.querySelector('.bo-select[data-name="incOwner"]'));
+  const incDateEl = document.getElementById("incDateFilter");
+  incDateEl.value = "";
+  incDateEl.type = "text";
+  document.getElementById("incSearchInput").value = "";
+
+  refreshIncidentTable();
+});
+
 /* ---------------- Impact popover trigger (Impact column) ---------------- */
 document.getElementById("incidentRows").addEventListener("click", (e) => {
   const trigger = e.target.closest("[data-impact-trigger]");

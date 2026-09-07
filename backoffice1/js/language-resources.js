@@ -1,14 +1,8 @@
 /* ---------------- Language Resources ---------------- */
 const LR_PAGE_SIZE = 20;
 
-document.getElementById("lrSiteFilter").insertAdjacentHTML(
-  "beforeend",
-  LR_SITES.map((s) => `<option value="${s}">${s}</option>`).join("")
-);
-document.getElementById("lrLangFilter").insertAdjacentHTML(
-  "beforeend",
-  LR_LANGS.map((l) => `<option value="${l}">${l}</option>`).join("")
-);
+document.getElementById("lrSiteFilterMenu").innerHTML = buildBoSelectOptions(LR_SITES);
+document.getElementById("lrLangFilterMenu").innerHTML = buildBoSelectOptions(LR_LANGS);
 
 let lrSiteFilter = "";
 let lrLangFilter = "";
@@ -96,11 +90,45 @@ document.getElementById("lrRows").addEventListener("click", (e) => {
   }
 });
 
-document.getElementById("lrApplyBtn").addEventListener("click", () => {
-  lrSiteFilter = document.getElementById("lrSiteFilter").value;
-  lrLangFilter = document.getElementById("lrLangFilter").value;
-  lrIdentifierFilter = document.getElementById("lrIdentifierFilter").value;
-  lrUsernameFilter = document.getElementById("lrUsernameFilter").value;
+/* Filters apply as soon as a field changes -- no Apply button to batch them. */
+document.getElementById("lrSiteFilter").addEventListener("change", (e) => {
+  lrSiteFilter = e.target.value;
+  lrPager.resetPage();
+  lrPager();
+});
+document.getElementById("lrLangFilter").addEventListener("change", (e) => {
+  lrLangFilter = e.target.value;
+  lrPager.resetPage();
+  lrPager();
+});
+document.getElementById("lrIdentifierFilter").addEventListener("input", (e) => {
+  lrIdentifierFilter = e.target.value;
+  lrPager.resetPage();
+  lrPager();
+});
+document.getElementById("lrUsernameFilter").addEventListener("input", (e) => {
+  lrUsernameFilter = e.target.value;
+  lrPager.resetPage();
+  lrPager();
+});
+
+document.getElementById("lrClearFiltersBtn").addEventListener("click", () => {
+  lrSiteFilter = "";
+  lrLangFilter = "";
+  lrIdentifierFilter = "";
+  lrUsernameFilter = "";
+
+  resetBoSelect(document.querySelector('.bo-select[data-name="lrSite"]'));
+  resetBoSelect(document.querySelector('.bo-select[data-name="lrLang"]'));
+  document.getElementById("lrIdentifierFilter").value = "";
+  document.getElementById("lrUsernameFilter").value = "";
+  const fromDateEl = document.getElementById("lrFromDate");
+  const toDateEl = document.getElementById("lrToDate");
+  fromDateEl.value = "";
+  fromDateEl.type = "text";
+  toDateEl.value = "";
+  toDateEl.type = "text";
+
   lrPager.resetPage();
   lrPager();
 });

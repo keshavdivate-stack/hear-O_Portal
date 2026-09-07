@@ -130,9 +130,9 @@ function sdRenderAllTables() {
 }
 sdRenderAllTables();
 
+document.getElementById("sentenceLangFilterMenu").innerHTML = buildBoSelectOptions(["AR", "EN", "HE", "RU", "ES", "DE"]);
 document.getElementById("sentenceLangFilter").addEventListener("change", (e) => {
   sentenceLangFilter = e.target.value;
-  e.target.classList.toggle("has-value", e.target.value !== "");
   sdSentencesPager.resetPage();
   sdSentencesPager();
 });

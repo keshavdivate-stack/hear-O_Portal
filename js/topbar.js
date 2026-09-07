@@ -23,6 +23,7 @@ document.addEventListener("click", () => closeAllTopbarPopovers());
 
 wireTopbarToggle("orgSwitchBtn", "orgPopover");
 wireTopbarToggle("notifBtn", "notifPopover");
+wireTopbarToggle("messagesBtn", "messagesPopover");
 wireTopbarToggle("langBtn", "langPopover");
 wireTopbarToggle("moreBtn", "morePopover");
 wireTopbarToggle("profileBtn", "profilePopover");
@@ -98,6 +99,67 @@ if (notifTabsEl) {
     activeNotifTab = tab.dataset.tab;
     notifUnreadTabCount[activeNotifTab] = 0;
     renderNotifications();
+  });
+}
+
+/* ---------------- Messages ---------------- */
+const messagesData = [
+  { avatar: "SM", cls: "notif-av-red", title: "Dr. Sarah Mitchell: Can you check John Hill's latest reading?", time: "10m", unread: true },
+  { avatar: "JC", cls: "notif-av-gray", title: "Dr. James Carter: Thanks, following up with the patient now.", time: "1h", unread: true },
+  { avatar: "AL", cls: "notif-av-darkgray", title: "Amanda Lee, RN: Care plan updated for Eric Rosso.", time: "3h", unread: false },
+  { avatar: "EC", cls: "notif-av-gray", title: "Dr. Emily Chen: Shared a note on the compliance dashboard.", time: "1d", unread: false },
+];
+
+let activeMessagesTab = "all";
+const messagesUnreadTabCount = { all: messagesData.filter((m) => m.unread).length, unread: 0 };
+
+function renderMessagesTabs() {
+  const tabs = document.getElementById("messagesTabs");
+  if (!tabs) return;
+  tabs.querySelectorAll(".notif-tab").forEach((tab) => {
+    const key = tab.dataset.tab;
+    const count = messagesUnreadTabCount[key];
+    const label = key === "unread" ? "Unread" : "All";
+    tab.textContent = count ? `${label} (${count} new)` : label;
+    tab.classList.toggle("active", key === activeMessagesTab);
+  });
+}
+
+function renderMessagesList() {
+  const list = document.getElementById("messagesList");
+  if (!list) return;
+  const items = activeMessagesTab === "unread" ? messagesData.filter((m) => m.unread) : messagesData;
+  list.innerHTML = items.length
+    ? items
+        .map(
+          (m) => `
+      <div class="notif-item">
+        <span class="notif-avatar ${m.cls}">${m.avatar}</span>
+        <div class="notif-body">
+          <p class="notif-item-title">${m.title}</p>
+          <div class="notif-item-time">${m.time}</div>
+        </div>
+        <span class="notif-dot ${m.unread ? "unread" : "read"}"></span>
+      </div>`
+        )
+        .join("")
+    : `<p class="notif-empty">No messages.</p>`;
+}
+
+function renderMessages() {
+  renderMessagesTabs();
+  renderMessagesList();
+}
+
+renderMessages();
+
+const messagesTabsEl = document.getElementById("messagesTabs");
+if (messagesTabsEl) {
+  messagesTabsEl.addEventListener("click", (e) => {
+    const tab = e.target.closest(".notif-tab");
+    if (!tab) return;
+    activeMessagesTab = tab.dataset.tab;
+    renderMessages();
   });
 }
 

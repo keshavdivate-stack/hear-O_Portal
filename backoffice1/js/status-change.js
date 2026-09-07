@@ -26,10 +26,11 @@ let scToDate = "";
 /* ---------------- Multi-select checkbox filter (Clinical site) ---------------- */
 const scCheckIcon = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 
-function wireMultiSelect(containerId, values) {
+function wireMultiSelect(containerId, values, onChange) {
   const container = document.getElementById(containerId);
   const trigger = container.querySelector(".bo-multiselect-trigger");
   const valueEl = container.querySelector(".bo-multiselect-value");
+  const placeholderLabel = valueEl.textContent.trim();
   const menu = container.querySelector(".bo-multiselect-menu");
   const selected = new Set(values);
 
@@ -50,9 +51,11 @@ function wireMultiSelect(containerId, values) {
 
   function renderTrigger() {
     if (selected.size === values.length || selected.size === 0) {
-      valueEl.textContent = "All";
+      valueEl.textContent = placeholderLabel;
+      valueEl.classList.add("placeholder");
     } else {
       valueEl.textContent = values.filter((v) => selected.has(v)).join(", ");
+      valueEl.classList.remove("placeholder");
     }
   }
 
@@ -82,9 +85,18 @@ function wireMultiSelect(containerId, values) {
 
     renderMenu();
     renderTrigger();
+    if (onChange) onChange(selected);
   });
 
-  return { getSelected: () => selected };
+  return {
+    getSelected: () => selected,
+    reset() {
+      selected.clear();
+      values.forEach((v) => selected.add(v));
+      renderMenu();
+      renderTrigger();
+    },
+  };
 }
 
 document.addEventListener("click", (e) => {
@@ -94,8 +106,12 @@ document.addEventListener("click", (e) => {
 });
 
 const scSiteCodes = [...new Set(statusChanges.map((s) => s.username.split("-")[0]))];
-const scSiteMultiSelect = wireMultiSelect("scSiteFilter", scSiteCodes);
 let scSiteFilter = new Set(scSiteCodes);
+const scSiteMultiSelect = wireMultiSelect("scSiteFilter", scSiteCodes, (selected) => {
+  scSiteFilter = selected;
+  scCurrentPage = 1;
+  renderStatusChanges();
+});
 
 /* ---------------- Status Change To (single-select) ---------------- */
 const scStatusToSelect = document.querySelector('.bo-select[data-name="scStatusTo"]');
@@ -230,17 +246,47 @@ function renderStatusChanges() {
 
 renderStatusChanges();
 
-/* ---------------- Filters ---------------- */
+/* ---------------- Filters (apply as soon as a field changes) ---------------- */
 document.getElementById("scSearchInput").addEventListener("input", (e) => {
   scSearchTerm = e.target.value.trim().toLowerCase();
+  scCurrentPage = 1;
+  renderStatusChanges();
 });
 
-document.getElementById("scFromDate").addEventListener("change", (e) => { scFromDate = e.target.value; });
-document.getElementById("scToDate").addEventListener("change", (e) => { scToDate = e.target.value; });
+document.getElementById("scFromDate").addEventListener("change", (e) => {
+  scFromDate = e.target.value;
+  scCurrentPage = 1;
+  renderStatusChanges();
+});
+document.getElementById("scToDate").addEventListener("change", (e) => {
+  scToDate = e.target.value;
+  scCurrentPage = 1;
+  renderStatusChanges();
+});
 
-document.getElementById("scApplyBtn").addEventListener("click", () => {
-  scSiteFilter = scSiteMultiSelect.getSelected();
-  scStatusToFilter = scStatusToSelect.querySelector("input[type=hidden]").value;
+document.getElementById("scStatusToFilter").addEventListener("change", (e) => {
+  scStatusToFilter = e.target.value;
+  scCurrentPage = 1;
+  renderStatusChanges();
+});
+
+document.getElementById("scClearFiltersBtn").addEventListener("click", () => {
+  scSiteMultiSelect.reset();
+  scSiteFilter = new Set(scSiteCodes);
+  scStatusToFilter = "";
+  scSearchTerm = "";
+  scFromDate = "";
+  scToDate = "";
+
+  setBoSelectValue(scStatusToSelect, "", { silent: true });
+  document.getElementById("scSearchInput").value = "";
+  const fromDateEl = document.getElementById("scFromDate");
+  const toDateEl = document.getElementById("scToDate");
+  fromDateEl.value = "";
+  fromDateEl.type = "text";
+  toDateEl.value = "";
+  toDateEl.type = "text";
+
   scCurrentPage = 1;
   renderStatusChanges();
 });

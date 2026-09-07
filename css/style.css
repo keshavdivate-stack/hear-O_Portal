@@ -1207,6 +1207,11 @@ button, input, select, textarea, optgroup {
 .list-table tbody tr:hover td:first-child,
 .list-table tbody tr:hover td:last-child {
   background: #FAFBFC;
+  /* Sticky first/last cells all share the same base z-index, so later rows
+     normally paint over earlier ones. Without this, a hovered row's action
+     tooltip (which overflows downward out of its own cell) gets visually
+     clipped/covered by the next row's sticky cell instead of floating above it. */
+  z-index: 4;
 }
 
 .lt-name { font-weight: 700; color: #23272E; }
@@ -4367,6 +4372,8 @@ label.checkbox-field {
 }
 
 .notif-item-time { font-size: 13px; color: var(--gray-text); margin-top: 5px; }
+
+.notif-empty { padding: 24px 4px; text-align: center; font-size: 13.5px; color: var(--gray-text); }
 
 .notif-dot {
   width: 12px;

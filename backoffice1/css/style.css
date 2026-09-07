@@ -927,11 +927,15 @@ body.bo-page-scroll .bo-list-toolbar {
   gap: 10px;
   background: #fff;
   border: 1px solid var(--field-border);
-  border-radius: 10px;
-  padding: 10px 16px;
-  width: 320px;
-  flex-shrink: 0;
+  border-radius: 8px;
+  padding: 9px 12px;
+  min-width: 150px;
 }
+
+/* Fixed width only when the search pill sits in a page toolbar next to a
+   title/tabs -- inside a .bo-filter-row it flexes evenly with the other
+   filters instead (see the .bo-filter-row rule below). */
+.bo-list-toolbar .bo-search-pill { width: 240px; flex-shrink: 0; padding: 10px 16px; border-radius: 10px; }
 
 .bo-search-pill svg { flex-shrink: 0; color: var(--gray); }
 
@@ -1090,6 +1094,11 @@ body.bo-page-scroll .bo-list-toolbar {
 .bo-list-table tbody tr:hover td:first-child,
 .bo-list-table tbody tr:hover td:last-child {
   background: var(--bg);
+  /* Sticky first/last cells all share the same base z-index, so later rows
+     normally paint over earlier ones -- this keeps a hovered row's content
+     (e.g. a tooltip that overflows its own cell) from being visually
+     clipped/covered by the next row's sticky cell. */
+  z-index: 4;
 }
 
 .bo-list-table tbody td.mono { color: var(--gray-text); }
@@ -1270,8 +1279,8 @@ body.bo-page-scroll .bo-list-toolbar {
   align-items: center;
   background: #fff;
   border: 1px solid var(--field-border);
-  border-radius: 10px;
-  padding: 10px 14px;
+  border-radius: 8px;
+  padding: 9px 12px;
   min-width: 150px;
   flex-shrink: 0;
 }
@@ -1299,13 +1308,13 @@ body.bo-page-scroll .bo-list-toolbar {
   border: none;
   outline: none;
   font-size: 13.5px;
-  font-weight: 600;
+  font-weight: 400;
   font-family: inherit;
   background: transparent;
   color: var(--ink);
 }
 
-.bo-filter-field input[type="text"]::placeholder { color: var(--gray-text); font-weight: 700; }
+.bo-filter-field input[type="text"]::placeholder { color: #AEB4BC; font-weight: 400; }
 
 /* Full-width filter row: fields grow evenly to fill the row (no dead space on the right) */
 .bo-filter-row-label {
@@ -1317,7 +1326,7 @@ body.bo-page-scroll .bo-list-toolbar {
 
 .bo-filter-row {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   gap: 12px;
   margin-bottom: 20px;
 }
@@ -1344,27 +1353,6 @@ body.bo-page-scroll .bo-list-toolbar {
   .bo-filter-row .bo-search-pill { flex: 1 1 150px; }
 }
 
-/* Filter field with its own label above it (as opposed to a placeholder
-   option standing in for the label, which most .bo-filter-row instances
-   use instead) -- e.g. Terms & Conditions' "User Type" / "Search User" row. */
-.bo-filter-row .bo-filter-field-group {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  flex: 1 1 0;
-  min-width: 0;
-}
-
-.bo-filter-field-group > label {
-  font-size: 12.5px;
-  font-weight: 700;
-  color: var(--ink);
-}
-
-@media (max-width: 1100px) {
-  .bo-filter-row .bo-filter-field-group { flex: 1 1 150px; }
-}
-
 /* Date field — matches .bo-filter-field, with a trailing calendar glyph */
 .bo-date-field {
   display: flex;
@@ -1372,8 +1360,8 @@ body.bo-page-scroll .bo-list-toolbar {
   gap: 8px;
   background: #fff;
   border: 1px solid var(--field-border);
-  border-radius: 10px;
-  padding: 10px 14px;
+  border-radius: 8px;
+  padding: 9px 12px;
   min-width: 150px;
   flex-shrink: 0;
 }
@@ -1384,13 +1372,13 @@ body.bo-page-scroll .bo-list-toolbar {
   flex: 1;
   min-width: 0;
   font-size: 13.5px;
-  font-weight: 600;
+  font-weight: 400;
   font-family: inherit;
   background: transparent;
   color: var(--ink);
 }
 
-.bo-date-field input::placeholder { color: var(--gray-text); font-weight: 600; }
+.bo-date-field input::placeholder { color: #AEB4BC; font-weight: 400; }
 .bo-date-field svg { flex-shrink: 0; color: var(--gray); }
 
 /* When .bo-date-field is a <label> (e.g. the Add Task modal's Due date
@@ -1721,6 +1709,24 @@ a.bo-btn-secondary { text-decoration: none; }
 .bo-btn-text:hover { background: var(--bg); border-color: var(--gray); }
 .bo-btn-text.danger { color: var(--red); border-color: var(--red); }
 .bo-btn-text.danger:hover { background: var(--red-light); }
+
+/* Plain text "Clear filters" link -- filters apply as soon as a value
+   changes (see .bo-filter-row selects/inputs), so there's no Apply button
+   to sit next to; this just resets every field back to its default. */
+.bo-clear-filters {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--gray-text);
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+  text-decoration: none;
+  white-space: nowrap;
+  flex-shrink: 0;
+  font-family: inherit;
+}
+.bo-clear-filters:hover { color: var(--ink); }
 
 .bo-modal-field select {
   width: 100%;

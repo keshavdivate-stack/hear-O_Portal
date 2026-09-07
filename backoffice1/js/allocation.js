@@ -5,28 +5,18 @@ document.querySelectorAll("#allocTabs .bo-tab").forEach((tab) => {
     document.querySelectorAll(".bo-tab-panel").forEach((p) => p.classList.remove("active"));
     tab.classList.add("active");
     document.getElementById(`tab-${tab.dataset.tab}`).classList.add("active");
-    document.getElementById("allocFilters").hidden = tab.dataset.tab !== "current";
   });
 });
 
 /* ---------------- Filter options ---------------- */
 const allocSites = ["B01", "101", "104", "B03", "105"];
-document.getElementById("allocSiteFilter").insertAdjacentHTML(
-  "beforeend",
-  allocSites.map((s) => `<option value="${s}">${s}</option>`).join("")
-);
+document.getElementById("allocSiteFilterMenu").innerHTML = buildBoSelectOptions(allocSites);
 
 const allocConfigs = ["Main New8 no HQ Sensors Train 4.0 Zaza", "Main New8 HQ Sensors Train 4.0", "Legacy Config 3.2"];
-document.getElementById("allocConfigFilter").insertAdjacentHTML(
-  "beforeend",
-  allocConfigs.map((c) => `<option value="${c}">${c}</option>`).join("")
-);
+document.getElementById("allocConfigFilterMenu").innerHTML = buildBoSelectOptions(allocConfigs);
 
 const allocLangs = ["EN", "HE", "AR", "ES"];
-document.getElementById("allocLangFilter").insertAdjacentHTML(
-  "beforeend",
-  allocLangs.map((l) => `<option value="${l}">${l}</option>`).join("")
-);
+document.getElementById("allocLangFilterMenu").innerHTML = buildBoSelectOptions(allocLangs);
 
 /* ---------------- Current patients ---------------- */
 const ALLOC_PAGE_SIZE = 10;
@@ -85,19 +75,16 @@ allocCurrentPager();
 
 document.getElementById("allocSiteFilter").addEventListener("change", (e) => {
   allocSiteFilterValue = e.target.value;
-  e.target.classList.toggle("has-value", e.target.value !== "");
   allocCurrentPager.resetPage();
   allocCurrentPager();
 });
 document.getElementById("allocConfigFilter").addEventListener("change", (e) => {
   allocConfigFilterValue = e.target.value;
-  e.target.classList.toggle("has-value", e.target.value !== "");
   allocCurrentPager.resetPage();
   allocCurrentPager();
 });
 document.getElementById("allocLangFilter").addEventListener("change", (e) => {
   allocLangFilterValue = e.target.value;
-  e.target.classList.toggle("has-value", e.target.value !== "");
   allocCurrentPager.resetPage();
   allocCurrentPager();
 });
@@ -178,8 +165,18 @@ allocRowMenu.addEventListener("click", (e) => {
   allocRowMenu.classList.remove("open");
 });
 
-/* ---------------- Update configs ---------------- */
-document.getElementById("allocUpdateBtn").addEventListener("click", () => {
-  const rows = document.querySelectorAll("#allocCurrentRows tr");
-  if (!rows.length) return;
+/* ---------------- Clear filters ---------------- */
+document.getElementById("allocClearFiltersBtn").addEventListener("click", () => {
+  allocSiteFilterValue = "";
+  allocConfigFilterValue = "";
+  allocLangFilterValue = "";
+  allocSearchTerm = "";
+
+  resetBoSelect(document.querySelector('.bo-select[data-name="allocSite"]'));
+  resetBoSelect(document.querySelector('.bo-select[data-name="allocConfig"]'));
+  resetBoSelect(document.querySelector('.bo-select[data-name="allocLang"]'));
+  document.getElementById("allocSearchInput").value = "";
+
+  allocCurrentPager.resetPage();
+  allocCurrentPager();
 });

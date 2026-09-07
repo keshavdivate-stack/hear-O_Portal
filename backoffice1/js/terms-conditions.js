@@ -1,18 +1,9 @@
 /* ---------------- Terms & Conditions ---------------- */
 const TC_PAGE_SIZE = 10;
 
-document.getElementById("tcUserTypeFilter").insertAdjacentHTML(
-  "beforeend",
-  TC_USER_TYPES.map((t) => `<option value="${t}">${t}</option>`).join("")
-);
-document.getElementById("tcDocTypeFilter").insertAdjacentHTML(
-  "beforeend",
-  TC_DOC_TYPES.map((t) => `<option value="${t}">${t}</option>`).join("")
-);
-document.getElementById("tcOrgFilter").insertAdjacentHTML(
-  "beforeend",
-  TC_ORGS.map((o) => `<option value="${o}">${o}</option>`).join("")
-);
+document.getElementById("tcUserTypeFilterMenu").innerHTML = buildBoSelectOptions(TC_USER_TYPES);
+document.getElementById("tcDocTypeFilterMenu").innerHTML = buildBoSelectOptions(TC_DOC_TYPES);
+document.getElementById("tcOrgFilterMenu").innerHTML = buildBoSelectOptions(TC_ORGS);
 
 let tcUserTypeFilter = "";
 let tcUserSearch = "";
@@ -72,17 +63,57 @@ document.getElementById("tcRows").addEventListener("click", (e) => {
 
 tcPager();
 
-document.querySelectorAll("#tcUserTypeFilter, #tcDocTypeFilter, #tcOrgFilter").forEach((select) => {
-  select.addEventListener("change", () => select.classList.toggle("has-value", select.value !== ""));
+/* Filters apply as soon as a field changes -- no Apply button to batch them. */
+document.getElementById("tcUserTypeFilter").addEventListener("change", (e) => {
+  tcUserTypeFilter = e.target.value;
+  tcPager.resetPage();
+  tcPager();
+});
+document.getElementById("tcDocTypeFilter").addEventListener("change", (e) => {
+  tcDocTypeFilter = e.target.value;
+  tcPager.resetPage();
+  tcPager();
+});
+document.getElementById("tcOrgFilter").addEventListener("change", (e) => {
+  tcOrgFilter = e.target.value;
+  tcPager.resetPage();
+  tcPager();
+});
+document.getElementById("tcUserSearch").addEventListener("input", (e) => {
+  tcUserSearch = e.target.value;
+  tcPager.resetPage();
+  tcPager();
+});
+document.getElementById("tcFromDate").addEventListener("change", (e) => {
+  tcFromDate = e.target.value;
+  tcPager.resetPage();
+  tcPager();
+});
+document.getElementById("tcToDate").addEventListener("change", (e) => {
+  tcToDate = e.target.value;
+  tcPager.resetPage();
+  tcPager();
 });
 
-document.getElementById("tcApplyBtn").addEventListener("click", () => {
-  tcUserTypeFilter = document.getElementById("tcUserTypeFilter").value;
-  tcUserSearch = document.getElementById("tcUserSearch").value;
-  tcDocTypeFilter = document.getElementById("tcDocTypeFilter").value;
-  tcOrgFilter = document.getElementById("tcOrgFilter").value;
-  tcFromDate = document.getElementById("tcFromDate").value;
-  tcToDate = document.getElementById("tcToDate").value;
+document.getElementById("tcClearFiltersBtn").addEventListener("click", () => {
+  tcUserTypeFilter = "";
+  tcUserSearch = "";
+  tcDocTypeFilter = "";
+  tcOrgFilter = "";
+  tcFromDate = "";
+  tcToDate = "";
+
+  resetBoSelect(document.querySelector('.bo-select[data-name="tcUserType"]'));
+  document.getElementById("tcUserSearch").value = "";
+  resetBoSelect(document.querySelector('.bo-select[data-name="tcDocType"]'));
+  resetBoSelect(document.querySelector('.bo-select[data-name="tcOrg"]'));
+  const fromDateEl = document.getElementById("tcFromDate");
+  const toDateEl = document.getElementById("tcToDate");
+  fromDateEl.value = "";
+  fromDateEl.type = "text";
+  toDateEl.value = "";
+  toDateEl.type = "text";
+
   tcPager.resetPage();
   tcPager();
 });
