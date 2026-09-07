@@ -479,6 +479,23 @@ wireCheckboxFilter(
   renderPatientList
 );
 
+/* Deep link: ?careTeam=<Care Team Member name> -- lets the Care Team
+   Members page's row click land here with that member's patients already
+   filtered, instead of dropping the user on the unfiltered list. */
+(function applyIncomingCareTeamFilter() {
+  const careTeam = new URLSearchParams(location.search).get("careTeam");
+  if (!careTeam || !teamMemberOptions.some((m) => m.key === careTeam)) return;
+
+  selectedCareTeams.add(careTeam);
+  const checkbox = careTeamFilterMenu.querySelector(`input[value="${CSS.escape(careTeam)}"]`);
+  if (checkbox) checkbox.checked = true;
+
+  const label = document.querySelector('.checkbox-filter[data-name="careTeam"] .checkbox-filter-label');
+  label.textContent = `Care Team (${selectedCareTeams.size})`;
+
+  renderPatientList();
+})();
+
 function closeAllFilterPopovers() {
   document.querySelectorAll(".checkbox-filter.open").forEach((el) => el.classList.remove("open"));
   document.querySelectorAll(".checkbox-filter-menu-portaled").forEach((menuEl) => closeFilterMenu(menuEl));

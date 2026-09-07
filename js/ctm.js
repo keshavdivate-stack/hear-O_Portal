@@ -26,7 +26,7 @@ function renderCtmMembers() {
       const patients = ctmPatients.filter((p) => p.teamMember === m.name);
       const count = (pred) => patients.filter(pred).length;
       return `
-      <tr>
+      <tr class="ctm-row" data-member="${encodeURIComponent(m.name)}">
         <td>
           <div class="ctm-card-top">
             <span class="ctm-card-avatar">${memberInitials(m.name)}</span>
@@ -36,6 +36,7 @@ function renderCtmMembers() {
             </div>
           </div>
         </td>
+        <td class="ctm-count-col"><strong>${patients.length}</strong></td>
         <td class="ctm-count-col">${count((p) => p.status === "priority")}</td>
         <td class="ctm-count-col">${count((p) => p.status === "active")}</td>
         <td class="ctm-count-col">${count((p) => p.status === "registered")}</td>
@@ -54,6 +55,15 @@ function renderCtmMembers() {
 }
 
 renderCtmMembers();
+
+/* ---------------- Row click -> Patient List filtered to this member ----------------
+   Delegated on the tbody (not per-row) so it keeps working after every
+   renderCtmMembers() re-render replaces the rows' innerHTML. */
+document.getElementById("ctmMemberRows").addEventListener("click", (e) => {
+  const row = e.target.closest("tr[data-member]");
+  if (!row) return;
+  location.href = `patient-list.html?careTeam=${row.dataset.member}`;
+});
 
 /* ---------------- Search ---------------- */
 document.getElementById("ctmSearchInput").addEventListener("input", (e) => {

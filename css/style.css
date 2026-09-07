@@ -6796,6 +6796,11 @@ body.patient-discontinued #chatOpenBtn {
 
 .ctm-count-col { text-align: center; }
 
+/* Whole row navigates to that member's patients (Patient List, pre-filtered
+   by Care Team) -- cursor signals the row itself is clickable, not just the
+   name cell. */
+.ctm-row { cursor: pointer; }
+
 /* ---------------- Patient Onboarding Guide ---------------- */
 .study-intro { color: var(--gray-text); font-size: 14px; max-width: 640px; margin: 0 0 28px; }
 
