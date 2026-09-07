@@ -23,7 +23,7 @@ const mktBinDataBase = {
   ],
 };
 
-const mktStudyHeadBase = { sites: 5, avgDays: 42, needAttention: 11 };
+const mktStudyHeadBase = { sites: 5, needAttention: 11 };
 
 let screenedSeries = screenedSeriesBase;
 let mktBinData = mktBinDataBase;
@@ -194,7 +194,6 @@ function renderForOrg(orgIds) {
   renderMktBins(activeMktBinsTab);
 
   document.getElementById("mktSitesEnrolled").textContent = isAll ? mktStudyHeadBase.sites : orgIds.length;
-  document.getElementById("mktAvgDays").textContent = mktScale(mktStudyHeadBase.avgDays, seed + 2, 0.3);
   document.getElementById("mktNeedAttention").textContent = mktScale(mktStudyHeadBase.needAttention, seed + 5, 0.5);
 }
 
