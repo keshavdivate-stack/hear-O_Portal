@@ -12,9 +12,9 @@
   --gray-border: #E7EAEE;
   --bg: #F4F7FA;
   --transition: 220ms ease;
-  --btn-bg: #7DD3FC;
-  --btn-bg-hover: #5EC2F5;
-  --btn-text: #0C4A6E;
+  --btn-bg: #3b82f6;
+  --btn-bg-hover: #2563eb;
+  --btn-text: #fff;
   /* Accessible (AA, 4.5:1+) text colors for use on the *-light tint
      backgrounds, or as plain colored text on white -- the base hues
      (--blue, --red, --green, and the raw orange/yellow/purple hexes used
