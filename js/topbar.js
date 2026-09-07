@@ -110,27 +110,11 @@ const messagesData = [
   { avatar: "EC", cls: "notif-av-gray", title: "Dr. Emily Chen: Shared a note on the compliance dashboard.", time: "1d", unread: false },
 ];
 
-let activeMessagesTab = "all";
-const messagesUnreadTabCount = { all: messagesData.filter((m) => m.unread).length, unread: 0 };
-
-function renderMessagesTabs() {
-  const tabs = document.getElementById("messagesTabs");
-  if (!tabs) return;
-  tabs.querySelectorAll(".notif-tab").forEach((tab) => {
-    const key = tab.dataset.tab;
-    const count = messagesUnreadTabCount[key];
-    const label = key === "unread" ? "Unread" : "All";
-    tab.textContent = count ? `${label} (${count} new)` : label;
-    tab.classList.toggle("active", key === activeMessagesTab);
-  });
-}
-
-function renderMessagesList() {
+function renderMessages() {
   const list = document.getElementById("messagesList");
   if (!list) return;
-  const items = activeMessagesTab === "unread" ? messagesData.filter((m) => m.unread) : messagesData;
-  list.innerHTML = items.length
-    ? items
+  list.innerHTML = messagesData.length
+    ? messagesData
         .map(
           (m) => `
       <div class="notif-item">
@@ -146,22 +130,7 @@ function renderMessagesList() {
     : `<p class="notif-empty">No messages.</p>`;
 }
 
-function renderMessages() {
-  renderMessagesTabs();
-  renderMessagesList();
-}
-
 renderMessages();
-
-const messagesTabsEl = document.getElementById("messagesTabs");
-if (messagesTabsEl) {
-  messagesTabsEl.addEventListener("click", (e) => {
-    const tab = e.target.closest(".notif-tab");
-    if (!tab) return;
-    activeMessagesTab = tab.dataset.tab;
-    renderMessages();
-  });
-}
 
 /* ---------------- Support Ticket floating button ----------------
    Bottom-right floating shortcut to this clinic's own tickets (transcript:
