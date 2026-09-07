@@ -892,6 +892,11 @@ body.bo-page-scroll .bo-page { overflow-y: auto; overflow-x: hidden; }
    opposed to .bo-filter-row, where selects stretch to fill the row). */
 .bo-list-toolbar .bo-toolbar-select { width: 170px; flex-shrink: 0; }
 
+/* Small muted line under an .bo-list-toolbar h1 (e.g. the Support Dashboard's
+   "Welcome back, <agent>" line) -- wrap both in .bo-list-toolbar-title-wrap
+   so they stack instead of sitting inline with the rest of the toolbar. */
+.bo-toolbar-subtitle { margin: 3px 0 0; font-size: 12.5px; font-weight: 500; color: var(--gray-text); }
+
 .bo-list-toolbar-group {
   display: flex;
   align-items: center;

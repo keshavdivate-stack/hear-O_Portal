@@ -142,84 +142,90 @@
   <main class="bo-page">
 
     <div class="bo-list-toolbar">
-      <h1>Support Dashboard</h1>
-      <span class="bo-list-toolbar-spacer"></span>
-      <div class="bo-seg-toggle" id="supDashTimeToggle">
-        <button class="bo-seg-btn" data-range="24h">24h</button>
-        <button class="bo-seg-btn active" data-range="7d">7d</button>
-        <button class="bo-seg-btn" data-range="30d">30d</button>
+      <div class="bo-list-toolbar-title-wrap">
+        <h1>My Support Dashboard</h1>
+        <p class="bo-toolbar-subtitle" id="supDashWelcome">&nbsp;</p>
       </div>
-      <a href="support.html?tab=incidents" class="bo-btn-secondary">
-        View All Incidents
+      <span class="bo-list-toolbar-spacer"></span>
+      <div class="bo-select bo-toolbar-select" data-name="supDashAgent" style="width:210px;">
+        <button type="button" class="bo-select-trigger">
+          <span class="bo-select-value placeholder">Viewing as</span>
+          <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="bo-select-menu" id="supDashAgentMenu"></div>
+        <input type="hidden" id="supDashAgentFilter" />
+      </div>
+      <a href="support.html" class="bo-btn-secondary">
+        View All Tickets
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
       </a>
-      <a href="support.html" class="bo-btn-primary">
-        View All Tickets
+      <a href="support.html" class="bo-btn-primary" id="supDashMyTicketsBtn">
+        View My Tickets
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
       </a>
     </div>
 
     <div class="bo-health-grid bo-health-grid--auto" id="supDashHealthGrid"></div>
 
-    <!-- VOLUME TREND + NEEDS ATTENTION (tickets + incidents merged, most urgent first) -->
-    <div style="display:flex; align-items:stretch; gap:16px; flex-shrink:0; margin-bottom:20px; height:300px;">
-      <section class="bo-card bo-panel" style="flex:1.6 1 0;">
-        <div class="bo-panel-head">
-          <h3 class="bo-panel-title" style="margin:0;">Volume Trend</h3>
-          <div class="bo-legend-row" id="supDashTrendLegend" style="margin:0;"></div>
+    <!-- MY QUEUE + RECENTLY RESOLVED -->
+    <div style="display:flex; align-items:stretch; gap:16px; flex-shrink:0; margin-bottom:20px; height:320px;">
+      <section class="bo-card bo-panel" style="flex:1.3 1 0;">
+        <div class="bo-panel-head" style="flex-shrink:0;">
+          <h3 class="bo-panel-title" style="margin:0;">My Queue</h3>
+          <span style="font-size:12px; color:var(--gray-text); font-weight:500;">Sorted by priority</span>
         </div>
-        <div id="supDashTrendChart" class="bo-chart-area"></div>
+        <div class="bo-crit-issue-list" id="supDashQueueList" style="flex:1; min-height:0; overflow-y:auto;"></div>
       </section>
 
       <section class="bo-card bo-panel" style="flex:1 1 0;">
         <div class="bo-panel-head" style="flex-shrink:0;">
-          <h3 class="bo-panel-title" style="margin:0;">Needs Attention</h3>
+          <h3 class="bo-panel-title" style="margin:0;">Recently Resolved</h3>
         </div>
-        <div class="bo-crit-issue-list" id="supDashAttentionList" style="flex:1; min-height:0; overflow-y:auto;"></div>
+        <div class="bo-crit-issue-list" id="supDashResolvedList" style="flex:1; min-height:0; overflow-y:auto;"></div>
       </section>
     </div>
 
-    <!-- SEVERITY MIX -->
+    <!-- MY TICKETS: STATUS + SEVERITY MIX -->
     <div style="display:flex; align-items:stretch; gap:16px; flex-shrink:0; margin-bottom:20px;">
       <section class="bo-card bo-panel bo-panel--static" style="flex:1 1 0; display:block;">
-        <h3 class="bo-panel-title">Tickets by Severity</h3>
+        <h3 class="bo-panel-title">My Tickets by Status</h3>
         <div class="bo-donut-row">
           <div class="bo-donut-wrap">
-            <div class="bo-donut" id="supDashTicketDonut"></div>
+            <div class="bo-donut" id="supDashStatusDonut"></div>
             <div class="bo-donut-center">
-              <span class="num" id="supDashTicketDonutTotal">&nbsp;</span>
-              <span class="lbl">Open Tickets</span>
+              <span class="num" id="supDashStatusDonutTotal">&nbsp;</span>
+              <span class="lbl">My Tickets</span>
             </div>
           </div>
-          <div class="bo-donut-legend" id="supDashTicketDonutLegend"></div>
+          <div class="bo-donut-legend" id="supDashStatusDonutLegend"></div>
         </div>
       </section>
 
       <section class="bo-card bo-panel bo-panel--static" style="flex:1 1 0; display:block;">
-        <h3 class="bo-panel-title">Incidents by Severity</h3>
+        <h3 class="bo-panel-title">My Tickets by Severity</h3>
         <div class="bo-donut-row">
           <div class="bo-donut-wrap">
-            <div class="bo-donut" id="supDashIncidentDonut"></div>
+            <div class="bo-donut" id="supDashSeverityDonut"></div>
             <div class="bo-donut-center">
-              <span class="num" id="supDashIncidentDonutTotal">&nbsp;</span>
-              <span class="lbl">Open Incidents</span>
+              <span class="num" id="supDashSeverityDonutTotal">&nbsp;</span>
+              <span class="lbl">My Tickets</span>
             </div>
           </div>
-          <div class="bo-donut-legend" id="supDashIncidentDonutLegend"></div>
+          <div class="bo-donut-legend" id="supDashSeverityDonutLegend"></div>
         </div>
       </section>
     </div>
 
-    <!-- CATEGORY / SOURCE BREAKDOWN -->
+    <!-- MY TICKETS: CATEGORY + TYPE BREAKDOWN -->
     <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px; flex-shrink:0;">
       <section class="bo-card bo-panel bo-panel--static" style="display:block;">
-        <h3 class="bo-panel-title">Tickets by Category</h3>
+        <h3 class="bo-panel-title">My Tickets by Category</h3>
         <div class="bo-hbar-list" id="supDashCategoryBars"></div>
       </section>
 
       <section class="bo-card bo-panel bo-panel--static" style="display:block;">
-        <h3 class="bo-panel-title">Incidents by Source</h3>
-        <div class="bo-hbar-list" id="supDashSourceBars"></div>
+        <h3 class="bo-panel-title">My Tickets by Type</h3>
+        <div class="bo-hbar-list" id="supDashTypeBars"></div>
       </section>
     </div>
 
@@ -227,8 +233,7 @@
 
 <script src="js/dashboard-nav.js"></script>
 <script src="js/support-data.js"></script>
-<script src="js/support-incidents-data.js"></script>
-<script src="js/support-incidents-common.js"></script>
+<script src="js/support-tickets-common.js"></script>
 <script src="js/notifications.js"></script>
 <script src="js/support-dashboard.js"></script>
 </body>
