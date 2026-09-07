@@ -6817,7 +6817,8 @@ body.patient-discontinued #chatOpenBtn {
 .ctm-load-tag.load-moderate { color: var(--orange-text); }
 .ctm-load-tag.load-high { color: var(--red-text); }
 
-.ctm-count-col { text-align: center; }
+.list-table thead th.ctm-count-col,
+.list-table tbody td.ctm-count-col { text-align: center; }
 
 /* Whole row navigates to that member's patients (Patient List, pre-filtered
    by Care Team) -- cursor signals the row itself is clickable, not just the
