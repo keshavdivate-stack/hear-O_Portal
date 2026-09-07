@@ -174,19 +174,8 @@ if (!ticket) {
     const orgFieldVisible = !document.getElementById("ticketDetailOrgField").hidden;
     const orgFilled = !orgFieldVisible || document.querySelector('.custom-select[data-name="ticketOrgHandling"] input[type=hidden]').value !== "";
     const assigneeFilled = status === "Resolved" || document.querySelector('.custom-select[data-name="ticketAssignedTo"] input[type=hidden]').value !== "";
-    const invalid = !assigneeFilled || !orgFilled;
-
-    saveTicketDetailBtn.disabled = invalid;
-    saveTicketDetailBtn.classList.toggle("enabled", !invalid);
-
-    /* Re-rendered with the rest of the body on every renderBody(), so it's
-       looked up live rather than cached like saveTicketDetailBtn (a static
-       header element that never gets replaced). */
-    const bottomSaveBtn = document.getElementById("saveTicketDetailBtnBottom");
-    if (bottomSaveBtn) {
-      bottomSaveBtn.disabled = invalid;
-      bottomSaveBtn.classList.toggle("enabled", !invalid);
-    }
+    saveTicketDetailBtn.disabled = !assigneeFilled || !orgFilled;
+    saveTicketDetailBtn.classList.toggle("enabled", !saveTicketDetailBtn.disabled);
   }
 
   function handlingMarkup() {
@@ -740,13 +729,7 @@ if (!ticket) {
         </div>
       </div>`;
 
-    ticketDetailBody.innerHTML = `
-      ${summaryCard}
-
-      <div class="ticket-detail-actions" style="justify-content:flex-end;">
-        <button type="submit" form="ticketDetailForm" class="btn-save" id="saveTicketDetailBtnBottom">Save changes</button>
-      </div>
-    `;
+    ticketDetailBody.innerHTML = summaryCard;
 
     wireRecording();
     wireHandling();
