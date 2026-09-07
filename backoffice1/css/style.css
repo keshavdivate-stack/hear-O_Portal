@@ -531,7 +531,7 @@ button, input, select, textarea, optgroup {
   position: sticky;
   top: 0;
   z-index: 2;
-  background: var(--bg);
+  background: var(--gray-border);
   text-align: left;
   color: var(--gray-text);
   font-weight: 600;
@@ -954,7 +954,7 @@ body.bo-page-scroll .bo-page { overflow-y: auto; overflow-x: hidden; }
   position: sticky;
   top: 0;
   z-index: 5;
-  background: var(--bg);
+  background: var(--gray-border);
   text-align: left;
   font-size: 11.5px;
   font-weight: 700;
@@ -1005,7 +1005,7 @@ body.bo-page-scroll .bo-page { overflow-y: auto; overflow-x: hidden; }
 
 .bo-list-table thead th:first-child,
 .bo-list-table thead th:last-child {
-  background: var(--bg);
+  background: var(--gray-border);
 }
 
 .bo-table-scroll.has-h-scroll .bo-list-table th:first-child,
