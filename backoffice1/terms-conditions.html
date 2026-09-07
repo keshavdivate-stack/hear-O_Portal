@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>HearO Backoffice | Language Resources</title>
+<title>HearO Backoffice | Terms & Conditions</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="css/style.css" />
+<link rel="stylesheet" href="css/style.css?v=4" />
 </head>
 <body class="bo-page-scroll">
 
@@ -48,14 +48,14 @@
         </div>
       </div>
       <div class="bo-nav-item">
-        <button type="button" class="bo-nav-link active" id="reportsNavBtn">
+        <button type="button" class="bo-nav-link" id="reportsNavBtn">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>
           Reports
           <svg class="bo-nav-caret" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
         </button>
         <div class="bo-popover bo-nav-popover" id="reportsPopover">
           <a href="report-management.html" class="bo-popover-item">Report Management</a>
-          <a href="language-resources.html" class="bo-popover-item active">Language Resource</a>
+          <a href="language-resources.html" class="bo-popover-item">Language Resource</a>
           <a href="audit-log.html" class="bo-popover-item">Audit Log</a>
         </div>
       </div>
@@ -64,7 +64,7 @@
         Support
       </a>
       <div class="bo-nav-item">
-        <button type="button" class="bo-nav-link" id="settingsNavBtn">
+        <button type="button" class="bo-nav-link active" id="settingsNavBtn">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
           Settings
           <svg class="bo-nav-caret" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
@@ -82,7 +82,7 @@
             </div>
           </div>
           <a href="manage-users.html" class="bo-popover-item">Manage Users</a>
-          <a href="terms-conditions.html" class="bo-popover-item">Terms &amp; Conditions</a>
+          <a href="terms-conditions.html" class="bo-popover-item active">Terms &amp; Conditions</a>
         </div>
       </div>
       <div class="bo-nav-item">
@@ -142,73 +142,99 @@
   <main class="bo-page bo-page-list">
 
     <div class="bo-list-toolbar">
-      <h1>Language Resources</h1>
-      <span class="bo-list-toolbar-spacer"></span>
-      <label class="bo-switch-field">
-        <span class="bo-switch">
-          <input type="checkbox" id="lrHmoToggle" checked />
-          <span class="bo-switch-track"></span>
-        </span>
-        Non-HMO
-      </label>
+      <h1>Terms &amp; Conditions</h1>
     </div>
 
     <div class="bo-filter-row">
-      <div class="bo-filter-field">
-        <select class="bo-filter-select" id="lrSiteFilter">
-          <option value="">Clinical site</option>
-        </select>
+      <div class="bo-filter-field-group">
+        <label>User Type</label>
+        <div class="bo-filter-field">
+          <select class="bo-filter-select" id="tcUserTypeFilter">
+            <option value="">All</option>
+          </select>
+        </div>
       </div>
-      <div class="bo-filter-field">
-        <select class="bo-filter-select" id="lrLangFilter">
-          <option value="">Language</option>
-        </select>
+      <div class="bo-filter-field-group">
+        <label>Search User</label>
+        <div class="bo-filter-field">
+          <input type="text" id="tcUserSearch" placeholder="Enter Usercode" />
+        </div>
       </div>
-      <div class="bo-filter-field">
-        <input type="text" id="lrIdentifierFilter" placeholder="Sentences identifier" />
+      <div class="bo-filter-field-group">
+        <label>Document Type</label>
+        <div class="bo-filter-field">
+          <select class="bo-filter-select" id="tcDocTypeFilter">
+            <option value="">All</option>
+          </select>
+        </div>
       </div>
-      <div class="bo-filter-field">
-        <input type="text" id="lrUsernameFilter" placeholder="Enter patient username" />
+      <div class="bo-filter-field-group">
+        <label>Organization</label>
+        <div class="bo-filter-field">
+          <select class="bo-filter-select" id="tcOrgFilter">
+            <option value="">All</option>
+          </select>
+        </div>
       </div>
-      <div class="bo-date-field">
-        <input type="text" id="lrFromDate" placeholder="mm/dd/yyyy" onfocus="(this.type='date')" onblur="if(!this.value)this.type='text'" />
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="17" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3 9H21" stroke="currentColor" stroke-width="1.8"/></svg>
+      <div class="bo-filter-field-group">
+        <label>From Date:</label>
+        <div class="bo-date-field">
+          <input type="text" id="tcFromDate" placeholder="mm/dd/yyyy" onfocus="(this.type='date')" onblur="if(!this.value)this.type='text'" />
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="17" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3 9H21" stroke="currentColor" stroke-width="1.8"/></svg>
+        </div>
       </div>
-      <div class="bo-date-field">
-        <input type="text" id="lrToDate" placeholder="mm/dd/yyyy" onfocus="(this.type='date')" onblur="if(!this.value)this.type='text'" />
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="17" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3 9H21" stroke="currentColor" stroke-width="1.8"/></svg>
+      <div class="bo-filter-field-group">
+        <label>To Date:</label>
+        <div class="bo-date-field">
+          <input type="text" id="tcToDate" placeholder="mm/dd/yyyy" onfocus="(this.type='date')" onblur="if(!this.value)this.type='text'" />
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="17" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3 9H21" stroke="currentColor" stroke-width="1.8"/></svg>
+        </div>
       </div>
-      <button class="bo-btn-secondary" id="lrApplyBtn">Apply</button>
+      <button class="bo-btn-primary" id="tcApplyBtn">Apply</button>
     </div>
+
     <div class="bo-table-card">
       <div class="bo-table-scroll">
         <table class="bo-list-table bo-list-table--fluid">
           <thead>
             <tr>
-              <th>#</th>
-              <th>USERNAME</th>
-              <th>DATE</th>
-              <th>TIME</th>
-              <th>LANGUAGE</th>
-              <th>IDENTIFIER</th>
-              <th>NOTES</th>
-              <th>VOICE ENGINE INPUT</th>
-              <th>AUDIO</th>
+              <th>USER</th>
+              <th>DOCUMENT TYPE</th>
+              <th>DOCUMENT PATH</th>
+              <th>ORGANIZATION</th>
+              <th>SIGNED (DATE &amp; TIME)</th>
+              <th></th>
             </tr>
           </thead>
-          <tbody id="lrRows"></tbody>
+          <tbody id="tcRows"></tbody>
         </table>
       </div>
     </div>
 
   </main>
 
+  <!-- VIEW DOCUMENT MODAL -->
+  <div class="bo-center-modal-overlay" id="tcDocOverlay">
+    <div class="bo-center-modal bo-center-modal-xl">
+      <div class="bo-center-modal-head">
+        <h2 id="tcDocTitle">EU/1.0/ES/UserPrivacy.pdf</h2>
+        <button type="button" class="bo-drawer-close" id="tcDocCloseX" aria-label="Close">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6L18 18M6 18L18 6"/></svg>
+        </button>
+      </div>
+      <div class="bo-doc-viewer" id="tcDocBody"></div>
+      <div class="bo-center-modal-foot bo-center-modal-foot-divided">
+        <button type="button" class="bo-btn-text" id="tcDocCancelBtn">Cancel</button>
+      </div>
+    </div>
+  </div>
+
 <script src="js/dashboard-nav.js"></script>
 <script src="js/support-data.js"></script>
 <script src="js/notifications.js"></script>
 <script src="js/bo-table-scroll.js"></script>
 <script src="js/bo-pagination.js"></script>
-<script src="js/language-resources-data.js"></script>
-<script src="js/language-resources.js"></script>
+<script src="js/terms-conditions-data.js"></script>
+<script src="js/terms-conditions.js"></script>
 </body>
 </html>

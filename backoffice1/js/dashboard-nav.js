@@ -77,6 +77,11 @@ document.querySelectorAll(".bo-popover-item[data-val]").forEach((item) => {
   const trigger = document.getElementById("viewVersionBtn");
   if (!trigger) return;
 
+  const SUMMARY_VERSIONS = [
+    { label: "Cordio HearO™ software version", value: "3.1.0.0" },
+    { label: "Portal software version", value: "3.1.0.0" },
+  ];
+
   const VERSIONS = [
     { label: "Client", value: "2.0.62.11" },
     { label: "Server", value: "2.0.203.9" },
@@ -99,6 +104,9 @@ document.querySelectorAll(".bo-popover-item[data-val]").forEach((item) => {
   overlay.innerHTML = `
     <div class="bo-center-modal">
       <h2>Versions</h2>
+      <div class="bo-version-list bo-version-list-summary">
+        ${SUMMARY_VERSIONS.map((v) => `<div class="bo-version-row"><span>${v.label}</span><span>${v.value}</span></div>`).join("")}
+      </div>
       <div class="bo-version-list">
         ${VERSIONS.map((v) => `<div class="bo-version-row"><span>${v.label}</span><span>${v.value}</span></div>`).join("")}
       </div>
@@ -124,4 +132,28 @@ document.querySelectorAll(".bo-popover-item[data-val]").forEach((item) => {
     if (e.target === overlay) closeModal();
   });
   document.getElementById("closeViewVersionModal").addEventListener("click", closeModal);
+})();
+
+/* ---------------- Change Password / Logout (avatar menu) ----------------
+   This script is loaded from both backoffice1/*.html (as "js/dashboard-nav.js")
+   and backoffice1/clinic/*.html (as "../js/dashboard-nav.js"), so a relative
+   redirect needs to account for the extra "clinic/" path segment on the
+   latter -- boBase resolves both back to backoffice1/login.html and
+   backoffice1/change-password.html. */
+(function initAccountMenuNav() {
+  const boBase = /\/clinic\//.test(location.pathname) ? "../" : "";
+
+  const changePasswordBtn = document.getElementById("changePasswordBtn");
+  if (changePasswordBtn) {
+    changePasswordBtn.addEventListener("click", () => {
+      window.location.href = boBase + "change-password.html";
+    });
+  }
+
+  const logoutBtn = document.getElementById("logoutBtn");
+  if (logoutBtn) {
+    logoutBtn.addEventListener("click", () => {
+      window.location.href = boBase + "login.html?loggedOut=1";
+    });
+  }
 })();

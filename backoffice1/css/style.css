@@ -274,6 +274,15 @@ button, input, select, textarea, optgroup {
 .bo-popover-item:hover { background: var(--bg); }
 .bo-popover-item.active { color: var(--blue); background: var(--blue-light); }
 
+/* Avatar menu (View Version / Change Password / Logout) */
+.bo-popover-item-account {
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var(--navy);
+  font-weight: 700;
+}
+.bo-popover-item-account:hover { background: var(--navy-light); }
+
 .bo-nav-popover {
   left: 0;
   right: auto;
@@ -842,6 +851,16 @@ button, input, select, textarea, optgroup {
    of the default fixed-viewport .bo-page, which clips overflow entirely. */
 body.bo-page-scroll .bo-page { overflow-y: auto; overflow-x: hidden; }
 
+/* Keep the page title/toolbar (e.g. Support Dashboard's title + agent
+   switcher + ticket links) pinned above the scrolling content instead of
+   scrolling away with it. */
+body.bo-page-scroll .bo-list-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: var(--bg);
+}
+
 .bo-list-toolbar {
   display: flex;
   align-items: center;
@@ -1280,6 +1299,27 @@ body.bo-page-scroll .bo-page { overflow-y: auto; overflow-x: hidden; }
   .bo-filter-row .bo-select,
   .bo-filter-row .bo-multiselect,
   .bo-filter-row .bo-search-pill { flex: 1 1 150px; }
+}
+
+/* Filter field with its own label above it (as opposed to a placeholder
+   option standing in for the label, which most .bo-filter-row instances
+   use instead) -- e.g. Terms & Conditions' "User Type" / "Search User" row. */
+.bo-filter-row .bo-filter-field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.bo-filter-field-group > label {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+@media (max-width: 1100px) {
+  .bo-filter-row .bo-filter-field-group { flex: 1 1 150px; }
 }
 
 /* Date field — matches .bo-filter-field, with a trailing calendar glyph */
@@ -3065,6 +3105,48 @@ a.bo-btn-secondary { text-decoration: none; }
 .bo-version-row span:first-child { color: var(--gray-text); }
 .bo-version-row span:last-child { font-weight: 700; }
 
+.bo-version-list-summary {
+  margin-bottom: 18px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--gray-border);
+}
+.bo-version-list-summary .bo-version-row span:first-child { color: var(--ink); font-weight: 700; }
+
+/* Center-modal header with a title + close (x) button, e.g. the Terms &
+   Conditions document viewer -- plain .bo-center-modal h2 has no room for
+   a close button beside it, so wrap both in this row when one is needed. */
+.bo-center-modal-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0 -26px 20px;
+  padding: 0 26px 16px;
+  border-bottom: 1px solid var(--gray-border);
+}
+.bo-center-modal-head h2 { margin: 0; }
+.bo-center-modal-head .bo-drawer-close { margin-top: -4px; margin-right: -6px; }
+
+/* Signed-document viewer (Terms & Conditions "view" action) */
+.bo-doc-viewer {
+  border: 1.5px solid var(--ink);
+  border-radius: 6px;
+  padding: 24px 28px;
+  max-height: 55vh;
+  overflow-y: auto;
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--ink);
+  text-align: justify;
+}
+
+.bo-doc-viewer h3 { text-align: center; margin: 0 0 4px; font-size: 14px; }
+.bo-doc-viewer .bo-doc-updated { text-align: center; font-style: italic; color: var(--gray-text); margin: 0 0 20px; font-size: 12.5px; }
+.bo-doc-viewer h4 { font-size: 13.5px; margin: 22px 0 8px; text-decoration: underline; }
+.bo-doc-viewer ol { margin: 0 0 20px; padding-left: 20px; }
+.bo-doc-viewer ol a { color: var(--blue); text-decoration: underline; }
+.bo-doc-viewer p { margin: 0 0 14px; }
+
 /* Patient log modal: compact device snapshot + scrollable log history */
 .patient-log-modal {
   display: flex;
@@ -3276,6 +3358,15 @@ a.bo-btn-secondary { text-decoration: none; }
   align-items: center;
   gap: 10px;
   margin-top: 4px;
+}
+
+/* Opt-in top divider for a footer, mirroring .bo-center-modal-head's bottom
+   divider -- e.g. Terms & Conditions' document viewer, where the footer
+   sits right after a bordered scrollable box and needs its own separation. */
+.bo-center-modal-foot-divided {
+  margin: 16px -26px 0;
+  padding: 16px 26px 0;
+  border-top: 1px solid var(--gray-border);
 }
 
 /* Multi-select checkbox dropdown */
@@ -4848,3 +4939,68 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
 }
 
 .chat-plus-menu-item:hover { background: var(--bg); }
+
+/* ---------------- Standalone auth pages (Login / Change Password) ---------------- */
+.bo-auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+  padding: 24px;
+}
+
+.bo-auth-card {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 20px 44px rgba(20, 30, 50, 0.12);
+  padding: 40px 36px;
+  width: 100%;
+  max-width: 380px;
+}
+
+.bo-auth-logo { height: 26px; display: block; margin: 0 auto 28px; }
+
+.bo-auth-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--ink);
+  margin: 0 0 6px;
+  text-align: center;
+}
+
+.bo-auth-subtitle {
+  font-size: 13px;
+  color: var(--gray-text);
+  margin: 0 0 24px;
+  text-align: center;
+  line-height: 1.5;
+}
+
+.bo-auth-card .bo-modal-field { margin-bottom: 16px; }
+
+.bo-auth-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.bo-auth-actions .bo-btn-primary,
+.bo-auth-actions .bo-btn-secondary {
+  justify-content: center;
+  width: 100%;
+}
+
+.bo-auth-success {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--green-light);
+  color: var(--green-text);
+  border-radius: 9px;
+  padding: 10px 14px;
+  font-size: 12.5px;
+  font-weight: 700;
+  margin-bottom: 20px;
+}

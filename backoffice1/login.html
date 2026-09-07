@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>HearO Backoffice | Log In</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="css/style.css?v=4" />
+</head>
+<body>
+
+  <div class="bo-auth-page">
+    <div class="bo-auth-card">
+      <img src="https://web.dev3.cordiomed.com/assets/icons/logo.svg" alt="HearO" class="bo-auth-logo" />
+      <h1 class="bo-auth-title">Backoffice Log In</h1>
+      <p class="bo-auth-subtitle">Sign in with your Backoffice credentials to continue.</p>
+
+      <div id="loggedOutBanner" class="bo-auth-success" style="display:none; background:var(--blue-light); color:var(--blue-text);">
+        You've been logged out.
+      </div>
+
+      <div class="bo-modal-field">
+        <label for="loginUsername">Username</label>
+        <input type="text" id="loginUsername" placeholder="Enter username" autocomplete="username" />
+      </div>
+      <div class="bo-modal-field">
+        <label for="loginPassword">Password</label>
+        <input type="password" id="loginPassword" placeholder="Enter password" autocomplete="current-password" />
+      </div>
+
+      <div class="bo-auth-actions">
+        <button type="button" class="bo-btn-primary" id="loginBtn">Log In</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+  if (new URLSearchParams(window.location.search).get("loggedOut") === "1") {
+    document.getElementById("loggedOutBanner").style.display = "flex";
+  }
+
+  document.getElementById("loginBtn").addEventListener("click", () => {
+    window.location.href = "overview-dashboard.html";
+  });
+</script>
+
+</body>
+</html>

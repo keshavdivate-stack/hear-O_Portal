@@ -4976,12 +4976,15 @@ label.checkbox-field {
   width: 18px;
   height: 18px;
   border-radius: 5px;
-  border: 1.5px solid var(--gray-border);
+  border: 1.5px solid #9AA5B1;
   background: #fff;
   cursor: pointer;
   position: relative;
   flex-shrink: 0;
+  transition: background 120ms ease, border-color 120ms ease;
 }
+
+.bill-checkbox:hover { border-color: var(--blue); }
 
 .bill-checkbox.checked {
   background: var(--blue);
