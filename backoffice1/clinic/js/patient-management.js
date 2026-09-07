@@ -32,7 +32,7 @@ function renderPmTable() {
         <td>${clinicFmtDMY4(p.statusSince)}</td>
         <td>
           <div class="b01-row-actions">
-            <a class="b01-row-icon-btn" href="patient-data.html" title="View Patient" aria-label="View ${p.id}">${pmEyeIcon}</a>
+            <button type="button" class="b01-row-icon-btn" title="View Patient" aria-label="View ${p.id}">${pmEyeIcon}</button>
             <button type="button" class="b01-row-icon-btn pm-reset-btn" data-id="${p.id}" title="Reset Password" aria-label="Reset password for ${p.id}">${pmLockIcon}</button>
           </div>
         </td>
