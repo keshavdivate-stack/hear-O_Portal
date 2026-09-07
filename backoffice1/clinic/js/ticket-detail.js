@@ -30,6 +30,30 @@ const ticketDetailBody = document.getElementById("ticketDetailBody");
 const ticketDetailActions = document.getElementById("ticketDetailActions");
 const saveTicketDetailBtn = document.getElementById("saveTicketDetailBtn");
 
+/* The Back arrow returns to wherever the user actually came from instead of
+   always landing on the Tickets tab. When the referring page is part of this
+   app, that page's URL wins -- history.back() is used on click for a true
+   back-nav, and the link's href falls back to that same URL for reload/
+   new-tab cases with no history entry to go back to. With no usable in-app
+   referrer, the link keeps its default "Support" destination. */
+(function initTicketDetailBackLink() {
+  const backLink = document.getElementById("ticketDetailBack");
+  if (!backLink) return;
+  const ref = document.referrer;
+  if (!ref) return;
+  try {
+    const refUrl = new URL(ref);
+    if (refUrl.origin !== location.origin) return;
+    backLink.setAttribute("href", refUrl.pathname + refUrl.search);
+    backLink.addEventListener("click", (e) => {
+      if (window.history.length > 1) {
+        e.preventDefault();
+        window.history.back();
+      }
+    });
+  } catch (e) {}
+})();
+
 if (!ticket) {
   ticketDetailBody.innerHTML = `<div class="ticket-detail-card"><h2>Ticket not found</h2><p style="color:var(--gray-text);">This ticket doesn't exist or has been removed. <a href="support.html">Back to Support</a></p></div>`;
 } else {

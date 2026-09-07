@@ -40,6 +40,32 @@ function resolveTicketFromUrl() {
 
 let { source: currentSource, ticket: currentTicket } = resolveTicketFromUrl();
 
+/* The Back arrow returns to wherever the user actually came from (Support
+   Dashboard, the Tickets tab, a notification, an incident's related ticket,
+   etc.) instead of always landing on the Tickets tab. When the referring page
+   is part of this app, that page's URL wins -- history.back() is used on
+   click so it's a true back-nav (preserves scroll/tab state), and the link's
+   href falls back to that same URL for reload/new-tab cases where there's no
+   history entry to go back to. With no usable in-app referrer, the link keeps
+   its default "Tickets tab" destination. */
+(function initTicketDetailBackLink() {
+  const backLink = document.getElementById("ticketDetailBack");
+  if (!backLink) return;
+  const ref = document.referrer;
+  if (!ref) return;
+  try {
+    const refUrl = new URL(ref);
+    if (refUrl.origin !== location.origin) return;
+    backLink.setAttribute("href", refUrl.pathname + refUrl.search);
+    backLink.addEventListener("click", (e) => {
+      if (window.history.length > 1) {
+        e.preventDefault();
+        window.history.back();
+      }
+    });
+  } catch (e) {}
+})();
+
 document.querySelector('.bo-select[data-name="ticketLevel"] .bo-select-menu').innerHTML = buildSelectOptions(TIERS);
 document.querySelector('.bo-select[data-name="ticketSeverityHandling"] .bo-select-menu').innerHTML = buildSelectOptions(SEVERITIES);
 document.querySelector('.bo-select[data-name="ticketStatus"] .bo-select-menu').innerHTML = buildSelectOptions(STATUSES);
