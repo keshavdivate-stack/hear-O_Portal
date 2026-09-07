@@ -1959,7 +1959,6 @@ wireAddModal("addMedOverlay", "addMedForm", "cancelAddMed", "openAddMedBtn", (fd
     effectiveDateTime: fd.get("effectiveDateTime"),
     route: fd.get("route"),
     sig: fd.get("sig"),
-    note: fd.get("note"),
     drugCodeType: fd.get("drugCodeType"),
     drugCodeValue: fd.get("drugCodeValue"),
   });
@@ -1994,7 +1993,6 @@ function openEditMedModal(id) {
   editMedForm.effectiveDateTime.value = m.effectiveDateTime || "";
   editMedForm.dose.value = m.dose || "";
   editMedForm.sig.value = m.sig || "";
-  editMedForm.note.value = m.note || "";
 
   setCustomSelectValue(editMedForm.querySelector('.custom-select[data-name="drugCodeType"]'), m.drugCodeType || "RxNorm", { silent: true });
   editMedForm.drugCodeValue.value = m.drugCodeValue || "";
@@ -2040,7 +2038,6 @@ editMedForm.addEventListener("submit", (e) => {
   m.freq = fd.get("frequency") || m.freq;
   m.route = fd.get("route");
   m.sig = fd.get("sig");
-  m.note = fd.get("note");
   m.schedule = fd.get("sig") || m.schedule;
   m.drugCodeType = fd.get("drugCodeType");
   m.drugCodeValue = fd.get("drugCodeValue");

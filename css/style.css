@@ -5002,16 +5002,6 @@ label.checkbox-field {
 
 .bill-th-check { width: 44px; }
 
-.bill-table thead th {
-  position: sticky;
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0;
-  color: #23272E;
-  line-height: 1.4;
-  text-transform: none;
-}
-
 .bill-elig-cell { line-height: 1.4; white-space: nowrap; }
 
 .elig-label {
@@ -6202,13 +6192,36 @@ body.patient-discontinued #chatOpenBtn {
 .ticket-history-date { font-size: 11.5px; color: var(--gray-text); }
 
 /* Full ticket-detail page */
+/* .list-content is normally capped at one viewport tall (calc(100vh - 74px))
+   so an inner .table-scroll can own its own scrollbar on the list pages --
+   but a sticky descendant can never stick past its containing block's own
+   bottom edge, and that fixed height IS the containing block here. Once the
+   ticket's cards (much taller than one viewport) pushed the page past that
+   first screenful, .ticket-detail-topbar-row's sticky box had already
+   scrolled fully out of view along with it. Growing to the page's real
+   content height (this page has no inner .table-scroll to protect) is what
+   lets the sticky row stay pinned for the full scroll range. */
+.list-content.ticket-detail-page {
+  height: auto;
+  min-height: calc(100vh - 74px);
+}
+
 .ticket-detail-topbar-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 20px;
   flex-wrap: wrap;
-  margin-bottom: 22px;
+  margin: -4px -32px 22px;
+  padding: 14px 32px;
+  /* .main has no overflow of its own (see its comment above) -- the
+     document/window scrolls, so sticky here pins against the viewport once
+     .topbar scrolls out of view, instead of scrolling away with the rest of
+     the ticket's cards. */
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: var(--bg);
 }
 
 .ticket-detail-title-group { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
@@ -6228,6 +6241,13 @@ body.patient-discontinued #chatOpenBtn {
 }
 
 .ticket-detail-title { font-size: 22px; font-weight: 800; margin: 0; }
+
+/* align-items: center is load-bearing here -- the lifecycle-state pill
+   (.ticket-pill-state-*) renders as plain inline text with no padding while
+   the type/severity pills next to it keep their padded pill box, so without
+   this the default flex stretch left the state text sitting at the top of
+   the row instead of centered against the other pills. */
+.ticket-detail-pills { display: flex; align-items: center; gap: 8px; }
 
 .ticket-detail-card {
   background: #fff;
