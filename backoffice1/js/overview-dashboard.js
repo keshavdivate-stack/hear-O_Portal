@@ -591,6 +591,116 @@ function wireOvChartTooltips(container, tooltip) {
 
 window.addEventListener("resize", () => renderOvClinicComplianceChart(ovSelectedOrgId));
 
+/* ---------------- System Health (per-service status + 30-day uptime) ---------------- */
+/* A status-page-style widget (service + status dot + uptime% + daily history
+   bars) rather than a load chart -- system health here means "is it up",
+   not "how busy is it". Service names mirror the "View Version" avatar-menu
+   modal. Voice Engine's current-day status is deliberately "degraded" to
+   match the real "Voice engine errors" Critical incident already listed in
+   Recent Incidents above (started "20 min ago"), so this panel and that one
+   tell the same story instead of two disconnected numbers. Static like the
+   Workload chart it replaces -- infra status isn't scoped to one org. */
+const OV_UPTIME_STATUS_META = {
+  ok: { color: "var(--green)", label: "Operational" },
+  degraded: { color: "var(--orange)", label: "Degraded" },
+  down: { color: "var(--red)", label: "Outage" },
+};
+
+/* Builds a 30-entry day-by-day history ending today. `exceptions` maps a
+   days-ago offset (0 = today) to a status, so a service definition only has
+   to name what went wrong instead of writing out 30 "ok"s by hand. */
+function ovUptimeDays(exceptions) {
+  const days = new Array(30).fill("ok");
+  Object.entries(exceptions).forEach(([daysAgo, status]) => {
+    days[29 - Number(daysAgo)] = status;
+  });
+  return days;
+}
+
+const OV_UPTIME_SERVICES = [
+  { name: "Voice Engine", days: ovUptimeDays({ 0: "degraded" }) },
+  { name: "ASR", days: ovUptimeDays({}) },
+  { name: "API Server", days: ovUptimeDays({ 22: "down" }) },
+  { name: "Database", days: ovUptimeDays({}) },
+];
+
+/* A "degraded" day counts as half an outage, not a full one, so a single
+   rough day doesn't crater the uptime% the way a full outage would. */
+function ovUptimePercent(days) {
+  const credit = { ok: 1, degraded: 0.5, down: 0 };
+  const sum = days.reduce((s, d) => s + credit[d], 0);
+  return (sum / days.length) * 100;
+}
+
+function renderOvUptimeList() {
+  const activeIncidents = OV_UPTIME_SERVICES.filter((s) => s.days[s.days.length - 1] !== "ok").length;
+  const summaryEl = document.getElementById("ovUptimeSummary");
+  summaryEl.textContent = activeIncidents ? `${activeIncidents} active incident${activeIncidents === 1 ? "" : "s"}` : "All systems operational";
+  summaryEl.style.color = activeIncidents ? "var(--orange-text)" : "var(--green-text)";
+
+  document.getElementById("ovUptimeRows").innerHTML = OV_UPTIME_SERVICES.map((s) => {
+    const today = s.days[s.days.length - 1];
+    const meta = OV_UPTIME_STATUS_META[today];
+    const pct = ovUptimePercent(s.days);
+    const bars = s.days
+      .map((status, i) => {
+        const daysAgo = s.days.length - 1 - i;
+        const when = daysAgo === 0 ? "Today" : daysAgo === 1 ? "Yesterday" : `${daysAgo} days ago`;
+        return `<span class="bo-uptime-bar" style="background:${OV_UPTIME_STATUS_META[status].color};" data-label="${s.name}" data-status="${OV_UPTIME_STATUS_META[status].label}" data-x="${when}" data-color="${OV_UPTIME_STATUS_META[status].color}"></span>`;
+      })
+      .join("");
+
+    return `
+    <div class="bo-uptime-row">
+      <div class="bo-uptime-row-top">
+        <span class="bo-uptime-dot" style="background:${meta.color};"></span>
+        <span class="bo-uptime-name">${s.name}</span>
+        <span class="bo-uptime-status" style="color:${meta.color};">${meta.label}</span>
+        <span class="bo-uptime-pct">${pct.toFixed(2)}% uptime</span>
+      </div>
+      <div class="bo-uptime-bars">${bars}</div>
+    </div>`;
+  }).join("");
+
+  wireOvUptimeTooltips();
+}
+
+/* Same tooltip look as the line charts above (.bo-trend-tooltip), wired to
+   the uptime bars instead of chart dots -- hovering a day shows which
+   service, which day, and its status that day. */
+function wireOvUptimeTooltips() {
+  const container = document.getElementById("ovUptimeList");
+  const tooltip = document.getElementById("ovUptimeTooltip");
+
+  container.querySelectorAll(".bo-uptime-bar").forEach((bar) => {
+    bar.addEventListener("mouseenter", () => {
+      const { label, status, x, color } = bar.dataset;
+      tooltip.innerHTML = `<span class="dot" style="background:${color};"></span>${label}: <b>${status}</b> &middot; ${x}`;
+      tooltip.style.display = "block";
+
+      /* The tooltip is centered on the bar's x position, but for a bar near
+         either edge of the 30-day row that centered box runs past the card
+         and off the page -- clamp it to the container's own width (now that
+         .innerHTML/display are set, tooltip.getBoundingClientRect() reports
+         its real rendered size) so it always stays fully visible. */
+      const barRect = bar.getBoundingClientRect();
+      const containerRect = container.getBoundingClientRect();
+      const tooltipRect = tooltip.getBoundingClientRect();
+      const halfW = tooltipRect.width / 2;
+      const rawLeft = barRect.left - containerRect.left + barRect.width / 2;
+      const left = Math.max(halfW + 4, Math.min(containerRect.width - halfW - 4, rawLeft));
+
+      tooltip.style.left = `${left}px`;
+      tooltip.style.top = `${barRect.bottom - containerRect.top}px`;
+    });
+    bar.addEventListener("mouseleave", () => {
+      tooltip.style.display = "none";
+    });
+  });
+}
+
+renderOvUptimeList();
+
 /* ---------------- Render orchestration (re-run per organization scope) ---------------- */
 function renderOvForOrg(orgId) {
   ovSelectedOrgId = orgId;

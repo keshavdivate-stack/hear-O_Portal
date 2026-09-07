@@ -253,10 +253,16 @@
         <div id="ovClinicComplianceChart" class="bo-chart-area" style="height:220px;"></div>
       </section>
 
-      <!-- WORKLOAD (placeholder -- content/metrics TBD) -->
-      <section class="bo-card bo-panel bo-panel--static" style="flex:1 1 0; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:6px;">
-        <h3 class="bo-panel-title" style="margin:0;">Workload</h3>
-        <p style="color:var(--gray-text); font-size:13px; margin:0;">Coming soon</p>
+      <!-- SYSTEM HEALTH (per-service status + 30-day uptime history) -->
+      <section class="bo-card bo-panel bo-panel--static" style="flex:1 1 0; display:block;">
+        <div class="bo-panel-head">
+          <h3 class="bo-panel-title" style="margin:0;">System Health</h3>
+          <span id="ovUptimeSummary" style="font-size:12px; font-weight:700;"></span>
+        </div>
+        <div class="bo-uptime-list" id="ovUptimeList">
+          <div id="ovUptimeRows"></div>
+          <div class="bo-trend-tooltip" id="ovUptimeTooltip"></div>
+        </div>
       </section>
     </div>
 

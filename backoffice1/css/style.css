@@ -528,6 +528,49 @@ button, input, select, textarea, optgroup {
 .bo-panel--fill { flex: 1; min-height: 0; }
 .bo-panel--static { flex-shrink: 0; overflow: visible; }
 
+/* System Health Overview: "System Health" -- per-service status-page-style
+   widget (status dot + uptime% + 30-day history bars), the actual "is it up"
+   signal rather than a load/throughput chart. */
+.bo-uptime-list { position: relative; }
+
+/* Unlike the line-chart tooltips (.bo-trend-tooltip's default: pop up above
+   the point, plenty of chart room above it), an uptime bar sits right below
+   its own row label -- popping up would cover that label. Drop it below the
+   bar instead, where the reserved row gap already has room for it. */
+#ovUptimeTooltip { transform: translate(-50%, 0); margin-top: 8px; }
+
+#ovUptimeRows { display: flex; flex-direction: column; gap: 22px; }
+
+.bo-uptime-row-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.bo-uptime-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.bo-uptime-name { font-size: 12.5px; font-weight: 700; color: var(--ink); }
+.bo-uptime-status { font-size: 11.5px; font-weight: 700; }
+
+.bo-uptime-pct {
+  margin-left: auto;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--gray-text);
+  white-space: nowrap;
+}
+
+.bo-uptime-bars { display: flex; gap: 3px; }
+
+.bo-uptime-bar {
+  flex: 1;
+  height: 18px;
+  border-radius: 3px;
+  min-width: 2px;
+  cursor: pointer;
+}
+
+
 .bo-table-scroll { flex: 1; min-height: 0; overflow-y: auto; }
 
 .bo-table {
