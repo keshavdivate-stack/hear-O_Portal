@@ -219,7 +219,6 @@ function renderHbarList(containerId, entries) {
 function renderDashboard() {
   const mine = myTickets();
 
-  document.getElementById("supDashWelcome").textContent = `Welcome back, ${currentAgent} · ${AGENT_LEVEL[currentAgent] || ""}`;
   document.getElementById("supDashMyTicketsBtn").href = myTicketsHref({});
 
   renderKpis(mine);
