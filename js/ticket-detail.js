@@ -1,8 +1,10 @@
 /* ---------------- Ticket Detail page ----------------
    Full-screen deep dive for a single Ticket: Ticket Info -> Issue (+
    Recording player for Voice Engine tickets) -> Handling -> Patient Log
-   (patient-sourced tickets only) -> History -> Resolution, plus a
-   Chat-with-Patient side panel (patient-sourced tickets only). Ported from
+   (patient-sourced tickets only) -> History, plus a Chat-with-Patient side
+   panel (patient-sourced tickets only). Resolving a ticket is just the
+   Handling section's Status dropdown -- there's no separate resolution-note
+   workflow. Ported from
    backoffice1/js/ticket-detail.js and adapted to the clinic portal's ticket
    shape and its existing "rebuild the whole card list on every change"
    rendering style (see the original clinic ticket-detail.js this replaces). */
@@ -172,8 +174,19 @@ if (!ticket) {
     const orgFieldVisible = !document.getElementById("ticketDetailOrgField").hidden;
     const orgFilled = !orgFieldVisible || document.querySelector('.custom-select[data-name="ticketOrgHandling"] input[type=hidden]').value !== "";
     const assigneeFilled = status === "Resolved" || document.querySelector('.custom-select[data-name="ticketAssignedTo"] input[type=hidden]').value !== "";
-    saveTicketDetailBtn.disabled = !assigneeFilled || !orgFilled;
-    saveTicketDetailBtn.classList.toggle("enabled", !saveTicketDetailBtn.disabled);
+    const invalid = !assigneeFilled || !orgFilled;
+
+    saveTicketDetailBtn.disabled = invalid;
+    saveTicketDetailBtn.classList.toggle("enabled", !invalid);
+
+    /* Re-rendered with the rest of the body on every renderBody(), so it's
+       looked up live rather than cached like saveTicketDetailBtn (a static
+       header element that never gets replaced). */
+    const bottomSaveBtn = document.getElementById("saveTicketDetailBtnBottom");
+    if (bottomSaveBtn) {
+      bottomSaveBtn.disabled = invalid;
+      bottomSaveBtn.classList.toggle("enabled", !invalid);
+    }
   }
 
   function handlingMarkup() {
@@ -676,8 +689,6 @@ if (!ticket) {
 
   /* ---------------- Full body render ---------------- */
   function renderBody() {
-    const alreadyResolved = ticket.state === "Resolved";
-
     const summaryCard = `
       <div class="ticket-detail-card">
         <h2>Ticket Info</h2>
@@ -732,40 +743,14 @@ if (!ticket) {
     ticketDetailBody.innerHTML = `
       ${summaryCard}
 
-      <div class="ticket-detail-card">
-        <h2>Resolution</h2>
-        <div class="form-field" style="margin-top:14px;">
-          <label>Resolution note${alreadyResolved ? "" : '<span class="required-star">*</span>'}</label>
-          <textarea id="ticketResolutionNote" ${alreadyResolved ? "disabled" : ""} placeholder="${alreadyResolved ? "This ticket is already resolved." : "Describe how this ticket was resolved"}"></textarea>
-        </div>
-        <div class="modal-actions" style="padding-top:0; border-top:none;">
-          <button type="button" class="btn-save" id="resolveTicketBtn" disabled>${alreadyResolved ? "Already resolved" : "Resolve ticket"}</button>
-        </div>
+      <div class="ticket-detail-actions" style="justify-content:flex-end;">
+        <button type="submit" form="ticketDetailForm" class="btn-save" id="saveTicketDetailBtnBottom">Save changes</button>
       </div>
     `;
 
     wireRecording();
     wireHandling();
     wirePatientLog();
-
-    if (!alreadyResolved) {
-      const note = document.getElementById("ticketResolutionNote");
-      const resolveBtn = document.getElementById("resolveTicketBtn");
-
-      note.addEventListener("input", () => {
-        const canResolve = note.value.trim().length > 0;
-        resolveBtn.disabled = !canResolve;
-        resolveBtn.classList.toggle("enabled", canResolve);
-      });
-
-      resolveBtn.addEventListener("click", () => {
-        const text = note.value.trim();
-        if (!text || resolveBtn.disabled) return;
-        ticket.state = "Resolved";
-        ticket.history.push({ date: "Today", title: "Ticket Resolved", detail: text });
-        renderAll();
-      });
-    }
   }
 
   function renderAll() {
