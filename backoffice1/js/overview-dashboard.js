@@ -409,10 +409,29 @@ document.getElementById("ovCategoryTrendLegend").innerHTML = ovCategories
   .map((c) => `<span><span class="dot" style="background:${c.color}"></span>${c.label}</span>`)
   .join("");
 
-/* Stacked bar chart -- one bar per day, segmented by category count, using
-   the same colored-rect + gridline + hover-tooltip building blocks as the
-   rest of the dashboard's SVG charts. Reads far cleaner than 6 overlapping
-   lines/areas for the same data. */
+/* Catmull-Rom -> cubic Bezier smoothing for a soft curve instead of sharp
+   straight-line segments. */
+function ovSmoothPath(points) {
+  if (points.length < 2) return "";
+  let d = `M ${points[0].x},${points[0].y}`;
+  for (let i = 0; i < points.length - 1; i++) {
+    const p0 = points[i - 1] || points[i];
+    const p1 = points[i];
+    const p2 = points[i + 1];
+    const p3 = points[i + 2] || p2;
+    const c1x = p1.x + (p2.x - p0.x) / 6;
+    const c1y = p1.y + (p2.y - p0.y) / 6;
+    const c2x = p2.x - (p3.x - p1.x) / 6;
+    const c2y = p2.y - (p3.y - p1.y) / 6;
+    d += ` C ${c1x},${c1y} ${c2x},${c2y} ${p2.x},${p2.y}`;
+  }
+  return d;
+}
+
+/* Smooth multi-line chart with hollow point markers and a single shared
+   hover card (one card lists every category's value for the hovered day,
+   plus a highlighted vertical band) instead of a plain per-dot tooltip --
+   reads clean even with 6 series, unlike a stacked bar or filled area would. */
 function renderOvCategoryTrendChart() {
   const labels = ovCategoryTrendLabels;
   const series = ovCategories.map((c) => ({ ...c, values: ovCategoryTrendData[c.label] || labels.map(() => 0) }));
@@ -426,15 +445,13 @@ function renderOvCategoryTrendChart() {
   const padB = 22;
   const plotW = width - padL - padR;
   const plotH = height - padT - padB;
-  const dailyTotals = labels.map((_, i) => series.reduce((sum, s) => sum + s.values[i], 0));
+  const rawMax = Math.max(...series.map((s) => Math.max(...s.values)));
   const gridStep = 5;
-  const yMax = Math.max(gridStep, Math.ceil(Math.max(...dailyTotals) / gridStep) * gridStep);
+  const yMax = Math.max(gridStep, Math.ceil((rawMax || 1) / gridStep) * gridStep);
 
   const slotW = plotW / labels.length;
-  const barW = Math.min(38, slotW * 0.5);
   const xAt = (i) => padL + slotW * i + slotW / 2;
   const yAt = (v) => padT + plotH - (v / yMax) * plotH;
-  const baselineY = yAt(0);
 
   const gridLines = [];
   for (let v = 0; v <= yMax; v += gridStep) {
@@ -449,51 +466,58 @@ function renderOvCategoryTrendChart() {
     .map((m, i) => `<text x="${xAt(i)}" y="${height - 5}" text-anchor="middle" font-size="9.5" fill="#9AA5B1">${m}</text>`)
     .join("");
 
-  const bars = labels
-    .map((label, i) => {
-      let cumulative = 0;
-      const cx = xAt(i);
-      return series
-        .map((s) => {
-          const v = s.values[i];
-          if (!v) return "";
-          const y1 = yAt(cumulative);
-          const y2 = yAt(cumulative + v);
-          cumulative += v;
-          return `<rect class="bo-trend-dot" x="${cx - barW / 2}" y="${y2}" width="${barW}" height="${y1 - y2}" rx="2" fill="${s.color}" data-label="${s.label}" data-value="${v}" data-x="${label}" data-color="${s.color}"/>`;
-        })
-        .join("");
-    })
+  const seriesPoints = series.map((s) => s.values.map((v, i) => ({ x: xAt(i), y: yAt(v) })));
+
+  const lines = series
+    .map(
+      (s, i) => `
+      <path d="${ovSmoothPath(seriesPoints[i])}" fill="none" stroke="${s.color}" stroke-width="2.25" stroke-linejoin="round" stroke-linecap="round"/>
+      ${seriesPoints[i].map((p) => `<circle cx="${p.x}" cy="${p.y}" r="3" fill="#fff" stroke="${s.color}" stroke-width="2"/>`).join("")}`
+    )
+    .join("");
+
+  const hoverBands = labels
+    .map(
+      (label, i) => `
+      <rect class="ov-cat-hitcol" x="${padL + slotW * i}" y="${padT}" width="${slotW}" height="${plotH}" fill="transparent" data-index="${i}"/>
+      <line class="ov-cat-guide" id="ovCatGuide${i}" x1="${xAt(i)}" y1="${padT}" x2="${xAt(i)}" y2="${padT + plotH}" stroke="var(--ink)" stroke-width="1" stroke-dasharray="3 3" opacity="0"/>`
+    )
     .join("");
 
   document.getElementById("ovCategoryTrendChart").innerHTML = `
     <svg viewBox="0 0 ${width} ${height}" class="bo-area-svg" preserveAspectRatio="none">
       ${gridLines.join("")}
-      <line x1="${padL}" y1="${baselineY}" x2="${width - padR}" y2="${baselineY}" stroke="#E7EAEE" stroke-width="1.2"/>
-      ${bars}
+      ${lines}
+      ${hoverBands}
       ${xLabels}
     </svg>
-    <div class="bo-trend-tooltip" id="ovCategoryTrendTooltip"></div>`;
+    <div class="bo-multitip" id="ovCategoryTrendTooltip"></div>`;
 
-  wireOvCategoryTrendTooltips();
+  wireOvCategoryTrendTooltips(series, labels, xAt, padT);
 }
 
-function wireOvCategoryTrendTooltips() {
+function wireOvCategoryTrendTooltips(series, labels, xAt, padT) {
   const container = document.getElementById("ovCategoryTrendChart");
   const tooltip = document.getElementById("ovCategoryTrendTooltip");
 
-  container.querySelectorAll(".bo-trend-dot").forEach((bar) => {
-    bar.addEventListener("mouseenter", () => {
-      const { label, value, x, color } = bar.dataset;
-      tooltip.innerHTML = `<span class="dot" style="background:${color};"></span>${label}: <b>${value}</b> &middot; ${x}`;
-      tooltip.style.left = `${Number(bar.getAttribute("x")) + Number(bar.getAttribute("width")) / 2}px`;
-      tooltip.style.top = `${bar.getAttribute("y")}px`;
+  container.querySelectorAll(".ov-cat-hitcol").forEach((col) => {
+    const i = Number(col.dataset.index);
+    col.addEventListener("mouseenter", () => {
+      document.getElementById(`ovCatGuide${i}`)?.setAttribute("opacity", "1");
+      tooltip.innerHTML = `
+        <div class="bo-multitip-title">${labels[i]}</div>
+        ${series
+          .map(
+            (s) => `<div class="bo-multitip-row"><span class="dot" style="background:${s.color};"></span><span class="name">${s.label}</span><b>${s.values[i]}</b></div>`
+          )
+          .join("")}`;
+      tooltip.style.left = `${xAt(i)}px`;
+      tooltip.style.top = `${padT}px`;
       tooltip.style.display = "block";
-      bar.style.opacity = "0.8";
     });
-    bar.addEventListener("mouseleave", () => {
+    col.addEventListener("mouseleave", () => {
+      document.getElementById(`ovCatGuide${i}`)?.setAttribute("opacity", "0");
       tooltip.style.display = "none";
-      bar.style.opacity = "1";
     });
   });
 }
