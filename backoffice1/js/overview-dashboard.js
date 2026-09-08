@@ -392,6 +392,102 @@ function renderOvDonut(orgId) {
     .join("");
 }
 
+/* ---------------- Incidents by Category (over time) ----------------
+   Daily incident counts per category for the last 7 days, using the same
+   category list/colors/order as the donut above so the two views agree. */
+const ovCategoryTrendLabels = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+const ovCategoryTrendData = {
+  "Patient (Mobile/Web)": [4, 3, 5, 4, 6, 5, 7],
+  Compliance: [2, 3, 2, 4, 3, 5, 4],
+  "Voice Engine": [1, 2, 1, 3, 2, 1, 2],
+  Sensors: [1, 1, 2, 1, 1, 2, 1],
+  "System Schedule Engine": [2, 1, 1, 2, 1, 1, 1],
+  "Clinic Users (Security)": [0, 0, 1, 0, 0, 0, 0],
+};
+
+document.getElementById("ovCategoryTrendLegend").innerHTML = ovCategories
+  .map((c) => `<span><span class="dot" style="background:${c.color}"></span>${c.label}</span>`)
+  .join("");
+
+function renderOvCategoryTrendChart() {
+  const labels = ovCategoryTrendLabels;
+  const series = ovCategories.map((c) => ({ ...c, values: ovCategoryTrendData[c.label] || labels.map(() => 0) }));
+
+  const container = document.getElementById("ovCategoryTrendChart");
+  const width = container.clientWidth || 640;
+  const height = container.clientHeight || 220;
+  const padL = 26;
+  const padR = 10;
+  const padT = 10;
+  const padB = 22;
+  const plotW = width - padL - padR;
+  const plotH = height - padT - padB;
+  const yMax = 10;
+  const gridStep = 2;
+
+  const xAt = (i) => padL + (plotW * i) / (labels.length - 1);
+  const yAt = (v) => padT + plotH - (v / yMax) * plotH;
+
+  const gridLines = [];
+  for (let v = 0; v <= yMax; v += gridStep) {
+    const y = yAt(v);
+    gridLines.push(
+      `<line x1="${padL}" y1="${y}" x2="${width - padR}" y2="${y}" stroke="#EEF1F4" stroke-width="1"/>` +
+        `<text x="${padL - 8}" y="${y + 4}" text-anchor="end" font-size="10" fill="#9AA5B1">${v}</text>`
+    );
+  }
+
+  const xLabels = labels
+    .map((m, i) => `<text x="${xAt(i)}" y="${height - 5}" text-anchor="middle" font-size="9.5" fill="#9AA5B1">${m}</text>`)
+    .join("");
+
+  const buildLine = (s) => {
+    const line = s.values.map((v, i) => `${xAt(i)},${yAt(v)}`).join(" L ");
+    return `
+      <path d="M ${xAt(0)},${yAt(s.values[0])} L ${line}" fill="none" stroke="${s.color}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+      ${s.values
+        .map(
+          (v, i) =>
+            `<circle class="bo-trend-dot" cx="${xAt(i)}" cy="${yAt(v)}" r="2.6" fill="${s.color}" data-label="${s.label}" data-value="${v}" data-x="${labels[i]}" data-color="${s.color}"/>`
+        )
+        .join("")}`;
+  };
+
+  document.getElementById("ovCategoryTrendChart").innerHTML = `
+    <svg viewBox="0 0 ${width} ${height}" class="bo-area-svg" preserveAspectRatio="none">
+      ${gridLines.join("")}
+      ${series.map(buildLine).join("")}
+      ${xLabels}
+    </svg>
+    <div class="bo-trend-tooltip" id="ovCategoryTrendTooltip"></div>`;
+
+  wireOvCategoryTrendTooltips();
+}
+
+function wireOvCategoryTrendTooltips() {
+  const container = document.getElementById("ovCategoryTrendChart");
+  const tooltip = document.getElementById("ovCategoryTrendTooltip");
+
+  container.querySelectorAll(".bo-trend-dot").forEach((dot) => {
+    dot.addEventListener("mouseenter", () => {
+      const { label, value, x, color } = dot.dataset;
+      tooltip.innerHTML = `<span class="dot" style="background:${color};"></span>${label}: <b>${value}</b> &middot; ${x}`;
+      tooltip.style.left = `${dot.getAttribute("cx")}px`;
+      tooltip.style.top = `${dot.getAttribute("cy")}px`;
+      tooltip.style.display = "block";
+      dot.setAttribute("r", "4.5");
+    });
+    dot.addEventListener("mouseleave", () => {
+      tooltip.style.display = "none";
+      dot.setAttribute("r", "2.6");
+    });
+  });
+}
+renderOvCategoryTrendChart();
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(renderOvCategoryTrendChart);
+window.addEventListener("load", renderOvCategoryTrendChart);
+window.addEventListener("resize", renderOvCategoryTrendChart);
+
 /* ---------------- Affected Organizations ---------------- */
 const ovOrgDotColor = { critical: "var(--red)", warning: "var(--orange)", healthy: "var(--green)" };
 const ovOrgIssuesPillClass = { critical: "critical", warning: "warning", healthy: "healthy" };

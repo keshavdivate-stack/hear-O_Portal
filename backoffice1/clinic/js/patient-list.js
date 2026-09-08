@@ -159,12 +159,15 @@ const actionTypeLabels = {
 function actionCell(p) {
   const label = p.action ? actionTypeLabels[p.action.type] || "" : "";
   const pencilTitle = label || "Add action";
-  const tooltip = p.action && p.action.date ? `<div class="action-tooltip">${p.action.date}</div>` : "";
+  const hasNote = p.action && (p.action.date || p.action.note);
+  const tooltip = hasNote
+    ? `<div class="action-tooltip">${p.action.date ? `${p.action.date}, ` : ""}${p.action.note || ""}</div>`
+    : "";
   return `
     <div class="action-cell">
       <div class="action-icon-group">
         <div class="action-icon-wrap">
-          <button class="action-icon action-icon-with-label" aria-label="${pencilTitle}" ${tooltip ? "" : `title="${pencilTitle}"`} data-id="${p.id}" data-act="addAction">
+          <button class="action-icon action-icon-with-label" aria-label="${pencilTitle}" ${hasNote ? "" : `title="${pencilTitle}"`} data-id="${p.id}" data-act="addAction">
             ${pencilIcon}${label ? `<span class="action-icon-label">${label}</span>` : ""}
           </button>
           ${tooltip}
@@ -648,6 +651,7 @@ function openAddActionModal(patient) {
   if (patient.action) {
     setCustomSelectValue(actionTypeSelect, patient.action.type);
     addActionForm.actionDate.value = patient.action.date || "";
+    addActionForm.actionNote.value = patient.action.note || "";
   }
   addActionOverlay.classList.add("open");
 }
@@ -666,7 +670,11 @@ addActionForm.addEventListener("submit", (e) => {
   if (!patient) return;
   const type = addActionForm.actionType.value;
   if (type) {
-    patient.action = { type, date: addActionForm.actionDate.value };
+    patient.action = {
+      type,
+      date: addActionForm.actionDate.value,
+      note: addActionForm.actionNote.value,
+    };
   }
   closeAddActionModal();
   renderPatientList();

@@ -1512,14 +1512,62 @@ function rebuildRangedCharts() {
   renderQuestionnaire();
 }
 
-document.querySelectorAll(".range-toggle span").forEach((r) => {
+document.querySelectorAll("#dataRangeToggle span").forEach((r) => {
   r.addEventListener("click", () => {
-    document.querySelectorAll(".range-toggle span").forEach((s) => s.classList.remove("active"));
+    document.querySelectorAll("#dataRangeToggle span").forEach((s) => s.classList.remove("active"));
     r.classList.add("active");
     rangeMode = r.dataset.range || "month";
     rebuildRangedCharts();
   });
 });
+
+/* ---------------- Compliance Details: Total vs Custom Range ---------------- */
+function msPerDay() { return 1000 * 60 * 60 * 24; }
+
+function recalcComplianceDetails() {
+  const toggle = document.getElementById("complianceRangeToggle");
+  const mode = toggle?.querySelector("span.active")?.dataset.range || "custom";
+  const availableEl = document.getElementById("complianceAvailableDays");
+  const recordedEl = document.getElementById("complianceRecordedDays");
+  const missedEl = document.getElementById("complianceMissedDays");
+  const asrEl = document.getElementById("complianceAsrDays");
+  if (!availableEl) return;
+
+  let availableDays = 29;
+  if (mode === "custom") {
+    const start = document.getElementById("complianceRangeStart")?.value;
+    const end = document.getElementById("complianceRangeEnd")?.value;
+    if (start && end) {
+      const diff = Math.round((new Date(end) - new Date(start)) / msPerDay()) + 1;
+      if (diff > 0) availableDays = diff;
+    }
+  }
+
+  const recordedDays = Math.max(0, Math.round(availableDays * 0.69));
+  const asrDays = Math.max(0, Math.round(availableDays * 0.1));
+  const missedDays = Math.max(0, availableDays - recordedDays);
+
+  availableEl.textContent = availableDays;
+  recordedEl.textContent = recordedDays;
+  missedEl.textContent = missedDays;
+  asrEl.textContent = asrDays;
+}
+
+const complianceRangeToggle = document.getElementById("complianceRangeToggle");
+if (complianceRangeToggle) {
+  complianceRangeToggle.querySelectorAll("span").forEach((r) => {
+    r.addEventListener("click", () => {
+      complianceRangeToggle.querySelectorAll("span").forEach((s) => s.classList.remove("active"));
+      r.classList.add("active");
+      document.getElementById("complianceCustomRange")?.classList.toggle("open", r.dataset.range === "custom");
+      recalcComplianceDetails();
+    });
+  });
+  ["complianceRangeStart", "complianceRangeEnd"].forEach((id) => {
+    document.getElementById(id)?.addEventListener("change", recalcComplianceDetails);
+  });
+  recalcComplianceDetails();
+}
 
 /* ---------------- History events ---------------- */
 // Account-status changes made from the Patient List's "Update account" modal
@@ -1761,11 +1809,25 @@ function addOutgoingChatMessage(text) {
 }
 
 const chatInputField = document.getElementById("chatInputField");
+const chatReplyNotice = document.getElementById("chatReplyNotice");
+const chatReplyToggle = document.getElementById("chatReplyToggle");
+const chatReplyCheckbox = document.getElementById("chatReplyCheckbox");
+
+function updateChatReplyToggle() {
+  const hasText = chatInputField.value.trim().length > 0;
+  chatReplyNotice.hidden = !hasText;
+  chatReplyToggle.hidden = !hasText;
+  if (!hasText) chatReplyCheckbox.checked = false;
+}
+
+chatInputField.addEventListener("input", updateChatReplyToggle);
+
 document.getElementById("chatSendBtn").addEventListener("click", () => {
   const text = chatInputField.value.trim();
   if (!text) return;
   addOutgoingChatMessage(text);
   chatInputField.value = "";
+  updateChatReplyToggle();
 });
 chatInputField.addEventListener("keydown", (e) => {
   if (e.key === "Enter") {

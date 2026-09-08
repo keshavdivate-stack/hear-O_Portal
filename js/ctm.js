@@ -157,3 +157,103 @@ document.getElementById("ctmClearFilters").addEventListener("click", () => {
   ctmTeamMemberLabel.textContent = ctmTeamMemberBaseLabel;
   renderCtmMembers();
 });
+
+/* ---------------- Export Report ---------------- */
+function ctmMemberCounts(m) {
+  const patients = ctmPatients.filter((p) => p.teamMember === m.name);
+  const count = (pred) => patients.filter(pred).length;
+  return {
+    total: patients.length,
+    priority: count((p) => p.status === "priority"),
+    active: count((p) => p.status === "active"),
+    registered: count((p) => p.status === "registered"),
+    baseline: count((p) => p.status === "baseline"),
+    enabled: count((p) => p.account === "Enabled"),
+    paused: count((p) => p.account === "Paused"),
+    disabled: count((p) => p.account === "Discontinued"),
+    monitored: count((p) => p.monitoring === "monitored"),
+    unmonitored: count((p) => p.monitoring === "unmonitored"),
+  };
+}
+
+const CTM_EXPORT_COLUMNS = [
+  { label: "Care Team Member", value: (m) => m.name },
+  { label: "Role", value: (m) => m.role },
+  { label: "Total Patients", value: (m) => ctmMemberCounts(m).total },
+  { label: "Priority", value: (m) => ctmMemberCounts(m).priority },
+  { label: "Active", value: (m) => ctmMemberCounts(m).active },
+  { label: "Registered", value: (m) => ctmMemberCounts(m).registered },
+  { label: "Baseline", value: (m) => ctmMemberCounts(m).baseline },
+  { label: "Enabled", value: (m) => ctmMemberCounts(m).enabled },
+  { label: "Paused", value: (m) => ctmMemberCounts(m).paused },
+  { label: "Disabled", value: (m) => ctmMemberCounts(m).disabled },
+  { label: "Monitored", value: (m) => ctmMemberCounts(m).monitored },
+  { label: "Unmonitored", value: (m) => ctmMemberCounts(m).unmonitored },
+];
+
+function describeCtmFilters() {
+  const parts = [];
+  if (ctmSearchTerm) parts.push(`Search = "${ctmSearchTerm}"`);
+  if (ctmSelectedMembers.size) parts.push(`Care Team Member = ${[...ctmSelectedMembers].join(", ")}`);
+  return parts.length ? parts.join(", ") : "None";
+}
+
+function csvEscape(value) {
+  const str = String(value ?? "");
+  return /[",\n]/.test(str) ? `"${str.replace(/"/g, '""')}"` : str;
+}
+
+function downloadCsv(prefix, columns, rowsData) {
+  const header = columns.map((c) => c.label);
+  const lines = [header.join(",")].concat(rowsData.map((r) => columns.map((c) => csvEscape(c.value(r))).join(",")));
+  const blob = new Blob([lines.join("\n")], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `${prefix}-${new Date().toISOString().slice(0, 10)}.csv`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
+
+const exportReportOverlay = document.getElementById("exportReportOverlay");
+let pendingCtmExport = null;
+
+function openExportReportModal(context) {
+  pendingCtmExport = context;
+  document.getElementById("exportSummaryBox").innerHTML = `
+    <div><b>Report:</b> ${context.reportLabel}</div>
+    <div><b>Filters:</b> ${context.filtersLabel}</div>
+    <div><b>${context.countLabel || "Records"}:</b> ${context.count}</div>
+  `;
+  exportReportOverlay.classList.add("open");
+}
+
+document.getElementById("cancelExportReport").addEventListener("click", () => exportReportOverlay.classList.remove("open"));
+exportReportOverlay.addEventListener("click", (e) => { if (e.target === exportReportOverlay) exportReportOverlay.classList.remove("open"); });
+
+document.getElementById("confirmExportReport").addEventListener("click", () => {
+  if (!pendingCtmExport) return;
+  const format = document.querySelector('input[name="exportFormat"]:checked')?.value || "CSV";
+  if (format === "CSV") {
+    downloadCsv(pendingCtmExport.filenamePrefix || "report", pendingCtmExport.columns, pendingCtmExport.rows);
+  } else {
+    alert(`${format} export is coming soon — please use CSV for now.`);
+    return;
+  }
+  exportReportOverlay.classList.remove("open");
+});
+
+document.getElementById("exportCtmReportBtn").addEventListener("click", () => {
+  const list = filteredCtmMembers();
+  openExportReportModal({
+    reportLabel: "Care Team Members",
+    filtersLabel: describeCtmFilters(),
+    count: list.length,
+    countLabel: "Care Team Members",
+    rows: list,
+    columns: CTM_EXPORT_COLUMNS,
+    filenamePrefix: "care-team-members",
+  });
+});

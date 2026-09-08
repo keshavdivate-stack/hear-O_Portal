@@ -2079,11 +2079,25 @@ function addOutgoingChatMessage(text) {
 }
 
 const chatInputField = document.getElementById("chatInputField");
+const chatReplyNotice = document.getElementById("chatReplyNotice");
+const chatReplyToggle = document.getElementById("chatReplyToggle");
+const chatReplyCheckbox = document.getElementById("chatReplyCheckbox");
+
+function updateChatReplyToggle() {
+  const hasText = chatInputField.value.trim().length > 0;
+  chatReplyNotice.hidden = !hasText;
+  chatReplyToggle.hidden = !hasText;
+  if (!hasText) chatReplyCheckbox.checked = false;
+}
+
+chatInputField.addEventListener("input", updateChatReplyToggle);
+
 document.getElementById("chatSendBtn").addEventListener("click", () => {
   const text = chatInputField.value.trim();
   if (!text) return;
   addOutgoingChatMessage(text);
   chatInputField.value = "";
+  updateChatReplyToggle();
 });
 chatInputField.addEventListener("keydown", (e) => {
   if (e.key === "Enter") {

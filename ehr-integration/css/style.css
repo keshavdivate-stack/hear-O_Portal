@@ -2069,17 +2069,17 @@ button, input, select, textarea, optgroup {
   height: 54px;
   border-radius: 50%;
   border: none;
-  background: var(--blue);
+  background: #0E7FB8;
   color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: 0 10px 24px rgba(42, 169, 224, 0.4);
+  box-shadow: 0 10px 24px rgba(14, 127, 184, 0.45);
   z-index: 60;
 }
 
-.chat-fab:hover { background: #1c86b3; }
+.chat-fab:hover { background: #0B6693; }
 
 .chat-fab .dot-live {
   position: absolute;
@@ -2292,6 +2292,37 @@ button, input, select, textarea, optgroup {
 }
 
 .chat-plus-menu-item:hover { background: var(--bg); }
+
+.chat-reply-notice {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 16px 0;
+  font-size: 12.5px;
+  color: var(--gray-text);
+}
+
+.chat-reply-notice[hidden] { display: none; }
+
+.chat-reply-notice svg { flex-shrink: 0; }
+
+.chat-reply-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 16px 14px;
+  font-size: 13px;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.chat-reply-toggle[hidden] { display: none; }
+
+.chat-reply-toggle input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
 
 @media (max-width: 1180px) {
   .patient-card { flex-direction: column; }
@@ -5478,12 +5509,12 @@ label.checkbox-field {
 
 /* Emphasize the cards most relevant to a care recommendation decision */
 .rec-info-card-highlight {
-  background: var(--blue-light);
-  border-color: rgba(42, 169, 224, 0.3);
+  border-color: var(--gray-border);
+  border-left: 3px solid var(--blue);
+  padding-left: 13px;
 }
 
 .rec-info-card-highlight .rec-info-card-title { color: var(--blue); }
-.rec-info-card-highlight .rec-info-card-list li { color: #0C4A6E; }
 
 .rec-info-card-title {
   display: flex;

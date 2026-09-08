@@ -63,7 +63,7 @@
           <span class="nav-icon">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-2"/><path d="M9 12h6"/><path d="M9 16h6"/></svg>
           </span>
-          <span class="nav-label">CTM</span>
+          <span class="nav-label">HCP</span>
         </a>
         <a href="support.html" class="nav-item">
           <span class="nav-icon">
@@ -829,6 +829,10 @@
       <p class="chat-empty-title">No messages yet</p>
       <p class="chat-empty-sub">Start a conversation by sending a message below</p>
     </div>
+    <div class="chat-reply-notice" id="chatReplyNotice" hidden>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M12 11V17" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="8" r="1" fill="currentColor"/></svg>
+      Patients can reply in the app only when the reply option is enabled
+    </div>
     <div class="chat-input-row">
       <div class="chat-input-wrap">
         <input type="text" id="chatInputField" placeholder="Type a message..." />
@@ -846,6 +850,10 @@
         </div>
       </div>
     </div>
+    <label class="chat-reply-toggle" id="chatReplyToggle" hidden>
+      <input type="checkbox" id="chatReplyCheckbox" />
+      Enable patient reply
+    </label>
   </aside>
 
   <!-- Export Chat modal -->

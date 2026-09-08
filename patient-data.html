@@ -63,7 +63,7 @@
           <span class="nav-icon">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-2"/><path d="M9 12h6"/><path d="M9 16h6"/></svg>
           </span>
-          <span class="nav-label">CTM</span>
+          <span class="nav-label">HCP</span>
         </a>
         <a href="support.html" class="nav-item">
           <span class="nav-icon">
@@ -232,6 +232,10 @@
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="#F16C6C"><path d="M12 21C12 21 4 15.5 4 9.8C4 6.6 6.5 4.5 9.2 4.5C10.6 4.5 11.6 5.1 12 5.7C12.4 5.1 13.4 4.5 14.8 4.5C17.5 4.5 20 6.6 20 9.8C20 15.5 12 21 12 21Z"/></svg>
                 Priority
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M5 21V4" stroke="#F16C6C" stroke-width="1.8" stroke-linecap="round"/><path d="M5 4H16L13.5 8L16 12H5" stroke="#F16C6C" stroke-width="1.8" stroke-linejoin="round"/></svg>
+              </span>
+              <span class="monitoring-tag monitoring-tag-warning" id="aboutToBeUnmonitoredTag">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#B9770E" stroke-width="1.8"/><path d="M12 7V13" stroke="#B9770E" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="16.3" r="1" fill="#B9770E" stroke="none"/></svg>
+                About to be Unmonitored
               </span>
               <a href="care-recommendation.html" class="btn-care" id="openCareRecBtn">Care Recommendation</a>
             </div>
@@ -452,13 +456,24 @@
                 </div>
 
                 <div class="compliance-group">
-                  <h3 class="compliance-group-title">Compliance Details</h3>
-                  <div class="compliance-detail-grid">
+                  <div class="section-title-row" style="margin-top:0;">
+                    <h3 class="compliance-group-title" style="margin:0;">Compliance Details</h3>
+                    <div class="range-toggle compliance-range-toggle" id="complianceRangeToggle">
+                      <span data-range="total">Total</span>
+                      <span class="active" data-range="custom">Custom Range</span>
+                    </div>
+                  </div>
+                  <div class="compliance-custom-range open" id="complianceCustomRange">
+                    <input type="date" class="compliance-date-input" id="complianceRangeStart" value="2025-12-13" />
+                    <span class="compliance-range-sep">to</span>
+                    <input type="date" class="compliance-date-input" id="complianceRangeEnd" value="2026-01-11" />
+                  </div>
+                  <div class="compliance-detail-grid" id="complianceDetailGrid">
                     <div class="compliance-detail-item"><span class="compliance-detail-label">Monitoring Start Date</span><span class="compliance-detail-value">11/12/2025</span></div>
-                    <div class="compliance-detail-item"><span class="compliance-detail-label">Total Available Days</span><span class="compliance-detail-value">29</span></div>
-                    <div class="compliance-detail-item"><span class="compliance-detail-label">Total Recorded Days</span><span class="compliance-detail-value">20</span></div>
-                    <div class="compliance-detail-item"><span class="compliance-detail-label">Un-recorded / Missed Days</span><span class="compliance-detail-value">9</span></div>
-                    <div class="compliance-detail-item"><span class="compliance-detail-label">Non-valid ASR Days</span><span class="compliance-detail-value">3</span></div>
+                    <div class="compliance-detail-item"><span class="compliance-detail-label">Total Available Days</span><span class="compliance-detail-value" id="complianceAvailableDays">29</span></div>
+                    <div class="compliance-detail-item"><span class="compliance-detail-label">Total Recorded Days</span><span class="compliance-detail-value" id="complianceRecordedDays">20</span></div>
+                    <div class="compliance-detail-item"><span class="compliance-detail-label">Un-recorded / Missed Days</span><span class="compliance-detail-value" id="complianceMissedDays">9</span></div>
+                    <div class="compliance-detail-item"><span class="compliance-detail-label">Non-valid ASR Days</span><span class="compliance-detail-value" id="complianceAsrDays">3</span></div>
                   </div>
                 </div>
               </div>
@@ -900,6 +915,10 @@
       <p class="chat-empty-title">No messages yet</p>
       <p class="chat-empty-sub">Start a conversation by sending a message below</p>
     </div>
+    <div class="chat-reply-notice" id="chatReplyNotice" hidden>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M12 11V17" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="8" r="1" fill="currentColor"/></svg>
+      Patients can reply in the app only when the reply option is enabled
+    </div>
     <div class="chat-input-row">
       <div class="chat-input-wrap">
         <input type="text" id="chatInputField" placeholder="Type a message..." />
@@ -917,6 +936,10 @@
         </div>
       </div>
     </div>
+    <label class="chat-reply-toggle" id="chatReplyToggle" hidden>
+      <input type="checkbox" id="chatReplyCheckbox" />
+      Enable patient reply
+    </label>
   </aside>
 
   <!-- Export Chat modal -->
