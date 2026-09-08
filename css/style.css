@@ -21,8 +21,8 @@
      around the app) are tuned for icons/borders on white and don't pass
      contrast as small bold badge/link text on their own. */
   --blue-text: #0E5C99;
-  --green-text: #197A4E;
-  --red-text: #B3261E;
+  --green-text: #0FA875;
+  --red-text: #E11D48;
   --orange-text: #9A4A0F;
   --yellow-text: #7A5900;
   --purple-text: #6438C2;
@@ -41,7 +41,8 @@
 body {
   margin: 0;
   font-family: 'Exo 2', 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Arial, sans-serif;
-  background: var(--bg);
+  background: linear-gradient(180deg, #FFFFFF 0%, #E2E8F0 100%);
+  background-attachment: fixed;
   color: #23272E;
 }
 
@@ -139,7 +140,7 @@ button, input, select, textarea, optgroup {
   height: 42px;
   padding: 0 15px;
   border-radius: 10px;
-  color: #4B5563;
+  color: #78716C;
   text-decoration: none;
   white-space: nowrap;
   transition: background var(--transition), color var(--transition);
@@ -151,8 +152,8 @@ button, input, select, textarea, optgroup {
 }
 
 .nav-item.active {
-  background: var(--blue);
-  color: #14213D;
+  background: #7DD3FC;
+  color: #0C4A6E;
   border-radius: 14px;
   font-weight: 700;
 }
@@ -214,6 +215,7 @@ button, input, select, textarea, optgroup {
   font-weight: 700;
   margin: 0;
   flex-shrink: 0;
+  color: #44403C;
 }
 
 .search {
@@ -479,7 +481,7 @@ button, input, select, textarea, optgroup {
   z-index: 5;
   background: #fff;
   text-align: left;
-  color: #7E8993;
+  color: #363A3F;
   font-weight: 600;
   font-size: 11.5px;
   letter-spacing: 0.5px;
@@ -492,6 +494,7 @@ button, input, select, textarea, optgroup {
   padding: 15px 0;
   vertical-align: middle;
   background: transparent;
+  color: #636973;
 }
 
 .p-row td:first-child {
@@ -1140,7 +1143,7 @@ button, input, select, textarea, optgroup {
   font-size: 11.5px;
   font-weight: 700;
   letter-spacing: 0.4px;
-  color: #7E8993;
+  color: #363A3F;
   padding: 16px 18px;
   border-bottom: 1px solid var(--gray-border);
   white-space: nowrap;
@@ -1153,7 +1156,7 @@ button, input, select, textarea, optgroup {
 .list-table tbody td {
   padding: 16px 18px;
   font-size: 13.5px;
-  color: #363B42;
+  color: #636973;
   border-bottom: 1px solid #F0F2F5;
   vertical-align: middle;
   white-space: nowrap;
@@ -1367,7 +1370,7 @@ button, input, select, textarea, optgroup {
 .action-cell {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: flex-start;
   gap: 10px;
 }
 
@@ -1376,6 +1379,7 @@ button, input, select, textarea, optgroup {
   align-items: center;
   gap: 16px;
   flex-shrink: 0;
+  width: 100%;
 }
 
 .action-icon {
@@ -1383,17 +1387,26 @@ button, input, select, textarea, optgroup {
   border: none;
   padding: 0;
   cursor: pointer;
-  color: var(--blue);
+  color: #7E8993;
   display: inline-flex;
 }
 
-.action-icon.kebab { color: #7E8993; }
+.action-icon.kebab { color: #7E8993; margin-left: auto; }
 
-.action-icon-wrap { position: relative; display: inline-flex; }
+.action-icon-wrap { position: relative; display: inline-flex; align-items: center; gap: 6px; }
 
-.action-icon-with-label { gap: 6px; }
+.action-icon-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--blue);
+  white-space: nowrap;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
 
-.action-icon-label { font-size: 13px; font-weight: 600; color: var(--blue); white-space: nowrap; }
+.action-icon-label:hover { text-decoration: underline; }
 
 .action-tooltip {
   display: none;
@@ -1413,6 +1426,15 @@ button, input, select, textarea, optgroup {
 }
 
 .action-icon-wrap:hover .action-tooltip { display: block; }
+
+/* The tooltip lives inside a sticky last-column cell, which creates its own
+   stacking context per row -- without raising this row's stacking above its
+   sibling rows, the next row's sticky cell (same base z-index) paints over
+   the open tooltip instead of the tooltip sitting on top of it. */
+.list-table tbody tr:has(.action-icon-wrap:hover) td:first-child,
+.list-table tbody tr:has(.action-icon-wrap:hover) td:last-child {
+  z-index: 20;
+}
 
 .list-footer {
   display: flex;
@@ -1523,7 +1545,7 @@ button, input, select, textarea, optgroup {
 .btn-care {
   background: var(--btn-bg);
   color: var(--btn-text);
-  border: none;
+  border: 1px solid #FFFFFF;
   border-radius: 10px;
   padding: 11px 22px;
   font-size: 13.5px;
@@ -1534,12 +1556,12 @@ button, input, select, textarea, optgroup {
 .btn-care:hover { background: var(--btn-bg-hover); }
 
 .btn-care:disabled {
-  background: #E3E7EB;
-  color: #9AA5B1;
+  background: #8D929A;
+  color: #FFFFFF;
   cursor: not-allowed;
 }
 
-.btn-care:disabled:hover { background: #E3E7EB; }
+.btn-care:disabled:hover { background: #8D929A; }
 
 .monitoring-tag {
   display: inline-flex;
@@ -2259,7 +2281,7 @@ button, input, select, textarea, optgroup {
   text-align: left;
   font-size: 11.5px;
   font-weight: 700;
-  color: #7E8993;
+  color: #363A3F;
   padding: 12px 10px;
   border-top: 1px solid var(--gray-border);
   border-bottom: 1px solid var(--gray-border);
@@ -2377,17 +2399,17 @@ button, input, select, textarea, optgroup {
   height: 54px;
   border-radius: 50%;
   border: none;
-  background: #0E7FB8;
-  color: #fff;
+  background: #7DD3FC;
+  color: #0C4A6E;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: 0 10px 24px rgba(14, 127, 184, 0.45);
+  box-shadow: 0 10px 24px rgba(125, 211, 252, 0.55);
   z-index: 60;
 }
 
-.chat-fab:hover { background: #0B6693; }
+.chat-fab:hover { background: #63C8FB; }
 
 .chat-fab .dot-live {
   position: absolute;
@@ -3015,7 +3037,7 @@ button, input, select, textarea, optgroup {
   font-size: 11.5px;
   font-weight: 700;
   letter-spacing: 0.4px;
-  color: #7E8993;
+  color: #363A3F;
   padding: 12px 14px;
   border-bottom: 1px solid var(--gray-border);
   white-space: nowrap;
@@ -3214,7 +3236,7 @@ button, input, select, textarea, optgroup {
   text-align: left;
   font-size: 11.5px;
   font-weight: 700;
-  color: #7E8993;
+  color: #363A3F;
   padding: 12px 14px;
   border-bottom: 1px solid var(--gray-border);
   white-space: nowrap;
@@ -3451,9 +3473,8 @@ button, input, select, textarea, optgroup {
   vertical-align: -1px;
 }
 
-.quest-dot-yes { background: var(--blue); }
-.quest-dot-no { background: var(--blue); display: inline-flex; align-items: center; justify-content: center; }
-.quest-dot-no svg { width: 8px; height: 8px; }
+.quest-dot-yes, .quest-dot-no { background: var(--blue); display: inline-flex; align-items: center; justify-content: center; }
+.quest-dot-yes svg, .quest-dot-no svg { width: 8px; height: 8px; }
 
 .quest-legend-note { color: var(--gray-text); }
 
@@ -4987,7 +5008,7 @@ label.checkbox-field {
   align-items: center;
   gap: 9px;
   background: var(--btn-bg);
-  border: none;
+  border: 1px solid #FFFFFF;
   border-radius: 10px;
   padding: 11px 20px;
   font-size: 14.5px;
@@ -5021,7 +5042,7 @@ label.checkbox-field {
   opacity: 1;
   background: #fff;
   border-color: var(--gray-border);
-  color: #C1C7CF;
+  color: #8D929A;
   cursor: not-allowed;
 }
 
@@ -5548,8 +5569,10 @@ label.checkbox-field {
 .filter-select .custom-select-trigger svg:first-child { flex-shrink: 0; }
 .filter-select .custom-select-caret { margin-left: 2px; flex-shrink: 0; }
 
+.filter-select .custom-select-trigger { color: #55504D; }
+
 .filter-select .custom-select-value {
-  color: #23272E;
+  color: #55504D;
   white-space: nowrap;
 }
 
@@ -5840,20 +5863,10 @@ label.checkbox-field {
   color: #7A2E2E;
 }
 
-/* Discontinued patient: wash the profile card to read as disabled, but keep the
-   kebab menu clickable so staff can still reactivate the account or reset the password. */
+/* Discontinued patient: kebab menu stays clickable so staff can still
+   reactivate the account or reset the password. */
 .patient-card.is-discontinued {
   position: relative;
-}
-
-.patient-card.is-discontinued::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: rgba(246, 248, 250, 0.7);
-  border-radius: inherit;
-  pointer-events: none;
-  z-index: 5;
 }
 
 .patient-card.is-discontinued .action-icon.kebab,
@@ -5865,7 +5878,6 @@ label.checkbox-field {
 .patient-card.is-discontinued .btn-care,
 .patient-card.is-discontinued .care-app-chip {
   pointer-events: none;
-  filter: grayscale(1);
 }
 
 /* Discontinued patient: no action anywhere on the page below the profile
@@ -5884,8 +5896,6 @@ body.patient-discontinued .data-content #openAddEventBtn,
 body.patient-discontinued .data-content .clinical-add-link,
 body.patient-discontinued #chatOpenBtn {
   pointer-events: none;
-  opacity: 0.45;
-  filter: grayscale(1);
   cursor: not-allowed;
 }
 

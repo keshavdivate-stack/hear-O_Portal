@@ -2069,17 +2069,17 @@ button, input, select, textarea, optgroup {
   height: 54px;
   border-radius: 50%;
   border: none;
-  background: #0E7FB8;
-  color: #fff;
+  background: #7DD3FC;
+  color: #0C4A6E;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: 0 10px 24px rgba(14, 127, 184, 0.45);
+  box-shadow: 0 10px 24px rgba(125, 211, 252, 0.55);
   z-index: 60;
 }
 
-.chat-fab:hover { background: #0B6693; }
+.chat-fab:hover { background: #63C8FB; }
 
 .chat-fab .dot-live {
   position: absolute;
@@ -3285,9 +3285,8 @@ button, input, select, textarea, optgroup {
   vertical-align: -1px;
 }
 
-.quest-dot-yes { background: var(--blue); }
-.quest-dot-no { background: var(--blue); display: inline-flex; align-items: center; justify-content: center; }
-.quest-dot-no svg { width: 8px; height: 8px; }
+.quest-dot-yes, .quest-dot-no { background: var(--blue); display: inline-flex; align-items: center; justify-content: center; }
+.quest-dot-yes svg, .quest-dot-no svg { width: 8px; height: 8px; }
 
 .quest-legend-note { color: var(--gray-text); }
 

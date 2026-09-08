@@ -154,9 +154,10 @@ function actionCell(p) {
     <div class="action-cell">
       <div class="action-icon-group">
         <div class="action-icon-wrap">
-          <button class="action-icon action-icon-with-label" aria-label="${pencilTitle}" ${hasNote ? "" : `title="${pencilTitle}"`} data-id="${p.id}" data-act="addAction">
-            ${pencilIcon}${label ? `<span class="action-icon-label">${label}</span>` : ""}
+          <button class="action-icon" aria-label="${pencilTitle}" ${hasNote ? "" : `title="${pencilTitle}"`} data-id="${p.id}" data-act="addAction">
+            ${pencilIcon}
           </button>
+          ${label ? `<button class="action-icon-label" aria-label="Edit ${label}" data-id="${p.id}" data-act="editAction">${label}</button>` : ""}
           ${tooltip}
         </div>
         <button class="action-icon kebab row-menu-trigger" aria-label="More" data-id="${p.id}">${kebabIcon}</button>
@@ -1003,6 +1004,13 @@ rows.addEventListener("click", (e) => {
   const addActionBtn = e.target.closest('.action-icon[data-act="addAction"]');
   if (addActionBtn) {
     const patient = patientList.find((p) => p.id === Number(addActionBtn.dataset.id));
+    if (patient) openAddActionModal(patient);
+    return;
+  }
+
+  const editActionBtn = e.target.closest('.action-icon-label[data-act="editAction"]');
+  if (editActionBtn) {
+    const patient = patientList.find((p) => p.id === Number(editActionBtn.dataset.id));
     if (patient) openAddActionModal(patient);
     return;
   }
