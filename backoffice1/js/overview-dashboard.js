@@ -468,6 +468,12 @@ function renderOvCategoryTrendChart() {
 
   const seriesPoints = series.map((s) => s.values.map((v, i) => ({ x: xAt(i), y: yAt(v) })));
 
+  const bands = labels
+    .map(
+      (label, i) => `<rect class="ov-cat-band" id="ovCatBand${i}" x="${padL + slotW * i}" y="${padT}" width="${slotW}" height="${plotH}" fill="var(--btn-bg)" opacity="0"/>`
+    )
+    .join("");
+
   const lines = series
     .map(
       (s, i) => `
@@ -476,34 +482,33 @@ function renderOvCategoryTrendChart() {
     )
     .join("");
 
-  const hoverBands = labels
-    .map(
-      (label, i) => `
-      <rect class="ov-cat-hitcol" x="${padL + slotW * i}" y="${padT}" width="${slotW}" height="${plotH}" fill="transparent" data-index="${i}"/>
-      <line class="ov-cat-guide" id="ovCatGuide${i}" x1="${xAt(i)}" y1="${padT}" x2="${xAt(i)}" y2="${padT + plotH}" stroke="var(--ink)" stroke-width="1" stroke-dasharray="3 3" opacity="0"/>`
-    )
+  const hitCols = labels
+    .map((label, i) => `<rect class="ov-cat-hitcol" x="${padL + slotW * i}" y="${padT}" width="${slotW}" height="${plotH}" fill="transparent" data-index="${i}"/>`)
     .join("");
+
+  const topYAtIndex = labels.map((_, i) => Math.min(...seriesPoints.map((pts) => pts[i].y)));
 
   document.getElementById("ovCategoryTrendChart").innerHTML = `
     <svg viewBox="0 0 ${width} ${height}" class="bo-area-svg" preserveAspectRatio="none">
       ${gridLines.join("")}
+      ${bands}
       ${lines}
-      ${hoverBands}
       ${xLabels}
+      ${hitCols}
     </svg>
     <div class="bo-multitip" id="ovCategoryTrendTooltip"></div>`;
 
-  wireOvCategoryTrendTooltips(series, labels, xAt, padT);
+  wireOvCategoryTrendTooltips(series, labels, xAt, topYAtIndex, padT, width);
 }
 
-function wireOvCategoryTrendTooltips(series, labels, xAt, padT) {
+function wireOvCategoryTrendTooltips(series, labels, xAt, topYAtIndex, padT, width) {
   const container = document.getElementById("ovCategoryTrendChart");
   const tooltip = document.getElementById("ovCategoryTrendTooltip");
 
   container.querySelectorAll(".ov-cat-hitcol").forEach((col) => {
     const i = Number(col.dataset.index);
     col.addEventListener("mouseenter", () => {
-      document.getElementById(`ovCatGuide${i}`)?.setAttribute("opacity", "1");
+      document.getElementById(`ovCatBand${i}`)?.setAttribute("opacity", "0.08");
       tooltip.innerHTML = `
         <div class="bo-multitip-title">${labels[i]}</div>
         ${series
@@ -511,12 +516,15 @@ function wireOvCategoryTrendTooltips(series, labels, xAt, padT) {
             (s) => `<div class="bo-multitip-row"><span class="dot" style="background:${s.color};"></span><span class="name">${s.label}</span><b>${s.values[i]}</b></div>`
           )
           .join("")}`;
-      tooltip.style.left = `${xAt(i)}px`;
-      tooltip.style.top = `${padT}px`;
+      const x = xAt(i);
+      const clampedX = Math.min(Math.max(x, 90), width - 90);
+      const cardHeight = 26 + series.length * 17;
+      tooltip.style.left = `${clampedX}px`;
+      tooltip.style.top = `${Math.max(topYAtIndex[i], cardHeight + 14)}px`;
       tooltip.style.display = "block";
     });
     col.addEventListener("mouseleave", () => {
-      document.getElementById(`ovCatGuide${i}`)?.setAttribute("opacity", "0");
+      document.getElementById(`ovCatBand${i}`)?.setAttribute("opacity", "0");
       tooltip.style.display = "none";
     });
   });
