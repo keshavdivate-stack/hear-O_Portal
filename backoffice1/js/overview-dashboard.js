@@ -356,40 +356,100 @@ function ovCategoryDrilldownHref(label, orgId) {
   return `support.html?${params.toString()}`;
 }
 
+/* Short x-axis labels so 6 category names fit across one chart without
+   overlapping or wrapping -- the full name still shows in the hover
+   tooltip and via the drill-down link. */
+const OV_CATEGORY_SHORT_LABEL = {
+  Compliance: "Compliance",
+  "Voice Engine": "Voice",
+  Sensors: "Sensors",
+  "Patient (Mobile/Web)": "Patient",
+  "Clinic Users (Security)": "Security",
+  "System Schedule Engine": "Schedule",
+};
+
+/* Same data as the old donut, drawn as a line/dot chart (reusing the same
+   SVG line-chart building blocks as System Health Trend above) instead of
+   a circular chart -- easier to scan the count per category at a glance,
+   and every point still links out to that category's filtered ticket list. */
 function renderOvDonut(orgId) {
   const categories = orgId === "all" ? ovCategories : orgHealthData[orgId].categories.filter((c) => c.count > 0);
   const total = categories.reduce((s, c) => s + c.count, 0);
+  document.getElementById("ovCategoryChartTotal").textContent = total;
 
+  const container = document.getElementById("ovCategoryChart");
   if (!total) {
-    document.getElementById("ovDonut").style.background = "var(--bg)";
-    document.getElementById("ovDonutTotal").textContent = "0";
-    document.getElementById("ovDonutLegend").innerHTML = `<div class="bo-empty-state" style="color:var(--gray-text); font-size:13px;">No open issues.</div>`;
+    container.innerHTML = `<div class="bo-empty-state" style="color:var(--gray-text); font-size:13px;">No open issues.</div>`;
     return;
   }
 
-  let acc = 0;
-  const stops = categories
-    .map((c) => {
-      const from = (acc / total) * 360;
-      acc += c.count;
-      const to = (acc / total) * 360;
-      return `${c.color} ${from}deg ${to}deg`;
-    })
-    .join(", ");
-  document.getElementById("ovDonut").style.background = `conic-gradient(${stops})`;
-  document.getElementById("ovDonutTotal").textContent = total;
+  const width = container.clientWidth || 420;
+  const height = container.clientHeight || 190;
+  const padL = 26;
+  const padR = 16;
+  const padT = 14;
+  const padB = 26;
+  const plotW = width - padL - padR;
+  const plotH = height - padT - padB;
+  const rawMax = Math.max(...categories.map((c) => c.count));
+  const gridStep = Math.max(1, Math.ceil(rawMax / 4));
+  const yMax = gridStep * 4;
 
-  document.getElementById("ovDonutLegend").innerHTML = categories
-    .map((c) => {
+  const xAt = (i) => padL + (plotW * i) / (categories.length - 1 || 1);
+  const yAt = (v) => padT + plotH - (v / yMax) * plotH;
+
+  const gridLines = [];
+  for (let v = 0; v <= yMax; v += gridStep) {
+    const y = yAt(v);
+    gridLines.push(`<line x1="${padL}" y1="${y}" x2="${width - padR}" y2="${y}" stroke="#EEF1F4" stroke-width="1"/>`);
+  }
+
+  const xLabels = categories
+    .map((c, i) => `<text x="${xAt(i)}" y="${height - 6}" text-anchor="middle" font-size="10" fill="#9AA5B1">${OV_CATEGORY_SHORT_LABEL[c.label] || c.label}</text>`)
+    .join("");
+
+  const line = categories.map((c, i) => `${xAt(i)},${yAt(c.count)}`).join(" L ");
+  const dots = categories
+    .map((c, i) => {
       const pct = Math.round((c.count / total) * 100);
-      return `
-      <a class="bo-donut-legend-row" href="${ovCategoryDrilldownHref(c.label, orgId)}">
-        <span class="dot" style="background:${c.color};"></span>
-        <span class="name">${c.label}</span>
-        <span class="val">${c.count} (${pct}%)</span>
-      </a>`;
+      return `<circle class="bo-trend-dot" cx="${xAt(i)}" cy="${yAt(c.count)}" r="4" fill="${c.color}" data-label="${c.label}" data-value="${c.count} (${pct}%)" data-x="" data-color="${c.color}"/>`;
     })
     .join("");
+
+  container.innerHTML = `
+    <svg viewBox="0 0 ${width} ${height}" class="bo-area-svg" preserveAspectRatio="none">
+      ${gridLines.join("")}
+      <path d="M ${xAt(0)},${yAt(categories[0].count)} L ${line}" fill="none" stroke="var(--gray-border)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+      ${dots}
+      ${xLabels}
+    </svg>
+    <div class="bo-trend-tooltip" id="ovCategoryChartTooltip"></div>`;
+
+  wireOvCategoryChartTooltips(orgId, categories);
+}
+
+function wireOvCategoryChartTooltips(orgId, categories) {
+  const container = document.getElementById("ovCategoryChart");
+  const tooltip = document.getElementById("ovCategoryChartTooltip");
+
+  container.querySelectorAll(".bo-trend-dot").forEach((dot, i) => {
+    dot.style.cursor = "pointer";
+    dot.addEventListener("click", () => {
+      location.href = ovCategoryDrilldownHref(categories[i].label, orgId);
+    });
+    dot.addEventListener("mouseenter", () => {
+      const { label, value, color } = dot.dataset;
+      tooltip.innerHTML = `<span class="dot" style="background:${color};"></span>${label}: <b>${value}</b>`;
+      tooltip.style.left = `${dot.getAttribute("cx")}px`;
+      tooltip.style.top = `${dot.getAttribute("cy")}px`;
+      tooltip.style.display = "block";
+      dot.setAttribute("r", "5.5");
+    });
+    dot.addEventListener("mouseleave", () => {
+      tooltip.style.display = "none";
+      dot.setAttribute("r", "4");
+    });
+  });
 }
 
 /* ---------------- Affected Organizations ---------------- */
@@ -590,6 +650,7 @@ function wireOvChartTooltips(container, tooltip) {
 }
 
 window.addEventListener("resize", () => renderOvClinicComplianceChart(ovSelectedOrgId));
+window.addEventListener("resize", () => renderOvDonut(ovSelectedOrgId));
 
 /* ---------------- System Health (per-service status + 30-day uptime) ---------------- */
 /* A status-page-style widget (service + status dot + uptime% + daily history
