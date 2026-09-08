@@ -2069,17 +2069,17 @@ button, input, select, textarea, optgroup {
   height: 54px;
   border-radius: 50%;
   border: none;
-  background: #7DD3FC;
-  color: #0C4A6E;
+  background: #2563eb;
+  color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: 0 10px 24px rgba(125, 211, 252, 0.55);
+  box-shadow: 0 10px 24px rgba(59, 130, 246, 0.5);
   z-index: 60;
 }
 
-.chat-fab:hover { background: #63C8FB; }
+.chat-fab:hover { background: #3b82f6; }
 
 .chat-fab .dot-live {
   position: absolute;
@@ -2110,7 +2110,7 @@ button, input, select, textarea, optgroup {
 .chat-panel.open { right: 0; }
 
 .chat-panel-header {
-  background: var(--blue);
+  background: #3b82f6;
   color: #fff;
   padding: 16px 20px;
   font-size: 15px;

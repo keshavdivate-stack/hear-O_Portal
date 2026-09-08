@@ -409,6 +409,10 @@ document.getElementById("ovCategoryTrendLegend").innerHTML = ovCategories
   .map((c) => `<span><span class="dot" style="background:${c.color}"></span>${c.label}</span>`)
   .join("");
 
+/* Stacked bar chart -- one bar per day, segmented by category count, using
+   the same colored-rect + gridline + hover-tooltip building blocks as the
+   rest of the dashboard's SVG charts. Reads far cleaner than 6 overlapping
+   lines/areas for the same data. */
 function renderOvCategoryTrendChart() {
   const labels = ovCategoryTrendLabels;
   const series = ovCategories.map((c) => ({ ...c, values: ovCategoryTrendData[c.label] || labels.map(() => 0) }));
@@ -422,17 +426,21 @@ function renderOvCategoryTrendChart() {
   const padB = 22;
   const plotW = width - padL - padR;
   const plotH = height - padT - padB;
-  const yMax = 10;
-  const gridStep = 2;
+  const dailyTotals = labels.map((_, i) => series.reduce((sum, s) => sum + s.values[i], 0));
+  const gridStep = 5;
+  const yMax = Math.max(gridStep, Math.ceil(Math.max(...dailyTotals) / gridStep) * gridStep);
 
-  const xAt = (i) => padL + (plotW * i) / (labels.length - 1);
+  const slotW = plotW / labels.length;
+  const barW = Math.min(38, slotW * 0.5);
+  const xAt = (i) => padL + slotW * i + slotW / 2;
   const yAt = (v) => padT + plotH - (v / yMax) * plotH;
+  const baselineY = yAt(0);
 
   const gridLines = [];
   for (let v = 0; v <= yMax; v += gridStep) {
     const y = yAt(v);
     gridLines.push(
-      `<line x1="${padL}" y1="${y}" x2="${width - padR}" y2="${y}" stroke="#EEF1F4" stroke-width="1"/>` +
+      `<line x1="${padL}" y1="${y}" x2="${width - padR}" y2="${y}" stroke="#F1F3F6" stroke-width="1"/>` +
         `<text x="${padL - 8}" y="${y + 4}" text-anchor="end" font-size="10" fill="#9AA5B1">${v}</text>`
     );
   }
@@ -441,22 +449,28 @@ function renderOvCategoryTrendChart() {
     .map((m, i) => `<text x="${xAt(i)}" y="${height - 5}" text-anchor="middle" font-size="9.5" fill="#9AA5B1">${m}</text>`)
     .join("");
 
-  const buildLine = (s) => {
-    const line = s.values.map((v, i) => `${xAt(i)},${yAt(v)}`).join(" L ");
-    return `
-      <path d="M ${xAt(0)},${yAt(s.values[0])} L ${line}" fill="none" stroke="${s.color}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
-      ${s.values
-        .map(
-          (v, i) =>
-            `<circle class="bo-trend-dot" cx="${xAt(i)}" cy="${yAt(v)}" r="2.6" fill="${s.color}" data-label="${s.label}" data-value="${v}" data-x="${labels[i]}" data-color="${s.color}"/>`
-        )
-        .join("")}`;
-  };
+  const bars = labels
+    .map((label, i) => {
+      let cumulative = 0;
+      const cx = xAt(i);
+      return series
+        .map((s) => {
+          const v = s.values[i];
+          if (!v) return "";
+          const y1 = yAt(cumulative);
+          const y2 = yAt(cumulative + v);
+          cumulative += v;
+          return `<rect class="bo-trend-dot" x="${cx - barW / 2}" y="${y2}" width="${barW}" height="${y1 - y2}" rx="2" fill="${s.color}" data-label="${s.label}" data-value="${v}" data-x="${label}" data-color="${s.color}"/>`;
+        })
+        .join("");
+    })
+    .join("");
 
   document.getElementById("ovCategoryTrendChart").innerHTML = `
     <svg viewBox="0 0 ${width} ${height}" class="bo-area-svg" preserveAspectRatio="none">
       ${gridLines.join("")}
-      ${series.map(buildLine).join("")}
+      <line x1="${padL}" y1="${baselineY}" x2="${width - padR}" y2="${baselineY}" stroke="#E7EAEE" stroke-width="1.2"/>
+      ${bars}
       ${xLabels}
     </svg>
     <div class="bo-trend-tooltip" id="ovCategoryTrendTooltip"></div>`;
@@ -468,18 +482,18 @@ function wireOvCategoryTrendTooltips() {
   const container = document.getElementById("ovCategoryTrendChart");
   const tooltip = document.getElementById("ovCategoryTrendTooltip");
 
-  container.querySelectorAll(".bo-trend-dot").forEach((dot) => {
-    dot.addEventListener("mouseenter", () => {
-      const { label, value, x, color } = dot.dataset;
+  container.querySelectorAll(".bo-trend-dot").forEach((bar) => {
+    bar.addEventListener("mouseenter", () => {
+      const { label, value, x, color } = bar.dataset;
       tooltip.innerHTML = `<span class="dot" style="background:${color};"></span>${label}: <b>${value}</b> &middot; ${x}`;
-      tooltip.style.left = `${dot.getAttribute("cx")}px`;
-      tooltip.style.top = `${dot.getAttribute("cy")}px`;
+      tooltip.style.left = `${Number(bar.getAttribute("x")) + Number(bar.getAttribute("width")) / 2}px`;
+      tooltip.style.top = `${bar.getAttribute("y")}px`;
       tooltip.style.display = "block";
-      dot.setAttribute("r", "4.5");
+      bar.style.opacity = "0.8";
     });
-    dot.addEventListener("mouseleave", () => {
+    bar.addEventListener("mouseleave", () => {
       tooltip.style.display = "none";
-      dot.setAttribute("r", "2.6");
+      bar.style.opacity = "1";
     });
   });
 }

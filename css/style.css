@@ -1398,7 +1398,7 @@ button, input, select, textarea, optgroup {
 .action-icon-label {
   font-size: 13px;
   font-weight: 600;
-  color: var(--blue);
+  color: #7E8993;
   white-space: nowrap;
   background: none;
   border: none;
@@ -2399,17 +2399,17 @@ button, input, select, textarea, optgroup {
   height: 54px;
   border-radius: 50%;
   border: none;
-  background: #7DD3FC;
-  color: #0C4A6E;
+  background: var(--btn-bg-hover);
+  color: var(--btn-text);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: 0 10px 24px rgba(125, 211, 252, 0.55);
+  box-shadow: 0 10px 24px rgba(59, 130, 246, 0.5);
   z-index: 60;
 }
 
-.chat-fab:hover { background: #63C8FB; }
+.chat-fab:hover { background: var(--btn-bg); }
 
 .chat-fab .dot-live {
   position: absolute;
@@ -2440,7 +2440,7 @@ button, input, select, textarea, optgroup {
 .chat-panel.open { right: 0; }
 
 .chat-panel-header {
-  background: var(--blue);
+  background: var(--btn-bg);
   color: #fff;
   padding: 16px 20px;
   font-size: 15px;
@@ -3695,13 +3695,50 @@ button, input, select, textarea, optgroup {
 }
 
 .compliance-custom-range {
-  display: none;
+  display: flex;
   align-items: center;
   gap: 10px;
-  margin-bottom: 16px;
 }
 
-.compliance-custom-range.open { display: flex; }
+.compliance-range-field { position: relative; }
+
+.compliance-range-popover {
+  display: none;
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 320px;
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid var(--gray-border);
+  box-shadow: 0 14px 34px rgba(20, 30, 50, 0.18);
+  padding: 16px;
+  z-index: 30;
+}
+
+.compliance-range-popover.open { display: block; }
+
+.compliance-range-popover-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #7E8993;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  margin-bottom: 10px;
+}
+
+.compliance-range-popover-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.compliance-range-popover-actions .btn-care,
+.compliance-range-popover-actions .btn-secondary {
+  padding: 8px 16px;
+  font-size: 13px;
+}
 
 .compliance-range-sep {
   font-size: 13px;

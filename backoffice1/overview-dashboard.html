@@ -203,7 +203,7 @@
       </section>
     </div>
 
-    <!-- ISSUES BY CATEGORY + AFFECTED ORGANIZATIONS -->
+    <!-- ISSUES BY CATEGORY + AFFECTED ORGANIZATIONS + SYSTEM HEALTH -->
     <div style="display:flex; align-items:stretch; gap:16px; flex-shrink:0; margin-bottom:20px;">
       <section class="bo-card bo-panel bo-panel--static" style="flex:1 1 0; display:block;">
         <h3 class="bo-panel-title">Incidents by Category</h3>
@@ -226,16 +226,17 @@
         </div>
         <div class="bo-org-mini-list" id="ovOrgMiniList"></div>
       </section>
-    </div>
 
-    <!-- INCIDENTS BY CATEGORY OVER TIME -->
-    <div style="display:flex; align-items:stretch; gap:16px; flex-shrink:0; margin-bottom:20px;">
+      <!-- SYSTEM HEALTH (per-service status + 30-day uptime history) -->
       <section class="bo-card bo-panel bo-panel--static" style="flex:1 1 0; display:block;">
         <div class="bo-panel-head">
-          <h3 class="bo-panel-title" style="margin:0;">Incidents by Category Over Time</h3>
-          <div class="bo-legend-row" id="ovCategoryTrendLegend" style="margin:0;"></div>
+          <h3 class="bo-panel-title" style="margin:0;">System Health</h3>
+          <span id="ovUptimeSummary" style="font-size:12px; font-weight:700;"></span>
         </div>
-        <div id="ovCategoryTrendChart" class="bo-chart-area" style="height:220px;"></div>
+        <div class="bo-uptime-list" id="ovUptimeList">
+          <div id="ovUptimeRows"></div>
+          <div class="bo-trend-tooltip" id="ovUptimeTooltip"></div>
+        </div>
       </section>
     </div>
 
@@ -252,28 +253,25 @@
       </div>
     </div>
 
-    <!-- CLINIC-LEVEL PATIENT COMPLIANCE (monthly trend, scoped by the org filter
-         above like the panels before it -- picking a clinic there swaps this
-         chart to that clinic's own Compliance/Usable Compliance trend) -->
+    <!-- INCIDENTS BY CATEGORY OVER TIME + ORGANIZATION-LEVEL PATIENT COMPLIANCE
+         (monthly trend, scoped by the org filter above like the panels before
+         it -- picking a clinic there swaps this chart to that clinic's own
+         Compliance/Usable Compliance trend) -->
     <div style="display:flex; align-items:stretch; gap:16px; flex-shrink:0; margin-bottom:20px;">
-      <section class="bo-card bo-panel bo-panel--static" style="flex:1.6 1 0; display:block;">
+      <section class="bo-card bo-panel bo-panel--static" style="flex:1 1 0; display:block;">
+        <div class="bo-panel-head">
+          <h3 class="bo-panel-title" style="margin:0;">Incidents by Category Over Time</h3>
+          <div class="bo-legend-row" id="ovCategoryTrendLegend" style="margin:0;"></div>
+        </div>
+        <div id="ovCategoryTrendChart" class="bo-chart-area" style="height:220px;"></div>
+      </section>
+
+      <section class="bo-card bo-panel bo-panel--static" style="flex:1 1 0; display:block;">
         <div class="bo-panel-head">
           <h3 class="bo-panel-title" style="margin:0;" id="ovClinicComplianceTitle">Organization-level Patient Compliance</h3>
           <div class="bo-legend-row" id="ovClinicComplianceLegend" style="margin:0;"></div>
         </div>
         <div id="ovClinicComplianceChart" class="bo-chart-area" style="height:220px;"></div>
-      </section>
-
-      <!-- SYSTEM HEALTH (per-service status + 30-day uptime history) -->
-      <section class="bo-card bo-panel bo-panel--static" style="flex:1 1 0; display:block;">
-        <div class="bo-panel-head">
-          <h3 class="bo-panel-title" style="margin:0;">System Health</h3>
-          <span id="ovUptimeSummary" style="font-size:12px; font-weight:700;"></span>
-        </div>
-        <div class="bo-uptime-list" id="ovUptimeList">
-          <div id="ovUptimeRows"></div>
-          <div class="bo-trend-tooltip" id="ovUptimeTooltip"></div>
-        </div>
       </section>
     </div>
 

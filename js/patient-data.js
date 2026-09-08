@@ -1554,18 +1554,44 @@ function recalcComplianceDetails() {
 }
 
 const complianceRangeToggle = document.getElementById("complianceRangeToggle");
+const complianceRangePopover = document.getElementById("complianceRangePopover");
+
+function closeComplianceRangePopover() {
+  complianceRangePopover?.classList.remove("open");
+}
+
+function setComplianceRangeMode(mode) {
+  complianceRangeToggle?.querySelectorAll("span").forEach((s) => s.classList.toggle("active", s.dataset.range === mode));
+  recalcComplianceDetails();
+}
+
 if (complianceRangeToggle) {
   complianceRangeToggle.querySelectorAll("span").forEach((r) => {
     r.addEventListener("click", () => {
-      complianceRangeToggle.querySelectorAll("span").forEach((s) => s.classList.remove("active"));
-      r.classList.add("active");
-      document.getElementById("complianceCustomRange")?.classList.toggle("open", r.dataset.range === "custom");
-      recalcComplianceDetails();
+      if (r.dataset.range === "custom") {
+        complianceRangePopover?.classList.toggle("open");
+        return;
+      }
+      closeComplianceRangePopover();
+      setComplianceRangeMode("total");
     });
   });
-  ["complianceRangeStart", "complianceRangeEnd"].forEach((id) => {
-    document.getElementById(id)?.addEventListener("change", recalcComplianceDetails);
+
+  document.getElementById("complianceRangeApply")?.addEventListener("click", () => {
+    setComplianceRangeMode("custom");
+    closeComplianceRangePopover();
   });
+
+  document.getElementById("complianceRangeCancel")?.addEventListener("click", () => {
+    closeComplianceRangePopover();
+  });
+
+  document.addEventListener("click", (e) => {
+    if (!complianceRangePopover?.classList.contains("open")) return;
+    if (e.target.closest("#complianceRangePopover") || e.target.closest("#complianceRangeToggle")) return;
+    closeComplianceRangePopover();
+  });
+
   recalcComplianceDetails();
 }
 
