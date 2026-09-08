@@ -1413,16 +1413,29 @@ const chatMessages = [
 const chatMessagesEl = document.getElementById("chatMessages");
 const chatEmptyStateEl = document.getElementById("chatEmptyState");
 
+/* Icon shown on a media-request bubble -- camera outline for an image
+   request, camera-with-play-triangle for a video request. */
+const CHAT_REQUEST_ICON = {
+  image: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3Z"/><circle cx="12" cy="13" r="3.5"/></svg>`,
+  video: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2"/></svg>`,
+};
+
 function renderChatMessages() {
   chatEmptyStateEl.hidden = chatMessages.length > 0;
   chatMessagesEl.hidden = chatMessages.length === 0;
   chatMessagesEl.innerHTML = chatMessages
     .map((m) => {
       if (m.type === "sep") return `<div class="chat-day-sep">${m.label}</div>`;
+      const bubble = m.request
+        ? `<div class="chat-bubble chat-bubble--request">
+             <span>${m.request === "image" ? "Image request" : "Video request"}</span>
+             <span class="chat-request-icon">${CHAT_REQUEST_ICON[m.request]}</span>
+           </div>`
+        : `<div class="chat-bubble">${m.text}</div>`;
       return `
         <div class="chat-msg ${m.type}">
           <div class="chat-msg-meta">${m.name ? `<b>${m.name}</b> &middot; ` : ""}${m.time}</div>
-          <div class="chat-bubble">${m.text}</div>
+          ${bubble}
           ${m.seen ? `<div class="chat-seen">${m.seen}</div>` : ""}
         </div>`;
     })
@@ -1440,8 +1453,8 @@ function chatNowTime() {
   return new Date().toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
 }
 
-function addOutgoingChatMessage(text) {
-  chatMessages.push({ type: "out", name: "Dr. Alex Sholl", time: chatNowTime(), text });
+function addOutgoingChatMessage(text, request) {
+  chatMessages.push({ type: "out", name: "Dr. Alex Sholl", time: chatNowTime(), text, request });
   renderChatMessages();
 }
 
@@ -1486,8 +1499,7 @@ chatPlusMenu.addEventListener("click", (e) => {
   const item = e.target.closest(".chat-plus-menu-item");
   if (!item) return;
   chatPlusMenu.classList.remove("open");
-  const label = item.dataset.request === "image" ? "Requested an image" : "Requested a video";
-  addOutgoingChatMessage(label);
+  addOutgoingChatMessage("", item.dataset.request);
 });
 
 /* ---------------- Export Chat ---------------- */
