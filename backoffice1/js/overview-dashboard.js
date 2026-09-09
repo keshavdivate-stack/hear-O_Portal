@@ -356,166 +356,40 @@ function ovCategoryDrilldownHref(label, orgId) {
   return `support.html?${params.toString()}`;
 }
 
-/* Short x-axis labels so 6 category names fit across one chart without
-   overlapping or wrapping -- the full name still shows in the hover
-   tooltip and via the drill-down link. */
-const OV_CATEGORY_SHORT_LABEL = {
-  Compliance: "Compliance",
-  "Voice Engine": "Voice",
-  Sensors: "Sensors",
-  "Patient (Mobile/Web)": "Patient",
-  "Clinic Users (Security)": "Security",
-  "System Schedule Engine": "Schedule",
-};
-
-const OV_CATEGORY_TREND_LABELS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-
-/* Deterministic per-category daily split of that category's total open-issue
-   count across the last 7 days, so every category's week always sums back to
-   the same figure shown for it elsewhere (donut total, KPI, etc) instead of
-   being a separately maintained series that can drift out of sync.
-   Shaped as a single bell curve that peaks on a category-specific day (derived
-   from the category name's hash) rather than a noisy multi-wiggle sine, so
-   each category reads as one clear rise-and-fall trend and categories are
-   less likely to sit directly on top of each other across the whole week. */
-function ovCategoryWeekSeries(label, total) {
-  const days = OV_CATEGORY_TREND_LABELS.length;
-  if (!total) return OV_CATEGORY_TREND_LABELS.map(() => 0);
-  const seed = ovHash(label);
-  const peakDay = seed % days;
-  const spread = 1.3 + ((seed >> 3) % 3) * 0.35;
-  const floor = 0.3 + ((seed >> 6) % 4) * 0.05;
-  const weights = OV_CATEGORY_TREND_LABELS.map((_, i) => {
-    const d = i - peakDay;
-    return floor + Math.exp(-(d * d) / (2 * spread * spread));
-  });
-  const weightSum = weights.reduce((a, b) => a + b, 0);
-  const values = weights.map((w) => Math.round((w / weightSum) * total));
-  let diff = total - values.reduce((a, b) => a + b, 0);
-  for (let i = values.length - 1; diff !== 0 && i >= 0; i--) {
-    if (diff > 0) { values[i]++; diff--; }
-    else if (values[i] > 0) { values[i]--; diff++; }
-  }
-  return values;
-}
-
-/* One straight-line series per category, each with small, consistent dot
-   markers -- reads as a clean production trend chart instead of a
-   chart-library demo, and keeps the y-axis tied to the actual value range
-   (no headroom padding beyond the nearest grid step above the real max).
-   A shared hover card lists every non-zero category's exact count for the
-   hovered day (skipping zero values instead of drawing a flat clutter of
-   dots along the baseline), and the legend links out to that category's
-   filtered ticket list. */
 function renderOvDonut(orgId) {
   const categories = orgId === "all" ? ovCategories : orgHealthData[orgId].categories.filter((c) => c.count > 0);
   const total = categories.reduce((s, c) => s + c.count, 0);
-  document.getElementById("ovCategoryChartTotal").textContent = total;
 
-  document.getElementById("ovCategoryChartLegend").innerHTML = categories
-    .map(
-      (c) =>
-        `<a href="${ovCategoryDrilldownHref(c.label, orgId)}" style="display:flex; align-items:center; text-decoration:none; color:inherit;"><span class="dot" style="background:${c.color}"></span>${OV_CATEGORY_SHORT_LABEL[c.label] || c.label}</a>`
-    )
-    .join("");
-
-  const container = document.getElementById("ovCategoryChart");
   if (!total) {
-    container.innerHTML = `<div class="bo-empty-state" style="color:var(--gray-text); font-size:13px;">No open issues.</div>`;
+    document.getElementById("ovDonut").style.background = "var(--bg)";
+    document.getElementById("ovDonutTotal").textContent = "0";
+    document.getElementById("ovDonutLegend").innerHTML = `<div class="bo-empty-state" style="color:var(--gray-text); font-size:13px;">No open issues.</div>`;
     return;
   }
 
-  /* Draw order: lowest total first, highest total last -- so on a day
-     where two categories tie, the more significant category's line and
-     dot render on top instead of whichever happens to be first. */
-  const series = categories
-    .map((c) => ({ ...c, values: ovCategoryWeekSeries(c.label, c.count) }))
-    .sort((a, b) => a.count - b.count);
-  const labels = OV_CATEGORY_TREND_LABELS;
+  let acc = 0;
+  const stops = categories
+    .map((c) => {
+      const from = (acc / total) * 360;
+      acc += c.count;
+      const to = (acc / total) * 360;
+      return `${c.color} ${from}deg ${to}deg`;
+    })
+    .join(", ");
+  document.getElementById("ovDonut").style.background = `conic-gradient(${stops})`;
+  document.getElementById("ovDonutTotal").textContent = total;
 
-  const width = container.clientWidth || 420;
-  const height = container.clientHeight || 190;
-  const padL = 22;
-  const padR = 16;
-  const padT = 14;
-  const padB = 22;
-  const plotW = width - padL - padR;
-  const plotH = height - padT - padB;
-  const rawMax = Math.max(...series.map((s) => Math.max(...s.values)));
-  const gridStep = Math.max(1, Math.ceil(rawMax / 4));
-  const yMax = gridStep * 4;
-
-  const xAt = (i) => padL + (plotW * i) / (labels.length - 1 || 1);
-  const yAt = (v) => padT + plotH - (v / yMax) * plotH;
-
-  const gridLines = [];
-  const yLabels = [];
-  for (let v = 0; v <= yMax; v += gridStep) {
-    const y = yAt(v);
-    gridLines.push(`<line x1="${padL}" y1="${y}" x2="${width - padR}" y2="${y}" stroke="#EEF1F4" stroke-width="1"/>`);
-    yLabels.push(`<text x="${padL - 6}" y="${y + 3}" text-anchor="end" font-size="9.5" fill="#9AA5B1">${v}</text>`);
-  }
-
-  const xLabels = labels
-    .map((label, i) => `<text x="${xAt(i)}" y="${height - 5}" text-anchor="middle" font-size="9.5" fill="#9AA5B1">${label}</text>`)
-    .join("");
-
-  const lines = series
-    .map((s) => {
-      const points = s.values.map((v, i) => `${xAt(i)},${yAt(v)}`).join(" L ");
-      const dots = s.values.map((v, i) => `<circle cx="${xAt(i)}" cy="${yAt(v)}" r="3" fill="${s.color}"/>`).join("");
-      return `<path d="M ${points}" fill="none" stroke="${s.color}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>${dots}`;
+  document.getElementById("ovDonutLegend").innerHTML = categories
+    .map((c) => {
+      const pct = Math.round((c.count / total) * 100);
+      return `
+      <a class="bo-donut-legend-row" href="${ovCategoryDrilldownHref(c.label, orgId)}">
+        <span class="dot" style="background:${c.color};"></span>
+        <span class="name">${c.label}</span>
+        <span class="val">${c.count} (${pct}%)</span>
+      </a>`;
     })
     .join("");
-
-  const slotW = plotW / (labels.length - 1 || 1);
-  const hoverBands = labels
-    .map(
-      (label, i) => `
-      <rect class="ov-cat-hitcol" x="${padL + slotW * (i - 0.5)}" y="${padT}" width="${slotW}" height="${plotH}" fill="transparent" data-index="${i}"/>
-      <line class="ov-cat-guide" id="ovCatGuide${i}" x1="${xAt(i)}" y1="${padT}" x2="${xAt(i)}" y2="${padT + plotH}" stroke="#D8DEE5" stroke-width="1" stroke-dasharray="3 3" opacity="0" style="pointer-events:none;"/>`
-    )
-    .join("");
-
-  container.innerHTML = `
-    <svg viewBox="0 0 ${width} ${height}" class="bo-area-svg" preserveAspectRatio="none">
-      ${gridLines.join("")}
-      ${lines}
-      ${hoverBands}
-      ${xLabels}
-      ${yLabels.join("")}
-    </svg>
-    <div class="bo-multitip" id="ovCategoryChartTooltip"></div>`;
-
-  wireOvCategoryChartTooltips(series, labels, xAt, padT);
-}
-
-function wireOvCategoryChartTooltips(series, labels, xAt, padT) {
-  const container = document.getElementById("ovCategoryChart");
-  const tooltip = document.getElementById("ovCategoryChartTooltip");
-
-  container.querySelectorAll(".ov-cat-hitcol").forEach((col) => {
-    const i = Number(col.dataset.index);
-    col.addEventListener("mouseenter", () => {
-      document.getElementById(`ovCatGuide${i}`)?.setAttribute("opacity", "1");
-      const rows = series
-        .slice()
-        .sort((a, b) => b.count - a.count)
-        .filter((s) => s.values[i] > 0)
-        .map((s) => `<div class="bo-multitip-row"><span class="dot" style="background:${s.color};"></span><span class="name">${OV_CATEGORY_SHORT_LABEL[s.label] || s.label}</span><b>${s.values[i]}</b></div>`)
-        .join("");
-      tooltip.innerHTML = `
-        <div class="bo-multitip-title">${labels[i]}</div>
-        ${rows || `<div class="bo-multitip-row"><span class="name">No open issues</span></div>`}`;
-      tooltip.style.left = `${xAt(i)}px`;
-      tooltip.style.top = `${padT}px`;
-      tooltip.style.display = "block";
-    });
-    col.addEventListener("mouseleave", () => {
-      document.getElementById(`ovCatGuide${i}`)?.setAttribute("opacity", "0");
-      tooltip.style.display = "none";
-    });
-  });
 }
 
 /* ---------------- Affected Organizations ---------------- */
@@ -589,7 +463,7 @@ document.getElementById("ovOrgListModalClose").addEventListener("click", closeOv
 ovOrgListModalOverlay.addEventListener("click", (e) => { if (e.target === ovOrgListModalOverlay) closeOvOrgListModal(); });
 
 /* ---------------- Clinic-level Patient Compliance (monthly trend) ---------------- */
-/* Same Compliance / Usable Compliance line-chart language used on the
+/* Same Compliance / Recording Quality line-chart language used on the
    per-patient Monthly Compliance chart, but scoped to a clinic (or averaged
    across all clinics, weighted by patient count) instead of one patient --
    swapping the org dropdown above re-renders this chart for that clinic. */
@@ -606,11 +480,11 @@ function ovHash(str) {
    point stays consistent with the tier donut and KPI figures above it. */
 function ovOrgMonthlySeries(id, org) {
   const seed = ovHash(id);
-  const usableBaseline = Math.max(20, org.compliance - 8);
+  const qualityBaseline = Math.max(20, org.compliance - 8);
   return OV_COMPLIANCE_MONTHS.map((month, i) => ({
     month,
     compliance: Math.max(20, Math.min(100, Math.round(org.compliance + Math.sin((seed + i) / 2) * 8))),
-    usable: Math.max(15, Math.min(100, Math.round(usableBaseline + Math.cos((seed + i) / 2) * 8))),
+    quality: Math.max(15, Math.min(100, Math.round(qualityBaseline + Math.cos((seed + i) / 2) * 8))),
   }));
 }
 
@@ -623,14 +497,14 @@ function ovMonthlyComplianceFor(orgId) {
 
   return OV_COMPLIANCE_MONTHS.map((month, i) => {
     const compliance = perOrgSeries.reduce((sum, o) => sum + o.series[i].compliance * o.weight, 0) / totalPatients;
-    const usable = perOrgSeries.reduce((sum, o) => sum + o.series[i].usable * o.weight, 0) / totalPatients;
-    return { month, compliance: Math.round(compliance), usable: Math.round(usable) };
+    const quality = perOrgSeries.reduce((sum, o) => sum + o.series[i].quality * o.weight, 0) / totalPatients;
+    return { month, compliance: Math.round(compliance), quality: Math.round(quality) };
   });
 }
 
 document.getElementById("ovClinicComplianceLegend").innerHTML = [
   { label: "Compliance", color: "#1F3C73" },
-  { label: "Usable Compliance", color: "#F2994A" },
+  { label: "Recording Quality", color: "#F2994A" },
 ]
   .map((s) => `<span><span class="dot" style="background:${s.color}"></span>${s.label}</span>`)
   .join("");
@@ -655,7 +529,7 @@ function renderOvClinicComplianceChart(orgId) {
 
   const months = monthly.map((m) => m.month);
   const complianceSeries = monthly.map((m) => m.compliance);
-  const usableSeries = monthly.map((m) => m.usable);
+  const qualitySeries = monthly.map((m) => m.quality);
 
   const xAt = (i) => padL + (plotW * i) / (months.length - 1);
   const yAt = (v) => padT + plotH - ((v - yMin) / (yMax - yMin)) * plotH;
@@ -688,7 +562,7 @@ function renderOvClinicComplianceChart(orgId) {
     <svg viewBox="0 0 ${width} ${height}" class="bo-area-svg" preserveAspectRatio="none">
       ${gridLines.join("")}
       ${buildLine(complianceSeries, "#1F3C73", "Compliance")}
-      ${buildLine(usableSeries, "#F2994A", "Usable Compliance")}
+      ${buildLine(qualitySeries, "#F2994A", "Recording Quality")}
       ${xLabels}
     </svg>
     <div class="bo-trend-tooltip" id="ovClinicComplianceTooltip"></div>`;

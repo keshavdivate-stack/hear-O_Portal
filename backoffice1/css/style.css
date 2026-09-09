@@ -893,9 +893,9 @@ button, input, select, textarea, optgroup {
 .bo-mini-num { font-size: 28px; font-weight: 800; color: var(--blue-text); margin: 0; }
 .bo-mini-unit { font-size: 14px; font-weight: 600; color: var(--ink); margin-left: 4px; }
 
-.bo-usable-compliance-card { text-align: center; padding-top: 14px; padding-bottom: 18px; }
-.bo-usable-compliance-card .bo-panel-head { text-align: left; }
-.bo-usable-compliance-pct { font-size: 34px; font-weight: 800; color: #2E1C8C; margin: 8px 0 0; }
+.bo-recording-quality-card { text-align: center; padding-top: 14px; padding-bottom: 18px; }
+.bo-recording-quality-card .bo-panel-head { text-align: left; }
+.bo-recording-quality-pct { font-size: 34px; font-weight: 800; color: #2E1C8C; margin: 8px 0 0; }
 
 @media (max-width: 1400px) {
   .bo-stat-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
@@ -4131,13 +4131,13 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
 
 /* Patient Compliance panel: a single proportional stacked bar (tier sizes at a
    glance) plus a row per tier with its share, patient count, and average
-   compliance/usable figures — a snapshot layout, not the line-chart-with-
+   compliance/quality figures — a snapshot layout, not the line-chart-with-
    day-toggle pattern used elsewhere, since this page's own date-range filter
    already covers the time dimension. */
 /* Patient Compliance panel reuses the donut + legend language already
    established by "Incidents by Category" above it, instead of a flat progress
    bar, so the tier split reads as a proper chart. The legend is extended
-   into a small grid so each row also carries its compliance/usable figures
+   into a small grid so each row also carries its compliance/quality figures
    alongside the tier's share of the donut. */
 .bo-compliance-legend { flex: 1; min-width: 0; }
 

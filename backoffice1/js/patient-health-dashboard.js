@@ -75,10 +75,10 @@ document.getElementById("patientComplianceInfoList").innerHTML = [
   boKv("Un-recorded Days", ph.complianceInfo.unrecordedDays),
   boKv("Non-valid ASR Days", ph.complianceInfo.nonValidAsrDays),
   boKv("Total Compliance", `${ph.complianceInfo.totalCompliance}%`),
-  boKv("Usable Compliance", `${ph.usableCompliance}%`),
+  boKv("Recording Quality", `${ph.recordingQuality}%`),
 ].join("");
 
-document.getElementById("patientUsableCompliancePct").textContent = `${ph.usableCompliance}%`;
+document.getElementById("patientRecordingQualityPct").textContent = `${ph.recordingQuality}%`;
 
 /* ---------------- Calendar widget ---------------- */
 const PH_CAL_MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
@@ -167,14 +167,14 @@ function renderPatientComplianceChart() {
 
   const months = ph.monthlyCompliance.map((m) => m.month);
   const complianceSeries = ph.monthlyCompliance.map((m) => m.compliance);
-  const usableSeries = ph.monthlyCompliance.map((m) => m.usable);
+  const qualitySeries = ph.monthlyCompliance.map((m) => m.quality);
 
   /* Range the y-axis to the data actually in view (rounded to the nearest
      10, with a little breathing room) instead of a fixed 40-100 -- these
      series usually sit in a tight high band (e.g. 84-100), which against a
      fixed 40-100 axis crams every line up against the top of the chart. */
   const gridStep = 10;
-  const allValues = [...complianceSeries, ...usableSeries];
+  const allValues = [...complianceSeries, ...qualitySeries];
   const dataMin = Math.min(...allValues);
   const dataMax = Math.max(...allValues);
   const yMin = Math.max(0, Math.floor((dataMin - gridStep) / gridStep) * gridStep);
@@ -206,7 +206,7 @@ function renderPatientComplianceChart() {
     <svg viewBox="0 0 ${width} ${height}" class="bo-area-svg" preserveAspectRatio="none">
       ${gridLines.join("")}
       ${buildLine(complianceSeries, "#1F3C73")}
-      ${buildLine(usableSeries, "#F2994A")}
+      ${buildLine(qualitySeries, "#F2994A")}
       ${xLabels}
     </svg>`;
 }

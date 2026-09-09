@@ -30,7 +30,7 @@ const errorMessageBase = [
 
 const chartMonths = ["Sep", "Oct", "Nov", "Dec", "Jan", "Feb", "Mar", "Apr", "May", "Jun"];
 const complianceSeriesBase = [58, 60, 62, 59, 61, 63, 65, 62, 60, 61];
-const usableSeriesBase = [52, 55, 57, 54, 56, 58, 60, 57, 55, 56];
+const qualitySeriesBase = [52, 55, 57, 54, 56, 58, 60, 57, 55, 56];
 
 const binDefs = [
   { key: "90-100", label: "90%-100%", color: "var(--navy)" },
@@ -41,13 +41,13 @@ const binDefs = [
 ];
 
 const binDataBase = {
-  usable: { "90-100": 3, "80-90": 6, "70-80": 9, "60-70": 12, lt60: 21 },
+  quality: { "90-100": 3, "80-90": 6, "70-80": 9, "60-70": 12, lt60: 21 },
   compliance: { "90-100": 5, "80-90": 8, "70-80": 11, "60-70": 14, lt60: 24 },
 };
 
-let activeBinsTab = "usable";
+let activeBinsTab = "quality";
 let complianceSeries = complianceSeriesBase;
-let usableSeries = usableSeriesBase;
+let qualitySeries = qualitySeriesBase;
 let binData = binDataBase;
 
 /* ---------------- KPI row ---------------- */
@@ -89,7 +89,7 @@ function average(series) {
 
 function renderChartStats() {
   const complianceDelta = complianceSeries[complianceSeries.length - 1] - complianceSeries[0];
-  const usableDelta = usableSeries[usableSeries.length - 1] - usableSeries[0];
+  const qualityDelta = qualitySeries[qualitySeries.length - 1] - qualitySeries[0];
   const trendChip = (delta) => {
     if (delta === 0) {
       return `<span class="bo-trend-chip flat">
@@ -110,8 +110,8 @@ function renderChartStats() {
     </div>
     <div class="bo-chart-stat">
       <span class="dot" style="background:var(--orange)"></span>
-      Usable avg <b>${average(usableSeries)}%</b>
-      ${trendChip(usableDelta)}
+      Recording Quality avg <b>${average(qualitySeries)}%</b>
+      ${trendChip(qualityDelta)}
     </div>`;
 }
 
@@ -179,7 +179,7 @@ function renderAreaChart() {
       </defs>
       ${gridLines.join("")}
       ${buildArea(complianceSeries, "#1F3C73", "gradNavy")}
-      ${buildArea(usableSeries, "#F2994A", "gradOrange")}
+      ${buildArea(qualitySeries, "#F2994A", "gradOrange")}
       ${xLabels}
     </svg>`;
 }
@@ -226,12 +226,12 @@ function renderForOrg(orgIds) {
   renderTables(orgs);
 
   complianceSeries = complianceSeriesBase.map((v, i) => mktScale(v, seed + i, 0.25));
-  usableSeries = usableSeriesBase.map((v, i) => mktScale(v, seed + i + 7, 0.25));
+  qualitySeries = qualitySeriesBase.map((v, i) => mktScale(v, seed + i + 7, 0.25));
   renderChartStats();
   renderAreaChart();
 
   binData = {
-    usable: Object.fromEntries(Object.entries(binDataBase.usable).map(([k, v]) => [k, mktScale(v, seed + k.length, 0.5)])),
+    quality: Object.fromEntries(Object.entries(binDataBase.quality).map(([k, v]) => [k, mktScale(v, seed + k.length, 0.5)])),
     compliance: Object.fromEntries(Object.entries(binDataBase.compliance).map(([k, v]) => [k, mktScale(v, seed + k.length + 3, 0.5)])),
   };
   renderBins(activeBinsTab);

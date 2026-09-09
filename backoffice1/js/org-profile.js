@@ -404,7 +404,7 @@ function renderOrgPatients() {
         <td><span class="bo-status-pill ${orgPatientStatusClass(p.status)}">${p.status}</span></td>
         <td>${p.statusStart}</td>
         <td>${p.lastSession}</td>
-        <td>${orgPatientPct(p.usableCompliance)}</td>
+        <td>${orgPatientPct(p.recordingQuality)}</td>
         <td>${orgPatientPct(p.compliance)}</td>
         <td>
           <div class="bo-row-actions">

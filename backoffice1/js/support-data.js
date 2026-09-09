@@ -14,9 +14,9 @@ const SCOPES = ["Global", "Organization", "Patient"];
 
 const ISSUE_TYPES = [
   "Total Compliance Drop",
-  "Total Usable Compliance Drop",
+  "Total Recording Quality Drop",
   "Organization Compliance Drop",
-  "Organization Usable Compliance Drop",
+  "Organization Recording Quality Drop",
   "Signed In Not Uploaded",
   "Missing Smart Merger Results",
   "Missing ASR Results",
@@ -45,9 +45,9 @@ const ISSUE_TYPES = [
 
 const ISSUE_TYPE_CATEGORY = {
   "Total Compliance Drop": "Compliance",
-  "Total Usable Compliance Drop": "Compliance",
+  "Total Recording Quality Drop": "Compliance",
   "Organization Compliance Drop": "Compliance",
-  "Organization Usable Compliance Drop": "Compliance",
+  "Organization Recording Quality Drop": "Compliance",
   "Signed In Not Uploaded": "Compliance",
   "Missing Smart Merger Results": "Voice Engine",
   "Missing ASR Results": "Voice Engine",
@@ -80,9 +80,9 @@ const ISSUE_TYPE_CATEGORY = {
    instance rather than the aggregate alarm (e.g. a single patient/device). */
 const ISSUE_TYPE_SCOPE = {
   "Total Compliance Drop": "Global",
-  "Total Usable Compliance Drop": "Global",
+  "Total Recording Quality Drop": "Global",
   "Organization Compliance Drop": "Organization",
-  "Organization Usable Compliance Drop": "Organization",
+  "Organization Recording Quality Drop": "Organization",
   "Signed In Not Uploaded": "Global",
   "Missing Smart Merger Results": "Patient",
   "Missing ASR Results": "Patient",
@@ -168,9 +168,9 @@ const SUPPORT_ORG_CODES = ["120", "121", "104", "B03", "105", "122", "B01", "ATP
 const SUPPORT_CLINIC_STAFF = ["Rachel Cohen", "David Levi", "Miriam Katz", "Omer Peretz", "Noa Ben-David", "Yossi Mizrahi", "Tamar Azoulay", "Eitan Shapiro"];
 const SUPPORT_ISSUE_DESCRIPTIONS = {
   "Total Compliance Drop": "Active-patient compliance fell more than 60% versus yesterday.",
-  "Total Usable Compliance Drop": "Active-patient usable compliance fell more than 50% versus yesterday.",
+  "Total Recording Quality Drop": "Active-patient recording quality fell more than 50% versus yesterday.",
   "Organization Compliance Drop": "This organization's compliance dropped versus yesterday's baseline.",
-  "Organization Usable Compliance Drop": "This organization's usable compliance dropped versus yesterday's baseline.",
+  "Organization Recording Quality Drop": "This organization's recording quality dropped versus yesterday's baseline.",
   "Signed In Not Uploaded": "Patient signed in but no recording was uploaded.",
   "Missing Smart Merger Results": "Active patient has no smart merger results from yesterday's recordings.",
   "Missing ASR Results": "One or more recordings are missing ASR results.",

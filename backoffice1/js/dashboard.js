@@ -68,7 +68,7 @@ document.getElementById("errorMessageRows").innerHTML = errorMessageData
 /* ---------------- Monthly Compliance chart ---------------- */
 const chartMonths = ["Sep", "Oct", "Nov", "Dec", "Jan", "Feb", "Mar", "Apr", "May", "Jun"];
 const complianceSeries = [83, 82, 84, 83, 85, 83, 86, 84, 82, 83];
-const usableSeries = [78, 74, 77, 76, 79, 76, 80, 78, 76, 77];
+const qualitySeries = [78, 74, 77, 76, 79, 76, 80, 78, 76, 77];
 
 function average(series) {
   return Math.round(series.reduce((a, b) => a + b, 0) / series.length);
@@ -76,7 +76,7 @@ function average(series) {
 
 function renderChartStats() {
   const complianceDelta = complianceSeries[complianceSeries.length - 1] - complianceSeries[0];
-  const usableDelta = usableSeries[usableSeries.length - 1] - usableSeries[0];
+  const qualityDelta = qualitySeries[qualitySeries.length - 1] - qualitySeries[0];
   const trendChip = (delta) => {
     if (delta === 0) {
       return `<span class="bo-trend-chip flat">
@@ -97,8 +97,8 @@ function renderChartStats() {
     </div>
     <div class="bo-chart-stat">
       <span class="dot" style="background:var(--orange)"></span>
-      Usable avg <b>${average(usableSeries)}%</b>
-      ${trendChip(usableDelta)}
+      Recording Quality avg <b>${average(qualitySeries)}%</b>
+      ${trendChip(qualityDelta)}
     </div>`;
 }
 renderChartStats();
@@ -157,8 +157,8 @@ function renderAreaChart(mode) {
   };
 
   const parts = [];
-  if (mode !== "usable") parts.push(buildArea(complianceSeries, "#1F3C73", "gradNavy"));
-  if (mode !== "compliance") parts.push(buildArea(usableSeries, "#F2994A", "gradOrange"));
+  if (mode !== "quality") parts.push(buildArea(complianceSeries, "#1F3C73", "gradNavy"));
+  if (mode !== "compliance") parts.push(buildArea(qualitySeries, "#F2994A", "gradOrange"));
 
   document.getElementById("complianceArea").innerHTML = `
     <svg viewBox="0 0 ${width} ${height}" class="bo-area-svg" preserveAspectRatio="none">
@@ -195,7 +195,7 @@ const binDefs = [
 ];
 
 const binData = {
-  usable: { "90-100": 25, "80-90": 8, "70-80": 2, "60-70": 9, lt60: 3 },
+  quality: { "90-100": 25, "80-90": 8, "70-80": 2, "60-70": 9, lt60: 3 },
   compliance: { "90-100": 30, "80-90": 6, "70-80": 1, "60-70": 7, lt60: 2 },
 };
 
@@ -215,7 +215,7 @@ function renderBins(tab) {
     })
     .join("");
 }
-renderBins("usable");
+renderBins("quality");
 
 document.getElementById("binsToggle").addEventListener("click", (e) => {
   const btn = e.target.closest(".bo-seg-btn");

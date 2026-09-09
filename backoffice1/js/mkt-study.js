@@ -9,7 +9,7 @@ const screenedMonths = ["Mar", "Apr", "May", "Jun", "Jul", "Aug"];
 const screenedSeriesBase = [252, 253, 253, 262, 263, 263];
 
 const mktBinDataBase = {
-  usable: [
+  quality: [
     { label: "90%-100%", val: 32 },
     { label: "80%-89%", val: 24 },
     { label: "70%-79%", val: 18 },
@@ -27,7 +27,7 @@ const mktStudyHeadBase = { sites: 5, needAttention: 11 };
 
 let screenedSeries = screenedSeriesBase;
 let mktBinData = mktBinDataBase;
-let activeMktBinsTab = "usable";
+let activeMktBinsTab = "quality";
 
 /* ---------------- Ring gauge (Recorded / Did not upload / Left study) ----------------
    Each selected organization gets its own hero card + ring, built from its own
@@ -188,7 +188,7 @@ function renderForOrg(orgIds) {
   renderScreenedChart();
 
   mktBinData = {
-    usable: mktBinDataBase.usable.map((b, i) => ({ ...b, val: Math.min(100, mktScale(b.val, seed + i, 0.4)) })),
+    quality: mktBinDataBase.quality.map((b, i) => ({ ...b, val: Math.min(100, mktScale(b.val, seed + i, 0.4)) })),
     compliance: mktBinDataBase.compliance.map((b, i) => ({ ...b, val: Math.min(100, mktScale(b.val, seed + i + 4, 0.4)) })),
   };
   renderMktBins(activeMktBinsTab);

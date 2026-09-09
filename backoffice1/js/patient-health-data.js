@@ -21,7 +21,7 @@ function buildPatientProfile(username) {
 
   const lang = base ? base.lang : ["HE", "EN", "AR"][seed % 3];
   const status = base ? base.status : "Registered";
-  const usableCompliance = base && base.usableCompliance != null ? base.usableCompliance : Math.round((40 + (seed % 55)) * 100) / 100;
+  const recordingQuality = base && base.recordingQuality != null ? base.recordingQuality : Math.round((40 + (seed % 55)) * 100) / 100;
   const compliance = base && base.compliance != null ? base.compliance : Math.round((40 + (seed % 55)) * 100) / 100;
 
   const totalAvailableDays = 250 + (seed % 120);
@@ -31,7 +31,7 @@ function buildPatientProfile(username) {
   const monthlyCompliance = PH_MONTHS.map((m, i) => ({
     month: m,
     compliance: Math.max(50, Math.min(100, Math.round(compliance + Math.sin((seed + i) / 2) * 8))),
-    usable: Math.max(45, Math.min(100, Math.round(usableCompliance + Math.cos((seed + i) / 2) * 8))),
+    quality: Math.max(45, Math.min(100, Math.round(recordingQuality + Math.cos((seed + i) / 2) * 8))),
     /* Justified = compliance plus days excused for a documented reason
        (hospitalization, device issue, etc.) -- always at or above the raw
        compliance line since it only adds excused days back in. */
@@ -81,7 +81,7 @@ function buildPatientProfile(username) {
     langName: PH_LANG_NAMES[lang] || lang,
     tag: base ? base.tag : "CUR",
     status,
-    usableCompliance,
+    recordingQuality,
     compliance,
     org: username.split("-")[0],
 
@@ -123,7 +123,7 @@ function buildPatientProfile(username) {
       unrecordedDays,
       nonValidAsrDays: seed % 4,
       totalCompliance: compliance,
-      usableComplianceInfo: usableCompliance,
+      recordingQualityInfo: recordingQuality,
     },
 
     recordsInfo: {

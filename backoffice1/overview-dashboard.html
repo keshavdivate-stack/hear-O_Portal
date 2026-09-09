@@ -203,12 +203,17 @@
     <!-- ISSUES BY CATEGORY + AFFECTED ORGANIZATIONS -->
     <div style="display:flex; align-items:stretch; gap:16px; flex-shrink:0; margin-bottom:20px;">
       <section class="bo-card bo-panel bo-panel--static" style="flex:1 1 0; display:block;">
-        <div class="bo-panel-head">
-          <h3 class="bo-panel-title" style="margin:0;">Incidents by Category</h3>
-          <span style="font-size:12px; color:var(--gray-text); font-weight:700;"><b id="ovCategoryChartTotal" style="color:var(--ink); font-size:15px;"></b> Total Issues</span>
+        <h3 class="bo-panel-title">Incidents by Category</h3>
+        <div class="bo-donut-row">
+          <div class="bo-donut-wrap">
+            <div class="bo-donut" id="ovDonut"></div>
+            <div class="bo-donut-center">
+              <span class="num" id="ovDonutTotal">&nbsp;</span>
+              <span class="lbl">Total Issues</span>
+            </div>
+          </div>
+          <div class="bo-donut-legend" id="ovDonutLegend"></div>
         </div>
-        <div class="bo-legend-row" id="ovCategoryChartLegend" style="margin:0 0 6px;"></div>
-        <div id="ovCategoryChart" class="bo-chart-area" style="height:180px;"></div>
       </section>
 
       <section class="bo-card bo-panel bo-panel--static" style="flex:1 1 0; display:block;">
@@ -235,7 +240,7 @@
 
     <!-- CLINIC-LEVEL PATIENT COMPLIANCE (monthly trend, scoped by the org filter
          above like the panels before it -- picking a clinic there swaps this
-         chart to that clinic's own Compliance/Usable Compliance trend) -->
+         chart to that clinic's own Compliance/Recording Quality trend) -->
     <div style="display:flex; align-items:stretch; gap:16px; flex-shrink:0; margin-bottom:20px;">
       <section class="bo-card bo-panel bo-panel--static" style="flex:1.6 1 0; display:block;">
         <div class="bo-panel-head">

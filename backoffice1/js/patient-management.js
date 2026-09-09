@@ -91,7 +91,7 @@ function renderPatients() {
         <td data-col="lastPhoneModel">${p.lastPhoneModel || "—"}</td>
         <td data-col="lastSession">${p.lastSession}</td>
         <td data-col="lastSignIn">${p.lastSignIn || "—"}</td>
-        <td data-col="usableCompliance">${pct(p.usableCompliance)}</td>
+        <td data-col="recordingQuality">${pct(p.recordingQuality)}</td>
         <td data-col="compliance">${pct(p.compliance)}</td>
         <td data-col="actions">
           <div class="bo-row-actions">
