@@ -1158,12 +1158,8 @@ renderDocuments();
 
 /* ---------------- Patient Profile: Demographics ---------------- */
 const demographicsFields = [
-  { label: "Onboarding Date", value: "12/01/2025" },
-  { label: "MRN", value: "ABC-123" },
   { label: "SSN", value: "•••-••-4471" },
-  { label: "Language", value: "English" },
   { label: "Date of Birth", value: "04/12/1955" },
-  { label: "Gender", value: "Female" },
   { label: "Marital Status", value: "Married" },
   { label: "Race", value: "White" },
   { label: "Ethnicity", value: "Not Hispanic or Latino" },
@@ -2453,4 +2449,78 @@ if (patientHeaderKebab && patientHeaderMenu) {
       patientHeaderMenu.classList.remove("open");
     }
   });
+}
+
+/* ---------------- Compliance Details: Total vs Custom Range ---------------- */
+function msPerDay() { return 1000 * 60 * 60 * 24; }
+
+function recalcComplianceDetails() {
+  const toggle = document.getElementById("complianceRangeToggle");
+  const mode = toggle?.querySelector("span.active")?.dataset.range || "custom";
+  const availableEl = document.getElementById("complianceAvailableDays");
+  const recordedEl = document.getElementById("complianceRecordedDays");
+  const missedEl = document.getElementById("complianceMissedDays");
+  const asrEl = document.getElementById("complianceAsrDays");
+  if (!availableEl) return;
+
+  let availableDays = 29;
+  if (mode === "custom") {
+    const start = document.getElementById("complianceRangeStart")?.value;
+    const end = document.getElementById("complianceRangeEnd")?.value;
+    if (start && end) {
+      const diff = Math.round((new Date(end) - new Date(start)) / msPerDay()) + 1;
+      if (diff > 0) availableDays = diff;
+    }
+  }
+
+  const recordedDays = Math.max(0, Math.round(availableDays * 0.69));
+  const asrDays = Math.max(0, Math.round(availableDays * 0.1));
+  const missedDays = Math.max(0, availableDays - recordedDays);
+
+  availableEl.textContent = availableDays;
+  recordedEl.textContent = recordedDays;
+  missedEl.textContent = missedDays;
+  asrEl.textContent = asrDays;
+}
+
+const complianceRangeToggle = document.getElementById("complianceRangeToggle");
+const complianceRangePopover = document.getElementById("complianceRangePopover");
+
+function closeComplianceRangePopover() {
+  complianceRangePopover?.classList.remove("open");
+}
+
+function setComplianceRangeMode(mode) {
+  complianceRangeToggle?.querySelectorAll("span").forEach((s) => s.classList.toggle("active", s.dataset.range === mode));
+  recalcComplianceDetails();
+}
+
+if (complianceRangeToggle) {
+  complianceRangeToggle.querySelectorAll("span").forEach((r) => {
+    r.addEventListener("click", () => {
+      if (r.dataset.range === "custom") {
+        complianceRangePopover?.classList.toggle("open");
+        return;
+      }
+      closeComplianceRangePopover();
+      setComplianceRangeMode("total");
+    });
+  });
+
+  document.getElementById("complianceRangeApply")?.addEventListener("click", () => {
+    setComplianceRangeMode("custom");
+    closeComplianceRangePopover();
+  });
+
+  document.getElementById("complianceRangeCancel")?.addEventListener("click", () => {
+    closeComplianceRangePopover();
+  });
+
+  document.addEventListener("click", (e) => {
+    if (!complianceRangePopover?.classList.contains("open")) return;
+    if (e.target.closest("#complianceRangePopover") || e.target.closest("#complianceRangeToggle")) return;
+    closeComplianceRangePopover();
+  });
+
+  recalcComplianceDetails();
 }
