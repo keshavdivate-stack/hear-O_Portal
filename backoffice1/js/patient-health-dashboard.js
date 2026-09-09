@@ -72,6 +72,7 @@ document.getElementById("patientComplianceInfoList").innerHTML = [
   boKv("Baseline Complete", ph.complianceInfo.baselineComplete),
   boKv("Total Available Days", ph.complianceInfo.totalAvailableDays),
   boKv("Total Recorded Days", ph.complianceInfo.totalRecordedDays),
+  boKv("Valid Recording Days", ph.complianceInfo.validRecordingDays),
   boKv("Un-recorded Days", ph.complianceInfo.unrecordedDays),
   boKv("Non-valid ASR Days", ph.complianceInfo.nonValidAsrDays),
   boKv("Total Compliance", `${ph.complianceInfo.totalCompliance}%`),

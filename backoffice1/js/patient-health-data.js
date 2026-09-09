@@ -27,6 +27,8 @@ function buildPatientProfile(username) {
   const totalAvailableDays = 250 + (seed % 120);
   const unrecordedDays = 5 + (seed % 30);
   const totalRecordedDays = totalAvailableDays - unrecordedDays;
+  const nonValidAsrDays = seed % 4;
+  const validRecordingDays = totalRecordedDays - nonValidAsrDays;
 
   const monthlyCompliance = PH_MONTHS.map((m, i) => ({
     month: m,
@@ -120,8 +122,9 @@ function buildPatientProfile(username) {
       leavingDate: status === "Paused" ? "--" : "",
       totalAvailableDays,
       totalRecordedDays,
+      validRecordingDays,
       unrecordedDays,
-      nonValidAsrDays: seed % 4,
+      nonValidAsrDays,
       totalCompliance: compliance,
       recordingQualityInfo: recordingQuality,
     },

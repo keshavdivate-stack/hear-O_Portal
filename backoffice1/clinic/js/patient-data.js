@@ -591,6 +591,7 @@ function recalcComplianceDetails() {
   const mode = toggle?.querySelector("span.active")?.dataset.range || "custom";
   const availableEl = document.getElementById("complianceAvailableDays");
   const recordedEl = document.getElementById("complianceRecordedDays");
+  const validEl = document.getElementById("complianceValidDays");
   const missedEl = document.getElementById("complianceMissedDays");
   const asrEl = document.getElementById("complianceAsrDays");
   if (!availableEl) return;
@@ -608,9 +609,11 @@ function recalcComplianceDetails() {
   const recordedDays = Math.max(0, Math.round(availableDays * 0.69));
   const asrDays = Math.max(0, Math.round(availableDays * 0.1));
   const missedDays = Math.max(0, availableDays - recordedDays);
+  const validDays = Math.max(0, recordedDays - asrDays);
 
   availableEl.textContent = availableDays;
   recordedEl.textContent = recordedDays;
+  if (validEl) validEl.textContent = validDays;
   missedEl.textContent = missedDays;
   asrEl.textContent = asrDays;
 }
