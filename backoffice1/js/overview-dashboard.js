@@ -405,56 +405,126 @@ const ovCategoryTrendData = {
   "Clinic Users (Security)": [0, 0, 1, 0, 0, 0, 0],
 };
 
-/* Heatmap grid -- one row per category, one column per day, cell shade =
-   that day's count (darker = more incidents). Avoids the line-crossing
-   clutter a 6-series line/area/stacked-bar chart has for this data: nothing
-   overlaps, and a spike jumps out as a dark cell instead of a tangle of
-   colored lines. */
-function renderOvCategoryTrendChart() {
-  const labels = ovCategoryTrendLabels;
-  const rows = ovCategories.map((c) => ({ ...c, values: ovCategoryTrendData[c.label] || labels.map(() => 0) }));
-  const max = Math.max(1, ...rows.flatMap((r) => r.values));
+document.getElementById("ovCategoryTrendLegend").innerHTML = ovCategories
+  .map((c) => `<span><span class="dot" style="background:${c.color}"></span>${c.label}</span>`)
+  .join("");
 
-  const header =
-    `<div class="ov-heat-cell ov-heat-corner"></div>` +
-    labels.map((label) => `<div class="ov-heat-daylabel">${label}</div>`).join("");
-
-  const body = rows
-    .map((r) => {
-      const rowLabel = `<div class="ov-heat-rowlabel"><span class="dot" style="background:${r.color}"></span>${r.label}</div>`;
-      const cells = r.values
-        .map((v, i) => {
-          const mixPct = v ? Math.round(18 + (v / max) * 67) : 5;
-          const textColor = !v ? "#C7CDD4" : mixPct >= 50 ? "#fff" : "var(--ink)";
-          return `<div class="ov-heat-cell" style="background:color-mix(in srgb, ${r.color} ${mixPct}%, white); color:${textColor};" data-label="${r.label}" data-day="${labels[i]}" data-value="${v}" data-color="${r.color}">${v}</div>`;
-        })
-        .join("");
-      return rowLabel + cells;
-    })
-    .join("");
-
-  document.getElementById("ovCategoryTrendChart").innerHTML = `
-    <div class="ov-heatmap">${header}${body}</div>
-    <div class="bo-trend-tooltip" id="ovCategoryTrendTooltip"></div>`;
-
-  wireOvCategoryTrendTooltips();
+/* Catmull-Rom -> cubic Bezier smoothing for a soft curve instead of sharp
+   straight-line segments. */
+function ovSmoothPath(points) {
+  if (points.length < 2) return "";
+  let d = `M ${points[0].x},${points[0].y}`;
+  for (let i = 0; i < points.length - 1; i++) {
+    const p0 = points[i - 1] || points[i];
+    const p1 = points[i];
+    const p2 = points[i + 1];
+    const p3 = points[i + 2] || p2;
+    const c1x = p1.x + (p2.x - p0.x) / 6;
+    const c1y = p1.y + (p2.y - p0.y) / 6;
+    const c2x = p2.x - (p3.x - p1.x) / 6;
+    const c2y = p2.y - (p3.y - p1.y) / 6;
+    d += ` C ${c1x},${c1y} ${c2x},${c2y} ${p2.x},${p2.y}`;
+  }
+  return d;
 }
 
-function wireOvCategoryTrendTooltips() {
+/* Smooth multi-line chart with hollow point markers and a single shared
+   hover card (one card lists every category's value for the hovered day,
+   plus a highlighted vertical band) instead of a plain per-dot tooltip --
+   reads clean even with 6 series, unlike a stacked bar or filled area would. */
+function renderOvCategoryTrendChart() {
+  const labels = ovCategoryTrendLabels;
+  const series = ovCategories.map((c) => ({ ...c, values: ovCategoryTrendData[c.label] || labels.map(() => 0) }));
+
+  const container = document.getElementById("ovCategoryTrendChart");
+  const width = container.clientWidth || 640;
+  const height = container.clientHeight || 220;
+  const padL = 26;
+  const padR = 10;
+  const padT = 10;
+  const padB = 22;
+  const plotW = width - padL - padR;
+  const plotH = height - padT - padB;
+  const rawMax = Math.max(...series.map((s) => Math.max(...s.values)));
+  const gridStep = 5;
+  const yMax = Math.max(gridStep, Math.ceil((rawMax || 1) / gridStep) * gridStep);
+
+  const slotW = plotW / labels.length;
+  const xAt = (i) => padL + slotW * i + slotW / 2;
+  const yAt = (v) => padT + plotH - (v / yMax) * plotH;
+
+  const gridLines = [];
+  for (let v = 0; v <= yMax; v += gridStep) {
+    const y = yAt(v);
+    gridLines.push(
+      `<line x1="${padL}" y1="${y}" x2="${width - padR}" y2="${y}" stroke="#F1F3F6" stroke-width="1"/>` +
+        `<text x="${padL - 8}" y="${y + 4}" text-anchor="end" font-size="10" fill="#9AA5B1">${v}</text>`
+    );
+  }
+
+  const xLabels = labels
+    .map((m, i) => `<text x="${xAt(i)}" y="${height - 5}" text-anchor="middle" font-size="9.5" fill="#9AA5B1">${m}</text>`)
+    .join("");
+
+  const seriesPoints = series.map((s) => s.values.map((v, i) => ({ x: xAt(i), y: yAt(v) })));
+
+  const bands = labels
+    .map(
+      (label, i) => `<rect class="ov-cat-band" id="ovCatBand${i}" x="${padL + slotW * i}" y="${padT}" width="${slotW}" height="${plotH}" fill="var(--btn-bg)" opacity="0"/>`
+    )
+    .join("");
+
+  const lines = series
+    .map(
+      (s, i) => `
+      <path d="${ovSmoothPath(seriesPoints[i])}" fill="none" stroke="${s.color}" stroke-width="2.25" stroke-linejoin="round" stroke-linecap="round"/>
+      ${seriesPoints[i].map((p) => `<circle cx="${p.x}" cy="${p.y}" r="3" fill="#fff" stroke="${s.color}" stroke-width="2"/>`).join("")}`
+    )
+    .join("");
+
+  const hitCols = labels
+    .map((label, i) => `<rect class="ov-cat-hitcol" x="${padL + slotW * i}" y="${padT}" width="${slotW}" height="${plotH}" fill="transparent" data-index="${i}"/>`)
+    .join("");
+
+  const topYAtIndex = labels.map((_, i) => Math.min(...seriesPoints.map((pts) => pts[i].y)));
+
+  document.getElementById("ovCategoryTrendChart").innerHTML = `
+    <svg viewBox="0 0 ${width} ${height}" class="bo-area-svg" preserveAspectRatio="none">
+      ${gridLines.join("")}
+      ${bands}
+      ${lines}
+      ${xLabels}
+      ${hitCols}
+    </svg>
+    <div class="bo-multitip" id="ovCategoryTrendTooltip"></div>`;
+
+  wireOvCategoryTrendTooltips(series, labels, xAt, topYAtIndex, padT, width);
+}
+
+function wireOvCategoryTrendTooltips(series, labels, xAt, topYAtIndex, padT, width) {
   const container = document.getElementById("ovCategoryTrendChart");
   const tooltip = document.getElementById("ovCategoryTrendTooltip");
-  const containerRect = container.getBoundingClientRect();
 
-  container.querySelectorAll(".ov-heat-cell[data-value]").forEach((cell) => {
-    cell.addEventListener("mouseenter", () => {
-      const { label, day, value, color } = cell.dataset;
-      const rect = cell.getBoundingClientRect();
-      tooltip.innerHTML = `<span class="dot" style="background:${color};"></span>${label}: <b>${value}</b> &middot; ${day}`;
-      tooltip.style.left = `${rect.left - containerRect.left + rect.width / 2}px`;
-      tooltip.style.top = `${rect.top - containerRect.top}px`;
+  container.querySelectorAll(".ov-cat-hitcol").forEach((col) => {
+    const i = Number(col.dataset.index);
+    col.addEventListener("mouseenter", () => {
+      document.getElementById(`ovCatBand${i}`)?.setAttribute("opacity", "0.08");
+      tooltip.innerHTML = `
+        <div class="bo-multitip-title">${labels[i]}</div>
+        ${series
+          .map(
+            (s) => `<div class="bo-multitip-row"><span class="dot" style="background:${s.color};"></span><span class="name">${s.label}</span><b>${s.values[i]}</b></div>`
+          )
+          .join("")}`;
+      const x = xAt(i);
+      const clampedX = Math.min(Math.max(x, 90), width - 90);
+      const cardHeight = 26 + series.length * 17;
+      tooltip.style.left = `${clampedX}px`;
+      tooltip.style.top = `${Math.max(topYAtIndex[i], cardHeight + 14)}px`;
       tooltip.style.display = "block";
     });
-    cell.addEventListener("mouseleave", () => {
+    col.addEventListener("mouseleave", () => {
+      document.getElementById(`ovCatBand${i}`)?.setAttribute("opacity", "0");
       tooltip.style.display = "none";
     });
   });
