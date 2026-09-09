@@ -1,15 +1,10 @@
 /* ---------------- Organization scope (All Organizations vs single org) ---------------- */
 let ovSelectedOrgId = "all";
 
-/* ---------------- Incidents by Category: Category/Severity/Status filters ---------------- */
-let ovDonutCategoryFilter = "all";
-let ovDonutSeverityFilter = "all";
-let ovDonutStatusFilter = "all";
-
-/* ---------------- Incidents Over Time: Category/Severity/Status filters ---------------- */
-let ovTrendCategoryFilter = "all";
-let ovTrendSeverityFilter = "all";
-let ovTrendStatusFilter = "all";
+/* ---------------- Incidents by Category / Incidents Over Time: single
+   "group by" field (Category / Severity / Status), Category by default. */
+let ovDonutGroupBy = "category";
+let ovTrendGroupBy = "category";
 
 /* ---------------- KPI row (System Health Summary) ---------------- */
 /* "Organizations Affected" is derived from orgHealthData (orgs with at least one
@@ -373,82 +368,73 @@ const ovCategories = (() => {
     .map(([label, count]) => ({ label, count, color: OV_CATEGORY_COLORS[label] || "var(--gray)" }));
 })();
 
-const OV_INCIDENT_SEVERITIES = ["Critical", "High", "Medium", "Low"];
-const OV_INCIDENT_STATUSES = ["Open", "Investigating", "Monitoring", "Escalated"];
+/* Severity/status use the app's existing SEVERITIES/STATUSES lists (from
+   js/support-data.js) rather than a separately invented vocabulary, so
+   "group by Severity/Status" here lines up with the same values Support's
+   own filters use. */
+const OV_SEVERITY_COLORS = { Critical: "var(--red)", High: "var(--orange)", Medium: "var(--yellow)", Low: "var(--blue)" };
+const OV_STATUS_COLORS = { Open: "var(--red)", "In Progress": "var(--orange)", Escalated: "var(--purple)", Resolved: "var(--green)" };
 
-/* Deterministic per-category incident records (severity + status), used only
-   to drive the Category/Severity/Status filters above the donut. Each
-   category's `count` is split into exactly that many synthetic records, so a
-   filtered total always matches the sum of its filtered category counts
-   instead of drifting the way a rounded percentage split would. */
-function ovCategoryIncidentRecords(label, count) {
+/* Deterministic incident records (severity + status) for a category's
+   `count`, seeded by category + an arbitrary key (e.g. "donut", or a month
+   label for the trend chart) so a given category/key pair always splits the
+   same way, and the parts always sum back to `count` exactly. */
+function ovIncidentRecords(label, seedKey, count) {
   const records = [];
   for (let i = 0; i < count; i++) {
-    const seed = ovHash(`${label}#${i}`);
+    const seed = ovHash(`${label}#${seedKey}#${i}`);
     records.push({
-      severity: OV_INCIDENT_SEVERITIES[seed % OV_INCIDENT_SEVERITIES.length],
-      status: OV_INCIDENT_STATUSES[(seed >>> 3) % OV_INCIDENT_STATUSES.length],
+      severity: SEVERITIES[seed % SEVERITIES.length],
+      status: STATUSES[(seed >>> 3) % STATUSES.length],
     });
   }
   return records;
 }
 
-function ovFilteredCategoryCount(label, count) {
-  if (ovDonutCategoryFilter !== "all" && label !== ovDonutCategoryFilter) return 0;
-  if (ovDonutSeverityFilter === "all" && ovDonutStatusFilter === "all") return count;
-  return ovCategoryIncidentRecords(label, count).filter(
-    (r) =>
-      (ovDonutSeverityFilter === "all" || r.severity === ovDonutSeverityFilter) &&
-      (ovDonutStatusFilter === "all" || r.status === ovDonutStatusFilter)
-  ).length;
-}
-
-/* Same deterministic-record approach as the donut filter above, but seeded
-   per month too (so each point on the trend line gets its own split rather
-   than reusing the donut's single snapshot). */
-function ovFilteredTrendMonthCount(label, monthLabel, count) {
-  if (ovTrendSeverityFilter === "all" && ovTrendStatusFilter === "all") return count;
-  const records = [];
-  for (let i = 0; i < count; i++) {
-    const seed = ovHash(`${label}#${monthLabel}#${i}`);
-    records.push({
-      severity: OV_INCIDENT_SEVERITIES[seed % OV_INCIDENT_SEVERITIES.length],
-      status: OV_INCIDENT_STATUSES[(seed >>> 3) % OV_INCIDENT_STATUSES.length],
-    });
-  }
-  return records.filter(
-    (r) =>
-      (ovTrendSeverityFilter === "all" || r.severity === ovTrendSeverityFilter) &&
-      (ovTrendStatusFilter === "all" || r.status === ovTrendStatusFilter)
-  ).length;
-}
-
-/* Category names here are the same list as CATEGORIES in js/support-data.js,
-   so a legend row can drill straight into that category's tickets via
-   Support's Category filter instead of going through an issue-type lookup. */
-function ovCategoryDrilldownHref(label, orgId) {
+/* Legend/slice links drill into Support's matching filter -- category,
+   severity, or status -- depending on what this view is currently grouped
+   by, instead of always assuming category. */
+function ovDrilldownHref(dimension, value, orgId) {
   const params = new URLSearchParams();
-  params.set("category", label);
+  params.set(dimension, value);
   if (orgId && orgId !== "all") params.set("q", orgHealthData[orgId].name);
   return `support.html?${params.toString()}`;
 }
 
-function renderOvDonut(orgId) {
+/* Slices for the donut: by Category (the raw per-category totals, as
+   before), or by Severity/Status (every category's incidents tallied into
+   that dimension's values instead). */
+function ovDonutSlices(orgId) {
   const baseCategories = orgId === "all" ? ovCategories : orgHealthData[orgId].categories.filter((c) => c.count > 0);
-  const categories = baseCategories
-    .filter((c) => ovDonutCategoryFilter === "all" || c.label === ovDonutCategoryFilter)
-    .map((c) => ({ ...c, count: ovFilteredCategoryCount(c.label, c.count) }));
-  const total = categories.reduce((s, c) => s + c.count, 0);
+  if (ovDonutGroupBy === "category") {
+    return baseCategories.map((c) => ({ dimension: "category", value: c.label, label: c.label, count: c.count, color: c.color }));
+  }
+  const values = ovDonutGroupBy === "severity" ? SEVERITIES : STATUSES;
+  const colors = ovDonutGroupBy === "severity" ? OV_SEVERITY_COLORS : OV_STATUS_COLORS;
+  const totals = {};
+  values.forEach((v) => (totals[v] = 0));
+  baseCategories.forEach((c) => {
+    ovIncidentRecords(c.label, "donut", c.count).forEach((r) => {
+      const key = ovDonutGroupBy === "severity" ? r.severity : r.status;
+      totals[key]++;
+    });
+  });
+  return values.map((v) => ({ dimension: ovDonutGroupBy, value: v, label: v, count: totals[v], color: colors[v] }));
+}
+
+function renderOvDonut(orgId) {
+  const slices = ovDonutSlices(orgId);
+  const total = slices.reduce((s, c) => s + c.count, 0);
 
   if (!total) {
     document.getElementById("ovDonut").style.background = "var(--bg)";
     document.getElementById("ovDonutTotal").textContent = "0";
-    document.getElementById("ovDonutLegend").innerHTML = `<div class="bo-empty-state" style="color:var(--gray-text); font-size:13px;">No open issues match these filters.</div>`;
+    document.getElementById("ovDonutLegend").innerHTML = `<div class="bo-empty-state" style="color:var(--gray-text); font-size:13px;">No open issues.</div>`;
     return;
   }
 
   let acc = 0;
-  const stops = categories
+  const stops = slices
     .map((c) => {
       const from = (acc / total) * 360;
       acc += c.count;
@@ -459,11 +445,11 @@ function renderOvDonut(orgId) {
   document.getElementById("ovDonut").style.background = `conic-gradient(${stops})`;
   document.getElementById("ovDonutTotal").textContent = total;
 
-  document.getElementById("ovDonutLegend").innerHTML = categories
+  document.getElementById("ovDonutLegend").innerHTML = slices
     .map((c) => {
       const pct = Math.round((c.count / total) * 100);
       return `
-      <a class="bo-donut-legend-row" href="${ovCategoryDrilldownHref(c.label, orgId)}">
+      <a class="bo-donut-legend-row" href="${ovDrilldownHref(c.dimension, c.value, orgId)}">
         <span class="dot" style="background:${c.color};"></span>
         <span class="name">${c.label}</span>
         <span class="val">${c.count} (${pct}%)</span>
@@ -486,10 +472,6 @@ const ovCategoryTrendData = {
   "System Schedule Engine": [10, 12, 11, 14, 13, 16, 15, 18, 17, 20, 19, 22],
   "Clinic Users (Security)": [0, 1, 0, 2, 1, 3, 2, 4, 3, 5, 4, 6],
 };
-
-document.getElementById("ovCategoryTrendLegend").innerHTML = ovCategories
-  .map((c) => `<span><span class="dot" style="background:${c.color}"></span>${c.label}</span>`)
-  .join("");
 
 /* Range toggle for this chart only (separate from the header's System
    Health Trend range) -- "Last 6 Months"/"Last 1 Year" show the trailing
@@ -524,6 +506,32 @@ function ovCategoryTrendWindow() {
     labels: ovCategoryTrendLabels.slice(-months),
     valuesFor: (label) => (ovCategoryTrendData[label] || ovCategoryTrendLabels.map(() => 0)).slice(-months),
   };
+}
+
+/* Series for the trend chart: by Category (one line per category, as
+   before), or by Severity/Status (every category's monthly count split
+   into that dimension via the same deterministic records the donut uses,
+   then summed per month into one line per severity/status value). */
+function ovTrendSeries(labels, valuesFor) {
+  if (ovTrendGroupBy === "category") {
+    return ovCategories.map((c) => ({ label: c.label, color: c.color, values: valuesFor(c.label) }));
+  }
+  const dimValues = ovTrendGroupBy === "severity" ? SEVERITIES : STATUSES;
+  const colors = ovTrendGroupBy === "severity" ? OV_SEVERITY_COLORS : OV_STATUS_COLORS;
+  const monthlyTotals = labels.map(() => {
+    const totals = {};
+    dimValues.forEach((v) => (totals[v] = 0));
+    return totals;
+  });
+  ovCategories.forEach((c) => {
+    valuesFor(c.label).forEach((count, i) => {
+      ovIncidentRecords(c.label, labels[i], count).forEach((r) => {
+        const key = ovTrendGroupBy === "severity" ? r.severity : r.status;
+        monthlyTotals[i][key]++;
+      });
+    });
+  });
+  return dimValues.map((v) => ({ label: v, color: colors[v], values: monthlyTotals.map((t) => t[v]) }));
 }
 
 /* Catmull-Rom -> cubic Bezier smoothing for a soft curve instead of sharp
@@ -563,9 +571,10 @@ function ovNiceStep(max) {
    reads clean even with 6 series, unlike a stacked bar or filled area would. */
 function renderOvCategoryTrendChart() {
   const { labels, valuesFor } = ovCategoryTrendWindow();
-  const series = ovCategories
-    .filter((c) => ovTrendCategoryFilter === "all" || c.label === ovTrendCategoryFilter)
-    .map((c) => ({ ...c, values: valuesFor(c.label).map((v, i) => ovFilteredTrendMonthCount(c.label, labels[i], v)) }));
+  const series = ovTrendSeries(labels, valuesFor);
+  document.getElementById("ovCategoryTrendLegend").innerHTML = series
+    .map((s) => `<span><span class="dot" style="background:${s.color}"></span>${s.label}</span>`)
+    .join("");
 
   const container = document.getElementById("ovCategoryTrendChart");
   const width = container.clientWidth || 640;
@@ -1009,75 +1018,31 @@ ovOrgSelect.addEventListener("click", (e) => {
 
 renderOvForOrg(ovSelectedOrgId);
 
-/* ---------------- Category/Severity/Status "Filter" dropdown -- shared by
-   the Incidents by Category donut and the Incidents Over Time trend chart,
-   each with its own filter state and re-render, all defaulting to All. */
-function wireOvFilterDropdown({ containerId, triggerId, summaryId, resetId, fields, onChange }) {
-  const container = document.getElementById(containerId);
-  const summary = document.getElementById(summaryId);
-  const selects = fields.map((field) => {
-    const select = document.getElementById(field.selectId);
-    select.innerHTML =
-      `<option value="all">All ${field.label.toLowerCase()}s</option>` +
-      field.options.map((opt) => `<option value="${opt}">${opt}</option>`).join("");
-    select.addEventListener("change", () => {
-      field.setter(select.value);
-      updateSummary();
-      onChange();
-    });
-    return { select, ...field };
-  });
-
-  function updateSummary() {
-    const activeCount = selects.filter((f) => f.select.value !== "all").length;
-    summary.textContent = activeCount ? `Filter (${activeCount})` : "Filter";
-  }
-
-  document.getElementById(triggerId).addEventListener("click", (e) => {
+/* ---------------- "Group by" dropdown -- one field, shared by the
+   Incidents by Category donut and the Incidents Over Time trend chart. Its
+   three values (By Category/By Severity/By Status) switch what each chart
+   is broken down by, By Category selected by default. */
+function wireOvGroupBySelect(selectName, setter, onChange) {
+  const select = document.querySelector(`.bo-select[data-name="${selectName}"]`);
+  select.querySelector(".bo-select-trigger").addEventListener("click", (e) => {
     e.stopPropagation();
-    container.classList.toggle("open");
+    select.classList.toggle("open");
   });
-  document.addEventListener("click", (e) => {
-    if (container.classList.contains("open") && !e.target.closest(`#${containerId}`)) {
-      container.classList.remove("open");
-    }
-  });
-  document.getElementById(resetId).addEventListener("click", () => {
-    selects.forEach((f) => {
-      f.select.value = "all";
-      f.setter("all");
-    });
-    updateSummary();
+  select.addEventListener("click", (e) => {
+    const option = e.target.closest(".bo-select-option");
+    if (!option) return;
+    select.querySelector(".bo-select-value").textContent = option.textContent;
+    select.querySelectorAll(".bo-select-option").forEach((el) => el.classList.remove("selected"));
+    option.classList.add("selected");
+    select.classList.remove("open");
+    setter(option.dataset.value);
     onChange();
-    container.classList.remove("open");
   });
+  document.addEventListener("click", () => select.classList.remove("open"));
 }
 
-wireOvFilterDropdown({
-  containerId: "ovCatFilter",
-  triggerId: "ovCatFilterTrigger",
-  summaryId: "ovCatFilterSummary",
-  resetId: "ovCatFilterReset",
-  fields: [
-    { selectId: "ovCatFilterCategorySelect", label: "Category", options: CATEGORIES, setter: (v) => (ovDonutCategoryFilter = v) },
-    { selectId: "ovCatFilterSeveritySelect", label: "Severity", options: OV_INCIDENT_SEVERITIES, setter: (v) => (ovDonutSeverityFilter = v) },
-    { selectId: "ovCatFilterStatusSelect", label: "Status", options: OV_INCIDENT_STATUSES, setter: (v) => (ovDonutStatusFilter = v) },
-  ],
-  onChange: () => renderOvDonut(ovSelectedOrgId),
-});
-
-wireOvFilterDropdown({
-  containerId: "ovTrendFilter",
-  triggerId: "ovTrendFilterTrigger",
-  summaryId: "ovTrendFilterSummary",
-  resetId: "ovTrendFilterReset",
-  fields: [
-    { selectId: "ovTrendFilterCategorySelect", label: "Category", options: CATEGORIES, setter: (v) => (ovTrendCategoryFilter = v) },
-    { selectId: "ovTrendFilterSeveritySelect", label: "Severity", options: OV_INCIDENT_SEVERITIES, setter: (v) => (ovTrendSeverityFilter = v) },
-    { selectId: "ovTrendFilterStatusSelect", label: "Status", options: OV_INCIDENT_STATUSES, setter: (v) => (ovTrendStatusFilter = v) },
-  ],
-  onChange: () => renderOvCategoryTrendChart(),
-});
+wireOvGroupBySelect("ovDonutGroupBy", (v) => (ovDonutGroupBy = v), () => renderOvDonut(ovSelectedOrgId));
+wireOvGroupBySelect("ovTrendGroupBy", (v) => (ovTrendGroupBy = v), () => renderOvCategoryTrendChart());
 
 /* ---------------- Header: range dropdown + refresh + footer timestamp ---------------- */
 const ovRangeSelect = document.querySelector('.bo-select[data-name="ovRange"]');

@@ -4076,57 +4076,6 @@ a.bo-crit-issue-row:hover { background: var(--bg); }
 .bo-ov-triple { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-top: 16px; }
 .bo-ov-panel-foot { display: block; text-align: center; font-size: 12.5px; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--gray-border); flex-shrink: 0; }
 
-/* Single "Filter" dropdown above the Incidents by Category donut, holding
-   the Category/Severity/Status choices as one popover instead of three
-   separate toolbar selects -- each group defaults to All. */
-.ov-cat-filter { position: relative; }
-
-.ov-cat-filter-trigger {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  padding: 7px 12px;
-  border: 1px solid var(--field-border);
-  border-radius: 8px;
-  background: #fff;
-  font-family: inherit;
-  font-size: 12.5px;
-  font-weight: 600;
-  color: var(--ink);
-  cursor: pointer;
-}
-.ov-cat-filter-trigger:hover { border-color: #C9CFD6; }
-.ov-cat-filter.open .ov-cat-filter-trigger {
-  border-color: var(--blue);
-  box-shadow: 0 0 0 3px rgba(42, 169, 224, 0.15);
-}
-
-.ov-cat-filter-popover {
-  display: none;
-  position: absolute;
-  top: calc(100% + 8px);
-  right: 0;
-  width: 220px;
-  background: #fff;
-  border-radius: 12px;
-  border: 1px solid var(--gray-border);
-  box-shadow: 0 14px 34px rgba(20, 30, 50, 0.18);
-  padding: 16px;
-  z-index: 30;
-}
-.ov-cat-filter.open .ov-cat-filter-popover { display: block; }
-
-.ov-cat-filter-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
-.ov-cat-filter-group label { font-size: 11.5px; font-weight: 700; color: #7E8993; text-transform: uppercase; letter-spacing: 0.4px; }
-.ov-cat-filter-group select {
-  font-family: inherit;
-  font-size: 13px;
-  padding: 7px 10px;
-  border: 1px solid var(--gray-border);
-  border-radius: 8px;
-  color: #23272E;
-  background: #fff;
-}
 
 .bo-donut-row { display: flex; align-items: center; gap: 18px; flex: 1; }
 
