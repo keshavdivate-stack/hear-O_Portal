@@ -4074,6 +4074,9 @@ a.bo-crit-issue-row:hover { background: var(--bg); }
 .bo-ov-triple { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-top: 16px; }
 .bo-ov-panel-foot { display: block; text-align: center; font-size: 12.5px; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--gray-border); flex-shrink: 0; }
 
+.bo-donut-filter-row { display: flex; align-items: center; gap: 10px; margin: 12px 0 16px; }
+.bo-donut-filter-row .bo-select { flex: 1 1 0; min-width: 0; }
+
 .bo-donut-row { display: flex; align-items: center; gap: 18px; flex: 1; }
 
 .bo-donut-wrap { position: relative; width: 130px; height: 130px; flex-shrink: 0; }

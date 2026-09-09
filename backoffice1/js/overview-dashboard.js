@@ -1,6 +1,11 @@
 /* ---------------- Organization scope (All Organizations vs single org) ---------------- */
 let ovSelectedOrgId = "all";
 
+/* ---------------- Incidents by Category: Category/Severity/Status filters ---------------- */
+let ovDonutCategoryFilter = "all";
+let ovDonutSeverityFilter = "all";
+let ovDonutStatusFilter = "all";
+
 /* ---------------- KPI row (System Health Summary) ---------------- */
 /* "Organizations Affected" is derived from orgHealthData (orgs with at least one
    open issue) so it always agrees with the Affected Organizations list below
@@ -346,6 +351,36 @@ const ovCategories = (() => {
     .map(([label, count]) => ({ label, count, color: OV_CATEGORY_COLORS[label] || "var(--gray)" }));
 })();
 
+const OV_INCIDENT_SEVERITIES = ["Critical", "High", "Medium", "Low"];
+const OV_INCIDENT_STATUSES = ["Open", "Investigating", "Monitoring", "Escalated"];
+
+/* Deterministic per-category incident records (severity + status), used only
+   to drive the Category/Severity/Status filters above the donut. Each
+   category's `count` is split into exactly that many synthetic records, so a
+   filtered total always matches the sum of its filtered category counts
+   instead of drifting the way a rounded percentage split would. */
+function ovCategoryIncidentRecords(label, count) {
+  const records = [];
+  for (let i = 0; i < count; i++) {
+    const seed = ovHash(`${label}#${i}`);
+    records.push({
+      severity: OV_INCIDENT_SEVERITIES[seed % OV_INCIDENT_SEVERITIES.length],
+      status: OV_INCIDENT_STATUSES[(seed >>> 3) % OV_INCIDENT_STATUSES.length],
+    });
+  }
+  return records;
+}
+
+function ovFilteredCategoryCount(label, count) {
+  if (ovDonutCategoryFilter !== "all" && label !== ovDonutCategoryFilter) return 0;
+  if (ovDonutSeverityFilter === "all" && ovDonutStatusFilter === "all") return count;
+  return ovCategoryIncidentRecords(label, count).filter(
+    (r) =>
+      (ovDonutSeverityFilter === "all" || r.severity === ovDonutSeverityFilter) &&
+      (ovDonutStatusFilter === "all" || r.status === ovDonutStatusFilter)
+  ).length;
+}
+
 /* Category names here are the same list as CATEGORIES in js/support-data.js,
    so a legend row can drill straight into that category's tickets via
    Support's Category filter instead of going through an issue-type lookup. */
@@ -357,13 +392,16 @@ function ovCategoryDrilldownHref(label, orgId) {
 }
 
 function renderOvDonut(orgId) {
-  const categories = orgId === "all" ? ovCategories : orgHealthData[orgId].categories.filter((c) => c.count > 0);
+  const baseCategories = orgId === "all" ? ovCategories : orgHealthData[orgId].categories.filter((c) => c.count > 0);
+  const categories = baseCategories
+    .filter((c) => ovDonutCategoryFilter === "all" || c.label === ovDonutCategoryFilter)
+    .map((c) => ({ ...c, count: ovFilteredCategoryCount(c.label, c.count) }));
   const total = categories.reduce((s, c) => s + c.count, 0);
 
   if (!total) {
     document.getElementById("ovDonut").style.background = "var(--bg)";
     document.getElementById("ovDonutTotal").textContent = "0";
-    document.getElementById("ovDonutLegend").innerHTML = `<div class="bo-empty-state" style="color:var(--gray-text); font-size:13px;">No open issues.</div>`;
+    document.getElementById("ovDonutLegend").innerHTML = `<div class="bo-empty-state" style="color:var(--gray-text); font-size:13px;">No open issues match these filters.</div>`;
     return;
   }
 
@@ -393,16 +431,18 @@ function renderOvDonut(orgId) {
 }
 
 /* ---------------- Incidents by Category (over time) ----------------
-   Daily incident counts per category for the last 7 days, using the same
-   category list/colors/order as the donut above so the two views agree. */
-const ovCategoryTrendLabels = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+   Monthly incident counts per category for the trailing 12 months, using
+   the same category list/colors/order as the donut above so the two views
+   agree. Month/year x-axis labels (instead of weekdays) so the trend reads
+   as a real over-time chart, not a single-week snapshot. */
+const ovCategoryTrendLabels = ["Oct '25", "Nov '25", "Dec '25", "Jan '26", "Feb '26", "Mar '26", "Apr '26", "May '26", "Jun '26", "Jul '26", "Aug '26", "Sep '26"];
 const ovCategoryTrendData = {
-  "Patient (Mobile/Web)": [4, 3, 5, 4, 6, 5, 7],
-  Compliance: [2, 3, 2, 4, 3, 5, 4],
-  "Voice Engine": [1, 2, 1, 3, 2, 1, 2],
-  Sensors: [1, 1, 2, 1, 1, 2, 1],
-  "System Schedule Engine": [2, 1, 1, 2, 1, 1, 1],
-  "Clinic Users (Security)": [0, 0, 1, 0, 0, 0, 0],
+  "Patient (Mobile/Web)": [42, 38, 55, 60, 58, 72, 68, 80, 76, 92, 88, 104],
+  Compliance: [25, 30, 28, 35, 32, 40, 38, 45, 42, 50, 48, 56],
+  "Voice Engine": [12, 15, 14, 18, 16, 20, 19, 24, 22, 28, 26, 32],
+  Sensors: [8, 10, 9, 12, 11, 14, 13, 16, 15, 18, 17, 20],
+  "System Schedule Engine": [10, 12, 11, 14, 13, 16, 15, 18, 17, 20, 19, 22],
+  "Clinic Users (Security)": [0, 1, 0, 2, 1, 3, 2, 4, 3, 5, 4, 6],
 };
 
 document.getElementById("ovCategoryTrendLegend").innerHTML = ovCategories
@@ -428,6 +468,18 @@ function ovSmoothPath(points) {
   return d;
 }
 
+/* Round a raw max up to a "nice" grid step (1/2/5/10 x a power of ten) that
+   yields roughly 4 gridlines, so the y-axis reads in round numbers whether
+   the data tops out at 10 or 200 instead of a fixed step that's either too
+   fine or too coarse for the current range. */
+function ovNiceStep(max) {
+  const rough = max / 4;
+  const magnitude = Math.pow(10, Math.floor(Math.log10(rough)));
+  const residual = rough / magnitude;
+  const step = residual > 5 ? 10 : residual > 2 ? 5 : residual > 1 ? 2 : 1;
+  return step * magnitude;
+}
+
 /* Smooth multi-line chart with hollow point markers and a single shared
    hover card (one card lists every category's value for the hovered day,
    plus a highlighted vertical band) instead of a plain per-dot tooltip --
@@ -446,7 +498,7 @@ function renderOvCategoryTrendChart() {
   const plotW = width - padL - padR;
   const plotH = height - padT - padB;
   const rawMax = Math.max(...series.map((s) => Math.max(...s.values)));
-  const gridStep = 5;
+  const gridStep = ovNiceStep(rawMax || 1);
   const yMax = Math.max(gridStep, Math.ceil((rawMax || 1) / gridStep) * gridStep);
 
   const slotW = plotW / labels.length;
@@ -877,6 +929,40 @@ ovOrgSelect.addEventListener("click", (e) => {
 });
 
 renderOvForOrg(ovSelectedOrgId);
+
+/* ---------------- Incidents by Category: Category/Severity/Status filters ---------------- */
+const OV_DONUT_FILTERS = [
+  { selectName: "ovCatFilterCategory", menuId: "ovCatFilterCategoryMenu", clearLabel: "Category", options: CATEGORIES, setter: (v) => (ovDonutCategoryFilter = v) },
+  { selectName: "ovCatFilterSeverity", menuId: "ovCatFilterSeverityMenu", clearLabel: "Severity", options: OV_INCIDENT_SEVERITIES, setter: (v) => (ovDonutSeverityFilter = v) },
+  { selectName: "ovCatFilterStatus", menuId: "ovCatFilterStatusMenu", clearLabel: "Status", options: OV_INCIDENT_STATUSES, setter: (v) => (ovDonutStatusFilter = v) },
+];
+const ovDonutFilterSelects = OV_DONUT_FILTERS.map((filter) => {
+  const select = document.querySelector(`.bo-select[data-name="${filter.selectName}"]`);
+  document.getElementById(filter.menuId).innerHTML =
+    `<div class="bo-select-option selected" data-value="all">All ${filter.clearLabel.toLowerCase()}s</div>` +
+    filter.options.map((opt) => `<div class="bo-select-option" data-value="${opt}">${opt}</div>`).join("");
+
+  select.querySelector(".bo-select-trigger").addEventListener("click", (e) => {
+    e.stopPropagation();
+    ovDonutFilterSelects.forEach((s) => { if (s !== select) s.classList.remove("open"); });
+    select.classList.toggle("open");
+  });
+  select.addEventListener("click", (e) => {
+    const option = e.target.closest(".bo-select-option");
+    if (!option) return;
+    const value = option.dataset.value;
+    const valueEl = select.querySelector(".bo-select-value");
+    valueEl.textContent = value === "all" ? filter.clearLabel : option.textContent;
+    valueEl.classList.toggle("placeholder", value === "all");
+    select.querySelectorAll(".bo-select-option").forEach((el) => el.classList.remove("selected"));
+    option.classList.add("selected");
+    select.classList.remove("open");
+    filter.setter(value);
+    renderOvDonut(ovSelectedOrgId);
+  });
+  return select;
+});
+document.addEventListener("click", () => ovDonutFilterSelects.forEach((s) => s.classList.remove("open")));
 
 /* ---------------- Header: range dropdown + refresh + footer timestamp ---------------- */
 const ovRangeSelect = document.querySelector('.bo-select[data-name="ovRange"]');
