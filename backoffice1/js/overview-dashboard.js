@@ -103,7 +103,7 @@ const ovTrendDatasets = {
   },
 };
 
-let ovTrendRangeKey = "24h";
+let ovTrendRangeKey = "7d";
 
 document.getElementById("ovTrendLegend").innerHTML = ovTrendSeriesMeta
   .slice()
