@@ -251,11 +251,11 @@ renderOvTrendFooter();
    three disconnected numbers. Org/patient counts and "started" times are
    read from the real per-org records rather than invented separately. */
 const ovCritIssues = [
-  { title: "Compliance drops", desc: "Active-patient compliance falling below threshold", severity: "Critical", started: "2 hrs ago", orgs: 1, patients: 3, color: "var(--red)", category: "Compliance", incidentId: "INC-2026-0044", icon: `<path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/><path d="M12 2v3"/><path d="M12 19v3"/><path d="M4.2 4.2l2.1 2.1"/><path d="M17.7 17.7l2.1 2.1"/>` },
-  { title: "Voice engine errors", desc: "High error rate in voice processing", severity: "Critical", started: "20 min ago", orgs: 1, patients: 2, color: "var(--red)", category: "Voice Engine", incidentId: "INC-2026-0043", icon: `<path d="M12 2a10 10 0 1 0 10 10"/><path d="M12 6v6l4 2"/>` },
-  { title: "Missing run: Billing Calc", desc: "The Billing Calc job did not run yesterday", severity: "High", started: "3 hrs ago", orgs: 2, patients: 3, color: "var(--orange)", category: "System Schedule Engine", incidentId: "INC-2026-0046", icon: `<rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9H21"/><path d="M8 2v4"/><path d="M16 2v4"/>` },
-  { title: "Sensor data delays", desc: "Sensor data delayed or missing", severity: "Medium", started: "6 hrs ago", orgs: 3, patients: 3, color: "var(--yellow)", category: "Sensors", incidentId: "INC-2026-0041", icon: `<circle cx="12" cy="12" r="9"/><path d="M12 8v4"/><path d="M12 16h.01"/>` },
-  { title: "Patients stuck in Registered", desc: "Patients have been stuck in Registered status longer than expected", severity: "Low", started: "1 day ago", orgs: 1, patients: 1, color: "var(--blue)", category: "Patient (Mobile/Web)", incidentId: "INC-2026-0045", icon: `<circle cx="12" cy="12" r="9"/><path d="M12 7v5l4 2"/>` },
+  { title: "Compliance drops", desc: "Active-patient compliance falling below threshold", severity: "Critical", started: "2 hrs ago", orgs: 1, patients: 3, color: "var(--red)", category: "Compliance", incidentId: "INC-2026-0044" },
+  { title: "Voice engine errors", desc: "High error rate in voice processing", severity: "Critical", started: "20 min ago", orgs: 1, patients: 2, color: "var(--red)", category: "Voice Engine", incidentId: "INC-2026-0043" },
+  { title: "Missing run: Billing Calc", desc: "The Billing Calc job did not run yesterday", severity: "High", started: "3 hrs ago", orgs: 2, patients: 3, color: "var(--orange)", category: "System Schedule Engine", incidentId: "INC-2026-0046" },
+  { title: "Sensor data delays", desc: "Sensor data delayed or missing", severity: "Medium", started: "6 hrs ago", orgs: 3, patients: 3, color: "var(--yellow)", category: "Sensors", incidentId: "INC-2026-0041" },
+  { title: "Patients stuck in Registered", desc: "Patients have been stuck in Registered status longer than expected", severity: "Low", started: "1 day ago", orgs: 1, patients: 1, color: "var(--blue)", category: "Patient (Mobile/Web)", incidentId: "INC-2026-0045" },
 ];
 
 const ovSeverityPillClass = { Critical: "critical", High: "high", Medium: "medium", Low: "low" };
@@ -299,7 +299,7 @@ function renderOvCritIssues(orgId) {
       return `
     <a class="bo-crit-issue-row" href="${href}">
       <span class="bo-crit-issue-icon" style="background:${i.color};">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${i.icon}</svg>
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${OV_CATEGORY_ICONS[i.category] || OV_CATEGORY_ICONS["System Schedule Engine"]}</svg>
       </span>
       <span class="bo-crit-issue-body">
         <span class="bo-crit-issue-title">${ovIncidentTitle(i)}</span>
@@ -330,6 +330,23 @@ const OV_CATEGORY_COLORS = {
   "Patient (Mobile/Web)": "var(--blue)",
   "Clinic Users (Security)": "var(--navy)",
   "System Schedule Engine": "var(--gray)",
+};
+
+/* One icon per category, shared everywhere a category shows an icon (Recent
+   Incidents rows here, and anywhere else that reads from this map) so the
+   same issue type always reads the same glyph instead of an incident-by-
+   incident pick. Chosen for what each category actually is, not its
+   severity: a clipboard-check for compliance tracking, a mic for the voice
+   pipeline, an activity pulse for sensor telemetry, a phone for the
+   patient mobile/web app, a shield for clinic-user security, and a
+   calendar for the scheduling engine. */
+const OV_CATEGORY_ICONS = {
+  Compliance: `<rect x="8" y="2" width="8" height="4" rx="1"/><path d="M9 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-3"/><path d="m9 14 2 2 4-4"/>`,
+  "Voice Engine": `<path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/>`,
+  Sensors: `<path d="M22 12h-4l-3 9L9 3l-3 9H2"/>`,
+  "Patient (Mobile/Web)": `<rect x="6" y="2" width="12" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/>`,
+  "Clinic Users (Security)": `<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-4"/>`,
+  "System Schedule Engine": `<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/>`,
 };
 
 /* Seeded from every category name up front (not just whatever happens to
@@ -930,39 +947,51 @@ ovOrgSelect.addEventListener("click", (e) => {
 
 renderOvForOrg(ovSelectedOrgId);
 
-/* ---------------- Incidents by Category: Category/Severity/Status filters ---------------- */
+/* ---------------- Incidents by Category: single Filter dropdown holding
+   Category/Severity/Status, each defaulting to All ---------------- */
 const OV_DONUT_FILTERS = [
-  { selectName: "ovCatFilterCategory", menuId: "ovCatFilterCategoryMenu", clearLabel: "Category", options: CATEGORIES, setter: (v) => (ovDonutCategoryFilter = v) },
-  { selectName: "ovCatFilterSeverity", menuId: "ovCatFilterSeverityMenu", clearLabel: "Severity", options: OV_INCIDENT_SEVERITIES, setter: (v) => (ovDonutSeverityFilter = v) },
-  { selectName: "ovCatFilterStatus", menuId: "ovCatFilterStatusMenu", clearLabel: "Status", options: OV_INCIDENT_STATUSES, setter: (v) => (ovDonutStatusFilter = v) },
+  { selectId: "ovCatFilterCategorySelect", label: "Category", options: CATEGORIES, setter: (v) => (ovDonutCategoryFilter = v) },
+  { selectId: "ovCatFilterSeveritySelect", label: "Severity", options: OV_INCIDENT_SEVERITIES, setter: (v) => (ovDonutSeverityFilter = v) },
+  { selectId: "ovCatFilterStatusSelect", label: "Status", options: OV_INCIDENT_STATUSES, setter: (v) => (ovDonutStatusFilter = v) },
 ];
-const ovDonutFilterSelects = OV_DONUT_FILTERS.map((filter) => {
-  const select = document.querySelector(`.bo-select[data-name="${filter.selectName}"]`);
-  document.getElementById(filter.menuId).innerHTML =
-    `<div class="bo-select-option selected" data-value="all">All ${filter.clearLabel.toLowerCase()}s</div>` +
-    filter.options.map((opt) => `<div class="bo-select-option" data-value="${opt}">${opt}</div>`).join("");
-
-  select.querySelector(".bo-select-trigger").addEventListener("click", (e) => {
-    e.stopPropagation();
-    ovDonutFilterSelects.forEach((s) => { if (s !== select) s.classList.remove("open"); });
-    select.classList.toggle("open");
-  });
-  select.addEventListener("click", (e) => {
-    const option = e.target.closest(".bo-select-option");
-    if (!option) return;
-    const value = option.dataset.value;
-    const valueEl = select.querySelector(".bo-select-value");
-    valueEl.textContent = value === "all" ? filter.clearLabel : option.textContent;
-    valueEl.classList.toggle("placeholder", value === "all");
-    select.querySelectorAll(".bo-select-option").forEach((el) => el.classList.remove("selected"));
-    option.classList.add("selected");
-    select.classList.remove("open");
-    filter.setter(value);
+const ovCatFilter = document.getElementById("ovCatFilter");
+const ovCatFilterSummary = document.getElementById("ovCatFilterSummary");
+const ovCatFilterSelects = OV_DONUT_FILTERS.map((filter) => {
+  const select = document.getElementById(filter.selectId);
+  select.innerHTML =
+    `<option value="all">All ${filter.label.toLowerCase()}s</option>` +
+    filter.options.map((opt) => `<option value="${opt}">${opt}</option>`).join("");
+  select.addEventListener("change", () => {
+    filter.setter(select.value);
+    updateOvCatFilterSummary();
     renderOvDonut(ovSelectedOrgId);
   });
-  return select;
+  return { select, ...filter };
 });
-document.addEventListener("click", () => ovDonutFilterSelects.forEach((s) => s.classList.remove("open")));
+
+function updateOvCatFilterSummary() {
+  const activeCount = ovCatFilterSelects.filter((f) => f.select.value !== "all").length;
+  ovCatFilterSummary.textContent = activeCount ? `Filter (${activeCount})` : "Filter";
+}
+
+document.getElementById("ovCatFilterTrigger").addEventListener("click", (e) => {
+  e.stopPropagation();
+  ovCatFilter.classList.toggle("open");
+});
+document.addEventListener("click", (e) => {
+  if (ovCatFilter.classList.contains("open") && !e.target.closest("#ovCatFilter")) {
+    ovCatFilter.classList.remove("open");
+  }
+});
+document.getElementById("ovCatFilterReset").addEventListener("click", () => {
+  ovCatFilterSelects.forEach((f) => {
+    f.select.value = "all";
+    f.setter("all");
+  });
+  updateOvCatFilterSummary();
+  renderOvDonut(ovSelectedOrgId);
+  ovCatFilter.classList.remove("open");
+});
 
 /* ---------------- Header: range dropdown + refresh + footer timestamp ---------------- */
 const ovRangeSelect = document.querySelector('.bo-select[data-name="ovRange"]');
