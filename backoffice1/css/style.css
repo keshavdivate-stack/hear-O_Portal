@@ -1957,6 +1957,8 @@ a.bo-btn-secondary { text-decoration: none; }
 
 .bo-select-option.selected .option-check { display: block; }
 
+.bo-select-divider { height: 1px; background: var(--gray-border); margin: 6px 4px; }
+
 /* ---------------- Multi-select checkbox filter (Clinical site / Event type / Approved etc.) ---------------- */
 .bo-multiselect { position: relative; min-width: 160px; }
 

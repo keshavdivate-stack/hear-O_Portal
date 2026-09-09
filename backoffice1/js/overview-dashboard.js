@@ -6,6 +6,11 @@ let ovDonutCategoryFilter = "all";
 let ovDonutSeverityFilter = "all";
 let ovDonutStatusFilter = "all";
 
+/* ---------------- Incidents Over Time: Category/Severity/Status filters ---------------- */
+let ovTrendCategoryFilter = "all";
+let ovTrendSeverityFilter = "all";
+let ovTrendStatusFilter = "all";
+
 /* ---------------- KPI row (System Health Summary) ---------------- */
 /* "Organizations Affected" is derived from orgHealthData (orgs with at least one
    open issue) so it always agrees with the Affected Organizations list below
@@ -398,6 +403,26 @@ function ovFilteredCategoryCount(label, count) {
   ).length;
 }
 
+/* Same deterministic-record approach as the donut filter above, but seeded
+   per month too (so each point on the trend line gets its own split rather
+   than reusing the donut's single snapshot). */
+function ovFilteredTrendMonthCount(label, monthLabel, count) {
+  if (ovTrendSeverityFilter === "all" && ovTrendStatusFilter === "all") return count;
+  const records = [];
+  for (let i = 0; i < count; i++) {
+    const seed = ovHash(`${label}#${monthLabel}#${i}`);
+    records.push({
+      severity: OV_INCIDENT_SEVERITIES[seed % OV_INCIDENT_SEVERITIES.length],
+      status: OV_INCIDENT_STATUSES[(seed >>> 3) % OV_INCIDENT_STATUSES.length],
+    });
+  }
+  return records.filter(
+    (r) =>
+      (ovTrendSeverityFilter === "all" || r.severity === ovTrendSeverityFilter) &&
+      (ovTrendStatusFilter === "all" || r.status === ovTrendStatusFilter)
+  ).length;
+}
+
 /* Category names here are the same list as CATEGORIES in js/support-data.js,
    so a legend row can drill straight into that category's tickets via
    Support's Category filter instead of going through an issue-type lookup. */
@@ -467,15 +492,38 @@ document.getElementById("ovCategoryTrendLegend").innerHTML = ovCategories
   .join("");
 
 /* Range toggle for this chart only (separate from the header's System
-   Health Trend range) -- "Last 6 Months" just shows the trailing half of
-   the same 12-month dataset instead of fetching a separately maintained
-   series. */
+   Health Trend range) -- "Last 6 Months"/"Last 1 Year" show the trailing
+   window of the same 12-month dataset; a specific calendar year (e.g.
+   "2021") instead generates a deterministic Jan-Dec series per category so
+   older years stay browsable without hand-authoring a dataset for each one. */
 let ovCategoryTrendRangeKey = "1y";
 const OV_CATEGORY_TREND_RANGE_MONTHS = { "6mo": 6, "1y": 12 };
+const OV_CATEGORY_TREND_MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+function ovCategoryYearSeries(label, year) {
+  const baseMax = Math.max(10, ...(ovCategoryTrendData[label] || [10]));
+  return OV_CATEGORY_TREND_MONTH_NAMES.map((_, m) => {
+    const seed = ovHash(`${label}#${year}#${m}`);
+    const pct = 0.15 + (seed % 71) / 100; // 0.15-0.85 of this category's current peak
+    return Math.round(baseMax * pct);
+  });
+}
 
 function ovCategoryTrendWindow() {
+  const isYear = /^\d{4}$/.test(ovCategoryTrendRangeKey);
+  if (isYear) {
+    const year = ovCategoryTrendRangeKey;
+    const yy = year.slice(2);
+    return {
+      labels: OV_CATEGORY_TREND_MONTH_NAMES.map((m) => `${m} '${yy}`),
+      valuesFor: (label) => ovCategoryYearSeries(label, year),
+    };
+  }
   const months = OV_CATEGORY_TREND_RANGE_MONTHS[ovCategoryTrendRangeKey] || 12;
-  return { labels: ovCategoryTrendLabels.slice(-months), monthCount: months };
+  return {
+    labels: ovCategoryTrendLabels.slice(-months),
+    valuesFor: (label) => (ovCategoryTrendData[label] || ovCategoryTrendLabels.map(() => 0)).slice(-months),
+  };
 }
 
 /* Catmull-Rom -> cubic Bezier smoothing for a soft curve instead of sharp
@@ -514,8 +562,10 @@ function ovNiceStep(max) {
    plus a highlighted vertical band) instead of a plain per-dot tooltip --
    reads clean even with 6 series, unlike a stacked bar or filled area would. */
 function renderOvCategoryTrendChart() {
-  const { labels, monthCount } = ovCategoryTrendWindow();
-  const series = ovCategories.map((c) => ({ ...c, values: (ovCategoryTrendData[c.label] || ovCategoryTrendLabels.map(() => 0)).slice(-monthCount) }));
+  const { labels, valuesFor } = ovCategoryTrendWindow();
+  const series = ovCategories
+    .filter((c) => ovTrendCategoryFilter === "all" || c.label === ovTrendCategoryFilter)
+    .map((c) => ({ ...c, values: valuesFor(c.label).map((v, i) => ovFilteredTrendMonthCount(c.label, labels[i], v)) }));
 
   const container = document.getElementById("ovCategoryTrendChart");
   const width = container.clientWidth || 640;
@@ -959,50 +1009,74 @@ ovOrgSelect.addEventListener("click", (e) => {
 
 renderOvForOrg(ovSelectedOrgId);
 
-/* ---------------- Incidents by Category: single Filter dropdown holding
-   Category/Severity/Status, each defaulting to All ---------------- */
-const OV_DONUT_FILTERS = [
-  { selectId: "ovCatFilterCategorySelect", label: "Category", options: CATEGORIES, setter: (v) => (ovDonutCategoryFilter = v) },
-  { selectId: "ovCatFilterSeveritySelect", label: "Severity", options: OV_INCIDENT_SEVERITIES, setter: (v) => (ovDonutSeverityFilter = v) },
-  { selectId: "ovCatFilterStatusSelect", label: "Status", options: OV_INCIDENT_STATUSES, setter: (v) => (ovDonutStatusFilter = v) },
-];
-const ovCatFilter = document.getElementById("ovCatFilter");
-const ovCatFilterSummary = document.getElementById("ovCatFilterSummary");
-const ovCatFilterSelects = OV_DONUT_FILTERS.map((filter) => {
-  const select = document.getElementById(filter.selectId);
-  select.innerHTML =
-    `<option value="all">All ${filter.label.toLowerCase()}s</option>` +
-    filter.options.map((opt) => `<option value="${opt}">${opt}</option>`).join("");
-  select.addEventListener("change", () => {
-    filter.setter(select.value);
-    updateOvCatFilterSummary();
-    renderOvDonut(ovSelectedOrgId);
+/* ---------------- Category/Severity/Status "Filter" dropdown -- shared by
+   the Incidents by Category donut and the Incidents Over Time trend chart,
+   each with its own filter state and re-render, all defaulting to All. */
+function wireOvFilterDropdown({ containerId, triggerId, summaryId, resetId, fields, onChange }) {
+  const container = document.getElementById(containerId);
+  const summary = document.getElementById(summaryId);
+  const selects = fields.map((field) => {
+    const select = document.getElementById(field.selectId);
+    select.innerHTML =
+      `<option value="all">All ${field.label.toLowerCase()}s</option>` +
+      field.options.map((opt) => `<option value="${opt}">${opt}</option>`).join("");
+    select.addEventListener("change", () => {
+      field.setter(select.value);
+      updateSummary();
+      onChange();
+    });
+    return { select, ...field };
   });
-  return { select, ...filter };
-});
 
-function updateOvCatFilterSummary() {
-  const activeCount = ovCatFilterSelects.filter((f) => f.select.value !== "all").length;
-  ovCatFilterSummary.textContent = activeCount ? `Filter (${activeCount})` : "Filter";
+  function updateSummary() {
+    const activeCount = selects.filter((f) => f.select.value !== "all").length;
+    summary.textContent = activeCount ? `Filter (${activeCount})` : "Filter";
+  }
+
+  document.getElementById(triggerId).addEventListener("click", (e) => {
+    e.stopPropagation();
+    container.classList.toggle("open");
+  });
+  document.addEventListener("click", (e) => {
+    if (container.classList.contains("open") && !e.target.closest(`#${containerId}`)) {
+      container.classList.remove("open");
+    }
+  });
+  document.getElementById(resetId).addEventListener("click", () => {
+    selects.forEach((f) => {
+      f.select.value = "all";
+      f.setter("all");
+    });
+    updateSummary();
+    onChange();
+    container.classList.remove("open");
+  });
 }
 
-document.getElementById("ovCatFilterTrigger").addEventListener("click", (e) => {
-  e.stopPropagation();
-  ovCatFilter.classList.toggle("open");
+wireOvFilterDropdown({
+  containerId: "ovCatFilter",
+  triggerId: "ovCatFilterTrigger",
+  summaryId: "ovCatFilterSummary",
+  resetId: "ovCatFilterReset",
+  fields: [
+    { selectId: "ovCatFilterCategorySelect", label: "Category", options: CATEGORIES, setter: (v) => (ovDonutCategoryFilter = v) },
+    { selectId: "ovCatFilterSeveritySelect", label: "Severity", options: OV_INCIDENT_SEVERITIES, setter: (v) => (ovDonutSeverityFilter = v) },
+    { selectId: "ovCatFilterStatusSelect", label: "Status", options: OV_INCIDENT_STATUSES, setter: (v) => (ovDonutStatusFilter = v) },
+  ],
+  onChange: () => renderOvDonut(ovSelectedOrgId),
 });
-document.addEventListener("click", (e) => {
-  if (ovCatFilter.classList.contains("open") && !e.target.closest("#ovCatFilter")) {
-    ovCatFilter.classList.remove("open");
-  }
-});
-document.getElementById("ovCatFilterReset").addEventListener("click", () => {
-  ovCatFilterSelects.forEach((f) => {
-    f.select.value = "all";
-    f.setter("all");
-  });
-  updateOvCatFilterSummary();
-  renderOvDonut(ovSelectedOrgId);
-  ovCatFilter.classList.remove("open");
+
+wireOvFilterDropdown({
+  containerId: "ovTrendFilter",
+  triggerId: "ovTrendFilterTrigger",
+  summaryId: "ovTrendFilterSummary",
+  resetId: "ovTrendFilterReset",
+  fields: [
+    { selectId: "ovTrendFilterCategorySelect", label: "Category", options: CATEGORIES, setter: (v) => (ovTrendCategoryFilter = v) },
+    { selectId: "ovTrendFilterSeveritySelect", label: "Severity", options: OV_INCIDENT_SEVERITIES, setter: (v) => (ovTrendSeverityFilter = v) },
+    { selectId: "ovTrendFilterStatusSelect", label: "Status", options: OV_INCIDENT_STATUSES, setter: (v) => (ovTrendStatusFilter = v) },
+  ],
+  onChange: () => renderOvCategoryTrendChart(),
 });
 
 /* ---------------- Header: range dropdown + refresh + footer timestamp ---------------- */
@@ -1025,6 +1099,18 @@ ovRangeSelect.addEventListener("click", (e) => {
 });
 /* ---------------- Incidents by Category Over Time: range dropdown ---------------- */
 const ovCategoryTrendRangeSelect = document.querySelector('.bo-select[data-name="ovCategoryTrendRange"]');
+/* Trailing 6mo/1y options stay above a divider, followed by a plain list of
+   calendar years (current year back a handful of years) so an older year
+   is one click away instead of only ever showing the trailing window. */
+const ovCurrentYear = new Date("2026-09-09").getFullYear();
+const ovTrendRangeMenu = ovCategoryTrendRangeSelect.querySelector(".bo-select-menu");
+ovTrendRangeMenu.insertAdjacentHTML(
+  "beforeend",
+  `<div class="bo-select-divider"></div>` +
+    Array.from({ length: 6 }, (_, i) => ovCurrentYear - i)
+      .map((year) => `<div class="bo-select-option" data-value="${year}">${year}</div>`)
+      .join("")
+);
 ovCategoryTrendRangeSelect.querySelector(".bo-select-trigger").addEventListener("click", (e) => {
   e.stopPropagation();
   ovCategoryTrendRangeSelect.classList.toggle("open");
