@@ -466,6 +466,18 @@ document.getElementById("ovCategoryTrendLegend").innerHTML = ovCategories
   .map((c) => `<span><span class="dot" style="background:${c.color}"></span>${c.label}</span>`)
   .join("");
 
+/* Range toggle for this chart only (separate from the header's System
+   Health Trend range) -- "Last 6 Months" just shows the trailing half of
+   the same 12-month dataset instead of fetching a separately maintained
+   series. */
+let ovCategoryTrendRangeKey = "1y";
+const OV_CATEGORY_TREND_RANGE_MONTHS = { "6mo": 6, "1y": 12 };
+
+function ovCategoryTrendWindow() {
+  const months = OV_CATEGORY_TREND_RANGE_MONTHS[ovCategoryTrendRangeKey] || 12;
+  return { labels: ovCategoryTrendLabels.slice(-months), monthCount: months };
+}
+
 /* Catmull-Rom -> cubic Bezier smoothing for a soft curve instead of sharp
    straight-line segments. */
 function ovSmoothPath(points) {
@@ -502,8 +514,8 @@ function ovNiceStep(max) {
    plus a highlighted vertical band) instead of a plain per-dot tooltip --
    reads clean even with 6 series, unlike a stacked bar or filled area would. */
 function renderOvCategoryTrendChart() {
-  const labels = ovCategoryTrendLabels;
-  const series = ovCategories.map((c) => ({ ...c, values: ovCategoryTrendData[c.label] || labels.map(() => 0) }));
+  const { labels, monthCount } = ovCategoryTrendWindow();
+  const series = ovCategories.map((c) => ({ ...c, values: (ovCategoryTrendData[c.label] || ovCategoryTrendLabels.map(() => 0)).slice(-monthCount) }));
 
   const container = document.getElementById("ovCategoryTrendChart");
   const width = container.clientWidth || 640;
@@ -1011,9 +1023,27 @@ ovRangeSelect.addEventListener("click", (e) => {
     renderOvTrendFooter();
   }
 });
+/* ---------------- Incidents by Category Over Time: range dropdown ---------------- */
+const ovCategoryTrendRangeSelect = document.querySelector('.bo-select[data-name="ovCategoryTrendRange"]');
+ovCategoryTrendRangeSelect.querySelector(".bo-select-trigger").addEventListener("click", (e) => {
+  e.stopPropagation();
+  ovCategoryTrendRangeSelect.classList.toggle("open");
+});
+ovCategoryTrendRangeSelect.addEventListener("click", (e) => {
+  const option = e.target.closest(".bo-select-option");
+  if (!option) return;
+  ovCategoryTrendRangeSelect.querySelector(".bo-select-value").textContent = option.textContent;
+  ovCategoryTrendRangeSelect.querySelectorAll(".bo-select-option").forEach((el) => el.classList.remove("selected"));
+  option.classList.add("selected");
+  ovCategoryTrendRangeSelect.classList.remove("open");
+  ovCategoryTrendRangeKey = option.dataset.value;
+  renderOvCategoryTrendChart();
+});
+
 document.addEventListener("click", () => {
   ovRangeSelect.classList.remove("open");
   ovOrgSelect.classList.remove("open");
+  ovCategoryTrendRangeSelect.classList.remove("open");
 });
 
 document.getElementById("ovRefreshBtn").addEventListener("click", () => {
