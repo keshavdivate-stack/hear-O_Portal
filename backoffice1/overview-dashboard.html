@@ -257,29 +257,31 @@
       <section class="bo-card bo-panel bo-panel--static" style="flex:1 1 0; display:block;">
         <div class="bo-panel-head">
           <h3 class="bo-panel-title" style="margin:0;">Incidents Over Time</h3>
-          <div class="bo-legend-row" id="ovCategoryTrendLegend" style="margin:0;"></div>
-          <div class="bo-select" data-name="ovTrendGroupBy" style="width:150px; flex-shrink:0;">
-            <button type="button" class="bo-select-trigger">
-              <span class="bo-select-value">By Category</span>
-              <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-            </button>
-            <div class="bo-select-menu">
-              <div class="bo-select-option selected" data-value="category">By Category</div>
-              <div class="bo-select-option" data-value="severity">By Severity</div>
-              <div class="bo-select-option" data-value="status">By Status</div>
+          <div style="display:flex; align-items:center; gap:10px;">
+            <div class="bo-select" data-name="ovTrendGroupBy" style="width:150px; flex-shrink:0;">
+              <button type="button" class="bo-select-trigger">
+                <span class="bo-select-value">By Category</span>
+                <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="bo-select-menu">
+                <div class="bo-select-option selected" data-value="category">By Category</div>
+                <div class="bo-select-option" data-value="severity">By Severity</div>
+                <div class="bo-select-option" data-value="status">By Status</div>
+              </div>
             </div>
-          </div>
-          <div class="bo-select" data-name="ovCategoryTrendRange" style="width:150px; flex-shrink:0;">
-            <button type="button" class="bo-select-trigger">
-              <span class="bo-select-value">Last 1 Year</span>
-              <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-            </button>
-            <div class="bo-select-menu">
-              <div class="bo-select-option" data-value="6mo">Last 6 Months</div>
-              <div class="bo-select-option selected" data-value="1y">Last 1 Year</div>
+            <div class="bo-select" data-name="ovCategoryTrendRange" style="width:150px; flex-shrink:0;">
+              <button type="button" class="bo-select-trigger">
+                <span class="bo-select-value">Last 1 Year</span>
+                <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="bo-select-menu">
+                <div class="bo-select-option" data-value="6mo">Last 6 Months</div>
+                <div class="bo-select-option selected" data-value="1y">Last 1 Year</div>
+              </div>
             </div>
           </div>
         </div>
+        <div class="bo-legend-row" id="ovCategoryTrendLegend" style="margin-bottom:12px;"></div>
         <div id="ovCategoryTrendChart" class="bo-chart-area" style="height:220px;"></div>
       </section>
     </div>
