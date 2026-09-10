@@ -473,4 +473,15 @@ peMessageForm.addEventListener("submit", (e) => {
 document.getElementById("peAddMessageBtn").addEventListener("click", openMessageDrawer);
 document.getElementById("peCancelMessageDrawer").addEventListener("click", closeMessageDrawer);
 document.getElementById("peCloseMessageDrawerX").addEventListener("click", closeMessageDrawer);
+
+/* ---------------- Commercial / Non Commercial toggle ----------------
+   On = Commercial, off = Non Commercial -- the label swaps with the
+   switch instead of staying fixed on one word regardless of state. */
+const peHmoToggle = document.getElementById("peHmoToggle");
+const peHmoToggleLabel = document.getElementById("peHmoToggleLabel");
+function syncHmoToggleLabel() {
+  peHmoToggleLabel.textContent = peHmoToggle.checked ? "Commercial" : "Non Commercial";
+}
+peHmoToggle.addEventListener("change", syncHmoToggleLabel);
+syncHmoToggleLabel();
 peMessageDrawerOverlay.addEventListener("click", (e) => { if (e.target === peMessageDrawerOverlay) closeMessageDrawer(); });
