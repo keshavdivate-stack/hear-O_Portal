@@ -28,6 +28,11 @@ const mktStudyHeadBase = { sites: 5, needAttention: 11 };
 let screenedSeries = screenedSeriesBase;
 let mktBinData = mktBinDataBase;
 let activeMktBinsTab = "quality";
+let activeMktOrgIds = ["all"];
+
+/* Order matches mktBinData[tab]'s array -- used to build the Usable
+   Compliance drill-down link for whichever bar was clicked. */
+const MKT_BIN_KEYS = ["90-100", "80-89", "70-79", "60-69"];
 
 /* ---------------- Ring gauge (Recorded / Did not upload / Left study) ----------------
    Each selected organization gets its own hero card + ring, built from its own
@@ -152,16 +157,24 @@ window.addEventListener("resize", renderScreenedChart);
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(renderScreenedChart);
 
 /* ---------------- Compliance bins ---------------- */
+function mktUsableComplianceHref(tab, bucketKey) {
+  const params = new URLSearchParams();
+  params.set("metric", tab);
+  params.set("bucket", bucketKey);
+  params.set("org", activeMktOrgIds.join(","));
+  return `usable-compliance.html?${params.toString()}`;
+}
+
 function renderMktBins(tab) {
   activeMktBinsTab = tab;
   document.getElementById("mktBinsList").innerHTML = mktBinData[tab]
     .map(
       (b, i) => `
-      <div class="mkt-bin-row">
+      <a class="mkt-bin-row" href="${mktUsableComplianceHref(tab, MKT_BIN_KEYS[i])}">
         <span class="mkt-bin-val">${b.val}</span>
         <div class="bo-bin-bar-track mkt-bin-track"><div class="bo-bin-bar-fill" style="width:${b.val}%; background:${i === 3 ? "var(--red)" : "var(--gray-border)"};"></div></div>
         <span class="mkt-bin-label">${b.label}</span>
-      </div>`
+      </a>`
     )
     .join("");
 }
@@ -176,6 +189,7 @@ document.getElementById("mktBinsTabs").addEventListener("click", (e) => {
 
 /* ---------------- Wire everything to the organization selector ---------------- */
 function renderForOrg(orgIds) {
+  activeMktOrgIds = orgIds;
   const isAll = orgIds.length === 1 && orgIds[0] === "all";
   const seed = isAll ? 0 : mktHash(orgIds.slice().sort().join(","));
 

@@ -3111,11 +3111,43 @@ a.bo-btn-secondary { text-decoration: none; }
   margin-top: 6px;
 }
 
+.uc-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--gray-text);
+  text-decoration: none;
+  margin-bottom: 6px;
+}
+.uc-back-link:hover { color: var(--navy); }
+
+.uc-tabs-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.uc-total { font-size: 14px; font-weight: 700; color: var(--ink); white-space: nowrap; }
+
 .mkt-bin-row {
   display: grid;
   grid-template-columns: 16px 1fr auto;
   align-items: center;
   gap: 10px;
+  text-decoration: none;
+  color: inherit;
+  border-radius: 6px;
+  padding: 2px 4px;
+  margin: -2px -4px;
+}
+
+.mkt-bin-row:hover {
+  background: var(--bg);
 }
 
 .mkt-bin-val { font-size: 12.5px; font-weight: 700; color: var(--ink); }
