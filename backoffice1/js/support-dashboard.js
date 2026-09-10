@@ -217,8 +217,6 @@ function renderHbarList(containerId, entries) {
 function renderDashboard() {
   const mine = myTickets();
 
-  document.getElementById("supDashMyTicketsBtn").href = myTicketsHref({});
-
   renderKpis(mine);
   renderQueue(mine);
   renderResolved(mine);
