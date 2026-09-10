@@ -1757,46 +1757,86 @@ input[type="password"]:focus {
 
 .med-update-banner-chevron { flex-shrink: 0; color: #b3781a; }
 
-/* ---- Dose list, grouped by time ---- */
-.med-time-group { margin-bottom: 22px; }
+/* ---- Dose list, grouped by time-of-day period (Morning/Afternoon/Night) ---- */
+.med-time-group {
+  margin-bottom: 22px;
+  border-radius: 18px;
+  padding: 14px;
+  border: 1.5px solid transparent;
+}
 
-/* Sticks to the top of the scroll area while its own dose rows scroll past,
-   so the time context never gets lost — the reader always knows which time
-   slot the visible medications belong to, without scrolling back up. */
+/* The period that's happening right now gets a tinted card so a glance at
+   the screen shows what's due without reading every header — the other
+   periods stay plain so they don't compete for attention. */
+.med-time-group.med-time-group-now-day { background: #fff8ea; border-color: #f3cf8e; }
+.med-time-group.med-time-group-now-night { background: #f3effc; border-color: #d9c8f2; }
+
 .med-time-head {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  position: sticky;
-  top: 0;
-  z-index: 5;
-  background: #f2f4f7;
-  padding: 10px 4px;
-  margin-bottom: 8px;
+  gap: 12px;
+  padding: 4px 4px 12px;
 }
 
-.med-time-label {
-  display: inline-flex;
+.med-time-icon {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
   align-items: center;
-  gap: 7px;
+  justify-content: center;
+  background: #fdf1cf;
+  color: #b3781a;
+}
+
+.med-time-icon.med-time-icon-night { background: #e6dbfa; color: #6a40d4; }
+
+.med-time-head-text { flex: 1; min-width: 0; }
+
+.med-time-label {
   font-size: calc(19px * var(--font-scale, 1));
   font-weight: 700;
   color: #1c1c1c;
 }
 
-.med-time-label svg { flex-shrink: 0; color: #9aa0a8; }
+.med-time-sub {
+  display: block;
+  font-size: calc(14px * var(--font-scale, 1));
+  color: #7a7f87;
+  margin-top: 1px;
+}
+
+.med-time-count {
+  flex-shrink: 0;
+  font-size: calc(13px * var(--font-scale, 1));
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 30px;
+  background: #e9f1ff;
+  color: #2f6fed;
+  white-space: nowrap;
+}
+
+.med-time-count.med-time-count-done { background: #dff5ea; color: #1c7a52; }
 
 .med-mark-all-btn {
-  border: none;
-  background: none;
+  display: block;
+  width: 100%;
+  margin-top: 12px;
+  padding: 13px 18px;
+  min-height: 46px;
+  border: 1.5px solid #2f6fed;
+  border-radius: 30px;
+  background: #fff;
   color: #2f6fed;
   font-size: calc(15px * var(--font-scale, 1));
   font-weight: 700;
   font-family: inherit;
   cursor: pointer;
-  padding: 6px 4px;
 }
+
+.med-mark-all-btn:active { background: #e9f1ff; }
 
 .med-time-card {
   background: #fff;
