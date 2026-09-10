@@ -136,11 +136,10 @@ orgRowMenu.addEventListener("click", (e) => {
   if (!item) return;
   orgRowMenu.classList.remove("open");
   if (item.dataset.action === "ehr") openEhrConnDrawer(activeOrgRowId);
-  if (item.dataset.action === "view") window.location.href = `org-profile.html?id=${activeOrgRowId}`;
-  if (item.dataset.action === "delete") {
+  if (item.dataset.action === "archive") {
     const org = orgs.find((o) => o.id === activeOrgRowId);
     if (!org) return;
-    if (!confirm(`Delete organization "${org.name}"? This cannot be undone.`)) return;
+    if (!confirm(`Archive organization "${org.name}"? It will be removed from active lists.`)) return;
     orgs.splice(orgs.indexOf(org), 1);
     renderOrgs();
   }
