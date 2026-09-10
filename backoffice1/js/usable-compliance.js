@@ -86,15 +86,6 @@ const ucPool = Array.from({ length: ucTotal }, (_, i) => {
 });
 
 /* ---------------- Render ---------------- */
-function ucFormatRange() {
-  const end = new Date();
-  const start = new Date(end);
-  start.setDate(start.getDate() - 30);
-  const fmt = (d) => d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
-  return `Last 31 Days: ${fmt(start)} - ${fmt(end)}`;
-}
-
-document.getElementById("ucRangeLabel").textContent = ucFormatRange();
 document.getElementById("ucTotalLabel").textContent = `Total: ${ucTotal} patients`;
 
 function renderUcTable() {
