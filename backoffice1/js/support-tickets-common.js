@@ -6,7 +6,7 @@
 
 const statusPillClass = { "Open": "bo-pill-status-open", "In Progress": "bo-pill-status-inprogress", "Escalated": "bo-pill-status-escalated", "Resolved": "bo-pill-status-resolved" };
 const severityPillClass = { "Low": "bo-pill-severity-low", "Medium": "bo-pill-severity-medium", "High": "bo-pill-severity-high", "Critical": "bo-pill-severity-critical" };
-const originPillClass = { "System Generated": "bo-pill-origin-system", "User Created": "bo-pill-origin-user" };
+const originPillClass = { "System Generated": "bo-pill-origin-system", "User Created": "bo-pill-origin-user", "Backoffice Created": "bo-pill-origin-backoffice" };
 const typePillClass = { "Patient": "bo-pill-type-patient", "Clinic": "bo-pill-type-clinic" };
 
 const statusPill = (s) => `<span class="bo-pill ${statusPillClass[s] || ""}">${s}</span>`;

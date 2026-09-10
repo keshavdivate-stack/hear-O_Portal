@@ -112,7 +112,7 @@ const ISSUE_TYPE_SCOPE = {
 const TIERS = ["Level 1", "Level 2", "Level 3"];
 const SEVERITIES = ["Low", "Medium", "High", "Critical"];
 const STATUSES = ["Open", "In Progress", "Escalated", "Resolved"];
-const ORIGINS = ["System Generated", "User Created"];
+const ORIGINS = ["System Generated", "User Created", "Backoffice Created"];
 const TICKET_TYPES = ["Patient", "Clinic"];
 
 /* ---------------- Support agents (ticket owners) ---------------- */
@@ -219,7 +219,7 @@ function topUpTickets(array, kind, status, count, ticketSeqStart) {
       scope: ISSUE_TYPE_SCOPE[issueType],
       tier: TIERS[n % TIERS.length],
       severity: severities[n % severities.length],
-      origin: n % 3 === 0 ? "System Generated" : "User Created",
+      origin: n % 5 === 0 ? "System Generated" : n % 5 === 1 ? "Backoffice Created" : "User Created",
       status,
       assignedTo: SUPPORT_AGENTS[n % SUPPORT_AGENTS.length],
       createdDate: `${String(1 + (n % 27)).padStart(2, "0")}/${String(1 + (n % 12)).padStart(2, "0")}/2026 ${String(8 + (n % 11)).padStart(2, "0")}:${String((n * 7) % 60).padStart(2, "0")}`,

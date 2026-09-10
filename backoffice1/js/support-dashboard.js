@@ -1,7 +1,19 @@
 /* ---------------- Color lookups ---------------- */
 const severityColor = { Critical: "var(--red)", High: "var(--orange)", Medium: "var(--yellow)", Low: "var(--blue)" };
 const statusColor = { Open: "var(--blue)", "In Progress": "var(--orange)", Escalated: "var(--red)", Resolved: "var(--green)" };
-const typeColor = { Patient: "var(--cyan)", Clinic: "var(--purple)" };
+const typeColor = { Patient: "var(--cyan)", Clinic: "var(--purple)", "System Generated": "var(--navy)", Backoffice: "var(--orange)" };
+
+/* "Tickets by Type" on this dashboard is a different cut than the Patient/Clinic
+   Type filter on the main Support ticket list: a ticket raised automatically or
+   opened directly by a backoffice agent is bucketed under that instead of
+   Patient/Clinic, even though it's still "about" a patient or a clinic --
+   who/what actually opened it is what this chart is answering. */
+const SUP_DASH_TYPES = ["Patient", "Clinic", "System Generated", "Backoffice"];
+function dashTicketType(t) {
+  if (t.origin === "System Generated") return "System Generated";
+  if (t.origin === "Backoffice Created") return "Backoffice";
+  return t.source === "patient" ? "Patient" : "Clinic";
+}
 
 /* ---------------- Combine patient + clinic tickets ----------------
    source/who match the lowercase convention support.js and ticket-detail.html
@@ -255,13 +267,19 @@ function renderDashboard() {
     })).sort((a, b) => b.count - a.count)
   );
 
+  const dashTypeHrefParams = {
+    Patient: { type: "Patient" },
+    Clinic: { type: "Clinic" },
+    "System Generated": { origin: "System Generated" },
+    Backoffice: { origin: "Backoffice Created" },
+  };
   renderHbarList(
     "supDashTypeBars",
-    TICKET_TYPES.map((type) => ({
+    SUP_DASH_TYPES.map((type) => ({
       label: type,
-      count: mine.filter((t) => (type === "Patient" ? t.source === "patient" : t.source === "clinic")).length,
+      count: mine.filter((t) => dashTicketType(t) === type).length,
       color: typeColor[type],
-      href: myTicketsHref({ type }),
+      href: myTicketsHref(dashTypeHrefParams[type]),
     }))
   );
 }

@@ -4310,6 +4310,7 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
 
 .bo-pill-origin-system { background: var(--navy-light); color: var(--navy); }
 .bo-pill-origin-user { background: var(--blue-light); color: var(--blue-text); }
+.bo-pill-origin-backoffice { background: var(--purple-light); color: var(--purple-text); }
 
 /* Category/tag columns -- simple gray-bordered badge, deliberately the
    quietest style so it never competes with Status or Severity. */
