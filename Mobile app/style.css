@@ -1882,6 +1882,13 @@ input[type="password"]:focus {
 
 .med-dose-item-action { flex-shrink: 0; }
 
+/* Small trailing arrow -- the only hint that tapping a dose row (outside its
+   Take button) opens that medication's history. Kept deliberately quiet
+   (thin, pale) so it reads as "more info this way" without competing with
+   the Take/Taken control, which is the row's primary action. */
+.med-dose-item-chevron { flex-shrink: 0; color: #c7ccd3; margin-left: -2px; }
+.med-dose-item-locked .med-dose-item-chevron { display: none; }
+
 .med-take-btn {
   padding: 12px 22px;
   min-width: 84px;
