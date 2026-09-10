@@ -11,6 +11,9 @@ const orgs = [
   { name: "ASF", tag: "CURRENT", study: "CHF", isHmo: true, target: 10, dateCreated: "11/03/2021", onDashboard: false, careRec: false, authType: "Patient Self Report", phone: "", latLng: "31.95977 / 34.775", docPath: "", updateSent: "01/01/0001", lng: "AR", ehr: [] },
   { name: "ATP", tag: "CURRENT", study: "CHF", isHmo: false, target: 0, dateCreated: "14/08/2019", onDashboard: true, careRec: true, authType: "Patient Self Report", phone: "0542199636", latLng: "0 / 0", docPath: "EU/1.0", updateSent: "01/01/0001", lng: "ES", ehr: ["Athena", "ECW", "Epic"] },
   { name: "B01", tag: "CURRENT", study: "CHF", isHmo: true, target: 50, dateCreated: "26/06/2024", onDashboard: true, careRec: false, authType: "Patient Clinic Report", phone: "0545030772", latLng: "32.45105 / 34.9", docPath: "EU/1.0", updateSent: "01/01/0001", lng: "ES", ehr: ["ECW"] },
+  { name: "B02", tag: "LEGACY", study: "CHF", isHmo: true, target: 30, dateCreated: "18/02/2020", onDashboard: false, careRec: false, authType: "Patient Self Report", phone: "052-7714420", latLng: "32.08 / 34.78", docPath: "", updateSent: "01/01/0001", lng: "AR", ehr: [], archived: true },
+  { name: "DEV", tag: "TEST", study: "CHF", isHmo: false, target: 5, dateCreated: "09/11/2019", onDashboard: false, careRec: false, authType: "Patient Self Report", phone: "", latLng: "0 / 0", docPath: "", updateSent: "01/01/0001", lng: "EN", ehr: [], archived: true },
+  { name: "IGO", tag: "LEGACY", study: "CHF", isHmo: true, target: 20, dateCreated: "22/07/2021", onDashboard: false, careRec: false, authType: "Patient Clinic Report", phone: "03-6091200", latLng: "32.06 / 34.77", docPath: "EU/1.0", updateSent: "01/01/0001", lng: "AR", ehr: ["Athena"], archived: true },
 ];
 
 orgs.forEach((o, i) => (o.id = i));

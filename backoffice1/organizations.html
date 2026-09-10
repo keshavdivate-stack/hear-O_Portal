@@ -143,6 +143,10 @@
 
     <div class="bo-list-toolbar">
       <h1>Organizations Management</h1>
+      <div class="bo-tabs bo-seg-toggle" id="orgViewTabs">
+        <button type="button" class="bo-tab bo-seg-btn active" data-view="active">Active Organizations</button>
+        <button type="button" class="bo-tab bo-seg-btn" data-view="archived">Archived Organizations</button>
+      </div>
       <span class="bo-list-toolbar-spacer"></span>
       <div class="bo-search-pill">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8"/><path d="M21 21L16.5 16.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
@@ -152,13 +156,6 @@
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
         Add Organization
       </button>
-    </div>
-
-    <div style="display:flex; margin-bottom:14px;">
-      <div class="bo-tabs bo-seg-toggle" id="orgViewTabs">
-        <button type="button" class="bo-tab bo-seg-btn active" data-view="active">Active Organizations</button>
-        <button type="button" class="bo-tab bo-seg-btn" data-view="archived">Archived Organizations</button>
-      </div>
     </div>
 
     <div class="bo-table-card">
@@ -212,8 +209,8 @@
 
   <!-- Row action dropdown -->
   <div class="bo-row-menu" id="orgRowMenu">
-    <button class="bo-row-menu-item" data-action="sendUpdate">Send Email &amp; Terms Update</button>
-    <button class="bo-row-menu-item" data-action="edit">Edit Organization</button>
+    <button class="bo-row-menu-item" data-action="sendUpdate" id="orgRowMenuSendUpdateBtn">Send Email &amp; Terms Update</button>
+    <button class="bo-row-menu-item" data-action="edit" id="orgRowMenuEditBtn">Edit Organization</button>
     <button class="bo-row-menu-item" data-action="ehr" id="orgRowMenuEhrBtn">Add EHR Connection</button>
     <button class="bo-row-menu-item danger" data-action="archive" id="orgRowMenuArchiveBtn">Archive Organization</button>
   </div>

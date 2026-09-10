@@ -127,6 +127,8 @@ let activeOrgRowId = null;
 
 const orgRowMenuEhrBtn = document.getElementById("orgRowMenuEhrBtn");
 const orgRowMenuArchiveBtn = document.getElementById("orgRowMenuArchiveBtn");
+const orgRowMenuSendUpdateBtn = document.getElementById("orgRowMenuSendUpdateBtn");
+const orgRowMenuEditBtn = document.getElementById("orgRowMenuEditBtn");
 
 document.getElementById("orgsRows").addEventListener("click", (e) => {
   const trigger = e.target.closest(".row-menu-trigger");
@@ -135,9 +137,15 @@ document.getElementById("orgsRows").addEventListener("click", (e) => {
   activeOrgRowId = Number(trigger.dataset.id);
 
   const org = orgs.find((o) => o.id === activeOrgRowId);
-  orgRowMenuEhrBtn.hidden = !org || (org.ehr || []).length >= EHR_MAX;
+  const isArchived = !!org?.archived;
+
+  /* An archived organization is read-only -- the only action left for it is
+     to bring it back, so every other row action is hidden while it's archived. */
+  orgRowMenuSendUpdateBtn.hidden = isArchived;
+  orgRowMenuEditBtn.hidden = isArchived;
+  orgRowMenuEhrBtn.hidden = isArchived || !org || (org.ehr || []).length >= EHR_MAX;
+
   if (org) {
-    const isArchived = !!org.archived;
     orgRowMenuArchiveBtn.textContent = isArchived ? "Unarchive Organization" : "Archive Organization";
     orgRowMenuArchiveBtn.dataset.action = isArchived ? "unarchive" : "archive";
     orgRowMenuArchiveBtn.classList.toggle("danger", !isArchived);

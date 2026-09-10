@@ -38,7 +38,7 @@ const MKT_BIN_KEYS = ["90-100", "80-89", "70-79", "60-69"];
    Each selected organization gets its own hero card + ring, built from its own
    seeded data, so picking multiple orgs shows their charts side by side rather
    than blending them into a single average. */
-function heroCardHtml(title, ring, compact) {
+function heroCardHtml(title, ring, compact, orgId) {
   const total = ring.reduce((s, seg) => s + seg.value, 0);
   let acc = 0;
   const stops = ring
@@ -81,7 +81,7 @@ function heroCardHtml(title, ring, compact) {
           </div>
         </div>
 
-        <div class="mkt-gauge-wrap">
+        <div class="mkt-gauge-wrap" data-org-id="${orgId}" data-ring='${JSON.stringify(ring.map((s) => ({ label: s.label, value: s.value })))}' title="Click a segment to view patients">
           <span class="mkt-tick mkt-tick-top">${topTick}</span>
           <div class="mkt-ring" style="background:conic-gradient(${stops})"></div>
           <div class="mkt-gauge-center"><span>${total}</span><b>/0</b></div>
@@ -104,9 +104,48 @@ function renderHeroCards(orgIds) {
 
   document.getElementById("mktHeroRow").classList.toggle("mkt-hero-row--multi", multi);
   document.getElementById("mktHeroCards").innerHTML = orgs
-    .map((org) => heroCardHtml(org.name, ringFor(org.id === "all" ? 0 : mktHash(org.id)), multi))
+    .map((org) => heroCardHtml(org.name, ringFor(org.id === "all" ? 0 : mktHash(org.id)), multi, org.id))
     .join("");
 }
+
+/* ---------------- Ring segment click -> drill-down to Study Patients ----------------
+   Any colored part of the donut opens the patients list, pre-filtered to the
+   tab matching the segment that was clicked (whole-ring clicks outside the
+   colored band, e.g. the center total, are ignored). */
+const RING_LABEL_TO_TAB = { Recorded: "uploaded", "Did not upload": "didnt-upload", "Left study": "left" };
+
+document.getElementById("mktHeroCards").addEventListener("click", (e) => {
+  const wrap = e.target.closest(".mkt-gauge-wrap");
+  if (!wrap) return;
+
+  const rect = wrap.getBoundingClientRect();
+  const cx = rect.left + rect.width / 2;
+  const cy = rect.top + rect.height / 2;
+  const dx = e.clientX - cx;
+  const dy = e.clientY - cy;
+  const dist = Math.sqrt(dx * dx + dy * dy);
+  const outerR = rect.width / 2;
+  const innerR = outerR - 22;
+  if (dist < innerR || dist > outerR) return;
+
+  const angle = (Math.atan2(dx, -dy) * 180 / Math.PI + 360) % 360;
+  const ring = JSON.parse(wrap.dataset.ring);
+  const total = ring.reduce((s, seg) => s + seg.value, 0);
+  let acc = 0;
+  const seg = ring.find((s) => {
+    const from = (acc / total) * 360;
+    acc += s.value;
+    const to = (acc / total) * 360;
+    return angle >= from && angle < to;
+  });
+  if (!seg) return;
+
+  const tab = RING_LABEL_TO_TAB[seg.label] || "all";
+  const params = new URLSearchParams();
+  params.set("tab", tab);
+  params.set("org", wrap.dataset.orgId === "all" ? activeMktOrgIds.join(",") : wrap.dataset.orgId);
+  window.location.href = `study-patients.html?${params.toString()}`;
+});
 
 function scopeLabel(orgIds) {
   if (orgIds.length === 1 && orgIds[0] === "all") return "";
