@@ -154,6 +154,13 @@
       </button>
     </div>
 
+    <div style="display:flex; margin-bottom:14px;">
+      <div class="bo-tabs bo-seg-toggle" id="orgViewTabs">
+        <button type="button" class="bo-tab bo-seg-btn active" data-view="active">Active Organizations</button>
+        <button type="button" class="bo-tab bo-seg-btn" data-view="archived">Archived Organizations</button>
+      </div>
+    </div>
+
     <div class="bo-table-card">
       <div class="bo-table-scroll">
         <table class="bo-list-table">
@@ -208,7 +215,7 @@
     <button class="bo-row-menu-item" data-action="sendUpdate">Send Email &amp; Terms Update</button>
     <button class="bo-row-menu-item" data-action="edit">Edit Organization</button>
     <button class="bo-row-menu-item" data-action="ehr" id="orgRowMenuEhrBtn">Add EHR Connection</button>
-    <button class="bo-row-menu-item danger" data-action="archive">Archive Organization</button>
+    <button class="bo-row-menu-item danger" data-action="archive" id="orgRowMenuArchiveBtn">Archive Organization</button>
   </div>
 
   <!-- Add Organization full-screen panel (sits under the top nav, not a separate page) -->

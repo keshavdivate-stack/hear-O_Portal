@@ -5,11 +5,16 @@ const ORG_PAGE_SIZE = 20;
 let orgCurrentPage = 1;
 let orgSortDir = "asc";
 let orgSearchTerm = "";
+/* Active/Archived is its own tab, not a filter dropdown value -- archiving an
+   org hides it from the working list without deleting it, and this is the
+   only place it's still reachable (to review it or Unarchive it back in). */
+let orgViewTab = "active";
 
 function filteredOrgs() {
-  if (!orgSearchTerm) return orgs;
+  const inView = orgs.filter((o) => !!o.archived === (orgViewTab === "archived"));
+  if (!orgSearchTerm) return inView;
   const q = orgSearchTerm.toLowerCase();
-  return orgs.filter((o) => o.name.toLowerCase().includes(q) || o.tag.toLowerCase().includes(q) || o.study.toLowerCase().includes(q));
+  return inView.filter((o) => o.name.toLowerCase().includes(q) || o.tag.toLowerCase().includes(q) || o.study.toLowerCase().includes(q));
 }
 
 function sortedOrgs() {
@@ -84,6 +89,16 @@ document.getElementById("orgSearchInput").addEventListener("input", (e) => {
   renderOrgs();
 });
 
+/* ---------------- Active / Archived tabs ---------------- */
+document.getElementById("orgViewTabs").addEventListener("click", (e) => {
+  const btn = e.target.closest(".bo-tab");
+  if (!btn || btn.classList.contains("active")) return;
+  orgViewTab = btn.dataset.view;
+  document.querySelectorAll("#orgViewTabs .bo-tab").forEach((b) => b.classList.toggle("active", b === btn));
+  orgCurrentPage = 1;
+  renderOrgs();
+});
+
 /* ---------------- Sort ---------------- */
 document.querySelector(".bo-list-table th.sortable").addEventListener("click", () => {
   orgSortDir = orgSortDir === "asc" ? "desc" : "asc";
@@ -111,6 +126,7 @@ const orgRowMenu = document.getElementById("orgRowMenu");
 let activeOrgRowId = null;
 
 const orgRowMenuEhrBtn = document.getElementById("orgRowMenuEhrBtn");
+const orgRowMenuArchiveBtn = document.getElementById("orgRowMenuArchiveBtn");
 
 document.getElementById("orgsRows").addEventListener("click", (e) => {
   const trigger = e.target.closest(".row-menu-trigger");
@@ -120,6 +136,12 @@ document.getElementById("orgsRows").addEventListener("click", (e) => {
 
   const org = orgs.find((o) => o.id === activeOrgRowId);
   orgRowMenuEhrBtn.hidden = !org || (org.ehr || []).length >= EHR_MAX;
+  if (org) {
+    const isArchived = !!org.archived;
+    orgRowMenuArchiveBtn.textContent = isArchived ? "Unarchive Organization" : "Archive Organization";
+    orgRowMenuArchiveBtn.dataset.action = isArchived ? "unarchive" : "archive";
+    orgRowMenuArchiveBtn.classList.toggle("danger", !isArchived);
+  }
 
   const rect = trigger.getBoundingClientRect();
   orgRowMenu.style.top = `${rect.bottom + 6}px`;
@@ -139,8 +161,14 @@ orgRowMenu.addEventListener("click", (e) => {
   if (item.dataset.action === "archive") {
     const org = orgs.find((o) => o.id === activeOrgRowId);
     if (!org) return;
-    if (!confirm(`Archive organization "${org.name}"? It will be removed from active lists.`)) return;
-    orgs.splice(orgs.indexOf(org), 1);
+    if (!confirm(`Archive organization "${org.name}"? It will move to the Archived Organizations tab.`)) return;
+    org.archived = true;
+    renderOrgs();
+  }
+  if (item.dataset.action === "unarchive") {
+    const org = orgs.find((o) => o.id === activeOrgRowId);
+    if (!org) return;
+    org.archived = false;
     renderOrgs();
   }
 });
