@@ -37,6 +37,7 @@ const rmDeliveryPill = (s) => `<span class="bo-pill ${rmDeliveryPillClass[s] || 
 const rmRecipientsChip = (count) => `<span class="bo-recipients-chip">${rmPeopleIcon}${count} ${count === 1 ? "person" : "people"}</span>`;
 
 function rmEsc(v) { return String(v == null ? "" : v).replace(/"/g, "&quot;"); }
+const rmScheduleIdLabel = (id) => `RPT-${String(id + 1).padStart(4, "0")}`;
 function rmParseRecipients(str) { return String(str || "").split(/[,;\s]+/).map((s) => s.trim()).filter(Boolean); }
 
 /* ---------------- Tabs ---------------- */
@@ -169,6 +170,7 @@ function rmFilteredSchedules() {
 function rmRenderScheduleRow(s) {
   return `
     <tr data-id="${s.id}">
+      <td class="mono">${rmScheduleIdLabel(s.id)}</td>
       <td>
         <div class="bo-cell-primary">${rmEsc(rmReportLabel(s.reportKey))}</div>
         <div class="bo-cell-secondary">${rmEsc(s.name)}</div>
@@ -190,7 +192,7 @@ function rmRenderScheduleRow(s) {
 }
 
 const rmScheduleEmptyHtml = `
-  <tr><td colspan="7">
+  <tr><td colspan="8">
     <div class="bo-empty-state">
       <svg class="bo-empty-state-icon" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9H21"/><path d="M8 2v4"/><path d="M16 2v4"/></svg>
       <p class="bo-empty-state-title" id="rmScheduleEmptyTitle">No scheduled reports yet</p>
