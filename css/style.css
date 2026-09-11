@@ -5526,11 +5526,10 @@ label.checkbox-field {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  /* Bias the crop/zoom toward the woman (lower-right of the source photo)
-     instead of the empty blue backdrop, so she reads larger in the frame. */
-  object-position: 78% 68%;
-  transform: scale(1.28);
-  transform-origin: 78% 68%;
+  /* No zoom -- any cropping needed to fill the panel comes off the top/left
+     (empty blue backdrop), anchored from the bottom-right so the woman and
+     her phone stay fully visible with natural framing, not tight-cropped. */
+  object-position: right bottom;
   z-index: 0;
 }
 
