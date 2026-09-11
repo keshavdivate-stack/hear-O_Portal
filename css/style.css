@@ -5542,10 +5542,6 @@ label.checkbox-field {
   filter: brightness(0) invert(1);
 }
 
-.plogin-visual-copy { position: relative; z-index: 1; margin-top: 40px; }
-.plogin-visual-copy h1 { font-size: 30px; font-weight: 800; margin: 0 0 10px; }
-.plogin-visual-copy p { font-size: 15px; line-height: 1.55; color: rgba(255, 255, 255, 0.78); max-width: 360px; }
-
 .plogin-disclaimer {
   position: relative;
   z-index: 1;
@@ -5680,7 +5676,6 @@ label.checkbox-field {
 @media (max-width: 860px) {
   .plogin-page { flex-direction: column; }
   .plogin-visual { flex: none; padding: 32px; }
-  .plogin-visual-copy { margin-top: 24px; }
   .plogin-form-panel { padding: 40px 24px 64px; }
   .plogin-lang { top: 16px; right: 20px; }
 }
