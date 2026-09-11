@@ -8,6 +8,12 @@
   padding: 0;
 }
 
+/* The browser's own [hidden] rule is user-agent-origin, so an author rule
+   that sets display on the same element (e.g. any flex/grid container) wins
+   over it regardless of specificity, leaving the "hidden" element visible.
+   This reasserts it at author level so `hidden` always actually hides. */
+[hidden] { display: none !important; }
+
 html, body {
   height: 100%;
   overflow: hidden;
@@ -2059,12 +2065,57 @@ input[type="password"]:focus {
 .med-note svg { flex-shrink: 0; margin-top: 2px; }
 
 /* ===== Medication detail popup (opened by tapping a dose row) ===== */
-.med-detail-screen {
-  flex: 1;
-  min-height: 0;
+.med-detail-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(20, 24, 30, 0.45);
+  z-index: 40;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.med-detail-sheet {
+  width: 100%;
+  max-height: 86%;
+  background: #fff;
+  border-radius: 26px 26px 0 0;
+  box-shadow: 0 -10px 34px rgba(0, 0, 0, 0.18);
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
+
+.med-detail-sheet-head {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 18px 20px;
+  border-bottom: 1px solid #eceef1;
+}
+
+.med-detail-sheet-head h2 {
+  font-size: calc(19px * var(--font-scale, 1));
+  font-weight: 800;
+  color: #1c1c1c;
+}
+
+.med-detail-close-btn {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: #f2f4f7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.med-detail-close-btn:active { background: #e5e8ec; }
 
 .med-detail-body {
   flex: 1;
