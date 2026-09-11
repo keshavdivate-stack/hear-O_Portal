@@ -1976,25 +1976,26 @@ input[type="password"]:focus {
 .med-action-btn.med-action-btn-nottaken:active { background: #fdece5; }
 
 /* Once a dose has a status, its two choice buttons collapse into this one
-   full-width status pill -- tapping it undoes the mark, back to pending. */
+   marker -- a tinted badge, not a solid full-width button, since it's now
+   reporting a state rather than prompting an action. Still tappable to
+   undo the mark, back to pending. */
 .med-action-status {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  gap: 7px;
-  width: 100%;
-  padding: 11px 14px;
-  min-height: 44px;
-  border-radius: 24px;
-  border: 1.5px solid transparent;
+  gap: 6px;
+  width: auto;
+  padding: 9px 16px;
+  min-height: 38px;
+  border-radius: 20px;
+  border: none;
   font-family: inherit;
-  font-size: calc(14.5px * var(--font-scale, 1));
+  font-size: calc(13.5px * var(--font-scale, 1));
   font-weight: 700;
   cursor: pointer;
 }
 
-.med-action-status-taken { background: #2f9e73; border-color: #2f9e73; color: #fff; }
-.med-action-status-nottaken { background: #fdece5; border-color: #f3c3af; color: #b33d17; }
+.med-action-status-taken { background: #dff5ea; color: #1c7a52; }
+.med-action-status-nottaken { background: #fdece5; color: #b33d17; }
 .med-action-status svg { flex-shrink: 0; }
 
 .med-dose-card-locked { opacity: 0.55; cursor: default; }
