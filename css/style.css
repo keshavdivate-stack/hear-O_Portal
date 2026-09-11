@@ -5528,9 +5528,11 @@ label.checkbox-field {
   /* cover: with this panel's proportions, height is the constraining
      dimension, so it fills top-to-bottom with no gap and only ever crops
      horizontally; positioning that crop away from the woman keeps her
-     fully visible regardless. Unflipped -- original photo orientation. */
+     fully visible regardless. Mirrored, with object-position set pre-flip
+     so she lands bottom-left post-flip. */
   object-fit: cover;
-  object-position: right bottom;
+  object-position: left bottom;
+  transform: scaleX(-1);
   z-index: 0;
 }
 
