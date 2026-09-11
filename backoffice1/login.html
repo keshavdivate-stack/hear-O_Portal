@@ -11,35 +11,82 @@
 </head>
 <body>
 
-  <div class="bo-auth-page">
-    <div class="bo-auth-card">
-      <img src="https://web.dev3.cordiomed.com/assets/icons/logo.svg" alt="HearO" class="bo-auth-logo" />
-      <h1 class="bo-auth-title">Backoffice Log In</h1>
-      <p class="bo-auth-subtitle">Sign in with your Backoffice credentials to continue.</p>
+  <div class="bo-login-page">
 
-      <div id="loggedOutBanner" class="bo-auth-success" style="display:none; background:var(--blue-light); color:var(--blue-text);">
-        You've been logged out.
+    <div class="bo-login-visual">
+      <svg class="bo-login-visual-wave" viewBox="0 0 420 140" preserveAspectRatio="none" aria-hidden="true">
+        <polyline points="0,90 60,90 80,40 100,120 120,70 145,70 165,20 190,110 420,110" fill="none" stroke="rgba(255,255,255,0.18)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+
+      <img src="https://web.dev3.cordiomed.com/assets/icons/logo.svg" alt="HearO" class="bo-login-logo" />
+
+      <div class="bo-login-visual-copy">
+        <h1>Welcome to HearO</h1>
+        <p>Sign in to manage patients, monitor compliance, and support your care teams.</p>
       </div>
 
-      <div class="bo-modal-field">
-        <label for="loginUsername">Username</label>
-        <input type="text" id="loginUsername" placeholder="Enter username" autocomplete="username" />
-      </div>
-      <div class="bo-modal-field">
-        <label for="loginPassword">Password</label>
-        <input type="password" id="loginPassword" placeholder="Enter password" autocomplete="current-password" />
-      </div>
-
-      <div class="bo-auth-actions">
-        <button type="button" class="bo-btn-primary" id="loginBtn">Log In</button>
+      <div class="bo-login-disclaimer">
+        <svg width="15" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 5v6c0 5 3.4 8.7 8 10 4.6-1.3 8-5 8-10V5l-8-3Z"/><path d="M9 12l2 2 4-4"/></svg>
+        <span>This software is provided for demonstration, evaluation, and training purposes only. Do Not Use for Clinical Decisions.</span>
       </div>
     </div>
+
+    <div class="bo-login-form-panel">
+      <div class="bo-login-lang">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a15 15 0 0 1 0 18a15 15 0 0 1 0-18Z"/></svg>
+        <span>English</span>
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+
+      <div class="bo-login-form-wrap">
+        <h2>Sign In</h2>
+        <p class="bo-login-form-sub">Enter your credentials to access your account.</p>
+
+        <div id="loggedOutBanner" class="bo-auth-success" style="display:none;">
+          You've been logged out.
+        </div>
+
+        <div class="bo-login-field">
+          <label for="loginUsername">Username</label>
+          <div class="bo-login-input-wrap">
+            <input type="text" id="loginUsername" placeholder="Enter username" autocomplete="username" />
+            <svg class="bo-login-input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-3.9 3.6-7 8-7s8 3.1 8 7"/></svg>
+          </div>
+        </div>
+
+        <div class="bo-login-field">
+          <label for="loginPassword">Password</label>
+          <div class="bo-login-input-wrap">
+            <input type="password" id="loginPassword" placeholder="Enter password" autocomplete="current-password" />
+            <button type="button" class="bo-login-input-icon-btn" id="togglePasswordBtn" aria-label="Show password">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="bo-login-forgot">
+          <a href="#">Forgot Password?</a>
+        </div>
+
+        <button type="button" class="bo-login-submit" id="loginBtn">Log in</button>
+      </div>
+
+      <div class="bo-login-footer">© 2026 HearO. All rights reserved.</div>
+    </div>
+
   </div>
 
 <script>
   if (new URLSearchParams(window.location.search).get("loggedOut") === "1") {
     document.getElementById("loggedOutBanner").style.display = "flex";
   }
+
+  document.getElementById("togglePasswordBtn").addEventListener("click", () => {
+    const input = document.getElementById("loginPassword");
+    const showing = input.type === "text";
+    input.type = showing ? "password" : "text";
+    document.getElementById("togglePasswordBtn").setAttribute("aria-label", showing ? "Show password" : "Hide password");
+  });
 
   document.getElementById("loginBtn").addEventListener("click", () => {
     window.location.href = "overview-dashboard.html";
