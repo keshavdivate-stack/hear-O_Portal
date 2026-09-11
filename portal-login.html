@@ -11,46 +11,87 @@
 </head>
 <body>
 
-  <div class="auth-page" style="flex-direction:column;">
-    <div class="auth-card">
-      <img src="https://web.dev3.cordiomed.com/assets/icons/logo.svg" alt="HearO" class="auth-logo" />
+  <div class="plogin-page">
 
-      <div id="linkedBanner" class="auth-field" style="display:none; margin-bottom:22px;">
-        <div style="display:flex; align-items:center; gap:8px; background:#E7F8EF; border-radius:9px; padding:10px 14px; font-size:12.5px; font-weight:700; color:var(--green);">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="var(--green)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <div class="plogin-visual">
+      <svg class="plogin-visual-wave" viewBox="0 0 420 140" preserveAspectRatio="none" aria-hidden="true">
+        <polyline points="0,90 60,90 80,40 100,120 120,70 145,70 165,20 190,110 420,110" fill="none" stroke="rgba(255,255,255,0.18)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+
+      <img src="https://web.dev3.cordiomed.com/assets/icons/logo.svg" alt="HearO" class="plogin-logo" />
+
+      <div class="plogin-visual-copy">
+        <h1>Welcome to HearO</h1>
+        <p>Sign in to track your recordings, medication, and stay connected with your care team.</p>
+      </div>
+
+      <div class="plogin-disclaimer">
+        <svg width="15" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 5v6c0 5 3.4 8.7 8 10 4.6-1.3 8-5 8-10V5l-8-3Z"/><path d="M9 12l2 2 4-4"/></svg>
+        <span>This software is provided for demonstration, evaluation, and training purposes only. Do Not Use for Clinical Decisions.</span>
+      </div>
+    </div>
+
+    <div class="plogin-form-panel">
+      <div class="plogin-lang">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a15 15 0 0 1 0 18a15 15 0 0 1 0-18Z"/></svg>
+        <select class="plogin-lang-select">
+          <option>English</option>
+          <option>Español</option>
+          <option>हिन्दी</option>
+        </select>
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+
+      <div class="plogin-form-wrap">
+        <h2>Sign In</h2>
+        <p class="plogin-form-sub">Enter your credentials to access your account.</p>
+
+        <div id="linkedBanner" class="plogin-success" style="display:none;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="var(--green-text)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
           Health record linked successfully
         </div>
+
+        <div class="plogin-field">
+          <label for="loginUsername">Username</label>
+          <div class="plogin-input-wrap">
+            <input type="text" id="loginUsername" placeholder="Enter username" autocomplete="username" />
+            <svg class="plogin-input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-3.9 3.6-7 8-7s8 3.1 8 7"/></svg>
+          </div>
+        </div>
+
+        <div class="plogin-field">
+          <label for="loginPassword">Password</label>
+          <div class="plogin-input-wrap">
+            <input type="password" id="loginPassword" placeholder="Enter password" autocomplete="current-password" />
+            <button type="button" class="plogin-input-icon-btn" id="togglePasswordBtn" aria-label="Show password">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="plogin-forgot">
+          <a href="#">Forgot Password?</a>
+        </div>
+
+        <button type="button" class="plogin-submit" id="loginBtn">Log in</button>
       </div>
 
-      <div class="auth-field">
-        <label>Username</label>
-        <input type="text" placeholder="Enter username" autocomplete="username" />
-      </div>
-      <div class="auth-field">
-        <label>Password</label>
-        <input type="password" placeholder="Enter password" autocomplete="current-password" />
-      </div>
-
-      <button type="button" class="auth-btn" id="loginBtn">Log in</button>
-      <a href="#" class="auth-link">Forgot Password?</a>
+      <div class="plogin-footer">© 2026 HearO. All rights reserved.</div>
     </div>
 
-    <div class="auth-footer">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#57626D" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M3 12H21"/><path d="M12 3C14.5 5.7 15.8 8.8 15.8 12C15.8 15.2 14.5 18.3 12 21C9.5 18.3 8.2 15.2 8.2 12C8.2 8.8 9.5 5.7 12 3Z"/></svg>
-      <select class="auth-lang-select">
-        <option>English</option>
-        <option>Español</option>
-        <option>हिन्दी</option>
-      </select>
-    </div>
-
-    <p class="auth-disclaimer">This software is provided for demonstration, evaluation, and training purposes only. Do Not Use for Clinical Decisions.</p>
   </div>
 
 <script>
   if (new URLSearchParams(window.location.search).get("linked") === "1") {
-    document.getElementById("linkedBanner").style.display = "block";
+    document.getElementById("linkedBanner").style.display = "flex";
   }
+
+  document.getElementById("togglePasswordBtn").addEventListener("click", () => {
+    const input = document.getElementById("loginPassword");
+    const showing = input.type === "text";
+    input.type = showing ? "password" : "text";
+    document.getElementById("togglePasswordBtn").setAttribute("aria-label", showing ? "Show password" : "Hide password");
+  });
 
   document.getElementById("loginBtn").addEventListener("click", () => {
     window.location.href = "index.html";
