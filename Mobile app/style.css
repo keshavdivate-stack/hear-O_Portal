@@ -1917,23 +1917,19 @@ input[type="password"]:focus {
   box-shadow: 0 1px 4px rgba(20, 24, 30, 0.06);
 }
 
-.med-dose-item {
-  display: flex;
-  align-items: center;
-  gap: 14px;
+/* Each dose is a two-row card: medication details on top, the action(s)
+   for it on their own full-width row below -- instead of squeezing name,
+   dose, and both action buttons into a single cramped row. */
+.med-dose-card {
   padding: 16px 18px;
   cursor: pointer;
 }
 
-.med-dose-item + .med-dose-item { border-top: 1px solid #f0f1f3; }
+.med-dose-card + .med-dose-card { border-top: 1px solid #f0f1f3; }
 
-.med-dose-info { flex: 1; min-width: 0; }
+.med-dose-card-info { margin-bottom: 12px; }
 
-/* Name + chevron sit inline on their own line, with the dose sub-line below
-   -- dropping the leading icon (and moving the chevron off the row's far
-   edge) frees up the width names like "Spironolactone" need next to two
-   action pills. */
-.med-dose-item-name {
+.med-dose-card-name {
   display: flex;
   align-items: center;
   gap: 5px;
@@ -1942,110 +1938,77 @@ input[type="password"]:focus {
   color: #1c1c1c;
 }
 
-.med-dose-item-sub {
+.med-dose-card-sub {
   font-size: calc(15px * var(--font-scale, 1));
   color: #7a7f87;
   margin-top: 2px;
 }
 
-.med-dose-item-action { flex-shrink: 0; }
-
-/* Small arrow next to the name -- the only hint that tapping a dose row
+/* Small arrow next to the name -- the only hint that tapping a dose card
    (outside its action buttons) opens that medication's history. Kept
    deliberately quiet (thin, pale) so it doesn't read as its own button. */
-.med-dose-item-chevron { flex-shrink: 0; color: #a8adb5; }
-.med-dose-item-locked .med-dose-item-chevron { display: none; }
+.med-dose-card-chevron { flex-shrink: 0; color: #a8adb5; }
+.med-dose-card-locked .med-dose-card-chevron { display: none; }
 
-.med-status {
+.med-dose-card-actions { display: flex; gap: 10px; }
+
+.med-action-btn {
+  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  padding: 12px 20px;
-  min-width: 84px;
+  gap: 7px;
+  padding: 11px 14px;
   min-height: 44px;
-  border-radius: 30px;
-  border: 1.5px solid transparent;
+  border-radius: 24px;
+  border: 1.5px solid #2f6fed;
+  background: #fff;
+  color: #2f6fed;
   font-family: inherit;
-  font-size: calc(16px * var(--font-scale, 1));
+  font-size: calc(14.5px * var(--font-scale, 1));
   font-weight: 700;
   cursor: pointer;
 }
 
-.med-status-taken { background: #2f9e73; border-color: #2f9e73; color: #fff; }
-.med-status-nottaken { background: #fdece5; border-color: #f3c3af; color: #b33d17; }
-.med-status svg { flex-shrink: 0; }
+.med-action-btn:active { background: #e9f1ff; }
 
-/* Pending dose: both outcomes sit side by side as compact icon buttons --
-   the .med-action-legend at the top of the screen spells out what each
-   icon means once, instead of repeating "Taken"/"Not taken" on every row. */
-.med-dose-item-choice {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
+.med-action-btn.med-action-btn-nottaken { border-color: #e0562a; color: #e0562a; }
+.med-action-btn.med-action-btn-nottaken:active { background: #fdece5; }
 
-.med-icon-btn {
-  flex-shrink: 0;
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  border: 1.5px solid #2f6fed;
-  background: #fff;
-  color: #2f6fed;
+/* Once a dose has a status, its two choice buttons collapse into this one
+   full-width status pill -- tapping it undoes the mark, back to pending. */
+.med-action-status {
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 7px;
+  width: 100%;
+  padding: 11px 14px;
+  min-height: 44px;
+  border-radius: 24px;
+  border: 1.5px solid transparent;
+  font-family: inherit;
+  font-size: calc(14.5px * var(--font-scale, 1));
+  font-weight: 700;
   cursor: pointer;
 }
 
-.med-icon-btn:active { background: #e9f1ff; }
+.med-action-status-taken { background: #2f9e73; border-color: #2f9e73; color: #fff; }
+.med-action-status-nottaken { background: #fdece5; border-color: #f3c3af; color: #b33d17; }
+.med-action-status svg { flex-shrink: 0; }
 
-.med-icon-btn.med-icon-btn-nottaken { border-color: #e0562a; color: #e0562a; }
-.med-icon-btn.med-icon-btn-nottaken:active { background: #fdece5; }
-
-/* Legend for the icon buttons above, shown once for the whole screen. */
-.med-action-legend {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  margin-bottom: 18px;
-  padding: 0 4px;
-}
-
-.med-action-legend-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: calc(13.5px * var(--font-scale, 1));
-  font-weight: 600;
-  color: #55606b;
-}
-
-.med-action-legend-icon {
-  flex-shrink: 0;
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  border: 1.5px solid #2f6fed;
-  color: #2f6fed;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.med-action-legend-icon.med-action-legend-icon-nottaken { border-color: #e0562a; color: #e0562a; }
-
-.med-dose-item-locked { opacity: 0.55; cursor: default; }
+.med-dose-card-locked { opacity: 0.55; cursor: default; }
 
 .med-locked-tag {
+  display: block;
+  width: 100%;
+  text-align: center;
   font-size: calc(13px * var(--font-scale, 1));
   font-weight: 700;
   color: #b3781a;
   background: #fff1d6;
-  padding: 8px 14px;
+  padding: 10px 14px;
   border-radius: 10px;
-  white-space: nowrap;
 }
 
 .med-note {

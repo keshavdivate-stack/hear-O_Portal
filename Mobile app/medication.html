@@ -50,21 +50,6 @@
         <div class="med-progress-track" id="medProgressTrack"></div>
       </div>
 
-      <div class="med-action-legend">
-        <span class="med-action-legend-item">
-          <span class="med-action-legend-icon">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12L9 17L20 6"/></svg>
-          </span>
-          Mark taken
-        </span>
-        <span class="med-action-legend-item">
-          <span class="med-action-legend-icon med-action-legend-icon-nottaken">
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6L18 18M6 18L18 6"/></svg>
-          </span>
-          Mark not taken
-        </span>
-      </div>
-
       <button type="button" class="med-update-banner" id="medUpdateBanner" onclick="window.location.href='medication-update.html'">
         <span class="med-update-banner-icon">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#b3781a" stroke-width="1.8"><path d="M12 9V13" stroke-linecap="round"/><circle cx="12" cy="16.5" r="1" fill="#b3781a" stroke="none"/><path d="M10.3 3.9L2.6 17.5C2.1 18.4 2.8 19.5 3.8 19.5H19.2C20.2 19.5 20.9 18.4 20.4 17.5L12.7 3.9C12.2 3 10.8 3 10.3 3.9Z" stroke-linejoin="round"/></svg>
@@ -268,16 +253,14 @@
     }
     const status = statusFor(dose.id);
     if (status === "taken") {
-      return `<button type="button" class="med-status med-status-taken" data-id="${dose.id}" data-reset="1">${checkIcon} Taken</button>`;
+      return `<button type="button" class="med-action-status med-action-status-taken" data-id="${dose.id}" data-reset="1">${checkIcon} Taken</button>`;
     }
     if (status === "not-taken") {
-      return `<button type="button" class="med-status med-status-nottaken" data-id="${dose.id}" data-reset="1">${xIcon} Not taken</button>`;
+      return `<button type="button" class="med-action-status med-action-status-nottaken" data-id="${dose.id}" data-reset="1">${xIcon} Not taken</button>`;
     }
     return `
-      <div class="med-dose-item-choice">
-        <button type="button" class="med-icon-btn" data-id="${dose.id}" data-action="taken" aria-label="Mark ${dose.name} taken">${checkIcon}</button>
-        <button type="button" class="med-icon-btn med-icon-btn-nottaken" data-id="${dose.id}" data-action="not-taken" aria-label="Mark ${dose.name} not taken">${xIcon}</button>
-      </div>`;
+      <button type="button" class="med-action-btn" data-id="${dose.id}" data-action="taken">${checkIcon} Taken</button>
+      <button type="button" class="med-action-btn med-action-btn-nottaken" data-id="${dose.id}" data-action="not-taken">${xIcon} Not taken</button>`;
   }
 
   function renderTimeGroups() {
@@ -300,15 +283,15 @@
         const rows = group
           .map(
             (dose) => `
-          <div class="med-dose-item ${isLocked(dose) ? "med-dose-item-locked" : ""}" data-med="${dose.med}" data-dose-id="${dose.id}">
-            <div class="med-dose-info">
-              <div class="med-dose-item-name">
+          <div class="med-dose-card ${isLocked(dose) ? "med-dose-card-locked" : ""}" data-med="${dose.med}" data-dose-id="${dose.id}">
+            <div class="med-dose-card-info">
+              <div class="med-dose-card-name">
                 ${dose.name}
-                <svg class="med-dose-item-chevron" width="7" height="12" viewBox="0 0 9 15" fill="none"><path d="M1.5 1.5L7.5 7.5L1.5 13.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <svg class="med-dose-card-chevron" width="7" height="12" viewBox="0 0 9 15" fill="none"><path d="M1.5 1.5L7.5 7.5L1.5 13.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
               </div>
-              <div class="med-dose-item-sub">${dose.dose ? `${dose.dose} &middot; ` : ""}Take 1 pill</div>
+              <div class="med-dose-card-sub">${dose.dose ? `${dose.dose} &middot; ` : ""}Take 1 pill</div>
             </div>
-            <div class="med-dose-item-action">${renderDoseAction(dose)}</div>
+            <div class="med-dose-card-actions">${renderDoseAction(dose)}</div>
           </div>`
           )
           .join("");
@@ -451,9 +434,9 @@
       return;
     }
 
-    // Tapping a dose row (outside its action buttons) opens its detail popup.
-    const row = e.target.closest(".med-dose-item");
-    if (row && !row.classList.contains("med-dose-item-locked")) {
+    // Tapping a dose card (outside its action buttons) opens its detail popup.
+    const row = e.target.closest(".med-dose-card");
+    if (row && !row.classList.contains("med-dose-card-locked")) {
       openMedDetail(Number(row.dataset.doseId));
     }
   });
