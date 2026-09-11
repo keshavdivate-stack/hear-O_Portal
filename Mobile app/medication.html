@@ -252,11 +252,12 @@
       return `<span class="med-locked-tag">Awaiting review</span>`;
     }
     const status = statusFor(dose.id);
-    if (status === "taken") {
-      return `<button type="button" class="med-action-status med-action-status-taken" data-id="${dose.id}" data-reset="1">${checkIcon} Taken</button>`;
-    }
-    if (status === "not-taken") {
-      return `<button type="button" class="med-action-status med-action-status-nottaken" data-id="${dose.id}" data-reset="1">${xIcon} Not taken</button>`;
+    if (status === "taken" || status === "not-taken") {
+      const label = status === "taken" ? "Taken" : "Not taken";
+      const icon = status === "taken" ? checkIcon : xIcon;
+      return `
+        <span class="med-action-status med-action-status-${status === "taken" ? "taken" : "nottaken"}">${icon} ${label}</span>
+        <button type="button" class="med-action-undo" data-id="${dose.id}" data-reset="1">Undo</button>`;
     }
     return `
       <button type="button" class="med-action-btn" data-id="${dose.id}" data-action="taken">${checkIcon} Taken</button>

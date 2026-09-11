@@ -1950,7 +1950,7 @@ input[type="password"]:focus {
 .med-dose-card-chevron { flex-shrink: 0; color: #a8adb5; }
 .med-dose-card-locked .med-dose-card-chevron { display: none; }
 
-.med-dose-card-actions { display: flex; gap: 10px; }
+.med-dose-card-actions { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
 
 .med-action-btn {
   flex: 1;
@@ -1975,28 +1975,39 @@ input[type="password"]:focus {
 .med-action-btn.med-action-btn-nottaken { border-color: #e0562a; color: #e0562a; }
 .med-action-btn.med-action-btn-nottaken:active { background: #fdece5; }
 
-/* Once a dose has a status, its two choice buttons collapse into this one
-   marker -- a tinted badge, not a solid full-width button, since it's now
-   reporting a state rather than prompting an action. Still tappable to
-   undo the mark, back to pending. */
+/* Once a dose has a status, its two choice buttons collapse into this
+   badge -- a plain label reporting the state, not a button -- paired with
+   an explicit Undo link on the other end of the row so reverting it stays
+   a clear, discoverable action instead of "tap the badge and hope". */
 .med-action-status {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  width: auto;
   padding: 9px 16px;
   min-height: 38px;
   border-radius: 20px;
-  border: none;
-  font-family: inherit;
   font-size: calc(13.5px * var(--font-scale, 1));
   font-weight: 700;
-  cursor: pointer;
 }
 
 .med-action-status-taken { background: #dff5ea; color: #1c7a52; }
 .med-action-status-nottaken { background: #fdece5; color: #b33d17; }
 .med-action-status svg { flex-shrink: 0; }
+
+.med-action-undo {
+  flex-shrink: 0;
+  padding: 8px 4px;
+  border: none;
+  background: none;
+  color: #7a7f87;
+  font-family: inherit;
+  font-size: calc(13.5px * var(--font-scale, 1));
+  font-weight: 700;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.med-action-undo:active { color: #4a4f57; }
 
 .med-dose-card-locked { opacity: 0.55; cursor: default; }
 
