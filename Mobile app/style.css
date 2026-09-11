@@ -1970,33 +1970,65 @@ input[type="password"]:focus {
 .med-status-nottaken { background: #fdece5; border-color: #f3c3af; color: #b33d17; }
 .med-status svg { flex-shrink: 0; }
 
-/* Pending dose: both outcomes sit side by side (stacked on this narrow
-   layout) so marking a day "not taken" is just as direct as marking it
-   taken -- neither one is buried behind the other. */
+/* Pending dose: both outcomes sit side by side as compact icon buttons --
+   the .med-action-legend at the top of the screen spells out what each
+   icon means once, instead of repeating "Taken"/"Not taken" on every row. */
 .med-dose-item-choice {
   display: flex;
-  flex-direction: column;
-  gap: 6px;
+  align-items: center;
+  gap: 8px;
 }
 
-.med-choice-btn {
-  min-width: 100px;
-  padding: 7px 14px;
-  border-radius: 20px;
+.med-icon-btn {
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
   border: 1.5px solid #2f6fed;
   background: #fff;
   color: #2f6fed;
-  font-family: inherit;
-  font-size: calc(13px * var(--font-scale, 1));
-  font-weight: 700;
-  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
 }
 
-.med-choice-btn:active { background: #e9f1ff; }
+.med-icon-btn:active { background: #e9f1ff; }
 
-.med-choice-btn.med-choice-nottaken { border-color: #e0562a; color: #e0562a; }
-.med-choice-btn.med-choice-nottaken:active { background: #fdece5; }
+.med-icon-btn.med-icon-btn-nottaken { border-color: #e0562a; color: #e0562a; }
+.med-icon-btn.med-icon-btn-nottaken:active { background: #fdece5; }
+
+/* Legend for the icon buttons above, shown once for the whole screen. */
+.med-action-legend {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 18px;
+  padding: 0 4px;
+}
+
+.med-action-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: calc(13.5px * var(--font-scale, 1));
+  font-weight: 600;
+  color: #55606b;
+}
+
+.med-action-legend-icon {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1.5px solid #2f6fed;
+  color: #2f6fed;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.med-action-legend-icon.med-action-legend-icon-nottaken { border-color: #e0562a; color: #e0562a; }
 
 .med-dose-item-locked { opacity: 0.55; cursor: default; }
 
