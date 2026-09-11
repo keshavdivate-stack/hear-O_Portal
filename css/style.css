@@ -5516,18 +5516,12 @@ label.checkbox-field {
   flex-direction: column;
   justify-content: space-between;
   padding: 48px 56px;
-  background: linear-gradient(160deg, #07304f 0%, #0E5C99 48%, #2AA9E0 100%);
+  /* Dark scrim over the photo so the white logo/copy stay readable, while
+     still tying back to the app's blue brand color. */
+  background-image: linear-gradient(160deg, rgba(7, 48, 79, 0.88) 0%, rgba(14, 92, 153, 0.78) 48%, rgba(42, 169, 224, 0.55) 100%), url("../img/Loginpageimage.png");
+  background-size: cover;
+  background-position: center;
   color: #fff;
-}
-
-.plogin-visual-wave {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 90px;
-  height: 140px;
-  width: 100%;
-  pointer-events: none;
 }
 
 .plogin-logo {
