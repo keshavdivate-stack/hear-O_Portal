@@ -5525,14 +5525,12 @@ label.checkbox-field {
   inset: 0;
   width: 100%;
   height: 100%;
-  /* Back to cover -- contain left a flat, seam-y gap at the top where the
-     photo didn't reach. With this panel's proportions, cover's height is
-     the constraining dimension, so it fills top-to-bottom with no gap and
-     only ever crops horizontally; positioning that crop away from the
-     woman (bottom-left, post-flip) keeps her fully visible regardless. */
+  /* cover: with this panel's proportions, height is the constraining
+     dimension, so it fills top-to-bottom with no gap and only ever crops
+     horizontally; positioning that crop away from the woman keeps her
+     fully visible regardless. Unflipped -- original photo orientation. */
   object-fit: cover;
   object-position: right bottom;
-  transform: scaleX(-1);
   z-index: 0;
 }
 
