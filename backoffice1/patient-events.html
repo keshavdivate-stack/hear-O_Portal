@@ -151,6 +151,10 @@
         </span>
         <span id="peHmoToggleLabel">Commercial</span>
       </label>
+      <button type="button" class="bo-btn-primary" id="peAddMessageBtn">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        Send message
+      </button>
       <button class="bo-btn-primary" id="peAddEventBtn">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
         Event
@@ -289,9 +293,21 @@
                   <input type="hidden" name="reportedVia" />
                 </div>
               </div>
-              <div class="bo-modal-field">
+              <div class="bo-modal-field full">
                 <label>Reported date:</label>
                 <input type="date" name="reportedDate" />
+              </div>
+              <div class="bo-modal-field full">
+                <label>Reported time:</label>
+                <input type="time" name="reportedTime" />
+              </div>
+              <div class="bo-modal-field">
+                <label>Start date:</label>
+                <input type="date" name="startDate" />
+              </div>
+              <div class="bo-modal-field">
+                <label>End date:</label>
+                <input type="date" name="endDate" />
               </div>
             </div>
           </div>

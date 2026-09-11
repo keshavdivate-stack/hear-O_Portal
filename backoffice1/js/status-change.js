@@ -1,16 +1,20 @@
 /* ---------------- Data ---------------- */
 /* start dates stored ISO (YYYY-MM-DD) so From/To date filters compare correctly */
 const statusChanges = [
-  { username: "ABC-1252", type: "Status", prev: "Active", next: "Priority", start: "2026-07-04", days: 3, by: "System" },
-  { username: "ABC-1254", type: "Monitoring", prev: "Monitored", next: "Unmonitored", start: "2026-06-30", days: 7, by: "ayelet_clinic" },
-  { username: "ABC-1254", type: "Account", prev: "Enabled", next: "Paused", start: "2026-06-30", days: 7, by: "ayelet_clinic" },
-  { username: "ABC-1238", type: "Monitoring", prev: "Monitored", next: "Unmonitored", start: "2026-06-25", days: 6, by: "System" },
-  { username: "ABC-1242", type: "Status", prev: "Registered", next: "Baseline", start: "2026-06-24", days: 2, by: "System" },
-  { username: "ABC-1283", type: "Account", prev: "Enabled", next: "Discontinued", start: "2026-06-24", days: 13, by: "ayelet_clinic" },
-  { username: "ABC-1283", type: "Status", prev: "Priority", next: "Active", start: "2026-06-23", days: 2, by: "System" },
+  { username: "B01-0335", prev: "Registered", next: "Baseline", start: "2026-09-11", days: 1, by: "System" },
+  { username: "B01-0334", prev: "Registered", next: "Baseline", start: "2026-09-11", days: 1, by: "System" },
+  { username: "B01-0333", prev: "Registered", next: "Baseline", start: "2026-09-11", days: 1, by: "System" },
+  { username: "B01-0335", prev: "", next: "Registered", start: "2026-09-10", days: 2, by: "System" },
+  { username: "B01-0334", prev: "", next: "Registered", start: "2026-09-10", days: 2, by: "System" },
+  { username: "B01-0333", prev: "", next: "Registered", start: "2026-09-10", days: 2, by: "System" },
+  { username: "NTS-0006", prev: "", next: "Registered", start: "2026-09-08", days: 4, by: "System" },
+  { username: "B01-0332", prev: "Registered", next: "Baseline", start: "2026-09-08", days: 4, by: "System" },
 ];
 
-const formatDate = (iso) => iso.split("-").reverse().join("/");
+const formatDate = (iso) => {
+  const [year, month, day] = iso.split("-");
+  return `${day}/${month}/${year.slice(-2)}`;
+};
 
 statusChanges.forEach((s, i) => (s.id = i));
 
@@ -201,15 +205,6 @@ function scFilteredRows() {
 }
 
 /* ---------------- Render ---------------- */
-function scStatusClass(status) {
-  return status.toLowerCase().replace(/\s+/g, "-").replace("insufficient-data", "insufficient");
-}
-
-function scCell(type, value) {
-  if (!value) return "";
-  return `<span class="bo-sc-badge ${scStatusClass(value)}">${value}</span>`;
-}
-
 function renderStatusChanges() {
   const list = scFilteredRows();
   const total = list.length;
@@ -224,9 +219,8 @@ function renderStatusChanges() {
       (s) => `
       <tr>
         <td><span class="bo-name-link">${s.username}</span></td>
-        <td>${s.type}</td>
-        <td>${scCell(s.type, s.prev)}</td>
-        <td>${scCell(s.type, s.next)}</td>
+        <td>${s.prev}</td>
+        <td>${s.next}</td>
         <td>${formatDate(s.start)}</td>
         <td>${s.days}</td>
         <td>${s.by}</td>
@@ -270,23 +264,7 @@ document.getElementById("scStatusToFilter").addEventListener("change", (e) => {
   renderStatusChanges();
 });
 
-document.getElementById("scClearFiltersBtn").addEventListener("click", () => {
-  scSiteMultiSelect.reset();
-  scSiteFilter = new Set(scSiteCodes);
-  scStatusToFilter = "";
-  scSearchTerm = "";
-  scFromDate = "";
-  scToDate = "";
-
-  setBoSelectValue(scStatusToSelect, "", { silent: true });
-  document.getElementById("scSearchInput").value = "";
-  const fromDateEl = document.getElementById("scFromDate");
-  const toDateEl = document.getElementById("scToDate");
-  fromDateEl.value = "";
-  fromDateEl.type = "text";
-  toDateEl.value = "";
-  toDateEl.type = "text";
-
+document.getElementById("scApplyFiltersBtn").addEventListener("click", () => {
   scCurrentPage = 1;
   renderStatusChanges();
 });

@@ -335,6 +335,19 @@ function todayIso() {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 }
 
+function peDateToIso(value) {
+  return value ? value.split("/").reverse().join("-") : "";
+}
+
+function peDateToDisplay(value) {
+  return value ? value.split("-").reverse().join("/") : "";
+}
+
+function peCurrentTime() {
+  const now = new Date();
+  return `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+}
+
 function validateEventForm() {
   peSaveEventBtn.disabled = peEventForm.username.value.trim() === "";
 }
@@ -350,9 +363,15 @@ function openEventDrawer(record) {
     peEventForm.username.value = record.username;
     peEventForm.description.value = record.description;
     peEventForm.reportedBy.value = record.reportedBy;
-    peEventForm.reportedDate.value = record.reportedTime ? record.reportedTime.split(" ")[0].split("/").reverse().join("-") : todayIso();
+    const [reportedDate, reportedTime] = (record.reportedTime || "").split(" ");
+    peEventForm.reportedDate.value = peDateToIso(reportedDate) || todayIso();
+    peEventForm.reportedTime.value = (reportedTime || "").slice(0, 5);
+    peEventForm.startDate.value = peDateToIso(record.startDate);
+    peEventForm.endDate.value = peDateToIso(record.endDate);
   } else {
     peEventForm.reportedDate.value = todayIso();
+    peEventForm.reportedTime.value = peCurrentTime();
+    peEventForm.startDate.value = todayIso();
   }
 
   validateEventForm();
@@ -380,10 +399,10 @@ peEventForm.addEventListener("submit", (e) => {
   e.preventDefault();
   if (peSaveEventBtn.disabled) return;
 
-  const dateStr = peEventForm.reportedDate.value ? peEventForm.reportedDate.value.split("-").reverse().join("/") : "";
-  const now = new Date();
-  const pad = (n) => String(n).padStart(2, "0");
-  const timeStr = `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+  const dateStr = peDateToDisplay(peEventForm.reportedDate.value);
+  const timeStr = peEventForm.reportedTime.value ? `${peEventForm.reportedTime.value}:00` : "";
+  const startDate = peDateToDisplay(peEventForm.startDate.value);
+  const endDate = peDateToDisplay(peEventForm.endDate.value);
 
   const record = {
     username: peEventForm.username.value.trim(),
@@ -394,8 +413,8 @@ peEventForm.addEventListener("submit", (e) => {
     reportedBy: peEventForm.reportedBy.value.trim(),
     reportedVia: reportedViaSelect.querySelector("input[type=hidden]").value,
     reportedTime: `${dateStr} ${timeStr}`,
-    startDate: dateStr,
-    endDate: editingEventId === null ? "" : peEvents.find((r) => r.id === editingEventId).endDate,
+    startDate,
+    endDate,
     approved: editingEventId === null ? false : peEvents.find((r) => r.id === editingEventId).approved,
     status: editingEventId === null ? "" : peEvents.find((r) => r.id === editingEventId).status,
   };
