@@ -1921,20 +1921,16 @@ input[type="password"]:focus {
 
 .med-dose-item + .med-dose-item { border-top: 1px solid #f0f1f3; }
 
-.med-dose-icon {
-  flex-shrink: 0;
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background: #eee9fb;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
 .med-dose-info { flex: 1; min-width: 0; }
 
+/* Name + chevron sit inline on their own line, with the dose sub-line below
+   -- dropping the leading icon (and moving the chevron off the row's far
+   edge) frees up the width names like "Spironolactone" need next to two
+   action pills. */
 .med-dose-item-name {
+  display: flex;
+  align-items: center;
+  gap: 5px;
   font-size: calc(18px * var(--font-scale, 1));
   font-weight: 700;
   color: #1c1c1c;
@@ -1948,28 +1944,11 @@ input[type="password"]:focus {
 
 .med-dose-item-action { flex-shrink: 0; }
 
-/* Small trailing arrow -- the only hint that tapping a dose row (outside its
-   Take button) opens that medication's history. Kept deliberately quiet
-   (thin, pale) so it reads as "more info this way" without competing with
-   the Take/Taken control, which is the row's primary action. */
-.med-dose-item-chevron { flex-shrink: 0; color: #c7ccd3; margin-left: -2px; }
+/* Small arrow next to the name -- the only hint that tapping a dose row
+   (outside its action buttons) opens that medication's history. Kept
+   deliberately quiet (thin, pale) so it doesn't read as its own button. */
+.med-dose-item-chevron { flex-shrink: 0; color: #a8adb5; }
 .med-dose-item-locked .med-dose-item-chevron { display: none; }
-
-.med-take-btn {
-  padding: 12px 22px;
-  min-width: 84px;
-  min-height: 44px;
-  border-radius: 30px;
-  border: 1.5px solid #2f6fed;
-  background: #fff;
-  color: #2f6fed;
-  font-size: calc(16px * var(--font-scale, 1));
-  font-weight: 700;
-  cursor: pointer;
-  font-family: inherit;
-}
-
-.med-take-btn:active { background: #e9f1ff; }
 
 .med-status {
   display: flex;
