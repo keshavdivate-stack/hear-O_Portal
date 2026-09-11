@@ -5526,10 +5526,11 @@ label.checkbox-field {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  /* No zoom -- any cropping needed to fill the panel comes off the top/left
-     (empty blue backdrop), anchored from the bottom-right so the woman and
-     her phone stay fully visible with natural framing, not tight-cropped. */
-  object-position: right bottom;
+  /* No zoom -- any cropping needed to fill the panel comes off the top/right
+     (empty blue backdrop) before the mirror below flips it back to bottom-
+     right, so the woman and her phone stay fully, naturally visible. */
+  object-position: left bottom;
+  transform: scaleX(-1);
   z-index: 0;
 }
 
