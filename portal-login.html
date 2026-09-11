@@ -39,11 +39,6 @@
         <h2>Welcome to HearO</h2>
         <p class="plogin-form-sub">Sign in to continue to your account.</p>
 
-        <div id="linkedBanner" class="plogin-success" style="display:none;">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="var(--green-text)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          Health record linked successfully
-        </div>
-
         <div class="plogin-field">
           <label for="loginUsername">Username</label>
           <div class="plogin-input-wrap">
@@ -75,10 +70,6 @@
   </div>
 
 <script>
-  if (new URLSearchParams(window.location.search).get("linked") === "1") {
-    document.getElementById("linkedBanner").style.display = "flex";
-  }
-
   document.getElementById("togglePasswordBtn").addEventListener("click", () => {
     const input = document.getElementById("loginPassword");
     const showing = input.type === "text";
