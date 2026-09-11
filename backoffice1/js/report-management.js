@@ -746,7 +746,7 @@ document.getElementById("rmSendTags").addEventListener("change", (e) => {
 });
 
 function validateSendForm() {
-  const ok = !!rmSendForm.reportKey.value && !!rmSendForm.org.value && rmSendForm.recipients.value.trim() !== "";
+  const ok = !!rmSendForm.reportKey.value && !!rmSendForm.org.value;
   rmSendBtn.disabled = !ok;
 }
 rmSendForm.addEventListener("input", validateSendForm);
@@ -777,12 +777,11 @@ rmSendForm.addEventListener("submit", (e) => {
   const email = rmSendForm.email.value.trim();
   const fromDate = rmSendForm.fromDate.value;
   const toDate = rmSendForm.toDate.value;
-  const recipients = rmParseRecipients(rmSendForm.recipients.value);
   const now = new Date();
   const sentOn = `Today, ${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
 
   const nextId = rmHistory.length ? Math.max(...rmHistory.map((h) => h.id)) + 1 : 0;
-  rmHistory.unshift({ id: nextId, reportKey, org, title, email, fromDate, toDate, sentOn, recipients: recipients.length, status: "Processing" });
+  rmHistory.unshift({ id: nextId, reportKey, org, title, email, fromDate, toDate, sentOn, recipients: 0, status: "Processing" });
 
   closeSendReport();
   rmRenderHistory();
