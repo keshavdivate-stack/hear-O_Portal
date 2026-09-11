@@ -48,8 +48,8 @@ function renderOrgs() {
       <tr>
         <td><a class="bo-name-link" href="org-profile.html?id=${o.id}">${o.name}</a></td>
         <td>${o.tag}</td>
-        <td>${o.study}</td>
-        <td>${orgCheck(o.id, "isHmo", o.isHmo)}</td>
+        <td>${o.type}</td>
+        <td>${o.type === "Commercial" ? "&mdash;" : o.study}</td>
         <td>${o.target}</td>
         <td>${o.dateCreated}</td>
         <td>${orgCheck(o.id, "onDashboard", o.onDashboard)}</td>
