@@ -1,4 +1,4 @@
-/* ---------------- Usable Compliance drill-down ----------------
+/* ---------------- Recording Quality drill-down ----------------
    Reached by clicking a bar in the Study dashboard's Recording Quality /
    Compliance bins widget (js/mkt-study.js renderMktBins). The clicked
    bucket ("90-100", "80-89", "70-79", "60-69", "lt60") and metric
@@ -60,7 +60,7 @@ const ucPool = Array.from({ length: ucTotal }, (_, i) => {
   const totalUnrecordedDays = totalAvailableDays - totalRecordedDays;
   const nvrd = totalRecordedDays > 0 ? seed % 3 : 0;
   const daysWithJustification = totalUnrecordedDays > 0 ? (seed >> 3) % 3 : 0;
-  const usablePct = Math.max(0, Math.min(100, Math.round(((totalRecordedDays + daysWithJustification) / totalAvailableDays) * 100)));
+  const recordingQualityPct = Math.max(0, Math.min(100, Math.round(((totalRecordedDays + daysWithJustification) / totalAvailableDays) * 100)));
   const compliancePctCol = Math.round((totalRecordedDays / totalAvailableDays) * 100);
 
   const startDate = ucDate(seed, 2020);
@@ -80,8 +80,8 @@ const ucPool = Array.from({ length: ucTotal }, (_, i) => {
     nvrd,
     daysWithJustification,
     compliancePctCol,
-    usablePct,
-    bucket: ucBucketOf(usablePct),
+    recordingQualityPct,
+    bucket: ucBucketOf(recordingQualityPct),
   };
 });
 
@@ -106,7 +106,7 @@ function renderUcTable() {
         <td>${p.nvrd}</td>
         <td>${p.daysWithJustification}</td>
         <td>${p.compliancePctCol}</td>
-        <td>${p.usablePct}</td>
+        <td>${p.recordingQualityPct}</td>
       </tr>`
     )
     .join("") || `<tr><td colspan="13" style="text-align:center; color:var(--gray-text); padding:24px;">No patients in this range.</td></tr>`;
