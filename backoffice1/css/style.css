@@ -1129,6 +1129,48 @@ body.bo-page-scroll .bo-list-toolbar {
 
 .bo-list-table tbody td.mono { color: var(--gray-text); }
 
+/* Session Data > Questions: compact metadata and an inline translation preview. */
+.sd-questions-table { min-width: 1120px !important; }
+.sd-answers-table { min-width: 960px !important; }
+.sd-questions-table .sd-expand-column,
+.sd-questions-table .sd-question-expand-cell { width: 48px; padding-right: 4px; }
+.sd-question-expand {
+  width: 28px;
+  height: 28px;
+  display: inline-grid;
+  place-items: center;
+  border: 0;
+  border-radius: 7px;
+  color: var(--blue-text);
+  background: transparent;
+  cursor: pointer;
+}
+.sd-question-expand:hover { background: #EEF7FC; }
+.sd-question-expand svg { transition: transform 160ms ease; }
+.sd-question-expand[aria-expanded="true"] svg { transform: rotate(90deg); }
+.sd-question-row.is-expanded td { background: #F4F8FC; border-bottom-color: transparent; }
+.sd-question-row.is-expanded td:first-child,
+.sd-question-row.is-expanded td:last-child { background: #F4F8FC; }
+.sd-question-meta { color: var(--gray-text) !important; }
+.sd-question-details-row:hover td { background: #fff !important; }
+.sd-question-details-row td { padding: 0 16px 16px 64px !important; background: #F4F8FC; }
+.sd-question-details {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  border: 1px solid #DCE6EF;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #DCE6EF;
+}
+.sd-question-detail-item { display: grid; grid-template-columns: 128px minmax(0, 1fr); gap: 12px; padding: 11px 14px; background: #fff; }
+.sd-question-detail-label { color: var(--gray-text); font-size: 12px; font-weight: 700; }
+.sd-question-detail-value { color: var(--ink); overflow-wrap: anywhere; }
+@media (max-width: 760px) {
+  .sd-question-details { grid-template-columns: 1fr; }
+  .sd-question-details-row td { padding-left: 16px !important; }
+}
+
 .bo-name-link { color: var(--blue-text); font-weight: 700; text-decoration: none; }
 .bo-name-link:hover { text-decoration: underline; }
 

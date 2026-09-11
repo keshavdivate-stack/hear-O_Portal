@@ -17,7 +17,37 @@ const SD_TAB_META = {
 
 const sdKebabIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="1.7" fill="currentColor"/><circle cx="12" cy="12" r="1.7" fill="currentColor"/><circle cx="12" cy="19" r="1.7" fill="currentColor"/></svg>`;
 
-function sdEsc(v) { return String(v == null ? "" : v).replace(/"/g, "&quot;"); }
+function sdEsc(v) {
+  return String(v == null ? "" : v)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+const sdChevronIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const sdQuestionLanguageLabels = { AR: "Arabic", EN: "English", HE: "Hebrew", RU: "Russian", ES: "Spanish", DE: "German" };
+
+function sdQuestionValue(value) {
+  return value === undefined || value === null || value === "" ? "--" : sdEsc(value);
+}
+
+function sdQuestionDetails(row) {
+  return SD_LANGS.map((lang) => `
+    <div class="sd-question-detail-item">
+      <span class="sd-question-detail-label">${sdQuestionLanguageLabels[lang]} question</span>
+      <span class="sd-question-detail-value"${lang === "AR" || lang === "HE" ? ' dir="auto"' : ""}>${sdQuestionValue(row.questions[lang])}</span>
+    </div>`).join("");
+}
+
+function sdAnswerDetails(row) {
+  return SD_LANGS.map((lang) => `
+    <div class="sd-question-detail-item">
+      <span class="sd-question-detail-label">${sdQuestionLanguageLabels[lang]} answer</span>
+      <span class="sd-question-detail-value"${lang === "AR" || lang === "HE" ? ' dir="auto"' : ""}>${sdQuestionValue(row.answers[lang])}</span>
+    </div>`).join("");
+}
 
 function sdActions(tabKey, idx) {
   return `
@@ -68,24 +98,35 @@ const sdQuestionsPager = boCreatePager(
   "rows-questions",
   () => sdEntries("questions"),
   (e) => `
-      <tr>
+      <tr class="sd-question-row" data-question-row="${e.i}">
+        <td class="sd-question-expand-cell"><button type="button" class="sd-question-expand" data-question-expand="${e.i}" aria-expanded="false" aria-controls="question-details-${e.i}" aria-label="Show question translations">${sdChevronIcon}</button></td>
         <td>${sdEsc(e.r.type)}</td>
+        <td class="sd-question-meta">${sdQuestionValue(e.r.decimal)}</td>
+        <td class="sd-question-meta">${sdQuestionValue(e.r.min)}</td>
+        <td class="sd-question-meta">${sdQuestionValue(e.r.max)}</td>
         <td>${sdEsc(e.r.questions.EN)}</td>
         <td>${sdActions("questions", e.i)}</td>
+      </tr>
+      <tr class="sd-question-details-row" id="question-details-${e.i}" hidden>
+        <td colspan="7"><div class="sd-question-details">${sdQuestionDetails(e.r)}</div></td>
       </tr>`,
-  { pageSize: SD_PAGE_SIZE, emptyColspan: 3, emptyText: "No questions yet." }
+  { pageSize: SD_PAGE_SIZE, emptyColspan: 7, emptyText: "No questions yet." }
 );
 
 const sdAnswersPager = boCreatePager(
   "rows-answers",
   () => sdEntries("answers"),
   (e) => `
-      <tr>
+      <tr class="sd-question-row" data-answer-row="${e.i}">
+        <td class="sd-question-expand-cell"><button type="button" class="sd-question-expand" data-answer-expand="${e.i}" aria-expanded="false" aria-controls="answer-details-${e.i}" aria-label="Show answer translations">${sdChevronIcon}</button></td>
         <td>${sdEsc(e.r.name)}</td>
         <td>${sdEsc(e.r.answers.EN || e.r.answers.AR || "")}</td>
         <td>${sdActions("answers", e.i)}</td>
+      </tr>
+      <tr class="sd-question-details-row" id="answer-details-${e.i}" hidden>
+        <td colspan="4"><div class="sd-question-details">${sdAnswerDetails(e.r)}</div></td>
       </tr>`,
-  { pageSize: SD_PAGE_SIZE, emptyColspan: 3, emptyText: "No answers yet." }
+  { pageSize: SD_PAGE_SIZE, emptyColspan: 4, emptyText: "No answers yet." }
 );
 
 const sdIaErrorsPager = boCreatePager(
@@ -144,6 +185,17 @@ let activeSdIdx = null;
 
 document.querySelectorAll(".bo-list-table").forEach((table) => {
   table.addEventListener("click", (e) => {
+    const expand = e.target.closest(".sd-question-expand");
+    if (expand) {
+      const expanded = expand.getAttribute("aria-expanded") === "true";
+      const details = document.getElementById(expand.getAttribute("aria-controls"));
+      expand.setAttribute("aria-expanded", String(!expanded));
+      const itemType = expand.dataset.answerExpand === undefined ? "question" : "answer";
+      expand.setAttribute("aria-label", expanded ? `Show ${itemType} translations` : `Hide ${itemType} translations`);
+      details.hidden = expanded;
+      expand.closest("tr").classList.toggle("is-expanded", !expanded);
+      return;
+    }
     const trigger = e.target.closest(".row-menu-trigger");
     if (!trigger) return;
     e.stopPropagation();
@@ -186,7 +238,7 @@ function sdInitState(tabKey, editIdx) {
   sdState = sdFreshState();
   if (editIdx === null) return;
   const row = SD_DATA[tabKey][editIdx];
-  if (tabKey === "questions") sdState.simple = { type: row.type, ...row.questions };
+  if (tabKey === "questions") sdState.simple = { type: row.type, decimal: row.decimal || "", min: row.min || "", max: row.max || "", ...row.questions };
   else if (tabKey === "answers") sdState.simple = { name: row.name, ...row.answers };
   else if (tabKey === "iaErrors") sdState.simple = { name: row.name, identifier: row.identifier, priority: row.priority, rerecordAttempts: row.rerecordAttempts, sessionRerecordAttempts: row.sessionRerecordAttempts, langTable: Object.fromEntries(SD_LANGS.map((l) => [l, [row.messages[l].regular, row.messages[l].successful, row.messages[l].unsuccessful]])) };
   else if (tabKey === "reminderTimeRange") sdState.simple = { name: row.name, start: sdSplitTime(row.start), end: sdSplitTime(row.end), defaultTime: sdSplitTime(row.defaultTime), langTable: Object.fromEntries(SD_LANGS.map((l) => [l, [row.text ? row.text[l] || "" : ""]])) };
@@ -202,6 +254,11 @@ function sdSplitTime(t) {
 function sdTextField(key, label) {
   const v = sdEsc(sdState.simple[key] || "");
   return `<div class="bo-modal-field"><label>${label}:</label><input type="text" data-field="${key}" value="${v}" placeholder="${label}" /></div>`;
+}
+
+function sdNumberField(key, label) {
+  const v = sdEsc(sdState.simple[key] || "");
+  return `<div class="bo-modal-field"><label>${label}:</label><input type="number" step="any" data-field="${key}" value="${v}" placeholder="${label}" /></div>`;
 }
 
 function sdSelectField(key, label, options) {
@@ -247,7 +304,12 @@ function sdBodySentences() {
 
 function sdBodyQuestions() {
   return `
-    ${sdSelectField("type", "Type", SD_QUESTION_TYPES)}
+    <div class="bo-modal-grid">
+      ${sdSelectField("type", "Type", SD_QUESTION_TYPES)}
+      ${sdNumberField("decimal", "Decimal")}
+      ${sdNumberField("min", "Min")}
+      ${sdNumberField("max", "Max")}
+    </div>
     <div class="bo-modal-grid">
       ${sdTextField("AR", "AR Question")}
       ${sdTextField("EN", "EN Question")}
@@ -372,7 +434,7 @@ document.getElementById("sdDrawerForm").addEventListener("submit", (e) => {
   if (sdCurrentTab === "sentences") {
     record = { identifier: s.identifier || "", language: s.language || "", sentence: s.sentence || "" };
   } else if (sdCurrentTab === "questions") {
-    record = { type: s.type || "", questions: Object.fromEntries(SD_LANGS.map((l) => [l, s[l] || ""])) };
+    record = { type: s.type || "", decimal: s.decimal || "", min: s.min || "", max: s.max || "", questions: Object.fromEntries(SD_LANGS.map((l) => [l, s[l] || ""])) };
   } else if (sdCurrentTab === "answers") {
     record = { name: s.name || "", answers: Object.fromEntries(SD_LANGS.map((l) => [l, s[l] || ""])) };
   } else if (sdCurrentTab === "iaErrors") {
