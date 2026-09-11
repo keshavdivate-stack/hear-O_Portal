@@ -264,7 +264,23 @@ document.getElementById("scStatusToFilter").addEventListener("change", (e) => {
   renderStatusChanges();
 });
 
-document.getElementById("scApplyFiltersBtn").addEventListener("click", () => {
+document.getElementById("scClearFiltersBtn").addEventListener("click", () => {
+  scSiteMultiSelect.reset();
+  scSiteFilter = new Set(scSiteCodes);
+  scStatusToFilter = "";
+  scSearchTerm = "";
+  scFromDate = "";
+  scToDate = "";
+
+  setBoSelectValue(scStatusToSelect, "", { silent: true });
+  document.getElementById("scSearchInput").value = "";
+  const fromDateEl = document.getElementById("scFromDate");
+  const toDateEl = document.getElementById("scToDate");
+  fromDateEl.value = "";
+  fromDateEl.type = "text";
+  toDateEl.value = "";
+  toDateEl.type = "text";
+
   scCurrentPage = 1;
   renderStatusChanges();
 });
