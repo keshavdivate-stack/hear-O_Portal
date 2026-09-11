@@ -5525,11 +5525,11 @@ label.checkbox-field {
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  /* No zoom -- any cropping needed to fill the panel comes off the top/right
-     (empty blue backdrop) before the mirror below flips it back to bottom-
-     right, so the woman and her phone stay fully, naturally visible. */
-  object-position: left bottom;
+  /* contain (not cover) so the full photo is always visible -- nothing of
+     the woman or her phone is ever cropped -- sitting flush at the bottom
+     of the panel with the leftover blue backdrop filling the space above. */
+  object-fit: contain;
+  object-position: center bottom;
   transform: scaleX(-1);
   z-index: 0;
 }
