@@ -5525,11 +5525,13 @@ label.checkbox-field {
   inset: 0;
   width: 100%;
   height: 100%;
-  /* contain (not cover) so the full photo is always visible -- nothing of
-     the woman or her phone is ever cropped -- sitting flush at the bottom
-     of the panel with the leftover blue backdrop filling the space above. */
-  object-fit: contain;
-  object-position: center bottom;
+  /* Back to cover -- contain left a flat, seam-y gap at the top where the
+     photo didn't reach. With this panel's proportions, cover's height is
+     the constraining dimension, so it fills top-to-bottom with no gap and
+     only ever crops horizontally; positioning that crop away from the
+     woman (bottom-left, post-flip) keeps her fully visible regardless. */
+  object-fit: cover;
+  object-position: right bottom;
   transform: scaleX(-1);
   z-index: 0;
 }
