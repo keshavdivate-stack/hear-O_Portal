@@ -1170,8 +1170,8 @@ body.bo-page-scroll .bo-list-toolbar {
   border-bottom: 1px solid var(--gray-border);
 }
 .sd-question-detail-item:last-child { border-bottom: 0; }
-.sd-question-detail-label { color: var(--ink); font-size: 13px; font-weight: 600; text-align: left; }
-.sd-question-detail-value { color: var(--ink); overflow-wrap: anywhere; text-align: left; unicode-bidi: plaintext; }
+.sd-question-detail-label { color: var(--ink); font-size: 13px; font-weight: 600; text-align: left; min-width: 0; white-space: normal; overflow-wrap: break-word; }
+.sd-question-detail-value { color: var(--ink); min-width: 0; white-space: normal; overflow-wrap: anywhere; text-align: left; unicode-bidi: plaintext; }
 @media (max-width: 760px) {
   .sd-question-details-row td { padding-left: 16px !important; }
   .sd-question-detail-item { grid-template-columns: 120px minmax(0, 1fr); }
@@ -1607,6 +1607,12 @@ label.bo-date-field { cursor: text; }
 }
 
 .bo-modal-field { display: flex; flex-direction: column; gap: 6px; }
+
+/* Session Data / Components' Add/Edit drawers render some fields as plain
+   stacked .bo-modal-field's (not inside .bo-modal-grid, which already
+   spaces its own rows) -- without this they sit flush against each other. */
+#sdDrawerBody > .bo-modal-field,
+#configDrawerBody > .bo-modal-field { margin-bottom: 16px; }
 .bo-modal-field[hidden] { display: none; }
 .bo-modal-field.full { grid-column: 1 / -1; }
 

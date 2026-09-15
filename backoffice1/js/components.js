@@ -19,8 +19,8 @@ const TAB_META = {
   iaErrors: { title: "Create/Edit IA Errors Config", addLabel: "IA Error" },
 };
 
+const compKebabIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="1.7" fill="currentColor"/><circle cx="12" cy="12" r="1.7" fill="currentColor"/><circle cx="12" cy="19" r="1.7" fill="currentColor"/></svg>`;
 const compEditIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 20h4L18.5 9.5a2.1 2.1 0 0 0-3-3L5 17v3Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round"/></svg>`;
-const compTrashIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>`;
 
 function esc(v) { return String(v == null ? "" : v).replace(/"/g, "&quot;"); }
 function escOrDash(v) { return v ? esc(v) : "—"; }
@@ -56,11 +56,11 @@ function makeSimplePager(tabKey) {
     () => DATA[tabKey].map((r, i) => ({ r, i })),
     (e) => `
       <tr>
-        <td><button type="button" class="bo-name-link simple-edit-trigger" data-tab="${tabKey}" data-idx="${e.i}">${esc(e.r.name)}</button></td>
+        <td>${esc(e.r.name)}</td>
         <td>${esc(e.r.creationDate)}</td>
         <td>
           <div class="bo-row-actions">
-            <button class="bo-action-icon danger simple-delete-trigger" data-tab="${tabKey}" data-idx="${e.i}" aria-label="Delete">${compTrashIcon}</button>
+            <button class="bo-action-icon row-menu-trigger" data-tab="${tabKey}" data-idx="${e.i}" aria-label="Row actions">${compKebabIcon}</button>
           </div>
         </td>
       </tr>`,
@@ -99,28 +99,49 @@ function renderAllTables() {
 }
 renderAllTables();
 
-/* ---------------- Row actions (edit / delete) ----------------
-   Every tab only ever offers two actions, and each already has its own
-   obvious trigger -- the row name opens Edit, a trash icon deletes -- so
-   there's no longer a kebab-menu dropdown to wire up here. */
+/* ---------------- Row action dropdown (edit / delete) ----------------
+   Main Config only ever offers Edit, so it gets a direct icon instead of
+   a menu. Every other tab offers two actions (Edit, Delete), so those
+   still go through the kebab dropdown. */
+const compRowMenu = document.getElementById("compRowMenu");
+let activeCompTab = null;
+let activeCompIdx = null;
+
 document.querySelectorAll(".bo-list-table").forEach((table) => {
   table.addEventListener("click", (e) => {
-    const editTrigger = e.target.closest(".main-edit-trigger, .simple-edit-trigger");
+    const editTrigger = e.target.closest(".main-edit-trigger");
     if (editTrigger) {
-      const tab = editTrigger.dataset.tab || "main";
-      openDrawer(tab, Number(editTrigger.dataset.idx));
+      openDrawer("main", Number(editTrigger.dataset.idx));
       return;
     }
 
-    const deleteTrigger = e.target.closest(".simple-delete-trigger");
-    if (deleteTrigger) {
-      const tab = deleteTrigger.dataset.tab;
-      const idx = Number(deleteTrigger.dataset.idx);
-      if (!confirm(`Delete "${DATA[tab][idx].name}"?`)) return;
-      DATA[tab].splice(idx, 1);
-      renderAllTables();
-    }
+    const trigger = e.target.closest(".row-menu-trigger");
+    if (!trigger) return;
+    e.stopPropagation();
+    activeCompTab = trigger.dataset.tab;
+    activeCompIdx = Number(trigger.dataset.idx);
+    const rect = trigger.getBoundingClientRect();
+    compRowMenu.style.top = `${rect.bottom + 6}px`;
+    compRowMenu.style.left = `${rect.right - 190}px`;
+    compRowMenu.classList.add("open");
   });
+});
+
+document.addEventListener("click", (e) => {
+  if (!compRowMenu.contains(e.target)) compRowMenu.classList.remove("open");
+});
+
+compRowMenu.addEventListener("click", (e) => {
+  const item = e.target.closest(".bo-row-menu-item");
+  if (!item || activeCompTab === null || activeCompIdx === null) return;
+  compRowMenu.classList.remove("open");
+
+  if (item.dataset.action === "edit") openDrawer(activeCompTab, activeCompIdx);
+  if (item.dataset.action === "delete") {
+    if (!confirm(`Delete "${DATA[activeCompTab][activeCompIdx].name}"?`)) return;
+    DATA[activeCompTab].splice(activeCompIdx, 1);
+    renderAllTables();
+  }
 });
 
 document.querySelectorAll(".bo-add-config-btn").forEach((btn) => {

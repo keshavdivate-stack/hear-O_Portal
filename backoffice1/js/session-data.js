@@ -328,8 +328,8 @@ function sdTimePairField(key, label) {
     </div>`;
 }
 
-function sdLangTable(columns) {
-  const head = `<div class="bo-lang-head" style="grid-template-columns:70px repeat(${columns.length},1fr);"><span>Language</span>${columns.map((c) => `<span>${c}</span>`).join("")}</div>`;
+function sdLangTable(columns, headLabel = "Language") {
+  const head = `<div class="bo-lang-head" style="grid-template-columns:70px repeat(${columns.length},1fr);"><span>${headLabel}</span>${columns.map((c) => `<span>${c}</span>`).join("")}</div>`;
   const rows = SD_LANGS.map(
     (l) => `
     <div class="bo-lang-row" style="grid-template-columns:70px repeat(${columns.length},1fr);">
@@ -391,7 +391,7 @@ function sdBodyIaErrors() {
       ${sdTextField("sessionRerecordAttempts", "Session Rerecord Attempts")}
       ${sdTextField("priority", "Priority")}
     </div>
-    ${sdLangTable(["Regular", "Successful", "Unsuccessful"])}
+    ${sdLangTable(["Regular", "Successful", "Unsuccessful"], "Language / Message")}
   `;
 }
 
