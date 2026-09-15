@@ -137,11 +137,11 @@ input[type="password"] {
   padding: 0 16px;
   border: 1.5px solid #c9cdd3;
   border-radius: 16px;
-  font-size: calc(16px * var(--font-scale, 1));
+  font-size: calc(25px * var(--font-scale, 1));
   color: #434141;
   background: #fff;
   outline: none;
-  text-align: center;
+  text-align: left;
   transition: border-color 0.15s ease;
 }
 
@@ -2962,37 +2962,39 @@ input[type="password"]:focus {
   padding: 11px 14px;
   min-height: 44px;
   border-radius: 24px;
-  border: 1.5px solid #186DCE;
+  border: 1.5px solid #2AC19E;
   background: #fff;
-  color: #186DCE;
+  color: #2AC19E;
   font-family: inherit;
-  font-size: calc(14.5px * var(--font-scale, 1));
-  font-weight: 700;
+  font-size: calc(18px * var(--font-scale, 1));
+  font-weight: 500;
   cursor: pointer;
 }
 
 .med-action-btn:active { background: #e9f1ff; }
 
-.med-action-btn.med-action-btn-nottaken { border-color: #e0562a; color: #e0562a; }
-.med-action-btn.med-action-btn-nottaken:active { background: #fdece5; }
+.med-action-btn.med-action-btn-nottaken { border-color: #F98B00; color: #F98B00; }
+.med-action-btn.med-action-btn-nottaken:active { background: #FFF3E5; }
 
 /* Once a dose has a status, its two choice buttons collapse into this
    badge -- a plain label reporting the state, not a button -- paired with
    an explicit Undo link on the other end of the row so reverting it stays
    a clear, discoverable action instead of "tap the badge and hope". */
 .med-action-status {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 9px 16px;
-  min-height: 38px;
-  border-radius: 20px;
-  font-size: calc(13.5px * var(--font-scale, 1));
-  font-weight: 700;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 11px 16px;
+  min-height: 44px;
+  border-radius: 24px;
+  font-size: calc(18px * var(--font-scale, 1));
+  font-weight: 500;
 }
 
-.med-action-status-taken { background: #dff5ea; color: #1c7a52; }
-.med-action-status-nottaken { background: #fdece5; color: #b33d17; }
+.med-action-status-taken { background: #dff5ea; color: #2AC19E; }
+.med-action-status-nottaken { background: #FFF3E5; color: #F98B00; }
 .med-action-status svg { flex-shrink: 0; }
 
 .med-action-undo {

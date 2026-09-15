@@ -26,7 +26,7 @@
       <button type="button" class="back-btn" onclick="window.location.href='home.html'">
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M12.5 4L6.5 10L12.5 16" stroke="#2b2b2b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
-      <h1>My Medication</h1>
+      <h1>My medication</h1>
     </div>
 
     <div class="med-body">
@@ -43,11 +43,6 @@
         <button type="button" class="med-date-nav-btn" id="medNextDay" aria-label="Next day">
           <svg width="8" height="13" viewBox="0 0 9 15" fill="none"><path d="M1.5 1.5L7.5 7.5L1.5 13.5" stroke="#2b2b2b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </button>
-      </div>
-
-      <div class="med-progress-card">
-        <div class="med-progress-text" id="medProgressText">0/5 medications taken</div>
-        <div class="med-progress-track" id="medProgressTrack"></div>
       </div>
 
       <button type="button" class="med-update-banner" id="medUpdateBanner" onclick="window.location.href='medication-update.html'">
@@ -234,34 +229,19 @@
     document.getElementById("medTodayBtn").hidden = isSelectedToday();
   }
 
-  function updateProgress() {
-    const total = DOSES.length;
-    const takenCount = DOSES.filter((d) => statusFor(d.id) === "taken").length;
-    document.getElementById("medProgressText").textContent = `${takenCount}/${total} medications taken`;
-    document.getElementById("medProgressTrack").innerHTML = DOSES
-      .map((d) => {
-        const s = statusFor(d.id);
-        const cls = s === "taken" ? "filled" : s === "not-taken" ? "not-taken" : "";
-        return `<span class="med-progress-seg ${cls}"></span>`;
-      })
-      .join("");
-  }
-
   function renderDoseAction(dose) {
     if (isLocked(dose)) {
       return `<span class="med-locked-tag">Awaiting review</span>`;
     }
     const status = statusFor(dose.id);
     if (status === "taken" || status === "not-taken") {
-      const label = status === "taken" ? "Taken" : "Not taken";
+      const label = status === "taken" ? "Taken" : "Skipped";
       const icon = status === "taken" ? checkIcon : xIcon;
-      return `
-        <span class="med-action-status med-action-status-${status === "taken" ? "taken" : "nottaken"}">${icon} ${label}</span>
-        <button type="button" class="med-action-undo" data-id="${dose.id}" data-reset="1">Undo</button>`;
+      return `<span class="med-action-status med-action-status-${status === "taken" ? "taken" : "nottaken"}">${icon} ${label}</span>`;
     }
     return `
-      <button type="button" class="med-action-btn" data-id="${dose.id}" data-action="taken">${checkIcon} Taken</button>
-      <button type="button" class="med-action-btn med-action-btn-nottaken" data-id="${dose.id}" data-action="not-taken">${xIcon} Not taken</button>`;
+      <button type="button" class="med-action-btn" data-id="${dose.id}" data-action="taken">${checkIcon} Take</button>
+      <button type="button" class="med-action-btn med-action-btn-nottaken" data-id="${dose.id}" data-action="not-taken">${xIcon} Skip</button>`;
   }
 
   function renderTimeGroups() {
@@ -314,8 +294,6 @@
         </div>`;
       })
       .join("");
-
-    updateProgress();
   }
 
   function renderAll() {
