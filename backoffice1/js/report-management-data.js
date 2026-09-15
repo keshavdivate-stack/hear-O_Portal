@@ -136,7 +136,7 @@ const rmHistory = [
   { id: rmHistorySeq++, reportKey: "missedRecordings", org: "Commercial Clalit", sentOn: "Today, 10:22 AM", daysAgo: 0, recipients: ["VickyDev1", "Sarah Admin", "Daniel Avraham"], status: "Delivered" },
   { id: rmHistorySeq++, reportKey: "missedRecordings", org: "Commercial Clalit", sentOn: "Today, 08:57 AM", daysAgo: 0, recipients: ["VickyDev1", "Sarah Admin"], status: "Delivered" },
   { id: rmHistorySeq++, reportKey: "clinicSummary", org: "Maccabi West", sentOn: "Fri, 04:00 PM", daysAgo: 3, recipients: ["emily.carter"], status: "Failed", failureReason: "SMTP relay timed out after 3 retries." },
-  { id: rmHistorySeq++, reportKey: "clinicPriorityNotification", org: "B01 Pilot", sentOn: "Today, 12:15 PM", daysAgo: 0, recipients: ["VickyDev1", "igor_clinic"], status: "Failed", failureReason: "1 of 2 recipient addresses bounced." },
+  { id: rmHistorySeq++, reportKey: "clinicPriorityNotification", org: "B01 Pilot", sentOn: "Today, 12:15 PM", daysAgo: 0, recipients: ["VickyDev1", "igor_clinic"], status: "Partial", failureReason: "1 of 2 recipient addresses bounced." },
   { id: rmHistorySeq++, reportKey: "qualityNotification", org: "Assuta Cardio", sentOn: "Mon, 09:00 AM", daysAgo: 5, recipients: ["igor_clinic"], status: "Delivered" },
   { id: rmHistorySeq++, reportKey: "lowCompliance", org: "Clalit South", sentOn: "Aug 1, 09:00 AM", daysAgo: 7, recipients: ["supervisor_dev3", "emily.carter"], status: "Delivered" },
   { id: rmHistorySeq++, reportKey: "missedRecordings", org: "Commercial Clalit", sentOn: "Yesterday, 10:22 AM", daysAgo: 1, recipients: ["VickyDev1", "Sarah Admin", "Daniel Avraham"], status: "Processing" },

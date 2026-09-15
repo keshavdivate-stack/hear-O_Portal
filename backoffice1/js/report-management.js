@@ -42,7 +42,7 @@ function rmDaysOfWeekLabel(s) {
 const rmReportTimeLabel = (s) => `${s.time} (${s.timezone})`;
 
 const rmStatusPillClass = { Active: "bo-pill-active", Paused: "bo-pill-paused" };
-const rmDeliveryPillClass = { Delivered: "bo-pill-delivered", Failed: "bo-pill-failed", Processing: "bo-pill-processing" };
+const rmDeliveryPillClass = { Delivered: "bo-pill-delivered", Failed: "bo-pill-failed", Partial: "bo-pill-partial", Processing: "bo-pill-processing" };
 const rmStatusPill = (s) => `<span class="bo-pill ${rmStatusPillClass[s] || ""}">${s}</span>`;
 const rmDeliveryPill = (s) => `<span class="bo-pill ${rmDeliveryPillClass[s] || ""}">${s}</span>`;
 /* "N people"/"1 person" stays the visible label -- hovering reveals who,
@@ -373,6 +373,7 @@ function rmRenderHistoryRow(h) {
       <td>${rmEsc(h.org)}</td>
       <td>${rmRecipientsChip(h.recipients)}</td>
       <td>${h.sentOn}</td>
+      <td>${rmDeliveryPill(h.status)}</td>
       <td>
         <div class="bo-row-actions">
           <button class="bo-action-icon row-menu-trigger" data-id="${h.id}" aria-label="Row actions">${rmKebabIcon}</button>
@@ -382,7 +383,7 @@ function rmRenderHistoryRow(h) {
 }
 
 const rmHistoryEmptyHtml = `
-  <tr><td colspan="6">
+  <tr><td colspan="7">
     <div class="bo-empty-state">
       <svg class="bo-empty-state-icon" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
       <p class="bo-empty-state-title" id="rmHistoryEmptyTitle">No deliveries yet</p>
