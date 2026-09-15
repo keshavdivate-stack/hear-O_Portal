@@ -291,7 +291,7 @@ function bodySentences() {
           <label>Sentence ${i + 1}</label>
           <div style="display:flex; align-items:center; gap:8px;">
             <div style="flex:1;">${customSelect("data-sentence", `${l}:${i}`, v || "", SENTENCE_OPTIONS, "Select sentence")}</div>
-            ${state.sentences[l].length > 1 ? `<button type="button" class="bo-btn-text bo-remove-sentence" data-lang="${l}" data-idx="${i}" aria-label="Remove" style="font-size:18px;">&times;</button>` : ""}
+            ${state.sentences[l].length > 1 ? `<button type="button" class="bo-remove-field-btn bo-remove-sentence" data-lang="${l}" data-idx="${i}" aria-label="Remove"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6L18 18M6 18L18 6"/></svg></button>` : ""}
           </div>
         </div>`
       )

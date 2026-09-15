@@ -1794,6 +1794,27 @@ a.bo-btn-secondary { text-decoration: none; }
 .bo-btn-text.danger { color: var(--red); border-color: var(--red); }
 .bo-btn-text.danger:hover { background: var(--red-light); }
 
+/* Small square "remove this row" button next to a field (e.g. a sentence
+   picker) -- .bo-btn-text's own padding/height made it balloon to match
+   the field's full height at a wide pill width; this is sized to just be
+   a compact square instead. */
+.bo-remove-field-btn {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid var(--field-border);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--gray-text);
+  cursor: pointer;
+  font-family: inherit;
+  padding: 0;
+}
+.bo-remove-field-btn:hover { background: var(--red-light); border-color: var(--red); color: var(--red); }
+
 /* Plain text "Clear filters" link -- filters apply as soon as a value
    changes (see .bo-filter-row selects/inputs), so there's no Apply button
    to sit next to; this just resets every field back to its default. */
