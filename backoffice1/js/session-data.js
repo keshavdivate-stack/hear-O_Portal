@@ -405,7 +405,7 @@ function sdBodyReminderTimeRange() {
       ${sdTimePairField("end", "End Hour")}
       ${sdTimePairField("defaultTime", "Default Reminder Time")}
     </div>
-    ${sdLangTable(["Text"])}
+    ${sdLangTable(["Text"], "Language / Message")}
   `;
 }
 
