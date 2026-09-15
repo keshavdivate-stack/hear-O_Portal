@@ -192,9 +192,7 @@ function rmRenderScheduleRow(s) {
       <td>${s.tags.length ? `<div class="bo-ehr-tags">${s.tags.map((t) => `<span class="bo-ehr-tag">${rmEsc(t)}</span>`).join("")}</div>` : `<span class="bo-ehr-none">—</span>`}</td>
       <td>${rmEsc(s.org)}</td>
       <td>${rmRecipientsChip(s.recipients)}</td>
-      <td>
-        <div class="bo-cell-primary">${s.frequency}</div>
-      </td>
+      <td>${s.frequency}</td>
       <td>${s.nextRun}</td>
       <td>${rmStatusPill(s.status)}</td>
       <td>
