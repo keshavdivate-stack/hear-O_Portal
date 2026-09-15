@@ -34,19 +34,21 @@ function sdQuestionValue(value) {
 }
 
 function sdQuestionDetails(row) {
-  return SD_LANGS.map((lang) => `
+  const items = SD_LANGS.map((lang) => `
     <div class="sd-question-detail-item">
-      <span class="sd-question-detail-label">${sdQuestionLanguageLabels[lang]} question</span>
+      <span class="sd-question-detail-label"><span class="sd-lang-chip">${lang}</span>${sdQuestionLanguageLabels[lang]} question</span>
       <span class="sd-question-detail-value"${lang === "AR" || lang === "HE" ? ' dir="auto"' : ""}>${sdQuestionValue(row.questions[lang])}</span>
     </div>`).join("");
+  return `<span class="sd-question-details-title">Translations</span><div class="sd-question-details">${items}</div>`;
 }
 
 function sdAnswerDetails(row) {
-  return SD_LANGS.map((lang) => `
+  const items = SD_LANGS.map((lang) => `
     <div class="sd-question-detail-item">
-      <span class="sd-question-detail-label">${sdQuestionLanguageLabels[lang]} answer</span>
+      <span class="sd-question-detail-label"><span class="sd-lang-chip">${lang}</span>${sdQuestionLanguageLabels[lang]} answer</span>
       <span class="sd-question-detail-value"${lang === "AR" || lang === "HE" ? ' dir="auto"' : ""}>${sdQuestionValue(row.answers[lang])}</span>
     </div>`).join("");
+  return `<span class="sd-question-details-title">Translations</span><div class="sd-question-details">${items}</div>`;
 }
 
 function sdActions(tabKey, idx) {
@@ -108,7 +110,7 @@ const sdQuestionsPager = boCreatePager(
         <td>${sdActions("questions", e.i)}</td>
       </tr>
       <tr class="sd-question-details-row" id="question-details-${e.i}" hidden>
-        <td colspan="7"><div class="sd-question-details">${sdQuestionDetails(e.r)}</div></td>
+        <td colspan="7"><div class="sd-question-details-wrap">${sdQuestionDetails(e.r)}</div></td>
       </tr>`,
   { pageSize: SD_PAGE_SIZE, emptyColspan: 7, emptyText: "No questions yet." }
 );
@@ -124,7 +126,7 @@ const sdAnswersPager = boCreatePager(
         <td>${sdActions("answers", e.i)}</td>
       </tr>
       <tr class="sd-question-details-row" id="answer-details-${e.i}" hidden>
-        <td colspan="4"><div class="sd-question-details">${sdAnswerDetails(e.r)}</div></td>
+        <td colspan="4"><div class="sd-question-details-wrap">${sdAnswerDetails(e.r)}</div></td>
       </tr>`,
   { pageSize: SD_PAGE_SIZE, emptyColspan: 4, emptyText: "No answers yet." }
 );
