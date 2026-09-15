@@ -2614,8 +2614,9 @@ input[type="password"]:focus {
 .issue-category-row .issue-category-row-chevron { flex-shrink: 0; }
 
 .issue-details-label {
-  font-size: calc(24px * var(--font-scale, 1));
-  font-weight: 700;
+  font-size: 20px;
+  font-weight: 500;
+  font-family: "Inter", inherit;
   color: #252424;
   margin: 22px 0 14px;
 }
@@ -2628,13 +2629,17 @@ input[type="password"]:focus {
   border-radius: 16px;
   font-size: calc(16px * var(--font-scale, 1));
   font-family: inherit;
-  color: #252424;
+  color: #434141;
   resize: none;
   outline: none;
 }
 
 .issue-textarea:focus { border-color: #4a9fd8; }
-.issue-textarea::placeholder { color: #A9A8A8; }
+.issue-textarea::placeholder {
+  color: #A9A8A8;
+  font-size: calc(25px * var(--font-scale, 1));
+  font-weight: 400;
+}
 
 .issue-submit-wrap { margin-top: 26px; }
 
