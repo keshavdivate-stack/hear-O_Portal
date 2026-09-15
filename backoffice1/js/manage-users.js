@@ -5,11 +5,15 @@ const USER_PAGE_SIZE = 20;
 let userCurrentPage = 1;
 let userSortDir = "asc";
 let userSearchTerm = "";
+/* Active/Archived is its own tab, not a filter -- archiving a user hides them
+   from the working list without deleting them, mirroring Organizations Management. */
+let userViewTab = "active";
 
 function filteredUsers() {
-  if (!userSearchTerm) return boUsers;
+  const inView = boUsers.filter((u) => !!u.archived === (userViewTab === "archived"));
+  if (!userSearchTerm) return inView;
   const q = userSearchTerm.toLowerCase();
-  return boUsers.filter(
+  return inView.filter(
     (u) =>
       u.username.toLowerCase().includes(q) ||
       u.firstName.toLowerCase().includes(q) ||
@@ -81,6 +85,16 @@ document.getElementById("userSearchInput").addEventListener("input", (e) => {
   renderUsers();
 });
 
+/* ---------------- Active / Archived tabs ---------------- */
+document.getElementById("userViewTabs").addEventListener("click", (e) => {
+  const btn = e.target.closest(".bo-tab");
+  if (!btn || btn.classList.contains("active")) return;
+  userViewTab = btn.dataset.view;
+  document.querySelectorAll("#userViewTabs .bo-tab").forEach((b) => b.classList.toggle("active", b === btn));
+  userCurrentPage = 1;
+  renderUsers();
+});
+
 /* ---------------- Sort ---------------- */
 document.querySelector(".bo-list-table th.sortable").addEventListener("click", () => {
   userSortDir = userSortDir === "asc" ? "desc" : "asc";
@@ -96,8 +110,11 @@ document.getElementById("userLastPage").addEventListener("click", () => {
   renderUsers();
 });
 
-/* ---------------- Row action dropdown (reset password / edit / delete) ---------------- */
+/* ---------------- Row action dropdown (reset password / edit / archive) ---------------- */
 const userRowMenu = document.getElementById("userRowMenu");
+const userRowMenuResetBtn = document.getElementById("userRowMenuResetBtn");
+const userRowMenuEditBtn = document.getElementById("userRowMenuEditBtn");
+const userRowMenuArchiveBtn = document.getElementById("userRowMenuArchiveBtn");
 let activeUserRowId = null;
 
 document.getElementById("usersRows").addEventListener("click", (e) => {
@@ -105,6 +122,20 @@ document.getElementById("usersRows").addEventListener("click", (e) => {
   if (!trigger) return;
   e.stopPropagation();
   activeUserRowId = Number(trigger.dataset.id);
+
+  const user = boUsers.find((u) => u.id === activeUserRowId);
+  const isArchived = !!user?.archived;
+
+  /* An archived user is read-only -- the only action left for them is to
+     bring them back, so every other row action is hidden while archived. */
+  userRowMenuResetBtn.hidden = isArchived;
+  userRowMenuEditBtn.hidden = isArchived;
+  if (user) {
+    userRowMenuArchiveBtn.textContent = isArchived ? "Unarchive User" : "Archive User";
+    userRowMenuArchiveBtn.dataset.action = isArchived ? "unarchive" : "archive";
+    userRowMenuArchiveBtn.classList.toggle("danger", !isArchived);
+  }
+
   const rect = trigger.getBoundingClientRect();
   userRowMenu.style.top = `${rect.bottom + 6}px`;
   userRowMenu.style.left = `${rect.right - 190}px`;
@@ -123,8 +154,12 @@ userRowMenu.addEventListener("click", (e) => {
   const user = boUsers.find((u) => u.id === activeUserRowId);
   if (!user) return;
 
-  if (item.dataset.action === "delete") {
-    boUsers.splice(boUsers.indexOf(user), 1);
+  if (item.dataset.action === "archive") {
+    if (!confirm(`Archive user "${user.username}"? They will move to the Archived Users tab.`)) return;
+    user.archived = true;
+    renderUsers();
+  } else if (item.dataset.action === "unarchive") {
+    user.archived = false;
     renderUsers();
   } else if (item.dataset.action === "edit") {
     openAddUserModal();

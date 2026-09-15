@@ -143,6 +143,10 @@
 
     <div class="bo-list-toolbar">
       <h1>Manage Users</h1>
+      <div class="bo-tabs bo-seg-toggle" id="userViewTabs">
+        <button type="button" class="bo-tab bo-seg-btn active" data-view="active">Users</button>
+        <button type="button" class="bo-tab bo-seg-btn" data-view="archived">Archived Users</button>
+      </div>
       <span class="bo-list-toolbar-spacer"></span>
       <div class="bo-search-pill">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8"/><path d="M21 21L16.5 16.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
@@ -200,9 +204,9 @@
 
   <!-- Row action dropdown -->
   <div class="bo-row-menu" id="userRowMenu">
-    <button class="bo-row-menu-item" data-action="reset">Reset Password</button>
-    <button class="bo-row-menu-item" data-action="edit">Edit User</button>
-    <button class="bo-row-menu-item danger" data-action="delete">Delete User</button>
+    <button class="bo-row-menu-item" id="userRowMenuResetBtn" data-action="reset">Reset Password</button>
+    <button class="bo-row-menu-item" id="userRowMenuEditBtn" data-action="edit">Edit User</button>
+    <button class="bo-row-menu-item danger" id="userRowMenuArchiveBtn" data-action="archive">Archive User</button>
   </div>
 
   <!-- Add User drawer -->
