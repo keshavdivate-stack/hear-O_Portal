@@ -600,6 +600,79 @@ document.getElementById("rmWizardOrgMenu").innerHTML = buildSelectOptions(RM_ORG
 document.getElementById("rmWizardFrequencyMenu").innerHTML = buildSelectOptions(RM_FREQUENCIES);
 document.getElementById("rmWizardUsersMenu").innerHTML = buildSelectOptions(RM_DIRECTORY);
 
+/* ---------------- Schedule Days (Weekly only) ----------------
+   A single multi-select field instead of a grid of standalone checkboxes --
+   unchecking a day in the dropdown is how it gets removed. */
+const RM_DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+const rmDaysCheckIcon = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+let rmWizardSelectedDays = new Set();
+
+const rmDaysSelectEl = document.getElementById("rmWizardDaysSelect");
+const rmDaysTrigger = rmDaysSelectEl.querySelector(".bo-multiselect-trigger");
+const rmDaysValueEl = rmDaysSelectEl.querySelector(".bo-multiselect-value");
+const rmDaysMenu = rmDaysSelectEl.querySelector(".bo-multiselect-menu");
+const rmDaysPlaceholder = rmDaysValueEl.textContent.trim();
+
+function renderDaysMenu() {
+  const allChecked = rmWizardSelectedDays.size === RM_DAYS.length;
+  rmDaysMenu.innerHTML =
+    `<label class="bo-multiselect-option all${allChecked ? " checked" : ""}" data-all="1">
+      <span class="bo-multiselect-checkbox">${rmDaysCheckIcon}</span> All days
+    </label>` +
+    RM_DAYS.map(
+      (d) => `<label class="bo-multiselect-option${rmWizardSelectedDays.has(d) ? " checked" : ""}" data-value="${d}">
+        <span class="bo-multiselect-checkbox">${rmDaysCheckIcon}</span> ${d}
+      </label>`
+    ).join("");
+}
+
+function renderDaysTrigger() {
+  if (rmWizardSelectedDays.size === 0) {
+    rmDaysValueEl.textContent = rmDaysPlaceholder;
+    rmDaysValueEl.classList.add("placeholder");
+  } else {
+    rmDaysValueEl.textContent = RM_DAYS.filter((d) => rmWizardSelectedDays.has(d)).join(", ");
+    rmDaysValueEl.classList.remove("placeholder");
+  }
+}
+
+rmDaysTrigger.addEventListener("click", (e) => {
+  e.stopPropagation();
+  const willOpen = !rmDaysSelectEl.classList.contains("open");
+  document.querySelectorAll(".bo-multiselect.open").forEach((el) => el.classList.remove("open"));
+  if (willOpen) rmDaysSelectEl.classList.add("open");
+});
+
+rmDaysMenu.addEventListener("click", (e) => {
+  const option = e.target.closest(".bo-multiselect-option");
+  if (!option) return;
+  e.stopPropagation();
+
+  if (option.dataset.all) {
+    if (rmWizardSelectedDays.size === RM_DAYS.length) rmWizardSelectedDays.clear();
+    else RM_DAYS.forEach((d) => rmWizardSelectedDays.add(d));
+  } else {
+    const d = option.dataset.value;
+    if (rmWizardSelectedDays.has(d)) rmWizardSelectedDays.delete(d);
+    else rmWizardSelectedDays.add(d);
+  }
+
+  renderDaysMenu();
+  renderDaysTrigger();
+  validateWizardForm();
+});
+
+document.addEventListener("click", (e) => {
+  if (!e.target.closest(".bo-multiselect")) {
+    document.querySelectorAll(".bo-multiselect.open").forEach((el) => el.classList.remove("open"));
+  }
+});
+
+function updateDaysFieldVisibility() {
+  const isWeekly = rmWizardForm.frequency.value === "Weekly";
+  document.getElementById("rmWizardDaysField").hidden = !isWeekly;
+}
+
 function renderWizardTags() {
   document.getElementById("rmWizardTags").innerHTML = RM_TAGS.map(
     (t) => `<label class="bo-checkbox-item"><input type="checkbox" data-wiz-tag="${t}" ${rmWizardSelectedTags.has(t) ? "checked" : ""} /> ${t}</label>`
@@ -623,21 +696,30 @@ function computeNextRun(frequency) {
 function validateWizardForm() {
   const reportOk = !!rmWizardForm.reportKey.value;
   const configOk = rmWizardForm.name.value.trim() !== "" && !!rmWizardForm.org.value;
-  const scheduleOk = !!rmWizardForm.frequency.value;
+  const frequency = rmWizardForm.frequency.value;
+  const daysOk = frequency !== "Weekly" || rmWizardSelectedDays.size > 0;
+  const scheduleOk = !!frequency && daysOk;
   rmWizardSaveBtn.disabled = !(reportOk && configOk && scheduleOk);
 }
 
 rmWizardForm.addEventListener("input", validateWizardForm);
-rmWizardForm.addEventListener("change", validateWizardForm);
+rmWizardForm.addEventListener("change", (e) => {
+  if (e.target.name === "frequency") updateDaysFieldVisibility();
+  validateWizardForm();
+});
 
 function openWizardForCreate() {
   rmWizardEditingId = null;
   rmWizardSelectedTags = new Set();
+  rmWizardSelectedDays = new Set();
   document.getElementById("rmWizardTitle").textContent = "Schedule Report";
   rmWizardSaveBtn.textContent = "Schedule Report";
   rmWizardForm.reset();
   rmWizardForm.querySelectorAll(".bo-select").forEach(resetBoSelect);
   renderWizardTags();
+  renderDaysMenu();
+  renderDaysTrigger();
+  updateDaysFieldVisibility();
   validateWizardForm();
   rmWizardOverlay.classList.add("open");
 }
@@ -647,6 +729,7 @@ function openWizardForEdit(id) {
   if (!s) return;
   rmWizardEditingId = id;
   rmWizardSelectedTags = new Set(s.tags);
+  rmWizardSelectedDays = new Set(s.days || []);
 
   document.getElementById("rmWizardTitle").textContent = `Edit Schedule — ${s.name}`;
   rmWizardSaveBtn.textContent = "Save Changes";
@@ -663,6 +746,9 @@ function openWizardForEdit(id) {
   rmWizardForm.mm.value = mm || "0";
 
   renderWizardTags();
+  renderDaysMenu();
+  renderDaysTrigger();
+  updateDaysFieldVisibility();
   validateWizardForm();
   rmWizardOverlay.classList.add("open");
 }
@@ -688,6 +774,7 @@ rmWizardForm.addEventListener("submit", (e) => {
   const mm = String(rmWizardForm.mm.value || "0").padStart(2, "0");
   const time = `${hh}:${mm}`;
   const tags = Array.from(rmWizardSelectedTags);
+  const days = frequency === "Weekly" ? Array.from(rmWizardSelectedDays) : [];
   const existingSchedule = rmSchedules.find((s) => s.id === rmWizardEditingId);
   const recipients = existingSchedule ? existingSchedule.recipients || [] : [];
   const nextRun = `${computeNextRun(frequency)}, ${time} ${timezone}`;
@@ -703,6 +790,7 @@ rmWizardForm.addEventListener("submit", (e) => {
       usersFilter,
       tags,
       frequency,
+      days,
       time,
       timezone,
       recipients,
@@ -713,7 +801,7 @@ rmWizardForm.addEventListener("submit", (e) => {
     });
   } else {
     const s = existingSchedule;
-    if (s) Object.assign(s, { reportKey, name: rmWizardForm.name.value.trim(), title, org, usersFilter, tags, frequency, time, timezone, recipients, nextRun });
+    if (s) Object.assign(s, { reportKey, name: rmWizardForm.name.value.trim(), title, org, usersFilter, tags, frequency, days, time, timezone, recipients, nextRun });
   }
 
   closeWizard();
