@@ -338,10 +338,16 @@ let rmHistOrgFilter = "";
    today, then compared against the picked range. */
 let rmHistFromDate = "";
 let rmHistToDate = "";
+let rmHistStatusFilter = "";
+
+/* Processing is a transient in-flight state, not a result -- there's nothing
+   useful to filter for once a delivery has actually finished, so the Status
+   filter only offers the three terminal outcomes. */
+const RM_HISTORY_STATUS_OPTIONS = ["Delivered", "Failed", "Partial"];
 
 document.getElementById("rmHistReportFilterMenu").innerHTML = buildFilterSelectOptions(RM_REPORTS.map((r) => r.label), "All reports");
-document.getElementById("rmHistReportNameFilterMenu").innerHTML = buildFilterSelectOptions([...new Set(rmHistory.map((h) => h.name))], "All report names");
 document.getElementById("rmHistOrgFilterMenu").innerHTML = buildFilterSelectOptions(RM_ORGS, "All organisations");
+document.getElementById("rmHistStatusFilterMenu").innerHTML = buildFilterSelectOptions(RM_HISTORY_STATUS_OPTIONS, "All statuses");
 
 function rmHistRecordDate(h) {
   const d = new Date();
@@ -353,8 +359,9 @@ function rmHistRecordDate(h) {
 function rmFilteredHistory() {
   return rmHistory.filter((h) => {
     if (rmHistReportFilter && rmReportLabel(h.reportKey) !== rmHistReportFilter) return false;
-    if (rmHistReportNameFilter && h.name !== rmHistReportNameFilter) return false;
+    if (rmHistReportNameFilter && !h.name.toLowerCase().includes(rmHistReportNameFilter.toLowerCase())) return false;
     if (rmHistOrgFilter && h.org !== rmHistOrgFilter) return false;
+    if (rmHistStatusFilter && h.status !== rmHistStatusFilter) return false;
     if (rmHistFromDate || rmHistToDate) {
       const recordDate = rmHistRecordDate(h);
       if (rmHistFromDate && recordDate < new Date(rmHistFromDate)) return false;
@@ -396,7 +403,7 @@ const rmHistoryEmptyHtml = `
 const rmHistoryPager = boCreatePager("rmHistoryRows", () => rmFilteredHistory(), rmRenderHistoryRow, { pageSize: 8, emptyHtml: rmHistoryEmptyHtml });
 
 function rmHistoryFiltersActive() {
-  return !!(rmHistReportFilter || rmHistReportNameFilter || rmHistOrgFilter || rmHistFromDate || rmHistToDate);
+  return !!(rmHistReportFilter || rmHistReportNameFilter || rmHistOrgFilter || rmHistStatusFilter || rmHistFromDate || rmHistToDate);
 }
 
 function rmRefreshHistoryEmptyState() {
@@ -420,8 +427,9 @@ function rmRenderHistory() {
 rmRenderHistory();
 
 document.getElementById("rmHistReportFilter").addEventListener("change", (e) => { rmHistReportFilter = e.target.value; rmHistoryPager.resetPage(); rmRenderHistory(); });
-document.getElementById("rmHistReportNameFilter").addEventListener("change", (e) => { rmHistReportNameFilter = e.target.value; rmHistoryPager.resetPage(); rmRenderHistory(); });
+document.getElementById("rmHistReportNameFilter").addEventListener("input", (e) => { rmHistReportNameFilter = e.target.value.trim(); rmHistoryPager.resetPage(); rmRenderHistory(); });
 document.getElementById("rmHistOrgFilter").addEventListener("change", (e) => { rmHistOrgFilter = e.target.value; rmHistoryPager.resetPage(); rmRenderHistory(); });
+document.getElementById("rmHistStatusFilter").addEventListener("change", (e) => { rmHistStatusFilter = e.target.value; rmHistoryPager.resetPage(); rmRenderHistory(); });
 document.getElementById("rmHistFromDate").addEventListener("change", (e) => { rmHistFromDate = e.target.value; rmHistoryPager.resetPage(); rmRenderHistory(); });
 document.getElementById("rmHistToDate").addEventListener("change", (e) => { rmHistToDate = e.target.value; rmHistoryPager.resetPage(); rmRenderHistory(); });
 
@@ -429,9 +437,11 @@ function rmClearHistoryFilters() {
   rmHistReportFilter = "";
   rmHistReportNameFilter = "";
   rmHistOrgFilter = "";
+  rmHistStatusFilter = "";
   rmHistFromDate = "";
   rmHistToDate = "";
   document.querySelectorAll("#tab-history .bo-select").forEach(resetBoSelect);
+  document.getElementById("rmHistReportNameFilter").value = "";
   const fromDateEl = document.getElementById("rmHistFromDate");
   const toDateEl = document.getElementById("rmHistToDate");
   fromDateEl.value = "";
