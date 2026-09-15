@@ -1179,6 +1179,7 @@ body.bo-page-scroll .bo-list-toolbar {
 
 .bo-name-link { color: var(--blue-text); font-weight: 700; text-decoration: none; }
 .bo-name-link:hover { text-decoration: underline; }
+button.bo-name-link { background: none; border: none; padding: 0; font: inherit; cursor: pointer; text-align: left; }
 
 .bo-cell-checkbox {
   appearance: none;
