@@ -20,7 +20,7 @@ document.getElementById("allocLangFilterMenu").innerHTML = buildBoSelectOptions(
 
 /* ---------------- Current patients ---------------- */
 const ALLOC_PAGE_SIZE = 10;
-const allocKebabIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="1.7" fill="currentColor"/><circle cx="12" cy="12" r="1.7" fill="currentColor"/><circle cx="12" cy="19" r="1.7" fill="currentColor"/></svg>`;
+const allocEditIcon = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg>`;
 
 const currentPatients = [
   { id: 0, username: "120-2001", language: "HE", creationDate: "31/10/2023", startDate: "31/10/2023", appConfig: "Main New8 no HQ Sensors Train 4.0 Zaza", lastModified: "09/02/2025 21:20:14" },
@@ -65,7 +65,7 @@ const allocCurrentPager = boCreatePager(
       <td>${e.r.lastModified}</td>
       <td>
         <div class="bo-row-actions">
-          <button class="bo-action-icon row-menu-trigger" data-id="${e.r.id}" aria-label="Row actions">${allocKebabIcon}</button>
+          <button class="bo-action-icon alloc-edit-btn" data-scope="current" data-id="${e.r.id}" aria-label="Edit">${allocEditIcon}</button>
         </div>
       </td>
     </tr>`,
@@ -122,7 +122,7 @@ const allocFuturePager = boCreatePager(
       <td>${e.r.lastModified}</td>
       <td>
         <div class="bo-row-actions">
-          <button class="bo-action-icon row-menu-trigger" data-id="${e.r.id}" aria-label="Row actions">${allocKebabIcon}</button>
+          <button class="bo-action-icon alloc-edit-btn" data-scope="future" data-id="${e.r.id}" aria-label="Edit">${allocEditIcon}</button>
         </div>
       </td>
     </tr>`,
@@ -137,32 +137,84 @@ document.getElementById("allocFutureRows").addEventListener("change", (e) => {
   if (row) row.isHmo = box.checked;
 });
 
-/* ---------------- Row action dropdown ---------------- */
-const allocRowMenu = document.getElementById("allocRowMenu");
-let activeAllocRowId = null;
+/* ---------------- Edit AppConfig modal ----------------
+   One action per row (Edit), so it's a direct icon button instead of a
+   kebab menu with a single item. Shared by both tabs: Current Patients
+   edits that patient's username, Future Patients edits the org name --
+   the same modal just relabels the field to match what's being edited. */
+const allocEditOverlay = document.getElementById("allocEditOverlay");
+const allocEditForm = document.getElementById("allocEditForm");
+const allocEditUsername = document.getElementById("allocEditUsername");
+const allocEditNameLabel = document.getElementById("allocEditNameLabel");
+const allocSaveEditBtn = document.getElementById("allocSaveEdit");
+const allocEditConfigSelect = document.querySelector('.bo-select[data-name="allocEditConfig"]');
+let allocEditScope = null;
+let allocEditId = null;
 
-function openAllocRowMenu(e) {
-  const trigger = e.target.closest(".row-menu-trigger");
-  if (!trigger) return;
-  e.stopPropagation();
-  activeAllocRowId = Number(trigger.dataset.id);
-  const rect = trigger.getBoundingClientRect();
-  allocRowMenu.style.top = `${rect.bottom + 6}px`;
-  allocRowMenu.style.left = `${rect.right - 190}px`;
-  allocRowMenu.classList.add("open");
+document.getElementById("allocEditConfigMenu").innerHTML = buildBoSelectOptions(allocConfigs);
+
+function allocEditRow() {
+  const list = allocEditScope === "future" ? futurePatients : currentPatients;
+  return list.find((p) => p.id === allocEditId);
 }
 
-document.getElementById("allocCurrentRows").addEventListener("click", openAllocRowMenu);
-document.getElementById("allocFutureRows").addEventListener("click", openAllocRowMenu);
+function openAllocEditModal(scope, id) {
+  const list = scope === "future" ? futurePatients : currentPatients;
+  const row = list.find((p) => p.id === id);
+  if (!row) return;
 
-document.addEventListener("click", (e) => {
-  if (!allocRowMenu.contains(e.target)) allocRowMenu.classList.remove("open");
-});
+  allocEditScope = scope;
+  allocEditId = id;
 
-allocRowMenu.addEventListener("click", (e) => {
-  const item = e.target.closest(".bo-row-menu-item");
-  if (!item || activeAllocRowId === null) return;
-  allocRowMenu.classList.remove("open");
+  allocEditNameLabel.textContent = scope === "future" ? "Name:" : "Username:";
+  allocEditUsername.value = scope === "future" ? row.name : row.username;
+  setBoSelectValue(allocEditConfigSelect, row.appConfig, { silent: true });
+  validateAllocEditForm();
+
+  allocEditOverlay.classList.add("open");
+}
+
+function closeAllocEditModal() {
+  allocEditOverlay.classList.remove("open");
+  allocEditScope = null;
+  allocEditId = null;
+}
+
+function validateAllocEditForm() {
+  const configChosen = allocEditConfigSelect.querySelector("input[type=hidden]").value !== "";
+  allocSaveEditBtn.disabled = !(allocEditUsername.value.trim() && configChosen);
+}
+
+allocEditForm.addEventListener("input", validateAllocEditForm);
+allocEditForm.addEventListener("change", validateAllocEditForm);
+
+function openAllocEdit(e) {
+  const btn = e.target.closest(".alloc-edit-btn");
+  if (!btn) return;
+  openAllocEditModal(btn.dataset.scope, Number(btn.dataset.id));
+}
+
+document.getElementById("allocCurrentRows").addEventListener("click", openAllocEdit);
+document.getElementById("allocFutureRows").addEventListener("click", openAllocEdit);
+
+document.getElementById("allocCancelEdit").addEventListener("click", closeAllocEditModal);
+allocEditOverlay.addEventListener("click", (e) => { if (e.target === allocEditOverlay) closeAllocEditModal(); });
+
+allocEditForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  if (allocSaveEditBtn.disabled) return;
+
+  const scope = allocEditScope;
+  const row = allocEditRow();
+  if (row) {
+    if (scope === "future") row.name = allocEditUsername.value.trim();
+    else row.username = allocEditUsername.value.trim();
+    row.appConfig = allocEditConfigSelect.querySelector("input[type=hidden]").value;
+  }
+
+  closeAllocEditModal();
+  if (scope === "future") allocFuturePager();
+  else allocCurrentPager();
 });
 
 /* ---------------- Clear filters ---------------- */

@@ -233,9 +233,35 @@
 
   </main>
 
-  <!-- Row action dropdown -->
-  <div class="bo-row-menu" id="allocRowMenu">
-    <button class="bo-row-menu-item" data-action="edit">Edit</button>
+  <!-- Edit AppConfig modal -->
+  <div class="bo-center-modal-overlay" id="allocEditOverlay">
+    <div class="bo-center-modal">
+      <h2>Edit AppConfig</h2>
+
+      <form id="allocEditForm">
+        <div class="bo-modal-field">
+          <label id="allocEditNameLabel">Username:</label>
+          <input type="text" id="allocEditUsername" name="username" required />
+        </div>
+
+        <div class="bo-modal-field">
+          <label>App Config</label>
+          <div class="bo-select" data-name="allocEditConfig">
+            <button type="button" class="bo-select-trigger">
+              <span class="bo-select-value placeholder">Select app config</span>
+              <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="bo-select-menu" id="allocEditConfigMenu"></div>
+            <input type="hidden" name="appConfig" required />
+          </div>
+        </div>
+
+        <div class="bo-center-modal-foot">
+          <button type="button" class="bo-btn-text" id="allocCancelEdit">Cancel</button>
+          <button type="submit" class="bo-btn-primary" id="allocSaveEdit" disabled>Save</button>
+        </div>
+      </form>
+    </div>
   </div>
 
 <script src="js/dashboard-nav.js"></script>
