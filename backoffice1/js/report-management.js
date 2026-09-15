@@ -34,7 +34,21 @@ const rmStatusPillClass = { Active: "bo-pill-active", Paused: "bo-pill-paused" }
 const rmDeliveryPillClass = { Delivered: "bo-pill-delivered", Failed: "bo-pill-failed", Processing: "bo-pill-processing" };
 const rmStatusPill = (s) => `<span class="bo-pill ${rmStatusPillClass[s] || ""}">${s}</span>`;
 const rmDeliveryPill = (s) => `<span class="bo-pill ${rmDeliveryPillClass[s] || ""}">${s}</span>`;
-const rmRecipientsChip = (count) => `<span class="bo-recipients-chip">${rmPeopleIcon}${count} ${count === 1 ? "person" : "people"}</span>`;
+/* History entries only carry a recipient count (no names were ever
+   recorded per-delivery), so the email tooltip only shows up where real
+   names exist -- the Scheduled Reports table's recipients array. */
+function rmRecipientEmail(name) {
+  return `${name.trim().toLowerCase().replace(/\s+/g, ".")}@cordio-med.com`;
+}
+
+function rmRecipientsChip(namesOrCount) {
+  const names = Array.isArray(namesOrCount) ? namesOrCount : null;
+  const count = names ? names.length : namesOrCount;
+  const tooltip = names && names.length
+    ? `<span class="bo-recipients-tooltip">${names.map((n) => `<span class="bo-recipients-tooltip-row">${rmEsc(rmRecipientEmail(n))}</span>`).join("")}</span>`
+    : "";
+  return `<span class="bo-recipients-chip">${rmPeopleIcon}${count} ${count === 1 ? "person" : "people"}${tooltip}</span>`;
+}
 
 function rmEsc(v) { return String(v == null ? "" : v).replace(/"/g, "&quot;"); }
 const rmScheduleIdLabel = (id) => `RPT-${String(id + 1).padStart(4, "0")}`;
@@ -176,7 +190,7 @@ function rmRenderScheduleRow(s) {
         <div class="bo-cell-secondary">${rmEsc(s.name)}</div>
       </td>
       <td>${rmEsc(s.org)}</td>
-      <td>${rmRecipientsChip(s.recipients.length)}</td>
+      <td>${rmRecipientsChip(s.recipients)}</td>
       <td>
         <div class="bo-cell-primary">${s.frequency}</div>
         <div class="bo-cell-secondary">${s.time} ${s.timezone}</div>
