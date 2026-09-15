@@ -39,7 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const checkSpace = option.querySelector(".check-space");
       if (checkSpace) {
         checkSpace.outerHTML = `<svg class="check" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M3 8.5L6.2 11.5L13 4.5" stroke="#2f6fed" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M3 8.5L6.2 11.5L13 4.5" stroke="#186DCE" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>`;
       }
 
@@ -67,8 +67,8 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    if (!localStorage.getItem("hearo_privacy_accepted")) {
-      window.location.href = "privacy.html";
+    if (!localStorage.getItem("hearo_onboarding_completed")) {
+      window.location.href = "welcome.html";
     } else {
       window.location.href = "home.html";
     }

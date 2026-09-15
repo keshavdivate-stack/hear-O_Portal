@@ -6,7 +6,7 @@
 <title>HearO - Sending</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 <script src="font-scale.js"></script>
 </head>
@@ -22,14 +22,15 @@
       </div>
     </div>
 
-    <div class="status-content">
-      <p class="status-text">Sending, Please hold...</p>
-      <div class="progress-ring" id="ring">0%</div>
+    <div class="status-content" id="statusContent">
+      <div class="sending-bars">
+        <span></span><span></span><span></span>
+      </div>
     </div>
   </div>
 
 <script>
-  const ring = document.getElementById("ring");
+  const statusContent = document.getElementById("statusContent");
   const outcome = new URLSearchParams(window.location.search).get("outcome") || "success";
   const destinations = {
     success: "record-saved.html",
@@ -37,15 +38,39 @@
     "no-hear": "record-retry.html",
   };
 
-  let pct = 0;
-  const interval = setInterval(() => {
-    pct += 10;
-    ring.textContent = pct + "%";
-    if (pct >= 100) {
-      clearInterval(interval);
-      setTimeout(() => { window.location.href = destinations[outcome] || destinations.success; }, 500);
-    }
-  }, 150);
+  setTimeout(() => {
+    statusContent.innerHTML = `
+      <p class="status-text">Sending, Please hold...</p>
+      <div class="progress-ring" id="ring" style="--pct:0"><span id="ringLabel">0%</span></div>
+    `;
+    const ring = document.getElementById("ring");
+    const ringLabel = document.getElementById("ringLabel");
+
+    let pct = 0;
+    const interval = setInterval(() => {
+      pct += 10;
+      ring.style.setProperty("--pct", pct);
+      ringLabel.textContent = pct + "%";
+      if (pct >= 100) {
+        clearInterval(interval);
+        setTimeout(() => {
+          if (outcome === "success") {
+            statusContent.innerHTML = `
+              <p class="status-text saved">Information uploaded successfully</p>
+              <div class="check-circle">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M4 12.5L9.5 18L20 6" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+            `;
+            setTimeout(() => { window.location.href = destinations.success; }, 1200);
+          } else {
+            window.location.href = destinations[outcome] || destinations.success;
+          }
+        }, 400);
+      }
+    }, 150);
+  }, 900);
 </script>
 </body>
 </html>

@@ -6,7 +6,7 @@
 <title>HearO - Chat</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 <script src="font-scale.js"></script>
 </head>
@@ -22,32 +22,62 @@
       </div>
     </div>
 
-    <div class="bp-header">
-      <button type="button" class="back-btn" onclick="window.location.href='home.html'">
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M12.5 4L6.5 10L12.5 16" stroke="#2b2b2b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <div class="chat-header">
+      <button type="button" class="chat-back-btn" onclick="window.location.href='home.html'">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M12.5 4L6.5 10L12.5 16" stroke="#252424" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
-      <h1>Chat</h1>
+      <h1 class="chat-header-title">Chat</h1>
+    </div>
+
+    <div class="chat-days-banner" id="daysBanner">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="8.5" stroke="#F98B00" stroke-width="1.8"/>
+        <path d="M12 7.5V12L15 14" stroke="#F98B00" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span>3 days remaining to respond</span>
     </div>
 
     <div class="chat-body" id="chatBody">
-      <div>
-        <p class="chat-sender">Clinic Team &middot; Yesterday</p>
-        <div class="chat-bubble incoming">Good morning! Please remember to record every morning right after waking up, before breakfast.</div>
+      <div class="chat-date-pill">Today</div>
+      <div class="chat-message-group">
+        <p class="chat-sender">Clinic</p>
+        <div class="chat-bubble incoming">
+          Hi Ben,<br>How do you feel today?
+          <span class="chat-bubble-time">09:45 AM</span>
+        </div>
       </div>
-      <div style="align-self:flex-end;">
-        <div class="chat-bubble outgoing">Sure, will do. Thank you!</div>
+      <div class="chat-message-group chat-message-group--outgoing">
+        <div class="chat-bubble outgoing">
+          Last night I didn't sleep well and kept waking up
+          <span class="chat-bubble-time">09:47 AM</span>
+        </div>
       </div>
-      <div>
-        <p class="chat-sender">Clinic Team &middot; Today</p>
-        <div class="chat-bubble incoming">Great job on your recordings this week. Keep it up!</div>
+      <div class="chat-message-group">
+        <p class="chat-sender">Clinic</p>
+        <div class="chat-bubble incoming">Can you please send a picture of you?</div>
+        <button type="button" class="chat-photo-request" id="photoRequestBtn" onclick="window.location.href='camera-capture.html'">
+          <span>Tap to take a photo</span>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="2.5" y="6.5" width="19" height="14" rx="3" fill="#186DCE"/>
+            <circle cx="12" cy="13.5" r="4" fill="#fff"/>
+            <rect x="8.5" y="3.5" width="7" height="3" rx="1.2" fill="#186DCE"/>
+          </svg>
+        </button>
+        <span class="chat-bubble-time" id="photoRequestTime">11:25 AM</span>
+      </div>
+      <div class="chat-message-group chat-message-group--outgoing" id="photoReplyGroup" hidden>
+        <div class="chat-photo-bubble">
+          <div class="chat-photo-thumb"></div>
+        </div>
+        <span class="chat-bubble-time" id="photoReplyTime"></span>
       </div>
     </div>
 
-    <div class="chat-input-bar">
-      <input type="text" id="chatInput" placeholder="Type a message...">
-      <button type="button" class="chat-send-btn" onclick="sendMessage()">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 12L21 3L14 21L11 13L3 12Z" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/></svg>
-      </button>
+    <div class="chat-input-bar" id="chatInputBar">
+      <input type="text" id="chatInput" placeholder="Type a message ...">
+    </div>
+    <div class="chat-disabled-note" id="chatDisabledNote" hidden>
+      Only the clinic can initiate a conversation. You currently have no messages you can reply to
     </div>
   </div>
 
@@ -58,7 +88,7 @@
     if (!text) return;
     const chatBody = document.getElementById("chatBody");
     const wrap = document.createElement("div");
-    wrap.style.alignSelf = "flex-end";
+    wrap.className = "chat-message-group chat-message-group--outgoing";
     wrap.innerHTML = `<div class="chat-bubble outgoing"></div>`;
     wrap.querySelector(".chat-bubble").textContent = text;
     chatBody.appendChild(wrap);
@@ -69,6 +99,21 @@
   document.getElementById("chatInput").addEventListener("keydown", (e) => {
     if (e.key === "Enter") sendMessage();
   });
+
+  if (new URLSearchParams(window.location.search).get("locked") === "1") {
+    document.getElementById("daysBanner").hidden = true;
+    document.getElementById("chatInputBar").hidden = true;
+    document.getElementById("chatDisabledNote").hidden = false;
+  }
+
+  if (new URLSearchParams(window.location.search).get("photo") === "1") {
+    document.getElementById("photoRequestBtn").hidden = true;
+    document.getElementById("photoRequestTime").hidden = true;
+    const group = document.getElementById("photoReplyGroup");
+    group.hidden = false;
+    document.getElementById("photoReplyTime").textContent = "11:27 AM";
+    window.scrollTo(0, document.body.scrollHeight);
+  }
 </script>
 </body>
 </html>

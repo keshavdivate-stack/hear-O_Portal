@@ -6,7 +6,7 @@
 <title>HearO - Cook the Food</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 <script src="font-scale.js"></script>
 </head>
@@ -24,11 +24,11 @@
 
     <div class="record-content">
       <h1 class="record-title">Cook the food</h1>
-      <p class="record-instructions">Get ready to record by reading the sentence: <strong>Cook the food</strong>. When you're ready press the blue button</p>
+      <p class="record-instructions" id="recordInstructions">Get ready to record by reading the sentence: <strong>Cook the food</strong>. When you're ready press the blue button</p>
 
       <div class="record-controls">
         <button type="button" class="mic-btn" id="micBtn">
-          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <rect x="9" y="2" width="6" height="12" rx="3" fill="#fff"/>
             <path d="M5 11a7 7 0 0 0 14 0" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
             <line x1="12" y1="18" x2="12" y2="22" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
@@ -48,6 +48,11 @@
   </div>
 
 <script>
+  const mode = new URLSearchParams(window.location.search).get("mode") || "daily";
+  if (mode !== "training") {
+    document.getElementById("recordInstructions").hidden = true;
+  }
+
   const micBtn = document.getElementById("micBtn");
   const releaseModal = document.getElementById("releaseModal");
   const modalOkBtn = document.getElementById("modalOkBtn");
@@ -66,7 +71,6 @@
   function endPress() {
     clearTimeout(pressTimer);
     if (!heldTooLong) {
-      const mode = new URLSearchParams(window.location.search).get("mode") || "daily";
       window.location.href = `record-active.html?mode=${mode}`;
     }
   }

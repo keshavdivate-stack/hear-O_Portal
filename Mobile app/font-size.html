@@ -6,7 +6,7 @@
 <title>HearO - Font Size</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 <script src="font-scale.js"></script>
 </head>
@@ -49,14 +49,9 @@
   ];
 
   const optionsEl = document.getElementById("options");
-  const previewEl = document.getElementById("previewText");
-
-  function currentScale() {
-    return localStorage.getItem("hearo_font_scale") || "1";
-  }
+  let active = "1";
 
   function render() {
-    const active = currentScale();
     optionsEl.innerHTML = SIZES.map(
       (s) => `
         <button type="button" class="fontsize-option${s.value === active ? " selected" : ""}" onclick="selectSize('${s.value}')">
@@ -70,8 +65,7 @@
   }
 
   function selectSize(value) {
-    localStorage.setItem("hearo_font_scale", value);
-    document.documentElement.style.setProperty("--font-scale", value);
+    active = value;
     render();
   }
 

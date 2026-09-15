@@ -6,7 +6,7 @@
 <title>HearO - Privacy Notice</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 <script src="font-scale.js"></script>
 </head>
@@ -79,11 +79,7 @@
 <script>
   document.getElementById("agreeBtn").addEventListener("click", () => {
     localStorage.setItem("hearo_privacy_accepted", "1");
-    if (localStorage.getItem("hearo_onboarding_completed")) {
-      window.location.href = "home.html";
-    } else {
-      window.location.href = "welcome.html";
-    }
+    window.location.href = "index.html";
   });
 </script>
 </body>
