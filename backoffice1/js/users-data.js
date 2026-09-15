@@ -24,6 +24,9 @@ const boUsers = [
   { username: "omer_katz", firstName: "Omer", lastName: "Katz", email: "omer.katz@cordio-med.com", phone: "+972-529988776", role: "CLINIC MANAGER", dateCreated: "17/05/2025", allowedOrgs: "ASF", mfa: false, locked: false },
   { username: "priya_nair", firstName: "Priya", lastName: "Nair", email: "priya.nair@think.com", phone: "+91-9820012345", role: "CLINIC SUPERVISOR", dateCreated: "23/05/2025", allowedOrgs: "ATP B01", mfa: false, locked: false },
   { username: "qasim_raza", firstName: "Qasim", lastName: "Raza", email: "qasim.raza@think.com", phone: "+91-9812233445", role: "CLINIC USER", dateCreated: "29/05/2025", allowedOrgs: "120", mfa: false, locked: true },
+  { username: "rina_gold", firstName: "Rina", lastName: "Gold", email: "rina.gold@cordio-med.com", phone: "+972-547766554", role: "CLINIC USER", dateCreated: "02/06/2025", allowedOrgs: "B01", mfa: false, locked: false, archived: true },
+  { username: "sam_wilson", firstName: "Sam", lastName: "Wilson", email: "sam.wilson@cordio-med.com", phone: "+1-2135559988", role: "CLINIC DOCTOR", dateCreated: "10/06/2025", allowedOrgs: "241", mfa: true, locked: false, archived: true },
+  { username: "tara_shah", firstName: "Tara", lastName: "Shah", email: "tara.shah@think.com", phone: "+91-9900112233", role: "CLINIC SUPERVISOR", dateCreated: "18/06/2025", allowedOrgs: "ATP", mfa: false, locked: false, archived: true },
 ];
 
 boUsers.forEach((u, i) => (u.id = i));
