@@ -45,25 +45,16 @@ const rmStatusPillClass = { Active: "bo-pill-active", Paused: "bo-pill-paused" }
 const rmDeliveryPillClass = { Delivered: "bo-pill-delivered", Failed: "bo-pill-failed", Processing: "bo-pill-processing" };
 const rmStatusPill = (s) => `<span class="bo-pill ${rmStatusPillClass[s] || ""}">${s}</span>`;
 const rmDeliveryPill = (s) => `<span class="bo-pill ${rmDeliveryPillClass[s] || ""}">${s}</span>`;
-/* Scheduled Reports has real recipient names, so the chip leads with the
-   first one instead of a bare count -- "who" beats "how many" as the thing
-   worth reading at a glance. The rest hide behind a hover tooltip. History
-   only ever recorded a count (no names per-delivery), so it falls back to
-   the old "N people" wording since there's nothing to name. */
+/* "N people"/"1 person" stays the visible label -- hovering reveals who,
+   via a tooltip listing every name, when real names are available (both
+   Scheduled Reports and Report History now carry recipient name arrays). */
 function rmRecipientsChip(namesOrCount) {
   const names = Array.isArray(namesOrCount) ? namesOrCount : null;
-
-  if (names && names.length) {
-    const [first, ...rest] = names;
-    const extra = rest.length ? `<span class="bo-recipients-extra">+${rest.length}</span>` : "";
-    const tooltip = rest.length
-      ? `<span class="bo-recipients-tooltip">${rest.map((n) => `<span class="bo-recipients-tooltip-row">${rmEsc(n)}</span>`).join("")}</span>`
-      : "";
-    return `<span class="bo-recipients-chip">${rmPeopleIcon}${rmEsc(first)}${extra}${tooltip}</span>`;
-  }
-
-  const count = namesOrCount;
-  return `<span class="bo-recipients-chip">${rmPeopleIcon}${count} ${count === 1 ? "person" : "people"}</span>`;
+  const count = names ? names.length : namesOrCount;
+  const tooltip = names && names.length
+    ? `<span class="bo-recipients-tooltip">${names.map((n) => `<span class="bo-recipients-tooltip-row">${rmEsc(n)}</span>`).join("")}</span>`
+    : "";
+  return `<span class="bo-recipients-chip">${rmPeopleIcon}${count} ${count === 1 ? "person" : "people"}${tooltip}</span>`;
 }
 
 function rmEsc(v) { return String(v == null ? "" : v).replace(/"/g, "&quot;"); }
