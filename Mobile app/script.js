@@ -63,14 +63,14 @@ document.addEventListener("DOMContentLoaded", () => {
     console.log("Login attempt:", { username, password, language });
 
     if (!username || !password) {
-      window.location.href = "error.html";
+      window.location.href = "/Mobile%20app/error.html";
       return;
     }
 
     if (!localStorage.getItem("hearo_onboarding_completed")) {
-      window.location.href = "welcome.html";
+      window.location.href = "/Mobile%20app/welcome.html";
     } else {
-      window.location.href = "home.html";
+      window.location.href = "/Mobile%20app/home.html";
     }
   });
 });
