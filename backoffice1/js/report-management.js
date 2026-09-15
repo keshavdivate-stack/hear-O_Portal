@@ -329,36 +329,37 @@ document.getElementById("rmArchivedSearchInput").addEventListener("input", (e) =
 
 /* ---------------- Report History ---------------- */
 let rmHistReportFilter = "";
+let rmHistReportNameFilter = "";
 let rmHistOrgFilter = "";
 
-/* Unlike the other history filters (blank = "no filter"), Date Range always
-   has a value -- it defaults to the last 7 days so the table doesn't dump a
-   long tail of old deliveries on first load, with Last 30/90 days and All
-   time available for anyone who needs to look further back. */
-const RM_DATE_RANGE_OPTIONS = [
-  { days: 7, label: "Last 7 days" },
-  { days: 30, label: "Last 30 days" },
-  { days: 90, label: "Last 90 days" },
-  { days: Infinity, label: "All time" },
-];
-let rmHistDateRangeFilter = 7;
+/* From/To date range -- both blank = no date filtering. `daysAgo` is the only
+   date info each history record carries (sentOn is a display-only string, see
+   below), so a record's actual calendar date is derived from it relative to
+   today, then compared against the picked range. */
+let rmHistFromDate = "";
+let rmHistToDate = "";
 
 document.getElementById("rmHistReportFilterMenu").innerHTML = buildFilterSelectOptions(RM_REPORTS.map((r) => r.label), "All reports");
+document.getElementById("rmHistReportNameFilterMenu").innerHTML = buildFilterSelectOptions([...new Set(rmHistory.map((h) => h.name))], "All report names");
 document.getElementById("rmHistOrgFilterMenu").innerHTML = buildFilterSelectOptions(RM_ORGS, "All organisations");
-document.getElementById("rmHistDateRangeFilterMenu").innerHTML = RM_DATE_RANGE_OPTIONS
-  .map(
-    (o) => `
-      <div class="bo-select-option${o.days === rmHistDateRangeFilter ? " selected" : ""}" data-value="${o.days}">${o.label}
-        <svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </div>`
-  )
-  .join("");
+
+function rmHistRecordDate(h) {
+  const d = new Date();
+  d.setHours(0, 0, 0, 0);
+  d.setDate(d.getDate() - h.daysAgo);
+  return d;
+}
 
 function rmFilteredHistory() {
   return rmHistory.filter((h) => {
     if (rmHistReportFilter && rmReportLabel(h.reportKey) !== rmHistReportFilter) return false;
+    if (rmHistReportNameFilter && h.name !== rmHistReportNameFilter) return false;
     if (rmHistOrgFilter && h.org !== rmHistOrgFilter) return false;
-    if (h.daysAgo > rmHistDateRangeFilter) return false;
+    if (rmHistFromDate || rmHistToDate) {
+      const recordDate = rmHistRecordDate(h);
+      if (rmHistFromDate && recordDate < new Date(rmHistFromDate)) return false;
+      if (rmHistToDate && recordDate > new Date(rmHistToDate)) return false;
+    }
     return true;
   });
 }
@@ -370,6 +371,7 @@ function rmRenderHistoryRow(h) {
     <tr data-id="${h.id}">
       <td class="mono">${rmHistoryIdLabel(h.id)}</td>
       <td>${rmEsc(rmReportLabel(h.reportKey))}</td>
+      <td>${rmEsc(h.name)}</td>
       <td>${rmEsc(h.org)}</td>
       <td>${rmRecipientsChip(h.recipients)}</td>
       <td>${h.sentOn}</td>
@@ -383,7 +385,7 @@ function rmRenderHistoryRow(h) {
 }
 
 const rmHistoryEmptyHtml = `
-  <tr><td colspan="7">
+  <tr><td colspan="8">
     <div class="bo-empty-state">
       <svg class="bo-empty-state-icon" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
       <p class="bo-empty-state-title" id="rmHistoryEmptyTitle">No deliveries yet</p>
@@ -394,7 +396,7 @@ const rmHistoryEmptyHtml = `
 const rmHistoryPager = boCreatePager("rmHistoryRows", () => rmFilteredHistory(), rmRenderHistoryRow, { pageSize: 8, emptyHtml: rmHistoryEmptyHtml });
 
 function rmHistoryFiltersActive() {
-  return !!(rmHistReportFilter || rmHistOrgFilter || rmHistDateRangeFilter !== 7);
+  return !!(rmHistReportFilter || rmHistReportNameFilter || rmHistOrgFilter || rmHistFromDate || rmHistToDate);
 }
 
 function rmRefreshHistoryEmptyState() {
@@ -418,15 +420,24 @@ function rmRenderHistory() {
 rmRenderHistory();
 
 document.getElementById("rmHistReportFilter").addEventListener("change", (e) => { rmHistReportFilter = e.target.value; rmHistoryPager.resetPage(); rmRenderHistory(); });
+document.getElementById("rmHistReportNameFilter").addEventListener("change", (e) => { rmHistReportNameFilter = e.target.value; rmHistoryPager.resetPage(); rmRenderHistory(); });
 document.getElementById("rmHistOrgFilter").addEventListener("change", (e) => { rmHistOrgFilter = e.target.value; rmHistoryPager.resetPage(); rmRenderHistory(); });
-document.getElementById("rmHistDateRangeFilter").addEventListener("change", (e) => { rmHistDateRangeFilter = Number(e.target.value); rmHistoryPager.resetPage(); rmRenderHistory(); });
+document.getElementById("rmHistFromDate").addEventListener("change", (e) => { rmHistFromDate = e.target.value; rmHistoryPager.resetPage(); rmRenderHistory(); });
+document.getElementById("rmHistToDate").addEventListener("change", (e) => { rmHistToDate = e.target.value; rmHistoryPager.resetPage(); rmRenderHistory(); });
 
 function rmClearHistoryFilters() {
   rmHistReportFilter = "";
+  rmHistReportNameFilter = "";
   rmHistOrgFilter = "";
-  rmHistDateRangeFilter = 7;
-  document.querySelectorAll('#tab-history .bo-select:not([data-name="rmHistDateRange"])').forEach(resetBoSelect);
-  setBoSelectValue(document.querySelector('#tab-history .bo-select[data-name="rmHistDateRange"]'), "7", { silent: true });
+  rmHistFromDate = "";
+  rmHistToDate = "";
+  document.querySelectorAll("#tab-history .bo-select").forEach(resetBoSelect);
+  const fromDateEl = document.getElementById("rmHistFromDate");
+  const toDateEl = document.getElementById("rmHistToDate");
+  fromDateEl.value = "";
+  fromDateEl.type = "text";
+  toDateEl.value = "";
+  toDateEl.type = "text";
   rmHistoryPager.resetPage();
   rmRenderHistory();
 }

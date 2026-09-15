@@ -1422,6 +1422,11 @@ button.bo-name-link { background: none; border: none; padding: 0; font: inherit;
 .bo-filter-row .bo-btn-primary,
 .bo-filter-row .bo-btn-secondary { flex-shrink: 0; white-space: nowrap; }
 
+/* A filter row with nothing but a search field (e.g. Archived Reports) has no
+   sibling filters to flex evenly against, so the 1 1 0 rule above would
+   stretch it across the whole row -- cap it back to a normal search-box width. */
+.bo-filter-row .bo-search-pill:only-child { flex: 0 1 320px; }
+
 @media (max-width: 1100px) {
   .bo-filter-row { flex-wrap: wrap; }
   .bo-filter-row .bo-filter-field,
