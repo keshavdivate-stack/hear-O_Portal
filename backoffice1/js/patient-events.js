@@ -489,7 +489,6 @@ peMessageForm.addEventListener("submit", (e) => {
   closeMessageDrawer();
 });
 
-document.getElementById("peAddMessageBtn").addEventListener("click", openMessageDrawer);
 document.getElementById("peCancelMessageDrawer").addEventListener("click", closeMessageDrawer);
 document.getElementById("peCloseMessageDrawerX").addEventListener("click", closeMessageDrawer);
 
