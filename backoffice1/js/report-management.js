@@ -34,16 +34,25 @@ const rmStatusPillClass = { Active: "bo-pill-active", Paused: "bo-pill-paused" }
 const rmDeliveryPillClass = { Delivered: "bo-pill-delivered", Failed: "bo-pill-failed", Processing: "bo-pill-processing" };
 const rmStatusPill = (s) => `<span class="bo-pill ${rmStatusPillClass[s] || ""}">${s}</span>`;
 const rmDeliveryPill = (s) => `<span class="bo-pill ${rmDeliveryPillClass[s] || ""}">${s}</span>`;
-/* History entries only carry a recipient count (no names were ever
-   recorded per-delivery), so the username tooltip only shows up where
-   real names exist -- the Scheduled Reports table's recipients array. */
+/* Scheduled Reports has real recipient names, so the chip leads with the
+   first one instead of a bare count -- "who" beats "how many" as the thing
+   worth reading at a glance. The rest hide behind a hover tooltip. History
+   only ever recorded a count (no names per-delivery), so it falls back to
+   the old "N people" wording since there's nothing to name. */
 function rmRecipientsChip(namesOrCount) {
   const names = Array.isArray(namesOrCount) ? namesOrCount : null;
-  const count = names ? names.length : namesOrCount;
-  const tooltip = names && names.length
-    ? `<span class="bo-recipients-tooltip">${names.map((n) => `<span class="bo-recipients-tooltip-row">${rmEsc(n)}</span>`).join("")}</span>`
-    : "";
-  return `<span class="bo-recipients-chip">${rmPeopleIcon}${count} ${count === 1 ? "person" : "people"}${tooltip}</span>`;
+
+  if (names && names.length) {
+    const [first, ...rest] = names;
+    const extra = rest.length ? `<span class="bo-recipients-extra">+${rest.length}</span>` : "";
+    const tooltip = rest.length
+      ? `<span class="bo-recipients-tooltip">${rest.map((n) => `<span class="bo-recipients-tooltip-row">${rmEsc(n)}</span>`).join("")}</span>`
+      : "";
+    return `<span class="bo-recipients-chip">${rmPeopleIcon}${rmEsc(first)}${extra}${tooltip}</span>`;
+  }
+
+  const count = namesOrCount;
+  return `<span class="bo-recipients-chip">${rmPeopleIcon}${count} ${count === 1 ? "person" : "people"}</span>`;
 }
 
 function rmEsc(v) { return String(v == null ? "" : v).replace(/"/g, "&quot;"); }
@@ -691,7 +700,67 @@ document.getElementById("rmWizardReportMenu").innerHTML = RM_REPORTS.map(
 ).join("");
 document.getElementById("rmWizardOrgMenu").innerHTML = buildSelectOptions(RM_ORGS);
 document.getElementById("rmWizardFrequencyMenu").innerHTML = buildSelectOptions(RM_FREQUENCIES);
-document.getElementById("rmWizardUsersMenu").innerHTML = buildSelectOptions(RM_DIRECTORY);
+
+/* ---------------- Users (multi-select) ----------------
+   A schedule can go to more than one person, so this is a checkbox
+   multi-select (same component as Schedule Days below) instead of the
+   single-select it used to be. */
+const rmMultiCheckIcon = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+let rmWizardSelectedUsers = new Set();
+
+const rmUsersSelectEl = document.getElementById("rmWizardUsersSelect");
+const rmUsersTrigger = rmUsersSelectEl.querySelector(".bo-multiselect-trigger");
+const rmUsersValueEl = rmUsersSelectEl.querySelector(".bo-multiselect-value");
+const rmUsersMenu = rmUsersSelectEl.querySelector(".bo-multiselect-menu");
+const rmUsersPlaceholder = rmUsersValueEl.textContent.trim();
+
+function renderUsersMenu() {
+  const allChecked = rmWizardSelectedUsers.size === RM_DIRECTORY.length;
+  rmUsersMenu.innerHTML =
+    `<label class="bo-multiselect-option all${allChecked ? " checked" : ""}" data-all="1">
+      <span class="bo-multiselect-checkbox">${rmMultiCheckIcon}</span> All users
+    </label>` +
+    RM_DIRECTORY.map(
+      (u) => `<label class="bo-multiselect-option${rmWizardSelectedUsers.has(u) ? " checked" : ""}" data-value="${u}">
+        <span class="bo-multiselect-checkbox">${rmMultiCheckIcon}</span> ${u}
+      </label>`
+    ).join("");
+}
+
+function renderUsersTrigger() {
+  if (rmWizardSelectedUsers.size === 0) {
+    rmUsersValueEl.textContent = rmUsersPlaceholder;
+    rmUsersValueEl.classList.add("placeholder");
+  } else {
+    rmUsersValueEl.textContent = RM_DIRECTORY.filter((u) => rmWizardSelectedUsers.has(u)).join(", ");
+    rmUsersValueEl.classList.remove("placeholder");
+  }
+}
+
+rmUsersTrigger.addEventListener("click", (e) => {
+  e.stopPropagation();
+  const willOpen = !rmUsersSelectEl.classList.contains("open");
+  document.querySelectorAll(".bo-multiselect.open").forEach((el) => el.classList.remove("open"));
+  if (willOpen) rmUsersSelectEl.classList.add("open");
+});
+
+rmUsersMenu.addEventListener("click", (e) => {
+  const option = e.target.closest(".bo-multiselect-option");
+  if (!option) return;
+  e.stopPropagation();
+
+  if (option.dataset.all) {
+    if (rmWizardSelectedUsers.size === RM_DIRECTORY.length) rmWizardSelectedUsers.clear();
+    else RM_DIRECTORY.forEach((u) => rmWizardSelectedUsers.add(u));
+  } else {
+    const u = option.dataset.value;
+    if (rmWizardSelectedUsers.has(u)) rmWizardSelectedUsers.delete(u);
+    else rmWizardSelectedUsers.add(u);
+  }
+
+  renderUsersMenu();
+  renderUsersTrigger();
+});
 
 /* ---------------- Schedule Days (Weekly only) ----------------
    A single multi-select field instead of a grid of standalone checkboxes --
@@ -805,11 +874,14 @@ function openWizardForCreate() {
   rmWizardEditingId = null;
   rmWizardSelectedTags = new Set();
   rmWizardSelectedDays = new Set();
+  rmWizardSelectedUsers = new Set();
   document.getElementById("rmWizardTitle").textContent = "Schedule Report";
   rmWizardSaveBtn.textContent = "Schedule Report";
   rmWizardForm.reset();
   rmWizardForm.querySelectorAll(".bo-select").forEach(resetBoSelect);
   renderWizardTags();
+  renderUsersMenu();
+  renderUsersTrigger();
   renderDaysMenu();
   renderDaysTrigger();
   updateDaysFieldVisibility();
@@ -823,6 +895,12 @@ function openWizardForEdit(id) {
   rmWizardEditingId = id;
   rmWizardSelectedTags = new Set(s.tags);
   rmWizardSelectedDays = new Set(s.days || []);
+  rmWizardSelectedUsers = new Set(
+    (s.usersFilter || "")
+      .split(",")
+      .map((u) => u.trim())
+      .filter(Boolean)
+  );
 
   document.getElementById("rmWizardTitle").textContent = `Edit Schedule — ${s.name}`;
   rmWizardSaveBtn.textContent = "Save Changes";
@@ -830,7 +908,6 @@ function openWizardForEdit(id) {
 
   setBoSelectValue(rmWizardForm.querySelector('.bo-select[data-name="wizReport"]'), s.reportKey, { silent: true });
   setBoSelectValue(rmWizardForm.querySelector('.bo-select[data-name="wizOrg"]'), s.org, { silent: true });
-  setBoSelectValue(rmWizardForm.querySelector('.bo-select[data-name="wizUsers"]'), s.usersFilter || "", { silent: true });
   setBoSelectValue(rmWizardForm.querySelector('.bo-select[data-name="wizFrequency"]'), s.frequency, { silent: true });
   rmWizardForm.name.value = s.name;
   rmWizardForm.title.value = s.title || "";
@@ -839,6 +916,8 @@ function openWizardForEdit(id) {
   rmWizardForm.mm.value = mm || "0";
 
   renderWizardTags();
+  renderUsersMenu();
+  renderUsersTrigger();
   renderDaysMenu();
   renderDaysTrigger();
   updateDaysFieldVisibility();
@@ -860,7 +939,7 @@ rmWizardForm.addEventListener("submit", (e) => {
   const reportKey = rmWizardForm.reportKey.value;
   const title = rmWizardForm.title.value.trim();
   const org = rmWizardForm.org.value;
-  const usersFilter = rmWizardForm.usersFilter.value;
+  const usersFilter = Array.from(rmWizardSelectedUsers).join(", ");
   const frequency = rmWizardForm.frequency.value;
   const timezone = "GMT";
   const hh = String(rmWizardForm.hh.value || "0").padStart(2, "0");
