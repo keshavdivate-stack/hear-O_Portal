@@ -2841,12 +2841,6 @@ input[type="password"]:focus {
   box-shadow: 0 1px 4px rgba(20, 24, 30, 0.06);
 }
 
-/* The period that's happening right now gets a tinted card so a glance at
-   the screen shows what's due without reading every header — the other
-   periods stay plain so they don't compete for attention. */
-.med-time-group.med-time-group-now-day { background: #fff8ea; border-color: #f3cf8e; }
-.med-time-group.med-time-group-now-night { background: #f3effc; border-color: #d9c8f2; }
-
 .med-time-head {
   display: flex;
   align-items: center;
