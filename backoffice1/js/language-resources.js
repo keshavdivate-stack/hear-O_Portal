@@ -196,6 +196,17 @@ document.getElementById("lrUsernameFilter").addEventListener("input", (e) => {
   lrPager();
 });
 
+/* ---------------- Commercial / Non Commercial toggle ----------------
+   On = Commercial, off = Non Commercial -- the label swaps with the
+   switch instead of staying fixed on one word regardless of state. */
+const lrHmoToggle = document.getElementById("lrHmoToggle");
+const lrHmoToggleLabel = document.getElementById("lrHmoToggleLabel");
+function syncLrHmoToggleLabel() {
+  lrHmoToggleLabel.textContent = lrHmoToggle.checked ? "Commercial" : "Non Commercial";
+}
+lrHmoToggle.addEventListener("change", syncLrHmoToggleLabel);
+syncLrHmoToggleLabel();
+
 document.getElementById("lrClearFiltersBtn").addEventListener("click", () => {
   lrSiteFilter = "";
   lrLangFilter = "";
