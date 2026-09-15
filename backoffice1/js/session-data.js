@@ -49,6 +49,29 @@ function sdAnswerDetails(row) {
     </div>`).join("");
 }
 
+/* Every language carries its own Rerecord/Successful/Unsuccessful message
+   triple, same shape as sdQuestionDetails/sdAnswerDetails -- the main row
+   only shows the EN copy so the table stays scannable. */
+function sdIaErrorDetails(row) {
+  return SD_LANGS.map((lang) => {
+    const m = row.messages[lang] || {};
+    const dir = lang === "AR" || lang === "HE" ? ' dir="auto"' : "";
+    return `
+    <div class="sd-question-detail-item">
+      <span class="sd-question-detail-label">${lang} Rerecord Message</span>
+      <span class="sd-question-detail-value"${dir}>${sdQuestionValue(m.regular)}</span>
+    </div>
+    <div class="sd-question-detail-item">
+      <span class="sd-question-detail-label">${lang} Successful Rerecord Message</span>
+      <span class="sd-question-detail-value"${dir}>${sdQuestionValue(m.successful)}</span>
+    </div>
+    <div class="sd-question-detail-item">
+      <span class="sd-question-detail-label">${lang} Unsuccessful Rerecord Message</span>
+      <span class="sd-question-detail-value"${dir}>${sdQuestionValue(m.unsuccessful)}</span>
+    </div>`;
+  }).join("");
+}
+
 function sdActions(tabKey, idx) {
   return `
     <div class="bo-row-actions">
@@ -133,15 +156,22 @@ const sdIaErrorsPager = boCreatePager(
   "rows-iaErrors",
   () => sdEntries("iaErrors"),
   (e) => `
-      <tr>
+      <tr class="sd-question-row" data-iaerror-row="${e.i}">
+        <td class="sd-question-expand-cell"><button type="button" class="sd-question-expand" data-iaerror-expand="${e.i}" aria-expanded="false" aria-controls="iaerror-details-${e.i}" aria-label="Show IA error translations">${sdChevronIcon}</button></td>
         <td>${sdEsc(e.r.name)}</td>
         <td>${sdEsc(e.r.identifier)}</td>
         <td>${sdEsc(e.r.priority)}</td>
         <td>${sdEsc(e.r.rerecordAttempts)}</td>
         <td>${sdEsc(e.r.sessionRerecordAttempts)}</td>
+        <td>${sdQuestionValue(e.r.messages.EN && e.r.messages.EN.regular)}</td>
+        <td>${sdQuestionValue(e.r.messages.EN && e.r.messages.EN.successful)}</td>
+        <td>${sdQuestionValue(e.r.messages.EN && e.r.messages.EN.unsuccessful)}</td>
         <td>${sdActions("iaErrors", e.i)}</td>
+      </tr>
+      <tr class="sd-question-details-row" id="iaerror-details-${e.i}" hidden>
+        <td colspan="10"><div class="sd-question-details">${sdIaErrorDetails(e.r)}</div></td>
       </tr>`,
-  { pageSize: SD_PAGE_SIZE, emptyColspan: 6, emptyText: "No IA errors yet." }
+  { pageSize: SD_PAGE_SIZE, emptyColspan: 10, emptyText: "No IA errors yet." }
 );
 
 const sdReminderTimeRangePager = boCreatePager(
@@ -190,7 +220,7 @@ document.querySelectorAll(".bo-list-table").forEach((table) => {
       const expanded = expand.getAttribute("aria-expanded") === "true";
       const details = document.getElementById(expand.getAttribute("aria-controls"));
       expand.setAttribute("aria-expanded", String(!expanded));
-      const itemType = expand.dataset.answerExpand === undefined ? "question" : "answer";
+      const itemType = expand.dataset.answerExpand !== undefined ? "answer" : expand.dataset.iaerrorExpand !== undefined ? "IA error" : "question";
       expand.setAttribute("aria-label", expanded ? `Show ${itemType} translations` : `Hide ${itemType} translations`);
       details.hidden = expanded;
       expand.closest("tr").classList.toggle("is-expanded", !expanded);

@@ -1132,8 +1132,11 @@ body.bo-page-scroll .bo-list-toolbar {
 /* Session Data > Questions: compact metadata and an inline translation preview. */
 .sd-questions-table { min-width: 1120px !important; }
 .sd-answers-table { min-width: 960px !important; }
+.sd-iaerrors-table { min-width: 1500px !important; }
 .sd-questions-table .sd-expand-column,
-.sd-questions-table .sd-question-expand-cell { width: 48px; padding-right: 4px; }
+.sd-questions-table .sd-question-expand-cell,
+.sd-iaerrors-table .sd-expand-column,
+.sd-iaerrors-table .sd-question-expand-cell { width: 48px; padding-right: 4px; }
 .sd-question-expand {
   width: 28px;
   height: 28px;
