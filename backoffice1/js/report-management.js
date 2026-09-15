@@ -194,7 +194,6 @@ function rmRenderScheduleRow(s) {
       <td>${rmRecipientsChip(s.recipients)}</td>
       <td>
         <div class="bo-cell-primary">${s.frequency}</div>
-        <div class="bo-cell-secondary">${s.time} ${s.timezone}</div>
       </td>
       <td>${s.nextRun}</td>
       <td>${rmStatusPill(s.status)}</td>
