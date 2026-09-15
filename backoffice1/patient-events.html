@@ -143,6 +143,10 @@
 
     <div class="bo-list-toolbar">
       <h1>Patient Events</h1>
+      <div class="bo-tabs bo-seg-toggle" id="peViewTabs">
+        <button type="button" class="bo-tab bo-seg-btn active" data-view="active">Events</button>
+        <button type="button" class="bo-tab bo-seg-btn" data-view="archived">Archived Events</button>
+      </div>
       <span class="bo-list-toolbar-spacer"></span>
       <label class="bo-switch-field">
         <span class="bo-switch">
@@ -228,8 +232,8 @@
 
   <!-- Row action dropdown (Patient Events) -->
   <div class="bo-row-menu" id="peRowMenu">
-    <button class="bo-row-menu-item" data-action="edit">Edit Event</button>
-    <button class="bo-row-menu-item danger" data-action="delete">Delete Event</button>
+    <button class="bo-row-menu-item" id="peRowMenuEditBtn" data-action="edit">Edit Event</button>
+    <button class="bo-row-menu-item danger" id="peRowMenuArchiveBtn" data-action="archive">Archive Event</button>
   </div>
 
   <!-- Add / Update Event drawer -->

@@ -92,6 +92,9 @@ let peApprovedFilter = new Set(PE_APPROVED_OPTIONS);
 let pePatientFilter = "";
 let peAddedByFilter = "";
 let peReportedByFilter = "";
+/* Active/Archived is its own tab, not a filter -- archiving an event hides it
+   from the working list without deleting it, mirroring Organizations Management. */
+let peViewTab = "active";
 
 /* Filters apply as soon as a value changes -- no Apply button to batch them. */
 const peSiteMultiSelect = wireMultiSelect("peSiteFilter", PE_SITES, (selected) => {
@@ -112,6 +115,7 @@ const peApprovedMultiSelect = wireMultiSelect("peApprovedFilter", PE_APPROVED_OP
 
 function peFiltered() {
   return peEvents.filter((r) => {
+    if (!!r.archived !== (peViewTab === "archived")) return false;
     if (peSiteFilter.size && peSiteFilter.size < PE_SITES.length) {
       if (![...peSiteFilter].some((s) => r.username.startsWith(s))) return false;
     }
@@ -169,6 +173,16 @@ const pePager = boCreatePager(
 );
 pePager();
 
+/* ---------------- Events / Archived Events tabs ---------------- */
+document.getElementById("peViewTabs").addEventListener("click", (e) => {
+  const btn = e.target.closest(".bo-tab");
+  if (!btn || btn.classList.contains("active")) return;
+  peViewTab = btn.dataset.view;
+  document.querySelectorAll("#peViewTabs .bo-tab").forEach((b) => b.classList.toggle("active", b === btn));
+  pePager.resetPage();
+  pePager();
+});
+
 document.getElementById("peRows").addEventListener("change", (e) => {
   const box = e.target.closest(".bo-cell-checkbox");
   if (!box) return;
@@ -176,8 +190,10 @@ document.getElementById("peRows").addEventListener("change", (e) => {
   if (rec) rec[box.dataset.field] = box.checked;
 });
 
-/* ---------------- Row action dropdown (edit / delete) ---------------- */
+/* ---------------- Row action dropdown (edit / archive) ---------------- */
 const peRowMenu = document.getElementById("peRowMenu");
+const peRowMenuEditBtn = document.getElementById("peRowMenuEditBtn");
+const peRowMenuArchiveBtn = document.getElementById("peRowMenuArchiveBtn");
 let activePeRowId = null;
 
 document.getElementById("peRows").addEventListener("click", (e) => {
@@ -185,6 +201,17 @@ document.getElementById("peRows").addEventListener("click", (e) => {
   if (!trigger) return;
   e.stopPropagation();
   activePeRowId = Number(trigger.dataset.id);
+
+  const rec = peEvents.find((r) => r.id === activePeRowId);
+  const isArchived = !!rec?.archived;
+
+  peRowMenuEditBtn.hidden = isArchived;
+  if (rec) {
+    peRowMenuArchiveBtn.textContent = isArchived ? "Unarchive Event" : "Archive Event";
+    peRowMenuArchiveBtn.dataset.action = isArchived ? "unarchive" : "archive";
+    peRowMenuArchiveBtn.classList.toggle("danger", !isArchived);
+  }
+
   const rect = trigger.getBoundingClientRect();
   peRowMenu.style.top = `${rect.bottom + 6}px`;
   peRowMenu.style.left = `${rect.right - 190}px`;
@@ -205,9 +232,12 @@ peRowMenu.addEventListener("click", (e) => {
 
   if (item.dataset.action === "edit") {
     openEventDrawer(rec);
-  } else if (item.dataset.action === "delete") {
-    if (!confirm(`Delete this event for "${rec.username}"?`)) return;
-    peEvents.splice(peEvents.indexOf(rec), 1);
+  } else if (item.dataset.action === "archive") {
+    if (!confirm(`Archive this event for "${rec.username}"? It will move to the Archived Events tab.`)) return;
+    rec.archived = true;
+    pePager();
+  } else if (item.dataset.action === "unarchive") {
+    rec.archived = false;
     pePager();
   }
 });
