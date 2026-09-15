@@ -31,7 +31,12 @@ function lrFiltered() {
 const lrPlayIcon = `<svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M6 4L20 12L6 20Z"/></svg>`;
 const lrPauseIcon = `<svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>`;
 const lrVolumeIcon = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9H4Z"/><path d="M17 9a4 4 0 0 1 0 6"/></svg>`;
+const lrVolumeMutedIcon = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9H4Z"/><path d="M17 9l5 5"/><path d="M22 9l-5 5"/></svg>`;
 const lrKebabIcon = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="1.7" fill="currentColor"/><circle cx="12" cy="12" r="1.7" fill="currentColor"/><circle cx="12" cy="19" r="1.7" fill="currentColor"/></svg>`;
+const lrSpeedIcon = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21a9 9 0 1 1 6.36-2.64"/><path d="M12 7v5l3 2"/><path d="M21 3v5h-5"/></svg>`;
+const lrChevronIcon = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>`;
+const lrCheckIcon = `<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const LR_SPEEDS = ["0.5", "0.75", "Normal", "1.25", "1.5"];
 
 function lrCurrentUserName() {
   const el = document.querySelector(".bo-user-name");
@@ -60,8 +65,8 @@ const lrPager = boCreatePager(
           <button class="bo-audio-play" data-id="${e.r.id}" aria-label="Play">${lrPlayIcon}</button>
           <span class="bo-audio-time">${lrDuration(e.r.duration)}</span>
           <div class="bo-audio-track"><div class="bo-audio-fill"></div></div>
-          <button class="bo-action-icon" type="button" aria-label="Volume">${lrVolumeIcon}</button>
-          <button class="bo-action-icon" type="button" aria-label="More">${lrKebabIcon}</button>
+          <button class="bo-action-icon lr-volume-btn" type="button" data-id="${e.r.id}" aria-label="${e.r.muted ? "Unmute" : "Mute"}">${e.r.muted ? lrVolumeMutedIcon : lrVolumeIcon}</button>
+          <button class="bo-action-icon lr-more-btn" type="button" data-id="${e.r.id}" aria-label="Playback options">${lrKebabIcon}</button>
         </div>
       </td>
     </tr>`,
@@ -72,22 +77,101 @@ lrPager();
 /* Play a recording: toggle its play/pause icon and stamp the Notes column with
    the username of whoever played it (the currently signed-in backoffice user). */
 document.getElementById("lrRows").addEventListener("click", (e) => {
-  const btn = e.target.closest(".bo-audio-play");
-  if (!btn) return;
+  const playBtn = e.target.closest(".bo-audio-play");
+  if (playBtn) {
+    const id = Number(playBtn.dataset.id);
+    const rec = lrRecordings.find((r) => r.id === id);
+    if (!rec) return;
 
-  const id = Number(btn.dataset.id);
+    const playing = playBtn.classList.toggle("playing");
+    playBtn.innerHTML = playing ? lrPauseIcon : lrPlayIcon;
+
+    if (playing) {
+      rec.notes = lrCurrentUserName();
+      const row = playBtn.closest("tr");
+      const notesCell = row && row.querySelector(".lr-notes-cell");
+      if (notesCell) notesCell.textContent = rec.notes;
+    }
+    return;
+  }
+
+  const volumeBtn = e.target.closest(".lr-volume-btn");
+  if (volumeBtn) {
+    const id = Number(volumeBtn.dataset.id);
+    const rec = lrRecordings.find((r) => r.id === id);
+    if (!rec) return;
+    rec.muted = !rec.muted;
+    volumeBtn.innerHTML = rec.muted ? lrVolumeMutedIcon : lrVolumeIcon;
+    volumeBtn.setAttribute("aria-label", rec.muted ? "Unmute" : "Mute");
+    return;
+  }
+
+  const moreBtn = e.target.closest(".lr-more-btn");
+  if (moreBtn) {
+    e.stopPropagation();
+    openLrSpeedMenu(Number(moreBtn.dataset.id), moreBtn);
+  }
+});
+
+/* ---------------- "More" popover: Playback speed ----------------
+   Opens straight to a single "Playback speed" row; clicking it drills the
+   same popover into the speed list (0.5–1.5) with a check on the active
+   value, instead of popping a second menu next to the first. */
+const lrSpeedMenu = document.getElementById("lrSpeedMenu");
+let lrSpeedMenuRecId = null;
+
+function lrSpeedMenuRootHtml() {
+  return `
+    <button type="button" class="bo-row-menu-item" data-step="speed" style="display:flex; align-items:center; gap:8px;">
+      ${lrSpeedIcon}
+      <span style="flex:1;">Playback speed</span>
+      ${lrChevronIcon}
+    </button>`;
+}
+
+function lrSpeedMenuListHtml(rec) {
+  const current = rec.speed || "Normal";
+  return LR_SPEEDS.map(
+    (v) => `<div class="bo-select-option${v === current ? " selected" : ""}" data-speed="${v}">${v}${lrCheckIcon}</div>`
+  ).join("");
+}
+
+function openLrSpeedMenu(id, anchorBtn) {
   const rec = lrRecordings.find((r) => r.id === id);
   if (!rec) return;
+  lrSpeedMenuRecId = id;
+  lrSpeedMenu.innerHTML = lrSpeedMenuRootHtml();
 
-  const playing = btn.classList.toggle("playing");
-  btn.innerHTML = playing ? lrPauseIcon : lrPlayIcon;
+  const rect = anchorBtn.getBoundingClientRect();
+  lrSpeedMenu.style.top = `${rect.bottom + 6}px`;
+  lrSpeedMenu.style.left = `${rect.right - 190}px`;
+  lrSpeedMenu.classList.add("open");
+}
 
-  if (playing) {
-    rec.notes = lrCurrentUserName();
-    const row = btn.closest("tr");
-    const notesCell = row && row.querySelector(".lr-notes-cell");
-    if (notesCell) notesCell.textContent = rec.notes;
+function closeLrSpeedMenu() {
+  lrSpeedMenu.classList.remove("open");
+  lrSpeedMenuRecId = null;
+}
+
+lrSpeedMenu.addEventListener("click", (e) => {
+  const rec = lrRecordings.find((r) => r.id === lrSpeedMenuRecId);
+  if (!rec) return;
+
+  const stepBtn = e.target.closest('[data-step="speed"]');
+  if (stepBtn) {
+    lrSpeedMenu.innerHTML = lrSpeedMenuListHtml(rec);
+    return;
   }
+
+  const speedOption = e.target.closest("[data-speed]");
+  if (speedOption) {
+    rec.speed = speedOption.dataset.speed;
+    closeLrSpeedMenu();
+  }
+});
+
+document.addEventListener("click", (e) => {
+  if (!lrSpeedMenu.contains(e.target)) closeLrSpeedMenu();
 });
 
 /* Filters apply as soon as a field changes -- no Apply button to batch them. */
