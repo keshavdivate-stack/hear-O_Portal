@@ -482,6 +482,9 @@ function openHistoryDetails(id) {
   document.getElementById("rmHistDetailOrg").textContent = h.org;
   document.getElementById("rmHistDetailSentOn").textContent = h.sentOn;
   document.getElementById("rmHistDetailStatus").innerHTML = rmDeliveryPill(h.status);
+  document.getElementById("rmHistDetailRecipients").innerHTML = h.recipients.length
+    ? h.recipients.map((r) => `<div>${rmEsc(r)}</div>`).join("")
+    : "—";
 
   const failureSection = document.getElementById("rmHistDetailFailureSection");
   if (h.failureReason) {
