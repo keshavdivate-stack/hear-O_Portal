@@ -58,15 +58,15 @@
           <p class="faceid-modal-sub" id="faceidSub">Please try again</p>
 
           <div class="faceid-modal-actions" id="faceidActions">
-            <button type="button" class="faceid-modal-btn" onclick="window.location.href='home.html'">Try again with Face ID</button>
-            <button type="button" class="faceid-modal-btn" onclick="window.location.href='verify-identity.html'">Cancel</button>
+            <button type="button" class="faceid-modal-btn" onclick="window.location.href='/Mobile%20app/home.html'">Try again with Face ID</button>
+            <button type="button" class="faceid-modal-btn" onclick="window.location.href='/Mobile%20app/verify-identity.html'">Cancel</button>
           </div>
         </div>
       </div>
 
       <div class="locked-footer" style="width:100%; display:flex; flex-direction:column; align-items:center; gap:16px;">
         <button type="button" class="login-btn" disabled style="margin-top:0; opacity:0.6;">OK</button>
-        <button type="button" class="skip-link" onclick="window.location.href='verify-identity.html'">Use code instead</button>
+        <button type="button" class="skip-link" onclick="window.location.href='/Mobile%20app/verify-identity.html'">Use code instead</button>
       </div>
     </div>
   </div>
@@ -77,8 +77,8 @@
     document.getElementById("faceidSub").hidden = true;
     document.getElementById("faceidActions").className = "faceid-modal-actions faceid-modal-actions-split";
     document.getElementById("faceidActions").innerHTML = `
-      <button type="button" class="faceid-modal-btn" onclick="window.location.href='home.html'">Try another way</button>
-      <button type="button" class="faceid-modal-btn" onclick="window.location.href='verify-identity.html'">Cancel</button>
+      <button type="button" class="faceid-modal-btn" onclick="window.location.href='/Mobile%20app/home.html'">Try another way</button>
+      <button type="button" class="faceid-modal-btn" onclick="window.location.href='/Mobile%20app/verify-identity.html'">Cancel</button>
     `;
   }
 </script>

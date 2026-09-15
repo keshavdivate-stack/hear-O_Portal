@@ -32,7 +32,7 @@
       <p class="welcome-text">Please record every morning immediately after waking up and before breakfast</p>
 
       <div class="welcome-footer">
-        <button type="button" class="login-btn" onclick="window.location.href='onboarding-1.html'">Let's start</button>
+        <button type="button" class="login-btn" onclick="window.location.href='/Mobile%20app/onboarding-1.html'">Let's start</button>
         <button type="button" class="skip-link" id="skipBtn">Skip</button>
       </div>
     </div>
@@ -41,7 +41,7 @@
 <script>
   document.getElementById("skipBtn").addEventListener("click", () => {
     localStorage.setItem("hearo_onboarding_completed", "1");
-    window.location.href = "home.html";
+    window.location.href = "/Mobile%20app/home.html";
   });
 </script>
 </body>

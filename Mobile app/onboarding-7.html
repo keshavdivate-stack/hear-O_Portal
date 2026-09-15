@@ -40,7 +40,7 @@
       <p class="onboarding-text">Now let's try to record together</p>
 
       <div class="onboarding-footer" style="margin-top:auto; display:flex; flex-direction:column; align-items:center; gap:16px;">
-        <button type="button" class="login-btn" style="margin-top:0;" onclick="window.location.href='record-prompt.html?mode=training'">Let's practice</button>
+        <button type="button" class="login-btn" style="margin-top:0;" onclick="window.location.href='/Mobile%20app/record-prompt.html?mode=training'">Let's practice</button>
         <button type="button" class="skip-link" id="skipBtn">Skip</button>
       </div>
     </div>
@@ -49,7 +49,7 @@
 <script>
   document.getElementById("skipBtn").addEventListener("click", () => {
     localStorage.setItem("hearo_onboarding_completed", "1");
-    window.location.href = "home.html";
+    window.location.href = "/Mobile%20app/home.html";
   });
 </script>
 </body>

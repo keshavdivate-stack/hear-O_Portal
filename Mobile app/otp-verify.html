@@ -23,7 +23,7 @@
     </div>
 
     <div class="otp-header">
-      <button type="button" class="back-btn" onclick="window.location.href='welcome-verify.html'" aria-label="Back">
+      <button type="button" class="back-btn" onclick="window.location.href='/Mobile%20app/welcome-verify.html'" aria-label="Back">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M15 5L8 12L15 19" stroke="#252424" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
@@ -62,12 +62,12 @@
           <span class="otp-hint-title">Still no code?</span>
         </div>
         <p class="otp-hint-desc">Make sure the information you entered is correct</p>
-        <button type="button" class="otp-hint-btn" onclick="window.location.href='welcome-verify.html'">Check my details</button>
+        <button type="button" class="otp-hint-btn" onclick="window.location.href='/Mobile%20app/welcome-verify.html'">Check my details</button>
       </div>
 
       <div class="otp-footer">
-        <button type="button" class="otp-email-btn" onclick="window.location.href='otp-verify-email.html'">Send code by email</button>
-        <p class="otp-help">Need help? <a href="contact-us.html" class="otp-help-link">Contact us</a></p>
+        <button type="button" class="otp-email-btn" onclick="window.location.href='/Mobile%20app/otp-verify-email.html'">Send code by email</button>
+        <p class="otp-help">Need help? <a href="/Mobile%20app/contact-us.html" class="otp-help-link">Contact us</a></p>
       </div>
     </div>
   </div>
@@ -93,9 +93,9 @@
 
     function goNext() {
       if (localStorage.getItem("hearo_privacy_accepted")) {
-        window.location.href = "index.html";
+        window.location.href = "/Mobile%20app/index.html";
       } else {
-        window.location.href = "privacy.html";
+        window.location.href = "/Mobile%20app/privacy.html";
       }
     }
 
@@ -112,7 +112,7 @@
             attempts += 1;
             if (attempts >= MAX_ATTEMPTS) {
               localStorage.setItem("hearo_lock_until", Date.now() + 30 * 60 * 1000);
-              window.location.href = "app-locked.html";
+              window.location.href = "/Mobile%20app/app-locked.html";
               return;
             }
             errorMsg.hidden = false;
