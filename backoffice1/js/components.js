@@ -20,8 +20,10 @@ const TAB_META = {
 };
 
 const compKebabIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="1.7" fill="currentColor"/><circle cx="12" cy="12" r="1.7" fill="currentColor"/><circle cx="12" cy="19" r="1.7" fill="currentColor"/></svg>`;
+const compEditIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 20h4L18.5 9.5a2.1 2.1 0 0 0-3-3L5 17v3Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round"/></svg>`;
 
 function esc(v) { return String(v == null ? "" : v).replace(/"/g, "&quot;"); }
+function escOrDash(v) { return v ? esc(v) : "—"; }
 
 function nowStamp() {
   const d = new Date();
@@ -76,16 +78,16 @@ configPagers.main = boCreatePager(
   (e) => `
       <tr>
         <td>${esc(e.r.name)}</td>
-        <td>${esc(e.r.sentencesConfig)}</td>
-        <td>${esc(e.r.questionsConfig)}</td>
-        <td>${esc(e.r.inputAssessmentConfig)}</td>
-        <td>${esc(e.r.generalParamsConfig)}</td>
-        <td>${esc(e.r.reminderConfig)}</td>
-        <td>${esc(e.r.iaErrorsConfig)}</td>
+        <td>${escOrDash(e.r.sentencesConfig)}</td>
+        <td>${escOrDash(e.r.questionsConfig)}</td>
+        <td>${escOrDash(e.r.inputAssessmentConfig)}</td>
+        <td>${escOrDash(e.r.generalParamsConfig)}</td>
+        <td>${escOrDash(e.r.reminderConfig)}</td>
+        <td>${escOrDash(e.r.iaErrorsConfig)}</td>
         <td>${esc(e.r.creationDate)}</td>
         <td>
           <div class="bo-row-actions">
-            <button class="bo-action-icon row-menu-trigger" data-tab="main" data-idx="${e.i}" aria-label="Row actions">${compKebabIcon}</button>
+            <button class="bo-action-icon main-edit-trigger" data-idx="${e.i}" aria-label="Edit">${compEditIcon}</button>
           </div>
         </td>
       </tr>`,
@@ -104,6 +106,13 @@ let activeCompIdx = null;
 
 document.querySelectorAll(".bo-list-table").forEach((table) => {
   table.addEventListener("click", (e) => {
+    // Main Config only ever offers Edit, so it skips the dropdown entirely.
+    const editTrigger = e.target.closest(".main-edit-trigger");
+    if (editTrigger) {
+      openDrawer("main", Number(editTrigger.dataset.idx));
+      return;
+    }
+
     const trigger = e.target.closest(".row-menu-trigger");
     if (!trigger) return;
     e.stopPropagation();
@@ -221,30 +230,32 @@ function dynamicList(listKey, itemLabelPrefix, options, addLabel, errorMsg) {
     )
     .join("");
   const showError = !list.some((v) => v) ? `<p class="bo-field-error">${errorMsg}</p>` : "";
-  return `${items}${showError}<button type="button" class="bo-btn-primary bo-add-dynlist" data-list="${listKey}" style="margin-bottom:18px;">${addLabel}</button>`;
+  return `${items}${showError}<button type="button" class="bo-btn-secondary bo-add-dynlist" data-list="${listKey}" style="margin-bottom:18px;">${addLabel}</button>`;
 }
 
 /* ---------------- Per-tab body renderers ---------------- */
 function bodyMain() {
   const existingOptions = mainConfigs.map((c) => c.name);
   return `
-    <div class="bo-modal-field">
-      <label>Existing main config:</label>
-      <div style="display:flex; gap:10px;">
-        <select data-field="existingMain" style="flex:1;">
-          <option value=""></option>
-          ${existingOptions.map((o) => `<option value="${esc(o)}">${esc(o)}</option>`).join("")}
-        </select>
-        <button type="button" class="bo-btn-primary" id="loadMainConfigBtn" style="flex-shrink:0;">Load</button>
+    <div class="bo-modal-grid">
+      <div class="bo-modal-field full">
+        <label>Existing main config:</label>
+        <div style="display:flex; gap:10px;">
+          <select data-field="existingMain" style="flex:1;">
+            <option value=""></option>
+            ${existingOptions.map((o) => `<option value="${esc(o)}">${esc(o)}</option>`).join("")}
+          </select>
+          <button type="button" class="bo-btn-secondary" id="loadMainConfigBtn" style="flex-shrink:0;">Load</button>
+        </div>
       </div>
+      ${textField("name", "Name")}
+      ${selectField("sentencesConfig", "Sentences Config", sentencesConfigs.map((c) => c.name))}
+      ${selectField("questionsConfig", "Questions Config", questionsConfigs.map((c) => c.name))}
+      ${selectField("inputAssessmentConfig", "Input Assessment Config", inputAssessmentConfigs.map((c) => c.name))}
+      ${selectField("generalParamsConfig", "General Config", generalParamsConfigs.map((c) => c.name))}
+      ${selectField("reminderConfig", "Reminder Config", reminderConfigs.map((c) => c.name))}
+      ${selectField("iaErrorsConfig", "IA Errors Config", iaErrorsConfigs.map((c) => c.name))}
     </div>
-    ${textField("name", "Name")}
-    ${selectField("sentencesConfig", "Sentences Config", sentencesConfigs.map((c) => c.name))}
-    ${selectField("questionsConfig", "Questions Config", questionsConfigs.map((c) => c.name))}
-    ${selectField("inputAssessmentConfig", "Input Assessment Config", inputAssessmentConfigs.map((c) => c.name))}
-    ${selectField("generalParamsConfig", "General Config", generalParamsConfigs.map((c) => c.name))}
-    ${selectField("reminderConfig", "Reminder Config", reminderConfigs.map((c) => c.name))}
-    ${selectField("iaErrorsConfig", "IA Errors Config", iaErrorsConfigs.map((c) => c.name))}
   `;
 }
 
@@ -268,7 +279,7 @@ function bodySentences() {
     return `
       <p style="font-size:13px; font-weight:700; color:var(--ink); margin:18px 0 4px;">${l} Sentences:</p>
       ${items}
-      <button type="button" class="bo-btn-primary bo-add-sentence" data-lang="${l}" style="margin:8px 0 4px;">Add Sentence</button>`;
+      <button type="button" class="bo-btn-secondary bo-add-sentence" data-lang="${l}" style="margin:8px 0 4px;">Add Sentence</button>`;
   }).join("");
   return `${textField("name", "Name")}${sections}`;
 }
@@ -292,61 +303,65 @@ function bodyQuestions() {
       </div>`
     )
     .join("");
-  return `${textField("name", "Name")}${tabsHtml}${items}<button type="button" class="bo-btn-primary bo-add-question" style="margin-bottom:18px;">Add Question</button>`;
+  return `${textField("name", "Name")}${tabsHtml}${items}<button type="button" class="bo-btn-secondary bo-add-question" style="margin-bottom:18px;">Add Question</button>`;
 }
 
 function bodyInputAssessment() {
   return `
-    ${textField("name", "Name")}
-    ${textField("noSpeechAfterStart", "No Speech After Start Threshold")}
-    ${textField("noStopAfterSpeech", "No Stop After Speech Threshold")}
-    ${textField("earlySpeech", "Early Speech Threshold")}
-    ${textField("lateSpeech", "Late Speech Threshold")}
-    ${textField("avgNoise", "Avg Noise Threshold")}
-    ${textField("postNoSpeech", "Post No Speech Threshold")}
-    ${textField("preNoSpeech", "Pre No Speech Threshold")}
-    ${textField("noiseBufferLength", "Noise Buffer Length")}
-    ${textField("snrThreshold", "SNR Threshold")}
-    ${textField("softSpeaking", "Soft Speaking Threshold")}
-    ${textField("loadSpeaking", "Load Speaking Threshold")}
-    ${textField("totalNoise", "Total Noise Threshold")}
-    ${textField("variance", "Variance Threshold")}
-    ${textField("postMargin", "Post Margin")}
-    ${textField("preMargin", "Pre Margin")}
-    ${textField("asrTimeout", "ASR Timeout")}
-    ${textField("androidMicModel", "Android Mic Model")}
-    ${selectField("reportIaErrors", "Report IA Errors", YES_NO)}
-    ${selectField("showPatientIaErrors", "Show Patient IA Errors", YES_NO)}
-    ${selectField("showMessageAtLast", "Show Message At Last", YES_NO)}
+    <div class="bo-modal-grid">
+      ${textField("name", "Name")}
+      ${textField("noSpeechAfterStart", "No Speech After Start Threshold")}
+      ${textField("noStopAfterSpeech", "No Stop After Speech Threshold")}
+      ${textField("earlySpeech", "Early Speech Threshold")}
+      ${textField("lateSpeech", "Late Speech Threshold")}
+      ${textField("avgNoise", "Avg Noise Threshold")}
+      ${textField("postNoSpeech", "Post No Speech Threshold")}
+      ${textField("preNoSpeech", "Pre No Speech Threshold")}
+      ${textField("noiseBufferLength", "Noise Buffer Length")}
+      ${textField("snrThreshold", "SNR Threshold")}
+      ${textField("softSpeaking", "Soft Speaking Threshold")}
+      ${textField("loadSpeaking", "Load Speaking Threshold")}
+      ${textField("totalNoise", "Total Noise Threshold")}
+      ${textField("variance", "Variance Threshold")}
+      ${textField("postMargin", "Post Margin")}
+      ${textField("preMargin", "Pre Margin")}
+      ${textField("asrTimeout", "ASR Timeout")}
+      ${textField("androidMicModel", "Android Mic Model")}
+      ${selectField("reportIaErrors", "Report IA Errors", YES_NO)}
+      ${selectField("showPatientIaErrors", "Show Patient IA Errors", YES_NO)}
+      ${selectField("showMessageAtLast", "Show Message At Last", YES_NO)}
+    </div>
     ${langTable(["Successful Session", "Unsuccessful Session"])}
   `;
 }
 
 function bodyGeneralParams() {
   return `
-    ${textField("name", "Name")}
-    ${textField("appTimeout", "App Timeout (min)")}
-    ${textField("recordingTimeout", "Recording Timeout (sec)")}
-    ${textField("recordButtonAnimTimeout", "Record Button Animation Timeout (sec)")}
-    ${textField("uploadMessageTimeout", "Upload Message Timeout (sec)")}
-    ${textField("uploadCompleteMessageTimeout", "Upload Complete Message Timeout (sec)")}
-    ${textField("chatMessageTimeout", "Chat Message Time Out")}
-    ${textField("maxVideoDuration", "Maximum Video Recording Duration (sec)")}
-    ${selectField("getLocation", "Get Location", YES_NO)}
-    ${selectField("enableMessages", "Enable Messages", YES_NO)}
-    ${selectField("longPressAlert", "Is Long Press Alert Enabled", YES_NO)}
-    ${selectField("sensorsDataEnabled", "Is Sensors Data Enabled", YES_NO)}
-    ${selectField("notificationsOffAlarm", "Is Notifications Off Alarm Enabled", YES_NO)}
-    ${selectField("flightModeAlarm", "Is Flight Mode Alarm Enabled", YES_NO)}
-    ${selectField("networkSettingsOffAlarm", "Is Network Settings Off Alarm Enabled", YES_NO)}
-    ${selectField("filesNotUploadedAlarm", "Is Files Is Not Uploaded Alarm Enabled", YES_NO)}
-    ${selectField("noInternetAlarm", "Is No Internet Alarm Enabled", YES_NO)}
-    ${selectField("healthQuestionsEnabled", "Is Health Questions Enabled", YES_NO)}
-    ${textField("healthQuestionsInterval", "Health Questions Interval (days)")}
-    ${textField("commIssueFilesCount", "Comm Issue Files Count")}
-    ${textField("trainingVersion", "Training Version")}
-    ${textField("lexiconsVersion", "Lexicons Version")}
-    ${textField("translationVersion", "Translation Version")}
+    <div class="bo-modal-grid">
+      ${textField("name", "Name")}
+      ${textField("appTimeout", "App Timeout (min)")}
+      ${textField("recordingTimeout", "Recording Timeout (sec)")}
+      ${textField("recordButtonAnimTimeout", "Record Button Animation Timeout (sec)")}
+      ${textField("uploadMessageTimeout", "Upload Message Timeout (sec)")}
+      ${textField("uploadCompleteMessageTimeout", "Upload Complete Message Timeout (sec)")}
+      ${textField("chatMessageTimeout", "Chat Message Time Out")}
+      ${textField("maxVideoDuration", "Maximum Video Recording Duration (sec)")}
+      ${selectField("getLocation", "Get Location", YES_NO)}
+      ${selectField("enableMessages", "Enable Messages", YES_NO)}
+      ${selectField("longPressAlert", "Is Long Press Alert Enabled", YES_NO)}
+      ${selectField("sensorsDataEnabled", "Is Sensors Data Enabled", YES_NO)}
+      ${selectField("notificationsOffAlarm", "Is Notifications Off Alarm Enabled", YES_NO)}
+      ${selectField("flightModeAlarm", "Is Flight Mode Alarm Enabled", YES_NO)}
+      ${selectField("networkSettingsOffAlarm", "Is Network Settings Off Alarm Enabled", YES_NO)}
+      ${selectField("filesNotUploadedAlarm", "Is Files Is Not Uploaded Alarm Enabled", YES_NO)}
+      ${selectField("noInternetAlarm", "Is No Internet Alarm Enabled", YES_NO)}
+      ${selectField("healthQuestionsEnabled", "Is Health Questions Enabled", YES_NO)}
+      ${textField("healthQuestionsInterval", "Health Questions Interval (days)")}
+      ${textField("commIssueFilesCount", "Comm Issue Files Count")}
+      ${textField("trainingVersion", "Training Version")}
+      ${textField("lexiconsVersion", "Lexicons Version")}
+      ${textField("translationVersion", "Translation Version")}
+    </div>
   `;
 }
 
