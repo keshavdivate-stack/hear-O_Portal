@@ -35,17 +35,13 @@ const rmDeliveryPillClass = { Delivered: "bo-pill-delivered", Failed: "bo-pill-f
 const rmStatusPill = (s) => `<span class="bo-pill ${rmStatusPillClass[s] || ""}">${s}</span>`;
 const rmDeliveryPill = (s) => `<span class="bo-pill ${rmDeliveryPillClass[s] || ""}">${s}</span>`;
 /* History entries only carry a recipient count (no names were ever
-   recorded per-delivery), so the email tooltip only shows up where real
-   names exist -- the Scheduled Reports table's recipients array. */
-function rmRecipientEmail(name) {
-  return `${name.trim().toLowerCase().replace(/\s+/g, ".")}@cordio-med.com`;
-}
-
+   recorded per-delivery), so the username tooltip only shows up where
+   real names exist -- the Scheduled Reports table's recipients array. */
 function rmRecipientsChip(namesOrCount) {
   const names = Array.isArray(namesOrCount) ? namesOrCount : null;
   const count = names ? names.length : namesOrCount;
   const tooltip = names && names.length
-    ? `<span class="bo-recipients-tooltip">${names.map((n) => `<span class="bo-recipients-tooltip-row">${rmEsc(rmRecipientEmail(n))}</span>`).join("")}</span>`
+    ? `<span class="bo-recipients-tooltip">${names.map((n) => `<span class="bo-recipients-tooltip-row">${rmEsc(n)}</span>`).join("")}</span>`
     : "";
   return `<span class="bo-recipients-chip">${rmPeopleIcon}${count} ${count === 1 ? "person" : "people"}${tooltip}</span>`;
 }
