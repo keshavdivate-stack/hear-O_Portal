@@ -279,10 +279,23 @@ document.getElementById("rmClearScheduleFiltersBtn").addEventListener("click", r
    sets s.archived and the row moves off Scheduled Reports into this tab,
    where the same row menu offers Unarchive Schedule to bring it back. */
 let rmArchivedSearch = "";
+let rmArchivedTypeFilter = "";
+let rmArchivedOrgFilter = "";
+let rmArchivedStatusFilter = "";
+let rmArchivedFrequencyFilter = "";
+
+document.getElementById("rmArchivedReportTypeFilterMenu").innerHTML = buildFilterSelectOptions(RM_REPORTS.map((r) => r.label), "All report types");
+document.getElementById("rmArchivedOrgFilterMenu").innerHTML = buildFilterSelectOptions(RM_ORGS, "All organisations");
+document.getElementById("rmArchivedStatusFilterMenu").innerHTML = buildFilterSelectOptions(RM_STATUSES, "All statuses");
+document.getElementById("rmArchivedFrequencyFilterMenu").innerHTML = buildFilterSelectOptions(RM_FREQUENCIES, "All frequencies");
 
 function rmFilteredArchived() {
   return rmSchedules.filter((s) => {
     if (!s.archived) return false;
+    if (rmArchivedTypeFilter && rmReportLabel(s.reportKey) !== rmArchivedTypeFilter) return false;
+    if (rmArchivedOrgFilter && s.org !== rmArchivedOrgFilter) return false;
+    if (rmArchivedStatusFilter && s.status !== rmArchivedStatusFilter) return false;
+    if (rmArchivedFrequencyFilter && s.frequency !== rmArchivedFrequencyFilter) return false;
     if (rmArchivedSearch) {
       const haystack = `${rmReportLabel(s.reportKey)} ${s.name} ${s.org}`.toLowerCase();
       if (!haystack.includes(rmArchivedSearch)) return false;
@@ -302,13 +315,18 @@ const rmArchivedEmptyHtml = `
 
 const rmArchivedPager = boCreatePager("rmArchivedRows", () => rmFilteredArchived(), rmRenderScheduleRow, { pageSize: 8, emptyHtml: rmArchivedEmptyHtml });
 
+function rmArchivedFiltersActive() {
+  return !!(rmArchivedSearch || rmArchivedTypeFilter || rmArchivedOrgFilter || rmArchivedStatusFilter || rmArchivedFrequencyFilter);
+}
+
 function rmRefreshArchivedEmptyState() {
   const titleEl = document.getElementById("rmArchivedEmptyTitle");
   const subEl = document.getElementById("rmArchivedEmptySub");
   if (!titleEl) return;
-  if (rmArchivedSearch) {
-    titleEl.textContent = "No archived reports match your search";
-    subEl.textContent = "Try a different search.";
+  if (rmArchivedFiltersActive()) {
+    titleEl.textContent = "No archived reports match your filters";
+    subEl.innerHTML = 'Try different filters, or <button type="button" class="bo-btn-text" id="rmClearArchivedFiltersInline" style="padding:0; font-size:inherit;">clear filters</button>.';
+    document.getElementById("rmClearArchivedFiltersInline").addEventListener("click", rmClearArchivedFilters);
   } else {
     titleEl.textContent = "No archived reports";
     subEl.textContent = "Schedules you archive will show up here, and can be unarchived any time.";
@@ -326,6 +344,23 @@ document.getElementById("rmArchivedSearchInput").addEventListener("input", (e) =
   rmArchivedPager.resetPage();
   rmRenderArchived();
 });
+document.getElementById("rmArchivedReportTypeFilter").addEventListener("change", (e) => { rmArchivedTypeFilter = e.target.value; rmArchivedPager.resetPage(); rmRenderArchived(); });
+document.getElementById("rmArchivedOrgFilter").addEventListener("change", (e) => { rmArchivedOrgFilter = e.target.value; rmArchivedPager.resetPage(); rmRenderArchived(); });
+document.getElementById("rmArchivedStatusFilter").addEventListener("change", (e) => { rmArchivedStatusFilter = e.target.value; rmArchivedPager.resetPage(); rmRenderArchived(); });
+document.getElementById("rmArchivedFrequencyFilter").addEventListener("change", (e) => { rmArchivedFrequencyFilter = e.target.value; rmArchivedPager.resetPage(); rmRenderArchived(); });
+
+function rmClearArchivedFilters() {
+  rmArchivedSearch = "";
+  rmArchivedTypeFilter = "";
+  rmArchivedOrgFilter = "";
+  rmArchivedStatusFilter = "";
+  rmArchivedFrequencyFilter = "";
+  document.getElementById("rmArchivedSearchInput").value = "";
+  document.querySelectorAll("#tab-archived .bo-select").forEach(resetBoSelect);
+  rmArchivedPager.resetPage();
+  rmRenderArchived();
+}
+document.getElementById("rmClearArchivedFiltersBtn").addEventListener("click", rmClearArchivedFilters);
 
 /* ---------------- Report History ---------------- */
 let rmHistReportFilter = "";
