@@ -1519,6 +1519,7 @@ input[type="password"]:focus {
 .status-text {
   font-size: calc(22px * var(--font-scale, 1));
   color: #3a3a3a;
+  line-height: 1.4;
   margin-bottom: 36px;
 }
 
