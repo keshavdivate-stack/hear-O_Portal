@@ -187,8 +187,9 @@ function rmRenderScheduleRow(s) {
       <td class="mono">${rmScheduleIdLabel(s.id)}</td>
       <td>
         <div class="bo-cell-primary">${rmEsc(rmReportLabel(s.reportKey))}</div>
-        <div class="bo-cell-secondary">${rmEsc(s.name)}</div>
       </td>
+      <td>${rmEsc(s.name)}</td>
+      <td>${s.tags.length ? `<div class="bo-ehr-tags">${s.tags.map((t) => `<span class="bo-ehr-tag">${rmEsc(t)}</span>`).join("")}</div>` : `<span class="bo-ehr-none">—</span>`}</td>
       <td>${rmEsc(s.org)}</td>
       <td>${rmRecipientsChip(s.recipients)}</td>
       <td>
@@ -206,7 +207,7 @@ function rmRenderScheduleRow(s) {
 }
 
 const rmScheduleEmptyHtml = `
-  <tr><td colspan="8">
+  <tr><td colspan="10">
     <div class="bo-empty-state">
       <svg class="bo-empty-state-icon" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9H21"/><path d="M8 2v4"/><path d="M16 2v4"/></svg>
       <p class="bo-empty-state-title" id="rmScheduleEmptyTitle">No scheduled reports yet</p>
