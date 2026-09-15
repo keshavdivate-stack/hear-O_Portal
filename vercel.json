@@ -1,5 +1,13 @@
 {
   "cleanUrls": true,
+  "headers": [
+    {
+      "source": "/(.*).(css|js)",
+      "headers": [
+        { "key": "Cache-Control", "value": "no-cache, must-revalidate" }
+      ]
+    }
+  ],
   "rewrites": [
     { "source": "/allocation", "destination": "/backoffice1/allocation.html" },
     { "source": "/components", "destination": "/backoffice1/components.html" },
