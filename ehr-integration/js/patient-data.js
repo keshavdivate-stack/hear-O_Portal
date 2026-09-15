@@ -1367,28 +1367,31 @@ document.getElementById("patientProfileDocumentsTableBody").addEventListener("cl
 });
 
 /* ---------------- Clinical: Medications ---------------- */
-function dailyAdherence(missedIdx) {
-  return chartDays.map((d, i) => !missedIdx.includes(i));
+function dailyAdherence(missedIdx, notRecordedIdx = []) {
+  return chartDays.map((d, i) => {
+    if (notRecordedIdx.includes(i)) return null;
+    return !missedIdx.includes(i);
+  });
 }
 
 const medications = [
   {
     hf: true, name: "Furosemide", cls: "Loop diuretic", freq: "Daily", dose: "40 mg", schedule: "Once daily, morning",
-    warning: null, adherence: dailyAdherence([8, 21, 26, 30]), source: "Care rec", srcClass: "src-carerec", status: "active",
+    warning: null, adherence: dailyAdherence([8, 21], [26, 30]), source: "Care rec", srcClass: "src-carerec", status: "active",
     ehrStatus: "Active", doseForm: "Tablet", manufacturer: "Sandoz Inc.", ingredient: "Furosemide", amount: "40 mg",
     effectiveDateTime: "2025-12-11T08:00", route: "Oral", sig: "Take one tablet by mouth once daily in the morning",
     statusReason: "Not applicable", lotNumber: "L2394A", expiryDate: "2027-03-15",
   },
   {
     hf: false, name: "Carvedilol", cls: "Beta blocker", freq: "Twice daily", dose: "6.25 mg", schedule: "Twice daily",
-    warning: null, adherence: dailyAdherence([5, 12, 19, 27]), source: "Clinic", srcClass: "src-clinic", status: "active",
+    warning: null, adherence: dailyAdherence([5, 12], [19, 27]), source: "Clinic", srcClass: "src-clinic", status: "active",
     ehrStatus: "Active", doseForm: "Tablet", manufacturer: "Teva Pharmaceuticals", ingredient: "Carvedilol", amount: "6.25 mg",
     effectiveDateTime: "2025-12-11T08:00", route: "Oral", sig: "Take one tablet by mouth twice daily with food",
     statusReason: "Not applicable", lotNumber: "C8821B", expiryDate: "2026-11-02",
   },
   {
     hf: false, name: "Sacubitril/Valsartan", cls: "ARNI", freq: "Twice daily", dose: "49/51 mg", schedule: "Twice daily",
-    warning: "Monitor renal function with diuretic", adherence: dailyAdherence([2, 3, 9, 15, 22, 23, 28, 29]), source: "Clinic", srcClass: "src-clinic", status: "active",
+    warning: "Monitor renal function with diuretic", adherence: dailyAdherence([2, 3, 9, 15], [22, 23, 28, 29]), source: "Clinic", srcClass: "src-clinic", status: "active",
     ehrStatus: "Active", doseForm: "Tablet", manufacturer: "Novartis", ingredient: "Sacubitril / Valsartan", amount: "49/51 mg",
     effectiveDateTime: "2025-12-11T08:00", route: "Oral", sig: "Take one tablet by mouth twice daily",
     statusReason: "Dose adjustment", lotNumber: "S5510C", expiryDate: "2027-01-20",
@@ -1402,14 +1405,14 @@ const medications = [
   },
   {
     hf: false, name: "Ibuprofen", cls: "NSAID (OTC)", freq: "As needed", dose: "200 mg", schedule: "As needed",
-    warning: "NSAIDs may worsen fluid retention in HF", adherence: dailyAdherence([1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29]), source: "Patient", srcClass: "src-patient", status: "past",
+    warning: "NSAIDs may worsen fluid retention in HF", adherence: dailyAdherence([1, 3, 5, 7, 9, 11, 13], [15, 17, 19, 21, 23, 25, 27, 29]), source: "Patient", srcClass: "src-patient", status: "past",
     ehrStatus: "Inactive", doseForm: "Tablet", manufacturer: "Other", ingredient: "Ibuprofen", amount: "200 mg",
     effectiveDateTime: "2025-11-02T09:00", route: "Oral", sig: "Take as needed for pain, not to exceed 3 tablets per day",
     statusReason: "Adverse reaction", lotNumber: "—", expiryDate: "2025-12-01",
   },
   {
     hf: false, name: "Atorvastatin", cls: "Statin", freq: "Daily", dose: "20 mg", schedule: "Once daily, evening",
-    warning: null, adherence: dailyAdherence([6, 14, 24]), source: "Clinic", srcClass: "src-clinic", status: "active",
+    warning: null, adherence: dailyAdherence([6, 14], [24]), source: "Clinic", srcClass: "src-clinic", status: "active",
     ehrStatus: "Active", doseForm: "Tablet", manufacturer: "Mylan", ingredient: "Atorvastatin", amount: "20 mg",
     effectiveDateTime: "2025-12-11T20:00", route: "Oral", sig: "Take one tablet by mouth once daily in the evening",
     statusReason: "Not applicable", lotNumber: "M4402E", expiryDate: "2027-05-08",
@@ -1525,6 +1528,7 @@ editRecForm.addEventListener("submit", (e) => {
 });
 
 const adhCheckIcon = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const adhXIcon = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M6 6L18 18M18 6L6 18" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/></svg>`;
 const adhDashIcon = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M6 12H18" stroke="#9AA5B1" stroke-width="2.4" stroke-linecap="round"/></svg>`;
 
 let medStatusFilter = "all";
@@ -1613,13 +1617,15 @@ function renderMeds() {
               const days = visibleDays();
               const adh = sliceForRange(m.adherence);
               return days
-                .map(
-                  (d, i) => `
+                .map((d, i) => {
+                  const state = adh[i] === true ? "taken" : adh[i] === false ? "missed" : "not-recorded";
+                  const icon = adh[i] === true ? adhCheckIcon : adh[i] === false ? adhXIcon : adhDashIcon;
+                  return `
                 <div class="med-adh-day">
-                  <span class="med-adh-icon ${adh[i] ? "med-adh-taken" : "med-adh-missed"}">${adh[i] ? adhCheckIcon : adhDashIcon}</span>
+                  <span class="med-adh-icon med-adh-${state}">${icon}</span>
                   <span class="med-adh-day-label">${d.label}</span>
-                </div>`
-                )
+                </div>`;
+                })
                 .join("");
             })()}
           </div>

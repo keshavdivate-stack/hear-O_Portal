@@ -3430,7 +3430,35 @@ button, input, select, textarea, optgroup {
 }
 
 .med-adh-taken { background: var(--blue); color: #fff; }
-.med-adh-missed { background: #E7EAEE; color: #7E8993; }
+.med-adh-missed { background: var(--red); color: #fff; }
+.med-adh-not-recorded { background: #E7EAEE; color: #7E8993; }
+
+.med-legend {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  font-size: 13px;
+  color: #363B42;
+  margin-bottom: 14px;
+}
+
+.med-legend-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 6px;
+  vertical-align: -1px;
+}
+
+.med-legend-dot svg { width: 8px; height: 8px; }
+
+.med-legend-taken { background: var(--blue); }
+.med-legend-missed { background: var(--red); }
+.med-legend-not-recorded { background: #E7EAEE; }
 
 .med-adh-day-label { font-size: 11.5px; color: var(--gray-text); }
 
