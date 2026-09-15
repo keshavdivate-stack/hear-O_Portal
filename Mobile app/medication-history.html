@@ -42,7 +42,7 @@
 
       <div class="med-hist-legend">
         <span class="med-hist-legend-item"><span class="med-hist-legend-dot taken"></span>Taken</span>
-        <span class="med-hist-legend-item"><span class="med-hist-legend-dot missed"></span>Missed</span>
+        <span class="med-hist-legend-item"><span class="med-hist-legend-dot missed"></span>Skipped</span>
       </div>
 
       <div id="historyList"></div>
@@ -72,7 +72,7 @@
   const medKey = params.get("med");
   const med = MED_INFO[medKey] || MED_INFO.furosemide;
 
-  document.getElementById("histTitle").textContent = `${med.name} History`;
+  document.getElementById("histTitle").textContent = `${med.name} history`;
 
   let monthIndex = AVAILABLE_MONTHS.length - 1;
 
@@ -105,7 +105,7 @@
       const weekday = dateObj.toLocaleDateString("en-US", { weekday: "short" });
       const monthShort = dateObj.toLocaleDateString("en-US", { month: "short" });
       const status = missedDays.includes(day) ? "missed" : "taken";
-      const statusLabel = status === "taken" ? "Taken" : "Missed";
+      const statusLabel = status === "taken" ? "Taken" : "Skipped";
 
       const card = document.createElement("div");
       card.className = "med-hist-day-card";

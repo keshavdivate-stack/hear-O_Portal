@@ -2687,7 +2687,7 @@ input[type="password"]:focus {
 .med-body {
   flex: 1;
   overflow-y: auto;
-  padding: 18px 24px 24px;
+  padding: 18px 28px 24px;
   background: #f2f4f7;
 }
 
@@ -2738,8 +2738,8 @@ input[type="password"]:focus {
 
 .med-date-nav-btn {
   flex-shrink: 0;
-  width: 38px;
-  height: 38px;
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
   border: 1.5px solid #d9dce1;
   background: #fff;
@@ -2760,15 +2760,16 @@ input[type="password"]:focus {
 
 .med-date-nav-day {
   display: block;
-  font-size: calc(17px * var(--font-scale, 1));
-  font-weight: 800;
+  font-size: 22px;
+  font-weight: 700;
   color: #252424;
 }
 
 .med-date-nav-full {
   display: block;
-  font-size: calc(13px * var(--font-scale, 1));
-  color: #7a7f87;
+  font-size: 18px;
+  font-weight: 400;
+  color: #8A8F97;
   margin-top: 1px;
 }
 
@@ -3098,7 +3099,7 @@ input[type="password"]:focus {
 .med-detail-body {
   flex: 1;
   overflow-y: auto;
-  padding: 20px 24px 8px;
+  padding: 20px 28px 8px;
 }
 
 .med-detail-title-row {
@@ -3227,7 +3228,7 @@ input[type="password"]:focus {
 .med-detail-row-status.nottaken .med-detail-row-status-dot { background: #e0562a; }
 .med-detail-row-status.pending .med-detail-row-status-dot { background: #c7ccd3; }
 
-.med-detail-footer { flex-shrink: 0; padding: 8px 24px 24px; }
+.med-detail-footer { flex-shrink: 0; padding: 8px 28px 24px; }
 
 .med-detail-cta {
   display: flex;
@@ -3282,7 +3283,7 @@ input[type="password"]:focus {
 .med-update-body {
   flex: 1;
   overflow-y: auto;
-  padding: 22px 24px 30px;
+  padding: 22px 28px 30px;
   display: flex;
   flex-direction: column;
 }
@@ -3388,7 +3389,8 @@ input[type="password"]:focus {
 .med-hist-body {
   flex: 1;
   overflow-y: auto;
-  padding: 18px 24px 24px;
+  padding: 18px 28px 24px;
+  background: #f2f4f7;
 }
 
 .med-hist-month-nav {
@@ -3444,7 +3446,7 @@ input[type="password"]:focus {
 }
 
 .med-hist-legend-dot.taken { background: #2AC19E; }
-.med-hist-legend-dot.missed { background: #e0562a; }
+.med-hist-legend-dot.missed { background: #F98B00; }
 
 .med-hist-day-card {
   padding: 16px 18px;
@@ -3475,13 +3477,15 @@ input[type="password"]:focus {
 }
 
 .med-hist-status-pill {
-  font-size: calc(14px * var(--font-scale, 1));
-  font-weight: 700;
+  font-size: calc(15px * var(--font-scale, 1));
+  font-weight: 500;
   flex-shrink: 0;
+  padding: 8px 16px;
+  border-radius: 16px;
 }
 
-.med-hist-status-pill.taken { color: #2AC19E; }
-.med-hist-status-pill.missed { color: #e0562a; }
+.med-hist-status-pill.taken { background: #dff5ea; color: #2AC19E; }
+.med-hist-status-pill.missed { background: #FFF3E5; color: #F98B00; }
 
 .fab-add-btn {
   position: absolute;
