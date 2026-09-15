@@ -165,6 +165,7 @@ document.getElementById("rmFrequencyFilterMenu").innerHTML = buildFilterSelectOp
 
 function rmFilteredSchedules() {
   return rmSchedules.filter((s) => {
+    if (s.archived) return false;
     if (rmScheduleTypeFilter && rmReportLabel(s.reportKey) !== rmScheduleTypeFilter) return false;
     if (rmScheduleOrgFilter && s.org !== rmScheduleOrgFilter) return false;
     if (rmScheduleStatusFilter && s.status !== rmScheduleStatusFilter) return false;
@@ -189,8 +190,8 @@ function rmRenderScheduleRow(s) {
       <td>${rmEsc(s.org)}</td>
       <td>${rmRecipientsChip(s.recipients)}</td>
       <td>${s.frequency}</td>
-      <td>${s.nextRun}</td>
-      <td>${rmStatusPill(s.status)}</td>
+      <td>${s.archived ? "—" : s.nextRun}</td>
+      <td>${s.archived ? `<span class="bo-pill bo-pill-paused">Archived</span>` : rmStatusPill(s.status)}</td>
       <td>
         <div class="bo-row-actions">
           <button class="bo-action-icon row-menu-trigger" data-id="${s.id}" aria-label="Row actions">${rmKebabIcon}</button>
@@ -256,6 +257,59 @@ function rmClearScheduleFilters() {
   rmRenderSchedules();
 }
 document.getElementById("rmClearScheduleFiltersBtn").addEventListener("click", rmClearScheduleFilters);
+
+/* ---------------- Archived Reports ----------------
+   Archiving a schedule (row menu / details drawer) doesn't delete it -- it
+   sets s.archived and the row moves off Scheduled Reports into this tab,
+   where the same row menu offers Unarchive Schedule to bring it back. */
+let rmArchivedSearch = "";
+
+function rmFilteredArchived() {
+  return rmSchedules.filter((s) => {
+    if (!s.archived) return false;
+    if (rmArchivedSearch) {
+      const haystack = `${rmReportLabel(s.reportKey)} ${s.name} ${s.org}`.toLowerCase();
+      if (!haystack.includes(rmArchivedSearch)) return false;
+    }
+    return true;
+  });
+}
+
+const rmArchivedEmptyHtml = `
+  <tr><td colspan="10">
+    <div class="bo-empty-state">
+      <svg class="bo-empty-state-icon" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9H21"/><path d="M8 2v4"/><path d="M16 2v4"/></svg>
+      <p class="bo-empty-state-title" id="rmArchivedEmptyTitle">No archived reports</p>
+      <p class="bo-empty-state-sub" id="rmArchivedEmptySub">Schedules you archive will show up here, and can be unarchived any time.</p>
+    </div>
+  </td></tr>`;
+
+const rmArchivedPager = boCreatePager("rmArchivedRows", () => rmFilteredArchived(), rmRenderScheduleRow, { pageSize: 8, emptyHtml: rmArchivedEmptyHtml });
+
+function rmRefreshArchivedEmptyState() {
+  const titleEl = document.getElementById("rmArchivedEmptyTitle");
+  const subEl = document.getElementById("rmArchivedEmptySub");
+  if (!titleEl) return;
+  if (rmArchivedSearch) {
+    titleEl.textContent = "No archived reports match your search";
+    subEl.textContent = "Try a different search.";
+  } else {
+    titleEl.textContent = "No archived reports";
+    subEl.textContent = "Schedules you archive will show up here, and can be unarchived any time.";
+  }
+}
+
+function rmRenderArchived() {
+  rmArchivedPager();
+  rmRefreshArchivedEmptyState();
+}
+rmRenderArchived();
+
+document.getElementById("rmArchivedSearchInput").addEventListener("input", (e) => {
+  rmArchivedSearch = e.target.value.trim().toLowerCase();
+  rmArchivedPager.resetPage();
+  rmRenderArchived();
+});
 
 /* ---------------- Report History ---------------- */
 let rmHistReportFilter = "";
@@ -428,30 +482,45 @@ rmHistDetailsOverlay.addEventListener("click", (e) => { if (e.target === rmHistD
 const rmScheduleRowMenu = document.getElementById("rmScheduleRowMenu");
 let activeScheduleId = null;
 
-document.getElementById("rmScheduleRows").addEventListener("click", (e) => {
-  const trigger = e.target.closest(".row-menu-trigger");
-  const row = e.target.closest("tr[data-id]");
-  if (!row) return;
-  const id = Number(row.dataset.id);
+/* Shared by both Scheduled Reports and Archived Reports rows -- same row
+   shape (tr[data-id] + .row-menu-trigger), same kebab menu, same details
+   drawer, so one listener per table is all that's needed. */
+function wireScheduleRowMenu(containerId) {
+  document.getElementById(containerId).addEventListener("click", (e) => {
+    const trigger = e.target.closest(".row-menu-trigger");
+    const row = e.target.closest("tr[data-id]");
+    if (!row) return;
+    const id = Number(row.dataset.id);
 
-  if (trigger) {
-    e.stopPropagation();
-    activeScheduleId = id;
-    refreshScheduleRowMenuLabel();
-    const rect = trigger.getBoundingClientRect();
-    rmScheduleRowMenu.style.top = `${rect.bottom + 6}px`;
-    rmScheduleRowMenu.style.left = `${rect.right - 190}px`;
-    rmScheduleRowMenu.classList.add("open");
-    return;
-  }
+    if (trigger) {
+      e.stopPropagation();
+      activeScheduleId = id;
+      refreshScheduleRowMenuLabel();
+      const rect = trigger.getBoundingClientRect();
+      rmScheduleRowMenu.style.top = `${rect.bottom + 6}px`;
+      rmScheduleRowMenu.style.left = `${rect.right - 190}px`;
+      rmScheduleRowMenu.classList.add("open");
+      return;
+    }
 
-  openScheduleDetails(id);
-});
+    openScheduleDetails(id);
+  });
+}
+wireScheduleRowMenu("rmScheduleRows");
+wireScheduleRowMenu("rmArchivedRows");
 
 function refreshScheduleRowMenuLabel() {
   const s = rmSchedules.find((x) => x.id === activeScheduleId);
   const toggleItem = rmScheduleRowMenu.querySelector('[data-action="toggle"]');
   if (s && toggleItem) toggleItem.textContent = s.status === "Active" ? "Pause Schedule" : "Resume Schedule";
+
+  const archiveBtn = document.getElementById("rmScheduleRowMenuArchiveBtn");
+  if (s && archiveBtn) {
+    const isArchived = !!s.archived;
+    archiveBtn.textContent = isArchived ? "Unarchive Schedule" : "Archive Schedule";
+    archiveBtn.dataset.action = isArchived ? "unarchive" : "archive";
+    archiveBtn.classList.toggle("danger", !isArchived);
+  }
 }
 
 document.addEventListener("click", (e) => {
@@ -466,12 +535,21 @@ function rmToggleScheduleStatus(id) {
   rmRenderSchedules();
 }
 
-function rmDeleteSchedule(id) {
+function rmArchiveSchedule(id) {
   const s = rmSchedules.find((x) => x.id === id);
   if (!s) return;
-  if (!confirm(`Delete "${s.name}"? This does not delete the underlying report — only this schedule.`)) return;
-  rmSchedules.splice(rmSchedules.indexOf(s), 1);
+  if (!confirm(`Archive "${s.name}"? It will stop sending and move to the Archived Reports tab — you can unarchive it any time.`)) return;
+  s.archived = true;
   rmRenderSchedules();
+  rmRenderArchived();
+}
+
+function rmUnarchiveSchedule(id) {
+  const s = rmSchedules.find((x) => x.id === id);
+  if (!s) return;
+  s.archived = false;
+  rmRenderSchedules();
+  rmRenderArchived();
 }
 
 rmScheduleRowMenu.addEventListener("click", (e) => {
@@ -484,7 +562,8 @@ rmScheduleRowMenu.addEventListener("click", (e) => {
   else if (item.dataset.action === "edit") openWizardForEdit(id);
   else if (item.dataset.action === "export") openExportReport(id);
   else if (item.dataset.action === "toggle") rmToggleScheduleStatus(id);
-  else if (item.dataset.action === "delete") rmDeleteSchedule(id);
+  else if (item.dataset.action === "archive") rmArchiveSchedule(id);
+  else if (item.dataset.action === "unarchive") rmUnarchiveSchedule(id);
 });
 
 /* ---------------- Download Report ---------------- */
@@ -559,13 +638,17 @@ function openScheduleDetails(id) {
   document.getElementById("rmDetailTags").textContent = s.tags.join(", ") || "—";
   document.getElementById("rmDetailFrequency").textContent = s.frequency;
   document.getElementById("rmDetailTime").textContent = `${s.time} ${s.timezone}`;
-  document.getElementById("rmDetailStatus").innerHTML = rmStatusPill(s.status);
+  document.getElementById("rmDetailStatus").innerHTML = s.archived ? `<span class="bo-pill bo-pill-paused">Archived</span>` : rmStatusPill(s.status);
   document.getElementById("rmDetailRecipients").textContent = s.recipients.join(", ");
   document.getElementById("rmDetailLastSent").textContent = s.lastSent;
   document.getElementById("rmDetailLastDeliveryStatus").innerHTML = rmDeliveryPill(s.lastDeliveryStatus);
-  document.getElementById("rmDetailNextRun").textContent = s.nextRun;
+  document.getElementById("rmDetailNextRun").textContent = s.archived ? "—" : s.nextRun;
 
   document.getElementById("rmDetailToggleBtn").textContent = s.status === "Active" ? "Pause Schedule" : "Resume Schedule";
+
+  const detailArchiveBtn = document.getElementById("rmDetailDeleteBtn");
+  detailArchiveBtn.textContent = s.archived ? "Unarchive Schedule" : "Archive Schedule";
+  detailArchiveBtn.classList.toggle("danger", !s.archived);
 
   rmDetailsOverlay.classList.add("open");
 }
@@ -583,8 +666,10 @@ document.getElementById("rmDetailToggleBtn").addEventListener("click", () => {
 document.getElementById("rmDetailDeleteBtn").addEventListener("click", () => {
   if (rmDetailsScheduleId === null) return;
   const id = rmDetailsScheduleId;
+  const s = rmSchedules.find((x) => x.id === id);
   closeScheduleDetails();
-  rmDeleteSchedule(id);
+  if (s && s.archived) rmUnarchiveSchedule(id);
+  else rmArchiveSchedule(id);
 });
 
 document.getElementById("rmDetailEditBtn").addEventListener("click", () => {

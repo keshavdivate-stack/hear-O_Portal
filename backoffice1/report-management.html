@@ -147,6 +147,7 @@
         <div class="bo-tabs bo-seg-toggle" id="rmTabs">
           <button class="bo-tab bo-seg-btn active" data-tab="scheduled">Scheduled Reports</button>
           <button class="bo-tab bo-seg-btn" data-tab="history">Report History</button>
+          <button class="bo-tab bo-seg-btn" data-tab="archived">Archived Reports</button>
         </div>
       </div>
       <div class="bo-profile-topbar-actions">
@@ -289,6 +290,40 @@
       </div>
     </div>
 
+    <!-- ARCHIVED REPORTS — archiving a schedule stops it from running and moves
+         it here instead of deleting it; Unarchive brings it straight back to
+         Scheduled Reports. -->
+    <div class="bo-tab-panel" id="tab-archived">
+      <div class="bo-filter-row">
+        <div class="bo-search-pill">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8"/><path d="M21 21L16.5 16.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          <input type="text" id="rmArchivedSearchInput" placeholder="Search archived reports" />
+        </div>
+      </div>
+
+      <div class="bo-table-card">
+        <div class="bo-table-scroll">
+          <table class="bo-list-table bo-list-table--compact">
+            <thead>
+              <tr>
+                <th>REPORT ID</th>
+                <th>REPORT</th>
+                <th>NAME</th>
+                <th>TAGS</th>
+                <th>ORGANISATION</th>
+                <th>USERS</th>
+                <th>FREQUENCY</th>
+                <th>REPORT TIME</th>
+                <th>STATUS</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="rmArchivedRows"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
   </main>
 
   <!-- Row action dropdown Ã¢â‚¬â€ schedules -->
@@ -297,7 +332,7 @@
     <button class="bo-row-menu-item" data-action="edit">Edit Schedule</button>
     <button class="bo-row-menu-item" data-action="export">Download Report</button>
     <button class="bo-row-menu-item" data-action="toggle">Pause Schedule</button>
-    <button class="bo-row-menu-item danger" data-action="delete">Delete Schedule</button>
+    <button class="bo-row-menu-item danger" data-action="archive" id="rmScheduleRowMenuArchiveBtn">Archive Schedule</button>
   </div>
 
   <!-- Row action dropdown Ã¢â‚¬â€ history -->
@@ -385,7 +420,7 @@
         </div>
       </div>
       <div class="bo-drawer-foot">
-        <button type="button" class="bo-btn-text danger" id="rmDetailDeleteBtn">Delete Schedule</button>
+        <button type="button" class="bo-btn-text danger" id="rmDetailDeleteBtn">Archive Schedule</button>
         <span class="bo-list-toolbar-spacer"></span>
         <button type="button" class="bo-btn-secondary" id="rmDetailToggleBtn">Pause Schedule</button>
         <button type="button" class="bo-btn-primary" id="rmDetailEditBtn">Edit Schedule</button>
