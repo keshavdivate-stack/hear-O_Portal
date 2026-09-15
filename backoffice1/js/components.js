@@ -21,6 +21,7 @@ const TAB_META = {
 
 const compKebabIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="1.7" fill="currentColor"/><circle cx="12" cy="12" r="1.7" fill="currentColor"/><circle cx="12" cy="19" r="1.7" fill="currentColor"/></svg>`;
 const compTrashIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>`;
+const compPlusIcon = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>`;
 
 function esc(v) { return String(v == null ? "" : v).replace(/"/g, "&quot;"); }
 function escOrDash(v) { return v ? esc(v) : "—"; }
@@ -255,7 +256,7 @@ function dynamicList(listKey, itemLabelPrefix, options, addLabel, errorMsg) {
     )
     .join("");
   const showError = !list.some((v) => v) ? `<p class="bo-field-error">${errorMsg}</p>` : "";
-  return `${items}${showError}<button type="button" class="bo-btn-secondary bo-add-dynlist" data-list="${listKey}" style="margin-bottom:18px;">${addLabel}</button>`;
+  return `${items}${showError}<button type="button" class="bo-btn-add-org bo-add-dynlist" data-list="${listKey}" style="margin-bottom:18px;">${compPlusIcon}${addLabel}</button>`;
 }
 
 /* ---------------- Per-tab body renderers ---------------- */
@@ -298,7 +299,7 @@ function bodySentences() {
     return `
       <p style="font-size:13px; font-weight:700; color:var(--ink); margin:18px 0 4px;">${l} Sentences:</p>
       ${items}
-      <button type="button" class="bo-btn-secondary bo-add-sentence" data-lang="${l}" style="margin:8px 0 4px;">Add Sentence</button>`;
+      <button type="button" class="bo-btn-add-org bo-add-sentence" data-lang="${l}" style="margin:8px 0 4px;">${compPlusIcon}Add Sentence</button>`;
   }).join("");
   return `${textField("name", "Name")}${sections}`;
 }
@@ -319,7 +320,7 @@ function bodyQuestions() {
       </div>`
     )
     .join("");
-  return `${textField("name", "Name")}${tabsHtml}${items}<button type="button" class="bo-btn-secondary bo-add-question" style="margin-bottom:18px;">Add Question</button>`;
+  return `${textField("name", "Name")}${tabsHtml}${items}<button type="button" class="bo-btn-add-org bo-add-question" style="margin-bottom:18px;">${compPlusIcon}Add Question</button>`;
 }
 
 function bodyInputAssessment() {
