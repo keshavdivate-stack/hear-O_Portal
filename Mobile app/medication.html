@@ -45,17 +45,6 @@
         </button>
       </div>
 
-      <button type="button" class="med-update-banner" id="medUpdateBanner" onclick="window.location.href='/Mobile%20app/medication-update.html'">
-        <span class="med-update-banner-icon">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#b3781a" stroke-width="1.8"><path d="M12 9V13" stroke-linecap="round"/><circle cx="12" cy="16.5" r="1" fill="#b3781a" stroke="none"/><path d="M10.3 3.9L2.6 17.5C2.1 18.4 2.8 19.5 3.8 19.5H19.2C20.2 19.5 20.9 18.4 20.4 17.5L12.7 3.9C12.2 3 10.8 3 10.3 3.9Z" stroke-linejoin="round"/></svg>
-        </span>
-        <span class="med-update-banner-text">
-          <div class="med-update-banner-title">Furosemide was updated</div>
-          <div class="med-update-banner-sub">Tap to review and acknowledge</div>
-        </span>
-        <svg class="med-update-banner-chevron" width="9" height="15" viewBox="0 0 9 15" fill="none"><path d="M1.5 1.5L7.5 7.5L1.5 13.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </button>
-
       <div id="medTimeGroups"></div>
 
       <div class="med-note">
@@ -104,7 +93,6 @@
   // one was taken/not taken on a given day does, so that's kept separately
   // in dayStatus rather than duplicating this list per date.
   const DOSES = [
-    { id: 1, med: "furosemide", name: "Furosemide", dose: "40 mg", time: "8:00 AM", sortKey: 480, lockable: true },
     { id: 2, med: "carvedilol", name: "Carvedilol", dose: "12.5 mg", time: "8:00 AM", sortKey: 480 },
     { id: 3, med: "spironolactone", name: "Spironolactone", dose: "25 mg", time: "8:00 AM", sortKey: 480 },
     { id: 4, med: "carvedilol", name: "Carvedilol", dose: "12.5 mg", time: "8:00 PM", sortKey: 1200 },
@@ -115,8 +103,8 @@
   // for that day is simply pending. A couple of past days are pre-seeded so
   // stepping back doesn't land on an empty screen.
   const dayStatus = {
-    [dateKey(addDays(TODAY, -1))]: { 1: "taken", 2: "taken", 3: "not-taken", 4: "taken", 5: "taken" },
-    [dateKey(addDays(TODAY, -2))]: { 1: "taken", 2: "taken", 3: "taken", 4: "taken", 5: "taken" },
+    [dateKey(addDays(TODAY, -1))]: { 2: "taken", 3: "not-taken", 4: "taken", 5: "taken" },
+    [dateKey(addDays(TODAY, -2))]: { 2: "taken", 3: "taken", 4: "taken", 5: "taken" },
   };
 
   function statusFor(doseId) {
@@ -134,26 +122,10 @@
   // Class + patient-facing purpose shown in the medication detail popup's
   // info card, keyed by the same med slug used everywhere else on this page.
   const MED_INFO = {
-    furosemide: { class: "Diuretic", desc: "Helps your body get rid of extra fluid." },
     carvedilol: { class: "Beta blocker", desc: "Helps control heart rate and blood pressure." },
     spironolactone: { class: "Diuretic", desc: "Helps balance fluid and potassium levels." },
     atorvastatin: { class: "Statin", desc: "Helps lower cholesterol levels." },
   };
-
-  // Acknowledging the Furosemide dose change (on medication-update-detail.html)
-  // sends the patient back here with ?ack=furosemide, which unlocks its row.
-  // This is about the medication itself, not any one day, so it applies no
-  // matter which day is being viewed.
-  const params = new URLSearchParams(window.location.search);
-  const acknowledgedMed = params.get("ack") || (localStorage.getItem("med_ack_furosemide") ? "furosemide" : null);
-  const furosemideAcknowledged = acknowledgedMed === "furosemide";
-
-  const medUpdateBanner = document.getElementById("medUpdateBanner");
-  if (furosemideAcknowledged) medUpdateBanner.style.display = "none";
-
-  function isLocked(dose) {
-    return !!dose.lockable && !furosemideAcknowledged;
-  }
 
   function formatDayLabel(date) {
     const diff = Math.round((date - startOfDay(TODAY)) / 86400000);
@@ -170,9 +142,6 @@
   }
 
   function renderDoseAction(dose) {
-    if (isLocked(dose)) {
-      return `<span class="med-locked-tag">Awaiting review</span>`;
-    }
     const status = statusFor(dose.id);
     if (status === "taken" || status === "not-taken") {
       const label = status === "taken" ? "Taken" : "Skipped";
@@ -195,7 +164,7 @@
         const takenCount = group.filter((d) => statusFor(d.id) === "taken").length;
         const notTakenCount = group.filter((d) => statusFor(d.id) === "not-taken").length;
         const total = group.length;
-        const pending = group.filter((d) => !isLocked(d) && !statusFor(d.id));
+        const pending = group.filter((d) => !statusFor(d.id));
 
         const distinctTimes = [...new Set(group.map((d) => d.time))];
         const timeSub = distinctTimes.length > 1 ? `${distinctTimes[0]} &ndash; ${distinctTimes[distinctTimes.length - 1]}` : distinctTimes[0];
@@ -204,7 +173,7 @@
         const rows = group
           .map(
             (dose) => `
-          <div class="med-dose-card ${isLocked(dose) ? "med-dose-card-locked" : ""}" data-med="${dose.med}" data-dose-id="${dose.id}">
+          <div class="med-dose-card" data-med="${dose.med}" data-dose-id="${dose.id}">
             <div class="med-dose-card-info">
               <div class="med-dose-card-name">
                 ${dose.name}
@@ -251,7 +220,7 @@
     const markAllBtn = e.target.closest("[data-mark-all]");
     if (markAllBtn) {
       const periodKey = markAllBtn.dataset.markAll;
-      DOSES.filter((d) => periodFor(d.sortKey).key === periodKey && !isLocked(d) && !statusFor(d.id)).forEach((d) => setStatus(d.id, "taken"));
+      DOSES.filter((d) => periodFor(d.sortKey).key === periodKey && !statusFor(d.id)).forEach((d) => setStatus(d.id, "taken"));
       renderTimeGroups();
       return;
     }
@@ -272,7 +241,7 @@
 
     // Tapping a dose card (outside its action buttons) opens that medication's history.
     const row = e.target.closest(".med-dose-card");
-    if (row && !row.classList.contains("med-dose-card-locked")) {
+    if (row) {
       window.location.href = `/Mobile%20app/medication-history.html?med=${row.dataset.med}`;
     }
   });
