@@ -20,7 +20,7 @@ const TAB_META = {
 };
 
 const compKebabIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="1.7" fill="currentColor"/><circle cx="12" cy="12" r="1.7" fill="currentColor"/><circle cx="12" cy="19" r="1.7" fill="currentColor"/></svg>`;
-const compEditIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 20h4L18.5 9.5a2.1 2.1 0 0 0-3-3L5 17v3Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round"/></svg>`;
+const compTrashIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>`;
 
 function esc(v) { return String(v == null ? "" : v).replace(/"/g, "&quot;"); }
 function escOrDash(v) { return v ? esc(v) : "—"; }
@@ -87,7 +87,7 @@ configPagers.main = boCreatePager(
         <td>${esc(e.r.creationDate)}</td>
         <td>
           <div class="bo-row-actions">
-            <button class="bo-action-icon main-edit-trigger" data-idx="${e.i}" aria-label="Edit">${compEditIcon}</button>
+            <button class="bo-action-icon danger main-delete-trigger" data-idx="${e.i}" aria-label="Delete">${compTrashIcon}</button>
           </div>
         </td>
       </tr>`,
@@ -100,18 +100,23 @@ function renderAllTables() {
 renderAllTables();
 
 /* ---------------- Row action dropdown (edit / delete) ----------------
-   Main Config only ever offers Edit, so it gets a direct icon instead of
-   a menu. Every other tab offers two actions (Edit, Delete), so those
-   still go through the kebab dropdown. */
+   Main Config only ever offers Delete (there's no in-place edit -- the
+   drawer's own "Existing main config" + Load lets you start a new one
+   from an old one's values, and Save always adds a new row), so it gets
+   a direct icon instead of a menu. Every other tab offers two actions
+   (Edit, Delete), so those still go through the kebab dropdown. */
 const compRowMenu = document.getElementById("compRowMenu");
 let activeCompTab = null;
 let activeCompIdx = null;
 
 document.querySelectorAll(".bo-list-table").forEach((table) => {
   table.addEventListener("click", (e) => {
-    const editTrigger = e.target.closest(".main-edit-trigger");
-    if (editTrigger) {
-      openDrawer("main", Number(editTrigger.dataset.idx));
+    const mainDeleteTrigger = e.target.closest(".main-delete-trigger");
+    if (mainDeleteTrigger) {
+      const idx = Number(mainDeleteTrigger.dataset.idx);
+      if (!confirm(`Delete "${mainConfigs[idx].name}"?`)) return;
+      mainConfigs.splice(idx, 1);
+      renderAllTables();
       return;
     }
 
