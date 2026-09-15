@@ -62,12 +62,16 @@ const rmScheduleIdLabel = (id) => `RPT-${String(id + 1).padStart(4, "0")}`;
 function rmParseRecipients(str) { return String(str || "").split(/[,;\s]+/).map((s) => s.trim()).filter(Boolean); }
 
 /* ---------------- Tabs ---------------- */
+/* Download Report only makes sense against a delivery that's already
+   happened, so it only shows on Report History -- Scheduled Reports and
+   Archived Reports don't have anything to download yet. */
 document.querySelectorAll("#rmTabs .bo-tab").forEach((tab) => {
   tab.addEventListener("click", () => {
     document.querySelectorAll("#rmTabs .bo-tab").forEach((t) => t.classList.remove("active"));
     document.querySelectorAll(".bo-tab-panel").forEach((p) => p.classList.remove("active"));
     tab.classList.add("active");
     document.getElementById(`tab-${tab.dataset.tab}`).classList.add("active");
+    document.getElementById("rmDownloadReportBtn").hidden = tab.dataset.tab !== "history";
   });
 });
 
@@ -326,7 +330,6 @@ document.getElementById("rmArchivedSearchInput").addEventListener("input", (e) =
 /* ---------------- Report History ---------------- */
 let rmHistReportFilter = "";
 let rmHistOrgFilter = "";
-let rmHistStatusFilter = "";
 
 /* Unlike the other history filters (blank = "no filter"), Date Range always
    has a value -- it defaults to the last 7 days so the table doesn't dump a
@@ -342,7 +345,6 @@ let rmHistDateRangeFilter = 7;
 
 document.getElementById("rmHistReportFilterMenu").innerHTML = buildFilterSelectOptions(RM_REPORTS.map((r) => r.label), "All reports");
 document.getElementById("rmHistOrgFilterMenu").innerHTML = buildFilterSelectOptions(RM_ORGS, "All organisations");
-document.getElementById("rmHistStatusFilterMenu").innerHTML = buildFilterSelectOptions(RM_DELIVERY_STATUSES, "All delivery statuses");
 document.getElementById("rmHistDateRangeFilterMenu").innerHTML = RM_DATE_RANGE_OPTIONS
   .map(
     (o) => `
@@ -356,20 +358,21 @@ function rmFilteredHistory() {
   return rmHistory.filter((h) => {
     if (rmHistReportFilter && rmReportLabel(h.reportKey) !== rmHistReportFilter) return false;
     if (rmHistOrgFilter && h.org !== rmHistOrgFilter) return false;
-    if (rmHistStatusFilter && h.status !== rmHistStatusFilter) return false;
     if (h.daysAgo > rmHistDateRangeFilter) return false;
     return true;
   });
 }
 
+const rmHistoryIdLabel = (id) => `DLV-${String(id + 1).padStart(4, "0")}`;
+
 function rmRenderHistoryRow(h) {
   return `
     <tr data-id="${h.id}">
+      <td class="mono">${rmHistoryIdLabel(h.id)}</td>
       <td>${rmEsc(rmReportLabel(h.reportKey))}</td>
       <td>${rmEsc(h.org)}</td>
-      <td>${h.sentOn}</td>
       <td>${rmRecipientsChip(h.recipients)}</td>
-      <td>${rmDeliveryPill(h.status)}</td>
+      <td>${h.sentOn}</td>
       <td>
         <div class="bo-row-actions">
           <button class="bo-action-icon row-menu-trigger" data-id="${h.id}" aria-label="Row actions">${rmKebabIcon}</button>
@@ -390,7 +393,7 @@ const rmHistoryEmptyHtml = `
 const rmHistoryPager = boCreatePager("rmHistoryRows", () => rmFilteredHistory(), rmRenderHistoryRow, { pageSize: 8, emptyHtml: rmHistoryEmptyHtml });
 
 function rmHistoryFiltersActive() {
-  return !!(rmHistReportFilter || rmHistOrgFilter || rmHistStatusFilter || rmHistDateRangeFilter !== 7);
+  return !!(rmHistReportFilter || rmHistOrgFilter || rmHistDateRangeFilter !== 7);
 }
 
 function rmRefreshHistoryEmptyState() {
@@ -415,13 +418,11 @@ rmRenderHistory();
 
 document.getElementById("rmHistReportFilter").addEventListener("change", (e) => { rmHistReportFilter = e.target.value; rmHistoryPager.resetPage(); rmRenderHistory(); });
 document.getElementById("rmHistOrgFilter").addEventListener("change", (e) => { rmHistOrgFilter = e.target.value; rmHistoryPager.resetPage(); rmRenderHistory(); });
-document.getElementById("rmHistStatusFilter").addEventListener("change", (e) => { rmHistStatusFilter = e.target.value; rmHistoryPager.resetPage(); rmRenderHistory(); });
 document.getElementById("rmHistDateRangeFilter").addEventListener("change", (e) => { rmHistDateRangeFilter = Number(e.target.value); rmHistoryPager.resetPage(); rmRenderHistory(); });
 
 function rmClearHistoryFilters() {
   rmHistReportFilter = "";
   rmHistOrgFilter = "";
-  rmHistStatusFilter = "";
   rmHistDateRangeFilter = 7;
   document.querySelectorAll('#tab-history .bo-select:not([data-name="rmHistDateRange"])').forEach(resetBoSelect);
   setBoSelectValue(document.querySelector('#tab-history .bo-select[data-name="rmHistDateRange"]'), "7", { silent: true });
