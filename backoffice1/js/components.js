@@ -181,12 +181,33 @@ function textField(key, label) {
   return `<div class="bo-modal-field"><label>${label}:</label><input type="text" data-field="${key}" value="${v}" placeholder="${label}" /></div>`;
 }
 
+/* Builds the app's styled .bo-select dropdown instead of a native <select> --
+   dataAttr/dataValue become the hidden input's data-* attribute (data-field,
+   data-dynlist, data-sentence, data-question, ...) so the existing delegated
+   input/change listeners on drawerBody keep working unchanged: setBoSelectValue
+   dispatches "change" on that same hidden input when an option is picked. */
+function customSelect(dataAttr, dataValue, current, options, placeholder) {
+  const opts = options
+    .map(
+      (o) => `<div class="bo-select-option${o === current ? " selected" : ""}" data-value="${esc(o)}">${esc(o)}
+        <svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>`
+    )
+    .join("");
+  return `
+    <div class="bo-select" data-name="${esc(dataValue)}">
+      <button type="button" class="bo-select-trigger">
+        <span class="bo-select-value${current ? "" : " placeholder"}">${current ? esc(current) : placeholder}</span>
+        <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <div class="bo-select-menu">${opts}</div>
+      <input type="hidden" ${dataAttr}="${esc(dataValue)}" value="${esc(current)}" />
+    </div>`;
+}
+
 function selectField(key, label, options) {
   const cur = state.simple[key] || "";
-  const opts = options
-    .map((o) => `<option value="${esc(o)}" ${o === cur ? "selected" : ""}>${esc(o)}</option>`)
-    .join("");
-  return `<div class="bo-modal-field"><label>${label}:</label><select data-field="${key}"><option value=""></option>${opts}</select></div>`;
+  return `<div class="bo-modal-field"><label>${label}:</label>${customSelect("data-field", key, cur, options, label)}</div>`;
 }
 
 function timePairField(key, label) {
@@ -222,10 +243,7 @@ function dynamicList(listKey, itemLabelPrefix, options, addLabel, errorMsg) {
       (v, i) => `
       <div class="bo-dyn-list-item">
         <label>${itemLabelPrefix} ${i + 1}</label>
-        <select data-dynlist="${listKey}:${i}">
-          <option value="">Select ${itemLabelPrefix.toLowerCase()}</option>
-          ${options.map((o) => `<option value="${esc(o)}" ${o === v ? "selected" : ""}>${esc(o)}</option>`).join("")}
-        </select>
+        ${customSelect("data-dynlist", `${listKey}:${i}`, v || "", options, `Select ${itemLabelPrefix.toLowerCase()}`)}
       </div>`
     )
     .join("");
@@ -240,11 +258,8 @@ function bodyMain() {
     <div class="bo-modal-grid">
       <div class="bo-modal-field full">
         <label>Existing main config:</label>
-        <div style="display:flex; gap:10px;">
-          <select data-field="existingMain" style="flex:1;">
-            <option value=""></option>
-            ${existingOptions.map((o) => `<option value="${esc(o)}">${esc(o)}</option>`).join("")}
-          </select>
+        <div style="display:flex; gap:10px; align-items:flex-start;">
+          <div style="flex:1;">${customSelect("data-field", "existingMain", "", existingOptions, "Select a config")}</div>
           <button type="button" class="bo-btn-secondary" id="loadMainConfigBtn" style="flex-shrink:0;">Load</button>
         </div>
       </div>
@@ -267,10 +282,7 @@ function bodySentences() {
         <div class="bo-dyn-list-item" style="margin-bottom:4px;">
           <label>Sentence ${i + 1}</label>
           <div style="display:flex; align-items:center; gap:8px;">
-            <select data-sentence="${l}:${i}" style="flex:1;">
-              <option value="">Select sentence</option>
-              ${SENTENCE_OPTIONS.map((o) => `<option value="${esc(o)}" ${o === v ? "selected" : ""}>${esc(o)}</option>`).join("")}
-            </select>
+            <div style="flex:1;">${customSelect("data-sentence", `${l}:${i}`, v || "", SENTENCE_OPTIONS, "Select sentence")}</div>
             ${state.sentences[l].length > 1 ? `<button type="button" class="bo-btn-text bo-remove-sentence" data-lang="${l}" data-idx="${i}" aria-label="Remove" style="font-size:18px;">&times;</button>` : ""}
           </div>
         </div>`
@@ -296,10 +308,7 @@ function bodyQuestions() {
       (v, i) => `
       <div class="bo-dyn-list-item">
         <label>${active === "Questions" ? "Question" : "HealthQuestion"} ${i + 1}</label>
-        <select data-question="${active}:${i}">
-          <option value="">Select question</option>
-          ${QUESTION_OPTIONS.map((o) => `<option value="${esc(o)}" ${o === v ? "selected" : ""}>${esc(o)}</option>`).join("")}
-        </select>
+        ${customSelect("data-question", `${active}:${i}`, v || "", QUESTION_OPTIONS, "Select question")}
       </div>`
     )
     .join("");
@@ -407,6 +416,7 @@ const drawerSaveBtn = document.getElementById("saveConfigDrawer");
 
 function render() {
   drawerBody.innerHTML = BODY_RENDERERS[currentTab]();
+  drawerBody.querySelectorAll(".bo-select").forEach(wireBoSelect);
   validateDrawer();
 }
 

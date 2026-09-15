@@ -293,8 +293,25 @@ function sdNumberField(key, label) {
 
 function sdSelectField(key, label, options) {
   const cur = sdState.simple[key] || "";
-  const opts = options.map((o) => `<option value="${sdEsc(o)}" ${o === cur ? "selected" : ""}>${sdEsc(o)}</option>`).join("");
-  return `<div class="bo-modal-field"><label>${label}:</label><select data-field="${key}"><option value=""></option>${opts}</select></div>`;
+  const opts = options
+    .map(
+      (o) => `<div class="bo-select-option${o === cur ? " selected" : ""}" data-value="${sdEsc(o)}">${sdEsc(o)}
+        <svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>`
+    )
+    .join("");
+  return `
+    <div class="bo-modal-field">
+      <label>${label}:</label>
+      <div class="bo-select" data-name="${key}">
+        <button type="button" class="bo-select-trigger">
+          <span class="bo-select-value${cur ? "" : " placeholder"}">${cur ? sdEsc(cur) : label}</span>
+          <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="bo-select-menu">${opts}</div>
+        <input type="hidden" data-field="${key}" value="${sdEsc(cur)}" />
+      </div>
+    </div>`;
 }
 
 function sdTimePairField(key, label) {
@@ -408,6 +425,7 @@ const sdDrawerSaveBtn = document.getElementById("sdSaveDrawer");
 
 function sdRender() {
   sdDrawerBody.innerHTML = SD_BODY_RENDERERS[sdCurrentTab]();
+  sdDrawerBody.querySelectorAll(".bo-select").forEach(wireBoSelect);
   sdValidate();
 }
 
