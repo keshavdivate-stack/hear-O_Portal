@@ -7,8 +7,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/Mobile%20app/style.css?v=16">
-<script src="/Mobile%20app/font-scale.js?v=16"></script>
+<link rel="stylesheet" href="/Mobile%20app/style.css?v=17">
+<script src="/Mobile%20app/font-scale.js?v=17"></script>
 </head>
 <body>
 
@@ -79,6 +79,16 @@
     </div>
 
     <div class="home-footer">
+      <button type="button" class="chat-nav-item" onclick="window.location.href='/Mobile%20app/history.html'">
+        <span class="chat-nav-icon">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M3 12a9 9 0 1 0 2.6-6.35" stroke="#186DCE" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M3 4.5V9h4.5" stroke="#186DCE" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M12 8v4.5l3.5 2" stroke="#186DCE" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </span>
+        <span>History</span>
+      </button>
       <button type="button" class="chat-nav-item" onclick="window.location.href=localStorage.getItem('hearo_chat_enabled')?'/Mobile%20app/chat.html':'/Mobile%20app/chat-consent.html'">
         <span class="chat-nav-icon">
           <span class="chat-badge">1</span>

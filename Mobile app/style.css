@@ -1889,6 +1889,7 @@ input[type="password"]:focus {
   padding: 14px 32px 22px;
   display: flex;
   justify-content: flex-end;
+  gap: 48px;
 }
 
 .chat-nav-item {
@@ -1938,6 +1939,95 @@ input[type="password"]:focus {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+/* ===== History screen ===== */
+.history-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 28px 24px;
+}
+
+.history-card {
+  background: #fff;
+  border: 1px solid #eceef1;
+  border-radius: 16px;
+  padding: 18px;
+  margin-bottom: 14px;
+  box-shadow: 0 1px 4px rgba(20, 24, 30, 0.06);
+}
+
+.history-card-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.history-icon {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #F2EDFD;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.history-card-title-wrap { flex: 1; min-width: 0; }
+
+.history-card-med {
+  font-size: calc(18px * var(--font-scale, 1));
+  font-weight: 700;
+  color: #252424;
+}
+
+.history-card-action {
+  font-size: calc(14px * var(--font-scale, 1));
+  color: #565454;
+  margin-top: 2px;
+}
+
+.history-card-date {
+  flex-shrink: 0;
+  font-size: calc(12px * var(--font-scale, 1));
+  color: #8A8F97;
+  white-space: nowrap;
+}
+
+.history-card-meta {
+  font-size: calc(14px * var(--font-scale, 1));
+  color: #7a7f87;
+  margin-bottom: 12px;
+}
+
+.history-card-meta strong { color: #434141; font-weight: 600; }
+
+.history-card-note {
+  background: #F7F8FA;
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: calc(14px * var(--font-scale, 1));
+  color: #434141;
+  line-height: 1.5;
+}
+
+.history-card-note-label {
+  display: block;
+  font-size: calc(11px * var(--font-scale, 1));
+  font-weight: 700;
+  color: #8A8F97;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  margin-bottom: 4px;
+}
+
+.history-empty {
+  text-align: center;
+  color: #8A8F97;
+  font-size: calc(16px * var(--font-scale, 1));
+  padding: 60px 20px;
 }
 
 /* ===== Tutorial intro screen (info) ===== */
