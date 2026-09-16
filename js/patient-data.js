@@ -1559,8 +1559,8 @@ document.querySelectorAll("#dataRangeToggle span").forEach((r) => {
 document.querySelectorAll(".compliance-highlight").forEach((box) => {
   const value = parseFloat(box.querySelector(".compliance-highlight-value")?.textContent || "0");
   const sufficient = value >= 70;
-  box.classList.add(sufficient ? "compliance-highlight-blue" : "compliance-highlight-red");
-  box.querySelector(".goal-progress-fill")?.classList.add(sufficient ? "fill-blue" : "fill-red");
+  box.classList.add(sufficient ? "compliance-highlight-blue" : "compliance-highlight-orange");
+  box.querySelector(".goal-progress-fill")?.classList.add(sufficient ? "fill-blue" : "fill-orange");
 });
 
 /* ---------------- History events ---------------- */

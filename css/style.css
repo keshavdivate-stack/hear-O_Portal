@@ -1987,10 +1987,8 @@ button, input, select, textarea, optgroup {
   gap: 14px;
   border-radius: 10px;
   padding: 8px 14px;
+  background: var(--bg);
 }
-
-.legend-group-status { background: var(--green-light); }
-.legend-group-monitoring { background: var(--blue-light); }
 
 .legend-group-label {
   display: flex;
@@ -3928,7 +3926,7 @@ button, input, select, textarea, optgroup {
 }
 
 .compliance-highlight-blue { background: var(--blue-light); }
-.compliance-highlight-red { background: #FCEAEA; }
+.compliance-highlight-orange { background: #FDF0DE; }
 
 .compliance-highlight-label {
   display: block;
@@ -3990,7 +3988,7 @@ button, input, select, textarea, optgroup {
 }
 
 .compliance-legend-dot-sufficient { background: var(--blue); }
-.compliance-legend-dot-insufficient { background: var(--red); }
+.compliance-legend-dot-insufficient { background: #F2994A; }
 
 .compliance-legend-dot-hatch {
   background-image: repeating-linear-gradient(45deg, transparent, transparent 1.5px, #D8DCE2 1.5px, #D8DCE2 3px);
