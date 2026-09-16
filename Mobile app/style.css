@@ -1972,9 +1972,10 @@ input[type="password"]:focus {
 }
 
 .history-card-med {
-  font-size: calc(18px * var(--font-scale, 1));
-  font-weight: 600;
-  color: #252424;
+  font-size: calc(22px * var(--font-scale, 1));
+  font-weight: 500;
+  font-family: "Inter", inherit;
+  color: #434141;
 }
 
 .history-card-date {
