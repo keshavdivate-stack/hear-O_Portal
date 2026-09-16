@@ -2091,7 +2091,7 @@ input[type="password"]:focus {
   margin-bottom: 18px;
 }
 
-.tooltip-preview-card {
+.nav-item-card.tooltip-preview-card {
   margin-bottom: 16px;
   pointer-events: none;
 }
