@@ -7,8 +7,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/Mobile%20app/style.css?v=8">
-<script src="/Mobile%20app/font-scale.js?v=8"></script>
+<link rel="stylesheet" href="/Mobile%20app/style.css?v=9">
+<script src="/Mobile%20app/font-scale.js?v=9"></script>
 </head>
 <body>
 
@@ -42,10 +42,10 @@
 
 <script>
   const SIZES = [
-    { value: "0.9", label: "Small", sample: 14 },
-    { value: "1", label: "Medium", sample: 16 },
-    { value: "1.15", label: "Large", sample: 18 },
-    { value: "1.3", label: "Extra Large", sample: 20 },
+    { value: "0.9", label: "Small", labelSize: 15, sample: 15, pad: 14 },
+    { value: "1", label: "Medium", labelSize: 17, sample: 20, pad: 17 },
+    { value: "1.15", label: "Large", labelSize: 19, sample: 25, pad: 20 },
+    { value: "1.3", label: "Extra Large", labelSize: 21, sample: 30, pad: 23 },
   ];
 
   const optionsEl = document.getElementById("options");
@@ -54,8 +54,8 @@
   function render() {
     optionsEl.innerHTML = SIZES.map(
       (s) => `
-        <button type="button" class="fontsize-option${s.value === active ? " selected" : ""}" onclick="selectSize('${s.value}')">
-          <span class="fontsize-option-label">${s.label}</span>
+        <button type="button" class="fontsize-option${s.value === active ? " selected" : ""}" style="padding-top:${s.pad}px;padding-bottom:${s.pad}px;" onclick="selectSize('${s.value}')">
+          <span class="fontsize-option-label" style="font-size:${s.labelSize}px;">${s.label}</span>
           <span class="fontsize-option-sample" style="font-size:${s.sample}px;">Aa</span>
           <span class="fontsize-option-check">
             ${s.value === active ? '<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M4 12.5L9.5 18L20 6" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>' : ""}

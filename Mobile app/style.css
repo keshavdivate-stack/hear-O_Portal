@@ -4669,6 +4669,7 @@ input[type="password"]:focus {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: nowrap;
   gap: 14px;
   padding: 16px 18px;
   border: 1.5px solid #eceef1;
@@ -4685,14 +4686,18 @@ input[type="password"]:focus {
 }
 
 .fontsize-option-label {
-  font-size: calc(16px * var(--font-scale, 1));
   font-weight: 600;
   color: #252424;
+  white-space: nowrap;
 }
 
 .fontsize-option-sample {
+  flex: 1;
+  text-align: center;
   color: #6a6f77;
   font-weight: 500;
+  white-space: nowrap;
+  line-height: 1;
 }
 
 .fontsize-option-check {
