@@ -1104,6 +1104,203 @@ button, input, select, textarea, optgroup {
   outline-offset: 2px;
 }
 
+/* -- Columns / saved-views switcher -- */
+.views-menu {
+  width: 300px;
+  max-height: 420px;
+  overflow-y: auto;
+  padding: 10px;
+}
+
+.views-menu-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  margin-bottom: 10px;
+  border: 1px solid var(--gray-border);
+  border-radius: 8px;
+}
+
+.views-menu-search svg { flex-shrink: 0; }
+
+.views-menu-search input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  font-size: 13.5px;
+  font-family: inherit;
+  color: #23272E;
+  background: transparent;
+}
+
+.views-menu-search input::placeholder { color: #9AA5B1; }
+
+.views-menu-section { margin-bottom: 6px; }
+
+.views-menu-section-label {
+  padding: 6px 8px 4px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  color: #9AA5B1;
+  text-transform: uppercase;
+}
+
+.views-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  position: relative;
+}
+
+.views-menu-item:hover { background: var(--bg); }
+
+.views-menu-item-check {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+}
+
+.views-menu-item-name {
+  flex: 1;
+  min-width: 0;
+  font-size: 14px;
+  color: #23272E;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.views-menu-item.active .views-menu-item-name { font-weight: 600; }
+
+.views-menu-item-badge {
+  flex-shrink: 0;
+  padding: 3px 9px;
+  border-radius: 20px;
+  background: var(--bg);
+  color: #6B7684;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.views-menu-item-actions {
+  flex-shrink: 0;
+  display: none;
+  align-items: center;
+  gap: 6px;
+}
+
+.views-menu-item:hover .views-menu-item-actions { display: flex; }
+
+.views-set-default-btn {
+  border: none;
+  background: none;
+  padding: 4px 6px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--blue-text);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.views-set-default-btn:hover { text-decoration: underline; }
+
+.views-edit-btn {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: none;
+  border-radius: 6px;
+  color: #6B7684;
+  cursor: pointer;
+}
+
+.views-edit-btn:hover { background: var(--gray-border); color: #23272E; }
+
+.views-menu-empty {
+  padding: 10px 8px;
+  font-size: 13px;
+  color: #9AA5B1;
+}
+
+.views-menu-create-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  margin-top: 6px;
+  padding: 10px;
+  border: none;
+  border-top: 1px solid var(--gray-border);
+  border-radius: 0;
+  background: none;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--blue-text);
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.views-menu-create-btn:hover { background: var(--bg); }
+
+/* -- Create/Edit Custom View modal -- */
+.view-columns-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px 12px;
+}
+
+.view-column-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 8px;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #23272E;
+  cursor: pointer;
+}
+
+.view-column-option:hover { background: var(--bg); }
+
+.view-column-option input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  padding: 0;
+  border: 1.5px solid #9AA5B1;
+  border-radius: 4px;
+  background: #fff;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 120ms ease, border-color 120ms ease;
+}
+
+.view-column-option input[type="checkbox"]:hover { border-color: var(--blue); }
+
+.view-column-option input[type="checkbox"]:checked {
+  background-color: var(--blue);
+  border-color: var(--blue);
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'><path d='M5 13L9.5 17.5L19 7' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 11px;
+}
+
 /* -- Provider filter (single-select: "All Patients" or one provider) -- */
 .provider-option.selected { background: var(--blue-light); color: var(--blue-text); font-weight: 600; }
 .provider-option:first-child { font-weight: 700; border-bottom: 1px solid var(--gray-border); border-radius: 8px 8px 0 0; margin-bottom: 4px; padding-bottom: 10px; }

@@ -293,7 +293,7 @@
               <span class="checkbox-filter-label">Columns</span>
               <svg class="caret" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#6B7684" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
             </button>
-            <div class="checkbox-filter-menu" id="columnsMenu"></div>
+            <div class="checkbox-filter-menu views-menu" id="columnsMenu"></div>
           </div>
         </div>
 
@@ -870,6 +870,28 @@
       <div class="modal-actions">
         <button type="button" class="btn-text" id="cancelUpdateAccount">Cancel</button>
         <button type="button" class="btn-save" id="saveUpdateAccount" disabled>Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Create/Edit Custom View modal -->
+  <div class="modal-overlay" id="viewModalOverlay">
+    <div class="modal modal-wide">
+      <h2 id="viewModalTitle">Create Custom View</h2>
+
+      <div class="form-field">
+        <label>View Name<span class="required-star">*</span></label>
+        <input type="text" id="viewNameInput" placeholder="Enter a name for this view" maxlength="60" />
+      </div>
+
+      <div class="form-field">
+        <label>Select Columns<span class="required-star">*</span></label>
+        <div class="view-columns-grid" id="viewColumnsGrid"></div>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn-text" id="cancelViewModal">Cancel</button>
+        <button type="button" class="btn-save" id="saveViewModal" disabled>Create View</button>
       </div>
     </div>
   </div>

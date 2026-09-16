@@ -539,41 +539,218 @@ wireCheckboxFilter(
   renderPatientList
 );
 
-/* ---------------- Columns visibility menu (wiring) ---------------- */
+/* ---------------- Columns / Views menu (wiring) ----------------
+   "Columns" now opens a saved-views switcher instead of a flat checkbox
+   list: two built-in Default Views plus any number of user-created
+   Custom Views, each capturing its own column selection. Selecting a
+   view applies its column set; Custom Views can also be renamed/edited
+   or promoted to load as the default. */
+const plusIcon = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>`;
+const checkIconBlue = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="#186DCE" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+
+const defaultViews = [
+  { key: "default1", name: "Default View 1", columns: columnOptions.map((c) => c.key) },
+  { key: "default2", name: "Default View 2", columns: ["username", "status", "monitoring", "careTeam"] },
+];
+const customViews = [
+  { key: "custom1", name: "Custom View 1", columns: ["username", "mrn", "status", "monitoring", "phone", "careTeam"] },
+];
+let activeViewKey = "default1";
+let defaultViewKey = "default1";
+let editingViewKey = null;
+
+function viewByKey(key) {
+  return defaultViews.find((v) => v.key === key) || customViews.find((v) => v.key === key);
+}
+
+function applyView(view) {
+  hiddenColumns.clear();
+  columnOptions.forEach((c) => {
+    if (!view.columns.includes(c.key)) hiddenColumns.add(c.key);
+  });
+  applyColumnVisibility();
+}
+
 const columnsMenu = document.getElementById("columnsMenu");
-columnsMenu.innerHTML = columnOptions
-  .map(
-    (c) => `
-    <label class="checkbox-filter-option">
-      <input type="checkbox" value="${c.key}" checked />
-      ${c.label}
-    </label>`
-  )
-  .join("");
+columnsMenu.innerHTML = `
+  <div class="views-menu-search">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#9AA5B1" stroke-width="1.8"/><path d="M21 21L16.5 16.5" stroke="#9AA5B1" stroke-width="1.8" stroke-linecap="round"/></svg>
+    <input type="text" id="viewsSearchInput" placeholder="Search" autocomplete="off" />
+  </div>
+  <div class="views-menu-section" id="defaultViewsSection">
+    <div class="views-menu-section-label">Default Views</div>
+    <div id="defaultViewsList"></div>
+  </div>
+  <div class="views-menu-section" id="customViewsSection">
+    <div class="views-menu-section-label">Custom Views</div>
+    <div id="customViewsList"></div>
+  </div>
+  <button type="button" class="views-menu-create-btn" id="createCustomViewBtn">${plusIcon} Create Custom View</button>
+`;
 
 const columnsFilterWrap = document.querySelector('.checkbox-filter[data-name="columns"]');
 const columnsTrigger = columnsFilterWrap.querySelector(".filter-btn");
-const columnsLabel = columnsFilterWrap.querySelector(".checkbox-filter-label");
+const viewsSearchInput = document.getElementById("viewsSearchInput");
+const defaultViewsSection = document.getElementById("defaultViewsSection");
+const defaultViewsList = document.getElementById("defaultViewsList");
+const customViewsSection = document.getElementById("customViewsSection");
+const customViewsList = document.getElementById("customViewsList");
+
+function renderViewRow(view, isBuiltIn) {
+  const isActive = view.key === activeViewKey;
+  const isDefault = view.key === defaultViewKey;
+  return `
+    <div class="views-menu-item ${isActive ? "active" : ""}" data-view="${view.key}">
+      <span class="views-menu-item-check">${isActive ? checkIconBlue : ""}</span>
+      <span class="views-menu-item-name">${view.name}</span>
+      ${isDefault ? `<span class="views-menu-item-badge">Default</span>` : ""}
+      ${
+        isBuiltIn
+          ? ""
+          : `<span class="views-menu-item-actions">
+               ${!isDefault ? `<button type="button" class="views-set-default-btn" data-view="${view.key}">Set as Default</button>` : ""}
+               <button type="button" class="views-edit-btn" data-view="${view.key}" aria-label="Edit view">${pencilIcon}</button>
+             </span>`
+      }
+    </div>`;
+}
+
+function renderViewsMenu() {
+  const query = viewsSearchInput.value.trim().toLowerCase();
+  const filteredDefaults = defaultViews.filter((v) => v.name.toLowerCase().includes(query));
+  const filteredCustom = customViews.filter((v) => v.name.toLowerCase().includes(query));
+
+  defaultViewsSection.hidden = filteredDefaults.length === 0;
+  defaultViewsList.innerHTML = filteredDefaults.map((v) => renderViewRow(v, true)).join("");
+
+  customViewsSection.hidden = query.length > 0 && filteredCustom.length === 0;
+  customViewsList.innerHTML =
+    filteredCustom.map((v) => renderViewRow(v, false)).join("") ||
+    (query ? "" : `<p class="views-menu-empty">No custom views yet</p>`);
+}
+
+viewsSearchInput.addEventListener("input", renderViewsMenu);
 
 columnsTrigger.addEventListener("click", (e) => {
   e.stopPropagation();
   const willOpen = !columnsFilterWrap.classList.contains("open");
   closeAllFilterPopovers();
   columnsFilterWrap.classList.toggle("open", willOpen);
-  if (willOpen) openFilterMenu(columnsFilterWrap, columnsMenu);
+  if (willOpen) {
+    viewsSearchInput.value = "";
+    renderViewsMenu();
+    openFilterMenu(columnsFilterWrap, columnsMenu);
+    // Columns sits at the far right of the filter row, so anchor the popover's
+    // right edge to the trigger's right edge instead of its left edge --
+    // otherwise this wider menu would hang off the edge of the screen.
+    const rect = columnsTrigger.getBoundingClientRect();
+    columnsMenu.style.left = "auto";
+    columnsMenu.style.right = `${window.innerWidth - rect.right}px`;
+  }
 });
 
-columnsMenu.addEventListener("click", (e) => e.stopPropagation());
+columnsMenu.addEventListener("click", (e) => {
+  e.stopPropagation();
 
-columnsMenu.addEventListener("change", (e) => {
-  const checkbox = e.target.closest('input[type="checkbox"]');
-  if (!checkbox) return;
-  if (checkbox.checked) hiddenColumns.delete(checkbox.value);
-  else hiddenColumns.add(checkbox.value);
+  const editBtn = e.target.closest(".views-edit-btn");
+  if (editBtn) {
+    openViewModal(editBtn.dataset.view);
+    return;
+  }
 
-  columnsLabel.textContent = hiddenColumns.size ? `Columns (${hiddenColumns.size} hidden)` : "Columns";
-  applyColumnVisibility();
+  const defaultBtn = e.target.closest(".views-set-default-btn");
+  if (defaultBtn) {
+    defaultViewKey = defaultBtn.dataset.view;
+    renderViewsMenu();
+    return;
+  }
+
+  if (e.target.closest("#createCustomViewBtn")) {
+    openViewModal(null);
+    return;
+  }
+
+  const row = e.target.closest(".views-menu-item");
+  if (row) {
+    activeViewKey = row.dataset.view;
+    applyView(viewByKey(activeViewKey));
+    renderViewsMenu();
+    columnsFilterWrap.classList.remove("open");
+    closeFilterMenu(columnsMenu);
+  }
 });
+
+/* ---------------- Create/Edit Custom View modal ---------------- */
+const viewModalOverlay = document.getElementById("viewModalOverlay");
+const viewModalTitle = document.getElementById("viewModalTitle");
+const viewNameInput = document.getElementById("viewNameInput");
+const viewColumnsGrid = document.getElementById("viewColumnsGrid");
+const cancelViewModalBtn = document.getElementById("cancelViewModal");
+const saveViewModalBtn = document.getElementById("saveViewModal");
+
+function updateSaveViewButtonState() {
+  const hasName = viewNameInput.value.trim().length > 0;
+  const hasColumn = !!viewColumnsGrid.querySelector('input[type="checkbox"]:checked');
+  saveViewModalBtn.disabled = !(hasName && hasColumn);
+}
+
+function openViewModal(editKey) {
+  editingViewKey = editKey;
+  const existing = editKey ? viewByKey(editKey) : null;
+
+  viewModalTitle.textContent = existing ? "Edit Custom View" : "Create Custom View";
+  saveViewModalBtn.textContent = existing ? "Save Changes" : "Create View";
+  viewNameInput.value = existing ? existing.name : "";
+
+  viewColumnsGrid.innerHTML = columnOptions
+    .map(
+      (c) => `
+      <label class="view-column-option">
+        <input type="checkbox" value="${c.key}" ${!existing || existing.columns.includes(c.key) ? "checked" : ""} />
+        ${c.label}
+      </label>`
+    )
+    .join("");
+
+  updateSaveViewButtonState();
+  viewModalOverlay.classList.add("open");
+  viewNameInput.focus();
+}
+
+function closeViewModal() {
+  viewModalOverlay.classList.remove("open");
+  editingViewKey = null;
+}
+
+viewNameInput.addEventListener("input", updateSaveViewButtonState);
+viewColumnsGrid.addEventListener("change", updateSaveViewButtonState);
+cancelViewModalBtn.addEventListener("click", closeViewModal);
+viewModalOverlay.addEventListener("click", (e) => {
+  if (e.target === viewModalOverlay) closeViewModal();
+});
+
+saveViewModalBtn.addEventListener("click", () => {
+  const name = viewNameInput.value.trim();
+  const selectedColumns = Array.from(viewColumnsGrid.querySelectorAll('input[type="checkbox"]:checked')).map((cb) => cb.value);
+  if (!name || !selectedColumns.length) return;
+
+  if (editingViewKey) {
+    const view = viewByKey(editingViewKey);
+    view.name = name;
+    view.columns = selectedColumns;
+    if (activeViewKey === editingViewKey) applyView(view);
+  } else {
+    const newView = { key: `custom-${Date.now()}`, name, columns: selectedColumns };
+    customViews.push(newView);
+    activeViewKey = newView.key;
+    applyView(newView);
+  }
+
+  closeViewModal();
+  renderViewsMenu();
+});
+
+applyView(viewByKey(activeViewKey));
 
 /* Deep link: ?careTeam=<Care Team Member name> -- lets the Care Team
    Members page's row click land here with that member's patients already
