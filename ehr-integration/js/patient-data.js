@@ -1984,21 +1984,33 @@ document.getElementById("historyLoadMoreBtn").addEventListener("click", () => {
 const addEventOverlay = document.getElementById("addEventOverlay");
 const addEventForm = document.getElementById("addEventForm");
 const saveAddEvent = document.getElementById("saveAddEvent");
+const addEventActionTypeField = document.getElementById("addEventActionTypeField");
+const addEventNameField = document.getElementById("addEventNameField");
 
-const CATEGORY_DOT = { account: "dot-blue", status: "dot-green", monitoring: "dot-teal", other: "dot-blue" };
+function updateAddEventTypeFields() {
+  const eventType = addEventForm.eventType.value;
+  addEventActionTypeField.style.display = eventType === "action" ? "" : "none";
+  addEventNameField.style.display = eventType === "other" ? "" : "none";
+}
 
 function validateAddEventForm() {
-  const valid = addEventForm.category.value !== "" && addEventForm.label.value.trim() !== "" && addEventForm.date.value !== "";
+  const eventType = addEventForm.eventType.value;
+  const detailValid = eventType === "action" ? addEventForm.actionType.value !== "" : eventType === "other" ? addEventForm.eventName.value.trim() !== "" : false;
+  const valid = eventType !== "" && detailValid && addEventForm.date.value !== "";
   saveAddEvent.disabled = !valid;
   saveAddEvent.classList.toggle("enabled", valid);
 }
 
 addEventForm.addEventListener("input", validateAddEventForm);
-addEventForm.addEventListener("change", validateAddEventForm);
+addEventForm.addEventListener("change", (e) => {
+  if (e.target.name === "eventType") updateAddEventTypeFields();
+  validateAddEventForm();
+});
 
 document.getElementById("openAddEventBtn").addEventListener("click", () => {
   addEventForm.reset();
   resetCustomSelectsIn(addEventForm);
+  updateAddEventTypeFields();
   validateAddEventForm();
   addEventOverlay.classList.add("open");
 });
@@ -2012,10 +2024,14 @@ addEventForm.addEventListener("submit", (e) => {
   if (saveAddEvent.disabled) return;
 
   const [y, m, d] = addEventForm.date.value.split("-");
+  const label = addEventForm.eventType.value === "action"
+    ? `Action taken: ${addEventForm.actionType.value}`
+    : addEventForm.eventName.value.trim();
+
   history.unshift({
-    category: addEventForm.category.value,
-    color: CATEGORY_DOT[addEventForm.category.value],
-    label: addEventForm.label.value.trim(),
+    category: "other",
+    color: "dot-blue",
+    label,
     date: `${m}.${d}.${y}`,
     note: addEventForm.note.value.trim() || undefined,
   });

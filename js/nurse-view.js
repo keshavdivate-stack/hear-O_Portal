@@ -1345,28 +1345,33 @@ document.getElementById("historyLoadMoreBtn").addEventListener("click", () => {
 const addEventOverlay = document.getElementById("addEventOverlay");
 const addEventForm = document.getElementById("addEventForm");
 const saveAddEvent = document.getElementById("saveAddEvent");
+const addEventActionTypeField = document.getElementById("addEventActionTypeField");
+const addEventNameField = document.getElementById("addEventNameField");
 
-const CATEGORY_DOT = { account: "dot-blue", status: "dot-green", monitoring: "dot-teal", medication: "dot-purple", other: "dot-blue" };
-
-function formatTimeLabel(hhmm) {
-  const [h, m] = hhmm.split(":").map(Number);
-  const period = h >= 12 ? "PM" : "AM";
-  const hour12 = h % 12 || 12;
-  return `${hour12}:${String(m).padStart(2, "0")} ${period}`;
+function updateAddEventTypeFields() {
+  const eventType = addEventForm.eventType.value;
+  addEventActionTypeField.style.display = eventType === "action" ? "" : "none";
+  addEventNameField.style.display = eventType === "other" ? "" : "none";
 }
 
 function validateAddEventForm() {
-  const valid = addEventForm.category.value !== "" && addEventForm.label.value.trim() !== "" && addEventForm.date.value !== "";
+  const eventType = addEventForm.eventType.value;
+  const detailValid = eventType === "action" ? addEventForm.actionType.value !== "" : eventType === "other" ? addEventForm.eventName.value.trim() !== "" : false;
+  const valid = eventType !== "" && detailValid && addEventForm.date.value !== "";
   saveAddEvent.disabled = !valid;
   saveAddEvent.classList.toggle("enabled", valid);
 }
 
 addEventForm.addEventListener("input", validateAddEventForm);
-addEventForm.addEventListener("change", validateAddEventForm);
+addEventForm.addEventListener("change", (e) => {
+  if (e.target.name === "eventType") updateAddEventTypeFields();
+  validateAddEventForm();
+});
 
 document.getElementById("openAddEventBtn").addEventListener("click", () => {
   addEventForm.reset();
   resetCustomSelectsIn(addEventForm);
+  updateAddEventTypeFields();
   validateAddEventForm();
   addEventOverlay.classList.add("open");
 });
@@ -1380,15 +1385,16 @@ addEventForm.addEventListener("submit", (e) => {
   if (saveAddEvent.disabled) return;
 
   const [y, m, d] = addEventForm.date.value.split("-");
-  const note = addEventForm.note.value.trim();
-  const timeNote = addEventForm.time.value ? `Acknowledged at ${formatTimeLabel(addEventForm.time.value)}` : "";
+  const label = addEventForm.eventType.value === "action"
+    ? `Action taken: ${addEventForm.actionType.value}`
+    : addEventForm.eventName.value.trim();
 
   history.unshift({
-    category: addEventForm.category.value,
-    color: CATEGORY_DOT[addEventForm.category.value],
-    label: addEventForm.label.value.trim(),
+    category: "other",
+    color: "dot-blue",
+    label,
     date: `${m}.${d}.${y}`,
-    note: [timeNote, note].filter(Boolean).join(" — ") || undefined,
+    note: addEventForm.note.value.trim() || undefined,
   });
 
   closeAddEventModal();

@@ -434,40 +434,51 @@
       <h2>Add Event</h2>
       <form id="addEventForm">
         <div class="form-field">
-          <label>Category<span class="required-star">*</span></label>
-          <div class="custom-select" id="addEventCategorySelect" data-name="category">
+          <label>Event Type<span class="required-star">*</span></label>
+          <div class="custom-select" id="addEventTypeSelect" data-name="eventType">
             <button type="button" class="custom-select-trigger">
-              <span class="custom-select-value placeholder">Select category</span>
+              <span class="custom-select-value placeholder">Choose event type</span>
               <svg class="custom-select-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
             </button>
             <div class="custom-select-menu">
-              <div class="custom-select-option" data-value="account">Account<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-              <div class="custom-select-option" data-value="status">Status<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-              <div class="custom-select-option" data-value="monitoring">Monitoring<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              <div class="custom-select-option" data-value="action">Action taken<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
               <div class="custom-select-option" data-value="other">Other<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
             </div>
-            <input type="hidden" name="category" required />
+            <input type="hidden" name="eventType" required />
           </div>
         </div>
-        <div class="form-field">
-          <label>Event<span class="required-star">*</span></label>
-          <input type="text" name="label" placeholder="e.g. Account changed to Enabled" required />
+        <div class="form-field" id="addEventActionTypeField" style="display:none;">
+          <label>Action Type<span class="required-star">*</span></label>
+          <div class="custom-select" id="addEventActionTypeSelect" data-name="actionType">
+            <button type="button" class="custom-select-trigger">
+              <span class="custom-select-value placeholder">Choose action type</span>
+              <svg class="custom-select-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="custom-select-menu">
+              <div class="custom-select-option" data-value="Patient contacted">Patient contacted<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              <div class="custom-select-option" data-value="Care plan updated">Care plan updated<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              <div class="custom-select-option" data-value="Escalated to clinician">Escalated to clinician<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              <div class="custom-select-option" data-value="Medication reviewed">Medication reviewed<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              <div class="custom-select-option" data-value="Reminder sent">Reminder sent<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            </div>
+            <input type="hidden" name="actionType" />
+          </div>
+        </div>
+        <div class="form-field" id="addEventNameField" style="display:none;">
+          <label>Event Name<span class="required-star">*</span></label>
+          <input type="text" name="eventName" placeholder="Enter event name" />
         </div>
         <div class="form-field">
           <label>Date<span class="required-star">*</span></label>
           <input type="date" name="date" required />
         </div>
         <div class="form-field">
-          <label>Time</label>
-          <input type="time" name="time" />
-        </div>
-        <div class="form-field">
-          <label>Note</label>
+          <label>Add Note</label>
           <textarea name="note" placeholder="Optional note"></textarea>
         </div>
         <div class="modal-actions">
           <button type="button" class="btn-text" id="cancelAddEvent">Cancel</button>
-          <button type="submit" class="btn-save" id="saveAddEvent" disabled>Add Event</button>
+          <button type="submit" class="btn-save" id="saveAddEvent" disabled>Save</button>
         </div>
       </form>
     </div>
