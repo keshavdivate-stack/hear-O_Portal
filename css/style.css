@@ -1427,6 +1427,23 @@ button, input, select, textarea, optgroup {
 
 .action-icon-wrap:hover .action-tooltip { display: block; }
 
+.status-ack-wrap { vertical-align: middle; }
+.status-ack-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--blue-light);
+  color: var(--blue-text);
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: default;
+}
+.status-ack-wrap .action-tooltip { top: calc(100% + 6px); left: 50%; transform: translateX(-50%); white-space: nowrap; min-width: 0; }
+
 /* The tooltip lives inside a sticky last-column cell, which creates its own
    stacking context per row -- without raising this row's stacking above its
    sibling rows, the next row's sticky cell (same base z-index) paints over

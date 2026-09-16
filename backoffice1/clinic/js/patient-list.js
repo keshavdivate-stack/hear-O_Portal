@@ -97,11 +97,28 @@ const selectedMonitorings = new Set();
 const selectedCareTeams = new Set();
 let patientScope = "all";
 
+function initialsOf(name) {
+  return (name || "")
+    .replace(/^Dr\.\s*/i, "")
+    .split(/[\s,]+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0].toUpperCase())
+    .join("");
+}
+
 function statusCell(p) {
   if (p.status === "priority") {
+    const ackMark = p.flag
+      ? flagIcon
+      : `
+        <span class="action-icon-wrap status-ack-wrap">
+          <span class="status-ack-avatar">${initialsOf(p.teamMember)}</span>
+          <span class="action-tooltip">Acknowledged by ${p.teamMember || "—"}</span>
+        </span>`;
     return `
       <div class="status-cell">
-        <span class="status-line status-priority">${heartIcon} Priority ${p.flag ? flagIcon : `<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#9AA5B1" stroke-width="1.8"/><path d="M12 8V13" stroke="#9AA5B1" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="16" r="1" fill="#9AA5B1"/></svg>`}</span>
+        <span class="status-line status-priority">${heartIcon} Priority ${ackMark}</span>
         <span class="status-since">${p.since}</span>
       </div>`;
   }
