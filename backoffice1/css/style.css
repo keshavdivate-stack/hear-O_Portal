@@ -1777,6 +1777,7 @@ label.bo-date-field { cursor: text; }
 }
 
 .bo-btn-secondary:hover { background: var(--bg); border-color: var(--gray); }
+.bo-btn-secondary[hidden] { display: none; }
 a.bo-btn-secondary { text-decoration: none; }
 
 .bo-btn-text {
