@@ -1949,11 +1949,10 @@ input[type="password"]:focus {
 
 .history-card {
   background: #fff;
-  border: 1px solid #eceef1;
+  border: 1.5px solid #eceef1;
   border-radius: 16px;
   padding: 18px;
   margin-bottom: 14px;
-  box-shadow: 0 1px 4px rgba(20, 24, 30, 0.06);
 }
 
 .history-card-head {
@@ -1976,45 +1975,52 @@ input[type="password"]:focus {
 
 .history-card-title-wrap { flex: 1; min-width: 0; }
 
+.history-card-top-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+
 .history-card-med {
   font-size: calc(18px * var(--font-scale, 1));
   font-weight: 700;
   color: #252424;
 }
 
-.history-card-action {
-  font-size: calc(14px * var(--font-scale, 1));
-  color: #565454;
-  margin-top: 2px;
-}
-
 .history-card-date {
   flex-shrink: 0;
-  font-size: calc(12px * var(--font-scale, 1));
-  color: #8A8F97;
+  font-size: calc(14px * var(--font-scale, 1));
+  color: #7a7f87;
   white-space: nowrap;
 }
 
-.history-card-meta {
-  font-size: calc(14px * var(--font-scale, 1));
+.history-card-action {
+  font-size: calc(15px * var(--font-scale, 1));
   color: #7a7f87;
+  margin-top: 2px;
+}
+
+.history-card-meta {
+  font-size: calc(15px * var(--font-scale, 1));
+  color: #8A8F97;
   margin-bottom: 12px;
 }
 
 .history-card-meta strong { color: #434141; font-weight: 600; }
 
 .history-card-note {
-  background: #F7F8FA;
+  border: 1.5px solid #eceef1;
   border-radius: 12px;
   padding: 12px 14px;
-  font-size: calc(14px * var(--font-scale, 1));
+  font-size: calc(15px * var(--font-scale, 1));
   color: #434141;
-  line-height: 1.5;
+  line-height: 1.4;
 }
 
 .history-card-note-label {
   display: block;
-  font-size: calc(11px * var(--font-scale, 1));
+  font-size: calc(12px * var(--font-scale, 1));
   font-weight: 700;
   color: #8A8F97;
   text-transform: uppercase;
