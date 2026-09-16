@@ -2189,6 +2189,15 @@ button, input, select, textarea, optgroup {
   display: inline-block;
 }
 
+/* Matches the chart's hatched SVG <rect> (line stroke #D8DCE2, dashed
+   border #C9CFD6) so the legend swatch reads as the same thing. */
+.dot-hatch {
+  width: 9px; height: 9px; border-radius: 2px;
+  background-image: repeating-linear-gradient(45deg, transparent, transparent 1.5px, #D8DCE2 1.5px, #D8DCE2 3px);
+  border: 1px dashed #C9CFD6;
+  display: inline-block;
+}
+
 .chart-wrap { overflow-x: auto; padding-top: 10px; flex: 1; min-width: 0; }
 
 .chart-svg { display: block; min-width: 100%; }
