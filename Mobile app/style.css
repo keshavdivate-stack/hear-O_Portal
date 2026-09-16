@@ -4686,6 +4686,8 @@ input[type="password"]:focus {
 }
 
 .fontsize-option-label {
+  flex-shrink: 0;
+  width: 120px;
   font-weight: 600;
   color: #434141;
   white-space: nowrap;
