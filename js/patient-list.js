@@ -253,7 +253,7 @@ function genderLabel(gender) {
    (ehr-integration/patient-data.html); patients flagged chartView: "nurse"
    open the nurse view; everyone else opens the standard patient chart.
    Kept as separate pages/portals -- see ehr-integration/. */
-function patientChartHref(p) {
+function patientChartHref(p, { tab } = {}) {
   const base = p.chartView === "nurse" ? "nurse-view.html" : p.ehrOrg ? "ehr-integration/patient-data.html" : "patient-data.html";
   const params = new URLSearchParams();
   if (p.account === "Discontinued") {
@@ -264,6 +264,10 @@ function patientChartHref(p) {
   /* Per-patient care-recommendation form customization -- carried through so
      patient-data.html can forward it onto its Care Recommendation links. */
   if (p.hideMedicationDetails) params.set("hideMedDetails", "1");
+  /* Opens straight to the chart's Clinical tab (Medication is its default
+     subtab) instead of landing on the Overview tab, for the row menu's
+     "Update medication" action. */
+  if (tab) params.set("openTab", tab);
   const query = params.toString();
   return query ? `${base}?${query}` : base;
 }
@@ -1078,6 +1082,7 @@ patientRowMenu.addEventListener("click", (e) => {
 
   if (item.dataset.action === "edit") openEditPatientModal(patient);
   else if (item.dataset.action === "account") openUpdateAccountModal(patient);
+  else if (item.dataset.action === "medication") window.location.href = patientChartHref(patient, { tab: "clinical" });
   else if (item.dataset.action === "reset") openResetPasswordModal(patient);
 });
 

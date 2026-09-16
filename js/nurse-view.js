@@ -1166,6 +1166,15 @@ document.querySelectorAll(".data-tab").forEach((tab) => {
   });
 });
 
+/* Opens straight to a given top-level tab on load (e.g. the Patient List row
+   menu's "Update medication" action links in with ?openTab=clinical -- the
+   Clinical tab's Medication subtab is already its default-active one). */
+(() => {
+  const openTab = new URLSearchParams(window.location.search).get("openTab");
+  if (!openTab) return;
+  document.querySelector(`.data-tab[data-tab="${openTab}"]`)?.click();
+})();
+
 /* ---------------- Sub-tabs (Measurement/Wellness, Medication/Care Recommendations) ----------------
    Scoped to the closest .data-tab-panel so two independent subtab groups on the
    same page (Health Data, Clinical) don't clear each other's active panel. */
