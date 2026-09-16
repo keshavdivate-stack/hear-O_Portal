@@ -147,7 +147,7 @@ const chartDays = [
   { label: "15", month: "Dec", status: "active" },
   { label: "16", month: "Dec", status: "active" },
   { label: "17", month: "Dec", status: "active" },
-  { label: "18", month: "Dec", status: "active" },
+  { label: "18", month: "Dec", status: "active", issue: true },
   { label: "19", month: "Dec", status: "active" },
   { label: "20", month: "Dec", status: "active" },
   { label: "21", month: "Dec", status: "active", gap: true },
@@ -156,7 +156,7 @@ const chartDays = [
   { label: "24", month: "Dec", status: "active" },
   { label: "25", month: "Dec", status: "active" },
   { label: "26", month: "Dec", status: "active" },
-  { label: "27", month: "Dec", status: "active" },
+  { label: "27", month: "Dec", status: "active", issue: true },
   { label: "28", month: "Dec", status: "active" },
   { label: "29", month: "Dec", status: "active" },
   { label: "30", month: "Dec", status: "active" },
@@ -215,6 +215,7 @@ const Y = { baseline: 118, active: 71, priority: 62 };
 
 let COL_W = FALLBACK_COL_W;
 let CHART_W = PAD * 2 + (chartDays.length - 1) * COL_W;
+let showIssues = false;
 
 function xAt(i) { return PAD + i * COL_W; }
 function yAt(d) { return Y[d.status]; }
@@ -255,6 +256,9 @@ function buildOverviewChart() {
     if (p.d.heart) {
       markers += `<path transform="translate(${p.x - 9}, ${p.y - 40})" d="M9 16C9 16 1 10.9 1 5.7C1 3 3.1 1.2 5.4 1.2C6.6 1.2 7.5 1.7 9 2.9C10.5 1.7 11.4 1.2 12.6 1.2C14.9 1.2 17 3 17 5.7C17 10.9 9 16 9 16Z" fill="#F16C6C"/>`;
     }
+    if (p.d.issue && showIssues) {
+      markers += `<circle cx="${p.x}" cy="${p.y - 16}" r="5" fill="#2AA9E0" stroke="#fff" stroke-width="1.5" />`;
+    }
   });
 
   const svg = `
@@ -281,6 +285,11 @@ let overviewResizeTimer = null;
 window.addEventListener("resize", () => {
   clearTimeout(overviewResizeTimer);
   overviewResizeTimer = setTimeout(buildOverviewChart, 150);
+});
+
+document.getElementById("issuesToggle").addEventListener("change", (e) => {
+  showIssues = e.target.checked;
+  buildOverviewChart();
 });
 
 /* ---------------- Recordings ---------------- */

@@ -1655,17 +1655,20 @@ button, input, select, textarea, optgroup {
   display: inline-block;
 }
 
-.dot-checkbox {
-  width: 9px; height: 9px; border-radius: 2px;
-  background: #fff;
-  border: 1.6px solid #9AA5B1;
-  display: inline-block;
-}
-
 .dot-info-blue {
   width: 9px; height: 9px; border-radius: 50%;
   background: var(--blue);
   display: inline-block;
+}
+
+/* Real filter toggle (not a decorative swatch) -- checking it overlays
+   the monitoring-issue markers on the chart above. */
+.legend-checkbox {
+  width: 13px;
+  height: 13px;
+  margin: 0;
+  accent-color: var(--blue);
+  cursor: pointer;
 }
 
 .chart-wrap { overflow-x: auto; padding-top: 10px; flex: 1; min-width: 0; }
