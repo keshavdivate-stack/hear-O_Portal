@@ -1104,6 +1104,34 @@ button, input, select, textarea, optgroup {
   outline-offset: 2px;
 }
 
+.checkbox-filter-option input[type="radio"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  padding: 0;
+  border: 1.5px solid #9AA5B1;
+  border-radius: 50%;
+  background: #fff;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: border-color 120ms ease;
+}
+
+.checkbox-filter-option input[type="radio"]:hover { border-color: var(--blue); }
+
+.checkbox-filter-option input[type="radio"]:checked {
+  border-color: var(--blue);
+  border-width: 5px;
+}
+
+.columns-custom-list {
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px solid var(--gray-border);
+}
+
 /* -- Provider filter (single-select: "All Patients" or one provider) -- */
 .provider-option.selected { background: var(--blue-light); color: var(--blue-text); font-weight: 600; }
 .provider-option:first-child { font-weight: 700; border-bottom: 1px solid var(--gray-border); border-radius: 8px 8px 0 0; margin-bottom: 4px; padding-bottom: 10px; }
@@ -3706,7 +3734,7 @@ button, input, select, textarea, optgroup {
 }
 
 .med-adh-taken { background: var(--blue); color: #fff; }
-.med-adh-missed { background: var(--red); color: #fff; }
+.med-adh-missed { background: var(--blue); color: #fff; }
 .med-adh-not-recorded { background: #E7EAEE; color: #7E8993; }
 
 .med-legend {
@@ -3733,7 +3761,7 @@ button, input, select, textarea, optgroup {
 .med-legend-dot svg { width: 8px; height: 8px; }
 
 .med-legend-taken { background: var(--blue); }
-.med-legend-missed { background: var(--red); }
+.med-legend-missed { background: var(--blue); }
 .med-legend-not-recorded { background: #E7EAEE; }
 
 /* Sits in the same unpadded position as .med-adh-scroll above it (both

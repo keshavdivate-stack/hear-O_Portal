@@ -539,17 +539,40 @@ wireCheckboxFilter(
   renderPatientList
 );
 
-/* ---------------- Columns visibility menu (wiring) ---------------- */
-const columnsMenu = document.getElementById("columnsMenu");
-columnsMenu.innerHTML = columnOptions
-  .map(
-    (c) => `
+/* ---------------- Columns visibility menu (wiring) ----------------
+   Two modes: Default View (all columns shown, no picker) and Custom
+   View (reveals a checkbox per column so the user can choose which to
+   show). Switching back to Default View clears any hidden columns. */
+let columnsViewMode = "default";
+
+function renderColumnsMenu() {
+  columnsMenu.innerHTML = `
     <label class="checkbox-filter-option">
-      <input type="checkbox" value="${c.key}" checked />
-      ${c.label}
-    </label>`
-  )
-  .join("");
+      <input type="radio" name="columnsViewMode" value="default" ${columnsViewMode === "default" ? "checked" : ""} />
+      Default View
+    </label>
+    <label class="checkbox-filter-option">
+      <input type="radio" name="columnsViewMode" value="custom" ${columnsViewMode === "custom" ? "checked" : ""} />
+      Custom View
+    </label>
+    ${
+      columnsViewMode === "custom"
+        ? `<div class="columns-custom-list">${columnOptions
+            .map(
+              (c) => `
+          <label class="checkbox-filter-option">
+            <input type="checkbox" value="${c.key}" ${hiddenColumns.has(c.key) ? "" : "checked"} />
+            ${c.label}
+          </label>`
+            )
+            .join("")}</div>`
+        : ""
+    }
+  `;
+}
+
+const columnsMenu = document.getElementById("columnsMenu");
+renderColumnsMenu();
 
 const columnsFilterWrap = document.querySelector('.checkbox-filter[data-name="columns"]');
 const columnsTrigger = columnsFilterWrap.querySelector(".filter-btn");
@@ -566,6 +589,19 @@ columnsTrigger.addEventListener("click", (e) => {
 columnsMenu.addEventListener("click", (e) => e.stopPropagation());
 
 columnsMenu.addEventListener("change", (e) => {
+  const radio = e.target.closest('input[type="radio"][name="columnsViewMode"]');
+  if (radio) {
+    columnsViewMode = radio.value;
+    if (columnsViewMode === "default") {
+      hiddenColumns.clear();
+      columnsLabel.textContent = "Columns";
+      applyColumnVisibility();
+    }
+    renderColumnsMenu();
+    positionFilterMenu(columnsTrigger, columnsMenu);
+    return;
+  }
+
   const checkbox = e.target.closest('input[type="checkbox"]');
   if (!checkbox) return;
   if (checkbox.checked) hiddenColumns.delete(checkbox.value);
