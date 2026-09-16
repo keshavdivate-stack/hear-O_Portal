@@ -287,27 +287,58 @@ function filteredPatientList() {
 
 const rows = document.getElementById("patientListRows");
 
+/* ---------------- Columns visibility ----------------
+   Display preference, not a data filter -- Name and Action stay pinned
+   (no checkbox), everything else defaults to visible/checked and survives
+   "Clear all filters" since it's not filtering rows. Defined before
+   renderPatientList (which calls applyColumnVisibility on every render)
+   so there's no temporal-dead-zone gap between the two. */
+const columnOptions = [
+  { key: "username", label: "Username" },
+  { key: "mrn", label: "MRN/ID" },
+  { key: "phone", label: "Phone No." },
+  { key: "account", label: "Account" },
+  { key: "enrolledDate", label: "Enrolled Date" },
+  { key: "connectedEhr", label: "Connected EHR" },
+  { key: "source", label: "Source" },
+  { key: "status", label: "Status" },
+  { key: "monitoring", label: "Monitoring" },
+  { key: "careRecommendation", label: "Care Recommendation" },
+  { key: "careTeam", label: "Care Team" },
+];
+const hiddenColumns = new Set();
+
+function applyColumnVisibility() {
+  columnOptions.forEach((c) => {
+    const hide = hiddenColumns.has(c.key);
+    document.querySelectorAll(`.list-table [data-col="${c.key}"]`).forEach((el) => {
+      el.style.display = hide ? "none" : "";
+    });
+  });
+}
+
 function renderPatientList() {
   rows.innerHTML = filteredPatientList()
     .map(
       (p) => `
       <tr>
-        <td><a class="lt-name ${p.status === "priority" ? "priority" : "active-name"}" href="${patientChartHref(p)}">${p.name} ${genderLabel(p.gender)}</a></td>
-        <td>${p.username}</td>
-        <td>${p.mrn}</td>
-        <td>${p.phone}</td>
-        <td>${p.account}</td>
-        <td>${p.enrolledDate || "—"}</td>
-        <td>${p.ehrSystem ? `<span class="ehr-connected-pill">${p.ehrSystem}</span>` : "—"}</td>
-        <td>${p.source === "EHR Imported" ? `<span class="source-outline-badge">EHR</span>` : `<span class="source-outline-badge">Manual</span>`}</td>
-        <td>${statusCell(p)}</td>
-        <td>${monitoringCell(p)}</td>
-        <td>${careCell(p)}</td>
-        <td>${careTeamCell(p)}</td>
-        <td>${actionCell(p)}</td>
+        <td data-col="name"><a class="lt-name ${p.status === "priority" ? "priority" : "active-name"}" href="${patientChartHref(p)}">${p.name} ${genderLabel(p.gender)}</a></td>
+        <td data-col="username">${p.username}</td>
+        <td data-col="mrn">${p.mrn}</td>
+        <td data-col="phone">${p.phone}</td>
+        <td data-col="account">${p.account}</td>
+        <td data-col="enrolledDate">${p.enrolledDate || "—"}</td>
+        <td data-col="connectedEhr">${p.ehrSystem ? `<span class="ehr-connected-pill">${p.ehrSystem}</span>` : "—"}</td>
+        <td data-col="source">${p.source === "EHR Imported" ? `<span class="source-outline-badge">EHR</span>` : `<span class="source-outline-badge">Manual</span>`}</td>
+        <td data-col="status">${statusCell(p)}</td>
+        <td data-col="monitoring">${monitoringCell(p)}</td>
+        <td data-col="careRecommendation">${careCell(p)}</td>
+        <td data-col="careTeam">${careTeamCell(p)}</td>
+        <td data-col="action">${actionCell(p)}</td>
       </tr>`
     )
     .join("");
+  applyColumnVisibility();
 }
 
 renderPatientList();
@@ -507,6 +538,42 @@ wireCheckboxFilter(
   selectedCareTeams,
   renderPatientList
 );
+
+/* ---------------- Columns visibility menu (wiring) ---------------- */
+const columnsMenu = document.getElementById("columnsMenu");
+columnsMenu.innerHTML = columnOptions
+  .map(
+    (c) => `
+    <label class="checkbox-filter-option">
+      <input type="checkbox" value="${c.key}" checked />
+      ${c.label}
+    </label>`
+  )
+  .join("");
+
+const columnsFilterWrap = document.querySelector('.checkbox-filter[data-name="columns"]');
+const columnsTrigger = columnsFilterWrap.querySelector(".filter-btn");
+const columnsLabel = columnsFilterWrap.querySelector(".checkbox-filter-label");
+
+columnsTrigger.addEventListener("click", (e) => {
+  e.stopPropagation();
+  const willOpen = !columnsFilterWrap.classList.contains("open");
+  closeAllFilterPopovers();
+  columnsFilterWrap.classList.toggle("open", willOpen);
+  if (willOpen) openFilterMenu(columnsFilterWrap, columnsMenu);
+});
+
+columnsMenu.addEventListener("click", (e) => e.stopPropagation());
+
+columnsMenu.addEventListener("change", (e) => {
+  const checkbox = e.target.closest('input[type="checkbox"]');
+  if (!checkbox) return;
+  if (checkbox.checked) hiddenColumns.delete(checkbox.value);
+  else hiddenColumns.add(checkbox.value);
+
+  columnsLabel.textContent = hiddenColumns.size ? `Columns (${hiddenColumns.size} hidden)` : "Columns";
+  applyColumnVisibility();
+});
 
 /* Deep link: ?careTeam=<Care Team Member name> -- lets the Care Team
    Members page's row click land here with that member's patients already
