@@ -1605,6 +1605,9 @@ button, input, select, textarea, optgroup {
   flex-wrap: wrap;
   font-size: 13px;
   color: #363B42;
+  background: var(--bg);
+  border-radius: 10px;
+  padding: 8px 14px;
 }
 
 .legend-group {
