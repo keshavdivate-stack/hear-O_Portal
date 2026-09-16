@@ -1347,11 +1347,15 @@ const addEventForm = document.getElementById("addEventForm");
 const saveAddEvent = document.getElementById("saveAddEvent");
 const addEventActionTypeField = document.getElementById("addEventActionTypeField");
 const addEventNameField = document.getElementById("addEventNameField");
+const addEventDateField = document.getElementById("addEventDateField");
+const addEventNoteField = document.getElementById("addEventNoteField");
 
 function updateAddEventTypeFields() {
   const eventType = addEventForm.eventType.value;
   addEventActionTypeField.style.display = eventType === "action" ? "" : "none";
   addEventNameField.style.display = eventType === "other" ? "" : "none";
+  addEventDateField.style.display = eventType === "" ? "none" : "";
+  addEventNoteField.style.display = eventType === "" ? "none" : "";
 }
 
 function validateAddEventForm() {
@@ -1378,6 +1382,7 @@ document.getElementById("openAddEventBtn").addEventListener("click", () => {
 
 function closeAddEventModal() { addEventOverlay.classList.remove("open"); }
 document.getElementById("cancelAddEvent").addEventListener("click", closeAddEventModal);
+document.getElementById("closeAddEventX").addEventListener("click", closeAddEventModal);
 addEventOverlay.addEventListener("click", (e) => { if (e.target === addEventOverlay) closeAddEventModal(); });
 
 addEventForm.addEventListener("submit", (e) => {

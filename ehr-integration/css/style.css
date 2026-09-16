@@ -3915,6 +3915,8 @@ button, input, select, textarea, optgroup {
 
 .modal-close-x:hover { background: var(--bg); color: #23272E; }
 
+.modal-close-x-top { position: absolute; top: 20px; right: 20px; }
+
 .form-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
