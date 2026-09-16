@@ -7,8 +7,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/Mobile%20app/style.css?v=20">
-<script src="/Mobile%20app/font-scale.js?v=20"></script>
+<link rel="stylesheet" href="/Mobile%20app/style.css?v=21">
+<script src="/Mobile%20app/font-scale.js?v=21"></script>
 </head>
 <body>
 
@@ -33,35 +33,29 @@
   </div>
 
 <script>
-  const pillIcon = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g transform="rotate(45 12 12)"><path d="M12 9 H6 A3 3 0 0 0 6 15 H12 Z" fill="#8857FF"/><path d="M12 9 H18 A3 3 0 0 1 18 15 H12 Z" fill="none" stroke="#8857FF" stroke-width="1.6"/></g></svg>`;
-
   const historyEvents = [
     {
       med: "Furosemide",
       action: "Dosage increased to 40 mg",
-      by: "Dr. Sarah Mitchell",
-      date: "Today, 8:15 AM",
+      date: "Aug 18, 8:15 AM",
       note: "Take 2 pills (40 mg) once daily as instructed.",
     },
     {
       med: "Carvedilol",
       action: "Dosage updated to 12.5 mg",
-      by: "Amanda Lee, RN",
-      date: "Yesterday, 3:40 PM",
+      date: "Aug 17, 3:40 PM",
       note: "Continue taking twice daily with food.",
     },
     {
       med: "Spironolactone",
       action: "New medication added",
-      by: "Dr. Michael Reyes",
-      date: "2 days ago, 10:00 AM",
+      date: "Aug 16, 10:00 AM",
       note: "Started at 25 mg once daily to help manage fluid retention.",
     },
     {
       med: "Atorvastatin",
       action: "Dosage decreased to 10 mg",
-      by: "Dr. Sarah Mitchell",
-      date: "5 days ago, 9:30 AM",
+      date: "Aug 13, 9:30 AM",
       note: "Reduced dose due to reported muscle soreness. Please report any new symptoms.",
     },
   ];
@@ -76,7 +70,6 @@
         (h) => `
       <div class="history-card">
         <div class="history-card-head">
-          <span class="history-icon">${pillIcon}</span>
           <div class="history-card-title-wrap">
             <div class="history-card-top-row">
               <span class="history-card-med">${h.med}</span>
