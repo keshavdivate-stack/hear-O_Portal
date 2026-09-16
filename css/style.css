@@ -798,7 +798,7 @@ button, input, select, textarea, optgroup {
 /* Narrower filter buttons on the Patient List page only -- there are enough
    filters now (scope, account, status, monitoring, compliance, gender, care
    team) that full-width buttons push Add Patient off the right edge. */
-.list-content .filters-bar { gap: 6px; }
+.list-content .filters-bar { gap: 6px; margin-bottom: 10px; }
 .list-content .filters-bar .search-pill { width: 170px; padding: 9px 12px; }
 .list-content .filters-bar .filter-btn { padding: 9px 10px; gap: 5px; }
 .list-content .filters-bar .clear-filters { padding: 0 2px; }
@@ -2368,6 +2368,55 @@ button, input, select, textarea, optgroup {
 }
 
 .history-add-event-btn:hover { background: #2394c4; }
+
+/* -- Clinical: Questionnaire header / Create New Question -- */
+.quest-panel-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.quest-add-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--blue);
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  padding: 8px 16px;
+  font-size: 13.5px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.quest-add-btn:hover { background: #2394c4; }
+
+.quest-answer-config {
+  border: 1px solid var(--gray-border);
+  border-radius: 10px;
+  padding: 14px;
+  margin-bottom: 14px;
+}
+
+.quest-answer-config-title { font-size: 13px; font-weight: 700; color: #23272E; margin: 0 0 8px; }
+.quest-answer-config .form-field { margin-top: 10px; margin-bottom: 0; }
+
+.quest-config-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+.quest-config-tag {
+  display: inline-flex;
+  align-items: center;
+  background: var(--blue-light);
+  color: var(--blue-text);
+  border-radius: 20px;
+  padding: 3px 10px;
+  font-size: 11.5px;
+  font-weight: 600;
+}
 
 .history-load-more-row {
   display: flex;
