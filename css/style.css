@@ -3847,6 +3847,7 @@ button, input, select, textarea, optgroup {
 .goal-progress-fill { height: 100%; border-radius: 6px; }
 .fill-blue { background: var(--blue); }
 .fill-orange { background: #F2994A; }
+.fill-red { background: var(--red); }
 .fill-green { background: var(--green); }
 
 .goal-meta-row {
@@ -3922,7 +3923,7 @@ button, input, select, textarea, optgroup {
 }
 
 .compliance-highlight-blue { background: var(--blue-light); }
-.compliance-highlight-orange { background: #FDF0DE; }
+.compliance-highlight-red { background: #FCEAEA; }
 
 .compliance-highlight-label {
   display: block;
@@ -3943,109 +3944,57 @@ button, input, select, textarea, optgroup {
 
 .compliance-highlight .goal-progress-track { height: 6px; margin-bottom: 0; background: rgba(255, 255, 255, 0.6); }
 
-@media (max-width: 900px) {
-  .compliance-highlight-grid { grid-template-columns: 1fr; }
+.compliance-highlight-note {
+  display: block;
+  font-size: 11.5px;
+  color: var(--gray-text);
+  margin-top: 8px;
 }
 
-.compliance-group {
-  margin-top: 20px;
-  padding-top: 18px;
+.compliance-insufficient-note {
+  font-size: 12.5px;
+  color: var(--gray-text);
+  margin: 12px 0 0;
+}
+
+.compliance-insufficient-note strong { color: #23272E; }
+
+.compliance-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 12px;
+  padding-top: 12px;
   border-top: 1px solid var(--gray-border);
 }
 
-.compliance-group-title {
-  font-size: 12px;
-  font-weight: 700;
-  color: #7E8993;
-  text-transform: uppercase;
-  letter-spacing: 0.4px;
-  margin: 0 0 16px;
-}
-
-.compliance-detail-grid {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 20px 24px;
-}
-
-@media (max-width: 1100px) {
-  .compliance-detail-grid { grid-template-columns: repeat(3, 1fr); }
-}
-
-@media (max-width: 700px) {
-  .compliance-detail-grid { grid-template-columns: repeat(2, 1fr); }
-}
-
-.compliance-detail-item {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.compliance-custom-range {
-  display: flex;
+.compliance-legend-item {
+  display: inline-flex;
   align-items: center;
-  gap: 10px;
-}
-
-.compliance-range-field { position: relative; }
-
-.compliance-range-popover {
-  display: none;
-  position: absolute;
-  top: calc(100% + 8px);
-  right: 0;
-  width: 320px;
-  background: #fff;
-  border-radius: 12px;
-  border: 1px solid var(--gray-border);
-  box-shadow: 0 14px 34px rgba(20, 30, 50, 0.18);
-  padding: 16px;
-  z-index: 30;
-}
-
-.compliance-range-popover.open { display: block; }
-
-.compliance-range-popover-label {
-  font-size: 12px;
-  font-weight: 700;
-  color: #7E8993;
-  text-transform: uppercase;
-  letter-spacing: 0.4px;
-  margin-bottom: 10px;
-}
-
-.compliance-range-popover-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  margin-top: 16px;
-}
-
-.compliance-range-popover-actions .btn-care,
-.compliance-range-popover-actions .btn-secondary {
-  padding: 8px 16px;
-  font-size: 13px;
-}
-
-.compliance-range-sep {
-  font-size: 13px;
+  gap: 6px;
+  font-size: 12.5px;
   color: var(--gray-text);
-  font-weight: 600;
 }
 
-.compliance-date-input {
-  font-family: inherit;
-  font-size: 13.5px;
-  padding: 7px 10px;
-  border: 1px solid var(--gray-border);
-  border-radius: 8px;
-  color: #23272E;
-  background: #fff;
+.compliance-legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  display: inline-block;
+  flex-shrink: 0;
 }
 
-.compliance-detail-label { font-size: 12px; font-weight: 600; color: var(--gray-text); }
-.compliance-detail-value { font-size: 14px; font-weight: 700; color: #23272E; }
+.compliance-legend-dot-sufficient { background: var(--blue); }
+.compliance-legend-dot-insufficient { background: var(--red); }
+
+.compliance-legend-dot-hatch {
+  background-image: repeating-linear-gradient(45deg, transparent, transparent 1.5px, #D8DCE2 1.5px, #D8DCE2 3px);
+  border: 1px dashed #C9CFD6;
+}
+
+@media (max-width: 900px) {
+  .compliance-highlight-grid { grid-template-columns: 1fr; }
+}
 
 @media (max-width: 900px) {
   .compliance-summary-grid { grid-template-columns: 1fr; }
