@@ -363,15 +363,22 @@ const portaledFilterMenus = new Map();
 
 function positionFilterMenu(trigger, menu) {
   const rect = trigger.getBoundingClientRect();
-  const menuHeight = Math.min(menu.scrollHeight || 280, 280) + 12;
+  const margin = 12;
+  const menuHeight = Math.min(menu.scrollHeight || 280, 280) + margin;
   const spaceBelow = window.innerHeight - rect.bottom;
-  const openUpward = spaceBelow < menuHeight && rect.top > menuHeight;
+  const spaceAbove = rect.top;
+  const openUpward = spaceBelow < menuHeight && spaceAbove > spaceBelow;
 
   menu.style.position = "fixed";
   menu.style.left = `${rect.left}px`;
   menu.style.minWidth = `${rect.width}px`;
   menu.style.top = openUpward ? "auto" : `${rect.bottom + 6}px`;
   menu.style.bottom = openUpward ? `${window.innerHeight - rect.top + 6}px` : "auto";
+  // Cap height to whichever side it opens toward so a long list (e.g. the
+  // Columns custom checkbox list) scrolls internally instead of running off
+  // the bottom of the viewport when there isn't 280px of room available.
+  const available = (openUpward ? spaceAbove : spaceBelow) - margin - 6;
+  menu.style.maxHeight = `${Math.max(120, Math.min(280, available))}px`;
 }
 
 function openFilterMenu(wrapEl, menuEl) {
@@ -398,6 +405,7 @@ function closeFilterMenu(menuEl) {
   menuEl.style.top = "";
   menuEl.style.bottom = "";
   menuEl.style.minWidth = "";
+  menuEl.style.maxHeight = "";
 }
 
 function wireCheckboxFilter(wrapEl, menuEl, selectedSet, onChange) {
