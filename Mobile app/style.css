@@ -306,6 +306,15 @@ input[type="password"]:focus {
   background: #13579f;
 }
 
+.login-btn:disabled {
+  background: #A9A8A8;
+  cursor: not-allowed;
+}
+
+.login-btn:disabled:hover {
+  background: #A9A8A8;
+}
+
 .login-btn:active {
   transform: scale(0.99);
 }
@@ -1182,6 +1191,29 @@ input[type="password"]:focus {
 }
 
 .consent-footer .login-btn { width: 100%; }
+
+.consent-icon-circle {
+  flex-shrink: 0;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: #E4EEFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.consent-not-now-link {
+  background: none;
+  border: none;
+  color: #186DCE;
+  font-size: calc(18px * var(--font-scale, 1));
+  font-weight: 500;
+  cursor: pointer;
+  font-family: inherit;
+  margin-top: 16px;
+}
 
 /* ===== Onboarding stepper ===== */
 .onboarding-content {

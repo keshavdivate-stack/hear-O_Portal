@@ -7,8 +7,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/Mobile%20app/style.css?v=6">
-<script src="/Mobile%20app/font-scale.js?v=6"></script>
+<link rel="stylesheet" href="/Mobile%20app/style.css?v=7">
+<script src="/Mobile%20app/font-scale.js?v=7"></script>
 </head>
 <body>
 
@@ -79,7 +79,7 @@
     </div>
 
     <div class="home-footer">
-      <button type="button" class="chat-nav-item" onclick="window.location.href='/Mobile%20app/chat.html'">
+      <button type="button" class="chat-nav-item" onclick="window.location.href=localStorage.getItem('hearo_chat_enabled')?'/Mobile%20app/chat.html':'/Mobile%20app/chat-consent.html'">
         <span class="chat-nav-icon">
           <span class="chat-badge">1</span>
           <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
