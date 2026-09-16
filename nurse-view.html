@@ -682,10 +682,6 @@
                 <span><span class="quest-dot quest-dot-no"><svg viewBox="0 0 24 24" fill="none"><path d="M6 6L18 18M18 6L6 18" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg></span> No</span>
                 <span class="quest-legend-note">Sent to the patient once a week</span>
               </div>
-              <button type="button" class="quest-add-btn" id="openCreateQuestionBtn">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
-                Create New Question
-              </button>
             </div>
             <div class="quest-list" id="questList"></div>
           </div>
@@ -694,11 +690,11 @@
           <div class="data-tab-panel" data-panel="info">
             <div class="subtab-row">
               <div class="subtabs">
-                <span class="subtab active" data-subtab="emergency-contact">Caregiver Contact</span>
+                <span class="subtab active" data-subtab="emergency-contact">Designated Contact</span>
               </div>
             </div>
 
-            <!-- Caregiver Contact -->
+            <!-- Designated Contact -->
             <div class="subtab-panel open" data-subpanel="emergency-contact">
               <div class="rec-table-wrap">
                 <table class="rec-table">
@@ -1033,59 +1029,6 @@
         <div class="modal-actions">
           <button type="button" class="btn-text" id="cancelAddMed">Cancel</button>
           <button type="submit" class="btn-save">Add Medication</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- Create New Question modal -->
-  <div class="modal-overlay" id="createQuestionOverlay">
-    <div class="modal">
-      <h2>Create New Question</h2>
-      <form id="createQuestionForm">
-        <div class="form-field">
-          <label>Question<span class="required-star">*</span></label>
-          <textarea name="text" rows="2" placeholder="e.g. Do you feel more tired than usual?" required></textarea>
-        </div>
-
-        <div class="form-field">
-          <label>Answer Type<span class="required-star">*</span></label>
-          <div class="custom-select" data-name="answerType">
-            <button type="button" class="custom-select-trigger">
-              <span class="custom-select-value">Yes / No</span>
-              <svg class="custom-select-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-            </button>
-            <div class="custom-select-menu">
-              <div class="custom-select-option selected" data-value="yesno">Yes / No<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-              <div class="custom-select-option" data-value="value">Value (patient enters a number)<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-            </div>
-            <input type="hidden" name="answerType" value="yesno" required />
-          </div>
-        </div>
-
-        <div class="form-field" id="questValueSection" hidden>
-          <label>Value Label<span class="required-star">*</span></label>
-          <input type="text" name="valueLabel" placeholder="e.g. Weight" required />
-        </div>
-
-        <div class="form-field" id="questUnitsField" hidden>
-          <label>Units<span class="required-star">*</span></label>
-          <div class="quest-unit-list" id="questUnitList">
-            <span class="quest-unit-chip is-default" data-unit="KG">KG<button type="button" class="quest-unit-remove" aria-label="Remove unit">&times;</button></span>
-            <span class="quest-unit-chip" data-unit="lbs">lbs<button type="button" class="quest-unit-remove" aria-label="Remove unit">&times;</button></span>
-          </div>
-          <div class="quest-unit-add-row">
-            <input type="text" id="questUnitInput" placeholder="Add another unit" />
-            <button type="button" class="btn-text" id="questUnitAddBtn">+ Add</button>
-          </div>
-          <p class="quest-unit-hint">Click a unit to set it as the default the patient sees selected.</p>
-          <input type="hidden" name="units" id="questUnitsHidden" value="KG,lbs" />
-          <input type="hidden" name="defaultUnit" id="questDefaultUnitHidden" value="KG" />
-        </div>
-
-        <div class="modal-actions">
-          <button type="button" class="btn-text" id="cancelCreateQuestion">Cancel</button>
-          <button type="submit" class="btn-save">Create Question</button>
         </div>
       </form>
     </div>
