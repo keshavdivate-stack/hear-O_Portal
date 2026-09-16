@@ -1888,8 +1888,7 @@ input[type="password"]:focus {
   border-top: 1px solid #e4e6ea;
   padding: 14px 32px 22px;
   display: flex;
-  justify-content: flex-end;
-  gap: 48px;
+  justify-content: space-between;
 }
 
 .chat-nav-item {
