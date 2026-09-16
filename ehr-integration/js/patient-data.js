@@ -1715,12 +1715,23 @@ const questions = [
 function renderQuestionnaire() {
   const days = visibleDays();
   document.getElementById("questList").innerHTML = questions
-    .map(
-      (q, qi) => `
+    .map((q, qi) => {
+      /* Only new (custom) fields get a tag -- the legacy Q3/Q4 "Yes" value
+         is already surfaced via the hover tooltip above, so it's left alone
+         to avoid changing how those existing questions look. */
+      const tags = [];
+      if (q.answerType === "value") tags.push(`Value entry${q.valueLabel ? ` — ${q.valueLabel}` : ""}`);
+      if (q.noValueLabel) tags.push(`"No" also asks for: ${q.noValueLabel}`);
+      const tagsHtml = tags.length
+        ? `<div class="quest-config-tags">${tags.map((t) => `<span class="quest-config-tag">${t}</span>`).join("")}</div>`
+        : "";
+
+      return `
       <div class="med-block">
         <div class="quest-block-head">
           <span class="quest-label">${q.label}</span>
           <span class="quest-text">${q.text}</span>
+          ${tagsHtml}
         </div>
 
         <div class="med-adherence-row">
@@ -1729,14 +1740,16 @@ function renderQuestionnaire() {
             ${(() => {
               const ans = sliceForRange(q.answers);
               const vals = q.values ? sliceForRange(q.values) : null;
+              const noVals = q.noValues ? sliceForRange(q.noValues) : null;
               return days
                 .map((d, i) => {
                   const a = ans[i];
                   const cls = a === true ? "quest-ans-yes" : a === false ? "quest-ans-no" : "quest-ans-none";
                   const icon = a === true ? adhCheckIcon : a === false ? questXIcon : "";
-                  const val = vals ? vals[i] : null;
+                  const val = a === true ? (vals ? vals[i] : null) : a === false ? (noVals ? noVals[i] : null) : null;
+                  const valLabel = a === true ? q.valueLabel : q.noValueLabel;
                   const tooltip = val
-                    ? `<span class="quest-weight-tooltip">${q.valueLabel}: ${val}</span>`
+                    ? `<span class="quest-weight-tooltip">${valLabel}: ${val}</span>`
                     : "";
                   return `
                 <div class="med-adh-day">
@@ -1750,8 +1763,8 @@ function renderQuestionnaire() {
           <button class="chart-arrow quest-adh-next" data-quest="${qi}" aria-label="Next month"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 6L15 12L9 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
         </div>
         <div class="chart-month-row" style="padding:0 40px;">${monthRowHtml(days)}</div>
-      </div>`
-    )
+      </div>`;
+    })
     .join("");
 
   document.querySelectorAll(".quest-adh-prev, .quest-adh-next").forEach((btn) => {
@@ -1789,6 +1802,67 @@ function wireQuestTooltips() {
 }
 
 renderQuestionnaire();
+
+/* ---------------- Clinical: Create New Question ---------------- */
+let nextQuestionNumber = questions.length + 1;
+
+const questAnswerTypeSelect = document.querySelector('#createQuestionForm .custom-select[data-name="answerType"]');
+const questValueSection = document.getElementById("questValueSection");
+const questYesNoSection = document.getElementById("questYesNoSection");
+const questYesCheckbox = document.querySelector('#createQuestionForm input[name="yesRequiresExtra"]');
+const questYesValueField = document.getElementById("questYesValueField");
+const questNoCheckbox = document.querySelector('#createQuestionForm input[name="noRequiresExtra"]');
+const questNoValueField = document.getElementById("questNoValueField");
+
+questAnswerTypeSelect.querySelector("input[type=hidden]").addEventListener("change", (e) => {
+  const isValue = e.target.value === "value";
+  questValueSection.hidden = !isValue;
+  questYesNoSection.hidden = isValue;
+});
+
+questYesCheckbox.addEventListener("change", () => {
+  questYesValueField.hidden = !questYesCheckbox.checked;
+});
+
+questNoCheckbox.addEventListener("change", () => {
+  questNoValueField.hidden = !questNoCheckbox.checked;
+});
+
+wireAddModal("createQuestionOverlay", "createQuestionForm", "cancelCreateQuestion", "openCreateQuestionBtn", (fd) => {
+  const answerType = fd.get("answerType") || "yesno";
+  const question = {
+    label: `Q${nextQuestionNumber++}`,
+    text: fd.get("text"),
+    answerType,
+    answers: weeklyAnswers({}),
+  };
+
+  if (answerType === "value") {
+    question.valueLabel = fd.get("valueLabel") || "Value";
+  } else {
+    if (fd.get("yesRequiresExtra")) {
+      question.valueLabel = fd.get("yesValueLabel") || "Value";
+      question.values = weeklyAnswers({});
+    }
+    if (fd.get("noRequiresExtra")) {
+      question.noValueLabel = fd.get("noValueLabel") || "Value";
+      question.noValues = weeklyAnswers({});
+    }
+  }
+
+  questions.push(question);
+  renderQuestionnaire();
+});
+
+/* Conditional sections aren't part of native form reset -- resync them to
+   their default (Yes/No visible, Value + both extra fields hidden) every
+   time the modal opens, since wireAddModal's own reset stays silent. */
+document.getElementById("openCreateQuestionBtn").addEventListener("click", () => {
+  questValueSection.hidden = true;
+  questYesNoSection.hidden = false;
+  questYesValueField.hidden = true;
+  questNoValueField.hidden = true;
+});
 
 document.getElementById("medStatusFilter").addEventListener("change", (e) => {
   medStatusFilter = e.target.value;
