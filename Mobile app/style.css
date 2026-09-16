@@ -1126,14 +1126,15 @@ input[type="password"]:focus {
 .consent-content .logo { margin-bottom: 28px; }
 
 .consent-title {
-  font-size: calc(24px * var(--font-scale, 1));
-  font-weight: 700;
-  color: #252424;
+  font-size: calc(30px * var(--font-scale, 1));
+  font-weight: 600;
+  color: #434141;
   margin-bottom: 8px;
 }
 
 .consent-subtitle {
-  font-size: calc(17px * var(--font-scale, 1));
+  font-size: calc(25px * var(--font-scale, 1));
+  font-weight: 400;
   color: #434141;
   line-height: 1.4;
   margin-bottom: 28px;
@@ -1175,7 +1176,8 @@ input[type="password"]:focus {
 .consent-option.checked .consent-checkbox svg { display: block; }
 
 .consent-option-text {
-  font-size: calc(16px * var(--font-scale, 1));
+  font-size: calc(20px * var(--font-scale, 1));
+  font-weight: 400;
   line-height: 1.5;
   color: #434141;
 }
