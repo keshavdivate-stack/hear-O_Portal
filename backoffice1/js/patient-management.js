@@ -114,20 +114,34 @@ function renderPatients() {
   applyColumnVisibility();
 }
 
-/* ---------------- Column visibility ---------------- */
-/* Built from the table's own data-col headers, so this list never drifts
-   out of sync with whatever columns actually exist. All columns start
-   visible; unchecking one hides both its header cell and every row's cell
-   for that column. */
+/* ---------------- Columns / Views menu ----------------
+   "Columns" opens a saved-views switcher: two built-in Default Views
+   plus any number of user-created Custom Views, each capturing its own
+   column selection. Built from the table's own data-col headers, so
+   the available columns never drift out of sync with the table. */
+const pencilIconSm = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 20H21" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M16.5 3.5C17.3 2.7 18.6 2.7 19.4 3.5C20.2 4.3 20.2 5.6 19.4 6.4L7 18.8L3 20L4.2 16L16.5 3.5Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>`;
+const plusIconSm = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>`;
+const checkIconBlueSm = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="#2AA9E0" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+
 const patientColumnDefs = Array.from(document.querySelectorAll('#patientTable thead th[data-col]'))
   .map((th) => ({ key: th.dataset.col, label: th.textContent.trim() }))
   .filter((c) => c.key !== "actions");
 const hiddenPatientColumns = new Set();
 
-const patientColumnsMenu = document.getElementById("patientColumnsMenu");
-patientColumnsMenu.innerHTML = patientColumnDefs
-  .map((c) => `<label class="bo-popover-item"><input type="checkbox" checked data-col-toggle="${c.key}" />${c.label}</label>`)
-  .join("");
+const patientDefaultViews = [
+  { key: "default1", name: "Default View 1", columns: patientColumnDefs.map((c) => c.key) },
+  { key: "default2", name: "Default View 2", columns: ["username", "status", "monitoring", "lastSession"] },
+];
+const patientCustomViews = [
+  { key: "custom1", name: "Custom View 1", columns: ["username", "lang", "tag", "status", "monitoring", "compliance"] },
+];
+let patientActiveViewKey = "default1";
+let patientDefaultViewKey = "default1";
+let patientEditingViewKey = null;
+
+function patientViewByKey(key) {
+  return patientDefaultViews.find((v) => v.key === key) || patientCustomViews.find((v) => v.key === key);
+}
 
 function applyColumnVisibility() {
   document.querySelectorAll("#patientTable [data-col]").forEach((cell) => {
@@ -135,17 +149,190 @@ function applyColumnVisibility() {
   });
 }
 
-patientColumnsMenu.addEventListener("click", (e) => e.stopPropagation());
-patientColumnsMenu.addEventListener("change", (e) => {
-  const checkbox = e.target.closest('input[type="checkbox"]');
-  if (!checkbox) return;
-  const key = checkbox.dataset.colToggle;
-  if (checkbox.checked) hiddenPatientColumns.delete(key);
-  else hiddenPatientColumns.add(key);
+function applyPatientView(view) {
+  hiddenPatientColumns.clear();
+  patientColumnDefs.forEach((c) => {
+    if (!view.columns.includes(c.key)) hiddenPatientColumns.add(c.key);
+  });
   applyColumnVisibility();
+}
+
+const patientColumnsField = document.getElementById("patientColumnsField");
+const patientColumnsBtn = document.getElementById("patientColumnsBtn");
+const patientColumnsMenu = document.getElementById("patientColumnsMenu");
+
+patientColumnsMenu.innerHTML = `
+  <div class="bo-views-menu-search">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8"/><path d="M21 21L16.5 16.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    <input type="text" id="patientViewsSearchInput" placeholder="Search" autocomplete="off" />
+  </div>
+  <div class="bo-views-menu-section" id="patientDefaultViewsSection">
+    <div class="bo-views-menu-section-label">Default Views</div>
+    <div id="patientDefaultViewsList"></div>
+  </div>
+  <div class="bo-views-menu-section" id="patientCustomViewsSection">
+    <div class="bo-views-menu-section-label">Custom Views</div>
+    <div id="patientCustomViewsList"></div>
+  </div>
+  <button type="button" class="bo-views-menu-create-btn" id="createPatientCustomViewBtn">${plusIconSm} Create Custom View</button>
+`;
+
+const patientViewsSearchInput = document.getElementById("patientViewsSearchInput");
+const patientDefaultViewsSection = document.getElementById("patientDefaultViewsSection");
+const patientDefaultViewsList = document.getElementById("patientDefaultViewsList");
+const patientCustomViewsSection = document.getElementById("patientCustomViewsSection");
+const patientCustomViewsList = document.getElementById("patientCustomViewsList");
+
+function renderPatientViewRow(view, isBuiltIn) {
+  const isActive = view.key === patientActiveViewKey;
+  const isDefault = view.key === patientDefaultViewKey;
+  return `
+    <div class="bo-views-menu-item" data-view="${view.key}">
+      <span class="bo-views-menu-item-check">${isActive ? checkIconBlueSm : ""}</span>
+      <span class="bo-views-menu-item-name">${view.name}</span>
+      ${isDefault ? `<span class="bo-views-menu-item-badge">Default</span>` : ""}
+      ${
+        isBuiltIn
+          ? ""
+          : `<span class="bo-views-menu-item-actions">
+               ${!isDefault ? `<button type="button" class="bo-views-set-default-btn" data-view="${view.key}">Set as Default</button>` : ""}
+               <button type="button" class="bo-views-edit-btn" data-view="${view.key}" aria-label="Edit view">${pencilIconSm}</button>
+             </span>`
+      }
+    </div>`;
+}
+
+function renderPatientViewsMenu() {
+  const query = patientViewsSearchInput.value.trim().toLowerCase();
+  const filteredDefaults = patientDefaultViews.filter((v) => v.name.toLowerCase().includes(query));
+  const filteredCustom = patientCustomViews.filter((v) => v.name.toLowerCase().includes(query));
+
+  patientDefaultViewsSection.hidden = filteredDefaults.length === 0;
+  patientDefaultViewsList.innerHTML = filteredDefaults.map((v) => renderPatientViewRow(v, true)).join("");
+
+  patientCustomViewsSection.hidden = query.length > 0 && filteredCustom.length === 0;
+  patientCustomViewsList.innerHTML =
+    filteredCustom.map((v) => renderPatientViewRow(v, false)).join("") ||
+    (query ? "" : `<p class="bo-views-menu-empty">No custom views yet</p>`);
+}
+
+patientViewsSearchInput.addEventListener("input", renderPatientViewsMenu);
+
+patientColumnsBtn.addEventListener("click", (e) => {
+  e.stopPropagation();
+  const willOpen = !patientColumnsMenu.classList.contains("open");
+  document.querySelectorAll(".bo-popover.open").forEach((p) => p.classList.remove("open"));
+  patientColumnsField.classList.toggle("open", willOpen);
+  patientColumnsMenu.classList.toggle("open", willOpen);
+  if (willOpen) {
+    patientViewsSearchInput.value = "";
+    renderPatientViewsMenu();
+  }
 });
 
-wirePopover("patientColumnsBtn", "patientColumnsMenu");
+patientColumnsMenu.addEventListener("click", (e) => {
+  e.stopPropagation();
+
+  const editBtn = e.target.closest(".bo-views-edit-btn");
+  if (editBtn) {
+    openViewDrawer(editBtn.dataset.view);
+    return;
+  }
+
+  const defaultBtn = e.target.closest(".bo-views-set-default-btn");
+  if (defaultBtn) {
+    patientDefaultViewKey = defaultBtn.dataset.view;
+    renderPatientViewsMenu();
+    return;
+  }
+
+  if (e.target.closest("#createPatientCustomViewBtn")) {
+    openViewDrawer(null);
+    return;
+  }
+
+  const row = e.target.closest(".bo-views-menu-item");
+  if (row) {
+    patientActiveViewKey = row.dataset.view;
+    applyPatientView(patientViewByKey(patientActiveViewKey));
+    renderPatientViewsMenu();
+    patientColumnsField.classList.remove("open");
+    patientColumnsMenu.classList.remove("open");
+  }
+});
+
+/* ---------------- Create/Edit Custom View drawer ---------------- */
+const viewDrawerOverlay = document.getElementById("viewDrawerOverlay");
+const viewDrawerTitle = document.getElementById("viewDrawerTitle");
+const viewNameInput = document.getElementById("viewNameInput");
+const viewColumnsGrid = document.getElementById("viewColumnsGrid");
+const cancelViewDrawerBtn = document.getElementById("cancelViewDrawer");
+const saveViewDrawerBtn = document.getElementById("saveViewDrawer");
+
+function updateSaveViewDrawerState() {
+  const hasName = viewNameInput.value.trim().length > 0;
+  const hasColumn = !!viewColumnsGrid.querySelector('input[type="checkbox"]:checked');
+  saveViewDrawerBtn.disabled = !(hasName && hasColumn);
+}
+
+function openViewDrawer(editKey) {
+  patientEditingViewKey = editKey;
+  const existing = editKey ? patientViewByKey(editKey) : null;
+
+  viewDrawerTitle.textContent = existing ? "Edit Custom View" : "Create Custom View";
+  saveViewDrawerBtn.textContent = existing ? "Save Changes" : "Create View";
+  viewNameInput.value = existing ? existing.name : "";
+
+  viewColumnsGrid.innerHTML = patientColumnDefs
+    .map(
+      (c) => `
+      <label class="bo-view-column-option">
+        <input type="checkbox" value="${c.key}" ${!existing || existing.columns.includes(c.key) ? "checked" : ""} />
+        ${c.label}
+      </label>`
+    )
+    .join("");
+
+  updateSaveViewDrawerState();
+  viewDrawerOverlay.classList.add("open");
+  viewNameInput.focus();
+}
+
+function closeViewDrawer() {
+  viewDrawerOverlay.classList.remove("open");
+  patientEditingViewKey = null;
+}
+
+viewNameInput.addEventListener("input", updateSaveViewDrawerState);
+viewColumnsGrid.addEventListener("change", updateSaveViewDrawerState);
+document.getElementById("closeViewDrawerX").addEventListener("click", closeViewDrawer);
+cancelViewDrawerBtn.addEventListener("click", closeViewDrawer);
+viewDrawerOverlay.addEventListener("click", (e) => {
+  if (e.target === viewDrawerOverlay) closeViewDrawer();
+});
+
+saveViewDrawerBtn.addEventListener("click", () => {
+  const name = viewNameInput.value.trim();
+  const selectedColumns = Array.from(viewColumnsGrid.querySelectorAll('input[type="checkbox"]:checked')).map((cb) => cb.value);
+  if (!name || !selectedColumns.length) return;
+
+  if (patientEditingViewKey) {
+    const view = patientViewByKey(patientEditingViewKey);
+    view.name = name;
+    view.columns = selectedColumns;
+    if (patientActiveViewKey === patientEditingViewKey) applyPatientView(view);
+  } else {
+    const newView = { key: `custom-${Date.now()}`, name, columns: selectedColumns };
+    patientCustomViews.push(newView);
+    patientActiveViewKey = newView.key;
+    applyPatientView(newView);
+  }
+
+  closeViewDrawer();
+  renderPatientViewsMenu();
+});
+
+applyPatientView(patientViewByKey(patientActiveViewKey));
 
 renderPatients();
 
