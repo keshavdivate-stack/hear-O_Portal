@@ -3350,11 +3350,11 @@ input[type="password"]:focus {
   justify-content: center;
   gap: 7px;
   padding: 11px 14px;
-  min-height: 44px;
+  min-height: 46px;
   border-radius: 24px;
-  border: 1.5px solid #2AC19E;
-  background: #fff;
-  color: #2AC19E;
+  border: 2px solid #186DCE;
+  background: #F6F9FD;
+  color: #186DCE;
   font-family: inherit;
   font-size: calc(18px * var(--font-scale, 1));
   font-weight: 500;
@@ -3363,8 +3363,8 @@ input[type="password"]:focus {
 
 .med-action-btn:active { background: #e9f1ff; }
 
-.med-action-btn.med-action-btn-nottaken { border-color: #F98B00; color: #F98B00; }
-.med-action-btn.med-action-btn-nottaken:active { background: #FFF3E5; }
+.med-action-btn.med-action-btn-nottaken { border-color: #F59E0B; background: #FFF5F2; color: #DE7C00; }
+.med-action-btn.med-action-btn-nottaken:active { background: #FFE9DC; }
 
 /* Once a dose has a status, its two choice buttons collapse into this
    badge -- a plain label reporting the state, not a button -- paired with
@@ -3383,8 +3383,8 @@ input[type="password"]:focus {
   font-weight: 500;
 }
 
-.med-action-status-taken { background: #dff5ea; color: #2AC19E; }
-.med-action-status-nottaken { background: #FFF3E5; color: #F98B00; }
+.med-action-status-taken { background: #F6F9FD; color: #186DCE; }
+.med-action-status-nottaken { background: #FFF5F2; color: #DE7C00; }
 .med-action-status svg { flex-shrink: 0; }
 
 .med-action-undo {
