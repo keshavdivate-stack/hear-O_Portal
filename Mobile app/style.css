@@ -2028,6 +2028,27 @@ input[type="password"]:focus {
   pointer-events: none;
 }
 
+/* Dims an individual element rather than a whole ancestor -- lets a sibling
+   (the tour's highlighted card/button) stay at full brightness instead of
+   getting darkened along with everything else under a parent's filter. */
+.tour-dim {
+  filter: brightness(0.75);
+  pointer-events: none;
+}
+
+.highlight-blue,
+.highlight-orange,
+.highlight-chat {
+  position: relative;
+  z-index: 41;
+  border-radius: 16px;
+  box-shadow: 0 0 0 3px #186DCE, 0 10px 24px rgba(0, 0, 0, 0.18);
+}
+
+.highlight-orange {
+  box-shadow: 0 0 0 3px #F98B00, 0 10px 24px rgba(0, 0, 0, 0.18);
+}
+
 .tooltip-popover {
   position: absolute;
   left: 24px;
