@@ -2091,6 +2091,11 @@ input[type="password"]:focus {
   margin-bottom: 18px;
 }
 
+.tooltip-preview-card {
+  margin-bottom: 16px;
+  pointer-events: none;
+}
+
 .tooltip-popover .login-btn {
   margin-top: 0;
   padding: 13px;
