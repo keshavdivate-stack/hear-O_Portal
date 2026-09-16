@@ -2093,8 +2093,6 @@ input[type="password"]:focus {
 
 .tooltip-popover .login-btn {
   margin-top: 0;
-  padding: 13px;
-  font-size: calc(16px * var(--font-scale, 1));
 }
 
 .nav-item-card {
