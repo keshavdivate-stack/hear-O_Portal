@@ -67,7 +67,7 @@ let { source: currentSource, ticket: currentTicket } = resolveTicketFromUrl();
 })();
 
 document.querySelector('.bo-select[data-name="ticketLevel"] .bo-select-menu').innerHTML = buildSelectOptions(TIERS);
-document.querySelector('.bo-select[data-name="ticketSeverityHandling"] .bo-select-menu').innerHTML = buildSelectOptions(SEVERITIES);
+document.querySelector('.bo-select[data-name="ticketPriorityHandling"] .bo-select-menu').innerHTML = buildSelectOptions(PRIORITIES);
 document.querySelector('.bo-select[data-name="ticketStatus"] .bo-select-menu').innerHTML = buildSelectOptions(STATUSES);
 document.querySelector('.bo-select[data-name="ticketOrgHandling"] .bo-select-menu').innerHTML = buildSelectOptions(orgs.map((o) => o.name));
 
@@ -86,12 +86,12 @@ function defaultAssigneeForTier(tier) {
   return (TIER_AGENTS[tier] || SUPPORT_AGENTS)[0] || "";
 }
 
-/* Resolved tickets no longer need routing info -- hide Level/Severity/
+/* Resolved tickets no longer need routing info -- hide Level/Priority/
    Assigned To rather than asking for values that don't matter anymore. */
 function applyTicketDetailStatusVisibility(status) {
   const resolved = status === "Resolved";
   document.getElementById("ticketDetailLevelField").hidden = resolved;
-  document.getElementById("ticketDetailSeverityField").hidden = resolved;
+  document.getElementById("ticketDetailPriorityField").hidden = resolved;
   document.getElementById("ticketDetailAssignedToField").hidden = resolved;
   const tier = document.querySelector('.bo-select[data-name="ticketLevel"] input[type=hidden]').value;
   document.getElementById("ticketDetailOrgField").hidden = resolved || tier !== "Level 3";
@@ -124,7 +124,7 @@ function renderTicketHeader() {
 function renderTicketInfo() {
   document.getElementById("ticketDetailSource").textContent = currentSource === "patient" ? "Patient" : "Clinic";
   document.getElementById("ticketDetailStatusKv").innerHTML = statusPill(currentTicket.status);
-  document.getElementById("ticketDetailSeverityKv").innerHTML = severityPill(currentTicket.severity);
+  document.getElementById("ticketDetailPriorityKv").innerHTML = priorityPill(currentTicket.priority);
   document.getElementById("ticketDetailWhoLabel").textContent = currentSource === "patient" ? "Patient ID" : "Raised By";
   document.getElementById("ticketDetailWho").textContent = currentSource === "patient" ? currentTicket.patientId : currentTicket.raisedBy;
   document.getElementById("ticketDetailOrg").textContent = currentTicket.organization;
@@ -244,7 +244,7 @@ function renderTicketHandling() {
   document.getElementById("ticketDetailRootCause").value = currentTicket.rootCause || "";
   setBoSelectValue(document.querySelector('.bo-select[data-name="ticketStatus"]'), currentTicket.status, { silent: true });
   setBoSelectValue(document.querySelector('.bo-select[data-name="ticketLevel"]'), currentTicket.tier, { silent: true });
-  setBoSelectValue(document.querySelector('.bo-select[data-name="ticketSeverityHandling"]'), currentTicket.severity, { silent: true });
+  setBoSelectValue(document.querySelector('.bo-select[data-name="ticketPriorityHandling"]'), currentTicket.priority, { silent: true });
   populateTicketDetailAssignees(currentTicket.tier);
   const tierAgents = TIER_AGENTS[currentTicket.tier] || SUPPORT_AGENTS;
   const assignee = tierAgents.includes(currentTicket.assignedTo) ? currentTicket.assignedTo : defaultAssigneeForTier(currentTicket.tier);
@@ -658,16 +658,16 @@ ticketDetailForm.addEventListener("submit", (e) => {
   const rootCause = document.getElementById("ticketDetailRootCause").value.trim();
   const nextAssignee = document.querySelector('.bo-select[data-name="ticketAssignedTo"] input[type=hidden]').value;
   const nextTier = document.querySelector('.bo-select[data-name="ticketLevel"] input[type=hidden]').value || currentTicket.tier;
-  const nextSeverity = document.querySelector('.bo-select[data-name="ticketSeverityHandling"] input[type=hidden]').value || currentTicket.severity;
+  const nextPriority = document.querySelector('.bo-select[data-name="ticketPriorityHandling"] input[type=hidden]').value || currentTicket.priority;
   const nextStatus = document.querySelector('.bo-select[data-name="ticketStatus"] input[type=hidden]').value || currentTicket.status;
 
-  /* Every field a Save touches (reassignment, level/tier transfer, severity,
+  /* Every field a Save touches (reassignment, level/tier transfer, priority,
      status) is folded into a single history entry instead of one line per
      field -- so a ticket transfer and the note explaining it always land
      together, and whoever picks the ticket up next sees the note attached
      directly to the transfer instead of buried in a separate line. The
      entry's title headlines whichever change is most significant
-     (reassignment > level > status > severity); everything that changed,
+     (reassignment > level > status > priority); everything that changed,
      plus the free-text note, goes in the boxed detail underneath. */
   const isReassignment = nextAssignee !== (currentTicket.assignedTo || "");
   const changeParts = [];
@@ -684,9 +684,9 @@ ticketDetailForm.addEventListener("submit", (e) => {
     changeParts.push(`Status changed from ${currentTicket.status} to ${nextStatus}`);
     title = title || `Status Changed to ${nextStatus}`;
   }
-  if (nextSeverity !== currentTicket.severity) {
-    changeParts.push(`Severity changed from ${currentTicket.severity} to ${nextSeverity}`);
-    title = title || `Severity Changed to ${nextSeverity}`;
+  if (nextPriority !== currentTicket.priority) {
+    changeParts.push(`Priority changed from ${currentTicket.priority} to ${nextPriority}`);
+    title = title || `Priority Changed to ${nextPriority}`;
   }
 
   const noteChanged = rootCause !== (currentTicket.rootCause || "");
@@ -704,7 +704,7 @@ ticketDetailForm.addEventListener("submit", (e) => {
   currentTicket.rootCause = rootCause;
   currentTicket.assignedTo = nextAssignee;
   currentTicket.tier = nextTier;
-  currentTicket.severity = nextSeverity;
+  currentTicket.priority = nextPriority;
   currentTicket.status = nextStatus;
 
   renderTicketHeader();

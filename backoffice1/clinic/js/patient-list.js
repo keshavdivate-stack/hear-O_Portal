@@ -296,10 +296,21 @@ function positionFilterMenu(trigger, menu) {
   const openUpward = spaceBelow < menuHeight && rect.top > menuHeight;
 
   menu.style.position = "fixed";
-  menu.style.left = `${rect.left}px`;
+  menu.style.left = "0px";
   menu.style.minWidth = `${rect.width}px`;
   menu.style.top = openUpward ? "auto" : `${rect.bottom + 6}px`;
   menu.style.bottom = openUpward ? `${window.innerHeight - rect.top + 6}px` : "auto";
+
+  // Anchor left edge to the trigger, then pull the menu back inside the
+  // viewport if its natural width (e.g. the Columns picker) would run off
+  // the right edge of the screen.
+  const margin = 12;
+  const menuWidth = menu.offsetWidth;
+  let left = rect.left;
+  if (left + menuWidth + margin > window.innerWidth) {
+    left = Math.max(margin, rect.right - menuWidth);
+  }
+  menu.style.left = `${left}px`;
 }
 
 function openFilterMenu(wrapEl, menuEl) {

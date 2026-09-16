@@ -171,7 +171,7 @@
           <span class="bo-incident-kpi-value" id="ticketKpiEscalated">â€”</span>
         </div>
         <div class="bo-incident-kpi-card">
-          <span class="bo-incident-kpi-label">Critical Severity</span>
+          <span class="bo-incident-kpi-label">Critical Priority</span>
           <span class="bo-incident-kpi-value" id="ticketKpiCritical">â€”</span>
         </div>
         <div class="bo-incident-kpi-card">
@@ -201,13 +201,13 @@
         <div class="bo-select-menu" id="ticketTypeFilterMenu"></div>
         <input type="hidden" id="ticketTypeFilter" />
       </div>
-      <div class="bo-select bo-toolbar-select" data-name="ticketSeverity">
+      <div class="bo-select bo-toolbar-select" data-name="ticketPriority">
         <button type="button" class="bo-select-trigger">
-          <span class="bo-select-value placeholder">Severity</span>
+          <span class="bo-select-value placeholder">Priority</span>
           <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
         </button>
-        <div class="bo-select-menu" id="ticketSeverityFilterMenu"></div>
-        <input type="hidden" id="ticketSeverityFilter" />
+        <div class="bo-select-menu" id="ticketPriorityFilterMenu"></div>
+        <input type="hidden" id="ticketPriorityFilter" />
       </div>
       <div class="bo-select bo-toolbar-select" data-name="ticketCategory">
         <button type="button" class="bo-select-trigger">
@@ -257,7 +257,7 @@
                 <th>ISSUE TYPE</th>
                 <th>ORIGIN</th>
                 <th>LEVEL</th>
-                <th>SEVERITY</th>
+                <th>PRIORITY</th>
                 <th>STATUS</th>
                 <th>ASSIGNED TO</th>
                 <th>CREATED</th>
@@ -305,13 +305,13 @@
           <div class="bo-select-menu" id="incStatusFilterMenu"></div>
           <input type="hidden" id="incStatusFilter" />
         </div>
-        <div class="bo-select bo-toolbar-select" data-name="incSeverity">
+        <div class="bo-select bo-toolbar-select" data-name="incPriority">
           <button type="button" class="bo-select-trigger">
-            <span class="bo-select-value placeholder">Severity</span>
+            <span class="bo-select-value placeholder">Priority</span>
             <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
           </button>
-          <div class="bo-select-menu" id="incSeverityFilterMenu"></div>
-          <input type="hidden" id="incSeverityFilter" />
+          <div class="bo-select-menu" id="incPriorityFilterMenu"></div>
+          <input type="hidden" id="incPriorityFilter" />
         </div>
         <div class="bo-select bo-toolbar-select" data-name="incSource">
           <button type="button" class="bo-select-trigger">
@@ -352,7 +352,7 @@
                 <th>INCIDENT ID</th>
                 <th>INCIDENT</th>
                 <th>CATEGORY</th>
-                <th>SEVERITY</th>
+                <th>PRIORITY</th>
                 <th>STATUS</th>
                 <th>IMPACT</th>
                 <th>DURATION</th>
@@ -376,7 +376,7 @@
                 <th>RULE</th>
                 <th>CATEGORY</th>
                 <th>CONDITION / THRESHOLD</th>
-                <th>SEVERITY</th>
+                <th>PRIORITY</th>
                 <th>ROUTED LEVEL</th>
                 <th>SLA (RESPONSE / RESOLVE)</th>
                 <th>CHANNELS</th>
@@ -415,10 +415,10 @@
           </div>
 
           <div class="bo-modal-field">
-            <label>Severity:<span class="required-star">*</span></label>
-            <div class="bo-select" data-name="ruleSeverity">
+            <label>Priority:<span class="required-star">*</span></label>
+            <div class="bo-select" data-name="rulePriority">
               <button type="button" class="bo-select-trigger">
-                <span class="bo-select-value placeholder">Severity</span>
+                <span class="bo-select-value placeholder">Priority</span>
                 <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
               </button>
               <div class="bo-select-menu"></div>
@@ -516,10 +516,10 @@
           </div>
 
           <div class="bo-modal-field">
-            <label>Severity<span class="required-star">*</span></label>
-            <div class="bo-select" data-name="newRuleSeverity">
+            <label>Priority<span class="required-star">*</span></label>
+            <div class="bo-select" data-name="newRulePriority">
               <button type="button" class="bo-select-trigger">
-                <span class="bo-select-value placeholder">Select severity</span>
+                <span class="bo-select-value placeholder">Select priority</span>
                 <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
               </button>
               <div class="bo-select-menu"></div>
@@ -685,14 +685,14 @@
                 </div>
               </div>
               <div class="bo-modal-field">
-                <label>Severity</label>
-                <div class="bo-select" data-name="ticketSeverity">
+                <label>Priority</label>
+                <div class="bo-select" data-name="ticketPriority">
                   <button type="button" class="bo-select-trigger" disabled>
                     <span class="bo-select-value placeholder">Select category &amp; issue type first</span>
                     <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
                   </button>
                   <div class="bo-select-menu"></div>
-                  <input type="hidden" name="severity" />
+                  <input type="hidden" name="priority" />
                 </div>
               </div>
               <div class="bo-modal-field">
@@ -785,10 +785,10 @@
               </div>
             </div>
             <div class="bo-modal-field">
-              <label>Severity</label>
+              <label>Priority</label>
               <div class="bo-select" data-name="taskPriority">
                 <button type="button" class="bo-select-trigger">
-                  <span class="bo-select-value placeholder">Select severity</span>
+                  <span class="bo-select-value placeholder">Select priority</span>
                   <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
                 </button>
                 <div class="bo-select-menu"></div>

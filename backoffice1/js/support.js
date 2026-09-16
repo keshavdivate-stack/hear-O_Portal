@@ -21,7 +21,7 @@ document.querySelectorAll("#supportTabs .bo-tab").forEach((tab) => {
 
 /* ---------------- Filter option lists ---------------- */
 document.getElementById("ticketStatusFilterMenu").innerHTML = buildFilterSelectOptions(STATUSES, "All statuses");
-document.getElementById("ticketSeverityFilterMenu").innerHTML = buildFilterSelectOptions(SEVERITIES, "All severities");
+document.getElementById("ticketPriorityFilterMenu").innerHTML = buildFilterSelectOptions(PRIORITIES, "All priorities");
 document.getElementById("ticketCategoryFilterMenu").innerHTML = buildFilterSelectOptions(CATEGORIES, "All categories");
 document.getElementById("ticketIssueFilterMenu").innerHTML = buildFilterSelectOptions(ISSUE_TYPES, "All issue types");
 document.getElementById("ticketOriginFilterMenu").innerHTML = buildFilterSelectOptions(ORIGINS, "All origins");
@@ -43,7 +43,7 @@ const allTickets = [...patientTickets, ...clinicTickets];
 function renderTicketKpis() {
   document.getElementById("ticketKpiOpen").textContent = allTickets.filter((t) => t.status === "Open" || t.status === "In Progress").length;
   document.getElementById("ticketKpiEscalated").textContent = allTickets.filter((t) => t.status === "Escalated").length;
-  document.getElementById("ticketKpiCritical").textContent = allTickets.filter((t) => t.severity === "Critical").length;
+  document.getElementById("ticketKpiCritical").textContent = allTickets.filter((t) => t.priority === "Critical").length;
   document.getElementById("ticketKpiResolved").textContent = allTickets.filter((t) => t.status === "Resolved").length;
 }
 renderTicketKpis();
@@ -52,7 +52,7 @@ const ticketKebabIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="n
 
 /* ---------------- Filter state (shared by both tabs) ---------------- */
 let ticketStatusValue = "";
-let ticketSeverityValue = "";
+let ticketPriorityValue = "";
 let ticketCategoryValue = "";
 let ticketIssueValue = "";
 let ticketOriginValue = "";
@@ -69,7 +69,7 @@ let ticketSearchTerm = "";
   const params = new URLSearchParams(location.search);
   const issueType = params.get("issueType");
   const status = params.get("status");
-  const severity = params.get("severity");
+  const priority = params.get("priority");
   const category = params.get("category");
   const origin = params.get("origin");
   const type = params.get("type");
@@ -84,9 +84,9 @@ let ticketSearchTerm = "";
     ticketStatusValue = status;
     setBoSelectValue(document.querySelector('.bo-select[data-name="ticketStatus"]'), status, { silent: true });
   }
-  if (severity && SEVERITIES.includes(severity)) {
-    ticketSeverityValue = severity;
-    setBoSelectValue(document.querySelector('.bo-select[data-name="ticketSeverity"]'), severity, { silent: true });
+  if (priority && PRIORITIES.includes(priority)) {
+    ticketPriorityValue = priority;
+    setBoSelectValue(document.querySelector('.bo-select[data-name="ticketPriority"]'), priority, { silent: true });
   }
   if (category && CATEGORIES.includes(category)) {
     ticketCategoryValue = category;
@@ -112,7 +112,7 @@ let ticketSearchTerm = "";
 
 function matchesFilters(t, extraSearchable) {
   if (ticketStatusValue && t.status !== ticketStatusValue) return false;
-  if (ticketSeverityValue && t.severity !== ticketSeverityValue) return false;
+  if (ticketPriorityValue && t.priority !== ticketPriorityValue) return false;
   if (ticketCategoryValue && ticketCategory(t) !== ticketCategoryValue) return false;
   if (ticketIssueValue && t.issueType !== ticketIssueValue) return false;
   if (ticketOriginValue && t.origin !== ticketOriginValue) return false;
@@ -158,7 +158,7 @@ const ticketPager = boCreatePager(
       <td>${t.issueType}</td>
       <td>${originPill(t.origin)}</td>
       <td>${tierPill(t.tier)}</td>
-      <td>${severityPill(t.severity)}</td>
+      <td>${priorityPill(t.priority)}</td>
       <td>${statusPill(t.status)}</td>
       <td>${t.assignedTo ? agentLabel(t.assignedTo) : "&mdash;"}</td>
       <td>${t.createdDate}</td>
@@ -182,8 +182,8 @@ document.getElementById("ticketStatusFilter").addEventListener("change", (e) => 
   ticketStatusValue = e.target.value;
   refreshTicketTables();
 });
-document.getElementById("ticketSeverityFilter").addEventListener("change", (e) => {
-  ticketSeverityValue = e.target.value;
+document.getElementById("ticketPriorityFilter").addEventListener("change", (e) => {
+  ticketPriorityValue = e.target.value;
   refreshTicketTables();
 });
 document.getElementById("ticketCategoryFilter").addEventListener("change", (e) => {
@@ -213,7 +213,7 @@ document.getElementById("ticketSearchInput").addEventListener("input", (e) => {
 
 document.getElementById("ticketClearFiltersBtn").addEventListener("click", () => {
   ticketStatusValue = "";
-  ticketSeverityValue = "";
+  ticketPriorityValue = "";
   ticketCategoryValue = "";
   ticketIssueValue = "";
   ticketOriginValue = "";
@@ -222,7 +222,7 @@ document.getElementById("ticketClearFiltersBtn").addEventListener("click", () =>
   ticketSearchTerm = "";
 
   resetBoSelect(document.querySelector('.bo-select[data-name="ticketStatus"]'));
-  resetBoSelect(document.querySelector('.bo-select[data-name="ticketSeverity"]'));
+  resetBoSelect(document.querySelector('.bo-select[data-name="ticketPriority"]'));
   resetBoSelect(document.querySelector('.bo-select[data-name="ticketCategory"]'));
   resetBoSelect(document.querySelector('.bo-select[data-name="ticketIssue"]'));
   resetBoSelect(document.querySelector('.bo-select[data-name="ticketOrigin"]'));
@@ -242,19 +242,19 @@ document.querySelector('#newTicketOverlay .bo-select[data-name="source"] .bo-sel
 document.querySelector('#newTicketOverlay .bo-select[data-name="issueType"] .bo-select-menu').innerHTML = buildSelectOptions(ISSUE_TYPES);
 document.querySelector('#newTicketOverlay .bo-select[data-name="category"] .bo-select-menu').innerHTML = buildSelectOptions(CATEGORIES);
 document.querySelector('#newTicketOverlay .bo-select[data-name="ticketOrg"] .bo-select-menu').innerHTML = buildSelectOptions(SUPPORT_ORG_CODES);
-document.querySelector('#newTicketOverlay .bo-select[data-name="ticketSeverity"] .bo-select-menu').innerHTML = buildSelectOptions(SEVERITIES);
+document.querySelector('#newTicketOverlay .bo-select[data-name="ticketPriority"] .bo-select-menu').innerHTML = buildSelectOptions(PRIORITIES);
 document.querySelector('#newTicketOverlay .bo-select[data-name="ticketLevel"] .bo-select-menu').innerHTML = buildSelectOptions(TIERS);
 
-/* Severity and Level depend on knowing what the ticket actually is, so they
+/* Priority and Level depend on knowing what the ticket actually is, so they
    stay locked until both Category and Issue Type are set (Issue Type alone
    is usually enough, since picking it auto-fills Category below). */
-function updateNewTicketSeverityLevelState() {
+function updateNewTicketPriorityLevelState() {
   const categoryValue = newTicketOverlay.querySelector('.bo-select[data-name="category"] input[type=hidden]').value;
   const issueTypeValue = newTicketOverlay.querySelector('.bo-select[data-name="issueType"] input[type=hidden]').value;
   const ready = !!categoryValue && !!issueTypeValue;
 
   [
-    { select: newTicketOverlay.querySelector('.bo-select[data-name="ticketSeverity"]'), placeholder: "Select severity" },
+    { select: newTicketOverlay.querySelector('.bo-select[data-name="ticketPriority"]'), placeholder: "Select priority" },
     { select: newTicketOverlay.querySelector('.bo-select[data-name="ticketLevel"]'), placeholder: "Select level" },
   ].forEach(({ select, placeholder }) => {
     const trigger = select.querySelector(".bo-select-trigger");
@@ -290,10 +290,10 @@ function renderNewTicketWhoOptions() {
 document.querySelector('#newTicketOverlay .bo-select[data-name="issueType"] input[type=hidden]').addEventListener("change", (e) => {
   const category = ISSUE_TYPE_CATEGORY[e.target.value];
   if (category) setBoSelectValue(newTicketOverlay.querySelector('.bo-select[data-name="category"]'), category, { silent: true });
-  updateNewTicketSeverityLevelState();
+  updateNewTicketPriorityLevelState();
 });
 
-document.querySelector('#newTicketOverlay .bo-select[data-name="category"] input[type=hidden]').addEventListener("change", updateNewTicketSeverityLevelState);
+document.querySelector('#newTicketOverlay .bo-select[data-name="category"] input[type=hidden]').addEventListener("change", updateNewTicketPriorityLevelState);
 
 /* ---------------- Row action dropdown (view ticket) ----------------
    Clicking the row, or "View Ticket" in the kebab menu, opens the full-page
@@ -364,7 +364,7 @@ function openNewTicketDrawer() {
   setBoSelectValue(newTicketOverlay.querySelector('.bo-select[data-name="source"]'), "Patient", { silent: true });
   document.getElementById("newTicketWhoLabel").textContent = "User ID";
   renderNewTicketWhoOptions();
-  updateNewTicketSeverityLevelState();
+  updateNewTicketPriorityLevelState();
   validateNewTicketForm();
   newTicketOverlay.classList.add("open");
 }
@@ -398,7 +398,7 @@ newTicketForm.addEventListener("submit", (e) => {
 
   const sourceValue = newTicketOverlay.querySelector('.bo-select[data-name="source"] input[type=hidden]').value || "Patient";
   const issueType = newTicketOverlay.querySelector('.bo-select[data-name="issueType"] input[type=hidden]').value;
-  const severity = newTicketForm.severity.value || "Medium";
+  const priority = newTicketForm.priority.value || "Medium";
   const tier = newTicketForm.level.value || "Level 1";
   const category = newTicketOverlay.querySelector('.bo-select[data-name="category"] input[type=hidden]').value || ISSUE_TYPE_CATEGORY[issueType];
   const now = new Date();
@@ -415,7 +415,7 @@ newTicketForm.addEventListener("submit", (e) => {
       category,
       scope: ISSUE_TYPE_SCOPE[issueType] || "Patient",
       tier,
-      severity,
+      priority,
       origin: "User Created",
       status: "Open",
       createdDate,
@@ -437,7 +437,7 @@ newTicketForm.addEventListener("submit", (e) => {
       category,
       scope: ISSUE_TYPE_SCOPE[issueType] || "Patient",
       tier,
-      severity,
+      priority,
       origin: "User Created",
       status: "Open",
       createdDate,
@@ -466,7 +466,7 @@ function renderRules() {
         <td><b>${r.name}</b></td>
         <td>${r.category}</td>
         <td>${r.condition}</td>
-        <td>${severityPill(r.severity)}</td>
+        <td>${priorityPill(r.priority)}</td>
         <td>${tierPill(r.tier)}</td>
         <td>${r.slaResponse} / ${r.slaResolve}</td>
         <td>${channelPills(r.channels)}</td>
@@ -482,7 +482,7 @@ function renderRules() {
 }
 renderRules();
 
-document.querySelector('#ruleDrawerOverlay .bo-select[data-name="ruleSeverity"] .bo-select-menu').innerHTML = buildSelectOptions(SEVERITIES);
+document.querySelector('#ruleDrawerOverlay .bo-select[data-name="rulePriority"] .bo-select-menu').innerHTML = buildSelectOptions(PRIORITIES);
 document.querySelector('#ruleDrawerOverlay .bo-select[data-name="ruleTier"] .bo-select-menu').innerHTML = buildSelectOptions(TIERS);
 
 const ruleRowMenu = document.getElementById("ruleRowMenu");
@@ -516,7 +516,7 @@ function openRuleDrawer(rule) {
   document.getElementById("ruleAppliesToInput").value = rule.appliesTo;
   document.getElementById("ruleAutoCreateInput").checked = rule.autoCreateTicket;
 
-  setBoSelectValue(ruleDrawerOverlay.querySelector('.bo-select[data-name="ruleSeverity"]'), rule.severity, { silent: true });
+  setBoSelectValue(ruleDrawerOverlay.querySelector('.bo-select[data-name="rulePriority"]'), rule.priority, { silent: true });
   setBoSelectValue(ruleDrawerOverlay.querySelector('.bo-select[data-name="ruleTier"]'), rule.tier, { silent: true });
 
   ruleDrawerForm.querySelectorAll('input[name="ruleChannel"]').forEach((box) => {
@@ -554,7 +554,7 @@ ruleDrawerForm.addEventListener("submit", (e) => {
   editingRule.slaResolve = document.getElementById("ruleSlaResolveInput").value.trim();
   editingRule.appliesTo = document.getElementById("ruleAppliesToInput").value.trim();
   editingRule.autoCreateTicket = document.getElementById("ruleAutoCreateInput").checked;
-  editingRule.severity = ruleDrawerOverlay.querySelector('.bo-select[data-name="ruleSeverity"] input[type=hidden]').value || editingRule.severity;
+  editingRule.priority = ruleDrawerOverlay.querySelector('.bo-select[data-name="rulePriority"] input[type=hidden]').value || editingRule.priority;
   editingRule.tier = ruleDrawerOverlay.querySelector('.bo-select[data-name="ruleTier"] input[type=hidden]').value || editingRule.tier;
   editingRule.channels = Array.from(ruleDrawerForm.querySelectorAll('input[name="ruleChannel"]:checked')).map((b) => b.value);
 
@@ -571,9 +571,9 @@ const RULE_APPLIES_TO = ["All organisations", "All Commercial orgs", "Per organi
 const NOTIFICATION_CHANNEL_OPTIONS = ["In App", "SMS", "Email"];
 const NOTIFICATION_CHANNEL_VALUE = { "In App": "Notification", SMS: "SMS", Email: "Email" };
 /* New rules don't collect SLA targets directly (the form keeps them out to stay
-   short) -- default from severity using the same response/resolve pairing the
+   short) -- default from priority using the same response/resolve pairing the
    hand-authored rules already follow. */
-const SEVERITY_DEFAULT_SLA = {
+const PRIORITY_DEFAULT_SLA = {
   Critical: { response: "30m", resolve: "4h" },
   High: { response: "2h", resolve: "24h" },
   Medium: { response: "8h", resolve: "3d" },
@@ -581,7 +581,7 @@ const SEVERITY_DEFAULT_SLA = {
 };
 
 document.querySelector('#newRuleDrawerOverlay .bo-select[data-name="newRuleCategory"] .bo-select-menu').innerHTML = buildSelectOptions(CATEGORIES);
-document.querySelector('#newRuleDrawerOverlay .bo-select[data-name="newRuleSeverity"] .bo-select-menu').innerHTML = buildSelectOptions(SEVERITIES);
+document.querySelector('#newRuleDrawerOverlay .bo-select[data-name="newRulePriority"] .bo-select-menu').innerHTML = buildSelectOptions(PRIORITIES);
 document.querySelector('#newRuleDrawerOverlay .bo-select[data-name="newRuleTier"] .bo-select-menu').innerHTML = buildSelectOptions(TIERS);
 document.querySelector('#newRuleDrawerOverlay .bo-select[data-name="newRuleAppliesTo"] .bo-select-menu').innerHTML = buildSelectOptions(RULE_APPLIES_TO);
 
@@ -712,7 +712,7 @@ function validateNewRuleForm() {
     responseTimeFilled &&
     resolveTimeFilled &&
     selectFilled("newRuleCategory") &&
-    selectFilled("newRuleSeverity") &&
+    selectFilled("newRulePriority") &&
     selectFilled("newRuleTier") &&
     selectFilled("newRuleAppliesTo") &&
     orgsFilled &&
@@ -720,10 +720,10 @@ function validateNewRuleForm() {
   );
 }
 
-/* Picking a severity prefills the standard SLA times for that severity --
+/* Picking a priority prefills the standard SLA times for that priority --
    left editable in case this rule needs a different SLA than the default. */
-newRuleDrawerOverlay.querySelector('.bo-select[data-name="newRuleSeverity"] input[type=hidden]').addEventListener("change", (e) => {
-  const sla = SEVERITY_DEFAULT_SLA[e.target.value];
+newRuleDrawerOverlay.querySelector('.bo-select[data-name="newRulePriority"] input[type=hidden]').addEventListener("change", (e) => {
+  const sla = PRIORITY_DEFAULT_SLA[e.target.value];
   if (sla) {
     document.getElementById("newRuleResponseTimeInput").value = sla.response;
     document.getElementById("newRuleResolveTimeInput").value = sla.resolve;
@@ -757,7 +757,7 @@ newRuleForm.addEventListener("submit", (e) => {
   if (saveNewRuleBtn.disabled) return;
 
   const selectValue = (name) => newRuleDrawerOverlay.querySelector(`.bo-select[data-name="${name}"] input[type=hidden]`).value;
-  const severity = selectValue("newRuleSeverity");
+  const priority = selectValue("newRulePriority");
   const appliesTo = selectValue("newRuleAppliesTo");
 
   const nextId = alertRules.length ? Math.max(...alertRules.map((r) => r.id)) + 1 : 0;
@@ -766,7 +766,7 @@ newRuleForm.addEventListener("submit", (e) => {
     name: document.getElementById("newRuleNameInput").value.trim(),
     category: selectValue("newRuleCategory"),
     condition: document.getElementById("newRuleConditionInput").value.trim(),
-    severity,
+    priority,
     tier: selectValue("newRuleTier"),
     slaResponse: document.getElementById("newRuleResponseTimeInput").value.trim(),
     slaResolve: document.getElementById("newRuleResolveTimeInput").value.trim(),

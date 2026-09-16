@@ -5,18 +5,18 @@
    device log data. */
 
 const statusPillClass = { "Open": "bo-pill-status-open", "In Progress": "bo-pill-status-inprogress", "Escalated": "bo-pill-status-escalated", "Resolved": "bo-pill-status-resolved" };
-const severityPillClass = { "Low": "bo-pill-severity-low", "Medium": "bo-pill-severity-medium", "High": "bo-pill-severity-high", "Critical": "bo-pill-severity-critical" };
+const priorityPillClass = { "Low": "bo-pill-severity-low", "Medium": "bo-pill-severity-medium", "High": "bo-pill-severity-high", "Critical": "bo-pill-severity-critical" };
 const originPillClass = { "System Generated": "bo-pill-origin-system", "User Created": "bo-pill-origin-user", "Backoffice Created": "bo-pill-origin-backoffice" };
 const typePillClass = { "Patient": "bo-pill-type-patient", "Clinic": "bo-pill-type-clinic" };
 
 const statusPill = (s) => `<span class="bo-pill ${statusPillClass[s] || ""}">${s}</span>`;
-const severityPill = (p) => `<span class="bo-pill ${severityPillClass[p] || ""}">${p}</span>`;
+const priorityPill = (p) => `<span class="bo-pill ${priorityPillClass[p] || ""}">${p}</span>`;
 const tierPill = (t) => `<span class="bo-pill bo-pill-tier">${t}</span>`;
 const originPill = (o) => `<span class="bo-pill ${originPillClass[o] || ""}">${o}</span>`;
 const typePill = (s) => `<span class="bo-pill ${typePillClass[s] || ""}">${s}</span>`;
 /* Category is a classification/routing field, not an urgency indicator --
    rendered as a neutral tag so it doesn't visually compete with the
-   severity/status color coding in the same row. Tickets created via the
+   priority/status color coding in the same row. Tickets created via the
    New Ticket form can carry an explicit category (user picked it, or it
    defaulted from Issue Type); older/generated tickets fall back to the
    Issue Type -> category lookup. */

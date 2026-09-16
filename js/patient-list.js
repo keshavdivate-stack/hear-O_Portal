@@ -370,10 +370,20 @@ function positionFilterMenu(trigger, menu) {
   const openUpward = spaceBelow < menuHeight && spaceAbove > spaceBelow;
 
   menu.style.position = "fixed";
-  menu.style.left = `${rect.left}px`;
+  menu.style.left = "0px";
   menu.style.minWidth = `${rect.width}px`;
   menu.style.top = openUpward ? "auto" : `${rect.bottom + 6}px`;
   menu.style.bottom = openUpward ? `${window.innerHeight - rect.top + 6}px` : "auto";
+
+  // Anchor left edge to the trigger, then pull the menu back inside the
+  // viewport if its natural width (e.g. the Columns picker) would run off
+  // the right edge of the screen.
+  const menuWidth = menu.offsetWidth;
+  let left = rect.left;
+  if (left + menuWidth + margin > window.innerWidth) {
+    left = Math.max(margin, rect.right - menuWidth);
+  }
+  menu.style.left = `${left}px`;
   // Cap height to whichever side it opens toward so a long list (e.g. the
   // Columns custom checkbox list) scrolls internally instead of running off
   // the bottom of the viewport when there isn't 280px of room available.
