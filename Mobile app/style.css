@@ -1972,7 +1972,7 @@ input[type="password"]:focus {
 }
 
 .history-card-med {
-  font-size: calc(15px * var(--font-scale, 1));
+  font-size: calc(18px * var(--font-scale, 1));
   font-weight: 600;
   color: #252424;
 }
