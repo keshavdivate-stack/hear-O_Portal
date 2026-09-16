@@ -15,7 +15,8 @@ const SD_TAB_META = {
   reminderTimeRange: { title: "Add/Edit Reminder Time Range", addLabel: "Reminder Time Range" },
 };
 
-const sdKebabIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="1.7" fill="currentColor"/><circle cx="12" cy="12" r="1.7" fill="currentColor"/><circle cx="12" cy="19" r="1.7" fill="currentColor"/></svg>`;
+const sdEditIcon = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg>`;
+const sdTrashIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>`;
 
 function sdEsc(v) {
   return String(v == null ? "" : v)
@@ -75,7 +76,8 @@ function sdIaErrorDetails(row) {
 function sdActions(tabKey, idx) {
   return `
     <div class="bo-row-actions">
-      <button class="bo-action-icon row-menu-trigger" data-tab="${tabKey}" data-idx="${idx}" aria-label="Row actions">${sdKebabIcon}</button>
+      <button class="bo-action-icon sd-edit-trigger" data-tab="${tabKey}" data-idx="${idx}" aria-label="Edit">${sdEditIcon}</button>
+      <button class="bo-action-icon danger sd-delete-trigger" data-tab="${tabKey}" data-idx="${idx}" aria-label="Delete">${sdTrashIcon}</button>
     </div>`;
 }
 
@@ -208,11 +210,7 @@ document.getElementById("sentenceLangFilter").addEventListener("change", (e) => 
   sdSentencesPager();
 });
 
-/* ---------------- Row action dropdown (edit / delete) ---------------- */
-const sdRowMenu = document.getElementById("sdRowMenu");
-let activeSdTab = null;
-let activeSdIdx = null;
-
+/* ---------------- Row actions (edit / delete) ---------------- */
 document.querySelectorAll(".bo-list-table").forEach((table) => {
   table.addEventListener("click", (e) => {
     const expand = e.target.closest(".sd-question-expand");
@@ -226,33 +224,22 @@ document.querySelectorAll(".bo-list-table").forEach((table) => {
       expand.closest("tr").classList.toggle("is-expanded", !expanded);
       return;
     }
-    const trigger = e.target.closest(".row-menu-trigger");
-    if (!trigger) return;
-    e.stopPropagation();
-    activeSdTab = trigger.dataset.tab;
-    activeSdIdx = Number(trigger.dataset.idx);
-    const rect = trigger.getBoundingClientRect();
-    sdRowMenu.style.top = `${rect.bottom + 6}px`;
-    sdRowMenu.style.left = `${rect.right - 190}px`;
-    sdRowMenu.classList.add("open");
+
+    const editTrigger = e.target.closest(".sd-edit-trigger");
+    if (editTrigger) {
+      sdOpenDrawer(editTrigger.dataset.tab, Number(editTrigger.dataset.idx));
+      return;
+    }
+
+    const deleteTrigger = e.target.closest(".sd-delete-trigger");
+    if (deleteTrigger) {
+      const tabKey = deleteTrigger.dataset.tab;
+      const idx = Number(deleteTrigger.dataset.idx);
+      if (!confirm("Delete this entry?")) return;
+      SD_DATA[tabKey].splice(idx, 1);
+      sdRenderAllTables();
+    }
   });
-});
-
-document.addEventListener("click", (e) => {
-  if (!sdRowMenu.contains(e.target)) sdRowMenu.classList.remove("open");
-});
-
-sdRowMenu.addEventListener("click", (e) => {
-  const item = e.target.closest(".bo-row-menu-item");
-  if (!item || activeSdTab === null || activeSdIdx === null) return;
-  sdRowMenu.classList.remove("open");
-
-  if (item.dataset.action === "edit") sdOpenDrawer(activeSdTab, activeSdIdx);
-  if (item.dataset.action === "delete") {
-    if (!confirm("Delete this entry?")) return;
-    SD_DATA[activeSdTab].splice(activeSdIdx, 1);
-    sdRenderAllTables();
-  }
 });
 
 /* ---------------- Drawer state ---------------- */

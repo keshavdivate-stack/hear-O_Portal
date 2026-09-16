@@ -19,7 +19,7 @@ const TAB_META = {
   iaErrors: { title: "Create/Edit IA Errors Config", addLabel: "IA Error" },
 };
 
-const compKebabIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="1.7" fill="currentColor"/><circle cx="12" cy="12" r="1.7" fill="currentColor"/><circle cx="12" cy="19" r="1.7" fill="currentColor"/></svg>`;
+const compEditIcon = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg>`;
 const compTrashIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>`;
 const compPlusIcon = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>`;
 
@@ -61,7 +61,8 @@ function makeSimplePager(tabKey) {
         <td>${esc(e.r.creationDate)}</td>
         <td>
           <div class="bo-row-actions">
-            <button class="bo-action-icon row-menu-trigger" data-tab="${tabKey}" data-idx="${e.i}" aria-label="Row actions">${compKebabIcon}</button>
+            <button class="bo-action-icon config-edit-trigger" data-tab="${tabKey}" data-idx="${e.i}" aria-label="Edit">${compEditIcon}</button>
+            <button class="bo-action-icon danger config-delete-trigger" data-tab="${tabKey}" data-idx="${e.i}" aria-label="Delete">${compTrashIcon}</button>
           </div>
         </td>
       </tr>`,
@@ -100,16 +101,13 @@ function renderAllTables() {
 }
 renderAllTables();
 
-/* ---------------- Row action dropdown (edit / delete) ----------------
+/* ---------------- Row actions (edit / delete) ----------------
    Main Config only ever offers Delete (there's no in-place edit -- the
    drawer's own "Existing main config" + Load lets you start a new one
    from an old one's values, and Save always adds a new row), so it gets
    a direct icon instead of a menu. Every other tab offers two actions
-   (Edit, Delete), so those still go through the kebab dropdown. */
-const compRowMenu = document.getElementById("compRowMenu");
-let activeCompTab = null;
-let activeCompIdx = null;
-
+   (Edit, Delete) shown as direct icon buttons rather than a kebab
+   dropdown. */
 document.querySelectorAll(".bo-list-table").forEach((table) => {
   table.addEventListener("click", (e) => {
     const mainDeleteTrigger = e.target.closest(".main-delete-trigger");
@@ -121,33 +119,21 @@ document.querySelectorAll(".bo-list-table").forEach((table) => {
       return;
     }
 
-    const trigger = e.target.closest(".row-menu-trigger");
-    if (!trigger) return;
-    e.stopPropagation();
-    activeCompTab = trigger.dataset.tab;
-    activeCompIdx = Number(trigger.dataset.idx);
-    const rect = trigger.getBoundingClientRect();
-    compRowMenu.style.top = `${rect.bottom + 6}px`;
-    compRowMenu.style.left = `${rect.right - 190}px`;
-    compRowMenu.classList.add("open");
+    const editTrigger = e.target.closest(".config-edit-trigger");
+    if (editTrigger) {
+      openDrawer(editTrigger.dataset.tab, Number(editTrigger.dataset.idx));
+      return;
+    }
+
+    const deleteTrigger = e.target.closest(".config-delete-trigger");
+    if (deleteTrigger) {
+      const tabKey = deleteTrigger.dataset.tab;
+      const idx = Number(deleteTrigger.dataset.idx);
+      if (!confirm(`Delete "${DATA[tabKey][idx].name}"?`)) return;
+      DATA[tabKey].splice(idx, 1);
+      renderAllTables();
+    }
   });
-});
-
-document.addEventListener("click", (e) => {
-  if (!compRowMenu.contains(e.target)) compRowMenu.classList.remove("open");
-});
-
-compRowMenu.addEventListener("click", (e) => {
-  const item = e.target.closest(".bo-row-menu-item");
-  if (!item || activeCompTab === null || activeCompIdx === null) return;
-  compRowMenu.classList.remove("open");
-
-  if (item.dataset.action === "edit") openDrawer(activeCompTab, activeCompIdx);
-  if (item.dataset.action === "delete") {
-    if (!confirm(`Delete "${DATA[activeCompTab][activeCompIdx].name}"?`)) return;
-    DATA[activeCompTab].splice(activeCompIdx, 1);
-    renderAllTables();
-  }
 });
 
 document.querySelectorAll(".bo-add-config-btn").forEach((btn) => {
