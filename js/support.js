@@ -43,7 +43,6 @@ function renderTicketList() {
         }</td>
         <td><span class="ticket-pill ticket-pill-category">${t.category}</span></td>
         <td>${t.issueType}</td>
-        <td><span class="ticket-pill ${severityCellClass(t.severity)}">${t.severity}</span></td>
         <td><span class="ticket-pill ${stateCellClass(t.state)}">${t.state}</span></td>
         <td>${t.created}</td>
         <td>${t.assignedTo}</td>
@@ -53,7 +52,7 @@ function renderTicketList() {
     .join("");
   ticketRangeLabel.textContent = list.length ? `1-${list.length} of ${list.length}` : "";
   if (!list.length) {
-    ticketRows.innerHTML = `<tr><td colspan="10" style="text-align:center; color:var(--gray-text); padding:24px;">No tickets match the current filters.</td></tr>`;
+    ticketRows.innerHTML = `<tr><td colspan="9" style="text-align:center; color:var(--gray-text); padding:24px;">No tickets match the current filters.</td></tr>`;
   }
 }
 

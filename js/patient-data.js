@@ -1450,8 +1450,10 @@ function renderQuestionnaire() {
          is already surfaced via the hover tooltip above, so it's left alone
          to avoid changing how those existing questions look. */
       const tags = [];
-      if (q.answerType === "value") tags.push(`Value entry${q.valueLabel ? ` — ${q.valueLabel}` : ""}`);
-      if (q.noValueLabel) tags.push(`"No" also asks for: ${q.noValueLabel}`);
+      if (q.answerType === "value") {
+        const unitsNote = q.units?.length ? ` (${q.units.join(" / ")})` : "";
+        tags.push(`Value entry${q.valueLabel ? ` — ${q.valueLabel}` : ""}${unitsNote}`);
+      }
       const tagsHtml = tags.length
         ? `<div class="quest-config-tags">${tags.map((t) => `<span class="quest-config-tag">${t}</span>`).join("")}</div>`
         : "";
@@ -1483,24 +1485,61 @@ let nextQuestionNumber = questions.length + 1;
 
 const questAnswerTypeSelect = document.querySelector('#createQuestionForm .custom-select[data-name="answerType"]');
 const questValueSection = document.getElementById("questValueSection");
-const questYesNoSection = document.getElementById("questYesNoSection");
-const questYesCheckbox = document.querySelector('#createQuestionForm input[name="yesRequiresExtra"]');
-const questYesValueField = document.getElementById("questYesValueField");
-const questNoCheckbox = document.querySelector('#createQuestionForm input[name="noRequiresExtra"]');
-const questNoValueField = document.getElementById("questNoValueField");
+const questUnitsField = document.getElementById("questUnitsField");
+const questUnitList = document.getElementById("questUnitList");
+const questUnitInput = document.getElementById("questUnitInput");
+const questUnitAddBtn = document.getElementById("questUnitAddBtn");
+const questUnitsHidden = document.getElementById("questUnitsHidden");
+const questDefaultUnitHidden = document.getElementById("questDefaultUnitHidden");
+const DEFAULT_QUEST_UNITS = ["KG", "lbs"];
 
 questAnswerTypeSelect.querySelector("input[type=hidden]").addEventListener("change", (e) => {
   const isValue = e.target.value === "value";
   questValueSection.hidden = !isValue;
-  questYesNoSection.hidden = isValue;
+  questUnitsField.hidden = !isValue;
 });
 
-questYesCheckbox.addEventListener("change", () => {
-  questYesValueField.hidden = !questYesCheckbox.checked;
+function syncQuestUnitHiddenFields() {
+  const chips = [...questUnitList.querySelectorAll(".quest-unit-chip")];
+  questUnitsHidden.value = chips.map((c) => c.dataset.unit).join(",");
+  questDefaultUnitHidden.value = chips.find((c) => c.classList.contains("is-default"))?.dataset.unit || "";
+}
+
+function addQuestUnitChip(unit, makeDefault) {
+  const chip = document.createElement("span");
+  chip.className = "quest-unit-chip" + (makeDefault ? " is-default" : "");
+  chip.dataset.unit = unit;
+  chip.innerHTML = `${unit}<button type="button" class="quest-unit-remove" aria-label="Remove unit">&times;</button>`;
+  questUnitList.appendChild(chip);
+}
+
+questUnitList.addEventListener("click", (e) => {
+  if (e.target.closest(".quest-unit-remove")) {
+    const chip = e.target.closest(".quest-unit-chip");
+    const wasDefault = chip.classList.contains("is-default");
+    chip.remove();
+    if (wasDefault) questUnitList.querySelector(".quest-unit-chip")?.classList.add("is-default");
+  } else if (e.target.closest(".quest-unit-chip")) {
+    questUnitList.querySelectorAll(".quest-unit-chip").forEach((c) => c.classList.remove("is-default"));
+    e.target.closest(".quest-unit-chip").classList.add("is-default");
+  }
+  syncQuestUnitHiddenFields();
 });
 
-questNoCheckbox.addEventListener("change", () => {
-  questNoValueField.hidden = !questNoCheckbox.checked;
+function addQuestUnitFromInput() {
+  const unit = questUnitInput.value.trim();
+  if (!unit) return;
+  addQuestUnitChip(unit, questUnitList.children.length === 0);
+  questUnitInput.value = "";
+  syncQuestUnitHiddenFields();
+}
+
+questUnitAddBtn.addEventListener("click", addQuestUnitFromInput);
+questUnitInput.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    addQuestUnitFromInput();
+  }
 });
 
 wireAddModal("createQuestionOverlay", "createQuestionForm", "cancelCreateQuestion", "openCreateQuestionBtn", (fd) => {
@@ -1514,15 +1553,8 @@ wireAddModal("createQuestionOverlay", "createQuestionForm", "cancelCreateQuestio
 
   if (answerType === "value") {
     question.valueLabel = fd.get("valueLabel") || "Value";
-  } else {
-    if (fd.get("yesRequiresExtra")) {
-      question.valueLabel = fd.get("yesValueLabel") || "Value";
-      question.values = weeklyAnswers({});
-    }
-    if (fd.get("noRequiresExtra")) {
-      question.noValueLabel = fd.get("noValueLabel") || "Value";
-      question.noValues = weeklyAnswers({});
-    }
+    question.units = (fd.get("units") || "").split(",").filter(Boolean);
+    question.defaultUnit = fd.get("defaultUnit") || question.units[0];
   }
 
   questions.push(question);
@@ -1530,13 +1562,14 @@ wireAddModal("createQuestionOverlay", "createQuestionForm", "cancelCreateQuestio
 });
 
 /* Conditional sections aren't part of native form reset -- resync them to
-   their default (Yes/No visible, Value + both extra fields hidden) every
+   their default (Value section + units hidden, units reset to KG/lbs) every
    time the modal opens, since wireAddModal's own reset stays silent. */
 document.getElementById("openCreateQuestionBtn").addEventListener("click", () => {
   questValueSection.hidden = true;
-  questYesNoSection.hidden = false;
-  questYesValueField.hidden = true;
-  questNoValueField.hidden = true;
+  questUnitsField.hidden = true;
+  questUnitList.innerHTML = "";
+  DEFAULT_QUEST_UNITS.forEach((unit, i) => addQuestUnitChip(unit, i === 0));
+  syncQuestUnitHiddenFields();
 });
 
 document.getElementById("medStatusFilter").addEventListener("change", (e) => {

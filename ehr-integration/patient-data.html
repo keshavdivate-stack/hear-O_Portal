@@ -359,7 +359,6 @@
                 <span class="legend-chip"><span class="dot-outline"></span> Active</span>
                 <span class="legend-chip"><span class="dot-fill-red"></span> Priority</span>
                 <span class="legend-chip"><span class="dot-square-gray"></span> Baseline</span>
-                <span class="legend-chip"><span class="dot-hatch"></span> Not Recorded</span>
               </div>
               <div class="legend-group">
                 <span class="legend-group-label">
@@ -367,7 +366,7 @@
                   Monitoring:
                 </span>
                 <span class="legend-chip"><span class="dot-hatch"></span> Unmonitored</span>
-                <span class="legend-chip"><input type="checkbox" class="legend-checkbox" id="issuesToggle" aria-label="Show monitoring issues on chart" /><span class="dot-info-blue"></span> Issues</span>
+                <span class="legend-chip"><input type="checkbox" class="legend-checkbox" id="issuesToggle" aria-label="Show monitoring issues on chart" /><svg class="dot-info-blue" width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="var(--blue)"/><path d="M12 7V13" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="16.3" r="1.3" fill="#fff"/></svg> Issues</span>
               </div>
             </div>
           </div>
@@ -736,7 +735,7 @@
             <div class="subtab-panel open" data-subpanel="medication">
               <div class="med-legend">
                 <span><span class="med-legend-dot med-legend-taken"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span> Taken</span>
-                <span><span class="med-legend-dot med-legend-missed"><svg viewBox="0 0 24 24" fill="none"><path d="M6 6L18 18M18 6L6 18" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg></span> Missed</span>
+                <span><span class="med-legend-dot med-legend-missed"><svg viewBox="0 0 24 24" fill="none"><path d="M6 6L18 18M18 6L6 18" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg></span> Skipped</span>
                 <span><span class="med-legend-dot med-legend-not-recorded"></span> Not Recorded</span>
               </div>
               <div class="med-list" id="medList"></div>
@@ -1326,32 +1325,22 @@
 
         <div class="form-field" id="questValueSection" hidden>
           <label>Value Label<span class="required-star">*</span></label>
-          <input type="text" name="valueLabel" placeholder="e.g. Weight (lbs)" required />
+          <input type="text" name="valueLabel" placeholder="e.g. Weight" required />
         </div>
 
-        <div id="questYesNoSection">
-          <div class="quest-answer-config">
-            <p class="quest-answer-config-title">For "Yes"</p>
-            <label class="checkbox-filter-option">
-              <input type="checkbox" name="yesRequiresExtra" />
-              Ask the patient for an additional value or text
-            </label>
-            <div class="form-field" id="questYesValueField" hidden>
-              <label>Value Label</label>
-              <input type="text" name="yesValueLabel" placeholder="e.g. Pillows used" required />
-            </div>
+        <div class="form-field" id="questUnitsField" hidden>
+          <label>Units<span class="required-star">*</span></label>
+          <div class="quest-unit-list" id="questUnitList">
+            <span class="quest-unit-chip is-default" data-unit="KG">KG<button type="button" class="quest-unit-remove" aria-label="Remove unit">&times;</button></span>
+            <span class="quest-unit-chip" data-unit="lbs">lbs<button type="button" class="quest-unit-remove" aria-label="Remove unit">&times;</button></span>
           </div>
-          <div class="quest-answer-config">
-            <p class="quest-answer-config-title">For "No"</p>
-            <label class="checkbox-filter-option">
-              <input type="checkbox" name="noRequiresExtra" />
-              Ask the patient for an additional value or text
-            </label>
-            <div class="form-field" id="questNoValueField" hidden>
-              <label>Value Label</label>
-              <input type="text" name="noValueLabel" placeholder="e.g. Reason" required />
-            </div>
+          <div class="quest-unit-add-row">
+            <input type="text" id="questUnitInput" placeholder="Add another unit" />
+            <button type="button" class="btn-text" id="questUnitAddBtn">+ Add</button>
           </div>
+          <p class="quest-unit-hint">Click a unit to set it as the default the patient sees selected.</p>
+          <input type="hidden" name="units" id="questUnitsHidden" value="KG,lbs" />
+          <input type="hidden" name="defaultUnit" id="questDefaultUnitHidden" value="KG" />
         </div>
 
         <div class="modal-actions">
