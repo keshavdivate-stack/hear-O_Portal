@@ -1,8 +1,7 @@
 /* ---------------- Non-HMO Patients Events ---------------- */
 const PE_PAGE_SIZE = 20;
-const PE_APPROVED_OPTIONS = ["APPROVED", "DISAPPROVED"];
 
-/* ---------------- Multi-select checkbox filter (Clinical site / Event type / Approved) ----------------
+/* ---------------- Multi-select checkbox filter (Clinical site / Event type) ----------------
    Every value starts checked (= "All", no filtering). Unchecking items narrows the filter;
    the "All" row is just a shortcut that selects/clears every option at once. */
 const peCheckIcon = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
@@ -88,7 +87,6 @@ document.addEventListener("click", (e) => {
 
 let peSiteFilter = new Set(PE_SITES);
 let peEventTypeFilter = new Set(PE_EVENT_TYPES);
-let peApprovedFilter = new Set(PE_APPROVED_OPTIONS);
 let pePatientFilter = "";
 let peAddedByFilter = "";
 let peReportedByFilter = "";
@@ -107,12 +105,6 @@ const peEventTypeMultiSelect = wireMultiSelect("peEventTypeFilter", PE_EVENT_TYP
   pePager.resetPage();
   pePager();
 });
-const peApprovedMultiSelect = wireMultiSelect("peApprovedFilter", PE_APPROVED_OPTIONS, (selected) => {
-  peApprovedFilter = selected;
-  pePager.resetPage();
-  pePager();
-});
-
 function peFiltered() {
   return peEvents.filter((r) => {
     if (!!r.archived !== (peViewTab === "archived")) return false;
@@ -120,10 +112,6 @@ function peFiltered() {
       if (![...peSiteFilter].some((s) => r.username.startsWith(s))) return false;
     }
     if (peEventTypeFilter.size && peEventTypeFilter.size < PE_EVENT_TYPES.length && !peEventTypeFilter.has(r.eventType)) return false;
-    if (peApprovedFilter.size && peApprovedFilter.size < PE_APPROVED_OPTIONS.length) {
-      const label = r.approved ? "APPROVED" : "DISAPPROVED";
-      if (!peApprovedFilter.has(label)) return false;
-    }
 
     if (pePatientFilter) {
       const names = pePatientFilter.split(",").map((s) => s.trim().toLowerCase()).filter(Boolean);
@@ -161,7 +149,6 @@ const pePager = boCreatePager(
       <td>${peEsc(e.r.reportedTime)}</td>
       <td>${peEsc(e.r.startDate)}</td>
       <td>${peEsc(e.r.endDate)}</td>
-      <td><input type="checkbox" class="bo-cell-checkbox" data-id="${e.r.id}" data-field="approved" ${e.r.approved ? "checked" : ""} /></td>
       <td>${peEsc(e.r.status)}</td>
       <td>
         <div class="bo-row-actions">
@@ -169,7 +156,7 @@ const pePager = boCreatePager(
         </div>
       </td>
     </tr>`,
-  { pageSize: PE_PAGE_SIZE, emptyColspan: 13, emptyText: "No events found for the selected filters." }
+  { pageSize: PE_PAGE_SIZE, emptyColspan: 12, emptyText: "No events found for the selected filters." }
 );
 pePager();
 
@@ -261,10 +248,8 @@ document.getElementById("peReportedByFilter").addEventListener("input", (e) => {
 document.getElementById("peClearFiltersBtn").addEventListener("click", () => {
   peSiteMultiSelect.reset();
   peEventTypeMultiSelect.reset();
-  peApprovedMultiSelect.reset();
   peSiteFilter = new Set(PE_SITES);
   peEventTypeFilter = new Set(PE_EVENT_TYPES);
-  peApprovedFilter = new Set(PE_APPROVED_OPTIONS);
 
   pePatientFilter = "";
   peAddedByFilter = "";
