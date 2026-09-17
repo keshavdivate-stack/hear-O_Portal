@@ -10,7 +10,6 @@ const selectedTypes = new Set();
 const selectedCategories = new Set();
 const selectedIssueTypes = new Set();
 const selectedOrigins = new Set();
-const selectedSeverities = new Set();
 const selectedStates = new Set();
 /* Assigned Ticket used to be hard-locked to CURRENT_ASSIGNEE's own tickets;
    now it defaults to "just mine" via this filter (pre-checked below) but can
@@ -25,7 +24,6 @@ function filteredTicketList() {
     if (selectedCategories.size && !selectedCategories.has(t.category)) return false;
     if (selectedIssueTypes.size && !selectedIssueTypes.has(t.issueType)) return false;
     if (selectedOrigins.size && !selectedOrigins.has(t.origin)) return false;
-    if (selectedSeverities.size && !selectedSeverities.has(t.severity)) return false;
     if (selectedStates.size && !selectedStates.has(t.state)) return false;
     if (selectedAssignees.size && !selectedAssignees.has(t.assignedTo)) return false;
     if (term && !`${t.ticketId} ${t.who} ${t.organization}`.toLowerCase().includes(term)) return false;
@@ -163,10 +161,6 @@ const ticketOriginMenu = document.getElementById("ticketOriginMenu");
 ticketOriginMenu.innerHTML = buildOptionsHtml(ticketOrigins);
 wireCheckboxFilter(document.querySelector('.checkbox-filter[data-name="origin"]'), ticketOriginMenu, selectedOrigins, renderTicketList);
 
-const ticketSeverityMenu = document.getElementById("ticketSeverityMenu");
-ticketSeverityMenu.innerHTML = buildOptionsHtml(ticketSeverities);
-wireCheckboxFilter(document.querySelector('.checkbox-filter[data-name="severity"]'), ticketSeverityMenu, selectedSeverities, renderTicketList);
-
 const ticketStateMenu = document.getElementById("ticketStateMenu");
 ticketStateMenu.innerHTML = buildOptionsHtml(ticketStates);
 wireCheckboxFilter(document.querySelector('.checkbox-filter[data-name="state"]'), ticketStateMenu, selectedStates, renderTicketList);
@@ -194,7 +188,6 @@ const clearableTicketFilters = [
   { name: "category", menu: ticketCategoryMenu, set: selectedCategories, label: "Category" },
   { name: "issueType", menu: ticketIssueMenu, set: selectedIssueTypes, label: "Issue Type" },
   { name: "origin", menu: ticketOriginMenu, set: selectedOrigins, label: "Origin" },
-  { name: "severity", menu: ticketSeverityMenu, set: selectedSeverities, label: "Severity" },
   { name: "state", menu: ticketStateMenu, set: selectedStates, label: "State" },
   { name: "assignedTo", menu: ticketAssignedToMenu, set: selectedAssignees, label: "Assigned To" },
 ];
