@@ -53,7 +53,7 @@ rowsEl.innerHTML = billingList
   .map(
     (b) => `
     <tr data-patient="${b.name}">
-      <td><span class="bill-checkbox row-check"></span></td>
+      <td><span class="bill-checkbox row-check${b.codes[0].t === "pending" ? " disabled" : ""}"></span></td>
       <td><span class="lt-name active-name">${b.name}</span></td>
       <td>${b.id}</td>
       <td>${b.enrolled}</td>
@@ -162,6 +162,7 @@ function updateExportBtnState() {
 
 document.querySelectorAll(".bill-checkbox").forEach((box) => {
   box.addEventListener("click", () => {
+    if (box.classList.contains("disabled")) return;
     box.classList.toggle("checked");
     updateExportBtnState();
   });
@@ -169,7 +170,7 @@ document.querySelectorAll(".bill-checkbox").forEach((box) => {
 
 document.getElementById("selectAllBox").addEventListener("click", function () {
   const checked = this.classList.contains("checked");
-  document.querySelectorAll(".row-check").forEach((box) => box.classList.toggle("checked", checked));
+  document.querySelectorAll(".row-check:not(.disabled)").forEach((box) => box.classList.toggle("checked", checked));
   updateExportBtnState();
 });
 

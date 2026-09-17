@@ -91,7 +91,7 @@ function renderBillingRows() {
     .map(
       (b) => `
     <tr data-patient="${b.patientId}">
-      <td><span class="bill-checkbox row-check"></span></td>
+      <td><span class="bill-checkbox row-check${b.codes[0].t === "pending" ? " disabled" : ""}"></span></td>
       <td><span class="lt-name active-name">${b.patientId}</span></td>
       <td>${b.id}</td>
       <td>${b.enrolled}</td>
@@ -130,7 +130,7 @@ function goToTimeLog(patientId) {
 rowsEl.addEventListener("click", (e) => {
   const checkbox = e.target.closest(".bill-checkbox");
   if (checkbox) {
-    checkbox.classList.toggle("checked");
+    if (!checkbox.classList.contains("disabled")) checkbox.classList.toggle("checked");
     updateExportBtnState();
     return;
   }
@@ -150,7 +150,7 @@ rowsEl.addEventListener("click", (e) => {
 
 document.getElementById("selectAllBox").addEventListener("click", function () {
   const checked = this.classList.contains("checked");
-  document.querySelectorAll(".row-check").forEach((box) => box.classList.toggle("checked", checked));
+  document.querySelectorAll(".row-check:not(.disabled)").forEach((box) => box.classList.toggle("checked", checked));
   updateExportBtnState();
 });
 

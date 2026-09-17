@@ -314,12 +314,6 @@ document.getElementById("clearFilters").addEventListener("click", () => {
   resetFilterOnPageChange();
 });
 
-/* ---------------- Export popover (same pattern as Billing) ---------------- */
-wireTopbarToggle("exportReportBtn", "exportFormatPopover");
-document.querySelectorAll("#exportFormatPopover .more-menu-item").forEach((item) => {
-  item.addEventListener("click", () => document.getElementById("exportFormatPopover").classList.remove("open"));
-});
-
 /* ---------------- Custom dropdowns (same pattern as Billing / Patient List) ---------------- */
 function setCustomSelectValue(select, value, { silent = false } = {}) {
   const hiddenInput = select.querySelector("input[type=hidden]");

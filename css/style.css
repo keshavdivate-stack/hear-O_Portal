@@ -5348,7 +5348,8 @@ label.checkbox-field {
   margin-left: auto;
 }
 
-#scheduleBillingReportBtn { margin-left: 0; }
+#scheduleBillingReportBtn,
+#addTimeLogBtn { margin-left: 0; }
 
 .bill-checkbox {
   display: inline-block;
@@ -5380,6 +5381,12 @@ label.checkbox-field {
   border: solid #fff;
   border-width: 0 2px 2px 0;
   transform: rotate(45deg);
+}
+
+.bill-checkbox.disabled {
+  background: var(--bg);
+  border-color: var(--gray-border);
+  cursor: not-allowed;
 }
 
 .bill-th-check { width: 44px; }
