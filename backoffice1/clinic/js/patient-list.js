@@ -281,12 +281,6 @@ function renderPatientList() {
 
 renderPatientList();
 
-/* ---------------- Compliance filter ---------------- */
-const complianceMenu = document.getElementById("complianceMenu");
-complianceMenu.innerHTML = complianceRanges
-  .map((r) => `<label class="checkbox-filter-option"><input type="checkbox" value="${r.key}" />${r.label}</label>`)
-  .join("");
-
 const portaledFilterMenus = new Map();
 
 function positionFilterMenu(trigger, menu) {
@@ -365,8 +359,6 @@ function wireCheckboxFilter(wrapEl, menuEl, selectedSet, onChange) {
   });
 }
 
-wireCheckboxFilter(document.querySelector('.checkbox-filter[data-name="compliance"]'), complianceMenu, selectedComplianceRanges, renderPatientList);
-
 /* ---------------- Gender filter ---------------- */
 const genderMenu = document.getElementById("genderMenu");
 genderMenu.innerHTML = genderOptions.map((g) => `<label class="checkbox-filter-option"><input type="checkbox" value="${g.key}" />${g.label}</label>`).join("");
@@ -422,7 +414,6 @@ const clearableFilters = [
   { name: "account", menu: accountMenu, set: selectedAccounts, label: "Account" },
   { name: "status", menu: statusMenu, set: selectedStatuses, label: "Status" },
   { name: "monitoring", menu: monitoringMenu, set: selectedMonitorings, label: "Monitoring" },
-  { name: "compliance", menu: complianceMenu, set: selectedComplianceRanges, label: "Compliance" },
   { name: "gender", menu: genderMenu, set: selectedGenders, label: "Gender" },
   { name: "careTeam", menu: careTeamFilterMenu, set: selectedCareTeams, label: "Care Team" },
 ];

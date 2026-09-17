@@ -5419,6 +5419,125 @@ label.checkbox-field {
 .bill-status-not { color: #7E8993; }
 
 /* ============================================================
+   TIME LOG (billing sub-page)
+   ============================================================ */
+.tl-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #9AA5B1;
+  margin-bottom: 16px;
+}
+
+.tl-breadcrumb a { color: var(--gray-text); text-decoration: none; }
+.tl-breadcrumb a:hover { color: var(--blue); text-decoration: underline; }
+
+.tl-total-time {
+  font-size: 14px;
+  color: var(--gray-text);
+  margin: 0 0 14px;
+}
+
+.tl-total-time b { color: #23272E; font-weight: 700; }
+
+.tl-cell-trunc {
+  display: inline-block;
+  max-width: 150px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: bottom;
+}
+
+.tl-delete-btn { color: #7E8993; }
+.tl-delete-btn:hover { color: var(--red-text); background: var(--bg); }
+
+/* -- Month/year filter popover (reuses .checkbox-filter-menu show/hide + portal) -- */
+.month-popover { width: 220px; padding: 14px; }
+
+.month-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.month-cell {
+  padding: 9px 0;
+  text-align: center;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #23272E;
+  cursor: pointer;
+}
+
+.month-cell:hover { background: var(--bg); }
+.month-cell.selected { background: var(--blue-light); color: var(--blue-text); }
+
+/* -- Add Time Log modal: H/M/S boxes + AM/PM toggle -- */
+.tl-time-group { display: flex; align-items: flex-end; gap: 10px; }
+
+.tl-time-box { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+
+.tl-time-box input {
+  width: 48px;
+  text-align: center;
+  padding: 10px 4px;
+  border: 1px solid var(--gray-border);
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 14px;
+  color: #23272E;
+}
+
+.tl-time-box input:focus { outline: none; border-color: var(--blue); }
+.tl-time-box span { font-size: 11px; font-weight: 600; color: var(--gray-text); }
+
+.ampm-toggle {
+  display: flex;
+  border: 1px solid var(--gray-border);
+  border-radius: 8px;
+  overflow: hidden;
+  height: 39px;
+}
+
+.ampm-btn {
+  padding: 0 12px;
+  font-size: 12px;
+  font-weight: 700;
+  background: #fff;
+  color: var(--gray-text);
+  border: none;
+  cursor: pointer;
+}
+
+.ampm-btn.active { background: var(--blue); color: #fff; }
+
+.reg-date-field.clearable input { padding-right: 66px; }
+
+.reg-date-clear {
+  position: absolute;
+  right: 36px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #9AA5B1;
+  font-size: 18px;
+  line-height: 1;
+  padding: 2px;
+}
+
+.reg-date-clear:hover { color: #6B7684; }
+
+.bill-table-clickable tbody tr { cursor: pointer; }
+.bill-table-clickable tbody tr:hover { background: var(--bg); }
+
+/* ============================================================
    AUTH / ONBOARDING FLOW (email preview, EHR login, consent, login)
    ============================================================ */
 .auth-page {
