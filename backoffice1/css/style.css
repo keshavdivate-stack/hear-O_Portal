@@ -1304,23 +1304,30 @@ button.bo-name-link { background: none; border: none; padding: 0; font: inherit;
 .bo-row-menu-item:hover { background: var(--bg); }
 .bo-row-menu-item.danger { color: var(--red-text); }
 
-/* Static title for a single-purpose row menu (e.g. the audio row's Playback
-   speed list) -- labels the option list below it without being clickable. */
-.bo-row-menu-title {
+/* Drill-in header for a two-level row menu (e.g. the audio row's Playback
+   speed list) -- a back chevron plus the section title, so it's clear what
+   list is showing and how to return to the root menu. */
+.bo-row-menu-back {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 10px 6px;
-  font-size: 12.5px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.02em;
-  color: var(--gray-text);
+  width: 100%;
+  background: none;
+  border: none;
+  text-align: left;
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-size: 13.5px;
+  font-weight: 600;
+  font-family: inherit;
+  color: var(--ink);
+  cursor: pointer;
 }
 
-.bo-row-menu-title svg { flex-shrink: 0; }
+.bo-row-menu-back:hover { background: var(--bg); }
+.bo-row-menu-back svg { flex-shrink: 0; color: var(--gray-text); }
 
-.bo-row-menu-divider { height: 1px; background: var(--gray-border); margin: 2px 4px 6px; }
+.bo-row-menu-divider { height: 1px; background: var(--gray-border); margin: 6px 4px; }
 
 .bo-row-menu-scroll { max-height: 220px; overflow-y: auto; }
 
