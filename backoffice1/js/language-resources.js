@@ -173,6 +173,12 @@ function closeLrSpeedMenu() {
 }
 
 lrSpeedMenu.addEventListener("click", (e) => {
+  /* Stop this click from also reaching the document-level "click outside
+     closes the menu" listener below. Without this, swapping innerHTML here
+     detaches e.target from the DOM, so that listener's `lrSpeedMenu.contains
+     (e.target)` check sees a detached node, reads it as "outside", and
+     closes the menu we just opened/drilled into in the same tick. */
+  e.stopPropagation();
   const rec = lrRecordings.find((r) => r.id === lrSpeedMenuRecId);
   if (!rec) return;
 
@@ -249,6 +255,10 @@ function closeLrVolumeMenu() {
 }
 
 lrVolumeMenu.addEventListener("click", (e) => {
+  /* Same reason as lrSpeedMenu's listener: this re-renders lrVolumeMenu's
+     innerHTML, which would detach e.target and fool the document-level
+     "click outside" listener into closing the popup immediately. */
+  e.stopPropagation();
   if (e.target.id !== "lrVolumeMuteToggle") return;
   const rec = lrRecordings.find((r) => r.id === lrVolumeMenuRecId);
   if (!rec) return;
