@@ -6,7 +6,6 @@ let pmSearchTerm = "";
 let pmCurrentPage = 1;
 
 const pmEyeIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12S5.5 5 12 5s10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>`;
-const pmLockIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>`;
 
 function pmFilteredRows() {
   if (!pmSearchTerm) return CLINIC_PATIENTS;
@@ -33,7 +32,6 @@ function renderPmTable() {
         <td>
           <div class="b01-row-actions">
             <button type="button" class="b01-row-icon-btn" title="View Patient" aria-label="View ${p.id}">${pmEyeIcon}</button>
-            <button type="button" class="b01-row-icon-btn pm-reset-btn" data-id="${p.id}" title="Reset Password" aria-label="Reset password for ${p.id}">${pmLockIcon}</button>
           </div>
         </td>
       </tr>`
@@ -63,20 +61,5 @@ document.getElementById("pmLastPage").addEventListener("click", () => {
   pmCurrentPage = Math.max(1, Math.ceil(pmFilteredRows().length / PM_PAGE_SIZE));
   renderPmTable();
 });
-
-/* ---------------- Reset Password modal ---------------- */
-const pmResetOverlay = document.getElementById("pmResetPasswordOverlay");
-const pmResetNameEl = document.getElementById("pmResetPasswordName");
-
-document.getElementById("pmRows").addEventListener("click", (e) => {
-  const btn = e.target.closest(".pm-reset-btn");
-  if (!btn) return;
-  pmResetNameEl.textContent = btn.dataset.id;
-  pmResetOverlay.classList.add("open");
-});
-
-document.getElementById("pmCancelResetPassword").addEventListener("click", () => pmResetOverlay.classList.remove("open"));
-document.getElementById("pmConfirmResetPassword").addEventListener("click", () => pmResetOverlay.classList.remove("open"));
-pmResetOverlay.addEventListener("click", (e) => { if (e.target === pmResetOverlay) pmResetOverlay.classList.remove("open"); });
 
 renderPmTable();
