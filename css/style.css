@@ -5351,6 +5351,8 @@ label.checkbox-field {
 #scheduleBillingReportBtn,
 #addTimeLogBtn { margin-left: 0; }
 
+.tl-export-btn { margin-left: auto; }
+
 .bill-checkbox {
   display: inline-block;
   width: 18px;
