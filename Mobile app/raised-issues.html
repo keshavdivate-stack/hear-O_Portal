@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HearO - Raise an Issue</title>
+<title>HearO - Raised Issues</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -23,22 +23,68 @@
     </div>
 
     <div class="bp-header">
-      <button type="button" class="back-btn" onclick="window.location.href='/Mobile%20app/menu.html'">
+      <button type="button" class="back-btn" onclick="window.location.href='/Mobile%20app/my-issues.html'">
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M12.5 4L6.5 10L12.5 16" stroke="#252424" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
-      <h1>Raise an Issue</h1>
+      <h1>Raised Issues</h1>
     </div>
 
-    <div class="history-body">
-      <p class="issues-intro">Track the issues you've reported and their current status.<br>Need help with something new? Raise it below.</p>
-      <div class="issue-submit-wrap" style="margin-top:0; margin-bottom:14px;">
-        <button type="button" class="login-btn" onclick="window.location.href='/Mobile%20app/raise-issue.html'">Raise New Issue</button>
-      </div>
-      <div class="issue-submit-wrap" style="margin-top:0;">
-        <button type="button" class="contact-btn-outline" onclick="window.location.href='/Mobile%20app/raised-issues.html'">View Raised Issues</button>
-      </div>
-    </div>
+    <div class="history-body" id="issuesList"></div>
   </div>
 
+<script>
+  const ISSUES_KEY = "hearo_raised_issues";
+
+  const SEED_ISSUES = [
+    {
+      issue: "App is not working as expected",
+      detail: "The app freezes for a few seconds after I finish a recording.",
+      date: "Aug 15, 2026, 9:20 AM",
+      status: "in-progress",
+    },
+    {
+      issue: "App configuration seems incorrect",
+      detail: "",
+      date: "Aug 5, 2026, 4:05 PM",
+      status: "resolved",
+    },
+  ];
+
+  function loadIssues() {
+    try {
+      const raw = localStorage.getItem(ISSUES_KEY);
+      if (raw) return JSON.parse(raw);
+    } catch (e) {}
+    localStorage.setItem(ISSUES_KEY, JSON.stringify(SEED_ISSUES));
+    return SEED_ISSUES;
+  }
+
+  const STATUS_LABELS = { open: "Open", "in-progress": "In Progress", resolved: "Resolved" };
+
+  const issuesList = document.getElementById("issuesList");
+  const issues = loadIssues();
+
+  if (!issues.length) {
+    issuesList.innerHTML = `<p class="history-empty">No issues raised yet</p>`;
+  } else {
+    issuesList.innerHTML = issues
+      .map(
+        (i) => `
+      <div class="history-card">
+        <div class="history-card-head">
+          <div class="history-card-title-wrap">
+            <div class="history-card-top-row">
+              <span class="history-card-med">${i.issue}</span>
+            </div>
+            <div class="history-card-action">${i.date}</div>
+          </div>
+          <span class="issue-status-pill ${i.status}">${STATUS_LABELS[i.status] || "Open"}</span>
+        </div>
+        ${i.detail ? `<div class="history-card-note">${i.detail}</div>` : ""}
+      </div>`
+      )
+      .join("");
+  }
+</script>
 </body>
 </html>
