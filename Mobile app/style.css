@@ -2024,6 +2024,13 @@ input[type="password"]:focus {
   padding: 60px 20px;
 }
 
+.issues-intro {
+  font-size: calc(15px * var(--font-scale, 1));
+  color: #7a7f87;
+  line-height: 1.4;
+  margin-bottom: 18px;
+}
+
 .issue-status-pill {
   flex-shrink: 0;
   font-size: calc(12.5px * var(--font-scale, 1));
