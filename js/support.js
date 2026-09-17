@@ -2,7 +2,6 @@ const selectedTypes = new Set();
 const selectedCategories = new Set();
 const selectedIssueTypes = new Set();
 const selectedOrigins = new Set();
-const selectedSeverities = new Set();
 const selectedStates = new Set();
 /* Assigned Ticket used to be hard-locked to CURRENT_ASSIGNEE's own tickets;
    now it defaults to "just mine" via this filter (pre-checked below) but can
@@ -17,7 +16,6 @@ function filteredTicketList() {
     if (selectedCategories.size && !selectedCategories.has(t.category)) return false;
     if (selectedIssueTypes.size && !selectedIssueTypes.has(t.issueType)) return false;
     if (selectedOrigins.size && !selectedOrigins.has(t.origin)) return false;
-    if (selectedSeverities.size && !selectedSeverities.has(t.severity)) return false;
     if (selectedStates.size && !selectedStates.has(t.state)) return false;
     if (selectedAssignees.size && !selectedAssignees.has(t.assignedTo)) return false;
     if (term && !`${t.ticketId} ${t.who} ${t.patientName || ""} ${t.organization}`.toLowerCase().includes(term)) return false;
@@ -155,10 +153,6 @@ const ticketOriginMenu = document.getElementById("ticketOriginMenu");
 ticketOriginMenu.innerHTML = buildOptionsHtml(ticketOrigins);
 wireCheckboxFilter(document.querySelector('.checkbox-filter[data-name="origin"]'), ticketOriginMenu, selectedOrigins, renderTicketList);
 
-const ticketSeverityMenu = document.getElementById("ticketSeverityMenu");
-ticketSeverityMenu.innerHTML = buildOptionsHtml(ticketSeverities);
-wireCheckboxFilter(document.querySelector('.checkbox-filter[data-name="severity"]'), ticketSeverityMenu, selectedSeverities, renderTicketList);
-
 const ticketStateMenu = document.getElementById("ticketStateMenu");
 ticketStateMenu.innerHTML = buildOptionsHtml(ticketStates);
 wireCheckboxFilter(document.querySelector('.checkbox-filter[data-name="state"]'), ticketStateMenu, selectedStates, renderTicketList);
@@ -186,7 +180,6 @@ const clearableTicketFilters = [
   { name: "category", menu: ticketCategoryMenu, set: selectedCategories, label: "Category" },
   { name: "issueType", menu: ticketIssueMenu, set: selectedIssueTypes, label: "Issue Type" },
   { name: "origin", menu: ticketOriginMenu, set: selectedOrigins, label: "Origin" },
-  { name: "severity", menu: ticketSeverityMenu, set: selectedSeverities, label: "Severity" },
   { name: "state", menu: ticketStateMenu, set: selectedStates, label: "State" },
   { name: "assignedTo", menu: ticketAssignedToMenu, set: selectedAssignees, label: "Assigned To" },
 ];
@@ -220,7 +213,6 @@ const createTicketForm = document.getElementById("createTicketForm");
 const saveCreateTicketBtn = document.getElementById("saveCreateTicket");
 const createTicketCategorySelect = document.querySelector('#createTicketOverlay .custom-select[data-name="category"]');
 const createTicketIssueSelect = document.querySelector('#createTicketOverlay .custom-select[data-name="issueType"]');
-const createTicketSeveritySelect = document.querySelector('#createTicketOverlay .custom-select[data-name="severity"]');
 const createTicketLevelSelect = document.querySelector('#createTicketOverlay .custom-select[data-name="level"]');
 const createTicketAssignedToSelect = document.querySelector('#createTicketOverlay .custom-select[data-name="assignedTo"]');
 
@@ -229,7 +221,6 @@ const createTicketAssignedToSelect = document.querySelector('#createTicketOverla
 const CURRENT_USER = "Emily Carter";
 
 createTicketCategorySelect.querySelector(".custom-select-menu").innerHTML = buildCustomSelectOptions(ticketCategories.map((c) => c.label));
-createTicketSeveritySelect.querySelector(".custom-select-menu").innerHTML = buildCustomSelectOptions(ticketSeverities.map((s) => s.label));
 createTicketLevelSelect.querySelector(".custom-select-menu").innerHTML = buildCustomSelectOptions(ticketLevels.map((l) => l.label));
 createTicketAssignedToSelect.querySelector(".custom-select-menu").innerHTML = buildCustomSelectOptions(SUPPORT_TEAM_MEMBERS);
 
@@ -271,18 +262,17 @@ function closeCreateTicketModal() {
 
 document.getElementById("openCreateTicketBtn").addEventListener("click", openCreateTicketModal);
 document.getElementById("cancelCreateTicket").addEventListener("click", closeCreateTicketModal);
+document.getElementById("closeCreateTicketX").addEventListener("click", closeCreateTicketModal);
 createTicketOverlay.addEventListener("click", (e) => { if (e.target === createTicketOverlay) closeCreateTicketModal(); });
 
 function validateCreateTicketForm() {
   const categoryValue = createTicketCategorySelect.querySelector("input[type=hidden]").value;
   const issueValue = createTicketIssueSelect.querySelector("input[type=hidden]").value;
-  const severityValue = createTicketSeveritySelect.querySelector("input[type=hidden]").value;
   const levelValue = createTicketLevelSelect.querySelector("input[type=hidden]").value;
   const assignedToValue = createTicketAssignedToSelect.querySelector("input[type=hidden]").value;
   const valid =
     categoryValue !== "" &&
     issueValue !== "" &&
-    severityValue !== "" &&
     levelValue !== "" &&
     assignedToValue !== "" &&
     createTicketForm.description.value.trim() !== "";
@@ -295,7 +285,6 @@ createTicketForm.addEventListener("submit", (e) => {
   e.preventDefault();
   const categoryValue = createTicketCategorySelect.querySelector("input[type=hidden]").value;
   const issueValue = createTicketIssueSelect.querySelector("input[type=hidden]").value;
-  const severityValue = createTicketSeveritySelect.querySelector("input[type=hidden]").value;
   const levelValue = createTicketLevelSelect.querySelector("input[type=hidden]").value;
   const assignedToValue = createTicketAssignedToSelect.querySelector("input[type=hidden]").value;
   const today = new Date();
@@ -309,7 +298,7 @@ createTicketForm.addEventListener("submit", (e) => {
     category: categoryValue,
     issueType: issueValue,
     origin: "User Created",
-    severity: severityValue,
+    severity: "Medium",
     level: levelValue,
     state: "Open",
     assignedTo: assignedToValue,

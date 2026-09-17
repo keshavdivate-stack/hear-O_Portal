@@ -52,7 +52,7 @@ const rowsEl = document.getElementById("billingRows");
 rowsEl.innerHTML = billingList
   .map(
     (b) => `
-    <tr>
+    <tr data-patient="${b.name}">
       <td><span class="bill-checkbox row-check"></span></td>
       <td><span class="lt-name active-name">${b.name}</span></td>
       <td>${b.id}</td>
@@ -66,12 +66,89 @@ rowsEl.innerHTML = billingList
       <td>
         <div class="action-cell">
           <button class="action-icon" aria-label="Edit">${pencilIcon}</button>
-          <button class="action-icon kebab" aria-label="More">${kebabIcon}</button>
+          <button class="action-icon kebab row-menu-trigger" aria-label="More" data-patient="${b.name}">${kebabIcon}</button>
         </div>
       </td>
     </tr>`
   )
   .join("");
+
+function goToTimeLog(patientName) {
+  window.location.href = `time-log.html?patient=${encodeURIComponent(patientName)}`;
+}
+
+/* ---------------- Row action dropdown ---------------- */
+const billingRowMenu = document.getElementById("billingRowMenu");
+let activeRowPatientId = null;
+
+function openBillingRowMenuFor(patientName, trigger) {
+  activeRowPatientId = patientName;
+  const rect = trigger.getBoundingClientRect();
+  billingRowMenu.style.top = `${rect.bottom + 6}px`;
+  billingRowMenu.style.left = `${rect.right - 190}px`;
+  billingRowMenu.classList.add("open");
+}
+
+document.addEventListener("click", (e) => {
+  if (!billingRowMenu.contains(e.target)) billingRowMenu.classList.remove("open");
+});
+
+rowsEl.addEventListener("click", (e) => {
+  if (e.target.closest(".bill-checkbox") || e.target.closest(".row-menu-trigger") || e.target.closest(".action-cell")) return;
+  const tr = e.target.closest("tr[data-patient]");
+  if (tr) goToTimeLog(tr.dataset.patient);
+});
+
+billingRowMenu.addEventListener("click", (e) => {
+  const item = e.target.closest(".row-menu-item");
+  if (!item || activeRowPatientId === null) return;
+  billingRowMenu.classList.remove("open");
+
+  if (item.dataset.action === "initialTraining") openInitialTrainingModal();
+  else if (item.dataset.action === "timeLog") goToTimeLog(activeRowPatientId);
+});
+
+rowsEl.addEventListener("click", (e) => {
+  const trigger = e.target.closest(".row-menu-trigger");
+  if (!trigger) return;
+  e.stopPropagation();
+  openBillingRowMenuFor(trigger.dataset.patient, trigger);
+});
+
+/* ---------------- Initial Training Confirmation modal ---------------- */
+const initialTrainingOverlay = document.getElementById("initialTrainingOverlay");
+const initialTrainingCheckbox = document.getElementById("initialTrainingConfirmCheckbox");
+const trainingProviderSelect = document.getElementById("trainingProviderSelect");
+const trainingProviderInput = trainingProviderSelect.querySelector('input[type=hidden]');
+const saveInitialTraining = document.getElementById("saveInitialTraining");
+
+function validateInitialTrainingForm() {
+  const valid = initialTrainingCheckbox.checked && trainingProviderInput.value !== "";
+  saveInitialTraining.disabled = !valid;
+  saveInitialTraining.classList.toggle("enabled", valid);
+}
+
+initialTrainingCheckbox.addEventListener("change", validateInitialTrainingForm);
+trainingProviderInput.addEventListener("change", validateInitialTrainingForm);
+
+function openInitialTrainingModal() {
+  initialTrainingCheckbox.checked = false;
+  setCustomSelectValue(trainingProviderSelect, "", { silent: true });
+  validateInitialTrainingForm();
+  initialTrainingOverlay.classList.add("open");
+}
+
+function closeInitialTrainingModal() {
+  initialTrainingOverlay.classList.remove("open");
+}
+
+document.getElementById("cancelInitialTraining").addEventListener("click", closeInitialTrainingModal);
+initialTrainingOverlay.addEventListener("click", (e) => { if (e.target === initialTrainingOverlay) closeInitialTrainingModal(); });
+
+saveInitialTraining.addEventListener("click", () => {
+  if (saveInitialTraining.disabled) return;
+  closeInitialTrainingModal();
+});
 
 const exportReportBtn = document.getElementById("exportReportBtn");
 const exportFormatPopover = document.getElementById("exportFormatPopover");
