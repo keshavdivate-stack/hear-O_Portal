@@ -24,13 +24,6 @@ const patientList = [
    All Patients / My Patients scope toggle. */
 const CURRENT_TEAM_MEMBER = "Emily Carter";
 
-const complianceRanges = [
-  { key: "76-100", label: "76-100%", min: 76, max: 100 },
-  { key: "51-75", label: "51-75%", min: 51, max: 75 },
-  { key: "26-50", label: "26-50%", min: 26, max: 50 },
-  { key: "0-25", label: "0-25%", min: 0, max: 25 },
-];
-
 const genderOptions = [
   { key: "M", label: "Male (M)" },
   { key: "F", label: "Female (F)" },
@@ -69,7 +62,6 @@ const teamMemberOptions = [
   { key: "Sandy Kohl, RN", label: "Sandy Kohl, RN" },
 ];
 
-const selectedComplianceRanges = new Set();
 const selectedGenders = new Set();
 const selectedAccounts = new Set();
 const selectedStatuses = new Set();
@@ -237,14 +229,6 @@ function careTeamListPopoverHtml(p) {
     ${team.map((name) => `<div class="care-team-popover-item"><span class="care-team-popover-name">${name}</span></div>`).join("")}`;
 }
 
-function complianceInRange(value) {
-  if (!selectedComplianceRanges.size) return true;
-  return [...selectedComplianceRanges].some((key) => {
-    const range = complianceRanges.find((r) => r.key === key);
-    return range && value >= range.min && value <= range.max;
-  });
-}
-
 function genderLabel(gender) {
   return gender === "M" ? "(M)" : gender === "F" ? "(F)" : "(Other)";
 }
@@ -275,7 +259,6 @@ function patientChartHref(p, { tab } = {}) {
 function filteredPatientList() {
   return patientList.filter(
     (p) =>
-      complianceInRange(p.compliance) &&
       (!selectedGenders.size || selectedGenders.has(p.gender)) &&
       (!selectedAccounts.size || selectedAccounts.has(p.account)) &&
       (!selectedStatuses.size || selectedStatuses.has(p.status)) &&
@@ -342,18 +325,6 @@ function renderPatientList() {
 }
 
 renderPatientList();
-
-/* ---------------- Compliance filter ---------------- */
-const complianceMenu = document.getElementById("complianceMenu");
-complianceMenu.innerHTML = complianceRanges
-  .map(
-    (r) => `
-    <label class="checkbox-filter-option">
-      <input type="checkbox" value="${r.key}" />
-      ${r.label}
-    </label>`
-  )
-  .join("");
 
 /* Filter menus live inside .filters-bar, which needs overflow-x:auto for narrow
    viewports. That forces overflow-y to compute as auto too (CSS spec), clipping any
@@ -443,13 +414,6 @@ function wireCheckboxFilter(wrapEl, menuEl, selectedSet, onChange) {
     onChange();
   });
 }
-
-wireCheckboxFilter(
-  document.querySelector('.checkbox-filter[data-name="compliance"]'),
-  complianceMenu,
-  selectedComplianceRanges,
-  renderPatientList
-);
 
 /* ---------------- Gender filter ---------------- */
 const genderMenu = document.getElementById("genderMenu");
@@ -668,7 +632,6 @@ const clearableFilters = [
   { name: "account", menu: accountMenu, set: selectedAccounts, label: "Account" },
   { name: "status", menu: statusMenu, set: selectedStatuses, label: "Status" },
   { name: "monitoring", menu: monitoringMenu, set: selectedMonitorings, label: "Monitoring" },
-  { name: "compliance", menu: complianceMenu, set: selectedComplianceRanges, label: "Compliance" },
   { name: "gender", menu: genderMenu, set: selectedGenders, label: "Gender" },
   { name: "careTeam", menu: careTeamFilterMenu, set: selectedCareTeams, label: "Care Team" },
 ];
@@ -1246,9 +1209,6 @@ function describePatientListFilters() {
   }
   if (selectedMonitorings.size) {
     parts.push(`Monitoring = ${[...selectedMonitorings].map((k) => monitoringOptions.find((o) => o.key === k)?.label || k).join(", ")}`);
-  }
-  if (selectedComplianceRanges.size) {
-    parts.push(`Compliance = ${[...selectedComplianceRanges].map((k) => complianceRanges.find((r) => r.key === k)?.label || k).join(", ")}`);
   }
   if (selectedGenders.size) {
     parts.push(`Gender = ${[...selectedGenders].map((k) => genderOptions.find((o) => o.key === k)?.label || k).join(", ")}`);
