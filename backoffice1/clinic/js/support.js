@@ -327,7 +327,6 @@ const createTicketForm = document.getElementById("createTicketForm");
 const saveCreateTicketBtn = document.getElementById("saveCreateTicket");
 const createTicketCategorySelect = document.querySelector('#createTicketOverlay .custom-select[data-name="category"]');
 const createTicketIssueSelect = document.querySelector('#createTicketOverlay .custom-select[data-name="issueType"]');
-const createTicketSeveritySelect = document.querySelector('#createTicketOverlay .custom-select[data-name="severity"]');
 const createTicketLevelSelect = document.querySelector('#createTicketOverlay .custom-select[data-name="level"]');
 const createTicketAssignedToSelect = document.querySelector('#createTicketOverlay .custom-select[data-name="assignedTo"]');
 
@@ -336,7 +335,6 @@ const createTicketAssignedToSelect = document.querySelector('#createTicketOverla
 const CURRENT_USER = "Emily Carter";
 
 createTicketCategorySelect.querySelector(".custom-select-menu").innerHTML = buildCustomSelectOptions(ticketCategories.map((c) => c.label));
-createTicketSeveritySelect.querySelector(".custom-select-menu").innerHTML = buildCustomSelectOptions(ticketSeverities.map((s) => s.label));
 createTicketLevelSelect.querySelector(".custom-select-menu").innerHTML = buildCustomSelectOptions(ticketLevels.map((l) => l.label));
 createTicketAssignedToSelect.querySelector(".custom-select-menu").innerHTML = buildCustomSelectOptions(SUPPORT_TEAM_MEMBERS);
 
@@ -383,13 +381,11 @@ createTicketOverlay.addEventListener("click", (e) => { if (e.target === createTi
 function validateCreateTicketForm() {
   const categoryValue = createTicketCategorySelect.querySelector("input[type=hidden]").value;
   const issueValue = createTicketIssueSelect.querySelector("input[type=hidden]").value;
-  const severityValue = createTicketSeveritySelect.querySelector("input[type=hidden]").value;
   const levelValue = createTicketLevelSelect.querySelector("input[type=hidden]").value;
   const assignedToValue = createTicketAssignedToSelect.querySelector("input[type=hidden]").value;
   const valid =
     categoryValue !== "" &&
     issueValue !== "" &&
-    severityValue !== "" &&
     levelValue !== "" &&
     assignedToValue !== "" &&
     createTicketForm.description.value.trim() !== "";
@@ -402,7 +398,6 @@ createTicketForm.addEventListener("submit", (e) => {
   e.preventDefault();
   const categoryValue = createTicketCategorySelect.querySelector("input[type=hidden]").value;
   const issueValue = createTicketIssueSelect.querySelector("input[type=hidden]").value;
-  const severityValue = createTicketSeveritySelect.querySelector("input[type=hidden]").value;
   const levelValue = createTicketLevelSelect.querySelector("input[type=hidden]").value;
   const assignedToValue = createTicketAssignedToSelect.querySelector("input[type=hidden]").value;
   const today = new Date();
@@ -416,7 +411,7 @@ createTicketForm.addEventListener("submit", (e) => {
     category: categoryValue,
     issueType: issueValue,
     origin: "User Created",
-    severity: severityValue,
+    severity: "Medium",
     level: levelValue,
     state: "Open",
     assignedTo: assignedToValue,
