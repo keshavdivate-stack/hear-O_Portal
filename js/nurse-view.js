@@ -81,8 +81,8 @@ function setMonthRow(id, days) {
 /* ---------------- Overview chart (status timeline) ---------------- */
 const FALLBACK_COL_W = 40;
 const PAD = 30;
-const CHART_H = 150;
-const Y = { baseline: 118, active: 71, priority: 62 };
+const CHART_H = 100;
+const Y = { baseline: 65, active: 65, priority: 65 };
 
 let COL_W = FALLBACK_COL_W;
 let CHART_W = PAD * 2 + (chartDays.length - 1) * COL_W;
