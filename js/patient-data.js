@@ -49,12 +49,6 @@ const availableCareTeamMembers = [
   { name: "James Wilson", role: "Social Worker · Care Team" },
   { name: "Elena Rodriguez", role: "Nurse · Care Team" },
 ];
-/* Titles a care-team member's role can be reassigned to via the edit panel.
-   The primary provider (role includes "Provider") isn't part of this pool and
-   isn't editable/removable here -- they're the patient's doctor, not a
-   care-team assignment this panel manages. */
-const CARE_TEAM_ROLE_TITLES = ["Nurse", "Care Coordinator", "Pharmacist", "Social Worker"];
-
 const careTeamPopover = document.getElementById("careTeamPopover");
 const careTeamTitle = careTeamPopover.querySelector(".care-team-popover-title");
 const careTeamMemberList = document.createElement("div");
@@ -62,7 +56,6 @@ const careTeamHeading = document.createElement("div");
 const openCareTeamAdd = document.createElement("button");
 const careTeamAddPanel = document.createElement("div");
 const careTeamMultiselect = document.createElement("div");
-const careTeamEditPanel = document.createElement("div");
 
 careTeamMemberList.id = "careTeamMemberList";
 careTeamHeading.className = "care-team-popover-heading";
@@ -76,14 +69,8 @@ careTeamAddPanel.innerHTML = '<span class="care-team-add-label">Select care team
 careTeamAddPanel.append(careTeamMultiselect);
 careTeamAddPanel.insertAdjacentHTML("beforeend", '<div class="care-team-add-actions"><button type="button" class="btn-text care-team-cancel-button">Cancel</button><button type="button" class="care-team-confirm-button">Add selected</button></div>');
 
-/* Same flyout treatment as the "+ Add member" panel -- content is rebuilt
-   each time it opens (via openCareTeamEditPanel) since it targets whichever
-   row's edit icon was clicked. */
-careTeamEditPanel.className = "care-team-add-panel";
-careTeamEditPanel.hidden = true;
-
 careTeamHeading.append(careTeamTitle, openCareTeamAdd);
-careTeamPopover.replaceChildren(careTeamHeading, careTeamMemberList, careTeamAddPanel, careTeamEditPanel);
+careTeamPopover.replaceChildren(careTeamHeading, careTeamMemberList, careTeamAddPanel);
 
 function renderPatientCareTeam() {
   careTeamMemberList.innerHTML = patientCareTeam.map((member) => {
@@ -96,9 +83,6 @@ function renderPatientCareTeam() {
       </div>
       ${isProvider ? "" : `
       <div class="care-team-item-actions">
-        <button type="button" class="care-team-edit-button" data-name="${member.name}" title="Edit role" aria-label="Edit ${member.name}'s role">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
-        </button>
         <button type="button" class="care-team-remove-button" data-name="${member.name}" title="Remove from care team" aria-label="Remove ${member.name} from care team">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6L18 18M18 6L6 18"/></svg>
         </button>
@@ -117,16 +101,8 @@ careTeamMemberList.addEventListener("click", (event) => {
     const index = patientCareTeam.findIndex((member) => member.name === name);
     if (index === -1) return;
     patientCareTeam.splice(index, 1);
-    if (careTeamEditPanel.dataset.name === name) closeCareTeamEditPanel();
     renderPatientCareTeam();
     renderCareTeamMultiselect();
-    return;
-  }
-
-  const editBtn = event.target.closest(".care-team-edit-button");
-  if (editBtn) {
-    event.stopPropagation();
-    openCareTeamEditPanel(editBtn.dataset.name);
   }
 });
 
@@ -143,43 +119,11 @@ function closeCareTeamAddPanel() {
   openCareTeamAdd.hidden = false;
 }
 
-/* Builds the edit panel's content fresh for whichever member's edit icon was
-   clicked, mirroring the "+ Add member" flyout's look but with a single role
-   select instead of a multiselect. Only one flyout (add or edit) is open at
-   a time. */
-function openCareTeamEditPanel(name) {
-  const member = patientCareTeam.find((item) => item.name === name);
-  if (!member) return;
-  closeCareTeamAddPanel();
-
-  const currentTitle = member.role.split(" · ")[0];
-  careTeamEditPanel.innerHTML = `
-    <span class="care-team-add-label">Edit role &mdash; ${member.name}</span>
-    <select class="care-team-role-select">
-      ${CARE_TEAM_ROLE_TITLES.map((title) => `<option value="${title}"${title === currentTitle ? " selected" : ""}>${title}</option>`).join("")}
-    </select>
-    <div class="care-team-add-actions">
-      <button type="button" class="btn-text care-team-edit-cancel-button">Cancel</button>
-      <button type="button" class="care-team-confirm-button care-team-edit-save-button">Save</button>
-    </div>`;
-  careTeamEditPanel.dataset.name = name;
-  careTeamEditPanel.hidden = false;
-  openCareTeamAdd.hidden = true;
-}
-
-function closeCareTeamEditPanel() {
-  careTeamEditPanel.hidden = true;
-  careTeamEditPanel.innerHTML = "";
-  delete careTeamEditPanel.dataset.name;
-  openCareTeamAdd.hidden = false;
-}
-
 renderPatientCareTeam();
 renderCareTeamMultiselect();
 
 openCareTeamAdd.addEventListener("click", (event) => {
   event.stopPropagation();
-  closeCareTeamEditPanel();
   careTeamAddPanel.hidden = false;
   openCareTeamAdd.hidden = true;
 });
@@ -197,22 +141,6 @@ careTeamAddPanel.querySelector(".care-team-confirm-button").addEventListener("cl
   renderPatientCareTeam();
   renderCareTeamMultiselect();
   closeCareTeamAddPanel();
-});
-
-careTeamEditPanel.addEventListener("click", (event) => {
-  event.stopPropagation();
-  if (event.target.closest(".care-team-edit-cancel-button")) {
-    closeCareTeamEditPanel();
-    return;
-  }
-  if (event.target.closest(".care-team-edit-save-button")) {
-    const name = careTeamEditPanel.dataset.name;
-    const member = patientCareTeam.find((item) => item.name === name);
-    const select = careTeamEditPanel.querySelector(".care-team-role-select");
-    if (member && select) member.role = `${select.value} · Care Team`;
-    closeCareTeamEditPanel();
-    renderPatientCareTeam();
-  }
 });
 
 /* ---------------- App & Device Info popover ---------------- */
