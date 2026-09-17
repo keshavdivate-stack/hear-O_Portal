@@ -65,7 +65,7 @@ const lrPager = boCreatePager(
           <button class="bo-audio-play" data-id="${e.r.id}" aria-label="Play">${lrPlayIcon}</button>
           <span class="bo-audio-time">${lrDuration(e.r.duration)}</span>
           <div class="bo-audio-track"><div class="bo-audio-fill"></div></div>
-          <button class="bo-action-icon lr-volume-btn" type="button" data-id="${e.r.id}" aria-label="${e.r.muted ? "Unmute" : "Mute"}">${e.r.muted ? lrVolumeMutedIcon : lrVolumeIcon}</button>
+          <button class="bo-action-icon lr-volume-btn" type="button" data-id="${e.r.id}" aria-label="${e.r.muted || lrVolumeOf(e.r) === 0 ? "Unmute" : "Mute"}">${e.r.muted || lrVolumeOf(e.r) === 0 ? lrVolumeMutedIcon : lrVolumeIcon}</button>
           <button class="bo-action-icon lr-more-btn" type="button" data-id="${e.r.id}" aria-label="Playback options">${lrKebabIcon}</button>
         </div>
       </td>
@@ -97,12 +97,8 @@ document.getElementById("lrRows").addEventListener("click", (e) => {
 
   const volumeBtn = e.target.closest(".lr-volume-btn");
   if (volumeBtn) {
-    const id = Number(volumeBtn.dataset.id);
-    const rec = lrRecordings.find((r) => r.id === id);
-    if (!rec) return;
-    rec.muted = !rec.muted;
-    volumeBtn.innerHTML = rec.muted ? lrVolumeMutedIcon : lrVolumeIcon;
-    volumeBtn.setAttribute("aria-label", rec.muted ? "Unmute" : "Mute");
+    e.stopPropagation();
+    openLrVolumeMenu(Number(volumeBtn.dataset.id), volumeBtn);
     return;
   }
 
@@ -139,6 +135,7 @@ function lrSpeedMenuListHtml(rec) {
 function openLrSpeedMenu(id, anchorBtn) {
   const rec = lrRecordings.find((r) => r.id === id);
   if (!rec) return;
+  closeLrVolumeMenu();
   lrSpeedMenuRecId = id;
   lrSpeedMenu.innerHTML = lrSpeedMenuRootHtml();
 
@@ -170,8 +167,82 @@ lrSpeedMenu.addEventListener("click", (e) => {
   }
 });
 
+/* ---------------- Volume popover ----------------
+   Opens on the volume icon, holds a slider (0-100) plus a mute toggle so the
+   level itself can be adjusted rather than only muting/unmuting. */
+const lrVolumeMenu = document.getElementById("lrVolumeMenu");
+let lrVolumeMenuRecId = null;
+
+function lrVolumeOf(rec) {
+  return typeof rec.volume === "number" ? rec.volume : 100;
+}
+
+function lrRowVolumeBtn(id) {
+  return document.querySelector(`.lr-volume-btn[data-id="${id}"]`);
+}
+
+function lrRefreshVolumeBtnIcon(rec) {
+  const btn = lrRowVolumeBtn(rec.id);
+  if (!btn) return;
+  const isMuted = rec.muted || lrVolumeOf(rec) === 0;
+  btn.innerHTML = isMuted ? lrVolumeMutedIcon : lrVolumeIcon;
+  btn.setAttribute("aria-label", isMuted ? "Unmute" : "Mute");
+}
+
+function lrVolumeMenuHtml(rec) {
+  const vol = rec.muted ? 0 : lrVolumeOf(rec);
+  const isMuted = rec.muted || lrVolumeOf(rec) === 0;
+  return `
+    <div class="bo-volume-menu-row">
+      <button type="button" class="bo-action-icon" id="lrVolumeMuteToggle" aria-label="${isMuted ? "Unmute" : "Mute"}">${isMuted ? lrVolumeMutedIcon : lrVolumeIcon}</button>
+      <input type="range" class="bo-volume-slider" id="lrVolumeSlider" min="0" max="100" value="${vol}" />
+      <span class="bo-volume-value" id="lrVolumeValue">${vol}%</span>
+    </div>`;
+}
+
+function openLrVolumeMenu(id, anchorBtn) {
+  const rec = lrRecordings.find((r) => r.id === id);
+  if (!rec) return;
+  closeLrSpeedMenu();
+  lrVolumeMenuRecId = id;
+  lrVolumeMenu.innerHTML = lrVolumeMenuHtml(rec);
+
+  const rect = anchorBtn.getBoundingClientRect();
+  lrVolumeMenu.style.top = `${rect.bottom + 6}px`;
+  lrVolumeMenu.style.left = `${rect.right - 190}px`;
+  lrVolumeMenu.classList.add("open");
+}
+
+function closeLrVolumeMenu() {
+  lrVolumeMenu.classList.remove("open");
+  lrVolumeMenuRecId = null;
+}
+
+lrVolumeMenu.addEventListener("click", (e) => {
+  if (e.target.id !== "lrVolumeMuteToggle") return;
+  const rec = lrRecordings.find((r) => r.id === lrVolumeMenuRecId);
+  if (!rec) return;
+  rec.muted = !rec.muted;
+  lrVolumeMenu.innerHTML = lrVolumeMenuHtml(rec);
+  lrRefreshVolumeBtnIcon(rec);
+});
+
+lrVolumeMenu.addEventListener("input", (e) => {
+  if (e.target.id !== "lrVolumeSlider") return;
+  const rec = lrRecordings.find((r) => r.id === lrVolumeMenuRecId);
+  if (!rec) return;
+  rec.volume = Number(e.target.value);
+  rec.muted = rec.volume === 0;
+  document.getElementById("lrVolumeValue").textContent = `${rec.volume}%`;
+  const muteBtn = document.getElementById("lrVolumeMuteToggle");
+  muteBtn.innerHTML = rec.muted ? lrVolumeMutedIcon : lrVolumeIcon;
+  muteBtn.setAttribute("aria-label", rec.muted ? "Unmute" : "Mute");
+  lrRefreshVolumeBtnIcon(rec);
+});
+
 document.addEventListener("click", (e) => {
   if (!lrSpeedMenu.contains(e.target)) closeLrSpeedMenu();
+  if (!lrVolumeMenu.contains(e.target)) closeLrVolumeMenu();
 });
 
 /* Filters apply as soon as a field changes -- no Apply button to batch them. */

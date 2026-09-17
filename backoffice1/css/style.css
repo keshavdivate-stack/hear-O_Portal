@@ -2542,6 +2542,55 @@ a.bo-btn-secondary { text-decoration: none; }
   background: var(--blue);
 }
 
+/* Volume popover — opens on the row's volume icon, holds a slider so the
+   level can be adjusted rather than only muted/unmuted. */
+.bo-volume-menu { min-width: 190px; }
+
+.bo-volume-menu-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 6px;
+}
+
+.bo-volume-slider {
+  flex: 1;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 3px;
+  border-radius: 999px;
+  background: var(--gray-border);
+  accent-color: var(--blue);
+  cursor: pointer;
+}
+
+.bo-volume-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: var(--blue);
+  cursor: pointer;
+}
+
+.bo-volume-slider::-moz-range-thumb {
+  width: 13px;
+  height: 13px;
+  border: none;
+  border-radius: 50%;
+  background: var(--blue);
+  cursor: pointer;
+}
+
+.bo-volume-value {
+  flex-shrink: 0;
+  min-width: 34px;
+  text-align: right;
+  font-size: 12.5px;
+  color: var(--gray-text);
+}
+
 /* Waveform variant of the audio player track (ticket-detail Recording section) --
    two stacked identical bar rows, the top one colored and width-clipped to the
    playback position, so the underlying gray bars are revealed as "unplayed". */
