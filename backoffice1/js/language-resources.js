@@ -36,7 +36,7 @@ const lrKebabIcon = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none"
 const lrSpeedIcon = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21a9 9 0 1 1 6.36-2.64"/><path d="M12 7v5l3 2"/><path d="M21 3v5h-5"/></svg>`;
 const lrChevronIcon = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>`;
 const lrCheckIcon = `<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
-const LR_SPEEDS = ["0.5", "0.75", "Normal", "1.25", "1.5"];
+const LR_SPEEDS = ["0.5x", "0.75x", "1x", "1.25x", "1.5x", "2x"];
 
 function lrCurrentUserName() {
   const el = document.querySelector(".bo-user-name");
@@ -126,7 +126,7 @@ function lrSpeedMenuRootHtml() {
 }
 
 function lrSpeedMenuListHtml(rec) {
-  const current = rec.speed || "Normal";
+  const current = rec.speed || "1x";
   return LR_SPEEDS.map(
     (v) => `<div class="bo-select-option${v === current ? " selected" : ""}" data-speed="${v}">${v}${lrCheckIcon}</div>`
   ).join("");
