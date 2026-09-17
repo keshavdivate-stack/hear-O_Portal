@@ -166,6 +166,14 @@ function buildFilterSelectOptions(values, clearLabel) {
   return clearOption + buildSelectOptions(values);
 }
 
+/* Only offer report types that actually appear in the given rows, rather than
+   every report type that has ever existed, so the filter can't list options
+   with nothing to show. */
+function rmReportTypeLabelsInUse(rows) {
+  const keysInUse = new Set(rows.map((r) => r.reportKey));
+  return RM_REPORTS.filter((r) => keysInUse.has(r.key)).map((r) => r.label);
+}
+
 /* ---------------- Scheduled Reports ---------------- */
 let rmScheduleSearch = "";
 let rmScheduleTypeFilter = "";
@@ -173,7 +181,7 @@ let rmScheduleOrgFilter = "";
 let rmScheduleStatusFilter = "";
 let rmScheduleFrequencyFilter = "";
 
-document.getElementById("rmReportTypeFilterMenu").innerHTML = buildFilterSelectOptions(RM_REPORTS.map((r) => r.label), "All report types");
+document.getElementById("rmReportTypeFilterMenu").innerHTML = buildFilterSelectOptions(rmReportTypeLabelsInUse(rmSchedules.filter((s) => !s.archived)), "All report types");
 document.getElementById("rmOrgFilterMenu").innerHTML = buildFilterSelectOptions(RM_ORGS, "All organisations");
 document.getElementById("rmStatusFilterMenu").innerHTML = buildFilterSelectOptions(RM_STATUSES, "All statuses");
 document.getElementById("rmFrequencyFilterMenu").innerHTML = buildFilterSelectOptions(RM_FREQUENCIES, "All frequencies");
@@ -284,7 +292,7 @@ let rmArchivedOrgFilter = "";
 let rmArchivedStatusFilter = "";
 let rmArchivedFrequencyFilter = "";
 
-document.getElementById("rmArchivedReportTypeFilterMenu").innerHTML = buildFilterSelectOptions(RM_REPORTS.map((r) => r.label), "All report types");
+document.getElementById("rmArchivedReportTypeFilterMenu").innerHTML = buildFilterSelectOptions(rmReportTypeLabelsInUse(rmSchedules.filter((s) => s.archived)), "All report types");
 document.getElementById("rmArchivedOrgFilterMenu").innerHTML = buildFilterSelectOptions(RM_ORGS, "All organisations");
 document.getElementById("rmArchivedStatusFilterMenu").innerHTML = buildFilterSelectOptions(RM_STATUSES, "All statuses");
 document.getElementById("rmArchivedFrequencyFilterMenu").innerHTML = buildFilterSelectOptions(RM_FREQUENCIES, "All frequencies");
