@@ -35,6 +35,7 @@ const lrVolumeMutedIcon = `<svg width="15" height="15" viewBox="0 0 24 24" fill=
 const lrKebabIcon = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="1.7" fill="currentColor"/><circle cx="12" cy="12" r="1.7" fill="currentColor"/><circle cx="12" cy="19" r="1.7" fill="currentColor"/></svg>`;
 const lrSpeedIcon = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21a9 9 0 1 1 6.36-2.64"/><path d="M12 7v5l3 2"/><path d="M21 3v5h-5"/></svg>`;
 const lrChevronIcon = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>`;
+const lrBackChevronIcon = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>`;
 const lrCheckIcon = `<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 const LR_SPEEDS = ["0.5x", "0.75x", "1x", "1.25x", "1.5x", "2x"];
 
@@ -127,9 +128,31 @@ function lrSpeedMenuRootHtml() {
 
 function lrSpeedMenuListHtml(rec) {
   const current = rec.speed || "1x";
-  return LR_SPEEDS.map(
-    (v) => `<div class="bo-select-option${v === current ? " selected" : ""}" data-speed="${v}">${v}${lrCheckIcon}</div>`
-  ).join("");
+  return `
+    <button type="button" class="bo-row-menu-back" data-step="back">
+      ${lrBackChevronIcon}
+      <span>Playback speed</span>
+    </button>
+    <div class="bo-row-menu-divider"></div>
+    <div class="bo-row-menu-scroll">
+      ${LR_SPEEDS.map(
+        (v) => `<div class="bo-select-option${v === current ? " selected" : ""}" data-speed="${v}">${v}${lrCheckIcon}</div>`
+      ).join("")}
+    </div>`;
+}
+
+let lrSpeedMenuAnchor = null;
+
+function lrPositionSpeedMenu() {
+  if (!lrSpeedMenuAnchor) return;
+  const rect = lrSpeedMenuAnchor.getBoundingClientRect();
+  const margin = 12;
+  const menuHeight = lrSpeedMenu.offsetHeight;
+  const spaceBelow = window.innerHeight - rect.bottom;
+  const openUpward = spaceBelow < menuHeight + margin && rect.top > spaceBelow;
+  lrSpeedMenu.style.top = openUpward ? "auto" : `${rect.bottom + 6}px`;
+  lrSpeedMenu.style.bottom = openUpward ? `${window.innerHeight - rect.top + 6}px` : "auto";
+  lrSpeedMenu.style.left = `${rect.right - 190}px`;
 }
 
 function openLrSpeedMenu(id, anchorBtn) {
@@ -137,26 +160,33 @@ function openLrSpeedMenu(id, anchorBtn) {
   if (!rec) return;
   closeLrVolumeMenu();
   lrSpeedMenuRecId = id;
+  lrSpeedMenuAnchor = anchorBtn;
   lrSpeedMenu.innerHTML = lrSpeedMenuRootHtml();
-
-  const rect = anchorBtn.getBoundingClientRect();
-  lrSpeedMenu.style.top = `${rect.bottom + 6}px`;
-  lrSpeedMenu.style.left = `${rect.right - 190}px`;
   lrSpeedMenu.classList.add("open");
+  lrPositionSpeedMenu();
 }
 
 function closeLrSpeedMenu() {
   lrSpeedMenu.classList.remove("open");
   lrSpeedMenuRecId = null;
+  lrSpeedMenuAnchor = null;
 }
 
 lrSpeedMenu.addEventListener("click", (e) => {
   const rec = lrRecordings.find((r) => r.id === lrSpeedMenuRecId);
   if (!rec) return;
 
+  const backBtn = e.target.closest('[data-step="back"]');
+  if (backBtn) {
+    lrSpeedMenu.innerHTML = lrSpeedMenuRootHtml();
+    lrPositionSpeedMenu();
+    return;
+  }
+
   const stepBtn = e.target.closest('[data-step="speed"]');
   if (stepBtn) {
     lrSpeedMenu.innerHTML = lrSpeedMenuListHtml(rec);
+    lrPositionSpeedMenu();
     return;
   }
 

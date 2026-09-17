@@ -1304,6 +1304,33 @@ button.bo-name-link { background: none; border: none; padding: 0; font: inherit;
 .bo-row-menu-item:hover { background: var(--bg); }
 .bo-row-menu-item.danger { color: var(--red-text); }
 
+/* Drill-in header for a two-level row menu (e.g. the audio row's Playback
+   speed list) -- a back chevron plus the section title, so it's clear what
+   list is showing and how to return to the root menu. */
+.bo-row-menu-back {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  background: none;
+  border: none;
+  text-align: left;
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-size: 13.5px;
+  font-weight: 600;
+  font-family: inherit;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.bo-row-menu-back:hover { background: var(--bg); }
+.bo-row-menu-back svg { flex-shrink: 0; color: var(--gray-text); }
+
+.bo-row-menu-divider { height: 1px; background: var(--gray-border); margin: 6px 4px; }
+
+.bo-row-menu-scroll { max-height: 220px; overflow-y: auto; }
+
 /* Switch toggle (e.g. HMO on/off) */
 .bo-switch-field {
   display: inline-flex;
