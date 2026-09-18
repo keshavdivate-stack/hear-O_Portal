@@ -239,7 +239,8 @@ function renderForOrg(orgIds) {
   renderDnr(seed + 11);
 }
 
-mktRenderOrgSelect("mktSummaryOrgSelect", renderForOrg);
+const mktSummaryOrgSelectApi = mktRenderOrgSelect("mktSummaryOrgSelect", renderForOrg);
+mktRenderOrgTypeSelect("mktSummaryTypeSelect", (type) => mktSummaryOrgSelectApi.setTypeFilter(type));
 
 if (document.fonts && document.fonts.ready) {
   document.fonts.ready.then(() => renderAreaChart());
