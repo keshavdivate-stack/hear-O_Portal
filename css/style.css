@@ -3848,8 +3848,7 @@ button, input, select, textarea, optgroup {
 }
 
 .goal-progress-fill { height: 100%; border-radius: 6px; }
-.fill-red { background: var(--red); }
-.fill-yellow { background: #F5A623; }
+.fill-orange { background: #F2994A; }
 .fill-green { background: var(--green); }
 
 .goal-meta-row {
@@ -3979,9 +3978,8 @@ button, input, select, textarea, optgroup {
   color: var(--gray-text);
 }
 
-.compliance-header-dot-critical { background: var(--red); }
-.compliance-header-dot-warning { background: #F5A623; }
-.compliance-header-dot-good { background: var(--green); }
+.compliance-header-dot-insufficient { background: #F2994A; }
+.compliance-header-dot-sufficient { background: var(--green); }
 
 @media (max-width: 900px) {
   .compliance-highlight-grid { grid-template-columns: 1fr; }
