@@ -3617,9 +3617,8 @@ button, input, select, textarea, optgroup {
 }
 
 .goal-progress-fill { height: 100%; border-radius: 6px; }
-.fill-red { background: var(--red); }
-.fill-orange { background: #F98B00; }
-.fill-green { background: var(--green); }
+.fill-blue { background: var(--blue); }
+.fill-orange { background: #F2994A; }
 
 .goal-meta-row {
   display: flex;
@@ -3670,9 +3669,8 @@ button, input, select, textarea, optgroup {
   border: 1px solid transparent;
 }
 
-.compliance-highlight-sufficient { background: var(--green-light); }
-.compliance-highlight-warning { background: #FFF3E5; }
-.compliance-highlight-critical { background: var(--red-light); }
+.compliance-highlight-sufficient { background: var(--blue-light); }
+.compliance-highlight-insufficient { background: #FDF0DE; }
 
 .compliance-highlight-label {
   display: block;
@@ -3733,9 +3731,23 @@ button, input, select, textarea, optgroup {
   flex-shrink: 0;
 }
 
-.compliance-legend-dot-sufficient { background: var(--green); }
-.compliance-legend-dot-warning { background: #F98B00; }
-.compliance-legend-dot-critical { background: var(--red); }
+.compliance-legend-dot-sufficient { background: var(--blue); }
+.compliance-legend-dot-insufficient { background: #F2994A; }
+
+/* Small red/yellow/green key next to the "Compliance" heading -- a rating
+   reference shown alongside (not instead of) the boxes below, which stay on
+   the blue/orange sufficient-vs-insufficient scale at the 70% line. */
+.compliance-header-legend {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 12.5px;
+  color: var(--gray-text);
+}
+
+.compliance-header-dot-critical { background: var(--red); }
+.compliance-header-dot-warning { background: #F5A623; }
+.compliance-header-dot-good { background: var(--green); }
 
 .compliance-legend-dot-hatch {
   background-image: repeating-linear-gradient(45deg, transparent, transparent 1.5px, #D8DCE2 1.5px, #D8DCE2 3px);
