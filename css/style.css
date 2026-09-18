@@ -3926,12 +3926,19 @@ button, input, select, textarea, optgroup {
   border: 1px solid transparent;
 }
 
+.compliance-highlight-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
 .compliance-highlight-label {
   display: block;
   font-size: 12.5px;
   font-weight: 700;
   color: var(--gray-text);
-  margin-bottom: 4px;
 }
 
 .compliance-highlight-value {
@@ -3968,13 +3975,14 @@ button, input, select, textarea, optgroup {
   flex-shrink: 0;
 }
 
-/* Small orange/green key next to the "Compliance" heading -- the same
-   insufficient/sufficient scale that colors the progress bars. */
+/* Small orange/green key next to each highlight's label -- the same
+   insufficient/sufficient scale that colors its progress bar. */
 .compliance-header-legend {
   display: flex;
   align-items: center;
-  gap: 20px;
-  font-size: 14px;
+  flex-shrink: 0;
+  gap: 12px;
+  font-size: 12.5px;
   color: var(--gray-text);
 }
 
