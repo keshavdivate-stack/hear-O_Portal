@@ -186,15 +186,21 @@
         </section>
 
         <div class="bo-sub-grid">
-          <section class="bo-card bo-panel">
+          <section class="bo-card bo-panel bo-bins-card">
             <div class="bo-panel-head">
-              <div class="bo-seg-toggle" id="binsToggle">
-                <button class="bo-seg-btn active" data-tab="quality">Recording Quality</button>
-                <button class="bo-seg-btn" data-tab="compliance">Compliance</button>
+              <div class="bo-bins-head-left">
+                <span class="bo-bins-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>
+                </span>
+                <div class="bo-seg-toggle" id="binsToggle">
+                  <button class="bo-seg-btn active" data-tab="quality">Recording Quality</button>
+                  <button class="bo-seg-btn" data-tab="compliance">Compliance</button>
+                </div>
               </div>
+              <div class="bo-days-row" style="margin:0;">Last <input type="number" class="bo-days-input" id="binsDaysInput" value="31" min="1" /> days</div>
             </div>
-            <div class="bo-days-row">Last <input type="number" class="bo-days-input" id="binsDaysInput" value="31" min="1" /> days</div>
-            <div class="bo-bins-grid" id="binsGrid"></div>
+            <div class="bo-bins-list" id="binsGrid"></div>
+            <a href="usable-compliance.html" class="bo-view-details-link">View details</a>
           </section>
 
           <section class="bo-card bo-panel bo-mini-stat">

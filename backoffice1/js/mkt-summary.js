@@ -189,15 +189,17 @@ function renderBins(tab) {
   activeBinsTab = tab;
   const data = binData[tab];
   const maxVal = Math.max(...Object.values(data));
-  const order = [binDefs[0], binDefs[3], binDefs[1], binDefs[4], binDefs[2]];
-  document.getElementById("binsGrid").innerHTML = order
+  document.getElementById("binsGrid").innerHTML = binDefs
     .map((b) => {
       const val = data[b.key];
       const pct = maxVal ? Math.round((val / maxVal) * 100) : 0;
       return `
-        <div class="bo-bin">
-          <div class="bo-bin-bar-track"><div class="bo-bin-bar-fill" style="width:${pct}%; background:${b.color};"></div></div>
-          <span class="bo-bin-label"><b>${val}</b>${b.label}</span>
+        <div class="bo-bin-row">
+          <span class="bo-bin-num">${val}</span>
+          <div class="bo-bin-body">
+            <span class="bo-bin-label">${b.label}</span>
+            <div class="bo-bin-bar-track"><div class="bo-bin-bar-fill" style="width:${pct}%; background:${b.color};"></div></div>
+          </div>
         </div>`;
     })
     .join("");

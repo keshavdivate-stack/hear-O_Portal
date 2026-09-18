@@ -878,6 +878,63 @@ button, input, select, textarea, optgroup {
 
 .bo-bin-label b { font-weight: 800; margin-right: 4px; }
 
+/* Summary dashboard: Recording Quality / Compliance card --
+   vertical bin list (icon + tab toggle header, one full-width row per
+   bucket) instead of the 2-column bar grid used elsewhere. */
+.bo-bins-card { padding-bottom: 16px; }
+
+.bo-bins-head-left { display: flex; align-items: center; gap: 10px; }
+
+.bo-bins-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: var(--orange-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.bo-bins-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.bo-bin-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.bo-bin-num {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--ink);
+  min-width: 22px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.bo-bin-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.bo-view-details-link {
+  display: inline-block;
+  margin-top: 16px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--blue-text);
+  text-decoration: none;
+}
+
+.bo-view-details-link:hover { text-decoration: underline; }
+
 /* Did Not Record mini stat */
 .bo-mini-stat { text-align: left; }
 
