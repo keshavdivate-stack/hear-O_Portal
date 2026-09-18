@@ -3953,15 +3953,6 @@ button, input, select, textarea, optgroup {
   margin-top: 8px;
 }
 
-.compliance-legend {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-  margin-top: 12px;
-  padding-top: 12px;
-  border-top: 1px solid var(--gray-border);
-}
-
 .compliance-legend-item {
   display: inline-flex;
   align-items: center;
@@ -3978,13 +3969,8 @@ button, input, select, textarea, optgroup {
   flex-shrink: 0;
 }
 
-.compliance-legend-dot-critical { background: var(--red); }
-.compliance-legend-dot-warning { background: #F5A623; }
-.compliance-legend-dot-good { background: var(--green); }
-
 /* Small red/yellow/green key next to the "Compliance" heading -- the same
-   critical/needs-improvement/good scale that colors the progress bars,
-   shown up top for a quick read without needing the fuller legend below. */
+   critical/needs-improvement/good scale that colors the progress bars. */
 .compliance-header-legend {
   display: flex;
   align-items: center;
@@ -3996,11 +3982,6 @@ button, input, select, textarea, optgroup {
 .compliance-header-dot-critical { background: var(--red); }
 .compliance-header-dot-warning { background: #F5A623; }
 .compliance-header-dot-good { background: var(--green); }
-
-.compliance-legend-dot-hatch {
-  background-image: repeating-linear-gradient(45deg, transparent, transparent 1.5px, #D8DCE2 1.5px, #D8DCE2 3px);
-  border: 1px dashed #C9CFD6;
-}
 
 @media (max-width: 900px) {
   .compliance-highlight-grid { grid-template-columns: 1fr; }
