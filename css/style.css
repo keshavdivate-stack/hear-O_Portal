@@ -5732,11 +5732,9 @@ label.checkbox-field {
      dimension, so it fills top-to-bottom with no gap and only ever crops
      horizontally. object-position picks which part of the SOURCE image
      survives that crop -- she sits on the right side of the source photo,
-     so it must stay "right" (not "left") to keep her uncropped; the
-     transform below then mirrors that crop, landing her bottom-left. */
+     so it must stay "right" (not "left") to keep her uncropped. */
   object-fit: cover;
   object-position: right bottom;
-  transform: scaleX(-1);
   z-index: 0;
 }
 
