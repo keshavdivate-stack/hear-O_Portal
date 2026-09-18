@@ -1483,12 +1483,12 @@ document.querySelectorAll("#dataRangeToggle span").forEach((r) => {
   });
 });
 
-/* ---------------- Compliance: sufficient (>=70%) vs insufficient coloring ---------------- */
+/* ---------------- Compliance bar: insufficient (<70%) vs sufficient (70%+) ----------------
+   Only the progress bar fill carries the color -- the card itself stays a
+   neutral gray, matching the orange/green key by the heading. */
 document.querySelectorAll(".compliance-highlight").forEach((box) => {
   const value = parseFloat(box.querySelector(".compliance-highlight-value")?.textContent || "0");
-  const sufficient = value >= 70;
-  box.classList.add(sufficient ? "compliance-highlight-sufficient" : "compliance-highlight-insufficient");
-  box.querySelector(".goal-progress-fill")?.classList.add(sufficient ? "fill-green" : "fill-red");
+  box.querySelector(".goal-progress-fill")?.classList.add(value >= 70 ? "fill-green" : "fill-orange");
 });
 
 /* ---------------- History events ---------------- */
