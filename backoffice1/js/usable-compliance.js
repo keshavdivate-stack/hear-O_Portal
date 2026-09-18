@@ -23,6 +23,13 @@ const ucMetric = params.get("metric") === "compliance" ? "compliance" : "quality
 const ucOrgParam = (params.get("org") || "all").split(",").filter(Boolean);
 let ucActiveBucket = UC_BUCKETS.some((b) => b.key === params.get("bucket")) ? params.get("bucket") : "90-100";
 
+// Reached from either the Study dashboard's per-bucket bars or the Summary
+// dashboard's "View details" link -- point the back arrow at whichever one sent us here.
+if (params.get("from") === "summary") {
+  document.getElementById("ucBackLink").href = "mkt-summary.html";
+  document.getElementById("ucBackLabel").textContent = "Back to Summary Dashboard";
+}
+
 const isAllOrgs = ucOrgParam.length === 0 || (ucOrgParam.length === 1 && ucOrgParam[0] === "all");
 const ucOrgSeed = isAllOrgs ? 0 : mktHash(ucOrgParam.slice().sort().join(","));
 const ucOrgCode = isAllOrgs ? "COR" : (MKT_ORG_LIST.find((o) => o.id === ucOrgParam[0])?.code || "COR");

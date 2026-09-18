@@ -49,6 +49,7 @@ let activeBinsTab = "quality";
 let complianceSeries = complianceSeriesBase;
 let qualitySeries = qualitySeriesBase;
 let binData = binDataBase;
+let currentOrgIds = ["all"];
 
 /* ---------------- KPI row ---------------- */
 function renderStats(org, seed) {
@@ -203,6 +204,13 @@ function renderBins(tab) {
         </div>`;
     })
     .join("");
+
+  const params = new URLSearchParams();
+  params.set("metric", tab);
+  params.set("bucket", binDefs[0].key);
+  params.set("org", currentOrgIds.join(","));
+  params.set("from", "summary");
+  document.getElementById("binsViewDetailsLink").href = `usable-compliance.html?${params.toString()}`;
 }
 
 document.getElementById("binsToggle").addEventListener("click", (e) => {
@@ -220,6 +228,7 @@ function renderDnr(seed) {
 
 /* ---------------- Wire everything to the organization selector ---------------- */
 function renderForOrg(orgIds) {
+  currentOrgIds = orgIds;
   const isAll = orgIds.length === 1 && orgIds[0] === "all";
   const orgs = isAll ? [MKT_ORG_LIST[0]] : orgIds.map((id) => MKT_ORG_LIST.find((o) => o.id === id));
   const seed = isAll ? 0 : mktHash(orgIds.slice().sort().join(","));
