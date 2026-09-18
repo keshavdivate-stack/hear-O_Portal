@@ -3618,6 +3618,7 @@ button, input, select, textarea, optgroup {
 
 .goal-progress-fill { height: 100%; border-radius: 6px; }
 .fill-red { background: var(--red); }
+.fill-orange { background: #F98B00; }
 .fill-green { background: var(--green); }
 
 .goal-meta-row {
@@ -3670,7 +3671,8 @@ button, input, select, textarea, optgroup {
 }
 
 .compliance-highlight-sufficient { background: var(--green-light); }
-.compliance-highlight-insufficient { background: var(--red-light); }
+.compliance-highlight-warning { background: #FFF3E5; }
+.compliance-highlight-critical { background: var(--red-light); }
 
 .compliance-highlight-label {
   display: block;
@@ -3732,7 +3734,8 @@ button, input, select, textarea, optgroup {
 }
 
 .compliance-legend-dot-sufficient { background: var(--green); }
-.compliance-legend-dot-insufficient { background: var(--red); }
+.compliance-legend-dot-warning { background: #F98B00; }
+.compliance-legend-dot-critical { background: var(--red); }
 
 .compliance-legend-dot-hatch {
   background-image: repeating-linear-gradient(45deg, transparent, transparent 1.5px, #D8DCE2 1.5px, #D8DCE2 3px);

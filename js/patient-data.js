@@ -1483,12 +1483,13 @@ document.querySelectorAll("#dataRangeToggle span").forEach((r) => {
   });
 });
 
-/* ---------------- Compliance: sufficient (>=70%) vs insufficient coloring ---------------- */
+/* ---------------- Compliance: critical (<50%) / needs improvement (50-79%) / good (80%+) ---------------- */
 document.querySelectorAll(".compliance-highlight").forEach((box) => {
   const value = parseFloat(box.querySelector(".compliance-highlight-value")?.textContent || "0");
-  const sufficient = value >= 70;
-  box.classList.add(sufficient ? "compliance-highlight-sufficient" : "compliance-highlight-insufficient");
-  box.querySelector(".goal-progress-fill")?.classList.add(sufficient ? "fill-green" : "fill-red");
+  const tier = value >= 80 ? "sufficient" : value >= 50 ? "warning" : "critical";
+  const fill = tier === "sufficient" ? "fill-green" : tier === "warning" ? "fill-orange" : "fill-red";
+  box.classList.add(`compliance-highlight-${tier}`);
+  box.querySelector(".goal-progress-fill")?.classList.add(fill);
 });
 
 /* ---------------- History events ---------------- */
