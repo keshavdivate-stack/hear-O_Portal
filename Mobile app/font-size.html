@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/Mobile%20app/style.css?v=29">
+<link rel="stylesheet" href="/Mobile%20app/style.css?v=30">
 <script src="/Mobile%20app/font-scale.js?v=29"></script>
 </head>
 <body>
@@ -37,6 +37,10 @@
       </div>
 
       <div class="fontsize-options" id="options"></div>
+
+      <div class="settime-save-wrap">
+        <button type="button" class="bp-save-btn enabled" onclick="handleApply()">Apply</button>
+      </div>
     </div>
   </div>
 
@@ -49,7 +53,7 @@
   ];
 
   const optionsEl = document.getElementById("options");
-  let active = "1";
+  let active = localStorage.getItem("hearo_font_scale") || "1";
 
   function render() {
     optionsEl.innerHTML = SIZES.map(
@@ -67,6 +71,12 @@
   function selectSize(value) {
     active = value;
     render();
+  }
+
+  function handleApply() {
+    localStorage.setItem("hearo_font_scale", active);
+    document.documentElement.style.setProperty("--font-scale", active);
+    window.location.href = "/Mobile%20app/menu.html";
   }
 
   render();

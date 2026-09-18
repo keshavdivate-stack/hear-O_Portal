@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/Mobile%20app/style.css?v=29">
+<link rel="stylesheet" href="/Mobile%20app/style.css?v=30">
 <script src="/Mobile%20app/font-scale.js?v=29"></script>
 </head>
 <body>
@@ -30,6 +30,8 @@
     </div>
 
     <div class="menu-body">
+      <p class="menu-section-label">RECORDING</p>
+
       <button type="button" class="reminder-time-block" id="reminderTimeRow" onclick="window.location.href='/Mobile%20app/set-time.html'">
         <span class="reminder-time-label">Reminder time</span>
         <span class="reminder-time-value" id="reminderTimeValue">11:00 AM</span>
@@ -47,6 +49,16 @@
         </div>
         <button type="button" class="toggle-switch on" id="autoToggle" onclick="toggleAuto()"></button>
       </div>
+
+      <p class="menu-section-label">MEDICATION</p>
+
+      <div class="menu-row">
+        <div class="menu-row-left-stack">
+          <span class="menu-row-left">Medication reminder</span>
+          <span class="menu-row-sub">Get notified when it's time to take your medication</span>
+        </div>
+        <button type="button" class="toggle-switch on" id="medicationReminderToggle" onclick="toggleMedicationReminder()"></button>
+      </div>
     </div>
   </div>
 
@@ -61,6 +73,10 @@
     const on = document.getElementById("autoToggle").classList.toggle("on");
     document.getElementById("reminderTimeRow").disabled = on;
     document.getElementById("reminderTimeRow").style.opacity = on ? "0.5" : "1";
+  }
+
+  function toggleMedicationReminder() {
+    document.getElementById("medicationReminderToggle").classList.toggle("on");
   }
 </script>
 </body>

@@ -2508,25 +2508,30 @@ input[type="password"]:focus {
   flex-direction: column;
   align-items: center;
   gap: 8px;
-  padding: 28px 4px;
+  margin: 8px 0 20px;
+  padding: 24px 4px;
   border: none;
-  border-bottom: 1px solid #eceef1;
-  background: none;
+  border-radius: 16px;
+  background: #eef4ff;
   cursor: pointer;
   font-family: inherit;
-  transition: opacity 0.15s ease;
+  transition: opacity 0.15s ease, background 0.15s ease;
+}
+
+.reminder-time-block:active {
+  background: #e2ecff;
 }
 
 .reminder-time-label {
-  font-size: calc(20px * var(--font-scale, 1));
+  font-size: calc(18px * var(--font-scale, 1));
   font-weight: 400;
-  color: #434141;
+  color: #6a6f77;
 }
 
 .reminder-time-value {
   font-size: calc(28px * var(--font-scale, 1));
   font-weight: 700;
-  color: #252424;
+  color: #186DCE;
 }
 
 .menu-row-left-stack {
