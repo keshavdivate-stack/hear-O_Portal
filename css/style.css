@@ -5784,6 +5784,9 @@ label.checkbox-field {
 }
 
 .plogin-lang-select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
   border: none;
   background: none;
   font-family: inherit;
