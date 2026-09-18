@@ -241,17 +241,17 @@
 
         <div class="table-card">
           <div class="table-scroll">
-            <table class="list-table bill-table">
+            <table class="list-table bill-table bill-table-clickable">
               <thead>
                 <tr>
                   <th class="bill-th-check"><span class="bill-checkbox" id="selectAllBox"></span></th>
                   <th>PATIENT NAME</th>
                   <th>ID NUMBER</th>
-                  <th>ENROLLMENT<br />DATE</th>
+                  <th>REGISTRATION<br />DATE</th>
                   <th>99453<br />INITIAL TRAINING</th>
-                  <th>99454<br />16 DAYS CHECK-INS</th>
+                  <th>99454<br />16 RECORDING DAYS</th>
                   <th>99457<br />20 MIN MONITORING</th>
-                  <th>99458 - ADDITIONAL<br />20 MIN MONITORING</th>
+                  <th>99458 - ADDITIONAL<br />20 MINS MONITORING</th>
                   <th>TIME<br />LOGGED</th>
                   <th>BILLING<br />STATUS</th>
                   <th></th>
@@ -389,6 +389,47 @@
           <button type="submit" class="btn-save" id="saveScheduleBillingReport" disabled>Schedule Report</button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- Row action dropdown -->
+  <div class="row-menu" id="billingRowMenu">
+    <button class="row-menu-item" data-action="initialTraining">Initial training</button>
+    <button class="row-menu-item" data-action="timeLog">Time Log</button>
+  </div>
+
+  <!-- Initial Training Confirmation modal -->
+  <div class="modal-overlay" id="initialTrainingOverlay">
+    <div class="modal">
+      <h2>Initial Training Confirmation</h2>
+
+      <label class="checkbox-filter-option" id="initialTrainingConfirmLabel" style="padding:0 0 22px; align-items:flex-start;">
+        <input type="checkbox" id="initialTrainingConfirmCheckbox" />
+        <span>By clicking this checkbox, you confirm that the patient has received training on how to use the application</span>
+      </label>
+
+      <div class="form-field">
+        <label>Training Provider<span class="required-star">*</span></label>
+        <div class="custom-select" id="trainingProviderSelect" data-name="trainingProvider">
+          <button type="button" class="custom-select-trigger">
+            <span class="custom-select-value placeholder">Choose</span>
+            <svg class="custom-select-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="custom-select-menu">
+            <div class="custom-select-option" data-value="Physician">Physician<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="custom-select-option" data-value="Nurse">Nurse<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="custom-select-option" data-value="Care Coordinator">Care Coordinator<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="custom-select-option" data-value="Support Staff">Support Staff<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="custom-select-option" data-value="Other">Other<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          </div>
+          <input type="hidden" name="trainingProvider" />
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn-text" id="cancelInitialTraining">Cancel</button>
+        <button type="button" class="btn-save" id="saveInitialTraining" disabled>Save</button>
+      </div>
     </div>
   </div>
 

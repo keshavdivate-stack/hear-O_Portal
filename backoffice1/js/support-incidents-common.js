@@ -98,7 +98,7 @@ function buildFilterSelectOptions(values, clearLabel) {
 
 /* Like buildFilterSelectOptions, but the option's displayed text (labels[i])
    can differ from the value it filters on (values[i]) -- used for the
-   severity filter, whose underlying values are SEV-1..4. */
+   priority filter, whose underlying values are SEV-1..4. */
 function buildFilterSelectOptionsLabeled(values, labels, clearLabel) {
   const clearOption = `
       <div class="bo-select-option" data-value="">${clearLabel}
@@ -122,8 +122,8 @@ const incKebabIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none
 
 /* ---------------- Shared render helpers (used by both the Incidents tab
    inside support.html and the standalone incident-detail.html page) ---------------- */
-function incSeverityPill(sev) {
-  return `<span class="bo-pill ${INC_SEVERITY_CLASS[sev] || ""}">${INC_SEVERITY_LABEL[sev] || sev}</span>`;
+function incPriorityPill(sev) {
+  return `<span class="bo-pill ${INC_PRIORITY_CLASS[sev] || ""}">${INC_PRIORITY_LABEL[sev] || sev}</span>`;
 }
 function incStatusPill(status) {
   return `<span class="bo-pill ${INC_STATUS_CLASS[status] || ""}">${status}</span>`;

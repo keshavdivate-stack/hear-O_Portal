@@ -14,11 +14,6 @@ const availableCareTeamMembers = [
   { name: "James Wilson", role: "Social Worker · Care Team" },
   { name: "Elena Rodriguez", role: "Nurse · Care Team" },
 ];
-/* Titles a care-team member's role can be reassigned to via the edit panel.
-   The primary provider (role includes "Provider") isn't part of this pool and
-   isn't editable/removable here -- they're the patient's doctor, not a
-   care-team assignment this panel manages. */
-const CARE_TEAM_ROLE_TITLES = ["Nurse", "Care Coordinator", "Pharmacist", "Social Worker"];
 const careTeamPopover = document.getElementById("careTeamPopover");
 const careTeamTitle = careTeamPopover.querySelector(".care-team-popover-title");
 const careTeamMemberList = document.createElement("div");
@@ -26,7 +21,6 @@ const careTeamHeading = document.createElement("div");
 const openCareTeamAdd = document.createElement("button");
 const careTeamAddPanel = document.createElement("div");
 const careTeamMultiselect = document.createElement("div");
-const careTeamEditPanel = document.createElement("div");
 careTeamMemberList.id = "careTeamMemberList";
 careTeamHeading.className = "care-team-popover-heading";
 openCareTeamAdd.type = "button";
@@ -38,17 +32,12 @@ careTeamMultiselect.className = "care-team-multiselect";
 careTeamAddPanel.innerHTML = '<span class="care-team-add-label">Select care team members</span>';
 careTeamAddPanel.append(careTeamMultiselect);
 careTeamAddPanel.insertAdjacentHTML("beforeend", '<div class="care-team-add-actions"><button type="button" class="btn-text care-team-cancel-button">Cancel</button><button type="button" class="care-team-confirm-button">Add selected</button></div>');
-/* Same flyout treatment as the "+ Add member" panel -- content is rebuilt
-   each time it opens (via openCareTeamEditPanel) since it targets whichever
-   row's edit icon was clicked. */
-careTeamEditPanel.className = "care-team-add-panel";
-careTeamEditPanel.hidden = true;
 careTeamHeading.append(careTeamTitle, openCareTeamAdd);
-careTeamPopover.replaceChildren(careTeamHeading, careTeamMemberList, careTeamAddPanel, careTeamEditPanel);
+careTeamPopover.replaceChildren(careTeamHeading, careTeamMemberList, careTeamAddPanel);
 function renderPatientCareTeam() {
   careTeamMemberList.innerHTML = patientCareTeam.map((member) => {
     const isProvider = member.role.includes("Provider");
-    return `<div class="care-team-popover-item"><div class="care-team-popover-info"><span class="care-team-popover-name">${member.name}</span><span class="care-team-popover-role">${member.role}</span></div>${isProvider ? "" : `<div class="care-team-item-actions"><button type="button" class="care-team-edit-button" data-name="${member.name}" title="Edit role" aria-label="Edit ${member.name}'s role"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button><button type="button" class="care-team-remove-button" data-name="${member.name}" title="Remove from care team" aria-label="Remove ${member.name} from care team"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6L18 18M18 6L6 18"/></svg></button></div>`}</div>`;
+    return `<div class="care-team-popover-item"><div class="care-team-popover-info"><span class="care-team-popover-name">${member.name}</span><span class="care-team-popover-role">${member.role}</span></div>${isProvider ? "" : `<div class="care-team-item-actions"><button type="button" class="care-team-remove-button" data-name="${member.name}" title="Remove from care team" aria-label="Remove ${member.name} from care team"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6L18 18M18 6L6 18"/></svg></button></div>`}</div>`;
   }).join("");
   const count = document.querySelector("#careTeamTrigger .care-team-more");
   if (count) count.textContent = patientCareTeam.length;
@@ -62,16 +51,8 @@ careTeamMemberList.addEventListener("click", (event) => {
     const index = patientCareTeam.findIndex((member) => member.name === name);
     if (index === -1) return;
     patientCareTeam.splice(index, 1);
-    if (careTeamEditPanel.dataset.name === name) closeCareTeamEditPanel();
     renderPatientCareTeam();
     renderCareTeamMultiselect();
-    return;
-  }
-
-  const editBtn = event.target.closest(".care-team-edit-button");
-  if (editBtn) {
-    event.stopPropagation();
-    openCareTeamEditPanel(editBtn.dataset.name);
   }
 });
 
@@ -81,32 +62,9 @@ function renderCareTeamMultiselect() {
 }
 function closeCareTeamAddPanel() { careTeamAddPanel.hidden = true; openCareTeamAdd.hidden = false; }
 
-/* Builds the edit panel's content fresh for whichever member's edit icon was
-   clicked, mirroring the "+ Add member" flyout's look but with a single role
-   select instead of a multiselect. Only one flyout (add or edit) is open at
-   a time. */
-function openCareTeamEditPanel(name) {
-  const member = patientCareTeam.find((item) => item.name === name);
-  if (!member) return;
-  closeCareTeamAddPanel();
-
-  const currentTitle = member.role.split(" · ")[0];
-  careTeamEditPanel.innerHTML = `<span class="care-team-add-label">Edit role &mdash; ${member.name}</span><select class="care-team-role-select">${CARE_TEAM_ROLE_TITLES.map((title) => `<option value="${title}"${title === currentTitle ? " selected" : ""}>${title}</option>`).join("")}</select><div class="care-team-add-actions"><button type="button" class="btn-text care-team-edit-cancel-button">Cancel</button><button type="button" class="care-team-confirm-button care-team-edit-save-button">Save</button></div>`;
-  careTeamEditPanel.dataset.name = name;
-  careTeamEditPanel.hidden = false;
-  openCareTeamAdd.hidden = true;
-}
-
-function closeCareTeamEditPanel() {
-  careTeamEditPanel.hidden = true;
-  careTeamEditPanel.innerHTML = "";
-  delete careTeamEditPanel.dataset.name;
-  openCareTeamAdd.hidden = false;
-}
-
 renderPatientCareTeam();
 renderCareTeamMultiselect();
-openCareTeamAdd.addEventListener("click", (event) => { event.stopPropagation(); closeCareTeamEditPanel(); careTeamAddPanel.hidden = false; openCareTeamAdd.hidden = true; });
+openCareTeamAdd.addEventListener("click", (event) => { event.stopPropagation(); careTeamAddPanel.hidden = false; openCareTeamAdd.hidden = true; });
 careTeamAddPanel.querySelector(".care-team-cancel-button").addEventListener("click", (event) => { event.stopPropagation(); closeCareTeamAddPanel(); });
 careTeamAddPanel.querySelector(".care-team-confirm-button").addEventListener("click", (event) => {
   event.stopPropagation();
@@ -117,22 +75,6 @@ careTeamAddPanel.querySelector(".care-team-confirm-button").addEventListener("cl
   renderPatientCareTeam();
   renderCareTeamMultiselect();
   closeCareTeamAddPanel();
-});
-
-careTeamEditPanel.addEventListener("click", (event) => {
-  event.stopPropagation();
-  if (event.target.closest(".care-team-edit-cancel-button")) {
-    closeCareTeamEditPanel();
-    return;
-  }
-  if (event.target.closest(".care-team-edit-save-button")) {
-    const name = careTeamEditPanel.dataset.name;
-    const member = patientCareTeam.find((item) => item.name === name);
-    const select = careTeamEditPanel.querySelector(".care-team-role-select");
-    if (member && select) member.role = `${select.value} · Care Team`;
-    closeCareTeamEditPanel();
-    renderPatientCareTeam();
-  }
 });
 
 /* ---------------- App & Device Info popover ---------------- */
@@ -210,8 +152,8 @@ function setMonthRow(id, days) {
 /* ---------------- Overview chart (status timeline) ---------------- */
 const FALLBACK_COL_W = 40;
 const PAD = 30;
-const CHART_H = 150;
-const Y = { baseline: 118, active: 71, priority: 62 };
+const CHART_H = 100;
+const Y = { baseline: 65, active: 65, priority: 65 };
 
 let COL_W = FALLBACK_COL_W;
 let CHART_W = PAD * 2 + (chartDays.length - 1) * COL_W;
@@ -1715,12 +1657,25 @@ const questions = [
 function renderQuestionnaire() {
   const days = visibleDays();
   document.getElementById("questList").innerHTML = questions
-    .map(
-      (q, qi) => `
+    .map((q, qi) => {
+      /* Only new (custom) fields get a tag -- the legacy Q3/Q4 "Yes" value
+         is already surfaced via the hover tooltip above, so it's left alone
+         to avoid changing how those existing questions look. */
+      const tags = [];
+      if (q.answerType === "value") {
+        const unitsNote = q.units?.length ? ` (${q.units.join(" / ")})` : "";
+        tags.push(`Value entry${q.valueLabel ? ` — ${q.valueLabel}` : ""}${unitsNote}`);
+      }
+      const tagsHtml = tags.length
+        ? `<div class="quest-config-tags">${tags.map((t) => `<span class="quest-config-tag">${t}</span>`).join("")}</div>`
+        : "";
+
+      return `
       <div class="med-block">
         <div class="quest-block-head">
           <span class="quest-label">${q.label}</span>
           <span class="quest-text">${q.text}</span>
+          ${tagsHtml}
         </div>
 
         <div class="med-adherence-row">
@@ -1729,14 +1684,16 @@ function renderQuestionnaire() {
             ${(() => {
               const ans = sliceForRange(q.answers);
               const vals = q.values ? sliceForRange(q.values) : null;
+              const noVals = q.noValues ? sliceForRange(q.noValues) : null;
               return days
                 .map((d, i) => {
                   const a = ans[i];
                   const cls = a === true ? "quest-ans-yes" : a === false ? "quest-ans-no" : "quest-ans-none";
                   const icon = a === true ? adhCheckIcon : a === false ? questXIcon : "";
-                  const val = vals ? vals[i] : null;
+                  const val = a === true ? (vals ? vals[i] : null) : a === false ? (noVals ? noVals[i] : null) : null;
+                  const valLabel = a === true ? q.valueLabel : q.noValueLabel;
                   const tooltip = val
-                    ? `<span class="quest-weight-tooltip">${q.valueLabel}: ${val}</span>`
+                    ? `<span class="quest-weight-tooltip">${valLabel}: ${val}</span>`
                     : "";
                   return `
                 <div class="med-adh-day">
@@ -1750,8 +1707,8 @@ function renderQuestionnaire() {
           <button class="chart-arrow quest-adh-next" data-quest="${qi}" aria-label="Next month"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 6L15 12L9 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
         </div>
         <div class="chart-month-row" style="padding:0 40px;">${monthRowHtml(days)}</div>
-      </div>`
-    )
+      </div>`;
+    })
     .join("");
 
   document.querySelectorAll(".quest-adh-prev, .quest-adh-next").forEach((btn) => {
@@ -1807,6 +1764,15 @@ document.querySelectorAll(".data-tab").forEach((tab) => {
     if (target === "health-data") rebuildRangedCharts();
   });
 });
+
+/* Opens straight to a given top-level tab on load (e.g. the Patient List row
+   menu's "Update medication" action links in with ?openTab=clinical -- the
+   Clinical tab's Medication subtab is already its default-active one). */
+(() => {
+  const openTab = new URLSearchParams(window.location.search).get("openTab");
+  if (!openTab) return;
+  document.querySelector(`.data-tab[data-tab="${openTab}"]`)?.click();
+})();
 
 /* ---------------- Sub-tabs (Measurement/Wellness, Medication/Care Recommendations) ----------------
    Scoped to the closest .data-tab-panel so two independent subtab groups on the
@@ -1960,27 +1926,44 @@ document.getElementById("historyLoadMoreBtn").addEventListener("click", () => {
 const addEventOverlay = document.getElementById("addEventOverlay");
 const addEventForm = document.getElementById("addEventForm");
 const saveAddEvent = document.getElementById("saveAddEvent");
+const addEventActionTypeField = document.getElementById("addEventActionTypeField");
+const addEventNameField = document.getElementById("addEventNameField");
+const addEventDateField = document.getElementById("addEventDateField");
+const addEventNoteField = document.getElementById("addEventNoteField");
 
-const CATEGORY_DOT = { account: "dot-blue", status: "dot-green", monitoring: "dot-teal", other: "dot-blue" };
+function updateAddEventTypeFields() {
+  const eventType = addEventForm.eventType.value;
+  addEventActionTypeField.style.display = eventType === "action" ? "" : "none";
+  addEventNameField.style.display = eventType === "other" ? "" : "none";
+  addEventDateField.style.display = eventType === "" ? "none" : "";
+  addEventNoteField.style.display = eventType === "" ? "none" : "";
+}
 
 function validateAddEventForm() {
-  const valid = addEventForm.category.value !== "" && addEventForm.label.value.trim() !== "" && addEventForm.date.value !== "";
+  const eventType = addEventForm.eventType.value;
+  const detailValid = eventType === "action" ? addEventForm.actionType.value !== "" : eventType === "other" ? addEventForm.eventName.value.trim() !== "" : false;
+  const valid = eventType !== "" && detailValid && addEventForm.date.value !== "";
   saveAddEvent.disabled = !valid;
   saveAddEvent.classList.toggle("enabled", valid);
 }
 
 addEventForm.addEventListener("input", validateAddEventForm);
-addEventForm.addEventListener("change", validateAddEventForm);
+addEventForm.addEventListener("change", (e) => {
+  if (e.target.name === "eventType") updateAddEventTypeFields();
+  validateAddEventForm();
+});
 
 document.getElementById("openAddEventBtn").addEventListener("click", () => {
   addEventForm.reset();
   resetCustomSelectsIn(addEventForm);
+  updateAddEventTypeFields();
   validateAddEventForm();
   addEventOverlay.classList.add("open");
 });
 
 function closeAddEventModal() { addEventOverlay.classList.remove("open"); }
 document.getElementById("cancelAddEvent").addEventListener("click", closeAddEventModal);
+document.getElementById("closeAddEventX").addEventListener("click", closeAddEventModal);
 addEventOverlay.addEventListener("click", (e) => { if (e.target === addEventOverlay) closeAddEventModal(); });
 
 addEventForm.addEventListener("submit", (e) => {
@@ -1988,10 +1971,14 @@ addEventForm.addEventListener("submit", (e) => {
   if (saveAddEvent.disabled) return;
 
   const [y, m, d] = addEventForm.date.value.split("-");
+  const label = addEventForm.eventType.value === "action"
+    ? `Action taken: ${addEventForm.actionType.value}`
+    : addEventForm.eventName.value.trim();
+
   history.unshift({
-    category: addEventForm.category.value,
-    color: CATEGORY_DOT[addEventForm.category.value],
-    label: addEventForm.label.value.trim(),
+    category: "other",
+    color: "dot-blue",
+    label,
     date: `${m}.${d}.${y}`,
     note: addEventForm.note.value.trim() || undefined,
   });
@@ -2457,79 +2444,11 @@ if (patientHeaderKebab && patientHeaderMenu) {
   });
 }
 
-/* ---------------- Compliance Details: Total vs Custom Range ---------------- */
-function msPerDay() { return 1000 * 60 * 60 * 24; }
+/* ---------------- Compliance: sufficient (>=70%) vs insufficient coloring ---------------- */
+document.querySelectorAll(".compliance-highlight").forEach((box) => {
+  const value = parseFloat(box.querySelector(".compliance-highlight-value")?.textContent || "0");
+  const sufficient = value >= 70;
+  box.classList.add(sufficient ? "compliance-highlight-sufficient" : "compliance-highlight-insufficient");
+  box.querySelector(".goal-progress-fill")?.classList.add(sufficient ? "fill-green" : "fill-red");
+});
 
-function recalcComplianceDetails() {
-  const toggle = document.getElementById("complianceRangeToggle");
-  const mode = toggle?.querySelector("span.active")?.dataset.range || "custom";
-  const availableEl = document.getElementById("complianceAvailableDays");
-  const recordedEl = document.getElementById("complianceRecordedDays");
-  const validEl = document.getElementById("complianceValidDays");
-  const missedEl = document.getElementById("complianceMissedDays");
-  const asrEl = document.getElementById("complianceAsrDays");
-  if (!availableEl) return;
-
-  let availableDays = 29;
-  if (mode === "custom") {
-    const start = document.getElementById("complianceRangeStart")?.value;
-    const end = document.getElementById("complianceRangeEnd")?.value;
-    if (start && end) {
-      const diff = Math.round((new Date(end) - new Date(start)) / msPerDay()) + 1;
-      if (diff > 0) availableDays = diff;
-    }
-  }
-
-  const recordedDays = Math.max(0, Math.round(availableDays * 0.69));
-  const asrDays = Math.max(0, Math.round(availableDays * 0.1));
-  const missedDays = Math.max(0, availableDays - recordedDays);
-  const validDays = Math.max(0, recordedDays - asrDays);
-
-  availableEl.textContent = availableDays;
-  recordedEl.textContent = recordedDays;
-  if (validEl) validEl.textContent = validDays;
-  missedEl.textContent = missedDays;
-  asrEl.textContent = asrDays;
-}
-
-const complianceRangeToggle = document.getElementById("complianceRangeToggle");
-const complianceRangePopover = document.getElementById("complianceRangePopover");
-
-function closeComplianceRangePopover() {
-  complianceRangePopover?.classList.remove("open");
-}
-
-function setComplianceRangeMode(mode) {
-  complianceRangeToggle?.querySelectorAll("span").forEach((s) => s.classList.toggle("active", s.dataset.range === mode));
-  recalcComplianceDetails();
-}
-
-if (complianceRangeToggle) {
-  complianceRangeToggle.querySelectorAll("span").forEach((r) => {
-    r.addEventListener("click", () => {
-      if (r.dataset.range === "custom") {
-        complianceRangePopover?.classList.toggle("open");
-        return;
-      }
-      closeComplianceRangePopover();
-      setComplianceRangeMode("total");
-    });
-  });
-
-  document.getElementById("complianceRangeApply")?.addEventListener("click", () => {
-    setComplianceRangeMode("custom");
-    closeComplianceRangePopover();
-  });
-
-  document.getElementById("complianceRangeCancel")?.addEventListener("click", () => {
-    closeComplianceRangePopover();
-  });
-
-  document.addEventListener("click", (e) => {
-    if (!complianceRangePopover?.classList.contains("open")) return;
-    if (e.target.closest("#complianceRangePopover") || e.target.closest("#complianceRangeToggle")) return;
-    closeComplianceRangePopover();
-  });
-
-  recalcComplianceDetails();
-}

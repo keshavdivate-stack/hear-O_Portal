@@ -12,31 +12,47 @@ const pencilIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none">
 const kebabIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="1.7" fill="currentColor"/><circle cx="12" cy="12" r="1.7" fill="currentColor"/><circle cx="12" cy="19" r="1.7" fill="currentColor"/></svg>`;
 
 const billingList = [
-  { patientId: "ABC-1301", id: "857 125 968", enrolled: "05.14.2023", time: "23 Min", status: "ready",
+  { patientId: "ABC-1301", id: "857 125 968", enrolled: "05.14.2023", time: "23 Min", status: "ready", period: "2026-01",
     codes: [ {t:"eligible", sub:"Setup on 01.01.2026"}, {t:"eligible", sub:"Complete on 01.01.2026"}, {t:"eligible", sub:"Complete on 01.01.2026"}, {t:"not", sub:"Insufficient time log"} ] },
-  { patientId: "ABC-1302", id: "857 125 968", enrolled: "05.14.2023", time: "40 Min", status: "ready",
+  { patientId: "ABC-1302", id: "857 125 968", enrolled: "05.14.2023", time: "40 Min", status: "ready", period: "2026-01",
     codes: [ {t:"eligible", sub:"Setup on 01.01.2026"}, {t:"eligible", sub:"Complete on 01.01.2026"}, {t:"eligible", sub:"Complete on 01.01.2026"}, {t:"eligible", sub:"Complete on 01.01.2026"} ] },
-  { patientId: "ABC-1303", id: "857 125 968", enrolled: "05.14.2023", time: "25 Min", status: "ready",
+  { patientId: "ABC-1303", id: "857 125 968", enrolled: "05.14.2023", time: "25 Min", status: "ready", period: "2026-01",
     codes: [ {t:"eligible", sub:"Setup on 01.01.2026"}, {t:"eligible", sub:"Complete on 01.01.2026"}, {t:"eligible", sub:"Complete on 01.01.2026"}, {t:"not", sub:"Insufficient time log"} ] },
-  { patientId: "ABC-1304", id: "857 125 968", enrolled: "05.14.2023", time: "43 Min", status: "ready",
+  { patientId: "ABC-1304", id: "857 125 968", enrolled: "05.14.2023", time: "43 Min", status: "ready", period: "2026-01",
     codes: [ {t:"eligible", sub:"Setup on 01.01.2026"}, {t:"eligible", sub:"Complete on 01.01.2026"}, {t:"eligible", sub:"Complete on 01.01.2026"}, {t:"eligible", sub:"Complete on 01.01.2026"} ] },
-  { patientId: "ABC-1305", id: "857 125 968", enrolled: "05.14.2023", time: "20 Min", status: "not",
+  { patientId: "ABC-1305", id: "857 125 968", enrolled: "05.14.2023", time: "20 Min", status: "not", period: "2026-01",
     codes: [ {t:"pending"}, {t:"not", sub:"Complete on 01.01.2026", warn:true}, {t:"eligible", sub:"Complete on 01.01.2026"}, {t:"not", sub:"Insufficient time log"} ] },
-  { patientId: "ABC-1306", id: "857 125 968", enrolled: "05.14.2023", time: "23 Min", status: "not",
+  { patientId: "ABC-1306", id: "857 125 968", enrolled: "05.14.2023", time: "23 Min", status: "not", period: "2026-01",
     codes: [ {t:"na"}, {t:"eligible", sub:"Complete on 01.01.2026"}, {t:"eligible", sub:"Complete on 01.01.2026"}, {t:"not", sub:"Insufficient time log"} ] },
-  { patientId: "ABC-1307", id: "857 125 968", enrolled: "05.14.2023", time: "12 Min", status: "not",
+  { patientId: "ABC-1307", id: "857 125 968", enrolled: "05.14.2023", time: "12 Min", status: "not", period: "2026-01",
     codes: [ {t:"eligible", sub:"Setup on 01.01.2026"}, {t:"eligible", sub:"Complete on 01.01.2026"}, {t:"not", sub:"Insufficient time log"}, {t:"not", sub:"Insufficient time log"} ] },
-  { patientId: "ABC-1222", id: "857 125 968", enrolled: "05.14.2023", time: "15 Min", status: "not",
+  { patientId: "ABC-1222", id: "857 125 968", enrolled: "05.14.2023", time: "15 Min", status: "not", period: "2026-01",
     codes: [ {t:"eligible", sub:"Setup on 01.01.2026"}, {t:"eligible", sub:"Complete on 01.01.2026"}, {t:"not", sub:"Insufficient time log"}, {t:"not", sub:"Insufficient time log"} ] },
-  { patientId: "ABC-1308", id: "857 125 968", enrolled: "05.14.2023", time: "16 Min", status: "not",
+  { patientId: "ABC-1308", id: "857 125 968", enrolled: "05.14.2023", time: "16 Min", status: "not", period: "2026-01",
     codes: [ {t:"eligible", sub:"Setup on 01.01.2026"}, {t:"eligible", sub:"Complete on 01.01.2026"}, {t:"not", sub:"Insufficient time log"}, {t:"not", sub:"Insufficient time log"} ] },
-  { patientId: "ABC-1309", id: "857 125 968", enrolled: "05.14.2023", time: "8 Min",  status: "not",
+  { patientId: "ABC-1309", id: "857 125 968", enrolled: "05.14.2023", time: "8 Min",  status: "not", period: "2026-01",
     codes: [ {t:"eligible", sub:"Setup on 01.01.2026"}, {t:"eligible", sub:"Complete on 01.01.2026"}, {t:"not", sub:"Insufficient time log"}, {t:"not", sub:"Insufficient time log"} ] },
-  { patientId: "ABC-1310", id: "857 125 968", enrolled: "05.14.2023", time: "11 Min", status: "not",
+  { patientId: "ABC-1310", id: "857 125 968", enrolled: "05.14.2023", time: "11 Min", status: "not", period: "2026-01",
     codes: [ {t:"eligible", sub:"Setup on 01.01.2026"}, {t:"eligible", sub:"Complete on 01.01.2026"}, {t:"not", sub:"Insufficient time log"}, {t:"not", sub:"Insufficient time log"} ] },
-  { patientId: "ABC-1311", id: "857 125 968", enrolled: "05.14.2023", time: "9 Min",  status: "not",
+  { patientId: "ABC-1311", id: "857 125 968", enrolled: "05.14.2023", time: "9 Min",  status: "not", period: "2026-01",
     codes: [ {t:"eligible", sub:"Setup on 01.01.2026"}, {t:"eligible", sub:"Complete on 01.01.2026"}, {t:"not", sub:"Insufficient time log"}, {t:"not", sub:"Insufficient time log"} ] },
 ];
+
+const ELIGIBILITY_OPTIONS = [
+  { key: "eligible", label: "Eligible" },
+  { key: "not", label: "Not Eligible" },
+  { key: "pending", label: "Pending" },
+  { key: "na", label: "N/A" },
+];
+const BILLING_STATUS_OPTIONS = [
+  { key: "ready", label: "Ready for billing" },
+  { key: "not", label: "Not eligible" },
+];
+const MONTH_LABELS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+const selectedEligibilityCodes = new Set();
+const selectedBillingStatuses = new Set();
+let selectedBillingMonth = "2026-01";
 
 function codeCell(c) {
   if (c.t === "eligible") {
@@ -57,12 +73,25 @@ function statusCell(status) {
     : `<span class="bill-status bill-status-not">Not eligible</span>`;
 }
 
+function filteredBillingList() {
+  const search = document.getElementById("searchInput").value.trim().toLowerCase();
+  return billingList.filter(
+    (b) =>
+      (!search || b.patientId.toLowerCase().includes(search)) &&
+      (!selectedEligibilityCodes.size || b.codes.some((c) => selectedEligibilityCodes.has(c.t))) &&
+      (!selectedBillingStatuses.size || selectedBillingStatuses.has(b.status)) &&
+      (!selectedBillingMonth || b.period === selectedBillingMonth)
+  );
+}
+
 const rowsEl = document.getElementById("billingRows");
-rowsEl.innerHTML = billingList
-  .map(
-    (b) => `
-    <tr>
-      <td><span class="bill-checkbox row-check"></span></td>
+
+function renderBillingRows() {
+  rowsEl.innerHTML = filteredBillingList()
+    .map(
+      (b) => `
+    <tr data-patient="${b.patientId}">
+      <td><span class="bill-checkbox row-check${b.codes[0].t === "pending" ? " disabled" : ""}"></span></td>
       <td><span class="lt-name active-name">${b.patientId}</span></td>
       <td>${b.id}</td>
       <td>${b.enrolled}</td>
@@ -75,12 +104,14 @@ rowsEl.innerHTML = billingList
       <td>
         <div class="action-cell">
           <button class="action-icon" aria-label="Edit">${pencilIcon}</button>
-          <button class="action-icon kebab" aria-label="More">${kebabIcon}</button>
+          <button class="action-icon kebab row-menu-trigger" aria-label="More" data-patient="${b.patientId}">${kebabIcon}</button>
         </div>
       </td>
     </tr>`
-  )
-  .join("");
+    )
+    .join("");
+  updateExportBtnState();
+}
 
 const exportReportBtn = document.getElementById("exportReportBtn");
 const exportFormatPopover = document.getElementById("exportFormatPopover");
@@ -92,16 +123,34 @@ function updateExportBtnState() {
   if (!anySelected) exportFormatPopover.classList.remove("open");
 }
 
-document.querySelectorAll(".bill-checkbox").forEach((box) => {
-  box.addEventListener("click", () => {
-    box.classList.toggle("checked");
+function goToTimeLog(patientId) {
+  window.location.href = `time-log.html?patient=${encodeURIComponent(patientId)}`;
+}
+
+rowsEl.addEventListener("click", (e) => {
+  const checkbox = e.target.closest(".bill-checkbox");
+  if (checkbox) {
+    if (!checkbox.classList.contains("disabled")) checkbox.classList.toggle("checked");
     updateExportBtnState();
-  });
+    return;
+  }
+
+  const trigger = e.target.closest(".row-menu-trigger");
+  if (trigger) {
+    e.stopPropagation();
+    openBillingRowMenuFor(trigger.dataset.patient, trigger);
+    return;
+  }
+
+  if (e.target.closest(".action-cell")) return;
+
+  const tr = e.target.closest("tr[data-patient]");
+  if (tr) goToTimeLog(tr.dataset.patient);
 });
 
 document.getElementById("selectAllBox").addEventListener("click", function () {
   const checked = this.classList.contains("checked");
-  document.querySelectorAll(".row-check").forEach((box) => box.classList.toggle("checked", checked));
+  document.querySelectorAll(".row-check:not(.disabled)").forEach((box) => box.classList.toggle("checked", checked));
   updateExportBtnState();
 });
 
@@ -113,9 +162,191 @@ exportFormatPopover.querySelectorAll(".more-menu-item").forEach((item) => {
   });
 });
 
+document.getElementById("searchInput").addEventListener("input", renderBillingRows);
+
+/* ---------------- Checkbox filter menus (Eligibility Code / Billing Status) ---------------- */
+const portaledFilterMenus = new Map();
+
+function positionFilterMenu(trigger, menu) {
+  const rect = trigger.getBoundingClientRect();
+  const menuHeight = Math.min(menu.scrollHeight || 280, 280) + 12;
+  const spaceBelow = window.innerHeight - rect.bottom;
+  const openUpward = spaceBelow < menuHeight && rect.top > menuHeight;
+
+  menu.style.position = "fixed";
+  menu.style.left = "0px";
+  menu.style.minWidth = `${rect.width}px`;
+  menu.style.top = openUpward ? "auto" : `${rect.bottom + 6}px`;
+  menu.style.bottom = openUpward ? `${window.innerHeight - rect.top + 6}px` : "auto";
+
+  const margin = 12;
+  const menuWidth = menu.offsetWidth;
+  let left = rect.left;
+  if (left + menuWidth + margin > window.innerWidth) {
+    left = Math.max(margin, rect.right - menuWidth);
+  }
+  menu.style.left = `${left}px`;
+}
+
+function openFilterMenu(wrapEl, menuEl) {
+  if (!portaledFilterMenus.has(menuEl)) {
+    portaledFilterMenus.set(menuEl, { parent: menuEl.parentNode, next: menuEl.nextSibling });
+  }
+  document.body.appendChild(menuEl);
+  menuEl.classList.add("checkbox-filter-menu-portaled");
+  positionFilterMenu(wrapEl.querySelector(".filter-btn"), menuEl);
+}
+
+function closeFilterMenu(menuEl) {
+  const original = portaledFilterMenus.get(menuEl);
+  if (original && menuEl.parentNode === document.body) {
+    if (original.next && original.next.parentNode === original.parent) {
+      original.parent.insertBefore(menuEl, original.next);
+    } else {
+      original.parent.appendChild(menuEl);
+    }
+  }
+  menuEl.classList.remove("checkbox-filter-menu-portaled");
+  menuEl.style.position = "";
+  menuEl.style.left = "";
+  menuEl.style.top = "";
+  menuEl.style.bottom = "";
+  menuEl.style.minWidth = "";
+}
+
+function wireCheckboxFilter(wrapEl, menuEl, selectedSet, onChange) {
+  const trigger = wrapEl.querySelector(".filter-btn");
+  const label = wrapEl.querySelector(".checkbox-filter-label");
+  const baseLabel = label.textContent.trim();
+
+  trigger.addEventListener("click", (e) => {
+    e.stopPropagation();
+    const willOpen = !wrapEl.classList.contains("open");
+    closeAllFilterPopovers();
+    wrapEl.classList.toggle("open", willOpen);
+    if (willOpen) openFilterMenu(wrapEl, menuEl);
+  });
+
+  menuEl.addEventListener("click", (e) => e.stopPropagation());
+
+  menuEl.addEventListener("change", (e) => {
+    const checkbox = e.target.closest('input[type="checkbox"]');
+    if (!checkbox) return;
+    if (checkbox.checked) selectedSet.add(checkbox.value);
+    else selectedSet.delete(checkbox.value);
+
+    label.textContent = selectedSet.size ? `${baseLabel} (${selectedSet.size})` : baseLabel;
+    onChange();
+  });
+}
+
+function closeAllFilterPopovers() {
+  document.querySelectorAll(".checkbox-filter.open").forEach((el) => el.classList.remove("open"));
+  document.querySelectorAll(".checkbox-filter-menu-portaled").forEach((menuEl) => closeFilterMenu(menuEl));
+}
+
+document.addEventListener("click", closeAllFilterPopovers);
+
+const eligibilityCodeMenu = document.getElementById("eligibilityCodeMenu");
+eligibilityCodeMenu.innerHTML = ELIGIBILITY_OPTIONS.map((o) => `<label class="checkbox-filter-option"><input type="checkbox" value="${o.key}" />${o.label}</label>`).join("");
+wireCheckboxFilter(document.querySelector('.checkbox-filter[data-name="eligibilityCode"]'), eligibilityCodeMenu, selectedEligibilityCodes, renderBillingRows);
+
+const billingStatusMenu = document.getElementById("billingStatusMenu");
+billingStatusMenu.innerHTML = BILLING_STATUS_OPTIONS.map((o) => `<label class="checkbox-filter-option"><input type="checkbox" value="${o.key}" />${o.label}</label>`).join("");
+wireCheckboxFilter(document.querySelector('.checkbox-filter[data-name="billingStatus"]'), billingStatusMenu, selectedBillingStatuses, renderBillingRows);
+
+/* ---------------- Month/year filter ---------------- */
+function pad2(n) { return String(n).padStart(2, "0"); }
+
+const monthWrap = document.querySelector('.checkbox-filter[data-name="month"]');
+const monthMenu = document.getElementById("monthMenu");
+const monthFilterLabel = document.getElementById("monthFilterLabel");
+let monthViewYear = 2026;
+
+function renderMonthMenu() {
+  const [selYear, selMonth] = selectedBillingMonth ? selectedBillingMonth.split("-").map(Number) : [null, null];
+  monthMenu.innerHTML = `
+    <div class="calendar-head">
+      <span class="calendar-month-label">${monthViewYear}</span>
+      <div class="calendar-nav">
+        <button type="button" class="calendar-nav-btn" data-nav="-1"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15 6L9 12L15 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <button type="button" class="calendar-nav-btn" data-nav="1"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 6L15 12L9 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      </div>
+    </div>
+    <div class="month-grid">
+      ${MONTH_LABELS.map((label, i) => {
+        const isSelected = selYear === monthViewYear && selMonth === i + 1;
+        return `<div class="month-cell${isSelected ? " selected" : ""}" data-month="${i + 1}">${label}</div>`;
+      }).join("")}
+    </div>
+    <div class="calendar-footer">
+      <button type="button" class="calendar-footer-btn" data-action="clear">Clear</button>
+    </div>
+  `;
+}
+
+monthWrap.querySelector(".filter-btn").addEventListener("click", (e) => {
+  e.stopPropagation();
+  const willOpen = !monthWrap.classList.contains("open");
+  closeAllFilterPopovers();
+  monthWrap.classList.toggle("open", willOpen);
+  if (willOpen) {
+    renderMonthMenu();
+    openFilterMenu(monthWrap, monthMenu);
+  }
+});
+
+monthMenu.addEventListener("click", (e) => {
+  e.stopPropagation();
+
+  const navBtn = e.target.closest(".calendar-nav-btn");
+  if (navBtn) {
+    monthViewYear += Number(navBtn.dataset.nav);
+    renderMonthMenu();
+    positionFilterMenu(monthWrap.querySelector(".filter-btn"), monthMenu);
+    return;
+  }
+
+  const monthCell = e.target.closest(".month-cell");
+  if (monthCell) {
+    selectedBillingMonth = `${monthViewYear}-${pad2(Number(monthCell.dataset.month))}`;
+    monthFilterLabel.textContent = `${MONTH_LABELS[Number(monthCell.dataset.month) - 1]}. ${monthViewYear}`;
+    monthWrap.classList.remove("open");
+    closeFilterMenu(monthMenu);
+    renderBillingRows();
+    return;
+  }
+
+  const clearBtn = e.target.closest('[data-action="clear"]');
+  if (clearBtn) {
+    selectedBillingMonth = null;
+    monthFilterLabel.textContent = "Month";
+    monthWrap.classList.remove("open");
+    closeFilterMenu(monthMenu);
+    renderBillingRows();
+  }
+});
+
+/* ---------------- Clear all filters ---------------- */
 document.getElementById("clearFilters").addEventListener("click", () => {
   document.getElementById("searchInput").value = "";
+
+  [
+    { menu: eligibilityCodeMenu, set: selectedEligibilityCodes, wrap: document.querySelector('.checkbox-filter[data-name="eligibilityCode"]'), label: "Eligibility Code" },
+    { menu: billingStatusMenu, set: selectedBillingStatuses, wrap: document.querySelector('.checkbox-filter[data-name="billingStatus"]'), label: "Billing Status" },
+  ].forEach(({ menu, set, wrap, label }) => {
+    set.clear();
+    menu.querySelectorAll('input[type="checkbox"]').forEach((cb) => (cb.checked = false));
+    wrap.querySelector(".checkbox-filter-label").textContent = label;
+  });
+
+  selectedBillingMonth = null;
+  monthFilterLabel.textContent = "Month";
+
+  renderBillingRows();
 });
+
+renderBillingRows();
 
 /* ---------------- Custom dropdowns (same pattern as Registration) ---------------- */
 function setCustomSelectValue(select, value, { silent = false } = {}) {
@@ -232,4 +463,64 @@ scheduleBillingReportForm.addEventListener("submit", (e) => {
   e.preventDefault();
   if (saveScheduleBillingReport.disabled) return;
   closeScheduleBillingReportModal();
+});
+
+/* ---------------- Row action dropdown ---------------- */
+const billingRowMenu = document.getElementById("billingRowMenu");
+let activeRowPatientId = null;
+
+function openBillingRowMenuFor(patientId, trigger) {
+  activeRowPatientId = patientId;
+  const rect = trigger.getBoundingClientRect();
+  billingRowMenu.style.top = `${rect.bottom + 6}px`;
+  billingRowMenu.style.left = `${rect.right - 190}px`;
+  billingRowMenu.classList.add("open");
+}
+
+document.addEventListener("click", (e) => {
+  if (!billingRowMenu.contains(e.target)) billingRowMenu.classList.remove("open");
+});
+
+billingRowMenu.addEventListener("click", (e) => {
+  const item = e.target.closest(".row-menu-item");
+  if (!item || activeRowPatientId === null) return;
+  billingRowMenu.classList.remove("open");
+
+  if (item.dataset.action === "initialTraining") openInitialTrainingModal();
+  else if (item.dataset.action === "timeLog") goToTimeLog(activeRowPatientId);
+});
+
+/* ---------------- Initial Training Confirmation modal ---------------- */
+const initialTrainingOverlay = document.getElementById("initialTrainingOverlay");
+const initialTrainingCheckbox = document.getElementById("initialTrainingConfirmCheckbox");
+const trainingProviderSelect = document.getElementById("trainingProviderSelect");
+const trainingProviderInput = trainingProviderSelect.querySelector('input[type=hidden]');
+const saveInitialTraining = document.getElementById("saveInitialTraining");
+
+function validateInitialTrainingForm() {
+  const valid = initialTrainingCheckbox.checked && trainingProviderInput.value !== "";
+  saveInitialTraining.disabled = !valid;
+  saveInitialTraining.classList.toggle("enabled", valid);
+}
+
+initialTrainingCheckbox.addEventListener("change", validateInitialTrainingForm);
+trainingProviderInput.addEventListener("change", validateInitialTrainingForm);
+
+function openInitialTrainingModal() {
+  initialTrainingCheckbox.checked = false;
+  setCustomSelectValue(trainingProviderSelect, "", { silent: true });
+  validateInitialTrainingForm();
+  initialTrainingOverlay.classList.add("open");
+}
+
+function closeInitialTrainingModal() {
+  initialTrainingOverlay.classList.remove("open");
+}
+
+document.getElementById("cancelInitialTraining").addEventListener("click", closeInitialTrainingModal);
+initialTrainingOverlay.addEventListener("click", (e) => { if (e.target === initialTrainingOverlay) closeInitialTrainingModal(); });
+
+saveInitialTraining.addEventListener("click", () => {
+  if (saveInitialTraining.disabled) return;
+  closeInitialTrainingModal();
 });

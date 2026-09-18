@@ -306,6 +306,15 @@ input[type="password"]:focus {
   background: #13579f;
 }
 
+.login-btn:disabled {
+  background: #A9A8A8;
+  cursor: not-allowed;
+}
+
+.login-btn:disabled:hover {
+  background: #A9A8A8;
+}
+
 .login-btn:active {
   transform: scale(0.99);
 }
@@ -1104,6 +1113,110 @@ input[type="password"]:focus {
   font-family: inherit;
 }
 
+/* ===== Consent screen ===== */
+.consent-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px 28px 40px;
+  text-align: center;
+}
+
+.consent-content .logo { margin-bottom: 28px; }
+
+.consent-title {
+  font-size: calc(30px * var(--font-scale, 1));
+  font-weight: 600;
+  color: #434141;
+  margin-bottom: 8px;
+}
+
+.consent-subtitle {
+  font-size: calc(25px * var(--font-scale, 1));
+  font-weight: 400;
+  color: #434141;
+  line-height: 1.4;
+  margin-bottom: 28px;
+}
+
+.consent-options {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  text-align: left;
+}
+
+.consent-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  cursor: pointer;
+}
+
+.consent-checkbox {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  margin-top: 1px;
+  border-radius: 5px;
+  border: 1.5px solid #C9CDD3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.consent-option.checked .consent-checkbox {
+  background: #186DCE;
+  border-color: #186DCE;
+}
+
+.consent-checkbox svg { display: none; }
+.consent-option.checked .consent-checkbox svg { display: block; }
+
+.consent-option-text {
+  font-size: calc(20px * var(--font-scale, 1));
+  font-weight: 400;
+  line-height: 1.5;
+  color: #434141;
+}
+
+.consent-option-text a {
+  color: #186DCE;
+  text-decoration: underline;
+}
+
+.consent-footer {
+  margin-top: auto;
+  width: 100%;
+}
+
+.consent-footer .login-btn { width: 100%; }
+
+.consent-icon-circle {
+  flex-shrink: 0;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: #E4EEFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.consent-not-now-link {
+  background: none;
+  border: none;
+  color: #186DCE;
+  font-size: calc(18px * var(--font-scale, 1));
+  font-weight: 500;
+  cursor: pointer;
+  font-family: inherit;
+  margin-top: 16px;
+}
+
 /* ===== Onboarding stepper ===== */
 .onboarding-content {
   flex: 1;
@@ -1775,7 +1888,7 @@ input[type="password"]:focus {
   border-top: 1px solid #e4e6ea;
   padding: 14px 32px 22px;
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
 }
 
 .chat-nav-item {
@@ -1826,6 +1939,110 @@ input[type="password"]:focus {
   align-items: center;
   justify-content: center;
 }
+
+/* ===== History screen ===== */
+.history-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 28px 24px;
+}
+
+.history-card {
+  background: #fff;
+  border: 1.5px solid #eceef1;
+  border-radius: 16px;
+  padding: 18px;
+  margin-bottom: 14px;
+}
+
+.history-card-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.history-card-title-wrap { flex: 1; min-width: 0; }
+
+.history-card-top-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.history-card-med {
+  font-size: calc(20px * var(--font-scale, 1));
+  font-weight: 600;
+  color: #434141;
+}
+
+.history-card-date {
+  flex-shrink: 0;
+  font-size: calc(14px * var(--font-scale, 1));
+  color: #7a7f87;
+  white-space: nowrap;
+}
+
+.history-card-action {
+  font-size: calc(15px * var(--font-scale, 1));
+  color: #7a7f87;
+  margin-top: 2px;
+}
+
+.history-card-meta {
+  font-size: calc(15px * var(--font-scale, 1));
+  color: #8A8F97;
+  margin-bottom: 12px;
+}
+
+.history-card-meta strong { color: #434141; font-weight: 600; }
+
+.history-card-note {
+  background: #F0F0F3;
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: calc(15px * var(--font-scale, 1));
+  color: #434141;
+  line-height: 1.4;
+}
+
+.history-card-note-label {
+  display: block;
+  font-size: calc(12px * var(--font-scale, 1));
+  font-weight: 700;
+  color: #8A8F97;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  margin-bottom: 4px;
+}
+
+.history-empty {
+  text-align: center;
+  color: #8A8F97;
+  font-size: calc(16px * var(--font-scale, 1));
+  padding: 60px 20px;
+}
+
+.issues-intro {
+  font-size: calc(15px * var(--font-scale, 1));
+  color: #7a7f87;
+  line-height: 1.4;
+  margin-bottom: 18px;
+}
+
+.issue-status-pill {
+  flex-shrink: 0;
+  font-size: calc(12.5px * var(--font-scale, 1));
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 14px;
+  white-space: nowrap;
+}
+
+.issue-status-pill.open { background: #FFF5F2; color: #DE7C00; }
+.issue-status-pill.in-progress { background: #F6F9FD; color: #186DCE; }
+.issue-status-pill.resolved { background: #dff5ea; color: #2AC19E; }
 
 /* ===== Tutorial intro screen (info) ===== */
 .tutorial-content {
@@ -1915,6 +2132,27 @@ input[type="password"]:focus {
   pointer-events: none;
 }
 
+/* Dims an individual element rather than a whole ancestor -- lets a sibling
+   (the tour's highlighted card/button) stay at full brightness instead of
+   getting darkened along with everything else under a parent's filter. */
+.tour-dim {
+  filter: brightness(0.75);
+  pointer-events: none;
+}
+
+.highlight-blue,
+.highlight-orange,
+.highlight-chat {
+  position: relative;
+  z-index: 41;
+  border-radius: 16px;
+  box-shadow: 0 0 0 3px #186DCE, 0 10px 24px rgba(0, 0, 0, 0.18);
+}
+
+.highlight-orange {
+  box-shadow: 0 0 0 3px #F98B00, 0 10px 24px rgba(0, 0, 0, 0.18);
+}
+
 .tooltip-popover {
   position: absolute;
   left: 24px;
@@ -1923,7 +2161,7 @@ input[type="password"]:focus {
   border-radius: 18px;
   padding: 22px 22px 20px;
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.25);
-  z-index: 40;
+  z-index: 50;
 }
 
 .tooltip-popover::after {
@@ -1959,8 +2197,6 @@ input[type="password"]:focus {
 
 .tooltip-popover .login-btn {
   margin-top: 0;
-  padding: 13px;
-  font-size: calc(16px * var(--font-scale, 1));
 }
 
 .nav-item-card {
@@ -3134,11 +3370,11 @@ input[type="password"]:focus {
   justify-content: center;
   gap: 7px;
   padding: 11px 14px;
-  min-height: 44px;
+  min-height: 46px;
   border-radius: 24px;
-  border: 1.5px solid #2AC19E;
-  background: #fff;
-  color: #2AC19E;
+  border: 2px solid #186DCE;
+  background: #F6F9FD;
+  color: #186DCE;
   font-family: inherit;
   font-size: calc(18px * var(--font-scale, 1));
   font-weight: 500;
@@ -3147,8 +3383,8 @@ input[type="password"]:focus {
 
 .med-action-btn:active { background: #e9f1ff; }
 
-.med-action-btn.med-action-btn-nottaken { border-color: #F98B00; color: #F98B00; }
-.med-action-btn.med-action-btn-nottaken:active { background: #FFF3E5; }
+.med-action-btn.med-action-btn-nottaken { border-color: #F59E0B; background: #FFF5F2; color: #DE7C00; }
+.med-action-btn.med-action-btn-nottaken:active { background: #FFE9DC; }
 
 /* Once a dose has a status, its two choice buttons collapse into this
    badge -- a plain label reporting the state, not a button -- paired with
@@ -3167,8 +3403,8 @@ input[type="password"]:focus {
   font-weight: 500;
 }
 
-.med-action-status-taken { background: #dff5ea; color: #2AC19E; }
-.med-action-status-nottaken { background: #FFF3E5; color: #F98B00; }
+.med-action-status-taken { background: #F6F9FD; color: #186DCE; }
+.med-action-status-nottaken { background: #FFF5F2; color: #DE7C00; }
 .med-action-status svg { flex-shrink: 0; }
 
 .med-action-undo {
@@ -4556,6 +4792,7 @@ input[type="password"]:focus {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: nowrap;
   gap: 14px;
   padding: 16px 18px;
   border: 1.5px solid #eceef1;
@@ -4572,14 +4809,20 @@ input[type="password"]:focus {
 }
 
 .fontsize-option-label {
-  font-size: calc(16px * var(--font-scale, 1));
+  flex-shrink: 0;
+  width: 120px;
   font-weight: 600;
-  color: #252424;
+  color: #434141;
+  white-space: nowrap;
 }
 
 .fontsize-option-sample {
+  flex: 1;
+  text-align: center;
   color: #6a6f77;
   font-weight: 500;
+  white-space: nowrap;
+  line-height: 1;
 }
 
 .fontsize-option-check {

@@ -250,4 +250,5 @@ function renderForOrg(orgIds) {
   document.getElementById("mktNeedAttention").textContent = mktScale(mktStudyHeadBase.needAttention, seed + 5, 0.5);
 }
 
-mktRenderOrgSelect("mktStudyOrgSelect", renderForOrg);
+const mktStudyOrgSelectApi = mktRenderOrgSelect("mktStudyOrgSelect", renderForOrg);
+mktRenderOrgTypeSelect("mktStudyTypeSelect", (type) => mktStudyOrgSelectApi.setTypeFilter(type));

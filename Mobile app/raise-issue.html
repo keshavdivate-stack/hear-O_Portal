@@ -7,8 +7,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/Mobile%20app/style.css?v=5">
-<script src="/Mobile%20app/font-scale.js?v=5"></script>
+<link rel="stylesheet" href="/Mobile%20app/style.css?v=29">
+<script src="/Mobile%20app/font-scale.js?v=29"></script>
 </head>
 <body>
 
@@ -113,17 +113,37 @@
     if (detailsStep.style.display !== "none") {
       detailsStep.style.display = "none";
       issueStep.style.display = "block";
+    } else if (window.history.length > 1) {
+      window.history.back();
     } else {
       window.location.href = "/Mobile%20app/contact-us.html";
     }
   });
 
+  // Reachable from Contact Us and from Menu > Raise an Issue, so the
+  // submitted issue is saved to the same list either way.
+  function saveIssue() {
+    const ISSUES_KEY = "hearo_raised_issues";
+    let issues = [];
+    try {
+      issues = JSON.parse(localStorage.getItem(ISSUES_KEY)) || [];
+    } catch (e) {}
+    issues.unshift({
+      issue: selectedIssue,
+      detail: document.getElementById("issueDetails").value.trim(),
+      date: new Date().toLocaleString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit" }),
+      status: "open",
+    });
+    localStorage.setItem(ISSUES_KEY, JSON.stringify(issues));
+  }
+
   function handleSubmit() {
+    saveIssue();
     document.getElementById("submittedModal").style.display = "flex";
   }
 
   document.getElementById("modalOkBtn").addEventListener("click", () => {
-    window.location.href = "/Mobile%20app/contact-us.html";
+    window.location.href = "/Mobile%20app/raised-issues.html";
   });
 
   renderIssues();

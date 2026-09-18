@@ -42,7 +42,7 @@ function rmDaysOfWeekLabel(s) {
 const rmReportTimeLabel = (s) => `${s.time} (${s.timezone})`;
 
 const rmStatusPillClass = { Active: "bo-pill-active", Paused: "bo-pill-paused" };
-const rmDeliveryPillClass = { Delivered: "bo-pill-delivered", Failed: "bo-pill-failed", Processing: "bo-pill-processing" };
+const rmDeliveryPillClass = { Delivered: "bo-pill-delivered", Failed: "bo-pill-failed", Partial: "bo-pill-partial", Processing: "bo-pill-processing" };
 const rmStatusPill = (s) => `<span class="bo-pill ${rmStatusPillClass[s] || ""}">${s}</span>`;
 const rmDeliveryPill = (s) => `<span class="bo-pill ${rmDeliveryPillClass[s] || ""}">${s}</span>`;
 /* "N people"/"1 person" stays the visible label -- hovering reveals who,
@@ -166,6 +166,14 @@ function buildFilterSelectOptions(values, clearLabel) {
   return clearOption + buildSelectOptions(values);
 }
 
+/* Only offer report types that actually appear in the given rows, rather than
+   every report type that has ever existed, so the filter can't list options
+   with nothing to show. */
+function rmReportTypeLabelsInUse(rows) {
+  const keysInUse = new Set(rows.map((r) => r.reportKey));
+  return RM_REPORTS.filter((r) => keysInUse.has(r.key)).map((r) => r.label);
+}
+
 /* ---------------- Scheduled Reports ---------------- */
 let rmScheduleSearch = "";
 let rmScheduleTypeFilter = "";
@@ -173,7 +181,7 @@ let rmScheduleOrgFilter = "";
 let rmScheduleStatusFilter = "";
 let rmScheduleFrequencyFilter = "";
 
-document.getElementById("rmReportTypeFilterMenu").innerHTML = buildFilterSelectOptions(RM_REPORTS.map((r) => r.label), "All report types");
+document.getElementById("rmReportTypeFilterMenu").innerHTML = buildFilterSelectOptions(rmReportTypeLabelsInUse(rmSchedules.filter((s) => !s.archived)), "All report types");
 document.getElementById("rmOrgFilterMenu").innerHTML = buildFilterSelectOptions(RM_ORGS, "All organisations");
 document.getElementById("rmStatusFilterMenu").innerHTML = buildFilterSelectOptions(RM_STATUSES, "All statuses");
 document.getElementById("rmFrequencyFilterMenu").innerHTML = buildFilterSelectOptions(RM_FREQUENCIES, "All frequencies");
@@ -279,10 +287,23 @@ document.getElementById("rmClearScheduleFiltersBtn").addEventListener("click", r
    sets s.archived and the row moves off Scheduled Reports into this tab,
    where the same row menu offers Unarchive Schedule to bring it back. */
 let rmArchivedSearch = "";
+let rmArchivedTypeFilter = "";
+let rmArchivedOrgFilter = "";
+let rmArchivedStatusFilter = "";
+let rmArchivedFrequencyFilter = "";
+
+document.getElementById("rmArchivedReportTypeFilterMenu").innerHTML = buildFilterSelectOptions(rmReportTypeLabelsInUse(rmSchedules.filter((s) => s.archived)), "All report types");
+document.getElementById("rmArchivedOrgFilterMenu").innerHTML = buildFilterSelectOptions(RM_ORGS, "All organisations");
+document.getElementById("rmArchivedStatusFilterMenu").innerHTML = buildFilterSelectOptions(RM_STATUSES, "All statuses");
+document.getElementById("rmArchivedFrequencyFilterMenu").innerHTML = buildFilterSelectOptions(RM_FREQUENCIES, "All frequencies");
 
 function rmFilteredArchived() {
   return rmSchedules.filter((s) => {
     if (!s.archived) return false;
+    if (rmArchivedTypeFilter && rmReportLabel(s.reportKey) !== rmArchivedTypeFilter) return false;
+    if (rmArchivedOrgFilter && s.org !== rmArchivedOrgFilter) return false;
+    if (rmArchivedStatusFilter && s.status !== rmArchivedStatusFilter) return false;
+    if (rmArchivedFrequencyFilter && s.frequency !== rmArchivedFrequencyFilter) return false;
     if (rmArchivedSearch) {
       const haystack = `${rmReportLabel(s.reportKey)} ${s.name} ${s.org}`.toLowerCase();
       if (!haystack.includes(rmArchivedSearch)) return false;
@@ -302,13 +323,18 @@ const rmArchivedEmptyHtml = `
 
 const rmArchivedPager = boCreatePager("rmArchivedRows", () => rmFilteredArchived(), rmRenderScheduleRow, { pageSize: 8, emptyHtml: rmArchivedEmptyHtml });
 
+function rmArchivedFiltersActive() {
+  return !!(rmArchivedSearch || rmArchivedTypeFilter || rmArchivedOrgFilter || rmArchivedStatusFilter || rmArchivedFrequencyFilter);
+}
+
 function rmRefreshArchivedEmptyState() {
   const titleEl = document.getElementById("rmArchivedEmptyTitle");
   const subEl = document.getElementById("rmArchivedEmptySub");
   if (!titleEl) return;
-  if (rmArchivedSearch) {
-    titleEl.textContent = "No archived reports match your search";
-    subEl.textContent = "Try a different search.";
+  if (rmArchivedFiltersActive()) {
+    titleEl.textContent = "No archived reports match your filters";
+    subEl.innerHTML = 'Try different filters, or <button type="button" class="bo-btn-text" id="rmClearArchivedFiltersInline" style="padding:0; font-size:inherit;">clear filters</button>.';
+    document.getElementById("rmClearArchivedFiltersInline").addEventListener("click", rmClearArchivedFilters);
   } else {
     titleEl.textContent = "No archived reports";
     subEl.textContent = "Schedules you archive will show up here, and can be unarchived any time.";
@@ -326,39 +352,64 @@ document.getElementById("rmArchivedSearchInput").addEventListener("input", (e) =
   rmArchivedPager.resetPage();
   rmRenderArchived();
 });
+document.getElementById("rmArchivedReportTypeFilter").addEventListener("change", (e) => { rmArchivedTypeFilter = e.target.value; rmArchivedPager.resetPage(); rmRenderArchived(); });
+document.getElementById("rmArchivedOrgFilter").addEventListener("change", (e) => { rmArchivedOrgFilter = e.target.value; rmArchivedPager.resetPage(); rmRenderArchived(); });
+document.getElementById("rmArchivedStatusFilter").addEventListener("change", (e) => { rmArchivedStatusFilter = e.target.value; rmArchivedPager.resetPage(); rmRenderArchived(); });
+document.getElementById("rmArchivedFrequencyFilter").addEventListener("change", (e) => { rmArchivedFrequencyFilter = e.target.value; rmArchivedPager.resetPage(); rmRenderArchived(); });
+
+function rmClearArchivedFilters() {
+  rmArchivedSearch = "";
+  rmArchivedTypeFilter = "";
+  rmArchivedOrgFilter = "";
+  rmArchivedStatusFilter = "";
+  rmArchivedFrequencyFilter = "";
+  document.getElementById("rmArchivedSearchInput").value = "";
+  document.querySelectorAll("#tab-archived .bo-select").forEach(resetBoSelect);
+  rmArchivedPager.resetPage();
+  rmRenderArchived();
+}
+document.getElementById("rmClearArchivedFiltersBtn").addEventListener("click", rmClearArchivedFilters);
 
 /* ---------------- Report History ---------------- */
 let rmHistReportFilter = "";
+let rmHistReportNameFilter = "";
 let rmHistOrgFilter = "";
 
-/* Unlike the other history filters (blank = "no filter"), Date Range always
-   has a value -- it defaults to the last 7 days so the table doesn't dump a
-   long tail of old deliveries on first load, with Last 30/90 days and All
-   time available for anyone who needs to look further back. */
-const RM_DATE_RANGE_OPTIONS = [
-  { days: 7, label: "Last 7 days" },
-  { days: 30, label: "Last 30 days" },
-  { days: 90, label: "Last 90 days" },
-  { days: Infinity, label: "All time" },
-];
-let rmHistDateRangeFilter = 7;
+/* From/To date range -- both blank = no date filtering. `daysAgo` is the only
+   date info each history record carries (sentOn is a display-only string, see
+   below), so a record's actual calendar date is derived from it relative to
+   today, then compared against the picked range. */
+let rmHistFromDate = "";
+let rmHistToDate = "";
+let rmHistStatusFilter = "";
+
+/* Processing is a transient in-flight state, not a result -- there's nothing
+   useful to filter for once a delivery has actually finished, so the Status
+   filter only offers the three terminal outcomes. */
+const RM_HISTORY_STATUS_OPTIONS = ["Delivered", "Failed", "Partial"];
 
 document.getElementById("rmHistReportFilterMenu").innerHTML = buildFilterSelectOptions(RM_REPORTS.map((r) => r.label), "All reports");
 document.getElementById("rmHistOrgFilterMenu").innerHTML = buildFilterSelectOptions(RM_ORGS, "All organisations");
-document.getElementById("rmHistDateRangeFilterMenu").innerHTML = RM_DATE_RANGE_OPTIONS
-  .map(
-    (o) => `
-      <div class="bo-select-option${o.days === rmHistDateRangeFilter ? " selected" : ""}" data-value="${o.days}">${o.label}
-        <svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </div>`
-  )
-  .join("");
+document.getElementById("rmHistStatusFilterMenu").innerHTML = buildFilterSelectOptions(RM_HISTORY_STATUS_OPTIONS, "All statuses");
+
+function rmHistRecordDate(h) {
+  const d = new Date();
+  d.setHours(0, 0, 0, 0);
+  d.setDate(d.getDate() - h.daysAgo);
+  return d;
+}
 
 function rmFilteredHistory() {
   return rmHistory.filter((h) => {
     if (rmHistReportFilter && rmReportLabel(h.reportKey) !== rmHistReportFilter) return false;
+    if (rmHistReportNameFilter && !h.name.toLowerCase().includes(rmHistReportNameFilter.toLowerCase())) return false;
     if (rmHistOrgFilter && h.org !== rmHistOrgFilter) return false;
-    if (h.daysAgo > rmHistDateRangeFilter) return false;
+    if (rmHistStatusFilter && h.status !== rmHistStatusFilter) return false;
+    if (rmHistFromDate || rmHistToDate) {
+      const recordDate = rmHistRecordDate(h);
+      if (rmHistFromDate && recordDate < new Date(rmHistFromDate)) return false;
+      if (rmHistToDate && recordDate > new Date(rmHistToDate)) return false;
+    }
     return true;
   });
 }
@@ -370,9 +421,11 @@ function rmRenderHistoryRow(h) {
     <tr data-id="${h.id}">
       <td class="mono">${rmHistoryIdLabel(h.id)}</td>
       <td>${rmEsc(rmReportLabel(h.reportKey))}</td>
+      <td>${rmEsc(h.name)}</td>
       <td>${rmEsc(h.org)}</td>
       <td>${rmRecipientsChip(h.recipients)}</td>
       <td>${h.sentOn}</td>
+      <td>${rmDeliveryPill(h.status)}</td>
       <td>
         <div class="bo-row-actions">
           <button class="bo-action-icon row-menu-trigger" data-id="${h.id}" aria-label="Row actions">${rmKebabIcon}</button>
@@ -382,7 +435,7 @@ function rmRenderHistoryRow(h) {
 }
 
 const rmHistoryEmptyHtml = `
-  <tr><td colspan="6">
+  <tr><td colspan="8">
     <div class="bo-empty-state">
       <svg class="bo-empty-state-icon" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
       <p class="bo-empty-state-title" id="rmHistoryEmptyTitle">No deliveries yet</p>
@@ -393,7 +446,7 @@ const rmHistoryEmptyHtml = `
 const rmHistoryPager = boCreatePager("rmHistoryRows", () => rmFilteredHistory(), rmRenderHistoryRow, { pageSize: 8, emptyHtml: rmHistoryEmptyHtml });
 
 function rmHistoryFiltersActive() {
-  return !!(rmHistReportFilter || rmHistOrgFilter || rmHistDateRangeFilter !== 7);
+  return !!(rmHistReportFilter || rmHistReportNameFilter || rmHistOrgFilter || rmHistStatusFilter || rmHistFromDate || rmHistToDate);
 }
 
 function rmRefreshHistoryEmptyState() {
@@ -417,15 +470,27 @@ function rmRenderHistory() {
 rmRenderHistory();
 
 document.getElementById("rmHistReportFilter").addEventListener("change", (e) => { rmHistReportFilter = e.target.value; rmHistoryPager.resetPage(); rmRenderHistory(); });
+document.getElementById("rmHistReportNameFilter").addEventListener("input", (e) => { rmHistReportNameFilter = e.target.value.trim(); rmHistoryPager.resetPage(); rmRenderHistory(); });
 document.getElementById("rmHistOrgFilter").addEventListener("change", (e) => { rmHistOrgFilter = e.target.value; rmHistoryPager.resetPage(); rmRenderHistory(); });
-document.getElementById("rmHistDateRangeFilter").addEventListener("change", (e) => { rmHistDateRangeFilter = Number(e.target.value); rmHistoryPager.resetPage(); rmRenderHistory(); });
+document.getElementById("rmHistStatusFilter").addEventListener("change", (e) => { rmHistStatusFilter = e.target.value; rmHistoryPager.resetPage(); rmRenderHistory(); });
+document.getElementById("rmHistFromDate").addEventListener("change", (e) => { rmHistFromDate = e.target.value; rmHistoryPager.resetPage(); rmRenderHistory(); });
+document.getElementById("rmHistToDate").addEventListener("change", (e) => { rmHistToDate = e.target.value; rmHistoryPager.resetPage(); rmRenderHistory(); });
 
 function rmClearHistoryFilters() {
   rmHistReportFilter = "";
+  rmHistReportNameFilter = "";
   rmHistOrgFilter = "";
-  rmHistDateRangeFilter = 7;
-  document.querySelectorAll('#tab-history .bo-select:not([data-name="rmHistDateRange"])').forEach(resetBoSelect);
-  setBoSelectValue(document.querySelector('#tab-history .bo-select[data-name="rmHistDateRange"]'), "7", { silent: true });
+  rmHistStatusFilter = "";
+  rmHistFromDate = "";
+  rmHistToDate = "";
+  document.querySelectorAll("#tab-history .bo-select").forEach(resetBoSelect);
+  document.getElementById("rmHistReportNameFilter").value = "";
+  const fromDateEl = document.getElementById("rmHistFromDate");
+  const toDateEl = document.getElementById("rmHistToDate");
+  fromDateEl.value = "";
+  fromDateEl.type = "text";
+  toDateEl.value = "";
+  toDateEl.type = "text";
   rmHistoryPager.resetPage();
   rmRenderHistory();
 }

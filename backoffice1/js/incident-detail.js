@@ -1,7 +1,7 @@
 /* ---------------- Incident Detail page ----------------
    Deep dive for a single system-generated Incident: Overview -> Impact ->
    Timeline -> Root Cause -> Resolution. Reached from the Incidents tab's
-   Incident ID link (?id=INC-2026-0042). Severity/Status/Owner are changed
+   Incident ID link (?id=INC-2026-0042). Priority/Status/Owner are changed
    from the Incidents list page's row menu, not from this page -- this page
    is read-only except for creating Support Tasks. */
 initBoSelects();
@@ -20,7 +20,7 @@ function renderIncidentHeader() {
 function renderIncidentSummary() {
   document.getElementById("incDetailSummaryText").textContent = currentIncident.summary;
   document.getElementById("incDetailDetected").textContent = currentIncident.detectedAt;
-  document.getElementById("incDetailSeverityKv").innerHTML = incSeverityPill(currentIncident.severity);
+  document.getElementById("incDetailPriorityKv").innerHTML = incPriorityPill(currentIncident.priority);
   document.getElementById("incDetailStatusKv").innerHTML = incStatusPill(currentIncident.status);
   document.getElementById("incDetailSource").textContent = currentIncident.source;
   document.getElementById("incDetailOwnerKv").textContent = currentIncident.owner;
@@ -90,7 +90,7 @@ const saveAddTaskBtn = document.getElementById("saveAddTask");
 document.querySelector('#addTaskOverlay .bo-select[data-name="taskTeam"] .bo-select-menu').innerHTML = buildSelectOptions(["Clinical Team", "Support Team"]);
 document.querySelector('#addTaskOverlay .bo-select[data-name="taskLevel"] .bo-select-menu').innerHTML = buildSelectOptions(["Level 1", "Level 2", "Level 3"]);
 document.querySelector('#addTaskOverlay .bo-select[data-name="taskAssignee"] .bo-select-menu').innerHTML = buildSelectOptions(SUPPORT_TEAM);
-document.querySelector('#addTaskOverlay .bo-select[data-name="taskPriority"] .bo-select-menu').innerHTML = buildSelectOptions(Object.values(INC_SEVERITY_LABEL));
+document.querySelector('#addTaskOverlay .bo-select[data-name="taskPriority"] .bo-select-menu').innerHTML = buildSelectOptions(Object.values(INC_PRIORITY_LABEL));
 
 function validateAddTaskForm() {
   const titleFilled = addTaskForm.taskTitle.value.trim() !== "";

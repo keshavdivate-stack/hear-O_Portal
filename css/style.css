@@ -798,7 +798,7 @@ button, input, select, textarea, optgroup {
 /* Narrower filter buttons on the Patient List page only -- there are enough
    filters now (scope, account, status, monitoring, compliance, gender, care
    team) that full-width buttons push Add Patient off the right edge. */
-.list-content .filters-bar { gap: 6px; }
+.list-content .filters-bar { gap: 6px; margin-bottom: 10px; }
 .list-content .filters-bar .search-pill { width: 170px; padding: 9px 12px; }
 .list-content .filters-bar .filter-btn { padding: 9px 10px; gap: 5px; }
 .list-content .filters-bar .clear-filters { padding: 0 2px; }
@@ -1102,6 +1102,34 @@ button, input, select, textarea, optgroup {
 .checkbox-filter-option input[type="checkbox"]:focus-visible {
   outline: 2px solid var(--blue);
   outline-offset: 2px;
+}
+
+.checkbox-filter-option input[type="radio"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  padding: 0;
+  border: 1.5px solid #9AA5B1;
+  border-radius: 50%;
+  background: #fff;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: border-color 120ms ease;
+}
+
+.checkbox-filter-option input[type="radio"]:hover { border-color: var(--blue); }
+
+.checkbox-filter-option input[type="radio"]:checked {
+  border-color: var(--blue);
+  border-width: 5px;
+}
+
+.columns-custom-list {
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px solid var(--gray-border);
 }
 
 /* -- Provider filter (single-select: "All Patients" or one provider) -- */
@@ -1426,6 +1454,23 @@ button, input, select, textarea, optgroup {
 }
 
 .action-icon-wrap:hover .action-tooltip { display: block; }
+
+.status-ack-wrap { vertical-align: middle; }
+.status-ack-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--blue-light);
+  color: var(--blue-text);
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: default;
+}
+.status-ack-wrap .action-tooltip { top: calc(100% + 6px); left: 50%; transform: translateX(-50%); white-space: nowrap; min-width: 0; }
 
 /* The tooltip lives inside a sticky last-column cell, which creates its own
    stacking context per row -- without raising this row's stacking above its
@@ -1930,7 +1975,7 @@ button, input, select, textarea, optgroup {
 .overview-legend {
   display: flex;
   align-items: center;
-  gap: 26px;
+  gap: 14px;
   flex-wrap: wrap;
   font-size: 13px;
   color: #363B42;
@@ -1940,6 +1985,9 @@ button, input, select, textarea, optgroup {
   display: flex;
   align-items: center;
   gap: 14px;
+  border-radius: 10px;
+  padding: 8px 14px;
+  background: var(--bg);
 }
 
 .legend-group-label {
@@ -1973,6 +2021,30 @@ button, input, select, textarea, optgroup {
   width: 9px; height: 9px; border-radius: 2px;
   background: #C9CFD6;
   display: inline-block;
+}
+
+/* Matches the chart's hatched SVG <rect> (line stroke #D8DCE2, dashed
+   border #C9CFD6) so the legend swatch reads as the same thing. */
+.dot-hatch {
+  width: 9px; height: 9px; border-radius: 2px;
+  background-image: repeating-linear-gradient(45deg, transparent, transparent 1.5px, #D8DCE2 1.5px, #D8DCE2 3px);
+  border: 1px dashed #C9CFD6;
+  display: inline-block;
+}
+
+.dot-info-blue {
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+/* Real filter toggle (not a decorative swatch) -- checking it overlays
+   the monitoring-issue markers on the chart above. */
+.legend-checkbox {
+  width: 13px;
+  height: 13px;
+  margin: 0;
+  accent-color: var(--blue);
+  cursor: pointer;
 }
 
 .chart-wrap { overflow-x: auto; padding-top: 10px; flex: 1; min-width: 0; }
@@ -2351,6 +2423,28 @@ button, input, select, textarea, optgroup {
 }
 
 .history-add-event-btn:hover { background: #2394c4; }
+
+/* -- Clinical: Questionnaire header / Create New Question -- */
+.quest-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+
+.quest-config-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+.quest-config-tag {
+  display: inline-flex;
+  align-items: center;
+  background: var(--blue-light);
+  color: var(--blue-text);
+  border-radius: 20px;
+  padding: 3px 10px;
+  font-size: 11.5px;
+  font-weight: 600;
+}
 
 .history-load-more-row {
   display: flex;
@@ -3615,7 +3709,7 @@ button, input, select, textarea, optgroup {
 }
 
 .med-adh-taken { background: var(--blue); color: #fff; }
-.med-adh-missed { background: var(--red); color: #fff; }
+.med-adh-missed { background: var(--blue); color: #fff; }
 .med-adh-not-recorded { background: #E7EAEE; color: #7E8993; }
 
 .med-legend {
@@ -3642,7 +3736,7 @@ button, input, select, textarea, optgroup {
 .med-legend-dot svg { width: 8px; height: 8px; }
 
 .med-legend-taken { background: var(--blue); }
-.med-legend-missed { background: var(--red); }
+.med-legend-missed { background: var(--blue); }
 .med-legend-not-recorded { background: #E7EAEE; }
 
 /* Sits in the same unpadded position as .med-adh-scroll above it (both
@@ -3754,8 +3848,7 @@ button, input, select, textarea, optgroup {
 }
 
 .goal-progress-fill { height: 100%; border-radius: 6px; }
-.fill-blue { background: var(--blue); }
-.fill-orange { background: #F2994A; }
+.fill-red { background: var(--red); }
 .fill-green { background: var(--green); }
 
 .goal-meta-row {
@@ -3830,8 +3923,8 @@ button, input, select, textarea, optgroup {
   border: 1px solid transparent;
 }
 
-.compliance-highlight-blue { background: var(--blue-light); }
-.compliance-highlight-orange { background: #FDF0DE; }
+.compliance-highlight-sufficient { background: var(--green-light); }
+.compliance-highlight-insufficient { background: var(--red-light); }
 
 .compliance-highlight-label {
   display: block;
@@ -3852,109 +3945,57 @@ button, input, select, textarea, optgroup {
 
 .compliance-highlight .goal-progress-track { height: 6px; margin-bottom: 0; background: rgba(255, 255, 255, 0.6); }
 
-@media (max-width: 900px) {
-  .compliance-highlight-grid { grid-template-columns: 1fr; }
+.compliance-highlight-note {
+  display: block;
+  font-size: 11.5px;
+  color: var(--gray-text);
+  margin-top: 8px;
 }
 
-.compliance-group {
-  margin-top: 20px;
-  padding-top: 18px;
+.compliance-insufficient-note {
+  font-size: 12.5px;
+  color: var(--gray-text);
+  margin: 12px 0 0;
+}
+
+.compliance-insufficient-note strong { color: #23272E; }
+
+.compliance-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 12px;
+  padding-top: 12px;
   border-top: 1px solid var(--gray-border);
 }
 
-.compliance-group-title {
-  font-size: 12px;
-  font-weight: 700;
-  color: #7E8993;
-  text-transform: uppercase;
-  letter-spacing: 0.4px;
-  margin: 0 0 16px;
-}
-
-.compliance-detail-grid {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 20px 24px;
-}
-
-@media (max-width: 1100px) {
-  .compliance-detail-grid { grid-template-columns: repeat(3, 1fr); }
-}
-
-@media (max-width: 700px) {
-  .compliance-detail-grid { grid-template-columns: repeat(2, 1fr); }
-}
-
-.compliance-detail-item {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.compliance-custom-range {
-  display: flex;
+.compliance-legend-item {
+  display: inline-flex;
   align-items: center;
-  gap: 10px;
-}
-
-.compliance-range-field { position: relative; }
-
-.compliance-range-popover {
-  display: none;
-  position: absolute;
-  top: calc(100% + 8px);
-  right: 0;
-  width: 320px;
-  background: #fff;
-  border-radius: 12px;
-  border: 1px solid var(--gray-border);
-  box-shadow: 0 14px 34px rgba(20, 30, 50, 0.18);
-  padding: 16px;
-  z-index: 30;
-}
-
-.compliance-range-popover.open { display: block; }
-
-.compliance-range-popover-label {
-  font-size: 12px;
-  font-weight: 700;
-  color: #7E8993;
-  text-transform: uppercase;
-  letter-spacing: 0.4px;
-  margin-bottom: 10px;
-}
-
-.compliance-range-popover-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  margin-top: 16px;
-}
-
-.compliance-range-popover-actions .btn-care,
-.compliance-range-popover-actions .btn-secondary {
-  padding: 8px 16px;
-  font-size: 13px;
-}
-
-.compliance-range-sep {
-  font-size: 13px;
+  gap: 6px;
+  font-size: 12.5px;
   color: var(--gray-text);
-  font-weight: 600;
 }
 
-.compliance-date-input {
-  font-family: inherit;
-  font-size: 13.5px;
-  padding: 7px 10px;
-  border: 1px solid var(--gray-border);
-  border-radius: 8px;
-  color: #23272E;
-  background: #fff;
+.compliance-legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  display: inline-block;
+  flex-shrink: 0;
 }
 
-.compliance-detail-label { font-size: 12px; font-weight: 600; color: var(--gray-text); }
-.compliance-detail-value { font-size: 14px; font-weight: 700; color: #23272E; }
+.compliance-legend-dot-sufficient { background: var(--green); }
+.compliance-legend-dot-insufficient { background: var(--red); }
+
+.compliance-legend-dot-hatch {
+  background-image: repeating-linear-gradient(45deg, transparent, transparent 1.5px, #D8DCE2 1.5px, #D8DCE2 3px);
+  border: 1px dashed #C9CFD6;
+}
+
+@media (max-width: 900px) {
+  .compliance-highlight-grid { grid-template-columns: 1fr; }
+}
 
 @media (max-width: 900px) {
   .compliance-summary-grid { grid-template-columns: 1fr; }
@@ -4218,6 +4259,8 @@ button, input, select, textarea, optgroup {
 }
 
 .modal-close-x:hover { background: var(--bg); color: #23272E; }
+
+.modal-close-x-top { position: absolute; top: 20px; right: 20px; }
 
 .form-grid {
   display: grid;
@@ -5303,7 +5346,10 @@ label.checkbox-field {
   margin-left: auto;
 }
 
-#scheduleBillingReportBtn { margin-left: 0; }
+#scheduleBillingReportBtn,
+#addTimeLogBtn { margin-left: 0; }
+
+.tl-export-btn { margin-left: auto; }
 
 .bill-checkbox {
   display: inline-block;
@@ -5335,6 +5381,12 @@ label.checkbox-field {
   border: solid #fff;
   border-width: 0 2px 2px 0;
   transform: rotate(45deg);
+}
+
+.bill-checkbox.disabled {
+  background: var(--bg);
+  border-color: var(--gray-border);
+  cursor: not-allowed;
 }
 
 .bill-th-check { width: 44px; }
@@ -5372,6 +5424,125 @@ label.checkbox-field {
 
 .bill-status-ready { color: var(--green-text); }
 .bill-status-not { color: #7E8993; }
+
+/* ============================================================
+   TIME LOG (billing sub-page)
+   ============================================================ */
+.tl-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #9AA5B1;
+  margin-bottom: 16px;
+}
+
+.tl-breadcrumb a { color: var(--gray-text); text-decoration: none; }
+.tl-breadcrumb a:hover { color: var(--blue); text-decoration: underline; }
+
+.tl-total-time {
+  font-size: 14px;
+  color: var(--gray-text);
+  margin: 0 0 14px;
+}
+
+.tl-total-time b { color: #23272E; font-weight: 700; }
+
+.tl-cell-trunc {
+  display: inline-block;
+  max-width: 150px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: bottom;
+}
+
+.tl-delete-btn { color: #7E8993; }
+.tl-delete-btn:hover { color: var(--red-text); background: var(--bg); }
+
+/* -- Month/year filter popover (reuses .checkbox-filter-menu show/hide + portal) -- */
+.month-popover { width: 220px; padding: 14px; }
+
+.month-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.month-cell {
+  padding: 9px 0;
+  text-align: center;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #23272E;
+  cursor: pointer;
+}
+
+.month-cell:hover { background: var(--bg); }
+.month-cell.selected { background: var(--blue-light); color: var(--blue-text); }
+
+/* -- Add Time Log modal: H/M/S boxes + AM/PM toggle -- */
+.tl-time-group { display: flex; align-items: flex-end; gap: 10px; }
+
+.tl-time-box { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+
+.tl-time-box input {
+  width: 48px;
+  text-align: center;
+  padding: 10px 4px;
+  border: 1px solid var(--gray-border);
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 14px;
+  color: #23272E;
+}
+
+.tl-time-box input:focus { outline: none; border-color: var(--blue); }
+.tl-time-box span { font-size: 11px; font-weight: 600; color: var(--gray-text); }
+
+.ampm-toggle {
+  display: flex;
+  border: 1px solid var(--gray-border);
+  border-radius: 8px;
+  overflow: hidden;
+  height: 39px;
+}
+
+.ampm-btn {
+  padding: 0 12px;
+  font-size: 12px;
+  font-weight: 700;
+  background: #fff;
+  color: var(--gray-text);
+  border: none;
+  cursor: pointer;
+}
+
+.ampm-btn.active { background: var(--blue); color: #fff; }
+
+.reg-date-field.clearable input { padding-right: 66px; }
+
+.reg-date-clear {
+  position: absolute;
+  right: 36px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #9AA5B1;
+  font-size: 18px;
+  line-height: 1;
+  padding: 2px;
+}
+
+.reg-date-clear:hover { color: #6B7684; }
+
+.bill-table-clickable tbody tr { cursor: pointer; }
+.bill-table-clickable tbody tr:hover { background: var(--bg); }
 
 /* ============================================================
    AUTH / ONBOARDING FLOW (email preview, EHR login, consent, login)

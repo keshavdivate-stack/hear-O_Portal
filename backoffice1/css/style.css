@@ -274,6 +274,12 @@ button, input, select, textarea, optgroup {
 .bo-popover-item:hover { background: var(--bg); }
 .bo-popover-item.active { color: var(--blue); background: var(--blue-light); }
 
+.bo-columns-custom-list {
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px solid var(--gray-border);
+}
+
 /* Avatar menu (View Version / Change Password / Logout) */
 .bo-popover-item-account {
   text-transform: uppercase;
@@ -1355,6 +1361,33 @@ button.bo-name-link { background: none; border: none; padding: 0; font: inherit;
 .bo-row-menu-item:hover { background: var(--bg); }
 .bo-row-menu-item.danger { color: var(--red-text); }
 
+/* Drill-in header for a two-level row menu (e.g. the audio row's Playback
+   speed list) -- a back chevron plus the section title, so it's clear what
+   list is showing and how to return to the root menu. */
+.bo-row-menu-back {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  background: none;
+  border: none;
+  text-align: left;
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-size: 13.5px;
+  font-weight: 600;
+  font-family: inherit;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.bo-row-menu-back:hover { background: var(--bg); }
+.bo-row-menu-back svg { flex-shrink: 0; color: var(--gray-text); }
+
+.bo-row-menu-divider { height: 1px; background: var(--gray-border); margin: 6px 4px; }
+
+.bo-row-menu-scroll { max-height: 220px; overflow-y: auto; }
+
 /* Switch toggle (e.g. HMO on/off) */
 .bo-switch-field {
   display: inline-flex;
@@ -1478,6 +1511,11 @@ button.bo-name-link { background: none; border: none; padding: 0; font: inherit;
 
 .bo-filter-row .bo-btn-primary,
 .bo-filter-row .bo-btn-secondary { flex-shrink: 0; white-space: nowrap; }
+
+/* A filter row with nothing but a search field (e.g. Archived Reports) has no
+   sibling filters to flex evenly against, so the 1 1 0 rule above would
+   stretch it across the whole row -- cap it back to a normal search-box width. */
+.bo-filter-row .bo-search-pill:only-child { flex: 0 1 320px; }
 
 @media (max-width: 1100px) {
   .bo-filter-row { flex-wrap: wrap; }
@@ -1829,6 +1867,7 @@ label.bo-date-field { cursor: text; }
 }
 
 .bo-btn-secondary:hover { background: var(--bg); border-color: var(--gray); }
+.bo-btn-secondary[hidden] { display: none; }
 a.bo-btn-secondary { text-decoration: none; }
 
 .bo-btn-text {
@@ -2585,6 +2624,55 @@ a.bo-btn-secondary { text-decoration: none; }
   width: 0%;
   border-radius: 999px;
   background: var(--blue);
+}
+
+/* Volume popover — opens on the row's volume icon, holds a slider so the
+   level can be adjusted rather than only muted/unmuted. */
+.bo-volume-menu { min-width: 190px; }
+
+.bo-volume-menu-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 6px;
+}
+
+.bo-volume-slider {
+  flex: 1;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 3px;
+  border-radius: 999px;
+  background: var(--gray-border);
+  accent-color: var(--blue);
+  cursor: pointer;
+}
+
+.bo-volume-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: var(--blue);
+  cursor: pointer;
+}
+
+.bo-volume-slider::-moz-range-thumb {
+  width: 13px;
+  height: 13px;
+  border: none;
+  border-radius: 50%;
+  background: var(--blue);
+  cursor: pointer;
+}
+
+.bo-volume-value {
+  flex-shrink: 0;
+  min-width: 34px;
+  text-align: right;
+  font-size: 12.5px;
+  color: var(--gray-text);
 }
 
 /* Waveform variant of the audio player track (ticket-detail Recording section) --

@@ -1,5 +1,5 @@
 /* ---------------- Color lookups ---------------- */
-const severityColor = { Critical: "var(--red)", High: "var(--orange)", Medium: "var(--yellow)", Low: "var(--blue)" };
+const priorityColor = { Critical: "var(--red)", High: "var(--orange)", Medium: "var(--yellow)", Low: "var(--blue)" };
 const statusColor = { Open: "var(--blue)", "In Progress": "var(--orange)", Escalated: "var(--red)", Resolved: "var(--green)" };
 const typeColor = { Patient: "var(--cyan)", Clinic: "var(--purple)", "System Generated": "var(--navy)", Backoffice: "var(--orange)" };
 
@@ -58,11 +58,11 @@ function myTicketsHref(extraParams) {
    this card row answers "what do I personally need to work on", not "how is
    the support module doing overall". Escalated/Resolved map to a single
    status value so those two cards deep-link straight into the filtered
-   ticket list; the others mix statuses/severities that support.html's
+   ticket list; the others mix statuses/priorities that support.html's
    single-value filters can't express in one URL, so they stay plain cards. */
 function renderKpis(mine) {
   const openTickets = mine.filter((t) => t.status === "Open" || t.status === "In Progress");
-  const priorityTickets = mine.filter((t) => (t.severity === "Critical" || t.severity === "High") && t.status !== "Resolved");
+  const priorityTickets = mine.filter((t) => (t.priority === "Critical" || t.priority === "High") && t.status !== "Resolved");
   const escalatedTickets = mine.filter((t) => t.status === "Escalated");
   const resolvedTickets = mine.filter((t) => t.status === "Resolved");
 
@@ -93,12 +93,12 @@ function renderKpis(mine) {
 
 /* ---------------- Recent Tickets ----------------
    Every ticket assigned to the agent that isn't Resolved yet, ranked so the
-   most urgent shows first: an Escalated ticket outranks any severity, then
+   most urgent shows first: an Escalated ticket outranks any priority, then
    Critical, then High, with newest-created breaking ties. */
 function queueWeight(t) {
   if (t.status === "Escalated") return 4;
-  if (t.severity === "Critical") return 3;
-  if (t.severity === "High") return 2;
+  if (t.priority === "Critical") return 3;
+  if (t.priority === "High") return 2;
   return 1;
 }
 
@@ -115,7 +115,7 @@ function renderQueue(mine) {
         .map(
           (t) => `
       <a class="bo-crit-issue-row" href="${ticketHref(t)}">
-        <span class="bo-crit-issue-icon" style="background:${severityColor[t.severity] || "var(--gray)"};">
+        <span class="bo-crit-issue-icon" style="background:${priorityColor[t.priority] || "var(--gray)"};">
           <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${ticketIcon}</svg>
         </span>
         <span class="bo-crit-issue-body">
@@ -124,7 +124,7 @@ function renderQueue(mine) {
           <span class="bo-crit-issue-meta">${t.status} &middot; ${t.createdDate}</span>
         </span>
         <span class="bo-crit-issue-right">
-          <span class="bo-severity-pill ${(t.severity || "").toLowerCase()}">${t.severity}</span>
+          <span class="bo-severity-pill ${(t.priority || "").toLowerCase()}">${t.priority}</span>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
         </span>
       </a>`
@@ -159,7 +159,7 @@ function renderResolved(mine) {
           <span class="bo-crit-issue-meta">Resolved &middot; ${t.createdDate}</span>
         </span>
         <span class="bo-crit-issue-right">
-          <span class="bo-severity-pill ${(t.severity || "").toLowerCase()}">${t.severity}</span>
+          <span class="bo-severity-pill ${(t.priority || "").toLowerCase()}">${t.priority}</span>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
         </span>
       </a>`
@@ -168,7 +168,7 @@ function renderResolved(mine) {
     : `<div class="bo-empty-state" style="padding:24px 4px; color:var(--gray-text); font-size:13px;">Nothing resolved yet &mdash; closed tickets will show up here.</div>`;
 }
 
-/* ---------------- Donuts (Status / Severity) ---------------- */
+/* ---------------- Donuts (Status / Priority) ---------------- */
 function renderDonut(donutId, totalId, legendId, entries) {
   const total = entries.reduce((s, e) => s + e.count, 0);
   if (!total) {
@@ -246,14 +246,14 @@ function renderDashboard() {
   );
 
   renderDonut(
-    "supDashSeverityDonut",
-    "supDashSeverityDonutTotal",
-    "supDashSeverityDonutLegend",
-    SEVERITIES.map((sev) => ({
+    "supDashPriorityDonut",
+    "supDashPriorityDonutTotal",
+    "supDashPriorityDonutLegend",
+    PRIORITIES.map((sev) => ({
       label: sev,
-      count: mine.filter((t) => t.severity === sev).length,
-      color: severityColor[sev],
-      href: myTicketsHref({ severity: sev }),
+      count: mine.filter((t) => t.priority === sev).length,
+      color: priorityColor[sev],
+      href: myTicketsHref({ priority: sev }),
     }))
   );
 

@@ -185,24 +185,33 @@
             <input type="text" id="searchInput" placeholder="Search Patient ID" />
           </div>
 
-          <button class="filter-btn">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M9 12L11 14L15 9" stroke="#6B7684" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="9" stroke="#6B7684" stroke-width="1.5"/></svg>
-            Eligibility Code
-            <svg class="caret" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#6B7684" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-          </button>
+          <div class="checkbox-filter" data-name="eligibilityCode">
+            <button type="button" class="filter-btn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M9 12L11 14L15 9" stroke="#6B7684" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="9" stroke="#6B7684" stroke-width="1.5"/></svg>
+              <span class="checkbox-filter-label">Eligibility Code</span>
+              <svg class="caret" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#6B7684" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="checkbox-filter-menu" id="eligibilityCodeMenu"></div>
+          </div>
 
-          <button class="filter-btn">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="14" rx="2" stroke="#6B7684" stroke-width="1.5"/><path d="M8 21H16" stroke="#6B7684" stroke-width="1.5" stroke-linecap="round"/><path d="M12 18V21" stroke="#6B7684" stroke-width="1.5" stroke-linecap="round"/></svg>
-            Billing Status
-            <svg class="caret" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#6B7684" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-          </button>
+          <div class="checkbox-filter" data-name="billingStatus">
+            <button type="button" class="filter-btn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="14" rx="2" stroke="#6B7684" stroke-width="1.5"/><path d="M8 21H16" stroke="#6B7684" stroke-width="1.5" stroke-linecap="round"/><path d="M12 18V21" stroke="#6B7684" stroke-width="1.5" stroke-linecap="round"/></svg>
+              <span class="checkbox-filter-label">Billing Status</span>
+              <svg class="caret" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#6B7684" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="checkbox-filter-menu" id="billingStatusMenu"></div>
+          </div>
 
-          <button class="filter-btn">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="16" rx="2" stroke="#6B7684" stroke-width="1.6"/><path d="M3 10H21" stroke="#6B7684" stroke-width="1.6"/><path d="M8 3V7" stroke="#6B7684" stroke-width="1.6" stroke-linecap="round"/><path d="M16 3V7" stroke="#6B7684" stroke-width="1.6" stroke-linecap="round"/></svg>
-            Jan. 2026
-          </button>
+          <div class="checkbox-filter" data-name="month">
+            <button type="button" class="filter-btn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="16" rx="2" stroke="#6B7684" stroke-width="1.6"/><path d="M3 10H21" stroke="#6B7684" stroke-width="1.6"/><path d="M8 3V7" stroke="#6B7684" stroke-width="1.6" stroke-linecap="round"/><path d="M16 3V7" stroke="#6B7684" stroke-width="1.6" stroke-linecap="round"/></svg>
+              <span class="checkbox-filter-label" id="monthFilterLabel">Jan. 2026</span>
+            </button>
+            <div class="checkbox-filter-menu month-popover" id="monthMenu"></div>
+          </div>
 
-          <button class="clear-filters" id="clearFilters">Clean all filters</button>
+          <button class="clear-filters" id="clearFilters">Clear all filters</button>
 
           <div class="export-menu-wrap">
             <button class="btn-secondary icon-only" id="exportReportBtn" aria-label="Export Report" title="Select at least one row to export" disabled>
@@ -222,17 +231,17 @@
 
         <div class="table-card">
           <div class="table-scroll">
-            <table class="list-table bill-table">
+            <table class="list-table bill-table bill-table-clickable">
               <thead>
                 <tr>
                   <th class="bill-th-check"><span class="bill-checkbox" id="selectAllBox"></span></th>
-                  <th>Patient ID</th>
+                  <th>Patient Name</th>
                   <th>ID Number</th>
-                  <th>Enrollment<br />Date</th>
+                  <th>Registration<br />Date</th>
                   <th>99453<br />Initial Training</th>
-                  <th>99454<br />16 Days Check-ins</th>
+                  <th>99454<br />16 Recording Days</th>
                   <th>99457<br />20 Min Monitoring</th>
-                  <th>99458 - Additional<br />20 Min Monitoring</th>
+                  <th>99458 - Additional<br />20 Mins Monitoring</th>
                   <th>Time<br />Logged</th>
                   <th>Billing<br />Status</th>
                   <th></th>
@@ -373,6 +382,46 @@
     </div>
   </div>
 
+  <!-- Row action dropdown -->
+  <div class="row-menu" id="billingRowMenu">
+    <button class="row-menu-item" data-action="initialTraining">Initial training</button>
+    <button class="row-menu-item" data-action="timeLog">Time Log</button>
+  </div>
+
+  <!-- Initial Training Confirmation modal -->
+  <div class="modal-overlay" id="initialTrainingOverlay">
+    <div class="modal">
+      <h2>Initial Training Confirmation</h2>
+
+      <label class="checkbox-filter-option" id="initialTrainingConfirmLabel" style="padding:0 0 22px; align-items:flex-start;">
+        <input type="checkbox" id="initialTrainingConfirmCheckbox" />
+        <span>By clicking this checkbox, you confirm that the patient has received training on how to use the application</span>
+      </label>
+
+      <div class="form-field">
+        <label>Training Provider<span class="required-star">*</span></label>
+        <div class="custom-select" id="trainingProviderSelect" data-name="trainingProvider">
+          <button type="button" class="custom-select-trigger">
+            <span class="custom-select-value placeholder">Choose</span>
+            <svg class="custom-select-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="custom-select-menu">
+            <div class="custom-select-option" data-value="Physician">Physician<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="custom-select-option" data-value="Nurse">Nurse<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="custom-select-option" data-value="Care Coordinator">Care Coordinator<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="custom-select-option" data-value="Support Staff">Support Staff<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="custom-select-option" data-value="Other">Other<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          </div>
+          <input type="hidden" name="trainingProvider" />
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn-text" id="cancelInitialTraining">Cancel</button>
+        <button type="button" class="btn-save" id="saveInitialTraining" disabled>Save</button>
+      </div>
+    </div>
+  </div>
 
 <script src="js/topbar.js"></script>
 <script src="../../js/table-scroll.js"></script>

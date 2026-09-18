@@ -6,14 +6,14 @@
 
 /* ---------------- Filter option lists ---------------- */
 document.getElementById("incStatusFilterMenu").innerHTML = buildFilterSelectOptions(INC_STATUSES, "All statuses");
-document.getElementById("incSeverityFilterMenu").innerHTML = buildFilterSelectOptionsLabeled(INC_SEVERITIES, INC_SEVERITIES.map((s) => INC_SEVERITY_LABEL[s]), "All severities");
+document.getElementById("incPriorityFilterMenu").innerHTML = buildFilterSelectOptionsLabeled(INC_PRIORITIES, INC_PRIORITIES.map((s) => INC_PRIORITY_LABEL[s]), "All severities");
 document.getElementById("incSourceFilterMenu").innerHTML = buildFilterSelectOptions(INC_SOURCES, "All sources");
 document.getElementById("incCategoryFilterMenu").innerHTML = buildFilterSelectOptions(INC_CATEGORIES, "All categories");
 document.getElementById("incOwnerFilterMenu").innerHTML = buildFilterSelectOptions(SUPPORT_TEAM, "All owners");
 
 /* ---------------- Filter state ---------------- */
 let incStatusValue = "";
-let incSeverityValue = "";
+let incPriorityValue = "";
 let incSourceValue = "";
 let incCategoryValue = "";
 let incOwnerValue = "";
@@ -22,7 +22,7 @@ let incSearchTerm = "";
 
 function incMatchesFilters(incident) {
   if (incStatusValue && incident.status !== incStatusValue) return false;
-  if (incSeverityValue && incident.severity !== incSeverityValue) return false;
+  if (incPriorityValue && incident.priority !== incPriorityValue) return false;
   if (incSourceValue && incident.source !== incSourceValue) return false;
   if (incCategoryValue && incident.category !== incCategoryValue) return false;
   if (incOwnerValue && incident.owner !== incOwnerValue) return false;
@@ -50,7 +50,7 @@ function incidentRowHtml(incident) {
         <span class="bo-incident-source-label">${incident.source}</span>
       </td>
       <td><span class="bo-pill bo-pill-tag">${incident.category}</span></td>
-      <td>${incSeverityPill(incident.severity)}</td>
+      <td>${incPriorityPill(incident.priority)}</td>
       <td>${incStatusPill(incident.status)}${incRelatedTicketLink(incident)}</td>
       <td><button type="button" class="bo-impact-link" data-impact-trigger data-id="${incident.id}">${incImpactLabel(incident)}</button></td>
       <td>${incident.duration}</td>
@@ -77,7 +77,7 @@ function refreshIncidentTable() {
 }
 
 document.getElementById("incStatusFilter").addEventListener("change", (e) => { incStatusValue = e.target.value; refreshIncidentTable(); });
-document.getElementById("incSeverityFilter").addEventListener("change", (e) => { incSeverityValue = e.target.value; refreshIncidentTable(); });
+document.getElementById("incPriorityFilter").addEventListener("change", (e) => { incPriorityValue = e.target.value; refreshIncidentTable(); });
 document.getElementById("incSourceFilter").addEventListener("change", (e) => { incSourceValue = e.target.value; refreshIncidentTable(); });
 document.getElementById("incCategoryFilter").addEventListener("change", (e) => { incCategoryValue = e.target.value; refreshIncidentTable(); });
 document.getElementById("incOwnerFilter").addEventListener("change", (e) => { incOwnerValue = e.target.value; refreshIncidentTable(); });
@@ -86,7 +86,7 @@ document.getElementById("incSearchInput").addEventListener("input", (e) => { inc
 
 document.getElementById("incClearFiltersBtn").addEventListener("click", () => {
   incStatusValue = "";
-  incSeverityValue = "";
+  incPriorityValue = "";
   incSourceValue = "";
   incCategoryValue = "";
   incOwnerValue = "";
@@ -94,7 +94,7 @@ document.getElementById("incClearFiltersBtn").addEventListener("click", () => {
   incSearchTerm = "";
 
   resetBoSelect(document.querySelector('.bo-select[data-name="incStatus"]'));
-  resetBoSelect(document.querySelector('.bo-select[data-name="incSeverity"]'));
+  resetBoSelect(document.querySelector('.bo-select[data-name="incPriority"]'));
   resetBoSelect(document.querySelector('.bo-select[data-name="incSource"]'));
   resetBoSelect(document.querySelector('.bo-select[data-name="incCategory"]'));
   resetBoSelect(document.querySelector('.bo-select[data-name="incOwner"]'));
@@ -161,12 +161,12 @@ let addTaskTargetIncident = null;
 document.querySelector('#addTaskOverlay .bo-select[data-name="taskTeam"] .bo-select-menu').innerHTML = buildSelectOptions(["Clinical Team", "Support Team"]);
 document.querySelector('#addTaskOverlay .bo-select[data-name="taskLevel"] .bo-select-menu').innerHTML = buildSelectOptions(["Level 1", "Level 2", "Level 3"]);
 document.querySelector('#addTaskOverlay .bo-select[data-name="taskAssignee"] .bo-select-menu').innerHTML = buildSelectOptions(SUPPORT_TEAM);
-document.querySelector('#addTaskOverlay .bo-select[data-name="taskPriority"] .bo-select-menu').innerHTML = buildSelectOptions(Object.values(INC_SEVERITY_LABEL));
+document.querySelector('#addTaskOverlay .bo-select[data-name="taskPriority"] .bo-select-menu').innerHTML = buildSelectOptions(Object.values(INC_PRIORITY_LABEL));
 
-/* Level defaults from the incident's own severity instead of always
+/* Level defaults from the incident's own priority instead of always
    starting blank -- a Critical incident should escalate straight to
    Level 3, not make the support agent re-derive that manually every time. */
-const INC_SEVERITY_TO_LEVEL = { "SEV-1": "Level 3", "SEV-2": "Level 2", "SEV-3": "Level 2", "SEV-4": "Level 1" };
+const INC_PRIORITY_TO_LEVEL = { "SEV-1": "Level 3", "SEV-2": "Level 2", "SEV-3": "Level 2", "SEV-4": "Level 1" };
 
 function validateAddTaskForm() {
   const titleFilled = addTaskForm.taskTitle.value.trim() !== "";
@@ -187,8 +187,8 @@ function openAddTaskDrawer(incident) {
   document.querySelector('#addTaskOverlay .bo-select[data-name="taskOrg"] .bo-select-menu').innerHTML = buildFilterSelectOptions(incident.orgs, "Optional");
   document.querySelector('#addTaskOverlay .bo-select[data-name="taskPatient"] .bo-select-menu').innerHTML = buildFilterSelectOptions(incident.patients, "Optional");
   addTaskOverlay.querySelectorAll(".bo-select").forEach(resetBoSelect);
-  setBoSelectValue(addTaskOverlay.querySelector('.bo-select[data-name="taskLevel"]'), INC_SEVERITY_TO_LEVEL[incident.severity] || "Level 1", { silent: true });
-  setBoSelectValue(addTaskOverlay.querySelector('.bo-select[data-name="taskPriority"]'), INC_SEVERITY_LABEL[incident.severity] || "", { silent: true });
+  setBoSelectValue(addTaskOverlay.querySelector('.bo-select[data-name="taskLevel"]'), INC_PRIORITY_TO_LEVEL[incident.priority] || "Level 1", { silent: true });
+  setBoSelectValue(addTaskOverlay.querySelector('.bo-select[data-name="taskPriority"]'), INC_PRIORITY_LABEL[incident.priority] || "", { silent: true });
   taskAttachmentName.textContent = "Click to attach a file";
   document.getElementById("addTaskIncidentTag").textContent = `Incident: ${incident.id}`;
   validateAddTaskForm();
@@ -228,25 +228,25 @@ addTaskForm.addEventListener("submit", (e) => {
   refreshIncidentTable();
 });
 
-/* ---------------- Deep link: support.html?tab=incidents&severity=<Critical|High|Medium|Low>&status=<...>&q=<search text>
+/* ---------------- Deep link: support.html?tab=incidents&priority=<Critical|High|Medium|Low>&status=<...>&q=<search text>
    Lets other screens (e.g. the Overview dashboard's System Health Trend /
    Issues panels) land here on the Incidents tab with the relevant
-   filter/search already applied. `severity` arrives as the human label
+   filter/search already applied. `priority` arrives as the human label
    used elsewhere (Critical/High/Medium/Low) rather than the raw SEV-1..4
-   key incidents are stored under, so it's translated via INC_SEVERITY_LABEL. */
+   key incidents are stored under, so it's translated via INC_PRIORITY_LABEL. */
 (function openIncidentsTabFromUrl() {
   const params = new URLSearchParams(location.search);
   if (params.get("tab") !== "incidents") return;
 
-  const severityLabel = params.get("severity");
+  const priorityLabel = params.get("priority");
   const status = params.get("status");
   const q = params.get("q");
 
-  if (severityLabel) {
-    const sevKey = INC_SEVERITIES.find((key) => INC_SEVERITY_LABEL[key] === severityLabel);
-    if (sevKey) {
-      incSeverityValue = sevKey;
-      setBoSelectValue(document.querySelector('.bo-select[data-name="incSeverity"]'), sevKey, { silent: true });
+  if (priorityLabel) {
+    const priKey = INC_PRIORITIES.find((key) => INC_PRIORITY_LABEL[key] === priorityLabel);
+    if (priKey) {
+      incPriorityValue = priKey;
+      setBoSelectValue(document.querySelector('.bo-select[data-name="incPriority"]'), priKey, { silent: true });
     }
   }
   if (status && INC_STATUSES.includes(status)) {

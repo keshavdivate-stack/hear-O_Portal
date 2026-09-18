@@ -1,9 +1,9 @@
 /* ---------------- Incidents — reference lists ----------------
    An Incident is a system-generated issue (Start Date Engine skipped a run,
    Voice Engine failure, ...), never a manually raised Ticket. */
-const INC_SEVERITIES = ["SEV-1", "SEV-2", "SEV-3", "SEV-4"];
-const INC_SEVERITY_LABEL = { "SEV-1": "Critical", "SEV-2": "High", "SEV-3": "Medium", "SEV-4": "Low" };
-const INC_SEVERITY_CLASS = { "SEV-1": "bo-pill-severity-critical", "SEV-2": "bo-pill-severity-high", "SEV-3": "bo-pill-severity-medium", "SEV-4": "bo-pill-severity-low" };
+const INC_PRIORITIES = ["SEV-1", "SEV-2", "SEV-3", "SEV-4"];
+const INC_PRIORITY_LABEL = { "SEV-1": "Critical", "SEV-2": "High", "SEV-3": "Medium", "SEV-4": "Low" };
+const INC_PRIORITY_CLASS = { "SEV-1": "bo-pill-severity-critical", "SEV-2": "bo-pill-severity-high", "SEV-3": "bo-pill-severity-medium", "SEV-4": "bo-pill-severity-low" };
 
 const INC_STATUSES = ["Active", "Escalated", "Resolved"];
 const INC_STATUS_CLASS = { Active: "bo-pill-incident-active", Escalated: "bo-pill-incident-escalated", Resolved: "bo-pill-incident-resolved" };
@@ -49,7 +49,7 @@ const incidents = [
     title: "Start Date Engine skipped a run",
     source: "System Scheduler",
     category: "System Schedule Engine",
-    severity: "SEV-2",
+    priority: "SEV-2",
     status: "Escalated",
     owner: "Maya Chen",
     relatedTickets: [
@@ -86,7 +86,7 @@ const incidents = [
     title: "Sensor upload latency elevated in EU region",
     source: "Sensors",
     category: "Sensors",
-    severity: "SEV-3",
+    priority: "SEV-3",
     status: "Active",
     owner: "Sarah Collins",
     detectedAt: "Aug 19, 2026 · 1:20 PM",
@@ -112,7 +112,7 @@ const incidents = [
     title: "Voice Engine failure",
     source: "Voice Engine",
     category: "Voice Engine",
-    severity: "SEV-1",
+    priority: "SEV-1",
     status: "Active",
     owner: "Priya Nair",
     detectedAt: "Aug 19, 2026 · 2:05 PM",
@@ -139,7 +139,7 @@ const incidents = [
     title: "Hebrew locale strings missing after release",
     source: "Other",
     category: "Localization",
-    severity: "SEV-3",
+    priority: "SEV-3",
     status: "Resolved",
     owner: "Daniel Adams",
     detectedAt: "Aug 12, 2026 · 9:05 AM",
@@ -174,7 +174,7 @@ const incidents = [
     title: "Active-patient compliance dropped below threshold",
     source: "System Health",
     category: "Compliance",
-    severity: "SEV-1",
+    priority: "SEV-1",
     status: "Active",
     owner: "Jordan Lee",
     detectedAt: "Aug 19, 2026 · 12:35 PM",
@@ -200,7 +200,7 @@ const incidents = [
     title: "Patients stuck in Registered status",
     source: "Patient Monitoring",
     category: "Patient (Mobile/Web)",
-    severity: "SEV-4",
+    priority: "SEV-4",
     status: "Active",
     owner: "Priya Nair",
     detectedAt: "Aug 18, 2026 · 2:35 PM",
@@ -224,7 +224,7 @@ const incidents = [
     title: "Billing Calc job did not run",
     source: "System Scheduler",
     category: "System Schedule Engine",
-    severity: "SEV-2",
+    priority: "SEV-2",
     status: "Active",
     owner: "Sarah Collins",
     detectedAt: "Aug 19, 2026 · 11:15 AM",
@@ -271,7 +271,7 @@ function topUpResolvedIncidents(count, startNum) {
   for (let i = 0; i < count; i++) {
     const n = startNum - i;
     const tpl = INC_TITLE_TEMPLATES[i % INC_TITLE_TEMPLATES.length];
-    const severity = INC_SEVERITIES[(i + 1) % INC_SEVERITIES.length];
+    const priority = INC_PRIORITIES[(i + 1) % INC_PRIORITIES.length];
     const owner = SUPPORT_TEAM[i % SUPPORT_TEAM.length];
     const orgCount = 1 + (i % 4);
     const orgs = orgsForCount(orgCount, i * 2);
@@ -287,7 +287,7 @@ function topUpResolvedIncidents(count, startNum) {
       title: tpl.title,
       source: tpl.source,
       category: INC_SOURCE_CATEGORY[tpl.source],
-      severity,
+      priority,
       status: "Resolved",
       owner,
       detectedAt: `Aug ${day}, 2026 · ${String(1 + (i % 11)).padStart(2, "0")}:${String((i * 9) % 60).padStart(2, "0")} AM`,

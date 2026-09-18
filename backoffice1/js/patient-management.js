@@ -114,20 +114,45 @@ function renderPatients() {
   applyColumnVisibility();
 }
 
-/* ---------------- Column visibility ---------------- */
-/* Built from the table's own data-col headers, so this list never drifts
-   out of sync with whatever columns actually exist. All columns start
-   visible; unchecking one hides both its header cell and every row's cell
-   for that column. */
+/* ---------------- Columns visibility menu ----------------
+   Two modes: Default View (all columns shown, no picker) and Custom
+   View (reveals a checkbox per column so specific ones can be shown/
+   hidden). Built from the table's own data-col headers, so this list
+   never drifts out of sync with whatever columns actually exist. */
 const patientColumnDefs = Array.from(document.querySelectorAll('#patientTable thead th[data-col]'))
   .map((th) => ({ key: th.dataset.col, label: th.textContent.trim() }))
   .filter((c) => c.key !== "actions");
 const hiddenPatientColumns = new Set();
+let patientColumnsViewMode = "default";
 
 const patientColumnsMenu = document.getElementById("patientColumnsMenu");
-patientColumnsMenu.innerHTML = patientColumnDefs
-  .map((c) => `<label class="bo-popover-item"><input type="checkbox" checked data-col-toggle="${c.key}" />${c.label}</label>`)
-  .join("");
+
+function renderPatientColumnsMenu() {
+  patientColumnsMenu.innerHTML = `
+    <label class="bo-popover-item">
+      <input type="radio" name="patientColumnsViewMode" value="default" ${patientColumnsViewMode === "default" ? "checked" : ""} />
+      Default View
+    </label>
+    <label class="bo-popover-item">
+      <input type="radio" name="patientColumnsViewMode" value="custom" ${patientColumnsViewMode === "custom" ? "checked" : ""} />
+      Custom View
+    </label>
+    ${
+      patientColumnsViewMode === "custom"
+        ? `<div class="bo-columns-custom-list">${patientColumnDefs
+            .map(
+              (c) => `
+          <label class="bo-popover-item">
+            <input type="checkbox" data-col-toggle="${c.key}" ${hiddenPatientColumns.has(c.key) ? "" : "checked"} />
+            ${c.label}
+          </label>`
+            )
+            .join("")}</div>`
+        : ""
+    }
+  `;
+}
+renderPatientColumnsMenu();
 
 function applyColumnVisibility() {
   document.querySelectorAll("#patientTable [data-col]").forEach((cell) => {
@@ -137,6 +162,17 @@ function applyColumnVisibility() {
 
 patientColumnsMenu.addEventListener("click", (e) => e.stopPropagation());
 patientColumnsMenu.addEventListener("change", (e) => {
+  const radio = e.target.closest('input[type="radio"][name="patientColumnsViewMode"]');
+  if (radio) {
+    patientColumnsViewMode = radio.value;
+    if (patientColumnsViewMode === "default") {
+      hiddenPatientColumns.clear();
+      applyColumnVisibility();
+    }
+    renderPatientColumnsMenu();
+    return;
+  }
+
   const checkbox = e.target.closest('input[type="checkbox"]');
   if (!checkbox) return;
   const key = checkbox.dataset.colToggle;

@@ -24,13 +24,6 @@ const patientList = [
    All Patients / My Patients scope toggle. */
 const CURRENT_TEAM_MEMBER = "Emily Carter";
 
-const complianceRanges = [
-  { key: "76-100", label: "76-100%", min: 76, max: 100 },
-  { key: "51-75", label: "51-75%", min: 51, max: 75 },
-  { key: "26-50", label: "26-50%", min: 26, max: 50 },
-  { key: "0-25", label: "0-25%", min: 0, max: 25 },
-];
-
 const genderOptions = [
   { key: "M", label: "Male (M)" },
   { key: "F", label: "Female (F)" },
@@ -69,7 +62,6 @@ const teamMemberOptions = [
   { key: "Sandy Kohl, RN", label: "Sandy Kohl, RN" },
 ];
 
-const selectedComplianceRanges = new Set();
 const selectedGenders = new Set();
 const selectedAccounts = new Set();
 const selectedStatuses = new Set();
@@ -77,11 +69,28 @@ const selectedMonitorings = new Set();
 const selectedCareTeams = new Set();
 let patientScope = "all";
 
+function initialsOf(name) {
+  return (name || "")
+    .replace(/^Dr\.\s*/i, "")
+    .split(/[\s,]+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0].toUpperCase())
+    .join("");
+}
+
 function statusCell(p) {
   if (p.status === "priority") {
+    const ackMark = p.flag
+      ? flagIcon
+      : `
+        <span class="action-icon-wrap status-ack-wrap">
+          <span class="status-ack-avatar">${initialsOf(p.teamMember)}</span>
+          <span class="action-tooltip">Acknowledged by ${p.teamMember || "—"}</span>
+        </span>`;
     return `
       <div class="status-cell">
-        <span class="status-line status-priority">${heartIcon} Priority ${p.flag ? flagIcon : `<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#9AA5B1" stroke-width="1.8"/><path d="M12 8V13" stroke="#9AA5B1" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="16" r="1" fill="#9AA5B1"/></svg>`}</span>
+        <span class="status-line status-priority">${heartIcon} Priority ${ackMark}</span>
         <span class="status-since">${p.since}</span>
       </div>`;
   }
@@ -220,14 +229,6 @@ function careTeamListPopoverHtml(p) {
     ${team.map((name) => `<div class="care-team-popover-item"><span class="care-team-popover-name">${name}</span></div>`).join("")}`;
 }
 
-function complianceInRange(value) {
-  if (!selectedComplianceRanges.size) return true;
-  return [...selectedComplianceRanges].some((key) => {
-    const range = complianceRanges.find((r) => r.key === key);
-    return range && value >= range.min && value <= range.max;
-  });
-}
-
 function genderLabel(gender) {
   return gender === "M" ? "(M)" : gender === "F" ? "(F)" : "(Other)";
 }
@@ -236,7 +237,7 @@ function genderLabel(gender) {
    (ehr-integration/patient-data.html); patients flagged chartView: "nurse"
    open the nurse view; everyone else opens the standard patient chart.
    Kept as separate pages/portals -- see ehr-integration/. */
-function patientChartHref(p) {
+function patientChartHref(p, { tab } = {}) {
   const base = p.chartView === "nurse" ? "nurse-view.html" : p.ehrOrg ? "ehr-integration/patient-data.html" : "patient-data.html";
   const params = new URLSearchParams();
   if (p.account === "Discontinued") {
@@ -247,6 +248,10 @@ function patientChartHref(p) {
   /* Per-patient care-recommendation form customization -- carried through so
      patient-data.html can forward it onto its Care Recommendation links. */
   if (p.hideMedicationDetails) params.set("hideMedDetails", "1");
+  /* Opens straight to the chart's Clinical tab (Medication is its default
+     subtab) instead of landing on the Overview tab, for the row menu's
+     "Update medication" action. */
+  if (tab) params.set("openTab", tab);
   const query = params.toString();
   return query ? `${base}?${query}` : base;
 }
@@ -254,7 +259,6 @@ function patientChartHref(p) {
 function filteredPatientList() {
   return patientList.filter(
     (p) =>
-      complianceInRange(p.compliance) &&
       (!selectedGenders.size || selectedGenders.has(p.gender)) &&
       (!selectedAccounts.size || selectedAccounts.has(p.account)) &&
       (!selectedStatuses.size || selectedStatuses.has(p.status)) &&
@@ -266,42 +270,61 @@ function filteredPatientList() {
 
 const rows = document.getElementById("patientListRows");
 
+/* ---------------- Columns visibility ----------------
+   Display preference, not a data filter -- Name and Action stay pinned
+   (no checkbox), everything else defaults to visible/checked and survives
+   "Clear all filters" since it's not filtering rows. Defined before
+   renderPatientList (which calls applyColumnVisibility on every render)
+   so there's no temporal-dead-zone gap between the two. */
+const columnOptions = [
+  { key: "username", label: "Username" },
+  { key: "mrn", label: "MRN/ID" },
+  { key: "phone", label: "Phone No." },
+  { key: "account", label: "Account" },
+  { key: "enrolledDate", label: "Enrolled Date" },
+  { key: "connectedEhr", label: "Connected EHR" },
+  { key: "source", label: "Source" },
+  { key: "status", label: "Status" },
+  { key: "monitoring", label: "Monitoring" },
+  { key: "careRecommendation", label: "Care Recommendation" },
+  { key: "careTeam", label: "Care Team" },
+];
+const hiddenColumns = new Set();
+
+function applyColumnVisibility() {
+  columnOptions.forEach((c) => {
+    const hide = hiddenColumns.has(c.key);
+    document.querySelectorAll(`.list-table [data-col="${c.key}"]`).forEach((el) => {
+      el.style.display = hide ? "none" : "";
+    });
+  });
+}
+
 function renderPatientList() {
   rows.innerHTML = filteredPatientList()
     .map(
       (p) => `
       <tr>
-        <td><a class="lt-name ${p.status === "priority" ? "priority" : "active-name"}" href="${patientChartHref(p)}">${p.name} ${genderLabel(p.gender)}</a></td>
-        <td>${p.username}</td>
-        <td>${p.mrn}</td>
-        <td>${p.phone}</td>
-        <td>${p.account}</td>
-        <td>${p.enrolledDate || "—"}</td>
-        <td>${p.ehrSystem ? `<span class="ehr-connected-pill">${p.ehrSystem}</span>` : "—"}</td>
-        <td>${p.source === "EHR Imported" ? `<span class="source-outline-badge">EHR</span>` : `<span class="source-outline-badge">Manual</span>`}</td>
-        <td>${statusCell(p)}</td>
-        <td>${monitoringCell(p)}</td>
-        <td>${careCell(p)}</td>
-        <td>${careTeamCell(p)}</td>
-        <td>${actionCell(p)}</td>
+        <td data-col="name"><a class="lt-name ${p.status === "priority" ? "priority" : "active-name"}" href="${patientChartHref(p)}">${p.name} ${genderLabel(p.gender)}</a></td>
+        <td data-col="username">${p.username}</td>
+        <td data-col="mrn">${p.mrn}</td>
+        <td data-col="phone">${p.phone}</td>
+        <td data-col="account">${p.account}</td>
+        <td data-col="enrolledDate">${p.enrolledDate || "—"}</td>
+        <td data-col="connectedEhr">${p.ehrSystem ? `<span class="ehr-connected-pill">${p.ehrSystem}</span>` : "—"}</td>
+        <td data-col="source">${p.source === "EHR Imported" ? `<span class="source-outline-badge">EHR</span>` : `<span class="source-outline-badge">Manual</span>`}</td>
+        <td data-col="status">${statusCell(p)}</td>
+        <td data-col="monitoring">${monitoringCell(p)}</td>
+        <td data-col="careRecommendation">${careCell(p)}</td>
+        <td data-col="careTeam">${careTeamCell(p)}</td>
+        <td data-col="action">${actionCell(p)}</td>
       </tr>`
     )
     .join("");
+  applyColumnVisibility();
 }
 
 renderPatientList();
-
-/* ---------------- Compliance filter ---------------- */
-const complianceMenu = document.getElementById("complianceMenu");
-complianceMenu.innerHTML = complianceRanges
-  .map(
-    (r) => `
-    <label class="checkbox-filter-option">
-      <input type="checkbox" value="${r.key}" />
-      ${r.label}
-    </label>`
-  )
-  .join("");
 
 /* Filter menus live inside .filters-bar, which needs overflow-x:auto for narrow
    viewports. That forces overflow-y to compute as auto too (CSS spec), clipping any
@@ -311,15 +334,32 @@ const portaledFilterMenus = new Map();
 
 function positionFilterMenu(trigger, menu) {
   const rect = trigger.getBoundingClientRect();
-  const menuHeight = Math.min(menu.scrollHeight || 280, 280) + 12;
+  const margin = 12;
+  const menuHeight = Math.min(menu.scrollHeight || 280, 280) + margin;
   const spaceBelow = window.innerHeight - rect.bottom;
-  const openUpward = spaceBelow < menuHeight && rect.top > menuHeight;
+  const spaceAbove = rect.top;
+  const openUpward = spaceBelow < menuHeight && spaceAbove > spaceBelow;
 
   menu.style.position = "fixed";
-  menu.style.left = `${rect.left}px`;
+  menu.style.left = "0px";
   menu.style.minWidth = `${rect.width}px`;
   menu.style.top = openUpward ? "auto" : `${rect.bottom + 6}px`;
   menu.style.bottom = openUpward ? `${window.innerHeight - rect.top + 6}px` : "auto";
+
+  // Anchor left edge to the trigger, then pull the menu back inside the
+  // viewport if its natural width (e.g. the Columns picker) would run off
+  // the right edge of the screen.
+  const menuWidth = menu.offsetWidth;
+  let left = rect.left;
+  if (left + menuWidth + margin > window.innerWidth) {
+    left = Math.max(margin, rect.right - menuWidth);
+  }
+  menu.style.left = `${left}px`;
+  // Cap height to whichever side it opens toward so a long list (e.g. the
+  // Columns custom checkbox list) scrolls internally instead of running off
+  // the bottom of the viewport when there isn't 280px of room available.
+  const available = (openUpward ? spaceAbove : spaceBelow) - margin - 6;
+  menu.style.maxHeight = `${Math.max(120, Math.min(280, available))}px`;
 }
 
 function openFilterMenu(wrapEl, menuEl) {
@@ -346,6 +386,7 @@ function closeFilterMenu(menuEl) {
   menuEl.style.top = "";
   menuEl.style.bottom = "";
   menuEl.style.minWidth = "";
+  menuEl.style.maxHeight = "";
 }
 
 function wireCheckboxFilter(wrapEl, menuEl, selectedSet, onChange) {
@@ -373,13 +414,6 @@ function wireCheckboxFilter(wrapEl, menuEl, selectedSet, onChange) {
     onChange();
   });
 }
-
-wireCheckboxFilter(
-  document.querySelector('.checkbox-filter[data-name="compliance"]'),
-  complianceMenu,
-  selectedComplianceRanges,
-  renderPatientList
-);
 
 /* ---------------- Gender filter ---------------- */
 const genderMenu = document.getElementById("genderMenu");
@@ -487,6 +521,78 @@ wireCheckboxFilter(
   renderPatientList
 );
 
+/* ---------------- Columns visibility menu (wiring) ----------------
+   Two modes: Default View (all columns shown, no picker) and Custom
+   View (reveals a checkbox per column so the user can choose which to
+   show). Switching back to Default View clears any hidden columns. */
+let columnsViewMode = "default";
+
+function renderColumnsMenu() {
+  columnsMenu.innerHTML = `
+    <label class="checkbox-filter-option">
+      <input type="radio" name="columnsViewMode" value="default" ${columnsViewMode === "default" ? "checked" : ""} />
+      Default View
+    </label>
+    <label class="checkbox-filter-option">
+      <input type="radio" name="columnsViewMode" value="custom" ${columnsViewMode === "custom" ? "checked" : ""} />
+      Custom View
+    </label>
+    ${
+      columnsViewMode === "custom"
+        ? `<div class="columns-custom-list">${columnOptions
+            .map(
+              (c) => `
+          <label class="checkbox-filter-option">
+            <input type="checkbox" value="${c.key}" ${hiddenColumns.has(c.key) ? "" : "checked"} />
+            ${c.label}
+          </label>`
+            )
+            .join("")}</div>`
+        : ""
+    }
+  `;
+}
+
+const columnsMenu = document.getElementById("columnsMenu");
+renderColumnsMenu();
+
+const columnsFilterWrap = document.querySelector('.checkbox-filter[data-name="columns"]');
+const columnsTrigger = columnsFilterWrap.querySelector(".filter-btn");
+const columnsLabel = columnsFilterWrap.querySelector(".checkbox-filter-label");
+
+columnsTrigger.addEventListener("click", (e) => {
+  e.stopPropagation();
+  const willOpen = !columnsFilterWrap.classList.contains("open");
+  closeAllFilterPopovers();
+  columnsFilterWrap.classList.toggle("open", willOpen);
+  if (willOpen) openFilterMenu(columnsFilterWrap, columnsMenu);
+});
+
+columnsMenu.addEventListener("click", (e) => e.stopPropagation());
+
+columnsMenu.addEventListener("change", (e) => {
+  const radio = e.target.closest('input[type="radio"][name="columnsViewMode"]');
+  if (radio) {
+    columnsViewMode = radio.value;
+    if (columnsViewMode === "default") {
+      hiddenColumns.clear();
+      columnsLabel.textContent = "Columns";
+      applyColumnVisibility();
+    }
+    renderColumnsMenu();
+    positionFilterMenu(columnsTrigger, columnsMenu);
+    return;
+  }
+
+  const checkbox = e.target.closest('input[type="checkbox"]');
+  if (!checkbox) return;
+  if (checkbox.checked) hiddenColumns.delete(checkbox.value);
+  else hiddenColumns.add(checkbox.value);
+
+  columnsLabel.textContent = hiddenColumns.size ? `Columns (${hiddenColumns.size} hidden)` : "Columns";
+  applyColumnVisibility();
+});
+
 /* Deep link: ?careTeam=<Care Team Member name> -- lets the Care Team
    Members page's row click land here with that member's patients already
    filtered, instead of dropping the user on the unfiltered list. */
@@ -526,7 +632,6 @@ const clearableFilters = [
   { name: "account", menu: accountMenu, set: selectedAccounts, label: "Account" },
   { name: "status", menu: statusMenu, set: selectedStatuses, label: "Status" },
   { name: "monitoring", menu: monitoringMenu, set: selectedMonitorings, label: "Monitoring" },
-  { name: "compliance", menu: complianceMenu, set: selectedComplianceRanges, label: "Compliance" },
   { name: "gender", menu: genderMenu, set: selectedGenders, label: "Gender" },
   { name: "careTeam", menu: careTeamFilterMenu, set: selectedCareTeams, label: "Care Team" },
 ];
@@ -1061,6 +1166,7 @@ patientRowMenu.addEventListener("click", (e) => {
 
   if (item.dataset.action === "edit") openEditPatientModal(patient);
   else if (item.dataset.action === "account") openUpdateAccountModal(patient);
+  else if (item.dataset.action === "medication") window.location.href = patientChartHref(patient, { tab: "clinical" });
   else if (item.dataset.action === "reset") openResetPasswordModal(patient);
 });
 
@@ -1103,9 +1209,6 @@ function describePatientListFilters() {
   }
   if (selectedMonitorings.size) {
     parts.push(`Monitoring = ${[...selectedMonitorings].map((k) => monitoringOptions.find((o) => o.key === k)?.label || k).join(", ")}`);
-  }
-  if (selectedComplianceRanges.size) {
-    parts.push(`Compliance = ${[...selectedComplianceRanges].map((k) => complianceRanges.find((r) => r.key === k)?.label || k).join(", ")}`);
   }
   if (selectedGenders.size) {
     parts.push(`Gender = ${[...selectedGenders].map((k) => genderOptions.find((o) => o.key === k)?.label || k).join(", ")}`);

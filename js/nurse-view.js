@@ -81,8 +81,8 @@ function setMonthRow(id, days) {
 /* ---------------- Overview chart (status timeline) ---------------- */
 const FALLBACK_COL_W = 40;
 const PAD = 30;
-const CHART_H = 150;
-const Y = { baseline: 118, active: 71, priority: 62 };
+const CHART_H = 100;
+const Y = { baseline: 65, active: 65, priority: 65 };
 
 let COL_W = FALLBACK_COL_W;
 let CHART_W = PAD * 2 + (chartDays.length - 1) * COL_W;
@@ -1111,15 +1111,17 @@ function renderQuestionnaire() {
     .map((q, qi) => {
       const ans = sliceForRange(q.answers);
       const vals = q.values ? sliceForRange(q.values) : null;
+      const noVals = q.noValues ? sliceForRange(q.noValues) : null;
 
       const iconsHtml = days
         .map((d, i) => {
           const a = ans[i];
           const cls = a === true ? "quest-ans-yes" : a === false ? "quest-ans-no" : "quest-ans-none";
           const icon = a === true ? adhCheckIcon : a === false ? questXIcon : "";
-          const val = vals ? vals[i] : null;
+          const val = a === true ? (vals ? vals[i] : null) : a === false ? (noVals ? noVals[i] : null) : null;
+          const valLabel = a === true ? q.valueLabel : q.noValueLabel;
           const tooltip = val
-            ? `<span class="quest-weight-tooltip">${q.valueLabel}: ${val}</span>`
+            ? `<span class="quest-weight-tooltip">${valLabel}: ${val}</span>`
             : "";
           return `
         <div class="med-adh-day">
@@ -1132,11 +1134,24 @@ function renderQuestionnaire() {
         .map((d) => `<span>${d.today ? `<span class="today">${d.label}</span>` : d.label}</span>`)
         .join("");
 
+      /* Only new (custom) fields get a tag -- the legacy Q3/Q4 "Yes" value
+         is already surfaced via the hover tooltip above, so it's left alone
+         to avoid changing how those existing questions look. */
+      const tags = [];
+      if (q.answerType === "value") {
+        const unitsNote = q.units?.length ? ` (${q.units.join(" / ")})` : "";
+        tags.push(`Value entry${q.valueLabel ? ` — ${q.valueLabel}` : ""}${unitsNote}`);
+      }
+      const tagsHtml = tags.length
+        ? `<div class="quest-config-tags">${tags.map((t) => `<span class="quest-config-tag">${t}</span>`).join("")}</div>`
+        : "";
+
       return `
       <div class="med-block">
         <div class="quest-block-head">
           <span class="quest-label">${q.label}</span>
           <span class="quest-text">${q.text}</span>
+          ${tagsHtml}
         </div>
 
         <div class="med-adherence-row">
@@ -1165,6 +1180,15 @@ document.querySelectorAll(".data-tab").forEach((tab) => {
     if (target === "health-data") rebuildRangedCharts();
   });
 });
+
+/* Opens straight to a given top-level tab on load (e.g. the Patient List row
+   menu's "Update medication" action links in with ?openTab=clinical -- the
+   Clinical tab's Medication subtab is already its default-active one). */
+(() => {
+  const openTab = new URLSearchParams(window.location.search).get("openTab");
+  if (!openTab) return;
+  document.querySelector(`.data-tab[data-tab="${openTab}"]`)?.click();
+})();
 
 /* ---------------- Sub-tabs (Measurement/Wellness, Medication/Care Recommendations) ----------------
    Scoped to the closest .data-tab-panel so two independent subtab groups on the
@@ -1321,34 +1345,44 @@ document.getElementById("historyLoadMoreBtn").addEventListener("click", () => {
 const addEventOverlay = document.getElementById("addEventOverlay");
 const addEventForm = document.getElementById("addEventForm");
 const saveAddEvent = document.getElementById("saveAddEvent");
+const addEventActionTypeField = document.getElementById("addEventActionTypeField");
+const addEventNameField = document.getElementById("addEventNameField");
+const addEventDateField = document.getElementById("addEventDateField");
+const addEventNoteField = document.getElementById("addEventNoteField");
 
-const CATEGORY_DOT = { account: "dot-blue", status: "dot-green", monitoring: "dot-teal", medication: "dot-purple", other: "dot-blue" };
-
-function formatTimeLabel(hhmm) {
-  const [h, m] = hhmm.split(":").map(Number);
-  const period = h >= 12 ? "PM" : "AM";
-  const hour12 = h % 12 || 12;
-  return `${hour12}:${String(m).padStart(2, "0")} ${period}`;
+function updateAddEventTypeFields() {
+  const eventType = addEventForm.eventType.value;
+  addEventActionTypeField.style.display = eventType === "action" ? "" : "none";
+  addEventNameField.style.display = eventType === "other" ? "" : "none";
+  addEventDateField.style.display = eventType === "" ? "none" : "";
+  addEventNoteField.style.display = eventType === "" ? "none" : "";
 }
 
 function validateAddEventForm() {
-  const valid = addEventForm.category.value !== "" && addEventForm.label.value.trim() !== "" && addEventForm.date.value !== "";
+  const eventType = addEventForm.eventType.value;
+  const detailValid = eventType === "action" ? addEventForm.actionType.value !== "" : eventType === "other" ? addEventForm.eventName.value.trim() !== "" : false;
+  const valid = eventType !== "" && detailValid && addEventForm.date.value !== "";
   saveAddEvent.disabled = !valid;
   saveAddEvent.classList.toggle("enabled", valid);
 }
 
 addEventForm.addEventListener("input", validateAddEventForm);
-addEventForm.addEventListener("change", validateAddEventForm);
+addEventForm.addEventListener("change", (e) => {
+  if (e.target.name === "eventType") updateAddEventTypeFields();
+  validateAddEventForm();
+});
 
 document.getElementById("openAddEventBtn").addEventListener("click", () => {
   addEventForm.reset();
   resetCustomSelectsIn(addEventForm);
+  updateAddEventTypeFields();
   validateAddEventForm();
   addEventOverlay.classList.add("open");
 });
 
 function closeAddEventModal() { addEventOverlay.classList.remove("open"); }
 document.getElementById("cancelAddEvent").addEventListener("click", closeAddEventModal);
+document.getElementById("closeAddEventX").addEventListener("click", closeAddEventModal);
 addEventOverlay.addEventListener("click", (e) => { if (e.target === addEventOverlay) closeAddEventModal(); });
 
 addEventForm.addEventListener("submit", (e) => {
@@ -1356,15 +1390,16 @@ addEventForm.addEventListener("submit", (e) => {
   if (saveAddEvent.disabled) return;
 
   const [y, m, d] = addEventForm.date.value.split("-");
-  const note = addEventForm.note.value.trim();
-  const timeNote = addEventForm.time.value ? `Acknowledged at ${formatTimeLabel(addEventForm.time.value)}` : "";
+  const label = addEventForm.eventType.value === "action"
+    ? `Action taken: ${addEventForm.actionType.value}`
+    : addEventForm.eventName.value.trim();
 
   history.unshift({
-    category: addEventForm.category.value,
-    color: CATEGORY_DOT[addEventForm.category.value],
-    label: addEventForm.label.value.trim(),
+    category: "other",
+    color: "dot-blue",
+    label,
     date: `${m}.${d}.${y}`,
-    note: [timeNote, note].filter(Boolean).join(" — ") || undefined,
+    note: addEventForm.note.value.trim() || undefined,
   });
 
   closeAddEventModal();

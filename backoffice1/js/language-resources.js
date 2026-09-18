@@ -35,8 +35,9 @@ const lrVolumeMutedIcon = `<svg width="15" height="15" viewBox="0 0 24 24" fill=
 const lrKebabIcon = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="1.7" fill="currentColor"/><circle cx="12" cy="12" r="1.7" fill="currentColor"/><circle cx="12" cy="19" r="1.7" fill="currentColor"/></svg>`;
 const lrSpeedIcon = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21a9 9 0 1 1 6.36-2.64"/><path d="M12 7v5l3 2"/><path d="M21 3v5h-5"/></svg>`;
 const lrChevronIcon = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>`;
+const lrBackChevronIcon = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>`;
 const lrCheckIcon = `<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
-const LR_SPEEDS = ["0.5", "0.75", "Normal", "1.25", "1.5"];
+const LR_SPEEDS = ["0.5x", "0.75x", "1x", "1.25x", "1.5x", "2x"];
 
 function lrCurrentUserName() {
   const el = document.querySelector(".bo-user-name");
@@ -65,7 +66,7 @@ const lrPager = boCreatePager(
           <button class="bo-audio-play" data-id="${e.r.id}" aria-label="Play">${lrPlayIcon}</button>
           <span class="bo-audio-time">${lrDuration(e.r.duration)}</span>
           <div class="bo-audio-track"><div class="bo-audio-fill"></div></div>
-          <button class="bo-action-icon lr-volume-btn" type="button" data-id="${e.r.id}" aria-label="${e.r.muted ? "Unmute" : "Mute"}">${e.r.muted ? lrVolumeMutedIcon : lrVolumeIcon}</button>
+          <button class="bo-action-icon lr-volume-btn" type="button" data-id="${e.r.id}" aria-label="${e.r.muted || lrVolumeOf(e.r) === 0 ? "Unmute" : "Mute"}">${e.r.muted || lrVolumeOf(e.r) === 0 ? lrVolumeMutedIcon : lrVolumeIcon}</button>
           <button class="bo-action-icon lr-more-btn" type="button" data-id="${e.r.id}" aria-label="Playback options">${lrKebabIcon}</button>
         </div>
       </td>
@@ -97,12 +98,8 @@ document.getElementById("lrRows").addEventListener("click", (e) => {
 
   const volumeBtn = e.target.closest(".lr-volume-btn");
   if (volumeBtn) {
-    const id = Number(volumeBtn.dataset.id);
-    const rec = lrRecordings.find((r) => r.id === id);
-    if (!rec) return;
-    rec.muted = !rec.muted;
-    volumeBtn.innerHTML = rec.muted ? lrVolumeMutedIcon : lrVolumeIcon;
-    volumeBtn.setAttribute("aria-label", rec.muted ? "Unmute" : "Mute");
+    e.stopPropagation();
+    openLrVolumeMenu(Number(volumeBtn.dataset.id), volumeBtn);
     return;
   }
 
@@ -115,8 +112,8 @@ document.getElementById("lrRows").addEventListener("click", (e) => {
 
 /* ---------------- "More" popover: Playback speed ----------------
    Opens straight to a single "Playback speed" row; clicking it drills the
-   same popover into the speed list (0.5–1.5) with a check on the active
-   value, instead of popping a second menu next to the first. */
+   same popover into the speed list with a check on the active value and a
+   back row to return, instead of popping a second menu next to the first. */
 const lrSpeedMenu = document.getElementById("lrSpeedMenu");
 let lrSpeedMenuRecId = null;
 
@@ -130,36 +127,72 @@ function lrSpeedMenuRootHtml() {
 }
 
 function lrSpeedMenuListHtml(rec) {
-  const current = rec.speed || "Normal";
-  return LR_SPEEDS.map(
-    (v) => `<div class="bo-select-option${v === current ? " selected" : ""}" data-speed="${v}">${v}${lrCheckIcon}</div>`
-  ).join("");
+  const current = rec.speed || "1x";
+  return `
+    <button type="button" class="bo-row-menu-back" data-step="back">
+      ${lrBackChevronIcon}
+      <span>Playback speed</span>
+    </button>
+    <div class="bo-row-menu-divider"></div>
+    <div class="bo-row-menu-scroll">
+      ${LR_SPEEDS.map(
+        (v) => `<div class="bo-select-option${v === current ? " selected" : ""}" data-speed="${v}">${v}${lrCheckIcon}</div>`
+      ).join("")}
+    </div>`;
+}
+
+let lrSpeedMenuAnchor = null;
+
+function lrPositionSpeedMenu() {
+  if (!lrSpeedMenuAnchor) return;
+  const rect = lrSpeedMenuAnchor.getBoundingClientRect();
+  const margin = 12;
+  const menuHeight = lrSpeedMenu.offsetHeight;
+  const spaceBelow = window.innerHeight - rect.bottom;
+  const openUpward = spaceBelow < menuHeight + margin && rect.top > spaceBelow;
+  lrSpeedMenu.style.top = openUpward ? "auto" : `${rect.bottom + 6}px`;
+  lrSpeedMenu.style.bottom = openUpward ? `${window.innerHeight - rect.top + 6}px` : "auto";
+  lrSpeedMenu.style.left = `${rect.right - 190}px`;
 }
 
 function openLrSpeedMenu(id, anchorBtn) {
   const rec = lrRecordings.find((r) => r.id === id);
   if (!rec) return;
+  closeLrVolumeMenu();
   lrSpeedMenuRecId = id;
+  lrSpeedMenuAnchor = anchorBtn;
   lrSpeedMenu.innerHTML = lrSpeedMenuRootHtml();
-
-  const rect = anchorBtn.getBoundingClientRect();
-  lrSpeedMenu.style.top = `${rect.bottom + 6}px`;
-  lrSpeedMenu.style.left = `${rect.right - 190}px`;
   lrSpeedMenu.classList.add("open");
+  lrPositionSpeedMenu();
 }
 
 function closeLrSpeedMenu() {
   lrSpeedMenu.classList.remove("open");
   lrSpeedMenuRecId = null;
+  lrSpeedMenuAnchor = null;
 }
 
 lrSpeedMenu.addEventListener("click", (e) => {
+  /* Stop this click from also reaching the document-level "click outside
+     closes the menu" listener below. Without this, swapping innerHTML here
+     detaches e.target from the DOM, so that listener's `lrSpeedMenu.contains
+     (e.target)` check sees a detached node, reads it as "outside", and
+     closes the menu we just opened/drilled into in the same tick. */
+  e.stopPropagation();
   const rec = lrRecordings.find((r) => r.id === lrSpeedMenuRecId);
   if (!rec) return;
+
+  const backBtn = e.target.closest('[data-step="back"]');
+  if (backBtn) {
+    lrSpeedMenu.innerHTML = lrSpeedMenuRootHtml();
+    lrPositionSpeedMenu();
+    return;
+  }
 
   const stepBtn = e.target.closest('[data-step="speed"]');
   if (stepBtn) {
     lrSpeedMenu.innerHTML = lrSpeedMenuListHtml(rec);
+    lrPositionSpeedMenu();
     return;
   }
 
@@ -170,8 +203,86 @@ lrSpeedMenu.addEventListener("click", (e) => {
   }
 });
 
+/* ---------------- Volume popover ----------------
+   Opens on the volume icon, holds a slider (0-100) plus a mute toggle so the
+   level itself can be adjusted rather than only muting/unmuting. */
+const lrVolumeMenu = document.getElementById("lrVolumeMenu");
+let lrVolumeMenuRecId = null;
+
+function lrVolumeOf(rec) {
+  return typeof rec.volume === "number" ? rec.volume : 100;
+}
+
+function lrRowVolumeBtn(id) {
+  return document.querySelector(`.lr-volume-btn[data-id="${id}"]`);
+}
+
+function lrRefreshVolumeBtnIcon(rec) {
+  const btn = lrRowVolumeBtn(rec.id);
+  if (!btn) return;
+  const isMuted = rec.muted || lrVolumeOf(rec) === 0;
+  btn.innerHTML = isMuted ? lrVolumeMutedIcon : lrVolumeIcon;
+  btn.setAttribute("aria-label", isMuted ? "Unmute" : "Mute");
+}
+
+function lrVolumeMenuHtml(rec) {
+  const vol = rec.muted ? 0 : lrVolumeOf(rec);
+  const isMuted = rec.muted || lrVolumeOf(rec) === 0;
+  return `
+    <div class="bo-volume-menu-row">
+      <button type="button" class="bo-action-icon" id="lrVolumeMuteToggle" aria-label="${isMuted ? "Unmute" : "Mute"}">${isMuted ? lrVolumeMutedIcon : lrVolumeIcon}</button>
+      <input type="range" class="bo-volume-slider" id="lrVolumeSlider" min="0" max="100" value="${vol}" />
+      <span class="bo-volume-value" id="lrVolumeValue">${vol}%</span>
+    </div>`;
+}
+
+function openLrVolumeMenu(id, anchorBtn) {
+  const rec = lrRecordings.find((r) => r.id === id);
+  if (!rec) return;
+  closeLrSpeedMenu();
+  lrVolumeMenuRecId = id;
+  lrVolumeMenu.innerHTML = lrVolumeMenuHtml(rec);
+
+  const rect = anchorBtn.getBoundingClientRect();
+  lrVolumeMenu.style.top = `${rect.bottom + 6}px`;
+  lrVolumeMenu.style.left = `${rect.right - 190}px`;
+  lrVolumeMenu.classList.add("open");
+}
+
+function closeLrVolumeMenu() {
+  lrVolumeMenu.classList.remove("open");
+  lrVolumeMenuRecId = null;
+}
+
+lrVolumeMenu.addEventListener("click", (e) => {
+  /* Same reason as lrSpeedMenu's listener: this re-renders lrVolumeMenu's
+     innerHTML, which would detach e.target and fool the document-level
+     "click outside" listener into closing the popup immediately. */
+  e.stopPropagation();
+  if (e.target.id !== "lrVolumeMuteToggle") return;
+  const rec = lrRecordings.find((r) => r.id === lrVolumeMenuRecId);
+  if (!rec) return;
+  rec.muted = !rec.muted;
+  lrVolumeMenu.innerHTML = lrVolumeMenuHtml(rec);
+  lrRefreshVolumeBtnIcon(rec);
+});
+
+lrVolumeMenu.addEventListener("input", (e) => {
+  if (e.target.id !== "lrVolumeSlider") return;
+  const rec = lrRecordings.find((r) => r.id === lrVolumeMenuRecId);
+  if (!rec) return;
+  rec.volume = Number(e.target.value);
+  rec.muted = rec.volume === 0;
+  document.getElementById("lrVolumeValue").textContent = `${rec.volume}%`;
+  const muteBtn = document.getElementById("lrVolumeMuteToggle");
+  muteBtn.innerHTML = rec.muted ? lrVolumeMutedIcon : lrVolumeIcon;
+  muteBtn.setAttribute("aria-label", rec.muted ? "Unmute" : "Mute");
+  lrRefreshVolumeBtnIcon(rec);
+});
+
 document.addEventListener("click", (e) => {
   if (!lrSpeedMenu.contains(e.target)) closeLrSpeedMenu();
+  if (!lrVolumeMenu.contains(e.target)) closeLrVolumeMenu();
 });
 
 /* Filters apply as soon as a field changes -- no Apply button to batch them. */

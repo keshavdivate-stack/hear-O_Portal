@@ -68,7 +68,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (!localStorage.getItem("hearo_onboarding_completed")) {
-      window.location.href = "/Mobile%20app/welcome.html";
+      window.location.href = "/Mobile%20app/consent.html";
     } else {
       window.location.href = "/Mobile%20app/home.html";
     }

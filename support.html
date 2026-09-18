@@ -240,15 +240,6 @@
             <div class="checkbox-filter-menu" id="ticketOriginMenu"></div>
           </div>
 
-          <div class="checkbox-filter" data-name="severity">
-            <button type="button" class="filter-btn">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 21C12 21 4 15.5 4 9.8C4 6.6 6.5 4.5 9.2 4.5C10.6 4.5 11.6 5.1 12 5.7C12.4 5.1 13.4 4.5 14.8 4.5C17.5 4.5 20 6.6 20 9.8C20 15.5 12 21 12 21Z" stroke="#6B7684" stroke-width="1.5"/></svg>
-              <span class="checkbox-filter-label">Severity</span>
-              <svg class="caret" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#6B7684" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-            </button>
-            <div class="checkbox-filter-menu" id="ticketSeverityMenu"></div>
-          </div>
-
           <div class="checkbox-filter" data-name="state">
             <button type="button" class="filter-btn">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 19V13M10 19V9M16 19V5M20 19V11" stroke="#6B7684" stroke-width="1.5" stroke-linecap="round"/></svg>
@@ -271,7 +262,7 @@
           <span class="filters-spacer"></span>
           <button class="btn-add-user" id="openCreateTicketBtn">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-            Raise Ticket
+            Create Ticket
           </button>
         </div>
 
@@ -285,7 +276,6 @@
                   <th>PATIENT / RAISED BY</th>
                   <th>CATEGORY</th>
                   <th>ISSUE TYPE</th>
-                  <th>SEVERITY</th>
                   <th>STATE</th>
                   <th>CREATED</th>
                   <th>ASSIGNED TO</th>
@@ -308,7 +298,10 @@
   <!-- Create Ticket modal -->
   <div class="modal-overlay" id="createTicketOverlay">
     <div class="modal modal-wide">
-      <h2>Raise Ticket</h2>
+      <h2>Create Ticket</h2>
+      <button type="button" class="modal-close-x modal-close-x-top" id="closeCreateTicketX" aria-label="Close">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6L18 18M6 18L18 6"/></svg>
+      </button>
       <form id="createTicketForm">
         <div class="form-grid">
           <div class="form-field">
@@ -331,17 +324,6 @@
               </button>
               <div class="custom-select-menu"></div>
               <input type="hidden" name="issueType" required />
-            </div>
-          </div>
-          <div class="form-field">
-            <label>Severity<span class="required-star">*</span></label>
-            <div class="custom-select" data-name="severity">
-              <button type="button" class="custom-select-trigger">
-                <span class="custom-select-value placeholder">Choose severity</span>
-                <svg class="custom-select-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </button>
-              <div class="custom-select-menu"></div>
-              <input type="hidden" name="severity" required />
             </div>
           </div>
           <div class="form-field">
@@ -374,7 +356,7 @@
 
         <div class="modal-actions">
           <button type="button" class="btn-text" id="cancelCreateTicket">Cancel</button>
-          <button type="submit" class="btn-save" id="saveCreateTicket" disabled>Raise Ticket</button>
+          <button type="submit" class="btn-save" id="saveCreateTicket" disabled>Create Ticket</button>
         </div>
       </form>
     </div>

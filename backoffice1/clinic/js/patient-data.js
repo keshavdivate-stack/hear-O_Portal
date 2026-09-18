@@ -113,8 +113,8 @@ function setMonthRow(id, days) {
 /* ---------------- Overview chart (status timeline -- not clinical values) ---------------- */
 const FALLBACK_COL_W = 40;
 const PAD = 30;
-const CHART_H = 150;
-const Y = { baseline: 118, active: 71, priority: 62 };
+const CHART_H = 100;
+const Y = { baseline: 65, active: 65, priority: 65 };
 
 let COL_W = FALLBACK_COL_W;
 let CHART_W = PAD * 2 + (chartDays.length - 1) * COL_W;
@@ -399,34 +399,44 @@ function resetCustomSelectsIn(root) {
 const addEventOverlay = document.getElementById("addEventOverlay");
 const addEventForm = document.getElementById("addEventForm");
 const saveAddEvent = document.getElementById("saveAddEvent");
+const addEventActionTypeField = document.getElementById("addEventActionTypeField");
+const addEventNameField = document.getElementById("addEventNameField");
+const addEventDateField = document.getElementById("addEventDateField");
+const addEventNoteField = document.getElementById("addEventNoteField");
 
-const CATEGORY_DOT = { account: "dot-blue", status: "dot-green", monitoring: "dot-teal", other: "dot-blue" };
-
-function formatTimeLabel(hhmm) {
-  const [h, m] = hhmm.split(":").map(Number);
-  const period = h >= 12 ? "PM" : "AM";
-  const hour12 = h % 12 || 12;
-  return `${hour12}:${String(m).padStart(2, "0")} ${period}`;
+function updateAddEventTypeFields() {
+  const eventType = addEventForm.eventType.value;
+  addEventActionTypeField.style.display = eventType === "action" ? "" : "none";
+  addEventNameField.style.display = eventType === "other" ? "" : "none";
+  addEventDateField.style.display = eventType === "" ? "none" : "";
+  addEventNoteField.style.display = eventType === "" ? "none" : "";
 }
 
 function validateAddEventForm() {
-  const valid = addEventForm.category.value !== "" && addEventForm.label.value.trim() !== "" && addEventForm.date.value !== "";
+  const eventType = addEventForm.eventType.value;
+  const detailValid = eventType === "action" ? addEventForm.actionType.value !== "" : eventType === "other" ? addEventForm.eventName.value.trim() !== "" : false;
+  const valid = eventType !== "" && detailValid && addEventForm.date.value !== "";
   saveAddEvent.disabled = !valid;
   saveAddEvent.classList.toggle("enabled", valid);
 }
 
 addEventForm.addEventListener("input", validateAddEventForm);
-addEventForm.addEventListener("change", validateAddEventForm);
+addEventForm.addEventListener("change", (e) => {
+  if (e.target.name === "eventType") updateAddEventTypeFields();
+  validateAddEventForm();
+});
 
 document.getElementById("openAddEventBtn").addEventListener("click", () => {
   addEventForm.reset();
   resetCustomSelectsIn(addEventForm);
+  updateAddEventTypeFields();
   validateAddEventForm();
   addEventOverlay.classList.add("open");
 });
 
 function closeAddEventModal() { addEventOverlay.classList.remove("open"); }
 document.getElementById("cancelAddEvent").addEventListener("click", closeAddEventModal);
+document.getElementById("closeAddEventX").addEventListener("click", closeAddEventModal);
 addEventOverlay.addEventListener("click", (e) => { if (e.target === addEventOverlay) closeAddEventModal(); });
 
 addEventForm.addEventListener("submit", (e) => {
@@ -434,15 +444,16 @@ addEventForm.addEventListener("submit", (e) => {
   if (saveAddEvent.disabled) return;
 
   const [y, m, d] = addEventForm.date.value.split("-");
-  const note = addEventForm.note.value.trim();
-  const timeNote = addEventForm.time.value ? `Acknowledged at ${formatTimeLabel(addEventForm.time.value)}` : "";
+  const label = addEventForm.eventType.value === "action"
+    ? `Action taken: ${addEventForm.actionType.value}`
+    : addEventForm.eventName.value.trim();
 
   history.unshift({
-    category: addEventForm.category.value,
-    color: CATEGORY_DOT[addEventForm.category.value],
-    label: addEventForm.label.value.trim(),
+    category: "other",
+    color: "dot-blue",
+    label,
     date: `${m}.${d}.${y}`,
-    note: [timeNote, note].filter(Boolean).join(" — ") || undefined,
+    note: addEventForm.note.value.trim() || undefined,
   });
 
   closeAddEventModal();
@@ -583,79 +594,11 @@ document.getElementById("cancelResetPassword").addEventListener("click", closeRe
 resetPasswordOverlay.addEventListener("click", (e) => { if (e.target === resetPasswordOverlay) closeResetPasswordModal(); });
 document.getElementById("confirmResetPassword").addEventListener("click", closeResetPasswordModal);
 
-/* ---------------- Compliance Details: Total vs Custom Range ---------------- */
-function msPerDay() { return 1000 * 60 * 60 * 24; }
+/* ---------------- Compliance: sufficient (>=70%) vs insufficient coloring ---------------- */
+document.querySelectorAll(".compliance-highlight").forEach((box) => {
+  const value = parseFloat(box.querySelector(".compliance-highlight-value")?.textContent || "0");
+  const sufficient = value >= 70;
+  box.classList.add(sufficient ? "compliance-highlight-sufficient" : "compliance-highlight-insufficient");
+  box.querySelector(".goal-progress-fill")?.classList.add(sufficient ? "fill-green" : "fill-red");
+});
 
-function recalcComplianceDetails() {
-  const toggle = document.getElementById("complianceRangeToggle");
-  const mode = toggle?.querySelector("span.active")?.dataset.range || "custom";
-  const availableEl = document.getElementById("complianceAvailableDays");
-  const recordedEl = document.getElementById("complianceRecordedDays");
-  const validEl = document.getElementById("complianceValidDays");
-  const missedEl = document.getElementById("complianceMissedDays");
-  const asrEl = document.getElementById("complianceAsrDays");
-  if (!availableEl) return;
-
-  let availableDays = 29;
-  if (mode === "custom") {
-    const start = document.getElementById("complianceRangeStart")?.value;
-    const end = document.getElementById("complianceRangeEnd")?.value;
-    if (start && end) {
-      const diff = Math.round((new Date(end) - new Date(start)) / msPerDay()) + 1;
-      if (diff > 0) availableDays = diff;
-    }
-  }
-
-  const recordedDays = Math.max(0, Math.round(availableDays * 0.69));
-  const asrDays = Math.max(0, Math.round(availableDays * 0.1));
-  const missedDays = Math.max(0, availableDays - recordedDays);
-  const validDays = Math.max(0, recordedDays - asrDays);
-
-  availableEl.textContent = availableDays;
-  recordedEl.textContent = recordedDays;
-  if (validEl) validEl.textContent = validDays;
-  missedEl.textContent = missedDays;
-  asrEl.textContent = asrDays;
-}
-
-const complianceRangeToggle = document.getElementById("complianceRangeToggle");
-const complianceRangePopover = document.getElementById("complianceRangePopover");
-
-function closeComplianceRangePopover() {
-  complianceRangePopover?.classList.remove("open");
-}
-
-function setComplianceRangeMode(mode) {
-  complianceRangeToggle?.querySelectorAll("span").forEach((s) => s.classList.toggle("active", s.dataset.range === mode));
-  recalcComplianceDetails();
-}
-
-if (complianceRangeToggle) {
-  complianceRangeToggle.querySelectorAll("span").forEach((r) => {
-    r.addEventListener("click", () => {
-      if (r.dataset.range === "custom") {
-        complianceRangePopover?.classList.toggle("open");
-        return;
-      }
-      closeComplianceRangePopover();
-      setComplianceRangeMode("total");
-    });
-  });
-
-  document.getElementById("complianceRangeApply")?.addEventListener("click", () => {
-    setComplianceRangeMode("custom");
-    closeComplianceRangePopover();
-  });
-
-  document.getElementById("complianceRangeCancel")?.addEventListener("click", () => {
-    closeComplianceRangePopover();
-  });
-
-  document.addEventListener("click", (e) => {
-    if (!complianceRangePopover?.classList.contains("open")) return;
-    if (e.target.closest("#complianceRangePopover") || e.target.closest("#complianceRangeToggle")) return;
-    closeComplianceRangePopover();
-  });
-
-  recalcComplianceDetails();
-}
