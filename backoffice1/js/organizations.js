@@ -270,24 +270,6 @@ const EHR_ENV_OPTIONS_HTML = `
 `;
 const EHR_MAX = 3;
 
-/* App Type options aren't finalized yet -- the dropdown renders empty until they're provided. */
-const EHR_APP_TYPE_OPTIONS_HTML = ``;
-
-function ehrAppTypeFieldHtml(prefix, n) {
-  return `
-    <div class="bo-modal-field">
-      <label>App Type</label>
-      <div class="bo-select" data-name="${prefix}${n}AppType">
-        <button type="button" class="bo-select-trigger">
-          <span class="bo-select-value placeholder">Choose</span>
-          <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-        </button>
-        <div class="bo-select-menu">${EHR_APP_TYPE_OPTIONS_HTML}</div>
-        <input type="hidden" name="${prefix}${n}AppType" />
-      </div>
-    </div>`;
-}
-
 function ehrConnNameFieldHtml(prefix, n) {
   return `
     <div class="bo-modal-field">
@@ -465,7 +447,6 @@ function addEhrRow() {
           <input type="hidden" name="ehr${n}Name" />
         </div>
       </div>
-      ${ehrAppTypeFieldHtml("ehr", n)}
       <div class="bo-modal-field">
         <label>Environment</label>
         <div class="bo-select" data-name="ehr${n}Env">
@@ -651,7 +632,6 @@ function addEhrConnRow(presetName) {
           <input type="hidden" name="ehrConn${n}Name" />
         </div>
       </div>
-      ${ehrAppTypeFieldHtml("ehrConn", n)}
       <div class="bo-modal-field">
         <label>Environment</label>
         <div class="bo-select" data-name="ehrConn${n}Env">

@@ -5,8 +5,6 @@
 const EHR_MAX = 3;
 const EHR_NAMES = ["Athena", "ECW", "Epic"];
 const EHR_ENVIRONMENTS = ["Sandbox", "Production"];
-/* App Type options aren't finalized yet -- the dropdown renders empty until they're provided. */
-const EHR_APP_TYPES = [];
 /* Scopes granted by the EHR (as listed on the URL the EHR/Epic sends back). */
 const EHR_SCOPES = ["openid", "fhirUser", "offline_access", "user/Patient.read", "user/Patient.write", "user/Practitioner.read", "user/PractitionerRole.read", "user/Organization.read", "user/Encounter.read", "user/RelatedPerson.read", "user/CareTeam.read", "user/CarePlan.read", "user/Goal.read", "user/Flag.read", "user/List.read", "user/AllergyIntolerance.read", "user/AllergyIntolerance.write", "user/Condition.read", "user/Condition.write", "user/Observation.read", "user/Observation.write", "user/MedicationRequest.read", "user/Medication.read", "user/MedicationDispense.read", "user/MedicationAdministration.read", "user/DocumentReference.read", "user/DocumentReference.write", "user/Binary.read"];
 
@@ -248,10 +246,6 @@ function openConnectEhrModal(index) {
           ${singleSelectHtml("ehrName", "Choose", EHR_NAMES)}
         </div>
         <div class="form-field">
-          <label>App Type</label>
-          ${singleSelectHtml("appType", "Choose", EHR_APP_TYPES)}
-        </div>
-        <div class="form-field">
           <label>Environment<span class="required-star">*</span></label>
           ${singleSelectHtml("ehrEnv", "Choose", EHR_ENVIRONMENTS)}
         </div>
@@ -284,7 +278,7 @@ function openConnectEhrModal(index) {
   card.querySelectorAll("input[type=text]").forEach((i) => i.addEventListener("input", validateConnectEhrForm));
 
   /* Auto-select from the table row; the EHR itself is fixed by the row. */
-  const [nameSelect, , envSelect] = card.querySelectorAll(".custom-select");
+  const [nameSelect, envSelect] = card.querySelectorAll(".custom-select");
   prefillSingleSelect(nameSelect, row.ehr);
   nameSelect.querySelector(".custom-select-trigger").disabled = true;
   if (row.env) prefillSingleSelect(envSelect, row.env);
