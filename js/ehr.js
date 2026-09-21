@@ -5,6 +5,8 @@
 const EHR_MAX = 3;
 const EHR_NAMES = ["Athena", "ECW", "Epic"];
 const EHR_ENVIRONMENTS = ["Sandbox", "Production"];
+/* App Type options aren't finalized yet -- the dropdown renders empty until they're provided. */
+const EHR_APP_TYPES = [];
 /* Scopes granted by the EHR (as listed on the URL the EHR/Epic sends back). */
 const EHR_SCOPES = ["openid", "fhirUser", "offline_access", "user/Patient.read", "user/Patient.write", "user/Practitioner.read", "user/PractitionerRole.read", "user/Organization.read", "user/Encounter.read", "user/RelatedPerson.read", "user/CareTeam.read", "user/CarePlan.read", "user/Goal.read", "user/Flag.read", "user/List.read", "user/AllergyIntolerance.read", "user/AllergyIntolerance.write", "user/Condition.read", "user/Condition.write", "user/Observation.read", "user/Observation.write", "user/MedicationRequest.read", "user/Medication.read", "user/MedicationDispense.read", "user/MedicationAdministration.read", "user/DocumentReference.read", "user/DocumentReference.write", "user/Binary.read"];
 
@@ -224,6 +226,13 @@ function validateConnectEhrForm() {
   const valid = ["ehrName", "ehrEnv", "clientId", "clientSecret"].every((n) => card.querySelector(`[name="${n}"]`).value.trim() !== "");
   saveConnectEhrBtn.disabled = !valid;
   saveConnectEhrBtn.classList.toggle("enabled", valid);
+  syncBaseUrlVisibility(card);
+}
+
+/* Base URL only applies to a live Production connection. */
+function syncBaseUrlVisibility(card) {
+  const env = card.querySelector('[name="ehrEnv"]').value;
+  card.querySelector("[data-base-url-field]").hidden = env !== "Production";
 }
 
 function openConnectEhrModal(index) {
@@ -239,6 +248,10 @@ function openConnectEhrModal(index) {
           ${singleSelectHtml("ehrName", "Choose", EHR_NAMES)}
         </div>
         <div class="form-field">
+          <label>App Type</label>
+          ${singleSelectHtml("appType", "Choose", EHR_APP_TYPES)}
+        </div>
+        <div class="form-field">
           <label>Environment<span class="required-star">*</span></label>
           ${singleSelectHtml("ehrEnv", "Choose", EHR_ENVIRONMENTS)}
         </div>
@@ -250,13 +263,17 @@ function openConnectEhrModal(index) {
           <label>Client Secret<span class="required-star">*</span></label>
           <input type="text" name="clientSecret" placeholder="Enter Client Secret" />
         </div>
+        <div class="form-field">
+          <label>Connection Name</label>
+          <input type="text" name="connName" placeholder="Enter Connection Name" />
+        </div>
         <div class="form-field" style="grid-column: 1 / -1;">
           <label>Scope</label>
           ${multiSelectHtml("scope", "Choose scope")}
         </div>
-        <div class="form-field" style="grid-column: 1 / -1;">
-          <label>URL</label>
-          <input type="text" name="url" placeholder="Enter URL" />
+        <div class="form-field" style="grid-column: 1 / -1;" data-base-url-field hidden>
+          <label>Base URL</label>
+          <input type="text" name="url" placeholder="Enter Base URL" />
         </div>
       </div>
     </div>`;
@@ -267,7 +284,7 @@ function openConnectEhrModal(index) {
   card.querySelectorAll("input[type=text]").forEach((i) => i.addEventListener("input", validateConnectEhrForm));
 
   /* Auto-select from the table row; the EHR itself is fixed by the row. */
-  const [nameSelect, envSelect] = card.querySelectorAll(".custom-select");
+  const [nameSelect, , envSelect] = card.querySelectorAll(".custom-select");
   prefillSingleSelect(nameSelect, row.ehr);
   nameSelect.querySelector(".custom-select-trigger").disabled = true;
   if (row.env) prefillSingleSelect(envSelect, row.env);

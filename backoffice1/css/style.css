@@ -1713,6 +1713,7 @@ label.bo-date-field { cursor: text; }
 .bo-kv-note { font-weight: 600; white-space: pre-wrap; }
 
 .bo-modal-field { display: flex; flex-direction: column; gap: 6px; }
+.bo-modal-field[hidden] { display: none; }
 
 /* Session Data / Components' Add/Edit drawers render some fields as plain
    stacked .bo-modal-field's (not inside .bo-modal-grid, which already

@@ -270,11 +270,56 @@ const EHR_ENV_OPTIONS_HTML = `
 `;
 const EHR_MAX = 3;
 
+/* App Type options aren't finalized yet -- the dropdown renders empty until they're provided. */
+const EHR_APP_TYPE_OPTIONS_HTML = ``;
+
+function ehrAppTypeFieldHtml(prefix, n) {
+  return `
+    <div class="bo-modal-field">
+      <label>App Type</label>
+      <div class="bo-select" data-name="${prefix}${n}AppType">
+        <button type="button" class="bo-select-trigger">
+          <span class="bo-select-value placeholder">Choose</span>
+          <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="bo-select-menu">${EHR_APP_TYPE_OPTIONS_HTML}</div>
+        <input type="hidden" name="${prefix}${n}AppType" />
+      </div>
+    </div>`;
+}
+
+function ehrConnNameFieldHtml(prefix, n) {
+  return `
+    <div class="bo-modal-field">
+      <label>Connection Name</label>
+      <input type="text" name="${prefix}${n}ConnName" placeholder="Enter Connection Name" />
+    </div>`;
+}
+
+function ehrBaseUrlFieldHtml(prefix, n) {
+  return `
+    <div class="bo-modal-field full" data-base-url-field hidden>
+      <label>Base URL</label>
+      <input type="text" name="${prefix}${n}Url" placeholder="Enter Base URL" />
+    </div>`;
+}
+
+/* Base URL only applies to a live Production connection -- shown/hidden as the
+   Environment select changes, driven off the "change" event setBoSelectValue fires. */
+function wireEhrBaseUrlToggle(card, prefix, n) {
+  const envInput = card.querySelector(`input[type=hidden][name="${prefix}${n}Env"]`);
+  const baseUrlField = card.querySelector("[data-base-url-field]");
+  if (!envInput || !baseUrlField) return;
+  const sync = () => { baseUrlField.hidden = envInput.value !== "Production"; };
+  envInput.addEventListener("change", sync);
+  sync();
+}
+
 /* Scopes granted by the EHR (as listed on the URL the EHR/Epic sends back). */
 const EHR_SCOPE_OPTIONS = ["openid", "fhirUser", "offline_access", "user/Patient.read", "user/Patient.write", "user/Practitioner.read", "user/PractitionerRole.read", "user/Organization.read", "user/Encounter.read", "user/RelatedPerson.read", "user/CareTeam.read", "user/CarePlan.read", "user/Goal.read", "user/Flag.read", "user/List.read", "user/AllergyIntolerance.read", "user/AllergyIntolerance.write", "user/Condition.read", "user/Condition.write", "user/Observation.read", "user/Observation.write", "user/MedicationRequest.read", "user/Medication.read", "user/MedicationDispense.read", "user/MedicationAdministration.read", "user/DocumentReference.read", "user/DocumentReference.write", "user/Binary.read"];
 const EHR_SCOPE_CHECK_ICON = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 
-function ehrScopeFieldHtml(n) {
+function ehrScopeFieldHtml(prefix, n) {
   return `
     <div class="bo-modal-field full">
       <label>Scope</label>
@@ -284,7 +329,7 @@ function ehrScopeFieldHtml(n) {
           <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
         </button>
         <div class="bo-multiselect-menu"></div>
-        <input type="hidden" name="ehr${n}Scope" />
+        <input type="hidden" name="${prefix}${n}Scope" />
       </div>
     </div>`;
 }
@@ -420,6 +465,7 @@ function addEhrRow() {
           <input type="hidden" name="ehr${n}Name" />
         </div>
       </div>
+      ${ehrAppTypeFieldHtml("ehr", n)}
       <div class="bo-modal-field">
         <label>Environment</label>
         <div class="bo-select" data-name="ehr${n}Env">
@@ -439,17 +485,16 @@ function addEhrRow() {
         <label>Client Secret</label>
         <input type="text" name="ehr${n}ClientSecret" placeholder="Enter Client Secret" />
       </div>
-      ${ehrScopeFieldHtml(n)}
-      <div class="bo-modal-field full">
-        <label>URL</label>
-        <input type="text" name="ehr${n}Url" placeholder="Enter URL" />
-      </div>
+      ${ehrConnNameFieldHtml("ehr", n)}
+      ${ehrScopeFieldHtml("ehr", n)}
+      ${ehrBaseUrlFieldHtml("ehr", n)}
     </div>
   `;
 
   ehrRowsWrap.appendChild(card);
   initBoSelects(card);
   initEhrScopes(card);
+  wireEhrBaseUrlToggle(card, "ehr", n);
 
   card.querySelector(".bo-org-row-remove").addEventListener("click", () => {
     card.remove();
@@ -461,6 +506,7 @@ function addEhrRow() {
 
 addEhrRowBtn.addEventListener("click", addEhrRow);
 initEhrScopes();
+ehrRowFields().forEach((card) => wireEhrBaseUrlToggle(card, "ehr", 1));
 
 function resetEhrRows() {
   ehrRowFields().forEach((field, i) => {
@@ -504,6 +550,7 @@ function openAddOrgModal() {
   addOrgForm.reset();
   addOrgForm.querySelectorAll(".bo-select").forEach(resetBoSelect);
   addOrgForm.querySelectorAll("[data-ehr-scope]").forEach((el) => el.clearScope());
+  addOrgForm.querySelectorAll("[data-base-url-field]").forEach((el) => { el.hidden = true; });
   resetEhrRows();
   validateAddOrgForm();
   goToAddOrgStep(1);
@@ -604,11 +651,23 @@ function addEhrConnRow(presetName) {
           <input type="hidden" name="ehrConn${n}Name" />
         </div>
       </div>
+      ${ehrAppTypeFieldHtml("ehrConn", n)}
+      <div class="bo-modal-field">
+        <label>Environment</label>
+        <div class="bo-select" data-name="ehrConn${n}Env">
+          <button type="button" class="bo-select-trigger">
+            <span class="bo-select-value placeholder">Choose</span>
+            <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="bo-select-menu">${EHR_ENV_OPTIONS_HTML}</div>
+          <input type="hidden" name="ehrConn${n}Env" />
+        </div>
+      </div>
       <div class="bo-modal-field">
         <label>Client Id</label>
         <input type="text" name="ehrConn${n}ClientId" placeholder="Enter Client ID" />
       </div>
-      <div class="bo-modal-field full">
+      <div class="bo-modal-field">
         <label>Client Secret</label>
         <input type="text" name="ehrConn${n}ClientSecret" placeholder="Enter Client Secret" />
       </div>
@@ -616,11 +675,15 @@ function addEhrConnRow(presetName) {
         <label>Connection Name</label>
         <input type="text" name="ehrConn${n}ConnName" placeholder="Enter Connection Name" />
       </div>
+      ${ehrScopeFieldHtml("ehrConn", n)}
+      ${ehrBaseUrlFieldHtml("ehrConn", n)}
     </div>
   `;
 
   ehrConnRowsWrap.appendChild(card);
   initBoSelects(card);
+  initEhrScopes(card);
+  wireEhrBaseUrlToggle(card, "ehrConn", n);
 
   if (presetName) {
     setBoSelectValue(card.querySelector(`.bo-select[data-name="ehrConn${n}Name"]`), presetName, { silent: true });
