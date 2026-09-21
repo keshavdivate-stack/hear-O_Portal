@@ -270,6 +270,96 @@ const EHR_ENV_OPTIONS_HTML = `
 `;
 const EHR_MAX = 3;
 
+/* Scopes granted by the EHR (as listed on the URL the EHR/Epic sends back). */
+const EHR_SCOPE_OPTIONS = ["patient/*.read", "patient/*.write", "user/*.read", "user/*.write", "launch", "openid", "fhirUser", "offline_access"];
+const EHR_SCOPE_CHECK_ICON = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+
+function ehrScopeFieldHtml(n) {
+  return `
+    <div class="bo-modal-field full">
+      <label>Scope</label>
+      <div class="bo-multiselect" data-ehr-scope>
+        <button type="button" class="bo-multiselect-trigger">
+          <span class="bo-multiselect-value placeholder">Choose scope</span>
+          <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="bo-multiselect-menu"></div>
+        <input type="hidden" name="ehr${n}Scope" />
+      </div>
+    </div>`;
+}
+
+function positionEhrScopeMenu(container) {
+  const rect = container.querySelector(".bo-multiselect-trigger").getBoundingClientRect();
+  const menu = container.querySelector(".bo-multiselect-menu");
+  const menuHeight = Math.min(menu.scrollHeight, 260) + 12;
+  const openUpward = window.innerHeight - rect.bottom < menuHeight && rect.top > menuHeight;
+
+  menu.style.position = "fixed";
+  menu.style.left = `${rect.left}px`;
+  menu.style.width = `${rect.width}px`;
+  menu.style.top = openUpward ? "auto" : `${rect.bottom + 6}px`;
+  menu.style.bottom = openUpward ? `${window.innerHeight - rect.top + 6}px` : "auto";
+}
+
+function closeAllEhrScopes() {
+  document.querySelectorAll(".bo-multiselect.open").forEach((el) => el.classList.remove("open"));
+}
+
+function initEhrScopes(root = document) {
+  root.querySelectorAll("[data-ehr-scope]").forEach((container) => {
+    const trigger = container.querySelector(".bo-multiselect-trigger");
+    const valueEl = container.querySelector(".bo-multiselect-value");
+    const menu = container.querySelector(".bo-multiselect-menu");
+    const hidden = container.querySelector("input[type=hidden]");
+    const placeholderText = valueEl.textContent.trim();
+    const selected = new Set();
+
+    function render() {
+      menu.innerHTML = EHR_SCOPE_OPTIONS.map(
+        (v) => `<label class="bo-multiselect-option${selected.has(v) ? " checked" : ""}" data-value="${v}">
+          <span class="bo-multiselect-checkbox">${EHR_SCOPE_CHECK_ICON}</span> ${v}
+        </label>`
+      ).join("");
+      const chosen = EHR_SCOPE_OPTIONS.filter((v) => selected.has(v));
+      valueEl.textContent = chosen.length ? chosen.join(", ") : placeholderText;
+      valueEl.classList.toggle("placeholder", chosen.length === 0);
+      hidden.value = chosen.join(",");
+    }
+
+    trigger.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const willOpen = !container.classList.contains("open");
+      closeAllEhrScopes();
+      closeAllBoSelects();
+      if (willOpen) {
+        positionEhrScopeMenu(container);
+        container.classList.add("open");
+      }
+    });
+
+    menu.addEventListener("click", (e) => {
+      const option = e.target.closest(".bo-multiselect-option");
+      if (!option) return;
+      e.stopPropagation();
+      const v = option.dataset.value;
+      if (selected.has(v)) selected.delete(v);
+      else selected.add(v);
+      render();
+      positionEhrScopeMenu(container);
+    });
+
+    container.clearScope = () => { selected.clear(); render(); };
+    render();
+  });
+}
+
+document.addEventListener("click", (e) => {
+  if (!e.target.closest(".bo-multiselect")) closeAllEhrScopes();
+});
+document.addEventListener("scroll", closeAllEhrScopes, true);
+window.addEventListener("resize", closeAllEhrScopes);
+
 const ehrRowsWrap = document.getElementById("ehrRowsWrap");
 const addEhrRowBtn = document.getElementById("addEhrRowBtn");
 let ehrRowCount = 1;
@@ -335,15 +425,17 @@ function addEhrRow() {
         <label>Client Secret</label>
         <input type="text" name="ehr${n}ClientSecret" placeholder="Enter Client Secret" />
       </div>
+      ${ehrScopeFieldHtml(n)}
       <div class="bo-modal-field full">
-        <label>Connection Name</label>
-        <input type="text" name="ehr${n}ConnName" placeholder="Enter Connection Name" />
+        <label>URL</label>
+        <input type="text" name="ehr${n}Url" placeholder="Enter URL" />
       </div>
     </div>
   `;
 
   ehrRowsWrap.appendChild(card);
   initBoSelects(card);
+  initEhrScopes(card);
 
   card.querySelector(".bo-org-row-remove").addEventListener("click", () => {
     card.remove();
@@ -354,6 +446,7 @@ function addEhrRow() {
 }
 
 addEhrRowBtn.addEventListener("click", addEhrRow);
+initEhrScopes();
 
 function resetEhrRows() {
   ehrRowFields().forEach((field, i) => {
@@ -396,6 +489,7 @@ function goToAddOrgStep(step) {
 function openAddOrgModal() {
   addOrgForm.reset();
   addOrgForm.querySelectorAll(".bo-select").forEach(resetBoSelect);
+  addOrgForm.querySelectorAll("[data-ehr-scope]").forEach((el) => el.clearScope());
   resetEhrRows();
   validateAddOrgForm();
   goToAddOrgStep(1);
