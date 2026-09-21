@@ -61,7 +61,9 @@ ehrListRows.addEventListener("click", (e) => {
 function positionMenu(container, menuSel, triggerSel, maxH) {
   const rect = container.querySelector(triggerSel).getBoundingClientRect();
   const menu = container.querySelector(menuSel);
-  const menuHeight = Math.min(menu.scrollHeight, maxH) + 12;
+  /* The menu is still display:none here (its "open" class hasn't been added
+     yet), so scrollHeight would read 0 -- use the caller-supplied cap instead. */
+  const menuHeight = maxH + 12;
   const openUpward = window.innerHeight - rect.bottom < menuHeight && rect.top > menuHeight;
 
   menu.style.position = "fixed";
@@ -78,7 +80,9 @@ function closeAllEhrDropdowns() {
 document.addEventListener("click", (e) => {
   if (!e.target.closest(".custom-select, .ehr-multiselect")) closeAllEhrDropdowns();
 });
-document.addEventListener("scroll", closeAllEhrDropdowns, true);
+/* Ignore scrolls inside the menu itself -- otherwise scrolling its own
+   option list bubbles up (in the capture phase) and closes the dropdown. */
+document.addEventListener("scroll", (e) => { if (!e.target.closest?.(".custom-select, .ehr-multiselect")) closeAllEhrDropdowns(); }, true);
 window.addEventListener("resize", closeAllEhrDropdowns);
 
 function singleSelectHtml(name, placeholder, values) {
@@ -169,14 +173,14 @@ function wireMultiSelect(container, values, onChange) {
     if (removeBtn) {
       selected.delete(removeBtn.dataset.remove);
       render();
-      if (container.classList.contains("open")) positionMenu(container, ".ehr-multiselect-menu", ".ehr-multiselect-trigger", 240);
+      if (container.classList.contains("open")) positionMenu(container, ".ehr-multiselect-menu", ".ehr-multiselect-trigger", 174);
       onChange();
       return;
     }
     const willOpen = !container.classList.contains("open");
     closeAllEhrDropdowns();
     if (willOpen) {
-      positionMenu(container, ".ehr-multiselect-menu", ".ehr-multiselect-trigger", 240);
+      positionMenu(container, ".ehr-multiselect-menu", ".ehr-multiselect-trigger", 174);
       container.classList.add("open");
     }
   });
@@ -190,7 +194,7 @@ function wireMultiSelect(container, values, onChange) {
     if (selected.has(v)) selected.delete(v);
     else selected.add(v);
     render();
-    positionMenu(container, ".ehr-multiselect-menu", ".ehr-multiselect-trigger", 240);
+    positionMenu(container, ".ehr-multiselect-menu", ".ehr-multiselect-trigger", 174);
     onChange();
   });
 

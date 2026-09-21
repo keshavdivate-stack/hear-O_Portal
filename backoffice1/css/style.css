@@ -2195,7 +2195,7 @@ a.bo-btn-secondary { text-decoration: none; }
   border-radius: 10px;
   box-shadow: 0 14px 34px rgba(20, 30, 50, 0.18);
   padding: 6px;
-  max-height: 260px;
+  max-height: 174px;
   overflow-y: auto;
   z-index: 420;
 }

@@ -253,7 +253,10 @@ function initBoSelects(root = document) {
 }
 
 document.addEventListener("click", closeAllBoSelects);
-document.addEventListener("scroll", closeAllBoSelects, true);
+/* Capturing so a scroll of the page (which the menu, positioned fixed, would
+   otherwise drift away from) closes it -- but ignore scrolls that happen
+   inside the menu itself, i.e. someone scrolling its own option list. */
+document.addEventListener("scroll", (e) => { if (!e.target.closest?.(".bo-select")) closeAllBoSelects(); }, true);
 window.addEventListener("resize", closeAllBoSelects);
 
 initBoSelects();
@@ -316,10 +319,13 @@ function ehrScopeFieldHtml(prefix, n) {
     </div>`;
 }
 
+/* Menu is still display:none at this point (its "open" class hasn't been added
+   yet), so scrollHeight would read 0 -- use the CSS max-height instead. */
+const BO_SCOPE_MENU_MAX_HEIGHT = 174;
 function positionEhrScopeMenu(container) {
   const rect = container.querySelector(".bo-multiselect-trigger").getBoundingClientRect();
   const menu = container.querySelector(".bo-multiselect-menu");
-  const menuHeight = Math.min(menu.scrollHeight, 260) + 12;
+  const menuHeight = BO_SCOPE_MENU_MAX_HEIGHT + 12;
   const openUpward = window.innerHeight - rect.bottom < menuHeight && rect.top > menuHeight;
 
   menu.style.position = "fixed";
@@ -398,7 +404,9 @@ function initEhrScopes(root = document) {
 document.addEventListener("click", (e) => {
   if (!e.target.closest(".bo-multiselect")) closeAllEhrScopes();
 });
-document.addEventListener("scroll", closeAllEhrScopes, true);
+/* Ignore scrolls inside the menu itself -- otherwise scrolling its own
+   option list bubbles up (in the capture phase) and closes the dropdown. */
+document.addEventListener("scroll", (e) => { if (!e.target.closest?.(".bo-multiselect")) closeAllEhrScopes(); }, true);
 window.addEventListener("resize", closeAllEhrScopes);
 
 const ehrRowsWrap = document.getElementById("ehrRowsWrap");
