@@ -9,13 +9,13 @@
   --green: #3FBE84;
   --green-light: #E9FBF3;
   --red: #F16C6C;
-  --red-light: #FDE7E5;
+  --red-light: #FDEDED;
   --navy: #1F3C73;
   --navy-light: #EAEEF7;
   --orange: #F2994A;
-  --orange-light: #FEEBD3;
+  --orange-light: #FEEDDC;
   --yellow: #D9A404;
-  --yellow-light: #FDF6E0;
+  --yellow-light: #FEF8DC;
   --cyan: #7FD3EE;
   --cyan-light: #EAF9FD;
   --purple: #9B7FE8;
@@ -32,7 +32,7 @@
   --green-text: #15803D;
   --red-text: #D92D20;
   --orange-text: #C25E00;
-  --yellow-text: #7A5900;
+  --yellow-text: #7A5F00;
   --purple-text: #6438C2;
   --bg: #F4F7FA;
   --ink: #1B2430;
@@ -3844,8 +3844,8 @@ a.bo-health-card:hover { border-color: var(--field-border); }
 
 .bo-severity-pill .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
 .bo-severity-pill.critical { background: var(--red-light); color: var(--red-text); }
-.bo-severity-pill.high { background: var(--red-light); color: var(--red-text); }
-.bo-severity-pill.medium { background: var(--orange-light); color: var(--orange-text); }
+.bo-severity-pill.high { background: var(--orange-light); color: var(--orange-text); }
+.bo-severity-pill.medium { background: var(--yellow-light); color: var(--yellow-text); }
 .bo-severity-pill.low { background: var(--bg); color: var(--gray-text); }
 .bo-severity-pill.warning { background: var(--orange-light); color: var(--orange-text); }
 .bo-severity-pill.healthy { background: var(--green-light); color: var(--green-text); }
@@ -4540,8 +4540,8 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
   border-radius: 6px;
 }
 .bo-pill-severity-critical { background: var(--red-light); color: var(--red-text); }
-.bo-pill-severity-high { background: var(--red-light); color: var(--red-text); }
-.bo-pill-severity-medium { background: var(--orange-light); color: var(--orange-text); }
+.bo-pill-severity-high { background: var(--orange-light); color: var(--orange-text); }
+.bo-pill-severity-medium { background: var(--yellow-light); color: var(--yellow-text); }
 .bo-pill-severity-low { background: var(--bg); color: var(--gray-text); }
 
 .bo-pill-origin-system { background: var(--navy-light); color: var(--navy); }
@@ -4909,8 +4909,8 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
   border-radius: 6px;
 }
 .bo-pill-sev1 { background: var(--red); color: #fff; }
-.bo-pill-sev2 { background: var(--red-light); color: var(--red-text); }
-.bo-pill-sev3 { background: var(--orange-light); color: var(--orange-text); }
+.bo-pill-sev2 { background: var(--orange-light); color: var(--orange-text); }
+.bo-pill-sev3 { background: var(--yellow-light); color: var(--yellow-text); }
 .bo-pill-sev4 { background: var(--bg); color: var(--gray-text); }
 
 /* Incident lifecycle status — distinct from Ticket statuses (Open/In

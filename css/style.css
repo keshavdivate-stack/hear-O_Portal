@@ -24,7 +24,7 @@
   --green-text: #15803D;
   --red-text: #D92D20;
   --orange-text: #C25E00;
-  --yellow-text: #7A5900;
+  --yellow-text: #7A5F00;
   --purple-text: #6438C2;
 }
 
@@ -6777,8 +6777,8 @@ body.patient-discontinued #chatOpenBtn {
   border-radius: 6px;
 }
 .ticket-pill-severity-critical { background: var(--red-light); color: var(--red-text); }
-.ticket-pill-severity-high { background: var(--red-light); color: var(--red-text); }
-.ticket-pill-severity-medium { background: #FDF3E7; color: var(--orange-text); }
+.ticket-pill-severity-high { background: #FEEDDC; color: var(--orange-text); }
+.ticket-pill-severity-medium { background: #FEF8DC; color: var(--yellow-text); }
 .ticket-pill-severity-low { background: #F1F3F5; color: var(--gray-text); }
 
 /* Lifecycle state -- plain colored text, no pill/dot. */

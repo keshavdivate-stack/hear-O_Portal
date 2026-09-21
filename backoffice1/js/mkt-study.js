@@ -246,8 +246,12 @@ function renderForOrg(orgIds) {
   };
   renderMktBins(activeMktBinsTab);
 
-  document.getElementById("mktSitesEnrolled").textContent = isAll ? mktStudyHeadBase.sites : orgIds.length;
-  document.getElementById("mktNeedAttention").textContent = mktScale(mktStudyHeadBase.needAttention, seed + 5, 0.5);
+  // These two counters are no longer on the page; skip them rather than throw,
+  // since a throw here aborts the script before the Organisation Type filter is drawn.
+  const sitesEl = document.getElementById("mktSitesEnrolled");
+  if (sitesEl) sitesEl.textContent = isAll ? mktStudyHeadBase.sites : orgIds.length;
+  const attentionEl = document.getElementById("mktNeedAttention");
+  if (attentionEl) attentionEl.textContent = mktScale(mktStudyHeadBase.needAttention, seed + 5, 0.5);
 }
 
 const mktStudyOrgSelectApi = mktRenderOrgSelect("mktStudyOrgSelect", renderForOrg);

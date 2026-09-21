@@ -1,5 +1,5 @@
 /* ---------------- Color lookups ---------------- */
-const priorityColor = { Critical: "var(--red)", High: "var(--red)", Medium: "var(--orange)", Low: "var(--gray)" };
+const priorityColor = { Critical: "var(--red)", High: "var(--orange)", Medium: "var(--yellow)", Low: "var(--gray)" };
 const statusColor = { Open: "var(--orange)", "In Progress": "var(--orange)", Escalated: "var(--red)", Resolved: "var(--green)" };
 const typeColor = { Patient: "var(--cyan)", Clinic: "var(--purple)", System: "var(--navy)", Backoffice: "var(--orange)" };
 
