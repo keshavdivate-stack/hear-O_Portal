@@ -15,7 +15,7 @@ const users = Array.from({ length: 32 }, (_, i) => {
     dateCreated: "02/08/2026",
     mfa: i % 5 === 0 ? "On" : "Off",
     blocked: i % 11 === 0 ? "Yes" : "No",
-    ehrInvite: i % 3 === 0 ? "Sent" : "Not Sent",
+    ehrInvite: i % 3 === 0 ? "Connected" : "Disconnected",
   };
 });
 
@@ -93,7 +93,7 @@ function renderUsers() {
         <td>${u.dateCreated}</td>
         <td>${u.mfa}</td>
         <td>${u.blocked}</td>
-        <td><span class="ehr-pill ${u.ehrInvite === "Sent" ? "ehr-pill-sent" : "ehr-pill-notsent"}">${u.ehrInvite}</span></td>
+        <td><span class="ehr-pill ${u.ehrInvite === "Connected" ? "ehr-pill-sent" : "ehr-pill-notsent"}">${u.ehrInvite}</span></td>
         <td>
           <button class="action-icon kebab row-menu-trigger" data-id="${u.id}" aria-label="Row actions">${kebabIcon}</button>
         </td>
@@ -149,7 +149,7 @@ document.getElementById("usersRows").addEventListener("click", (e) => {
   e.stopPropagation();
   activeRowUserId = Number(trigger.dataset.id);
   const user = users.find((u) => u.id === activeRowUserId);
-  if (user && user.ehrInvite === "Sent") {
+  if (user && user.ehrInvite === "Connected") {
     rowMenuInviteItem.textContent = "Reauthenticate Your EHR";
     rowMenuInviteItem.dataset.action = "reauthenticate";
   } else {
@@ -332,7 +332,7 @@ ehrInviteOverlay.addEventListener("click", (e) => { if (e.target === ehrInviteOv
 sendEhrInviteBtn.addEventListener("click", () => {
   if (sendEhrInviteBtn.disabled) return;
   if (selectedUserIds.size) {
-    users.forEach((u) => { if (selectedUserIds.has(u.id)) u.ehrInvite = "Sent"; });
+    users.forEach((u) => { if (selectedUserIds.has(u.id)) u.ehrInvite = "Connected"; });
     selectedUserIds.clear();
     renderUsers();
   }
