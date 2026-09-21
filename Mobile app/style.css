@@ -4952,3 +4952,17 @@ input[type="password"]:focus {
 /* Font Size: keep the Apply button clear of the last option card. */
 .fontsize-body { display: flex; flex-direction: column; }
 .fontsize-body .settime-save-wrap { margin-top: auto; padding-top: 28px; }
+
+/* Onboarding illustrations (SVG artwork from Figma) */
+.onboarding-illustration-img { display: block; width: 100%; max-height: 100%; height: auto; object-fit: contain; }
+.onb-phone-wrap { position: relative; width: 100%; }
+.onb-phone-wrap .onboarding-illustration-img { width: 100%; }
+.onb-badge { position: absolute; top: 85%; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transform: translate(-50%, -50%); }
+.onb-badge--no { left: 26%; background: #b7c0c8; }
+.onb-badge--yes { left: 69%; background: #00c896; }
+
+/* Chat: send button, shown once a message has been typed */
+.chat-input-bar { gap: 12px; }
+.chat-send-btn { flex-shrink: 0; width: 56px; height: 56px; border: none; border-radius: 50%; background: #186DCE; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+.chat-send-btn:active { background: #13579f; }
+.chat-send-btn[hidden] { display: none; }
