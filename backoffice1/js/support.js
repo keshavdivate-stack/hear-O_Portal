@@ -272,6 +272,18 @@ function updateNewTicketPriorityLevelState() {
    an org is selected, otherwise the full known patient list. */
 const NEW_TICKET_PATIENT_IDS = Array.from(new Set(patientTickets.map((t) => t.patientId))).sort();
 
+/* The label is always "Create For" now -- only the placeholder tells the
+   agent whether they're picking a patient or a clinic staff member, so it
+   has to be updated by hand (the bo-select plumbing only captures a
+   placeholder once, at page load). */
+function updateNewTicketWhoPlaceholder(sourceValue) {
+  const placeholder = sourceValue === "Clinic" ? "Select Clinic member" : "Select Patient";
+  const valueEl = newTicketOverlay.querySelector('.bo-select[data-name="ticketWho"] .bo-select-value');
+  valueEl.dataset.placeholder = placeholder;
+  valueEl.textContent = placeholder;
+  valueEl.classList.add("placeholder");
+}
+
 function renderNewTicketWhoOptions() {
   const sourceValue = newTicketOverlay.querySelector('.bo-select[data-name="source"] input[type=hidden]').value || "Patient";
   const orgValue = newTicketForm.organization.value;
@@ -362,7 +374,7 @@ function openNewTicketDrawer() {
   newTicketForm.reset();
   newTicketOverlay.querySelectorAll(".bo-select").forEach(resetBoSelect);
   setBoSelectValue(newTicketOverlay.querySelector('.bo-select[data-name="source"]'), "Patient", { silent: true });
-  document.getElementById("newTicketWhoLabel").textContent = "Username";
+  updateNewTicketWhoPlaceholder("Patient");
   renderNewTicketWhoOptions();
   updateNewTicketPriorityLevelState();
   validateNewTicketForm();
@@ -379,7 +391,7 @@ document.getElementById("cancelNewTicket").addEventListener("click", closeNewTic
 newTicketOverlay.addEventListener("click", (e) => { if (e.target === newTicketOverlay) closeNewTicketDrawer(); });
 
 newTicketOverlay.querySelector('.bo-select[data-name="source"] input[type=hidden]').addEventListener("change", (e) => {
-  document.getElementById("newTicketWhoLabel").textContent = e.target.value === "Clinic" ? "Clinic User" : "Username";
+  updateNewTicketWhoPlaceholder(e.target.value);
   resetBoSelect(newTicketOverlay.querySelector('.bo-select[data-name="ticketWho"]'));
   renderNewTicketWhoOptions();
 });
