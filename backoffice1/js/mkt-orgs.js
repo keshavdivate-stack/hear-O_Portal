@@ -42,11 +42,6 @@ function mktRenderOrgTypeSelect(elId, onChange) {
       const checked = selected === t.id;
       return `
         <label class="mkt-org-ms-item${checked ? " checked" : ""}" data-id="${t.id}">
-          <span class="mkt-org-ms-check">${
-            checked
-              ? '<svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l3 3 5-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>'
-              : ""
-          }</span>
           <span class="mkt-org-ms-name">${t.name}</span>
         </label>`;
     }).join("");
