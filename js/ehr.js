@@ -23,8 +23,6 @@ const ehrs = [
 
 /* ---------------- List ---------------- */
 const ehrListRows = document.getElementById("ehrListRows");
-const ehrConnectedCount = document.getElementById("ehrConnectedCount");
-const ehrConnectedHint = document.getElementById("ehrConnectedHint");
 const ehrRangeLabel = document.getElementById("ehrRangeLabel");
 
 function escapeHtml(s) {
@@ -32,8 +30,6 @@ function escapeHtml(s) {
 }
 
 function renderConnections() {
-  ehrConnectedCount.textContent = ehrs.filter((e) => e.connected).length;
-  ehrConnectedHint.textContent = `of ${ehrs.length}`;
   ehrRangeLabel.textContent = `1-${ehrs.length} of ${ehrs.length}`;
 
   ehrListRows.innerHTML = ehrs
