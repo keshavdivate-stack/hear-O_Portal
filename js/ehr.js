@@ -42,7 +42,7 @@ function renderConnections() {
         <td>${c.clientId ? escapeHtml(c.clientId) : "—"}</td>
         <td>${c.scope.length ? escapeHtml(c.scope.join(", ")) : "—"}</td>
         <td><span class="ehr-status-pill${c.connected ? "" : " off"}">${c.connected ? "Connected" : "Not Connected"}</span></td>
-        <td><a class="ticket-view-link" href="#" data-${c.connected ? "disconnect" : "connect"}="${i}">${c.connected ? "Disconnect" : "Connect"}</a></td>
+        <td class="td-action"><a class="ticket-view-link" href="#" data-${c.connected ? "disconnect" : "connect"}="${i}">${c.connected ? "Disconnect" : "Connect"}</a></td>
       </tr>`
     )
     .join("");

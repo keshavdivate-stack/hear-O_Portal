@@ -1180,6 +1180,7 @@ button, input, select, textarea, optgroup {
 .list-table thead th svg { vertical-align: -2px; margin-right: 6px; }
 
 .list-table thead th.th-action { text-align: right; }
+.list-table tbody td.td-action { text-align: right; }
 
 .list-table tbody td {
   padding: 16px 18px;
