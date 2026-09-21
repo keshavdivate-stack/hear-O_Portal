@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/Mobile%20app/style.css?v=30">
+<link rel="stylesheet" href="/Mobile%20app/style.css?v=35">
 <script src="/Mobile%20app/font-scale.js?v=29"></script>
 </head>
 <body>
@@ -42,23 +42,11 @@
       <p class="onboarding-text">Hold the phone in a way that doesn't block the microphone</p>
 
       <div class="onboarding-illustration">
-        <svg width="240" height="220" viewBox="0 0 240 220" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <ellipse cx="120" cy="115" rx="118" ry="100" fill="#eceef1"/>
-          <g>
-            <path d="M40 190 Q40 130 65 100 Q78 85 78 150 L78 195 Z" fill="#e8b382"/>
-            <rect x="52" y="85" width="46" height="88" rx="10" fill="#186DCE" stroke="#1c1c1c" stroke-width="2"/>
-            <rect x="58" y="95" width="34" height="60" rx="2" fill="#dce8ff"/>
-          </g>
-          <g>
-            <path d="M200 190 Q200 130 175 95 Q158 75 162 150 L165 195 Z" fill="#e8b382"/>
-            <rect x="142" y="70" width="46" height="88" rx="10" fill="#186DCE" stroke="#1c1c1c" stroke-width="2"/>
-            <rect x="148" y="80" width="34" height="60" rx="2" fill="#dce8ff"/>
-          </g>
-          <circle cx="82" cy="188" r="14" fill="#c7cbd1"/>
-          <path d="M76 188L81 193L89 183" stroke="#7a7f87" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          <circle cx="172" cy="188" r="14" fill="#2AC19E"/>
-          <path d="M166 188L171 193L179 183" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
+        <div class="onb-phone-wrap">
+          <img class="onboarding-illustration-img" src="/img/Phone.svg" alt="Holding the phone without blocking the microphone">
+          <span class="onb-badge onb-badge--no"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><path d="M6 6L18 18M6 18L18 6"/></svg></span>
+          <span class="onb-badge onb-badge--yes"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7"/></svg></span>
+        </div>
       </div>
 
       <div class="onboarding-nav">

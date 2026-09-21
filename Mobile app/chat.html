@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/Mobile%20app/style.css?v=30">
+<link rel="stylesheet" href="/Mobile%20app/style.css?v=36">
 <script src="/Mobile%20app/font-scale.js?v=29"></script>
 </head>
 <body>
@@ -74,7 +74,10 @@
     </div>
 
     <div class="chat-input-bar" id="chatInputBar">
-      <input type="text" id="chatInput" placeholder="Type a message ...">
+      <input type="text" id="chatInput" placeholder="Type a message ..." autocomplete="off">
+        <button type="button" class="chat-send-btn" id="chatSendBtn" aria-label="Send message" hidden>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2L15 22L11 13L2 9L22 2Z"/></svg>
+        </button>
     </div>
     <div class="chat-disabled-note" id="chatDisabledNote" hidden>
       Only the clinic can initiate a conversation. You currently have no messages you can reply to
@@ -89,12 +92,22 @@
     const chatBody = document.getElementById("chatBody");
     const wrap = document.createElement("div");
     wrap.className = "chat-message-group chat-message-group--outgoing";
-    wrap.innerHTML = `<div class="chat-bubble outgoing"></div>`;
-    wrap.querySelector(".chat-bubble").textContent = text;
+    wrap.innerHTML = `<div class="chat-bubble outgoing"><span class="chat-bubble-text"></span><span class="chat-bubble-time"></span></div>`;
+    wrap.querySelector(".chat-bubble-text").textContent = text;
+    wrap.querySelector(".chat-bubble-time").textContent = new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
     chatBody.appendChild(wrap);
     chatBody.scrollTop = chatBody.scrollHeight;
     input.value = "";
+    updateSendButton();
+    input.focus();
   }
+
+  // The send button only appears once there is something to send.
+  function updateSendButton() {
+    document.getElementById("chatSendBtn").hidden = !document.getElementById("chatInput").value.trim();
+  }
+  document.getElementById("chatInput").addEventListener("input", updateSendButton);
+  document.getElementById("chatSendBtn").addEventListener("click", sendMessage);
 
   document.getElementById("chatInput").addEventListener("keydown", (e) => {
     if (e.key === "Enter") sendMessage();
