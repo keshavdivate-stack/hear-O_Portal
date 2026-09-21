@@ -160,7 +160,7 @@ const ticketPager = boCreatePager(
       <td>${tierPill(t.tier)}</td>
       <td>${priorityPill(t.priority)}</td>
       <td>${statusPill(t.status)}</td>
-      <td>${t.assignedTo ? agentLabel(t.assignedTo) : "&mdash;"}</td>
+      <td>${t.assignedTo || "&mdash;"}</td>
       <td>${t.createdDate}</td>
       <td>
         <div class="bo-row-actions">
@@ -362,7 +362,7 @@ function openNewTicketDrawer() {
   newTicketForm.reset();
   newTicketOverlay.querySelectorAll(".bo-select").forEach(resetBoSelect);
   setBoSelectValue(newTicketOverlay.querySelector('.bo-select[data-name="source"]'), "Patient", { silent: true });
-  document.getElementById("newTicketWhoLabel").textContent = "User ID";
+  document.getElementById("newTicketWhoLabel").textContent = "Username";
   renderNewTicketWhoOptions();
   updateNewTicketPriorityLevelState();
   validateNewTicketForm();
@@ -379,7 +379,7 @@ document.getElementById("cancelNewTicket").addEventListener("click", closeNewTic
 newTicketOverlay.addEventListener("click", (e) => { if (e.target === newTicketOverlay) closeNewTicketDrawer(); });
 
 newTicketOverlay.querySelector('.bo-select[data-name="source"] input[type=hidden]').addEventListener("change", (e) => {
-  document.getElementById("newTicketWhoLabel").textContent = e.target.value === "Clinic" ? "Raised By" : "User ID";
+  document.getElementById("newTicketWhoLabel").textContent = e.target.value === "Clinic" ? "Clinic User" : "Username";
   resetBoSelect(newTicketOverlay.querySelector('.bo-select[data-name="ticketWho"]'));
   renderNewTicketWhoOptions();
 });
@@ -416,7 +416,7 @@ newTicketForm.addEventListener("submit", (e) => {
       scope: ISSUE_TYPE_SCOPE[issueType] || "Patient",
       tier,
       priority,
-      origin: "User Created",
+      origin: "Clinic",
       status: "Open",
       createdDate,
       description: newTicketForm.description.value.trim(),
@@ -438,7 +438,7 @@ newTicketForm.addEventListener("submit", (e) => {
       scope: ISSUE_TYPE_SCOPE[issueType] || "Patient",
       tier,
       priority,
-      origin: "User Created",
+      origin: "Patient",
       status: "Open",
       createdDate,
       description: newTicketForm.description.value.trim(),

@@ -27,8 +27,6 @@ function getTicketIdFromUrl() {
 
 const ticket = ticketList.find((t) => t.id === getTicketIdFromUrl());
 const ticketDetailBody = document.getElementById("ticketDetailBody");
-const ticketDetailActions = document.getElementById("ticketDetailActions");
-const saveTicketDetailBtn = document.getElementById("saveTicketDetailBtn");
 
 /* The Back arrow returns to wherever the user actually came from instead of
    always landing on the Tickets tab. When the referring page is part of this
@@ -59,7 +57,6 @@ if (!ticket) {
 } else {
   ensureTicketHistory(ticket);
   deriveDefaultTier(ticket);
-  ticketDetailActions.hidden = false;
 
   function renderHeader() {
     document.getElementById("ticketDetailTitle").textContent = ticket.ticketId;
@@ -106,14 +103,52 @@ if (!ticket) {
     const orgFieldVisible = !document.getElementById("ticketDetailOrgField").hidden;
     const orgFilled = !orgFieldVisible || document.querySelector('.custom-select[data-name="ticketOrgHandling"] input[type=hidden]').value !== "";
     const assigneeFilled = status === "Resolved" || document.querySelector('.custom-select[data-name="ticketAssignedTo"] input[type=hidden]').value !== "";
+    const saveTicketDetailBtn = document.getElementById("saveTicketDetailBtn");
     saveTicketDetailBtn.disabled = !assigneeFilled || !orgFilled;
     saveTicketDetailBtn.classList.toggle("enabled", !saveTicketDetailBtn.disabled);
+  }
+
+  /* Handling is read-only on the page itself; the Edit button opens the
+     popup below, which holds the actual form and its Save button. The popup
+     is a sibling of the card (not a child) so the card's own h2 styling
+     doesn't leak into the modal title. */
+  function escapeHandlingText(text) {
+    return String(text).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+
+  function handlingSummaryFields() {
+    const resolved = ticket.state === "Resolved";
+    const tierAgents = TIER_AGENTS[ticket.tier] || SUPPORT_TEAM_MEMBERS;
+    const assignee = tierAgents.includes(ticket.assignedTo) ? ticket.assignedTo : defaultAssigneeForTier(ticket.tier);
+    const fields = [`<div class="ticket-detail-field"><label>Status</label><span class="ticket-pill ${stateCellClass(ticket.state)}">${ticket.state}</span></div>`];
+    if (!resolved) {
+      fields.push(`<div class="ticket-detail-field"><label>Level</label><span>${ticket.tier || "&mdash;"}</span></div>`);
+      fields.push(`<div class="ticket-detail-field"><label>Severity</label><span class="ticket-pill ${severityCellClass(ticket.severity)}">${ticket.severity}</span></div>`);
+      if (ticket.tier === "Level 3") {
+        fields.push(`<div class="ticket-detail-field"><label>Organization</label><span>${ticket.organization || "&mdash;"}</span></div>`);
+      }
+      fields.push(`<div class="ticket-detail-field"><label>Assigned To</label><span>${assignee || "&mdash;"}</span></div>`);
+    }
+    fields.push(`<div class="ticket-detail-field ticket-handling-note"><label>Note</label><span>${ticket.rootCause ? escapeHandlingText(ticket.rootCause) : "&mdash;"}</span></div>`);
+    return fields.join("");
   }
 
   function handlingMarkup() {
     return `
       <div class="ticket-detail-card">
-        <h2>Handling</h2>
+        <div class="ticket-handling-head">
+          <h2>Handling</h2>
+          <button type="button" class="btn-secondary" id="editTicketHandlingBtn">Edit</button>
+        </div>
+        <div class="ticket-detail-grid">${handlingSummaryFields()}</div>
+      </div>
+
+      <div class="modal-overlay" id="ticketHandlingOverlay">
+      <div class="modal modal-wide ticket-handling-modal">
+        <h2>Edit Handling</h2>
+        <button type="button" class="modal-close-x modal-close-x-top" id="closeTicketHandlingX" aria-label="Close">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6L18 18M6 18L18 6"/></svg>
+        </button>
         <form id="ticketDetailForm">
           <div class="ticket-handling-row">
             <div class="form-field" style="margin-bottom:0;">
@@ -177,7 +212,12 @@ if (!ticket) {
             <label>Note</label>
             <textarea id="ticketDetailRootCause" placeholder="What caused this issue? (optional)"></textarea>
           </div>
+          <div class="modal-actions">
+            <button type="button" class="btn-text" id="cancelTicketHandling">Cancel</button>
+            <button type="submit" class="btn-save" id="saveTicketDetailBtn" disabled>Save</button>
+          </div>
         </form>
+      </div>
       </div>`;
   }
 
@@ -188,6 +228,18 @@ if (!ticket) {
     document.querySelector('.custom-select[data-name="ticketOrgHandling"] .custom-select-menu').innerHTML = buildCustomSelectOptions(TICKET_ORG_CODES);
 
     initCustomSelects();
+
+    /* The whole body (popup included) is rebuilt on every renderAll(), so
+       closing without saving just needs a re-render to throw away whatever
+       was changed in the form. */
+    const handlingOverlay = document.getElementById("ticketHandlingOverlay");
+    const closeHandlingModal = () => renderAll();
+    document.getElementById("editTicketHandlingBtn").addEventListener("click", () => handlingOverlay.classList.add("open"));
+    document.getElementById("closeTicketHandlingX").addEventListener("click", closeHandlingModal);
+    document.getElementById("cancelTicketHandling").addEventListener("click", closeHandlingModal);
+    handlingOverlay.addEventListener("click", (e) => {
+      if (e.target === handlingOverlay) closeHandlingModal();
+    });
 
     document.getElementById("ticketDetailRootCause").value = ticket.rootCause || "";
     setCustomSelectValue(document.querySelector('.custom-select[data-name="ticketStatus"]'), ticket.state, { silent: true });
@@ -232,7 +284,7 @@ if (!ticket) {
 
     form.addEventListener("submit", (e) => {
       e.preventDefault();
-      if (saveTicketDetailBtn.disabled) return;
+      if (document.getElementById("saveTicketDetailBtn").disabled) return;
 
       const changeDate = new Date().toLocaleString("en-GB", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit", hour12: false }).replace(",", "");
 
@@ -241,6 +293,7 @@ if (!ticket) {
       const nextTier = document.querySelector('.custom-select[data-name="ticketLevel"] input[type=hidden]').value || ticket.tier;
       const nextSeverity = document.querySelector('.custom-select[data-name="ticketSeverityHandling"] input[type=hidden]').value || ticket.severity;
       const nextStatus = document.querySelector('.custom-select[data-name="ticketStatus"] input[type=hidden]').value || ticket.state;
+      const nextOrg = (nextTier === "Level 3" && document.querySelector('.custom-select[data-name="ticketOrgHandling"] input[type=hidden]').value) || ticket.organization;
 
       /* Every field a Save touches (reassignment, level/tier transfer, severity,
          status) is folded into a single history entry instead of one line per
@@ -269,6 +322,10 @@ if (!ticket) {
         changeParts.push(`Severity changed from ${ticket.severity} to ${nextSeverity}`);
         title = title || `Severity Changed to ${nextSeverity}`;
       }
+      if (nextOrg !== ticket.organization) {
+        changeParts.push(`Organization changed from ${ticket.organization} to ${nextOrg}`);
+        title = title || `Organization Changed to ${nextOrg}`;
+      }
 
       const noteChanged = rootCause !== (ticket.rootCause || "");
       if (!changeParts.length && noteChanged) {
@@ -287,6 +344,7 @@ if (!ticket) {
       ticket.tier = nextTier;
       ticket.severity = nextSeverity;
       ticket.state = nextStatus;
+      ticket.organization = nextOrg;
 
       renderAll();
     });
@@ -705,6 +763,11 @@ if (!ticket) {
     renderBody();
   }
   renderAll();
+
+  document.addEventListener("keydown", (e) => {
+    const overlay = document.getElementById("ticketHandlingOverlay");
+    if (e.key === "Escape" && overlay && overlay.classList.contains("open")) renderAll();
+  });
 
   /* Chat-with-Patient panel removed entirely -- see file header comment.
      Its markup is already gone from ticket-detail.html, so there is nothing

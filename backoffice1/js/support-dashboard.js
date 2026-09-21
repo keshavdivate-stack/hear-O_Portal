@@ -1,18 +1,18 @@
 /* ---------------- Color lookups ---------------- */
 const priorityColor = { Critical: "var(--red)", High: "var(--orange)", Medium: "var(--yellow)", Low: "var(--blue)" };
 const statusColor = { Open: "var(--blue)", "In Progress": "var(--orange)", Escalated: "var(--red)", Resolved: "var(--green)" };
-const typeColor = { Patient: "var(--cyan)", Clinic: "var(--purple)", "System Generated": "var(--navy)", Backoffice: "var(--orange)" };
+const typeColor = { Patient: "var(--cyan)", Clinic: "var(--purple)", System: "var(--navy)", Backoffice: "var(--orange)" };
 
 /* "Tickets by Type" on this dashboard is a different cut than the Patient/Clinic
    Type filter on the main Support ticket list: a ticket raised automatically or
    opened directly by a backoffice agent is bucketed under that instead of
    Patient/Clinic, even though it's still "about" a patient or a clinic --
-   who/what actually opened it is what this chart is answering. */
-const SUP_DASH_TYPES = ["Patient", "Clinic", "System Generated", "Backoffice"];
+   who/what actually opened it is what this chart is answering. Origin is
+   already one of these four values (see support-data.js's ORIGINS), so this
+   is just that field by another name. */
+const SUP_DASH_TYPES = ["Patient", "Clinic", "System", "Backoffice"];
 function dashTicketType(t) {
-  if (t.origin === "System Generated") return "System Generated";
-  if (t.origin === "Backoffice Created") return "Backoffice";
-  return t.source === "patient" ? "Patient" : "Clinic";
+  return t.origin;
 }
 
 /* ---------------- Combine patient + clinic tickets ----------------
@@ -270,8 +270,8 @@ function renderDashboard() {
   const dashTypeHrefParams = {
     Patient: { type: "Patient" },
     Clinic: { type: "Clinic" },
-    "System Generated": { origin: "System Generated" },
-    Backoffice: { origin: "Backoffice Created" },
+    System: { origin: "System" },
+    Backoffice: { origin: "Backoffice" },
   };
   renderHbarList(
     "supDashTypeBars",
