@@ -16,9 +16,9 @@ const CARET_ICON = (cls) => `<svg class="${cls}" width="12" height="12" viewBox=
    saved through the Connect EHR modal; Athena keeps previously entered (unsaved)
    details so the modal shows them pre-filled. */
 const ehrs = [
-  { ehr: "Epic", env: "Production", clientId: "a1f3c9d2-77be-4e10-9c55-0d2e8b41f6a7", clientSecret: "••••••••", scope: ["patient/*.read", "launch", "openid"], connected: true },
-  { ehr: "Athena", env: "Sandbox", clientId: "ath-5521-9be0", clientSecret: "", scope: ["patient/*.read"], connected: false },
-  { ehr: "ECW", env: "", clientId: "", clientSecret: "", scope: [], connected: false },
+  { ehr: "Epic", env: "Production", clientId: "a1f3c9d2-77be-4e10-9c55-0d2e8b41f6a7", clientSecret: "••••••••", scope: ["patient/*.read", "launch", "openid"], url: "https://fhir.epic.com/interconnect-fhir-oauth", connected: true },
+  { ehr: "Athena", env: "Sandbox", clientId: "ath-5521-9be0", clientSecret: "", scope: ["patient/*.read"], url: "", connected: false },
+  { ehr: "ECW", env: "", clientId: "", clientSecret: "", scope: [], url: "", connected: false },
 ];
 
 /* ---------------- List ---------------- */
@@ -239,6 +239,10 @@ function openConnectEhrModal(index) {
           <label>Scope</label>
           ${multiSelectHtml("scope", "Choose scope")}
         </div>
+        <div class="form-field" style="grid-column: 1 / -1;">
+          <label>URL</label>
+          <input type="text" name="url" placeholder="Enter URL" />
+        </div>
       </div>
     </div>`;
 
@@ -254,6 +258,7 @@ function openConnectEhrModal(index) {
   if (row.env) prefillSingleSelect(envSelect, row.env);
   card.querySelector('[name="clientId"]').value = row.clientId;
   card.querySelector('[name="clientSecret"]').value = row.clientSecret;
+  card.querySelector('[name="url"]').value = row.url || "";
   scopeApi.setSelected(row.scope);
 
   validateConnectEhrForm();
@@ -278,6 +283,7 @@ connectEhrForm.addEventListener("submit", (e) => {
     clientId: val("clientId"),
     clientSecret: val("clientSecret"),
     scope: val("scope") ? val("scope").split(",") : [],
+    url: val("url"),
     connected: true,
   });
   renderConnections();
