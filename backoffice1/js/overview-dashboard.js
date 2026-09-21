@@ -70,7 +70,7 @@ function renderOvHealthGrid(orgId) {
    low-to-high so Critical renders on top, the level that matters most. */
 const ovTrendSeriesMeta = [
   { key: "low", label: "Low", color: "var(--gray)" },
-  { key: "medium", label: "Medium", color: "var(--yellow)" },
+  { key: "medium", label: "Medium", color: "var(--orange)" },
   { key: "high", label: "High", color: "var(--orange)" },
   { key: "critical", label: "Critical", color: "var(--red)" },
 ];
@@ -215,7 +215,7 @@ function renderOvTrendFooter() {
   const footer = [
     { num: sum(dataset.series.critical), label: "Critical", color: "var(--red-text)", delta: 8, dir: "up", badWhen: "up", param: "severity=Critical" },
     { num: sum(dataset.series.high), label: "High", color: "var(--orange-text)", delta: 6, dir: "up", badWhen: "up", param: "severity=High" },
-    { num: sum(dataset.series.medium), label: "Medium", color: "var(--yellow-text)", delta: 3, dir: "down", badWhen: "up", param: "severity=Medium" },
+    { num: sum(dataset.series.medium), label: "Medium", color: "var(--orange-text)", delta: 3, dir: "down", badWhen: "up", param: "severity=Medium" },
     { num: sum(dataset.series.low), label: "Low", color: "var(--gray-text)", delta: 2, dir: "down", badWhen: "up", param: "severity=Low" },
     { num: dataset.resolved, label: "Resolved", color: "var(--green-text)", delta: 15, dir: "up", badWhen: "down", param: "status=Resolved" },
   ];
@@ -243,7 +243,7 @@ renderOvTrendFooter();
 /* ---------------- Critical Issues (Top 5) ---------------- */
 /* Severity uses the same 4-level scale as everywhere else issues/tickets
    appear (Critical/High/Medium/Low), with colors matching the ticket
-   severity pills: red/orange/yellow/blue.
+   severity pills: red/red/orange/gray.
 
    One entry per category in orgHealthData (the same source the donut below
    aggregates), so this list, the donut, and the "Open Issues Requiring
@@ -254,8 +254,8 @@ const ovCritIssues = [
   { title: "Compliance drops", desc: "Active-patient compliance falling below threshold", severity: "Critical", started: "2 hrs ago", orgs: 1, patients: 3, color: "var(--red)", category: "Compliance", incidentId: "INC-2026-0044" },
   { title: "Voice engine errors", desc: "High error rate in voice processing", severity: "Critical", started: "20 min ago", orgs: 1, patients: 2, color: "var(--red)", category: "Voice Engine", incidentId: "INC-2026-0043" },
   { title: "Missing run: Billing Calc", desc: "The Billing Calc job did not run yesterday", severity: "High", started: "3 hrs ago", orgs: 2, patients: 3, color: "var(--orange)", category: "System Schedule Engine", incidentId: "INC-2026-0046" },
-  { title: "Sensor data delays", desc: "Sensor data delayed or missing", severity: "Medium", started: "6 hrs ago", orgs: 3, patients: 3, color: "var(--yellow)", category: "Sensors", incidentId: "INC-2026-0041" },
-  { title: "Patients stuck in Registered", desc: "Patients have been stuck in Registered status longer than expected", severity: "Low", started: "1 day ago", orgs: 1, patients: 1, color: "var(--blue)", category: "Patient (Mobile/Web)", incidentId: "INC-2026-0045" },
+  { title: "Sensor data delays", desc: "Sensor data delayed or missing", severity: "Medium", started: "6 hrs ago", orgs: 3, patients: 3, color: "var(--orange)", category: "Sensors", incidentId: "INC-2026-0041" },
+  { title: "Patients stuck in Registered", desc: "Patients have been stuck in Registered status longer than expected", severity: "Low", started: "1 day ago", orgs: 1, patients: 1, color: "var(--gray)", category: "Patient (Mobile/Web)", incidentId: "INC-2026-0045" },
 ];
 
 const ovSeverityPillClass = { Critical: "critical", High: "high", Medium: "medium", Low: "low" };
@@ -372,8 +372,8 @@ const ovCategories = (() => {
    js/support-data.js) rather than a separately invented vocabulary, so
    "group by Severity/Status" here lines up with the same values Support's
    own filters use. */
-const OV_SEVERITY_COLORS = { Critical: "var(--red)", High: "var(--orange)", Medium: "var(--yellow)", Low: "var(--blue)" };
-const OV_STATUS_COLORS = { Open: "var(--red)", "In Progress": "var(--orange)", Escalated: "var(--purple)", Resolved: "var(--green)" };
+const OV_SEVERITY_COLORS = { Critical: "var(--red)", High: "var(--red)", Medium: "var(--orange)", Low: "var(--gray)" };
+const OV_STATUS_COLORS = { Open: "var(--red)", "In Progress": "var(--orange)", Escalated: "var(--red)", Resolved: "var(--green)" };
 
 /* Deterministic incident records (severity + status) for a category's
    `count`, seeded by category + an arbitrary key (e.g. "donut", or a month

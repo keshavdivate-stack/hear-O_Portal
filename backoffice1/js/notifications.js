@@ -8,7 +8,7 @@
   const notifList = document.getElementById("notifList");
   if (!notifBtn || !notifList || typeof patientTickets === "undefined" || typeof clinicTickets === "undefined") return;
 
-  const notifSeverityColor = { Critical: "var(--red)", High: "var(--orange)", Medium: "var(--yellow)", Low: "var(--blue)" };
+  const notifSeverityColor = { Critical: "var(--red)", High: "var(--red)", Medium: "var(--orange)", Low: "var(--gray)" };
 
   /* createdDate is "DD/MM/YYYY HH:mm" -- parse to an actual timestamp so
      sorting is chronological rather than a lexicographic string compare. */

@@ -21,9 +21,9 @@
      around the app) are tuned for icons/borders on white and don't pass
      contrast as small bold badge/link text on their own. */
   --blue-text: #0E5C99;
-  --green-text: #0FA875;
-  --red-text: #E11D48;
-  --orange-text: #9A4A0F;
+  --green-text: #15803D;
+  --red-text: #D92D20;
+  --orange-text: #C25E00;
   --yellow-text: #7A5900;
   --purple-text: #6438C2;
 }
@@ -631,7 +631,7 @@ button, input, select, textarea, optgroup {
   gap: 4px;
   font-size: 12.5px;
   font-weight: 700;
-  color: var(--blue-text);
+  color: var(--orange-text);
   white-space: nowrap;
 }
 
@@ -660,8 +660,8 @@ button, input, select, textarea, optgroup {
 
 .handling-status-pill {
   display: inline-block;
-  background: var(--blue-light);
-  color: var(--blue-text);
+  background: #FDF3E7;
+  color: var(--orange-text);
   font-size: 12px;
   font-weight: 700;
   padding: 3px 10px;
@@ -1288,8 +1288,8 @@ button, input, select, textarea, optgroup {
   font-size: 12px;
   font-weight: 700;
   white-space: nowrap;
-  background: var(--blue-light);
-  color: var(--blue-text);
+  background: #E7F8EF;
+  color: var(--green-text);
 }
 
 .source-outline-badge {
@@ -1463,8 +1463,8 @@ button, input, select, textarea, optgroup {
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: var(--blue-light);
-  color: var(--blue-text);
+  background: #FDF3E7;
+  color: var(--orange-text);
   font-size: 9px;
   font-weight: 700;
   line-height: 1;
@@ -1619,7 +1619,7 @@ button, input, select, textarea, optgroup {
 }
 
 .monitoring-tag-warning {
-  color: #B9770E;
+  color: #C25E00;
   background: #FDF0DE;
 }
 
@@ -1850,7 +1850,7 @@ button, input, select, textarea, optgroup {
   cursor: pointer;
 }
 .care-team-remove-button { margin-top: 1px; }
-.care-team-remove-button:hover { background: #FBEAEA; color: #D64545; }
+.care-team-remove-button:hover { background: #FBEAEA; color: #D92D20; }
 .care-team-edit-button:hover { background: #EAF2FB; color: #2E70D6; }
 
 /* Role select inside the edit flyout (reuses .care-team-add-panel's layout) */
@@ -3041,8 +3041,8 @@ button, input, select, textarea, optgroup {
   color: #fff;
 }
 
-.rec-valid { background: var(--blue); }
-.rec-low { background: var(--blue); }
+.rec-valid { background: var(--green); }
+.rec-low { background: var(--orange, #F2994A); }
 .rec-none { background: #E7EAEE; }
 
 .rec-day-label { font-size: 11.5px; color: var(--gray-text); }
@@ -3325,7 +3325,7 @@ button, input, select, textarea, optgroup {
   white-space: nowrap;
 }
 
-.rec-status-recommended { color: var(--blue-text); }
+.rec-status-recommended { color: var(--gray-text); }
 .rec-status-progress { color: var(--orange-text); }
 .rec-status-completed { color: var(--green-text); }
 .rec-status-archived { color: var(--gray-text); }
@@ -3485,7 +3485,7 @@ button, input, select, textarea, optgroup {
 .pill-hf { background: #FDEDED; color: var(--red-text); }
 .pill-dot { width: 8px; height: 8px; border-radius: 2px; background: var(--red); display: inline-block; }
 .pill-pending { background: #FDF3E7; color: var(--orange-text); }
-.pill-recommended { background: var(--blue-light); color: var(--blue-text); }
+.pill-recommended { background: #EEF0F3; color: var(--gray-text); }
 .pill-completed { background: #E7F8EF; color: var(--green-text); }
 .pill-none { background: var(--bg); color: #7E8993; }
 
@@ -3708,8 +3708,8 @@ button, input, select, textarea, optgroup {
   flex-shrink: 0;
 }
 
-.med-adh-taken { background: var(--blue); color: #fff; }
-.med-adh-missed { background: var(--blue); color: #fff; }
+.med-adh-taken { background: var(--green); color: #fff; }
+.med-adh-missed { background: var(--orange, #F2994A); color: #fff; }
 .med-adh-not-recorded { background: #E7EAEE; color: #7E8993; }
 
 .med-legend {
@@ -3735,8 +3735,8 @@ button, input, select, textarea, optgroup {
 
 .med-legend-dot svg { width: 8px; height: 8px; }
 
-.med-legend-taken { background: var(--blue); }
-.med-legend-missed { background: var(--blue); }
+.med-legend-taken { background: var(--green); }
+.med-legend-missed { background: var(--orange, #F2994A); }
 .med-legend-not-recorded { background: #E7EAEE; }
 
 /* Sits in the same unpadded position as .med-adh-scroll above it (both
@@ -3835,7 +3835,7 @@ button, input, select, textarea, optgroup {
   white-space: nowrap;
 }
 
-.badge-ontrack { background: var(--blue-light); color: var(--blue-text); }
+.badge-ontrack { background: #E7F8EF; color: var(--green-text); }
 .badge-atrisk { background: #FDF0DE; color: var(--orange-text); }
 .badge-achieved { background: #E7F8EF; color: var(--green-text); }
 
@@ -6777,8 +6777,8 @@ body.patient-discontinued #chatOpenBtn {
   border-radius: 6px;
 }
 .ticket-pill-severity-critical { background: var(--red-light); color: var(--red-text); }
-.ticket-pill-severity-high { background: #FDF3E7; color: var(--orange-text); }
-.ticket-pill-severity-medium { background: #FCF6DA; color: var(--yellow-text); }
+.ticket-pill-severity-high { background: var(--red-light); color: var(--red-text); }
+.ticket-pill-severity-medium { background: #FDF3E7; color: var(--orange-text); }
 .ticket-pill-severity-low { background: #F1F3F5; color: var(--gray-text); }
 
 /* Lifecycle state -- plain colored text, no pill/dot. */
@@ -6791,7 +6791,7 @@ body.patient-discontinued #chatOpenBtn {
   padding: 0;
   border-radius: 0;
 }
-.ticket-pill-state-open { color: var(--blue-text); }
+.ticket-pill-state-open { color: var(--orange-text); }
 .ticket-pill-state-inprogress { color: var(--orange-text); }
 .ticket-pill-state-escalated { color: var(--red-text); }
 .ticket-pill-state-resolved { color: var(--green-text); }
@@ -7384,7 +7384,7 @@ body.patient-discontinued #chatOpenBtn {
 }
 .b01-priority-table tr[data-status="Priority"] { --row-accent: var(--red); }
 .b01-priority-table tr[data-status="Active"] { --row-accent: var(--green); }
-.b01-priority-table tr[data-status="Baseline"] { --row-accent: var(--blue); }
+.b01-priority-table tr[data-status="Baseline"] { --row-accent: #9AA5B1; }
 .b01-priority-table tr[data-status="On Hold"] { --row-accent: #23272E; }
 
 /* Beats the table's own ".patient-table thead th { text-align: left }" on
@@ -7643,7 +7643,7 @@ body.patient-discontinued #chatOpenBtn {
   font-size: 12px;
   font-weight: 700;
   background: #E6F6EE;
-  color: #0E8A5B;
+  color: #15803D;
 }
 
 .ehr-empty { text-align: center; color: #9AA5B1; padding: 40px 0 !important; }
@@ -7774,4 +7774,4 @@ body.patient-discontinued #chatOpenBtn {
 /* EHR modal: 2-column layout like Backoffice > Add Organization step 5 */
 .ehr-card .form-grid { grid-template-columns: repeat(2, 1fr); }
 .ehr-card .custom-select-trigger:disabled { background: #F3F6F9; cursor: not-allowed; }
-.ehr-status-pill.off { background: #FDECEC; color: #D64545; }
+.ehr-status-pill.off { background: #FDECEC; color: #D92D20; }

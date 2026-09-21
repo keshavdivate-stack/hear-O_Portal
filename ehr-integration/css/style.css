@@ -1047,7 +1047,7 @@ button, input, select, textarea, optgroup {
 .mon-unmonitored { color: var(--blue); }
 .mon-monitored { color: #363B42; }
 .mon-none { color: #7E8993; }
-.mon-progress { color: #C77B22; }
+.mon-progress { color: #C25E00; }
 
 .care-indicator-trigger {
   background: none;
@@ -1453,7 +1453,7 @@ button, input, select, textarea, optgroup {
   cursor: pointer;
 }
 .care-team-remove-button { margin-top: 1px; }
-.care-team-remove-button:hover { background: #FBEAEA; color: #D64545; }
+.care-team-remove-button:hover { background: #FBEAEA; color: #D92D20; }
 .care-team-edit-button:hover { background: #EAF2FB; color: #2E70D6; }
 
 /* Role select inside the edit flyout (reuses .care-team-add-panel's layout) */
@@ -2668,8 +2668,8 @@ button, input, select, textarea, optgroup {
   color: #fff;
 }
 
-.rec-valid { background: var(--blue); }
-.rec-low { background: var(--blue); }
+.rec-valid { background: #2E9A66; }
+.rec-low { background: #F2994A; }
 .rec-none { background: #E7EAEE; }
 
 .rec-day-label { font-size: 11.5px; color: var(--gray-text); }
@@ -2924,7 +2924,7 @@ button, input, select, textarea, optgroup {
   padding: 7px 14px;
   border-radius: 999px;
   background: var(--green-light, #E9FBF3);
-  color: #2E9A66;
+  color: #15803D;
   font-size: 12.5px;
   font-weight: 700;
 }
@@ -3068,25 +3068,25 @@ button, input, select, textarea, optgroup {
   white-space: nowrap;
 }
 
-.rec-status-recommended { color: var(--blue); }
-.rec-status-progress { color: #C97A2B; }
-.rec-status-completed { color: #2E9A66; }
+.rec-status-recommended { color: #7E8993; }
+.rec-status-progress { color: #C25E00; }
+.rec-status-completed { color: #15803D; }
 
 .rec-table-th-action { text-align: right; }
 .rec-table-actions { display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
 .rec-status-archived { color: #7E8993; }
 
 /* EHR-integrated data: condition/allergy/goal status variants (plain colored text) */
-.rec-status-active { color: #2E9A66; }
+.rec-status-active { color: #15803D; }
 .rec-status-resolved,
 .rec-status-inactive { color: #7E8993; }
-.rec-status-mild { color: var(--blue); }
-.rec-status-moderate { color: #C97A2B; }
-.rec-status-severe { color: #C4453D; }
-.rec-status-on-track { color: #2E9A66; }
-.rec-status-at-risk { color: #C97A2B; }
-.rec-status-achieved { color: var(--blue); }
-.rec-status-not-met { color: #C4453D; }
+.rec-status-mild { color: #7E8993; }
+.rec-status-moderate { color: #C25E00; }
+.rec-status-severe { color: #D92D20; }
+.rec-status-on-track { color: #15803D; }
+.rec-status-at-risk { color: #C25E00; }
+.rec-status-achieved { color: #15803D; }
+.rec-status-not-met { color: #D92D20; }
 
 .rec-latest { display: flex; flex-direction: column; gap: 1px; }
 .rec-latest-primary { font-size: 13.5px; font-weight: 600; color: #23272E; }
@@ -3259,8 +3259,8 @@ button, input, select, textarea, optgroup {
 
 .pill-hf { background: #FDEDED; color: var(--red); }
 .pill-dot { width: 8px; height: 8px; border-radius: 2px; background: var(--red); display: inline-block; }
-.pill-pending { background: #FDF3E7; color: #C77B22; }
-.pill-recommended { background: var(--blue-light); color: var(--blue); }
+.pill-pending { background: #FDF3E7; color: #C25E00; }
+.pill-recommended { background: #EEF0F3; color: #7E8993; }
 .pill-completed { background: #E7F8EF; color: var(--green); }
 .pill-none { background: var(--bg); color: #7E8993; }
 
@@ -3362,7 +3362,7 @@ button, input, select, textarea, optgroup {
   align-items: center;
   gap: 5px;
   font-size: 12px;
-  color: #C77B22;
+  color: #C25E00;
   margin-top: 6px;
   font-weight: 600;
   white-space: nowrap;
@@ -3381,7 +3381,7 @@ button, input, select, textarea, optgroup {
 .source-badge { display: inline-flex; padding: 5px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; white-space: nowrap; }
 .src-carerec { background: var(--blue-light); color: var(--blue); }
 .src-clinic { background: #EEF0F3; color: #57626D; }
-.src-patient { background: #FDF0DE; color: #C77B22; }
+.src-patient { background: #FDF0DE; color: #C25E00; }
 
 .ehr-badge { display: inline-flex; align-items: center; gap: 5px; padding: 5px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; white-space: nowrap; border: 1px solid transparent; }
 .ehr-badge::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
@@ -3478,8 +3478,8 @@ button, input, select, textarea, optgroup {
   flex-shrink: 0;
 }
 
-.med-adh-taken { background: var(--blue); color: #fff; }
-.med-adh-missed { background: var(--blue); color: #fff; }
+.med-adh-taken { background: #2E9A66; color: #fff; }
+.med-adh-missed { background: #F2994A; color: #fff; }
 .med-adh-not-recorded { background: #E7EAEE; color: #7E8993; }
 
 .med-legend {
@@ -3505,8 +3505,8 @@ button, input, select, textarea, optgroup {
 
 .med-legend-dot svg { width: 8px; height: 8px; }
 
-.med-legend-taken { background: var(--blue); }
-.med-legend-missed { background: var(--blue); }
+.med-legend-taken { background: #2E9A66; }
+.med-legend-missed { background: #F2994A; }
 .med-legend-not-recorded { background: #E7EAEE; }
 
 .med-adh-day-label { font-size: 11.5px; color: var(--gray-text); }
@@ -3604,8 +3604,8 @@ button, input, select, textarea, optgroup {
   white-space: nowrap;
 }
 
-.badge-ontrack { background: var(--blue-light); color: var(--blue); }
-.badge-atrisk { background: #FDF0DE; color: #C77B22; }
+.badge-ontrack { background: #E7F8EF; color: #15803D; }
+.badge-atrisk { background: #FDF0DE; color: #C25E00; }
 .badge-achieved { background: #E7F8EF; color: var(--green); }
 
 .goal-progress-track {
@@ -5750,7 +5750,7 @@ label.checkbox-field {
   letter-spacing: 0.3px;
 }
 
-.rec-alert-tag-condition { color: #C77B22; border-color: rgba(199, 123, 34, 0.4); }
+.rec-alert-tag-condition { color: #C25E00; border-color: rgba(199, 123, 34, 0.4); }
 
 /* -- Summary tab: Relevant Patient Information cards -- */
 .rec-info-cards-grid {

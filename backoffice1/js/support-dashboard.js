@@ -1,6 +1,6 @@
 /* ---------------- Color lookups ---------------- */
-const priorityColor = { Critical: "var(--red)", High: "var(--orange)", Medium: "var(--yellow)", Low: "var(--blue)" };
-const statusColor = { Open: "var(--blue)", "In Progress": "var(--orange)", Escalated: "var(--red)", Resolved: "var(--green)" };
+const priorityColor = { Critical: "var(--red)", High: "var(--red)", Medium: "var(--orange)", Low: "var(--gray)" };
+const statusColor = { Open: "var(--orange)", "In Progress": "var(--orange)", Escalated: "var(--red)", Resolved: "var(--green)" };
 const typeColor = { Patient: "var(--cyan)", Clinic: "var(--purple)", System: "var(--navy)", Backoffice: "var(--orange)" };
 
 /* "Tickets by Type" on this dashboard is a different cut than the Patient/Clinic
@@ -67,7 +67,7 @@ function renderKpis(mine) {
   const resolvedTickets = mine.filter((t) => t.status === "Resolved");
 
   const cards = [
-    { num: openTickets.length, label: "Open Tickets", color: "var(--blue)", icon: `<path d="M18 9.5C18 7.7 17.3 6 16 4.8C14.7 3.6 13 3 11.3 3.1C8.1 3.3 5.6 6.1 5.6 9.4V12.5C5.6 13.1 5.4 13.7 5 14.2L4 15.5C3.4 16.3 4 17.5 5 17.5H19C20 17.5 20.6 16.3 20 15.5L19 14.2C18.6 13.7 18.4 13.1 18.4 12.5"/>` },
+    { num: openTickets.length, label: "Open Tickets", color: "var(--orange)", icon: `<path d="M18 9.5C18 7.7 17.3 6 16 4.8C14.7 3.6 13 3 11.3 3.1C8.1 3.3 5.6 6.1 5.6 9.4V12.5C5.6 13.1 5.4 13.7 5 14.2L4 15.5C3.4 16.3 4 17.5 5 17.5H19C20 17.5 20.6 16.3 20 15.5L19 14.2C18.6 13.7 18.4 13.1 18.4 12.5"/>` },
     { num: priorityTickets.length, label: "Critical / High Priority", color: "var(--red)", icon: `<path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.73 3h16.9a2 2 0 0 0 1.73-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/>` },
     { num: escalatedTickets.length, label: "Escalated Tickets", color: "var(--navy)", icon: `<path d="M12 19V5"/><path d="m5 12 7-7 7 7"/>`, href: myTicketsHref({ status: "Escalated" }) },
     { num: resolvedTickets.length, label: "Tickets Resolved", color: "var(--green)", icon: `<path d="M4 12L9 17L20 6"/>`, href: myTicketsHref({ status: "Resolved" }) },
