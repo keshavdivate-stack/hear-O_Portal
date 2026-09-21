@@ -125,7 +125,7 @@ function renderTicketInfo() {
   document.getElementById("ticketDetailSource").textContent = currentSource === "patient" ? "Patient" : "Clinic";
   document.getElementById("ticketDetailStatusKv").innerHTML = statusPill(currentTicket.status);
   document.getElementById("ticketDetailPriorityKv").innerHTML = priorityPill(currentTicket.priority);
-  document.getElementById("ticketDetailWhoLabel").textContent = currentSource === "patient" ? "Patient ID" : "Raised By";
+  document.getElementById("ticketDetailWhoLabel").textContent = currentSource === "patient" ? "Username" : "Clinic User";
   document.getElementById("ticketDetailWho").textContent = currentSource === "patient" ? currentTicket.patientId : currentTicket.raisedBy;
   document.getElementById("ticketDetailOrg").textContent = currentTicket.organization;
   document.getElementById("ticketDetailOrigin").textContent = currentTicket.origin;
@@ -205,7 +205,7 @@ function renderTicketRecording() {
      depend on render order (Patient Log renders after the Issue panel). */
   if (currentSource === "patient") {
     const micPermission = buildPatientLog(currentTicket).permissions.find((p) => p.label === "Microphone");
-    micAlert.hidden = !micPermission || micPermission.value !== "Denied";
+    micAlert.hidden = !micPermission || micPermission.value !== "Disabled";
   }
 }
 
@@ -240,7 +240,30 @@ document.getElementById("ticketDetailAudioPlay").addEventListener("click", (e) =
   }, 200);
 });
 
+/* Handling is read-only on the page itself -- the values below mirror what's
+   stored on the ticket, and the Edit button opens the popup form (see
+   "Handling form wiring") which is the only place they can be changed.
+   Resolved tickets drop the routing fields, same as the form does. */
+function renderTicketHandlingSummary() {
+  const resolved = currentTicket.status === "Resolved";
+  const tierAgents = TIER_AGENTS[currentTicket.tier] || SUPPORT_AGENTS;
+  const assignee = tierAgents.includes(currentTicket.assignedTo) ? currentTicket.assignedTo : defaultAssigneeForTier(currentTicket.tier);
+  const cells = [`<div class="bo-kv-cell"><span class="k">Status</span><span class="v">${statusPill(currentTicket.status)}</span></div>`];
+  if (!resolved) {
+    cells.push(`<div class="bo-kv-cell"><span class="k">Level</span><span class="v">${currentTicket.tier || "—"}</span></div>`);
+    cells.push(`<div class="bo-kv-cell"><span class="k">Priority</span><span class="v">${priorityPill(currentTicket.priority)}</span></div>`);
+    if (currentTicket.tier === "Level 3") {
+      cells.push(`<div class="bo-kv-cell"><span class="k">Organization</span><span class="v">${currentTicket.organization || "—"}</span></div>`);
+    }
+    cells.push(`<div class="bo-kv-cell"><span class="k">Assigned To</span><span class="v">${assignee || "—"}</span></div>`);
+  }
+  cells.push(`<div class="bo-kv-cell bo-kv-cell--full"><span class="k">Note</span><span class="v bo-kv-note" id="ticketHandlingNote"></span></div>`);
+  document.getElementById("ticketHandlingSummary").innerHTML = cells.join("");
+  document.getElementById("ticketHandlingNote").textContent = currentTicket.rootCause || "—";
+}
+
 function renderTicketHandling() {
+  renderTicketHandlingSummary();
   document.getElementById("ticketDetailRootCause").value = currentTicket.rootCause || "";
   setBoSelectValue(document.querySelector('.bo-select[data-name="ticketStatus"]'), currentTicket.status, { silent: true });
   setBoSelectValue(document.querySelector('.bo-select[data-name="ticketLevel"]'), currentTicket.tier, { silent: true });
@@ -617,7 +640,31 @@ if (currentSource === "patient") {
   });
 }
 
-/* ---------------- Handling form wiring ---------------- */
+/* ---------------- Handling form wiring ----------------
+   The form lives in the Edit Handling popup, not on the page. Opening it
+   always re-seeds the fields from the ticket, so anything typed and then
+   cancelled is discarded instead of lingering for the next open. */
+const ticketHandlingOverlay = document.getElementById("ticketHandlingOverlay");
+
+function openTicketHandlingModal() {
+  renderTicketHandling();
+  ticketHandlingOverlay.classList.add("open");
+}
+
+function closeTicketHandlingModal() {
+  ticketHandlingOverlay.classList.remove("open");
+}
+
+document.getElementById("editTicketHandlingBtn").addEventListener("click", openTicketHandlingModal);
+document.getElementById("closeTicketHandlingX").addEventListener("click", closeTicketHandlingModal);
+document.getElementById("cancelTicketHandling").addEventListener("click", closeTicketHandlingModal);
+ticketHandlingOverlay.addEventListener("click", (e) => {
+  if (e.target === ticketHandlingOverlay) closeTicketHandlingModal();
+});
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && ticketHandlingOverlay.classList.contains("open")) closeTicketHandlingModal();
+});
+
 document.querySelector('.bo-select[data-name="ticketLevel"] input[type=hidden]').addEventListener("change", (e) => {
   const tier = e.target.value;
   populateTicketDetailAssignees(tier);
@@ -660,6 +707,7 @@ ticketDetailForm.addEventListener("submit", (e) => {
   const nextTier = document.querySelector('.bo-select[data-name="ticketLevel"] input[type=hidden]').value || currentTicket.tier;
   const nextPriority = document.querySelector('.bo-select[data-name="ticketPriorityHandling"] input[type=hidden]').value || currentTicket.priority;
   const nextStatus = document.querySelector('.bo-select[data-name="ticketStatus"] input[type=hidden]').value || currentTicket.status;
+  const nextOrg = (nextTier === "Level 3" && document.querySelector('.bo-select[data-name="ticketOrgHandling"] input[type=hidden]').value) || currentTicket.organization;
 
   /* Every field a Save touches (reassignment, level/tier transfer, priority,
      status) is folded into a single history entry instead of one line per
@@ -688,6 +736,10 @@ ticketDetailForm.addEventListener("submit", (e) => {
     changeParts.push(`Priority changed from ${currentTicket.priority} to ${nextPriority}`);
     title = title || `Priority Changed to ${nextPriority}`;
   }
+  if (nextOrg !== currentTicket.organization) {
+    changeParts.push(`Organization changed from ${currentTicket.organization} to ${nextOrg}`);
+    title = title || `Organization Changed to ${nextOrg}`;
+  }
 
   const noteChanged = rootCause !== (currentTicket.rootCause || "");
   if (!changeParts.length && noteChanged) {
@@ -706,9 +758,11 @@ ticketDetailForm.addEventListener("submit", (e) => {
   currentTicket.tier = nextTier;
   currentTicket.priority = nextPriority;
   currentTicket.status = nextStatus;
+  currentTicket.organization = nextOrg;
 
   renderTicketHeader();
   renderTicketInfo();
   renderTicketHandling();
   renderTicketHistory();
+  closeTicketHandlingModal();
 });

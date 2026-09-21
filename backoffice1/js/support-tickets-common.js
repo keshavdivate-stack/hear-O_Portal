@@ -6,7 +6,7 @@
 
 const statusPillClass = { "Open": "bo-pill-status-open", "In Progress": "bo-pill-status-inprogress", "Escalated": "bo-pill-status-escalated", "Resolved": "bo-pill-status-resolved" };
 const priorityPillClass = { "Low": "bo-pill-severity-low", "Medium": "bo-pill-severity-medium", "High": "bo-pill-severity-high", "Critical": "bo-pill-severity-critical" };
-const originPillClass = { "System Generated": "bo-pill-origin-system", "User Created": "bo-pill-origin-user", "Backoffice Created": "bo-pill-origin-backoffice" };
+const originPillClass = { "System": "bo-pill-origin-system", "Patient": "bo-pill-origin-patient", "Clinic": "bo-pill-origin-clinic", "Backoffice": "bo-pill-origin-backoffice" };
 const typePillClass = { "Patient": "bo-pill-type-patient", "Clinic": "bo-pill-type-clinic" };
 
 const statusPill = (s) => `<span class="bo-pill ${statusPillClass[s] || ""}">${s}</span>`;
@@ -294,18 +294,18 @@ function buildPatientLog(ticket) {
       { label: "OS Version", value: device.os },
       { label: "Available Storage", value: `${(storageMb / 1024).toFixed(1)} GB` },
     ],
-    /* Microphone and Health Data Access used to be hardcoded "Granted" --
+    /* Microphone and Health Data Access used to be hardcoded "Enabled" --
        that made it impossible to ever see the single most common cause of a
-       failed recording (mic access denied on-device), so they're now
+       failed recording (mic access disabled on-device), so they're now
        seeded per patient like every other field here. Voice Engine tickets
-       skew toward "Denied" so the diagnostic path (Issue panel's
+       skew toward "Disabled" so the diagnostic path (Issue panel's
        permission callout) actually has something to demonstrate. */
     permissions: [
-      { label: "Microphone", value: rand() < (ticketCategory(ticket) === "Voice Engine" ? 0.6 : 0.1) ? "Denied" : "Granted" },
-      { label: "Notifications", value: "Granted" },
-      { label: "Health Data Access", value: rand() > 0.8 ? "Denied" : "Granted" },
-      { label: "Chat", value: rand() > 0.85 ? "Denied" : "Granted" },
-      { label: "Blood Pressure Data", value: rand() > 0.5 ? "Denied" : "Granted" },
+      { label: "Microphone", value: rand() < (ticketCategory(ticket) === "Voice Engine" ? 0.6 : 0.1) ? "Disabled" : "Enabled" },
+      { label: "Notifications", value: "Enabled" },
+      { label: "Health Data Access", value: rand() > 0.8 ? "Disabled" : "Enabled" },
+      { label: "Chat", value: rand() > 0.85 ? "Disabled" : "Enabled" },
+      { label: "Blood Pressure Data", value: rand() > 0.5 ? "Disabled" : "Enabled" },
     ],
     sessions: buildLogSessions(ticket),
   };

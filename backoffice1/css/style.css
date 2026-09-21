@@ -1701,6 +1701,17 @@ label.bo-date-field { cursor: text; }
   .bo-handling-row { grid-template-columns: repeat(2, 1fr); }
 }
 
+/* Edit Handling popup (ticket-detail.html): the same fields, two-up to fit
+   the modal width. overflow stays visible so the last row's dropdown menu
+   isn't clipped by the modal's own scroll container. */
+.bo-handling-modal { overflow: visible; }
+.bo-handling-modal .bo-handling-row { grid-template-columns: repeat(2, 1fr); }
+
+/* Read-only Handling summary on the ticket page: Note spans the full row
+   and keeps the line breaks it was typed with. */
+.bo-kv-cell--full { grid-column: 1 / -1; }
+.bo-kv-note { font-weight: 600; white-space: pre-wrap; }
+
 .bo-modal-field { display: flex; flex-direction: column; gap: 6px; }
 
 /* Session Data / Components' Add/Edit drawers render some fields as plain
@@ -2713,7 +2724,7 @@ a.bo-btn-secondary { text-decoration: none; }
 .bo-waveform-progress .bar { background: var(--blue); }
 
 /* Root-cause callout shown on Voice Engine tickets when the patient log
-   reports Microphone permission as Denied -- surfaces the most common
+   reports Microphone permission as Disabled -- surfaces the most common
    cause of a failed recording right where the agent is already looking,
    instead of leaving it buried in the Patient Log's Permissions Info. */
 .bo-permission-alert {
@@ -4534,8 +4545,9 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
 .bo-pill-severity-low { background: var(--bg); color: var(--gray-text); }
 
 .bo-pill-origin-system { background: var(--navy-light); color: var(--navy); }
-.bo-pill-origin-user { background: var(--blue-light); color: var(--blue-text); }
-.bo-pill-origin-backoffice { background: var(--purple-light); color: var(--purple-text); }
+.bo-pill-origin-patient { background: var(--cyan-light); color: #1B8FA8; }
+.bo-pill-origin-clinic { background: var(--purple-light); color: var(--purple-text); }
+.bo-pill-origin-backoffice { background: var(--orange-light); color: var(--orange); }
 
 /* Category/tag columns -- simple gray-bordered badge, deliberately the
    quietest style so it never competes with Status or Severity. */

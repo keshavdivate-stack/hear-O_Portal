@@ -3,9 +3,8 @@ const selectedCategories = new Set();
 const selectedIssueTypes = new Set();
 const selectedOrigins = new Set();
 const selectedStates = new Set();
-/* Assigned Ticket used to be hard-locked to CURRENT_ASSIGNEE's own tickets;
-   now it defaults to "just mine" via this filter (pre-checked below) but can
-   be widened to see what's assigned to any teammate. */
+/* This list is always scoped to the current agent's own tickets -- there's
+   no Assigned To filter to widen it to a teammate's queue. */
 const selectedAssignees = new Set([CURRENT_ASSIGNEE]);
 let ticketSearchTerm = "";
 
@@ -157,16 +156,6 @@ const ticketStateMenu = document.getElementById("ticketStateMenu");
 ticketStateMenu.innerHTML = buildOptionsHtml(ticketStates);
 wireCheckboxFilter(document.querySelector('.checkbox-filter[data-name="state"]'), ticketStateMenu, selectedStates, renderTicketList);
 
-const allAssignees = [...new Set(ticketList.map((t) => t.assignedTo))].map((v) => ({ key: v, label: v }));
-const ticketAssignedToMenu = document.getElementById("ticketAssignedToMenu");
-ticketAssignedToMenu.innerHTML = allAssignees
-  .map((o) => `<label class="checkbox-filter-option"><input type="checkbox" value="${o.key}" ${selectedAssignees.has(o.key) ? "checked" : ""} />${o.label}</label>`)
-  .join("");
-{
-  const assignedToFilterWrap = document.querySelector('.checkbox-filter[data-name="assignedTo"]');
-  assignedToFilterWrap.querySelector(".checkbox-filter-label").textContent = `Assigned To (${selectedAssignees.size})`;
-  wireCheckboxFilter(assignedToFilterWrap, ticketAssignedToMenu, selectedAssignees, renderTicketList);
-}
 
 /* ---------------- Search ---------------- */
 document.getElementById("ticketSearchInput").addEventListener("input", (e) => {
@@ -181,7 +170,6 @@ const clearableTicketFilters = [
   { name: "issueType", menu: ticketIssueMenu, set: selectedIssueTypes, label: "Issue Type" },
   { name: "origin", menu: ticketOriginMenu, set: selectedOrigins, label: "Origin" },
   { name: "state", menu: ticketStateMenu, set: selectedStates, label: "State" },
-  { name: "assignedTo", menu: ticketAssignedToMenu, set: selectedAssignees, label: "Assigned To" },
 ];
 
 document.getElementById("clearTicketFilters").addEventListener("click", () => {

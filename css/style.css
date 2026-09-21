@@ -7057,6 +7057,22 @@ body.patient-discontinued #chatOpenBtn {
   .ticket-handling-row { grid-template-columns: repeat(2, 1fr); }
 }
 
+/* Handling card is read-only on the page: title + Edit button on one row,
+   values in the same grid as Ticket Info, Note spanning the full width. */
+.ticket-handling-head { display: flex; align-items: center; justify-content: space-between; gap: 14px; }
+.ticket-handling-head h2 { margin: 0; }
+.ticket-handling-head .btn-secondary { padding: 7px 18px; font-size: 13.5px; }
+.ticket-handling-note { grid-column: 1 / -1; }
+.ticket-handling-note span { font-weight: 600; white-space: pre-wrap; }
+
+/* Edit Handling popup: same fields two-up to fit the modal width. overflow
+   stays visible so the last row's dropdown menu isn't clipped by the modal's
+   own scroll container. */
+.ticket-handling-modal { overflow: visible; }
+.ticket-handling-modal > h2 { border-radius: 16px 16px 0 0; }
+.ticket-handling-modal .modal-actions { border-radius: 0 0 16px 16px; }
+.ticket-handling-modal .ticket-handling-row { grid-template-columns: repeat(2, 1fr); margin-top: 0; }
+
 .ticket-assigned-org-note { font-size: 12px; color: var(--gray-text); margin-top: 2px; }
 .ticket-assigned-org-note[hidden] { display: none; }
 
