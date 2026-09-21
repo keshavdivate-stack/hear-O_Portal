@@ -5570,3 +5570,22 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
   .bo-login-form-panel { padding: 40px 24px 64px; }
   .bo-login-lang { top: 16px; right: 20px; }
 }
+
+
+/* Handling panel on the ticket page: the same fields as the edit form,
+   locked until Edit is clicked. */
+.bo-panel-head-actions { display: flex; align-items: center; gap: 10px; }
+.bo-handling-form { margin-top: 10px; }
+.bo-handling-form.is-readonly .bo-select-trigger:disabled {
+  background: var(--bg, #F4F5F7);
+  color: var(--ink, #23272E);
+  cursor: default;
+}
+.bo-handling-form.is-readonly .bo-select-trigger:disabled .bo-select-caret { display: none; }
+.bo-handling-form.is-readonly .bo-select-trigger:disabled .bo-select-value.placeholder { color: #AEB4BC; }
+.bo-handling-form textarea:disabled {
+  background: var(--bg, #F4F5F7);
+  color: var(--ink, #23272E);
+  cursor: default;
+  resize: none;
+}

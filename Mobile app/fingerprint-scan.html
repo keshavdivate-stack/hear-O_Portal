@@ -7,8 +7,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/Mobile%20app/style.css?v=30">
+<link rel="stylesheet" href="/Mobile%20app/style.css?v=34">
 <script src="/Mobile%20app/font-scale.js?v=29"></script>
+<script src="/Mobile%20app/auth-flow.js"></script>
 </head>
 <body>
 
@@ -23,7 +24,7 @@
     </div>
 
     <div class="locked-content" style="padding-top:120px;">
-      <div class="locked-icon-outer">
+      <div class="locked-icon-outer" id="fpSensor" role="button" tabindex="0" aria-label="Touch the sensor" style="cursor:pointer;">
         <svg width="34" height="34" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M12 2C7 2 3 6 3 11C3 13 3.5 14.8 4.3 16.3" stroke="#186DCE" stroke-width="1.5" stroke-linecap="round"/>
           <path d="M12 4.5C8.4 4.5 5.5 7.4 5.5 11C5.5 13.5 6.3 15.4 7.3 16.8" stroke="#186DCE" stroke-width="1.5" stroke-linecap="round"/>
@@ -34,7 +35,7 @@
         </svg>
       </div>
 
-      <p class="locked-desc" style="font-size:calc(22px * var(--font-scale, 1)); color:#434141;">Touch the fingerprint sensor</p>
+      <p class="locked-desc" id="fpMessage" style="font-size:calc(22px * var(--font-scale, 1)); color:#434141;">Touch the fingerprint sensor</p>
 
       <div class="locked-footer">
         <button type="button" class="skip-link" onclick="window.location.href='/Mobile%20app/verify-identity.html'">Cancel</button>
@@ -43,7 +44,40 @@
   </div>
 
 <script>
-  setTimeout(() => { window.location.href = "/Mobile%20app/fingerprint-failed.html"; }, 2500);
+  // Touching the sensor verifies the user. If nothing is touched, the scan
+  // fails: the first miss shows "Fingerprint not recognized. Try again" and
+  // asks again; the second miss moves on to "try another way".
+  const sensor = document.getElementById("fpSensor");
+  const message = document.getElementById("fpMessage");
+  const attempts = Number(sessionStorage.getItem("hearo_fp_attempts") || 0);
+  const BLUE = "#186DCE", ORANGE = "#D84A00";
+  let done = false;
+
+  function tint(color) {
+    sensor.style.borderColor = color;
+    sensor.querySelectorAll("path").forEach((p) => p.setAttribute("stroke", color));
+  }
+
+  sensor.addEventListener("click", () => {
+    if (done) return;
+    done = true;
+    completeAuth("/Mobile%20app/home.html");
+  });
+
+  setTimeout(() => {
+    if (done) return;
+    done = true;
+    sessionStorage.setItem("hearo_fp_attempts", String(attempts + 1));
+    if (attempts + 1 >= 2) {
+      window.location.href = "/Mobile%20app/fingerprint-failed.html";
+      return;
+    }
+    tint(ORANGE);
+    message.textContent = "Fingerprint not recognized. Try again";
+    message.style.color = ORANGE;
+    message.style.fontSize = "calc(19px * var(--font-scale, 1))";
+    setTimeout(() => window.location.reload(), 1600);
+  }, 3500);
 </script>
 </body>
 </html>

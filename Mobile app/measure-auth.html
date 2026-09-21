@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HearO - Verifying</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="/Mobile%20app/font-scale.js?v=29"></script>
+</head>
+<body>
+<script>
+  // Which identity check this phone uses. Real devices would read it from the
+  // OS / the user's app setting; here it can be forced with ?method= and is
+  // remembered so the same flow starts every time.
+  const METHODS = { face: "/Mobile%20app/face-id.html", fingerprint: "/Mobile%20app/fingerprint-id.html", code: "/Mobile%20app/code-protect-intro.html" };
+  const param = new URLSearchParams(window.location.search).get("method");
+  if (METHODS[param]) localStorage.setItem("hearo_auth_method", param);
+  const method = METHODS[localStorage.getItem("hearo_auth_method")] ? localStorage.getItem("hearo_auth_method") : "face";
+
+  sessionStorage.setItem("hearo_auth_next", "/Mobile%20app/measurements.html");
+  ["hearo_face_attempts", "hearo_fp_attempts"].forEach((k) => sessionStorage.removeItem(k));
+  window.location.replace(METHODS[method]);
+</script>
+</body>
+</html>

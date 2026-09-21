@@ -9,6 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/Mobile%20app/style.css?v=30">
 <script src="/Mobile%20app/font-scale.js?v=29"></script>
+<script src="/Mobile%20app/auth-flow.js"></script>
 </head>
 <body>
 
@@ -72,6 +73,7 @@
     }
 
     function goNext() {
+      if (authGateActive()) { completeAuth("/Mobile%20app/home.html"); return; }
       if (localStorage.getItem("hearo_privacy_accepted")) {
         window.location.href = "/Mobile%20app/consent.html";
       } else {

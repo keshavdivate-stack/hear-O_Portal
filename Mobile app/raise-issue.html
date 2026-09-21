@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HearO - Select an Issue</title>
+<title>HearO - Raise an Issue</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/Mobile%20app/style.css?v=30">
+<link rel="stylesheet" href="/Mobile%20app/style.css?v=32">
 <script src="/Mobile%20app/font-scale.js?v=29"></script>
 </head>
 <body>
@@ -22,7 +22,7 @@
       </div>
     </div>
 
-    <div class="bp-header">
+    <div class="bp-header ri-header" id="issueHeader">
       <button type="button" class="back-btn" id="issueBackBtn">
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M12.5 4L6.5 10L12.5 16" stroke="#252424" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
@@ -32,33 +32,44 @@
     <!-- STEP 1: Issue selection -->
     <div class="issue-body" id="issueStep">
       <p class="issue-label">What seems to be the problem?</p>
+      <label class="ri-search">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6b6b6b" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/></svg>
+        <input type="text" id="issueSearch" placeholder="Search" autocomplete="off" />
+      </label>
       <div id="issueList"></div>
-
+      <p class="ri-no-match" id="noMatch" hidden>No matching issues</p>
       <div class="issue-submit-wrap">
         <button type="button" class="login-btn" id="nextBtn">Next</button>
       </div>
     </div>
 
     <!-- STEP 2: Details + submit -->
-    <div class="issue-body" id="detailsStep" style="display:none">
+    <div class="issue-body" id="detailsStep" hidden>
       <p class="issue-details-label">Add details (optional)</p>
       <textarea class="issue-textarea" id="issueDetails" placeholder="Tell us a bit more..."></textarea>
-
       <div class="issue-submit-wrap">
-        <button type="button" class="login-btn" onclick="handleSubmit()">Submit Issue</button>
+        <button type="button" class="login-btn" id="submitBtn">Submit Issue</button>
       </div>
     </div>
 
-    <div class="modal-overlay" id="submittedModal" style="display:none">
-      <div class="modal-card">
-        <div class="check-circle" style="margin:0 auto 18px;">
-          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M4 12.5L9.5 18L20 6" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </div>
-        <p class="modal-text">Your issue has been submitted. Our support team will get back to you soon.</p>
-        <button type="button" class="login-btn" id="modalOkBtn">OK</button>
+    <!-- RESULT: sent -->
+    <div class="ri-result" id="successStep" hidden>
+      <div class="ri-result-icon ri-result-icon--ok">
+        <svg width="54" height="54" viewBox="0 0 24 24" fill="none" stroke="#1f9d7a" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5 10-11"/></svg>
       </div>
+      <h2 class="ri-result-title">Issue Sent<br>Successfully</h2>
+      <p class="ri-result-text">Your issue has been successfully submitted to the clinic.</p>
+      <div class="ri-result-footer"><button type="button" class="login-btn" id="continueBtn">Continue</button></div>
+    </div>
+
+    <!-- RESULT: not sent -->
+    <div class="ri-result" id="errorStep" hidden>
+      <div class="ri-result-icon ri-result-icon--warn">
+        <svg width="34" height="60" viewBox="0 0 20 36" fill="#f5a30b"><path d="M2.5 2.5C2.5 1.4 3.4.5 4.5.5h11c1.1 0 2 .9 2 2 0 .4-.1.8-.2 1.100L11.800 22.500c-.3.9-1.100 1.500-2 1.500s-1.700-.6-2-1.500L2.700 3.600C2.600 3.300 2.500 2.900 2.500 2.500z"/><circle cx="10" cy="31.300" r="3.400"/></svg>
+      </div>
+      <h2 class="ri-result-title">Issue Not Sent</h2>
+      <p class="ri-result-text">Something went wrong while sending your issue. Please try again.</p>
+      <div class="ri-result-footer"><button type="button" class="login-btn" id="tryAgainBtn">Try Again</button></div>
     </div>
   </div>
 
@@ -70,81 +81,61 @@
     "App configuration seems incorrect",
     "Something else"
   ];
-
-  const issueStep = document.getElementById("issueStep");
-  const detailsStep = document.getElementById("detailsStep");
-  const issueListEl = document.getElementById("issueList");
-  const issueBackBtn = document.getElementById("issueBackBtn");
-  const nextBtn = document.getElementById("nextBtn");
-
+  const $ = (id) => document.getElementById(id);
+  const steps = ["issueStep", "detailsStep", "successStep", "errorStep"];
   let selectedIssue = ISSUES[0];
 
-  function makeIssueOption(label, isFirst) {
-    const btn = document.createElement("button");
-    btn.type = "button";
-    btn.className = "issue-option" + (isFirst ? " selected" : "");
-    btn.dataset.value = label;
-    btn.innerHTML = '<span class="radio-circle"></span><span></span>';
-    btn.querySelector("span:last-child").textContent = label;
-    return btn;
+  // Result screens are full screens (no header), like the Figma.
+  function show(step) {
+    steps.forEach((s) => { $(s).hidden = s !== step; });
+    $("issueHeader").hidden = step === "successStep" || step === "errorStep";
   }
 
   function renderIssues() {
-    issueListEl.innerHTML = "";
-    ISSUES.forEach((label, i) => {
-      const opt = makeIssueOption(label, i === 0);
-      opt.addEventListener("click", () => selectIssue(opt, label));
-      issueListEl.appendChild(opt);
+    const q = $("issueSearch").value.trim().toLowerCase();
+    const list = ISSUES.filter((l) => l.toLowerCase().includes(q));
+    $("noMatch").hidden = list.length > 0;
+    $("issueList").innerHTML = "";
+    list.forEach((label) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "issue-option" + (label === selectedIssue ? " selected" : "");
+      btn.innerHTML = '<span class="radio-circle"></span><span></span>';
+      btn.lastChild.textContent = label;
+      btn.addEventListener("click", () => { selectedIssue = label; renderIssues(); });
+      $("issueList").appendChild(btn);
     });
   }
+  $("issueSearch").addEventListener("input", renderIssues);
 
-  function selectIssue(optEl, label) {
-    issueListEl.querySelectorAll(".issue-option").forEach((o) => o.classList.remove("selected"));
-    optEl.classList.add("selected");
-    selectedIssue = label;
-  }
-
-  nextBtn.addEventListener("click", () => {
-    issueStep.style.display = "none";
-    detailsStep.style.display = "block";
+  $("nextBtn").addEventListener("click", () => show("detailsStep"));
+  $("issueBackBtn").addEventListener("click", () => {
+    if (!$("detailsStep").hidden) show("issueStep");
+    else window.location.href = "/Mobile%20app/my-issues.html";
   });
 
-  issueBackBtn.addEventListener("click", () => {
-    if (detailsStep.style.display !== "none") {
-      detailsStep.style.display = "none";
-      issueStep.style.display = "block";
-    } else if (window.history.length > 1) {
-      window.history.back();
-    } else {
-      window.location.href = "/Mobile%20app/contact-us.html";
-    }
-  });
-
-  // Reachable from Contact Us and from Menu > Raise an Issue, so the
-  // submitted issue is saved to the same list either way.
+  // Saved to the same list Raised Issues reads from.
   function saveIssue() {
-    const ISSUES_KEY = "hearo_raised_issues";
+    const KEY = "hearo_raised_issues";
     let issues = [];
-    try {
-      issues = JSON.parse(localStorage.getItem(ISSUES_KEY)) || [];
-    } catch (e) {}
+    try { issues = JSON.parse(localStorage.getItem(KEY)) || []; } catch (e) {}
     issues.unshift({
       issue: selectedIssue,
-      detail: document.getElementById("issueDetails").value.trim(),
-      date: new Date().toLocaleString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit" }),
+      detail: $("issueDetails").value.trim(),
+      date: new Date().toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }),
       status: "open",
     });
-    localStorage.setItem(ISSUES_KEY, JSON.stringify(issues));
+    localStorage.setItem(KEY, JSON.stringify(issues));
   }
 
-  function handleSubmit() {
+  // Sending can only fail when the phone is offline; that shows Issue Not Sent.
+  $("submitBtn").addEventListener("click", () => {
+    if (navigator.onLine === false) { show("errorStep"); return; }
     saveIssue();
-    document.getElementById("submittedModal").style.display = "flex";
-  }
-
-  document.getElementById("modalOkBtn").addEventListener("click", () => {
-    window.location.href = "/Mobile%20app/raised-issues.html";
+    show("successStep");
   });
+  $("tryAgainBtn").addEventListener("click", () => show("detailsStep"));
+  $("continueBtn").addEventListener("click", () => { window.location.href = "/Mobile%20app/raised-issues.html"; });
 
   renderIssues();
 </script>

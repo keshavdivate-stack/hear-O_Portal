@@ -7562,6 +7562,11 @@ body.patient-discontinued #chatOpenBtn {
 .onboarding-step-body h3 { font-size: 15px; font-weight: 700; margin: 3px 0 6px; color: #23272E; }
 .onboarding-step-body p { font-size: 13.5px; color: var(--gray-text); line-height: 1.6; margin: 0; }
 
+/* Bullet details under a step (EHR Onboarding Guide) */
+.onboarding-step-list { max-width: 720px; margin: 10px 0 0; padding: 12px 16px 12px 34px; background: var(--bg); border: 1px solid var(--gray-border); border-radius: 10px; }
+.onboarding-step-list li { font-size: 13.5px; color: #3A4450; line-height: 1.6; margin: 0; padding: 2px 0; }
+.onboarding-step-list li b { color: #23272E; }
+
 .app-preview {
   margin-top: 16px;
   padding: 16px;
@@ -7785,3 +7790,8 @@ body.patient-discontinued #chatOpenBtn {
 .ehr-multiselect-checkbox svg { display: none; }
 .ehr-multiselect-option.checked .ehr-multiselect-checkbox { background: var(--blue); border-color: var(--blue); }
 .ehr-multiselect-option.checked .ehr-multiselect-checkbox svg { display: block; }
+
+/* EHR modal: 2-column layout like Backoffice > Add Organization step 5 */
+.ehr-card .form-grid { grid-template-columns: repeat(2, 1fr); }
+.ehr-card .custom-select-trigger:disabled { background: #F3F6F9; cursor: not-allowed; }
+.ehr-status-pill.off { background: #FDECEC; color: #D64545; }

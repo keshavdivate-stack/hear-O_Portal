@@ -12,8 +12,13 @@ const CHECK_ICON = `<svg class="option-check" width="15" height="15" viewBox="0 
 const CHECKBOX_ICON = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 const CARET_ICON = (cls) => `<svg class="${cls}" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>`;
 
-const connections = [
-  { ehr: "Epic", env: "Production", clientId: "a1f3c9d2-77be-4e10-9c55-0d2e8b41f6a7", scope: ["patient/*.read", "launch", "openid"] },
+/* One row per supported EHR. A row is "connected" once its credentials have been
+   saved through the Connect EHR modal; Athena keeps previously entered (unsaved)
+   details so the modal shows them pre-filled. */
+const ehrs = [
+  { ehr: "Epic", env: "Production", clientId: "a1f3c9d2-77be-4e10-9c55-0d2e8b41f6a7", clientSecret: "••••••••", scope: ["patient/*.read", "launch", "openid"], connected: true },
+  { ehr: "Athena", env: "Sandbox", clientId: "ath-5521-9be0", clientSecret: "", scope: ["patient/*.read"], connected: false },
+  { ehr: "ECW", env: "", clientId: "", clientSecret: "", scope: [], connected: false },
 ];
 
 /* ---------------- List ---------------- */
@@ -21,45 +26,41 @@ const ehrListRows = document.getElementById("ehrListRows");
 const ehrConnectedCount = document.getElementById("ehrConnectedCount");
 const ehrConnectedHint = document.getElementById("ehrConnectedHint");
 const ehrRangeLabel = document.getElementById("ehrRangeLabel");
-const openConnectEhrBtn = document.getElementById("openConnectEhrBtn");
 
 function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 }
 
 function renderConnections() {
-  ehrConnectedCount.textContent = connections.length;
-  ehrConnectedHint.textContent = `of ${EHR_MAX} available`;
-  ehrRangeLabel.textContent = connections.length ? `1-${connections.length} of ${connections.length}` : "0 of 0";
-  openConnectEhrBtn.disabled = connections.length >= EHR_MAX;
+  ehrConnectedCount.textContent = ehrs.filter((e) => e.connected).length;
+  ehrConnectedHint.textContent = `of ${ehrs.length}`;
+  ehrRangeLabel.textContent = `1-${ehrs.length} of ${ehrs.length}`;
 
-  if (!connections.length) {
-    ehrListRows.innerHTML = `<tr><td colspan="6" class="ehr-empty">No EHR connected yet. Use "Connect EHR" to add one.</td></tr>`;
-    return;
-  }
-
-  ehrListRows.innerHTML = connections
+  ehrListRows.innerHTML = ehrs
     .map(
       (c, i) => `<tr>
         <td><strong>${escapeHtml(c.ehr)}</strong></td>
-        <td>${escapeHtml(c.env)}</td>
-        <td>${escapeHtml(c.clientId)}</td>
+        <td>${c.env ? escapeHtml(c.env) : "—"}</td>
+        <td>${c.clientId ? escapeHtml(c.clientId) : "—"}</td>
         <td>${c.scope.length ? escapeHtml(c.scope.join(", ")) : "—"}</td>
-        <td><span class="ehr-status-pill">Connected</span></td>
-        <td><a class="ticket-view-link" href="#" data-disconnect="${i}">Disconnect</a></td>
+        <td><span class="ehr-status-pill${c.connected ? "" : " off"}">${c.connected ? "Connected" : "Not Connected"}</span></td>
+        <td><a class="ticket-view-link" href="#" data-${c.connected ? "disconnect" : "connect"}="${i}">${c.connected ? "Disconnect" : "Connect"}</a></td>
       </tr>`
     )
     .join("");
 }
 
 ehrListRows.addEventListener("click", (e) => {
-  const link = e.target.closest("[data-disconnect]");
+  const link = e.target.closest("[data-connect], [data-disconnect]");
   if (!link) return;
   e.preventDefault();
-  connections.splice(Number(link.dataset.disconnect), 1);
-  renderConnections();
+  if (link.dataset.connect !== undefined) {
+    openConnectEhrModal(Number(link.dataset.connect));
+  } else {
+    ehrs[Number(link.dataset.disconnect)].connected = false;
+    renderConnections();
+  }
 });
-
 /* ---------------- Dropdown plumbing ---------------- */
 function positionMenu(container, menuSel, triggerSel, maxH) {
   const rect = container.querySelector(triggerSel).getBoundingClientRect();
@@ -183,98 +184,83 @@ function wireMultiSelect(container, values, onChange) {
   });
 
   render();
+  return {
+    setSelected: (vals) => { selected.clear(); vals.forEach((v) => selected.add(v)); render(); },
+  };
 }
 
-/* ---------------- Connect EHR modal ---------------- */
+/* ---------------- Connect EHR modal ----------------
+   Mirrors step 5 (EHR Connection Details) of the Backoffice "Add Organization"
+   wizard, opened for one EHR row and pre-filled from it. */
 const connectEhrOverlay = document.getElementById("connectEhrOverlay");
 const connectEhrForm = document.getElementById("connectEhrForm");
 const ehrRowsWrap = document.getElementById("ehrRowsWrap");
-const addEhrRowBtn = document.getElementById("addEhrRowBtn");
 const saveConnectEhrBtn = document.getElementById("saveConnectEhr");
-let ehrRowCount = 0;
+let activeEhrIndex = null;
 
-function ehrCards() {
-  return Array.from(ehrRowsWrap.querySelectorAll("[data-ehr-row]"));
-}
-
-function relabelEhrCards() {
-  const cards = ehrCards();
-  cards.forEach((card, i) => {
-    card.querySelector(".ehr-card-title").textContent = `EHR Connection ${i + 1}`;
-    card.querySelector(".ehr-card-remove").disabled = cards.length === 1;
-  });
-  addEhrRowBtn.style.display = cards.length >= EHR_MAX - connections.length ? "none" : "";
+function prefillSingleSelect(select, value) {
+  const option = Array.from(select.querySelectorAll(".custom-select-option")).find((o) => o.dataset.value === value);
+  if (!option) return;
+  option.classList.add("selected");
+  const valueEl = select.querySelector(".custom-select-value");
+  valueEl.textContent = value;
+  valueEl.classList.remove("placeholder");
+  select.querySelector("input[type=hidden]").value = value;
 }
 
 function validateConnectEhrForm() {
-  const valid = ehrCards().every((card) =>
-    ["ehrName", "ehrEnv", "clientId", "clientSecret"].every((n) => card.querySelector(`[name="${n}"]`).value.trim() !== "")
-  );
+  const card = ehrRowsWrap.querySelector("[data-ehr-row]");
+  const valid = ["ehrName", "ehrEnv", "clientId", "clientSecret"].every((n) => card.querySelector(`[name="${n}"]`).value.trim() !== "");
   saveConnectEhrBtn.disabled = !valid;
   saveConnectEhrBtn.classList.toggle("enabled", valid);
 }
 
-function addEhrCard() {
-  if (ehrCards().length >= EHR_MAX - connections.length) return;
-  ehrRowCount += 1;
+function openConnectEhrModal(index) {
+  const row = ehrs[index];
+  activeEhrIndex = index;
 
-  const card = document.createElement("div");
-  card.className = "ehr-card";
-  card.setAttribute("data-ehr-row", "");
-  card.innerHTML = `
-    <div class="ehr-card-head">
-      <span class="ehr-card-title"></span>
-      <button type="button" class="ehr-card-remove" aria-label="Remove EHR connection">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6L18 18M6 18L18 6"/></svg>
-      </button>
-    </div>
-    <div class="form-grid">
-      <div class="form-field">
-        <label>EHR Name<span class="required-star">*</span></label>
-        ${singleSelectHtml("ehrName", "Choose", EHR_NAMES)}
-      </div>
-      <div class="form-field">
-        <label>Environment<span class="required-star">*</span></label>
-        ${singleSelectHtml("ehrEnv", "Choose", EHR_ENVIRONMENTS)}
-      </div>
-      <div class="form-field">
-        <label>Client Id<span class="required-star">*</span></label>
-        <input type="text" name="clientId" placeholder="Enter Client ID" />
-      </div>
-      <div class="form-field">
-        <label>Client Secret<span class="required-star">*</span></label>
-        <input type="text" name="clientSecret" placeholder="Enter Client Secret" />
-      </div>
-      <div class="form-field" style="grid-column: span 2;">
-        <label>Scope</label>
-        ${multiSelectHtml("scope", "Choose scope")}
-      </div>
-      <div class="form-field" style="grid-column: 1 / -1;">
-        <label>URL</label>
-        <input type="text" name="url" placeholder="Enter URL" />
+  ehrRowsWrap.innerHTML = `
+    <div class="ehr-card" data-ehr-row>
+      <div class="ehr-card-head"><span class="ehr-card-title">EHR Connection</span></div>
+      <div class="form-grid">
+        <div class="form-field">
+          <label>EHR Name<span class="required-star">*</span></label>
+          ${singleSelectHtml("ehrName", "Choose", EHR_NAMES)}
+        </div>
+        <div class="form-field">
+          <label>Environment<span class="required-star">*</span></label>
+          ${singleSelectHtml("ehrEnv", "Choose", EHR_ENVIRONMENTS)}
+        </div>
+        <div class="form-field">
+          <label>Client Id<span class="required-star">*</span></label>
+          <input type="text" name="clientId" placeholder="Enter Client ID" />
+        </div>
+        <div class="form-field">
+          <label>Client Secret<span class="required-star">*</span></label>
+          <input type="text" name="clientSecret" placeholder="Enter Client Secret" />
+        </div>
+        <div class="form-field" style="grid-column: 1 / -1;">
+          <label>Scope</label>
+          ${multiSelectHtml("scope", "Choose scope")}
+        </div>
       </div>
     </div>`;
 
-  ehrRowsWrap.appendChild(card);
+  const card = ehrRowsWrap.firstElementChild;
   card.querySelectorAll(".custom-select").forEach((s) => wireSingleSelect(s, validateConnectEhrForm));
-  wireMultiSelect(card.querySelector(".ehr-multiselect"), EHR_SCOPES, validateConnectEhrForm);
+  const scopeApi = wireMultiSelect(card.querySelector(".ehr-multiselect"), EHR_SCOPES, validateConnectEhrForm);
   card.querySelectorAll("input[type=text]").forEach((i) => i.addEventListener("input", validateConnectEhrForm));
 
-  card.querySelector(".ehr-card-remove").addEventListener("click", () => {
-    card.remove();
-    relabelEhrCards();
-    validateConnectEhrForm();
-  });
+  /* Auto-select from the table row; the EHR itself is fixed by the row. */
+  const [nameSelect, envSelect] = card.querySelectorAll(".custom-select");
+  prefillSingleSelect(nameSelect, row.ehr);
+  nameSelect.querySelector(".custom-select-trigger").disabled = true;
+  if (row.env) prefillSingleSelect(envSelect, row.env);
+  card.querySelector('[name="clientId"]').value = row.clientId;
+  card.querySelector('[name="clientSecret"]').value = row.clientSecret;
+  scopeApi.setSelected(row.scope);
 
-  relabelEhrCards();
   validateConnectEhrForm();
-}
-
-function openConnectEhrModal() {
-  if (connections.length >= EHR_MAX) return;
-  ehrRowsWrap.innerHTML = "";
-  ehrRowCount = 0;
-  addEhrCard();
   connectEhrOverlay.classList.add("open");
 }
 
@@ -283,23 +269,20 @@ function closeConnectEhrModal() {
   connectEhrOverlay.classList.remove("open");
 }
 
-openConnectEhrBtn.addEventListener("click", openConnectEhrModal);
-addEhrRowBtn.addEventListener("click", addEhrCard);
 document.getElementById("closeConnectEhrX").addEventListener("click", closeConnectEhrModal);
 document.getElementById("cancelConnectEhr").addEventListener("click", closeConnectEhrModal);
 connectEhrOverlay.addEventListener("click", (e) => { if (e.target === connectEhrOverlay) closeConnectEhrModal(); });
 
 connectEhrForm.addEventListener("submit", (e) => {
   e.preventDefault();
-  ehrCards().forEach((card) => {
-    const val = (n) => card.querySelector(`[name="${n}"]`).value.trim();
-    connections.push({
-      ehr: val("ehrName"),
-      env: val("ehrEnv"),
-      clientId: val("clientId"),
-      url: val("url"),
-      scope: val("scope") ? val("scope").split(",") : [],
-    });
+  const card = ehrRowsWrap.firstElementChild;
+  const val = (n) => card.querySelector(`[name="${n}"]`).value.trim();
+  Object.assign(ehrs[activeEhrIndex], {
+    env: val("ehrEnv"),
+    clientId: val("clientId"),
+    clientSecret: val("clientSecret"),
+    scope: val("scope") ? val("scope").split(",") : [],
+    connected: true,
   });
   renderConnections();
   closeConnectEhrModal();

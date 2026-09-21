@@ -240,30 +240,10 @@ document.getElementById("ticketDetailAudioPlay").addEventListener("click", (e) =
   }, 200);
 });
 
-/* Handling is read-only on the page itself -- the values below mirror what's
-   stored on the ticket, and the Edit button opens the popup form (see
-   "Handling form wiring") which is the only place they can be changed.
-   Resolved tickets drop the routing fields, same as the form does. */
-function renderTicketHandlingSummary() {
-  const resolved = currentTicket.status === "Resolved";
-  const tierAgents = TIER_AGENTS[currentTicket.tier] || SUPPORT_AGENTS;
-  const assignee = tierAgents.includes(currentTicket.assignedTo) ? currentTicket.assignedTo : defaultAssigneeForTier(currentTicket.tier);
-  const cells = [`<div class="bo-kv-cell"><span class="k">Status</span><span class="v">${statusPill(currentTicket.status)}</span></div>`];
-  if (!resolved) {
-    cells.push(`<div class="bo-kv-cell"><span class="k">Level</span><span class="v">${currentTicket.tier || "—"}</span></div>`);
-    cells.push(`<div class="bo-kv-cell"><span class="k">Priority</span><span class="v">${priorityPill(currentTicket.priority)}</span></div>`);
-    if (currentTicket.tier === "Level 3") {
-      cells.push(`<div class="bo-kv-cell"><span class="k">Organization</span><span class="v">${currentTicket.organization || "—"}</span></div>`);
-    }
-    cells.push(`<div class="bo-kv-cell"><span class="k">Assigned To</span><span class="v">${assignee || "—"}</span></div>`);
-  }
-  cells.push(`<div class="bo-kv-cell bo-kv-cell--full"><span class="k">Note</span><span class="v bo-kv-note" id="ticketHandlingNote"></span></div>`);
-  document.getElementById("ticketHandlingSummary").innerHTML = cells.join("");
-  document.getElementById("ticketHandlingNote").textContent = currentTicket.rootCause || "—";
-}
-
+/* Handling shows the same fields as the edit form, but locked until Edit is
+   clicked (see "Handling form wiring"). Resolved tickets drop the routing
+   fields, same as the form does. */
 function renderTicketHandling() {
-  renderTicketHandlingSummary();
   document.getElementById("ticketDetailRootCause").value = currentTicket.rootCause || "";
   setBoSelectValue(document.querySelector('.bo-select[data-name="ticketStatus"]'), currentTicket.status, { silent: true });
   setBoSelectValue(document.querySelector('.bo-select[data-name="ticketLevel"]'), currentTicket.tier, { silent: true });
@@ -641,30 +621,37 @@ if (currentSource === "patient") {
 }
 
 /* ---------------- Handling form wiring ----------------
-   The form lives in the Edit Handling popup, not on the page. Opening it
-   always re-seeds the fields from the ticket, so anything typed and then
-   cancelled is discarded instead of lingering for the next open. */
-const ticketHandlingOverlay = document.getElementById("ticketHandlingOverlay");
+   The form is always on the page but locked (read-only) until Edit is
+   clicked. Cancel re-seeds every field from the ticket, so anything typed
+   and then cancelled is discarded instead of lingering. */
+const ticketDetailFormEl = document.getElementById("ticketDetailForm");
+const editTicketHandlingBtn = document.getElementById("editTicketHandlingBtn");
+const ticketHandlingActions = document.getElementById("ticketHandlingActions");
+const ticketNoteInput = document.getElementById("ticketDetailRootCause");
+const NOTE_PLACEHOLDER = "What caused this issue? (optional)";
+let ticketHandlingEditing = false;
 
-function openTicketHandlingModal() {
+function setTicketHandlingEditing(editing) {
+  ticketHandlingEditing = editing;
+  ticketDetailFormEl.classList.toggle("is-readonly", !editing);
+  ticketDetailFormEl.querySelectorAll(".bo-select-trigger").forEach((t) => { t.disabled = !editing; });
+  ticketNoteInput.disabled = !editing;
+  ticketNoteInput.placeholder = editing ? NOTE_PLACEHOLDER : "—";
+  editTicketHandlingBtn.hidden = editing;
+  ticketHandlingActions.hidden = !editing;
+  if (!editing) closeAllBoSelects();
+}
+
+function cancelTicketHandlingEdit() {
   renderTicketHandling();
-  ticketHandlingOverlay.classList.add("open");
+  setTicketHandlingEditing(false);
 }
 
-function closeTicketHandlingModal() {
-  ticketHandlingOverlay.classList.remove("open");
-}
-
-document.getElementById("editTicketHandlingBtn").addEventListener("click", openTicketHandlingModal);
-document.getElementById("closeTicketHandlingX").addEventListener("click", closeTicketHandlingModal);
-document.getElementById("cancelTicketHandling").addEventListener("click", closeTicketHandlingModal);
-ticketHandlingOverlay.addEventListener("click", (e) => {
-  if (e.target === ticketHandlingOverlay) closeTicketHandlingModal();
-});
+editTicketHandlingBtn.addEventListener("click", () => setTicketHandlingEditing(true));
+document.getElementById("cancelTicketHandling").addEventListener("click", cancelTicketHandlingEdit);
 document.addEventListener("keydown", (e) => {
-  if (e.key === "Escape" && ticketHandlingOverlay.classList.contains("open")) closeTicketHandlingModal();
+  if (e.key === "Escape" && ticketHandlingEditing) cancelTicketHandlingEdit();
 });
-
 document.querySelector('.bo-select[data-name="ticketLevel"] input[type=hidden]').addEventListener("change", (e) => {
   const tier = e.target.value;
   populateTicketDetailAssignees(tier);
@@ -686,7 +673,7 @@ document.querySelector('.bo-select[data-name="ticketOrgHandling"] input[type=hid
   validateTicketDetailForm();
 });
 
-const ticketDetailForm = document.getElementById("ticketDetailForm");
+const ticketDetailForm = ticketDetailFormEl;
 ticketDetailForm.addEventListener("input", validateTicketDetailForm);
 ticketDetailForm.addEventListener("change", validateTicketDetailForm);
 
@@ -764,5 +751,7 @@ ticketDetailForm.addEventListener("submit", (e) => {
   renderTicketInfo();
   renderTicketHandling();
   renderTicketHistory();
-  closeTicketHandlingModal();
+  setTicketHandlingEditing(false);
 });
+
+setTicketHandlingEditing(false);

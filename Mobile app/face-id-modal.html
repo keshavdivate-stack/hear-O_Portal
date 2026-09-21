@@ -23,7 +23,7 @@
     </div>
 
     <div class="locked-content home-dimmed" style="padding-top:56px;">
-      <button type="button" class="back-btn" style="position:absolute; top:56px; left:20px;">
+      <button type="button" class="back-btn" style="position:absolute; top:56px; left:20px;" onclick="window.location.href='/Mobile%20app/home.html'">
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M12.5 4L6.5 10L12.5 16" stroke="#252424" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
 
@@ -58,7 +58,7 @@
           <p class="faceid-modal-sub" id="faceidSub">Please try again</p>
 
           <div class="faceid-modal-actions" id="faceidActions">
-            <button type="button" class="faceid-modal-btn" onclick="window.location.href='/Mobile%20app/home.html'">Try again with Face ID</button>
+            <button type="button" class="faceid-modal-btn" onclick="window.location.href='/Mobile%20app/face-id.html'">Try again with Face ID</button>
             <button type="button" class="faceid-modal-btn" onclick="window.location.href='/Mobile%20app/verify-identity.html'">Cancel</button>
           </div>
         </div>
@@ -77,7 +77,7 @@
     document.getElementById("faceidSub").hidden = true;
     document.getElementById("faceidActions").className = "faceid-modal-actions faceid-modal-actions-split";
     document.getElementById("faceidActions").innerHTML = `
-      <button type="button" class="faceid-modal-btn" onclick="window.location.href='/Mobile%20app/home.html'">Try another way</button>
+      <button type="button" class="faceid-modal-btn" onclick="window.location.href='/Mobile%20app/verify-identity.html'">Try another way</button>
       <button type="button" class="faceid-modal-btn" onclick="window.location.href='/Mobile%20app/verify-identity.html'">Cancel</button>
     `;
   }

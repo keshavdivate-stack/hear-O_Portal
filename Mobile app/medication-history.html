@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/Mobile%20app/style.css?v=30">
+<link rel="stylesheet" href="/Mobile%20app/style.css?v=31">
 <script src="/Mobile%20app/font-scale.js?v=29"></script>
 </head>
 <body>
@@ -22,27 +22,27 @@
       </div>
     </div>
 
-    <div class="bp-header">
+    <div class="mx-header mx-header--left">
       <button type="button" class="back-btn" onclick="window.location.href='/Mobile%20app/medication.html'">
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M12.5 4L6.5 10L12.5 16" stroke="#252424" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
-      <h1 id="histTitle">Medication History</h1>
+      <h1 id="histTitle">Medication history</h1>
     </div>
 
-    <div class="med-hist-body">
-      <div class="med-hist-month-nav">
-        <button type="button" class="med-hist-month-btn" id="prevMonthBtn" aria-label="Previous month">
-          <svg width="9" height="15" viewBox="0 0 9 15" fill="none"><path d="M7.5 1.5L1.5 7.5L7.5 13.5" stroke="#252424" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <div class="mx-body">
+      <div class="mx-month-nav">
+        <button type="button" class="mx-circle-btn" id="prevMonthBtn" aria-label="Previous month">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M15 4.5L7 12L15 19.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </button>
-        <span class="med-hist-month-label" id="monthLabel"></span>
-        <button type="button" class="med-hist-month-btn" id="nextMonthBtn" aria-label="Next month">
-          <svg width="9" height="15" viewBox="0 0 9 15" fill="none"><path d="M1.5 1.5L7.5 7.5L1.5 13.5" stroke="#252424" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span class="mx-month-label" id="monthLabel"></span>
+        <button type="button" class="mx-circle-btn" id="nextMonthBtn" aria-label="Next month">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M9 4.5L17 12L9 19.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </button>
       </div>
 
-      <div class="med-hist-legend">
-        <span class="med-hist-legend-item"><span class="med-hist-legend-dot taken"></span>Taken</span>
-        <span class="med-hist-legend-item"><span class="med-hist-legend-dot missed"></span>Skipped</span>
+      <div class="mx-legend">
+        <span class="mx-legend-item"><span class="mx-legend-dot mx-legend-dot--taken"></span>Taken</span>
+        <span class="mx-legend-item"><span class="mx-legend-dot mx-legend-dot--skipped"></span>Skipped</span>
       </div>
 
       <div id="historyList"></div>
@@ -50,38 +50,29 @@
   </div>
 
 <script>
-  // Each medication's scheduled dose time(s). "Missed" days are a fixed demo
-  // pattern per medication rather than random, so the history stays the same
-  // on every visit.
+  // Each medication's dose times, plus the doses skipped on a given day.
+  // skipped[year-month][day] = the dose times skipped that day (fixed demo
+  // pattern, so the history reads the same on every visit).
   const MED_INFO = {
-    furosemide: { name: "Furosemide", times: ["8:00 AM"], missedDays: { "2026-7": [5, 14, 23], "2026-8": [3, 12] } },
-    carvedilol: { name: "Carvedilol", times: ["8:00 AM", "8:00 PM"], missedDays: { "2026-7": [8, 20], "2026-8": [9] } },
-    spironolactone: { name: "Spironolactone", times: ["8:00 AM"], missedDays: { "2026-7": [11], "2026-8": [] } },
-    atorvastatin: { name: "Atorvastatin", times: ["9:00 PM"], missedDays: { "2026-7": [3, 17, 29], "2026-8": [6, 15] } },
-    lisinopril: { name: "Lisinopril", times: ["8:00 AM"], missedDays: { "2026-7": [2, 9, 16, 23, 30], "2026-8": [] } },
-    ibuprofen: { name: "Ibuprofen", times: ["As needed"], missedDays: { "2026-7": [], "2026-8": [] } }
+    spironolactone: { name: "Spironolactone", times: ["8:00 AM", "8:00 PM"], skipped: { "2026-8": { 18: ["8:00 PM"] }, "2026-7": { 11: ["8:00 AM", "8:00 PM"] } } },
+    carvedilol: { name: "Carvedilol", times: ["8:00 AM", "8:00 PM"], skipped: { "2026-8": { 17: ["8:00 AM"] }, "2026-7": { 8: ["8:00 PM"], 20: ["8:00 AM"] } } },
+    furosemide: { name: "Furosemide", times: ["8:00 AM"], skipped: { "2026-8": { 12: ["8:00 AM"] }, "2026-7": { 5: ["8:00 AM"], 14: ["8:00 AM"] } } },
+    atorvastatin: { name: "Atorvastatin", times: ["9:00 PM"], skipped: { "2026-8": { 6: ["9:00 PM"] }, "2026-7": { 3: ["9:00 PM"], 17: ["9:00 PM"] } } },
   };
 
   const TODAY = { year: 2026, month: 8, day: 18 };
-  const AVAILABLE_MONTHS = [
-    { year: 2026, month: 7 },
-    { year: 2026, month: 8 }
-  ];
+  const AVAILABLE_MONTHS = [{ year: 2026, month: 7 }, { year: 2026, month: 8 }];
+  const MONTH_NAMES = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
-  const params = new URLSearchParams(window.location.search);
-  const medKey = params.get("med");
-  const med = MED_INFO[medKey] || MED_INFO.furosemide;
-
+  const medKey = new URLSearchParams(window.location.search).get("med");
+  const med = MED_INFO[medKey] || MED_INFO.spironolactone;
   document.getElementById("histTitle").textContent = `${med.name} history`;
 
   let monthIndex = AVAILABLE_MONTHS.length - 1;
-
   const monthLabelEl = document.getElementById("monthLabel");
   const historyListEl = document.getElementById("historyList");
   const prevBtn = document.getElementById("prevMonthBtn");
   const nextBtn = document.getElementById("nextMonthBtn");
-
-  const MONTH_NAMES = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
   function renderMonth() {
     const { year, month } = AVAILABLE_MONTHS[monthIndex];
@@ -89,58 +80,29 @@
     prevBtn.disabled = monthIndex === 0;
     nextBtn.disabled = monthIndex === AVAILABLE_MONTHS.length - 1;
 
-    const missedDays = med.missedDays[`${year}-${month}`] || [];
-    const daysInMonth = new Date(year, month, 0).getDate();
-    const isCurrentMonth = year === TODAY.year && month === TODAY.month;
-    const lastDay = isCurrentMonth ? TODAY.day : daysInMonth;
+    const skipped = med.skipped[`${year}-${month}`] || {};
+    const lastDay = year === TODAY.year && month === TODAY.month ? TODAY.day : new Date(year, month, 0).getDate();
 
     historyListEl.innerHTML = "";
-    if (lastDay < 1) {
-      historyListEl.innerHTML = '<p class="list-empty">No history yet for this month.</p>';
-      return;
-    }
-
     for (let day = lastDay; day >= 1; day--) {
       const dateObj = new Date(year, month - 1, day);
       const weekday = dateObj.toLocaleDateString("en-US", { weekday: "short" });
       const monthShort = dateObj.toLocaleDateString("en-US", { month: "short" });
-      const status = missedDays.includes(day) ? "missed" : "taken";
-      const statusLabel = status === "taken" ? "Taken" : "Skipped";
-
-      const card = document.createElement("div");
-      card.className = "med-hist-day-card";
-
-      const doseLines = med.times
-        .map((time) => `
-          <div class="med-hist-dose-line">
-            <span class="med-hist-time">${time}</span>
-            <span class="med-hist-status-pill ${status}">${statusLabel}</span>
-          </div>
-        `)
+      const lines = med.times
+        .map((time) => {
+          const isSkipped = (skipped[day] || []).includes(time);
+          return `<div class="mx-day-line"><span class="mx-day-time">${time}</span><span class="mx-pill ${isSkipped ? "mx-pill--skipped" : "mx-pill--taken"}">${isSkipped ? "Skipped" : "Taken"}</span></div>`;
+        })
         .join("");
-
-      card.innerHTML = `
-        <div class="med-hist-date">${weekday}, ${monthShort} ${day}</div>
-        ${doseLines}
-      `;
+      const card = document.createElement("div");
+      card.className = "mx-day-card";
+      card.innerHTML = `<div class="mx-day-date">${weekday}, ${monthShort} ${day}</div>${lines}`;
       historyListEl.appendChild(card);
     }
   }
 
-  prevBtn.addEventListener("click", () => {
-    if (monthIndex > 0) {
-      monthIndex--;
-      renderMonth();
-    }
-  });
-
-  nextBtn.addEventListener("click", () => {
-    if (monthIndex < AVAILABLE_MONTHS.length - 1) {
-      monthIndex++;
-      renderMonth();
-    }
-  });
-
+  prevBtn.addEventListener("click", () => { if (monthIndex > 0) { monthIndex--; renderMonth(); } });
+  nextBtn.addEventListener("click", () => { if (monthIndex < AVAILABLE_MONTHS.length - 1) { monthIndex++; renderMonth(); } });
   renderMonth();
 </script>
 </body>

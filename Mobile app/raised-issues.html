@@ -22,14 +22,14 @@
       </div>
     </div>
 
-    <div class="bp-header">
+    <div class="mx-header">
       <button type="button" class="back-btn" onclick="window.location.href='/Mobile%20app/my-issues.html'">
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M12.5 4L6.5 10L12.5 16" stroke="#252424" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
       <h1>Raised Issues</h1>
     </div>
 
-    <div class="history-body" id="issuesList"></div>
+    <div class="mx-body" id="issuesList"></div>
   </div>
 
 <script>
@@ -39,13 +39,13 @@
     {
       issue: "App is not working as expected",
       detail: "The app freezes for a few seconds after I finish a recording.",
-      date: "Aug 15, 2026, 9:20 AM",
+      date: "Aug 18, 8:15 AM",
       status: "in-progress",
     },
     {
       issue: "App configuration seems incorrect",
       detail: "",
-      date: "Aug 5, 2026, 4:05 PM",
+      date: "Aug 18, 8:15 AM",
       status: "resolved",
     },
   ];
@@ -70,17 +70,13 @@
     issuesList.innerHTML = issues
       .map(
         (i) => `
-      <div class="history-card">
-        <div class="history-card-head">
-          <div class="history-card-title-wrap">
-            <div class="history-card-top-row">
-              <span class="history-card-med">${i.issue}</span>
-            </div>
-            <div class="history-card-action">${i.date}</div>
-          </div>
-          <span class="issue-status-pill ${i.status}">${STATUS_LABELS[i.status] || "Open"}</span>
+      <div class="mx-issue-card">
+        <div class="mx-issue-top">
+          <span class="mx-issue-title">${i.issue}</span>
+          <span class="mx-issue-pill ${i.status}">${STATUS_LABELS[i.status] || "Open"}</span>
         </div>
-        ${i.detail ? `<div class="history-card-note">${i.detail}</div>` : ""}
+        <div class="mx-issue-date">${i.date}</div>
+        ${i.detail ? `<div class="mx-issue-note">${i.detail}</div>` : ""}
       </div>`
       )
       .join("");

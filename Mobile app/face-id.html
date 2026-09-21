@@ -7,8 +7,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/Mobile%20app/style.css?v=30">
+<link rel="stylesheet" href="/Mobile%20app/style.css?v=34">
 <script src="/Mobile%20app/font-scale.js?v=29"></script>
+<script src="/Mobile%20app/auth-flow.js"></script>
+<style>.faceid-icon svg { width: 84px; height: 84px; } .faceid-icon { margin-bottom: 26px; }</style>
 </head>
 <body>
 
@@ -22,12 +24,20 @@
       </div>
     </div>
 
-    <div class="locked-content">
-      <div class="locked-icon-outer">
+    <div class="locked-content" style="padding-top:56px;">
+      <button type="button" class="back-btn" style="position:absolute; top:56px; left:20px;" onclick="window.location.href='/Mobile%20app/home.html'">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M12.5 4L6.5 10L12.5 16" stroke="#252424" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+
+      <div class="faceid-icon">
         <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="8.5" cy="10" r="1" fill="#186DCE"/>
-          <circle cx="15.5" cy="10" r="1" fill="#186DCE"/>
-          <path d="M9 15C9.8 15.8 10.9 16.2 12 16.2C13.1 16.2 14.2 15.8 15 15" stroke="#186DCE" stroke-width="1.6" stroke-linecap="round"/>
+          <path d="M4 8V6C4 4.9 4.9 4 6 4H8" stroke="#7a7f87" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M20 8V6C20 4.9 19.1 4 18 4H16" stroke="#7a7f87" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M4 16V18C4 19.1 4.9 20 6 20H8" stroke="#7a7f87" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M20 16V18C20 19.1 19.1 20 18 20H16" stroke="#7a7f87" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="9" cy="11" r="0.8" fill="#7a7f87"/>
+          <circle cx="15" cy="11" r="0.8" fill="#7a7f87"/>
+          <path d="M9.5 15C10.2 15.6 11.1 16 12 16C12.9 16 13.8 15.6 14.5 15" stroke="#7a7f87" stroke-width="1.6" stroke-linecap="round"/>
         </svg>
       </div>
 
@@ -35,11 +45,27 @@
       <p class="locked-desc">We use Face ID to keep your health information private</p>
 
       <div class="locked-footer" style="width:100%; display:flex; flex-direction:column; align-items:center; gap:16px;">
-        <button type="button" class="login-btn" style="margin-top:0;" onclick="window.location.href='/Mobile%20app/home.html'">OK</button>
-        <button type="button" class="skip-link" onclick="window.location.href='/Mobile%20app/home.html'">Not now</button>
+        <button type="button" class="login-btn" style="margin-top:0;" id="faceOkBtn">OK</button>
+        <button type="button" class="skip-link" onclick="window.location.href='/Mobile%20app/verify-identity.html'">Use code instead</button>
       </div>
     </div>
   </div>
 
+<script>
+  // Face ID succeeds. To see the "not recognized" screens, open this page with
+  // ?fail=1 -- the first two attempts then fail (retry dialog, then the
+  // "Try another way" dialog) before the third succeeds.
+  if (new URLSearchParams(window.location.search).get("fail") === "1") sessionStorage.setItem("hearo_face_fail", "1");
+
+  document.getElementById("faceOkBtn").addEventListener("click", () => {
+    const attempts = Number(sessionStorage.getItem("hearo_face_attempts") || 0);
+    if (sessionStorage.getItem("hearo_face_fail") === "1" && attempts < 2) {
+      sessionStorage.setItem("hearo_face_attempts", String(attempts + 1));
+      window.location.href = "/Mobile%20app/face-id-modal.html" + (attempts + 1 >= 2 ? "?variant=split" : "");
+      return;
+    }
+    completeAuth("/Mobile%20app/home.html");
+  });
+</script>
 </body>
 </html>
