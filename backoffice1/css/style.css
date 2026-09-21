@@ -5589,3 +5589,28 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
   cursor: default;
   resize: none;
 }
+
+/* Scope multiselect: selected values render as removable chips */
+.scope-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 6px 3px 10px;
+  background: #E6F4FB;
+  color: #0B6FA4;
+  border-radius: 999px;
+  font-size: 12.5px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+.scope-chip-x {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+.scope-chip-x:hover { background: rgba(11, 111, 164, 0.18); }
+.has-chips { display: flex; flex-wrap: wrap; gap: 6px; white-space: normal !important; overflow: visible !important; }

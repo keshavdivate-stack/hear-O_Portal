@@ -271,7 +271,7 @@ const EHR_ENV_OPTIONS_HTML = `
 const EHR_MAX = 3;
 
 /* Scopes granted by the EHR (as listed on the URL the EHR/Epic sends back). */
-const EHR_SCOPE_OPTIONS = ["patient/*.read", "patient/*.write", "user/*.read", "user/*.write", "launch", "openid", "fhirUser", "offline_access"];
+const EHR_SCOPE_OPTIONS = ["openid", "fhirUser", "offline_access", "user/Patient.read", "user/Patient.write", "user/Practitioner.read", "user/PractitionerRole.read", "user/Organization.read", "user/Encounter.read", "user/RelatedPerson.read", "user/CareTeam.read", "user/CarePlan.read", "user/Goal.read", "user/Flag.read", "user/List.read", "user/AllergyIntolerance.read", "user/AllergyIntolerance.write", "user/Condition.read", "user/Condition.write", "user/Observation.read", "user/Observation.write", "user/MedicationRequest.read", "user/Medication.read", "user/MedicationDispense.read", "user/MedicationAdministration.read", "user/DocumentReference.read", "user/DocumentReference.write", "user/Binary.read"];
 const EHR_SCOPE_CHECK_ICON = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 
 function ehrScopeFieldHtml(n) {
@@ -322,13 +322,27 @@ function initEhrScopes(root = document) {
         </label>`
       ).join("");
       const chosen = EHR_SCOPE_OPTIONS.filter((v) => selected.has(v));
-      valueEl.textContent = chosen.length ? chosen.join(", ") : placeholderText;
+      if (chosen.length) {
+        valueEl.innerHTML = chosen
+          .map((v) => `<span class="scope-chip">${v}<span class="scope-chip-x" role="button" aria-label="Remove ${v}" data-remove="${v}"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M6 6L18 18M6 18L18 6"/></svg></span></span>`)
+          .join("");
+      } else {
+        valueEl.textContent = placeholderText;
+      }
       valueEl.classList.toggle("placeholder", chosen.length === 0);
+      valueEl.classList.toggle("has-chips", chosen.length > 0);
       hidden.value = chosen.join(",");
     }
 
     trigger.addEventListener("click", (e) => {
       e.stopPropagation();
+      const removeBtn = e.target.closest("[data-remove]");
+      if (removeBtn) {
+        selected.delete(removeBtn.dataset.remove);
+        render();
+        if (container.classList.contains("open")) positionEhrScopeMenu(container);
+        return;
+      }
       const willOpen = !container.classList.contains("open");
       closeAllEhrScopes();
       closeAllBoSelects();
