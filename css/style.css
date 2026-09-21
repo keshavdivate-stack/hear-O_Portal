@@ -7626,3 +7626,162 @@ body.patient-discontinued #chatOpenBtn {
 .app-phone-screenshot img { display: block; width: 100%; height: auto; }
 
 
+
+
+/* ============================================================
+   EHR PAGE (connected EHRs + Connect EHR modal)
+   ============================================================ */
+.ehr-summary {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.ehr-summary-stat {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 12px 18px;
+  background: #fff;
+  border-radius: 12px;
+}
+
+.ehr-summary-label { font-size: 13px; font-weight: 700; color: #6B7684; }
+.ehr-summary-count { font-size: 26px; font-weight: 800; color: #23272E; line-height: 1; }
+.ehr-summary-hint { font-size: 12.5px; color: #9AA5B1; }
+
+.ehr-status-pill {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  background: #E6F6EE;
+  color: #0E8A5B;
+}
+
+.ehr-empty { text-align: center; color: #9AA5B1; padding: 40px 0 !important; }
+
+.ehr-section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: #6B7684;
+  margin-bottom: 14px;
+}
+
+.ehr-section-title svg { color: var(--blue); }
+
+.ehr-card {
+  background: #F3F6F9;
+  border-radius: 12px;
+  padding: 18px 20px 20px;
+  margin-bottom: 14px;
+}
+
+.ehr-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.ehr-card-title { font-size: 15px; font-weight: 800; color: #23272E; }
+
+.ehr-card-remove {
+  border: none;
+  background: transparent;
+  color: #6B7684;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+}
+
+.ehr-card-remove:disabled { opacity: 0.35; cursor: not-allowed; }
+
+#connectEhrForm .btn-secondary { margin-bottom: 4px; }
+
+/* Checkbox multiselect (Scope) */
+.ehr-multiselect { position: relative; }
+
+.ehr-multiselect-trigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 11px 14px;
+  border: 1px solid var(--gray-border);
+  border-radius: 8px;
+  background: #fff;
+  font-family: inherit;
+  font-size: 14px;
+  color: #23272E;
+  cursor: pointer;
+  text-align: left;
+}
+
+.ehr-multiselect-trigger:hover { border-color: #C9CFD6; }
+.ehr-multiselect.open .ehr-multiselect-trigger { border-color: var(--blue); }
+
+.ehr-multiselect-value { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ehr-multiselect-value.placeholder { color: #AEB4BC; }
+
+.ehr-multiselect-caret { flex-shrink: 0; color: #6B7684; transition: transform 150ms ease; }
+.ehr-multiselect.open .ehr-multiselect-caret { transform: rotate(180deg); }
+
+.ehr-multiselect-menu {
+  display: none;
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 14px 34px rgba(20, 30, 50, 0.18);
+  padding: 6px;
+  max-height: 240px;
+  overflow-y: auto;
+  z-index: 420;
+}
+
+.ehr-multiselect.open .ehr-multiselect-menu { display: block; }
+
+/* Scoped under .ehr-multiselect so the global `.form-field label` rule
+   (display:block + bottom margin) can't stack the checkbox above its text --
+   these options are <label>s living inside a .form-field. */
+.ehr-multiselect .ehr-multiselect-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  padding: 9px 11px;
+  border-radius: 7px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.3;
+  color: #23272E;
+  cursor: pointer;
+}
+
+.ehr-multiselect .ehr-multiselect-option:hover { background: var(--bg); }
+
+.ehr-multiselect-checkbox {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  border: 1.6px solid #C9CFD6;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.ehr-multiselect-checkbox svg { display: none; }
+.ehr-multiselect-option.checked .ehr-multiselect-checkbox { background: var(--blue); border-color: var(--blue); }
+.ehr-multiselect-option.checked .ehr-multiselect-checkbox svg { display: block; }
