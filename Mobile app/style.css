@@ -4462,6 +4462,13 @@ input[type="password"]:focus {
   box-shadow: 0 0 0 2px #fff, 0 0 0 3.5px #186DCE;
 }
 
+.day-dot.is-clickable { cursor: pointer; }
+
+.day-dot.is-selected:not(.is-today) {
+  border-color: #186DCE;
+  box-shadow: 0 0 0 2px #fff, 0 0 0 3.5px #186DCE;
+}
+
 .day-cell-label {
   font-size: calc(13px * var(--font-scale, 1));
   color: #8a8f97;
