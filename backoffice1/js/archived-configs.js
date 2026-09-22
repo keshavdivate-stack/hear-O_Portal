@@ -16,7 +16,7 @@ const ARCH_CONFIG_TABS = Object.keys(ARCH_CONFIG_TARGETS);
 function archEsc(v) { return String(v == null ? "" : v).replace(/"/g, "&quot;"); }
 function archEscOrDash(v) { return v ? archEsc(v) : "—"; }
 
-const archUnarchiveIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v6h6"/><path d="M3 9a9 9 0 1 0 2.6-6.35"/></svg>`;
+const archUnarchiveIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="4" rx="1"/><path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8"/><path d="M12 17v-6"/><path d="M9 14l3-3 3 3"/></svg>`;
 const archUnarchiveBtn = (idx) => `<button type="button" class="bo-unarchive-link arch-config-unarchive" data-idx="${idx}" aria-label="Unarchive">${archUnarchiveIcon}</button>`;
 
 let archConfigSearch = "";
