@@ -15,8 +15,8 @@ const ARCH_SD_TABS = Object.keys(ARCH_SD_TARGETS);
 function archSdEsc(v) { return String(v == null ? "" : v).replace(/"/g, "&quot;"); }
 function archSdVal(v) { return v === undefined || v === null || v === "" ? "--" : archSdEsc(v); }
 
-const archSdUnarchiveIcon = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v6h6"/><path d="M3 9a9 9 0 1 0 2.6-6.35"/></svg>`;
-const archSdUnarchiveBtn = (idx) => `<button type="button" class="bo-unarchive-link arch-sd-unarchive" data-idx="${idx}">${archSdUnarchiveIcon} Unarchive</button>`;
+const archSdUnarchiveIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v6h6"/><path d="M3 9a9 9 0 1 0 2.6-6.35"/></svg>`;
+const archSdUnarchiveBtn = (idx) => `<button type="button" class="bo-unarchive-link arch-sd-unarchive" data-idx="${idx}" aria-label="Unarchive">${archSdUnarchiveIcon}</button>`;
 
 let archSdSearch = "";
 function archSdEntries(tabKey) {
