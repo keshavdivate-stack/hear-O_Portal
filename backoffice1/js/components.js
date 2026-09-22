@@ -37,6 +37,8 @@ function nowStamp() {
 const addConfigBtn = document.getElementById("addConfigBtn");
 const addConfigBtnLabel = document.getElementById("addConfigBtnLabel");
 
+const viewArchivedLink = document.getElementById("viewArchivedLink");
+
 document.querySelectorAll("#componentsTabs .bo-tab").forEach((tab) => {
   tab.addEventListener("click", () => {
     document.querySelectorAll("#componentsTabs .bo-tab").forEach((t) => t.classList.remove("active"));
@@ -45,6 +47,9 @@ document.querySelectorAll("#componentsTabs .bo-tab").forEach((tab) => {
     document.getElementById(`tab-${tab.dataset.tab}`).classList.add("active");
     addConfigBtn.dataset.tab = tab.dataset.tab;
     addConfigBtnLabel.textContent = TAB_META[tab.dataset.tab].addLabel;
+    /* View Archived should open on whichever tab you were looking at, since
+       each tab's archive shows that tab's own columns. */
+    viewArchivedLink.href = `archived-configs.html?tab=${tab.dataset.tab}`;
   });
 });
 

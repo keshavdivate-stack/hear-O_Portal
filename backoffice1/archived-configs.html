@@ -148,6 +148,15 @@
 
     <div class="bo-list-toolbar" style="margin-bottom:18px;">
       <h1>Archived Configurations</h1>
+      <div class="bo-tabs bo-seg-toggle" id="archConfigTabs" style="flex-wrap:wrap;">
+        <button class="bo-tab bo-seg-btn active" data-tab="main">Main Config</button>
+        <button class="bo-tab bo-seg-btn" data-tab="sentences">Sentences</button>
+        <button class="bo-tab bo-seg-btn" data-tab="questions">Questions</button>
+        <button class="bo-tab bo-seg-btn" data-tab="inputAssessment">Input Assessment</button>
+        <button class="bo-tab bo-seg-btn" data-tab="generalParams">General Params</button>
+        <button class="bo-tab bo-seg-btn" data-tab="reminder">Reminder</button>
+        <button class="bo-tab bo-seg-btn" data-tab="iaErrors">IA Errors</button>
+      </div>
       <span class="bo-list-toolbar-spacer"></span>
       <div class="bo-search-pill">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/></svg>
@@ -155,19 +164,99 @@
       </div>
     </div>
 
-    <div class="bo-table-card">
-      <div class="bo-table-scroll">
-        <table class="bo-list-table bo-list-table--fluid">
-          <thead>
-            <tr>
-              <th>CONFIGURATION</th>
-              <th>TYPE</th>
-              <th>DATE</th>
-              <th>ACTION</th>
-            </tr>
-          </thead>
-          <tbody id="archConfigRows"></tbody>
-        </table>
+    <!-- MAIN CONFIG -->
+    <div class="bo-tab-panel active" id="archtab-main">
+      <div class="bo-table-card">
+        <div class="bo-table-scroll">
+          <table class="bo-list-table bo-list-table--compact">
+            <thead>
+              <tr>
+                <th>FILE NAME</th>
+                <th>SENTENCES CONFIG</th>
+                <th>QUESTIONS CONFIG</th>
+                <th>INPUT ASSESSMENT CONFIG</th>
+                <th>GENERAL PARAMS CONFIG</th>
+                <th>REMINDER CONFIG</th>
+                <th>IA ERRORS CONFIG</th>
+                <th>CREATION DATE</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="arch-rows-main"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- SENTENCES -->
+    <div class="bo-tab-panel" id="archtab-sentences">
+      <div class="bo-table-card">
+        <div class="bo-table-scroll">
+          <table class="bo-list-table bo-list-table--compact">
+            <thead><tr><th>FILE NAME</th><th>CREATION DATE</th><th></th></tr></thead>
+            <tbody id="arch-rows-sentences"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- QUESTIONS -->
+    <div class="bo-tab-panel" id="archtab-questions">
+      <div class="bo-table-card">
+        <div class="bo-table-scroll">
+          <table class="bo-list-table bo-list-table--compact">
+            <thead><tr><th>FILE NAME</th><th>CREATION DATE</th><th></th></tr></thead>
+            <tbody id="arch-rows-questions"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- INPUT ASSESSMENT -->
+    <div class="bo-tab-panel" id="archtab-inputAssessment">
+      <div class="bo-table-card">
+        <div class="bo-table-scroll">
+          <table class="bo-list-table bo-list-table--compact">
+            <thead><tr><th>FILE NAME</th><th>CREATION DATE</th><th></th></tr></thead>
+            <tbody id="arch-rows-inputAssessment"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- GENERAL PARAMS -->
+    <div class="bo-tab-panel" id="archtab-generalParams">
+      <div class="bo-table-card">
+        <div class="bo-table-scroll">
+          <table class="bo-list-table bo-list-table--compact">
+            <thead><tr><th>FILE NAME</th><th>CREATION DATE</th><th></th></tr></thead>
+            <tbody id="arch-rows-generalParams"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- REMINDER -->
+    <div class="bo-tab-panel" id="archtab-reminder">
+      <div class="bo-table-card">
+        <div class="bo-table-scroll">
+          <table class="bo-list-table bo-list-table--compact">
+            <thead><tr><th>FILE NAME</th><th>CREATION DATE</th><th></th></tr></thead>
+            <tbody id="arch-rows-reminder"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- IA ERRORS -->
+    <div class="bo-tab-panel" id="archtab-iaErrors">
+      <div class="bo-table-card">
+        <div class="bo-table-scroll">
+          <table class="bo-list-table bo-list-table--compact">
+            <thead><tr><th>FILE NAME</th><th>CREATION DATE</th><th></th></tr></thead>
+            <tbody id="arch-rows-iaErrors"></tbody>
+          </table>
+        </div>
       </div>
     </div>
 
