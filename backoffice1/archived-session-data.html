@@ -148,6 +148,13 @@
 
     <div class="bo-list-toolbar" style="margin-bottom:18px;">
       <h1>Archived Session Data</h1>
+      <div class="bo-tabs bo-seg-toggle" id="archSdTabs" style="flex-wrap:wrap;">
+        <button class="bo-tab bo-seg-btn active" data-tab="sentences">Sentences</button>
+        <button class="bo-tab bo-seg-btn" data-tab="questions">Questions</button>
+        <button class="bo-tab bo-seg-btn" data-tab="answers">Answers</button>
+        <button class="bo-tab bo-seg-btn" data-tab="iaErrors">IA Errors</button>
+        <button class="bo-tab bo-seg-btn" data-tab="reminderTimeRange">Reminder Time Range</button>
+      </div>
       <span class="bo-list-toolbar-spacer"></span>
       <div class="bo-search-pill">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/></svg>
@@ -155,19 +162,63 @@
       </div>
     </div>
 
-    <div class="bo-table-card">
-      <div class="bo-table-scroll">
-        <table class="bo-list-table bo-list-table--fluid">
-          <thead>
-            <tr>
-              <th>ENTRY</th>
-              <th>TYPE</th>
-              <th>DATE</th>
-              <th>ACTION</th>
-            </tr>
-          </thead>
-          <tbody id="archSdRows"></tbody>
-        </table>
+    <!-- SENTENCES -->
+    <div class="bo-tab-panel active" id="archsdtab-sentences">
+      <div class="bo-table-card">
+        <div class="bo-table-scroll">
+          <table class="bo-list-table bo-list-table--compact">
+            <thead><tr><th>IDENTIFIER</th><th>LANGUAGE</th><th>SENTENCE</th><th></th></tr></thead>
+            <tbody id="arch-sd-rows-sentences"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- QUESTIONS -->
+    <div class="bo-tab-panel" id="archsdtab-questions">
+      <div class="bo-table-card">
+        <div class="bo-table-scroll">
+          <table class="bo-list-table bo-list-table--compact">
+            <thead><tr><th>TYPE</th><th>DECIMAL</th><th>MIN</th><th>MAX</th><th>EN QUESTION</th><th></th></tr></thead>
+            <tbody id="arch-sd-rows-questions"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ANSWERS -->
+    <div class="bo-tab-panel" id="archsdtab-answers">
+      <div class="bo-table-card">
+        <div class="bo-table-scroll">
+          <table class="bo-list-table bo-list-table--compact">
+            <thead><tr><th>NAME</th><th>EN ANSWER</th><th></th></tr></thead>
+            <tbody id="arch-sd-rows-answers"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- IA ERRORS -->
+    <div class="bo-tab-panel" id="archsdtab-iaErrors">
+      <div class="bo-table-card">
+        <div class="bo-table-scroll">
+          <table class="bo-list-table bo-list-table--compact">
+            <thead><tr><th>NAME</th><th>IDENTIFIER</th><th>PRIORITY</th><th>RERECORD ATTEMPTS</th><th>SESSION RERECORD ATTEMPTS</th><th></th></tr></thead>
+            <tbody id="arch-sd-rows-iaErrors"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- REMINDER TIME RANGE -->
+    <div class="bo-tab-panel" id="archsdtab-reminderTimeRange">
+      <div class="bo-table-card">
+        <div class="bo-table-scroll">
+          <table class="bo-list-table bo-list-table--compact">
+            <thead><tr><th>NAME</th><th>START HOUR</th><th>END HOUR</th><th>DEFAULT REMINDER TIME</th><th></th></tr></thead>
+            <tbody id="arch-sd-rows-reminderTimeRange"></tbody>
+          </table>
+        </div>
       </div>
     </div>
 

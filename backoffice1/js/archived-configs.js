@@ -1,7 +1,7 @@
 /* ---------------- Settings > Config > Components > Archived ----------------
-   Lists every archived config across all Components tabs (see
-   archiveConfig() in components.js, which pushes here instead of deleting).
-   Unarchive puts the row back into its original tab's array. */
+   Mirrors components.html's own tabs/columns exactly, filtered to archived
+   rows only (see archiveConfig() in components.js, which pushes here instead
+   of deleting). Unarchive puts a row back into its original tab's array. */
 const ARCH_CONFIG_TARGETS = {
   main: mainConfigs,
   sentences: sentencesConfigs,
@@ -11,41 +11,91 @@ const ARCH_CONFIG_TARGETS = {
   reminder: reminderConfigs,
   iaErrors: iaErrorsConfigs,
 };
+const ARCH_CONFIG_TABS = Object.keys(ARCH_CONFIG_TARGETS);
 
 function archEsc(v) { return String(v == null ? "" : v).replace(/"/g, "&quot;"); }
+function archEscOrDash(v) { return v ? archEsc(v) : "—"; }
 
 const archUnarchiveIcon = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v6h6"/><path d="M3 9a9 9 0 1 0 2.6-6.35"/></svg>`;
+const archUnarchiveBtn = (idx) => `<button type="button" class="bo-unarchive-link arch-config-unarchive" data-idx="${idx}">${archUnarchiveIcon} Unarchive</button>`;
 
 let archConfigSearch = "";
-
-const archConfigPager = boCreatePager(
-  "archConfigRows",
-  () => archivedConfigs
+function archConfigEntries(tabKey) {
+  return archivedConfigs
     .map((r, i) => ({ r, i }))
-    .filter((e) => !archConfigSearch || e.r.name.toLowerCase().includes(archConfigSearch)),
+    .filter((e) => e.r._tabKey === tabKey && (!archConfigSearch || e.r.name.toLowerCase().includes(archConfigSearch)));
+}
+
+const archConfigPagers = {};
+ARCH_CONFIG_TABS.filter((t) => t !== "main").forEach((tabKey) => {
+  archConfigPagers[tabKey] = boCreatePager(
+    `arch-rows-${tabKey}`,
+    () => archConfigEntries(tabKey),
+    (e) => `
+      <tr>
+        <td>${archEsc(e.r.name)}</td>
+        <td>${archEsc(e.r.archivedDate)}</td>
+        <td>${archUnarchiveBtn(e.i)}</td>
+      </tr>`,
+    { pageSize: 10, emptyColspan: 3, emptyText: "No archived configs." }
+  );
+});
+archConfigPagers.main = boCreatePager(
+  "arch-rows-main",
+  () => archConfigEntries("main"),
   (e) => `
-    <tr>
-      <td><strong>${archEsc(e.r.name)}</strong></td>
-      <td><span class="bo-pill bo-pill-archive-type">${archEsc(e.r._type)}</span></td>
-      <td>${archEsc(e.r.archivedDate)}</td>
-      <td><button type="button" class="bo-unarchive-link" data-idx="${e.i}">${archUnarchiveIcon} Unarchive</button></td>
-    </tr>`,
-  { pageSize: 10, emptyColspan: 4, emptyText: "No archived configurations." }
+      <tr>
+        <td>${archEsc(e.r.name)}</td>
+        <td>${archEscOrDash(e.r.sentencesConfig)}</td>
+        <td>${archEscOrDash(e.r.questionsConfig)}</td>
+        <td>${archEscOrDash(e.r.inputAssessmentConfig)}</td>
+        <td>${archEscOrDash(e.r.generalParamsConfig)}</td>
+        <td>${archEscOrDash(e.r.reminderConfig)}</td>
+        <td>${archEscOrDash(e.r.iaErrorsConfig)}</td>
+        <td>${archEsc(e.r.archivedDate)}</td>
+        <td>${archUnarchiveBtn(e.i)}</td>
+      </tr>`,
+  { pageSize: 10, emptyColspan: 9, emptyText: "No archived main configs." }
 );
-archConfigPager();
+
+function archConfigRenderAll() {
+  Object.values(archConfigPagers).forEach((p) => p());
+}
+archConfigRenderAll();
 
 document.getElementById("archConfigSearchInput").addEventListener("input", (e) => {
   archConfigSearch = e.target.value.trim().toLowerCase();
-  archConfigPager.resetPage();
-  archConfigPager();
+  Object.values(archConfigPagers).forEach((p) => p.resetPage());
+  archConfigRenderAll();
 });
 
-document.getElementById("archConfigRows").addEventListener("click", (e) => {
-  const btn = e.target.closest(".bo-unarchive-link");
-  if (!btn) return;
-  const idx = Number(btn.dataset.idx);
-  const [record] = archivedConfigs.splice(idx, 1);
-  const { _tabKey, _type, archivedDate, ...clean } = record;
-  (ARCH_CONFIG_TARGETS[_tabKey] || []).push(clean);
-  archConfigPager();
+document.querySelectorAll("#archConfigTabs .bo-tab").forEach((tab) => {
+  tab.addEventListener("click", () => {
+    document.querySelectorAll("#archConfigTabs .bo-tab").forEach((t) => t.classList.remove("active"));
+    document.querySelectorAll(".bo-tab-panel").forEach((p) => p.classList.remove("active"));
+    tab.classList.add("active");
+    document.getElementById(`archtab-${tab.dataset.tab}`).classList.add("active");
+  });
 });
+
+/* Unarchive: read the row, drop the archive-only fields, push it back into
+   its original tab's live array. */
+document.querySelectorAll(".bo-list-table").forEach((table) => {
+  table.addEventListener("click", (e) => {
+    const btn = e.target.closest(".arch-config-unarchive");
+    if (!btn) return;
+    const idx = Number(btn.dataset.idx);
+    const [record] = archivedConfigs.splice(idx, 1);
+    const { _tabKey, _type, archivedDate, ...clean } = record;
+    (ARCH_CONFIG_TARGETS[_tabKey] || []).push(clean);
+    archConfigRenderAll();
+  });
+});
+
+/* Open on whichever tab was active on the main page when "View Archived" was clicked. */
+(function openTabFromUrl() {
+  const tabKey = new URLSearchParams(location.search).get("tab");
+  if (!tabKey || !ARCH_CONFIG_TABS.includes(tabKey)) return;
+  const tabBtn = document.querySelector(`#archConfigTabs .bo-tab[data-tab="${tabKey}"]`);
+  if (tabBtn) tabBtn.click();
+})();

@@ -102,6 +102,8 @@ function sdRecordLabel(tabKey, r) {
 const sdAddBtn = document.getElementById("sdAddConfigBtn");
 const sdAddBtnLabel = document.getElementById("sdAddConfigBtnLabel");
 
+const sdViewArchivedLink = document.getElementById("sdViewArchivedLink");
+
 document.querySelectorAll("#sessionDataTabs .bo-tab").forEach((tab) => {
   tab.addEventListener("click", () => {
     document.querySelectorAll("#sessionDataTabs .bo-tab").forEach((t) => t.classList.remove("active"));
@@ -110,6 +112,7 @@ document.querySelectorAll("#sessionDataTabs .bo-tab").forEach((tab) => {
     document.getElementById(`tab-${tab.dataset.tab}`).classList.add("active");
     sdAddBtn.dataset.tab = tab.dataset.tab;
     sdAddBtnLabel.textContent = SD_TAB_META[tab.dataset.tab].addLabel;
+    sdViewArchivedLink.href = `archived-session-data.html?tab=${tab.dataset.tab}`;
   });
 });
 
