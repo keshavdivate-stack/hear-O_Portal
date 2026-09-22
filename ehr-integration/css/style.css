@@ -1032,6 +1032,7 @@ button, input, select, textarea, optgroup {
 .status-priority { color: var(--red); }
 .status-active { color: var(--green-text); }
 .status-muted { color: #7E8993; font-weight: 600; }
+.status-registered { color: var(--orange-text); font-weight: 600; }
 .status-since {
   display: block;
   margin-top: 2px;
@@ -3462,7 +3463,9 @@ button, input, select, textarea, optgroup {
 
 .med-adh-day {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
   flex: 1;
   min-width: 0;
 }
@@ -4965,7 +4968,8 @@ label.checkbox-field {
 
 .elig-eligible { color: var(--green); }
 .elig-not { color: var(--red-text); }
-.elig-pending { color: #7E8993; font-weight: 600; }
+.elig-pending { color: var(--orange-text); font-weight: 600; }
+.elig-na { color: #7E8993; font-weight: 600; }
 
 .elig-sub {
   display: block;
