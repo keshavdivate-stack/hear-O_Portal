@@ -65,7 +65,7 @@ const allocCurrentPager = boCreatePager(
       <td>${e.r.lastModified}</td>
       <td>
         <div class="bo-row-actions">
-          <button class="bo-action-icon alloc-edit-btn" data-scope="current" data-id="${e.r.id}" aria-label="Edit">${allocEditIcon}</button>
+          <button class="bo-action-icon blue alloc-edit-btn" data-scope="current" data-id="${e.r.id}" aria-label="Edit">${allocEditIcon}</button>
         </div>
       </td>
     </tr>`,
@@ -122,7 +122,7 @@ const allocFuturePager = boCreatePager(
       <td>${e.r.lastModified}</td>
       <td>
         <div class="bo-row-actions">
-          <button class="bo-action-icon alloc-edit-btn" data-scope="future" data-id="${e.r.id}" aria-label="Edit">${allocEditIcon}</button>
+          <button class="bo-action-icon blue alloc-edit-btn" data-scope="future" data-id="${e.r.id}" aria-label="Edit">${allocEditIcon}</button>
         </div>
       </td>
     </tr>`,
