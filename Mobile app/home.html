@@ -79,16 +79,6 @@
     </div>
 
     <div class="home-footer">
-      <button type="button" class="chat-nav-item" onclick="window.location.href='/Mobile%20app/history.html'">
-        <span class="chat-nav-icon">
-          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M3 12a9 9 0 1 0 2.6-6.35" stroke="#186DCE" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M3 4.5V9h4.5" stroke="#186DCE" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M12 8v4.5l3.5 2" stroke="#186DCE" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </span>
-        <span>Med Updates</span>
-      </button>
       <button type="button" class="chat-nav-item" onclick="window.location.href=localStorage.getItem('hearo_chat_enabled')?'/Mobile%20app/chat.html':'/Mobile%20app/chat-consent.html'">
         <span class="chat-nav-icon">
           <span class="chat-badge">1</span>
@@ -102,15 +92,16 @@
   </div>
 
 <script>
-  const recorded = new URLSearchParams(window.location.search).get("recorded");
-  if (recorded === "1") {
-    const now = new Date();
-    let hours = now.getHours();
-    const minutes = String(now.getMinutes()).padStart(2, "0");
-    const ampm = hours >= 12 ? "PM" : "AM";
-    hours = hours % 12 || 12;
-    const timeStr = `${hours}:${minutes} ${ampm}`;
+  // The "recording complete" state has to survive navigating away and back
+  // (Med Updates, Chat, the nav cards, etc.), so it is not just driven by the
+  // one-time ?recorded=1 redirect from record-saved.html -- it is saved to
+  // localStorage, keyed to today's date, and re-applied on every load of this
+  // page until a new day resets it back to "Start session".
+  function todayKey() {
+    return new Date().toDateString();
+  }
 
+  function showRecordingComplete(timeStr) {
     document.getElementById("sessionCardBody").innerHTML = `
       <div class="session-check-icon">
         <svg width="26" height="26" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -122,11 +113,33 @@
     `;
     document.getElementById("sessionCard").classList.add("complete");
     document.getElementById("lastRecording").hidden = true;
-    document.getElementById("sessionCard").insertAdjacentHTML(
-      "afterend",
-      `<button type="button" class="record-again-btn" onclick="window.location.href='/Mobile%20app/record-prompt.html?mode=daily'">Record again</button>`
-    );
+    if (!document.querySelector(".record-again-btn")) {
+      document.getElementById("sessionCard").insertAdjacentHTML(
+        "afterend",
+        `<button type="button" class="record-again-btn" onclick="window.location.href='/Mobile%20app/record-prompt.html?mode=daily'">Record again</button>`
+      );
+    }
     document.getElementById("homeNavCards").hidden = false;
+  }
+
+  const recorded = new URLSearchParams(window.location.search).get("recorded");
+  if (recorded === "1") {
+    const now = new Date();
+    let hours = now.getHours();
+    const minutes = String(now.getMinutes()).padStart(2, "0");
+    const ampm = hours >= 12 ? "PM" : "AM";
+    hours = hours % 12 || 12;
+    const timeStr = `${hours}:${minutes} ${ampm}`;
+
+    localStorage.setItem("hearo_recorded_date", todayKey());
+    localStorage.setItem("hearo_recorded_time", timeStr);
+    showRecordingComplete(timeStr);
+
+    // Drop ?recorded=1 from the URL so a plain refresh of this page re-reads
+    // the saved state above instead of re-running this one-time branch.
+    window.history.replaceState({}, "", "/Mobile%20app/home.html");
+  } else if (localStorage.getItem("hearo_recorded_date") === todayKey()) {
+    showRecordingComplete(localStorage.getItem("hearo_recorded_time"));
   }
 </script>
 <script>sessionStorage.removeItem("hearo_auth_next");</script>
