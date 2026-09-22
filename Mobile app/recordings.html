@@ -32,11 +32,11 @@
     <div id="banner"></div>
 
     <div class="week-nav">
-      <button type="button" class="week-nav-btn" onclick="shiftWeek(-1)">
+      <button type="button" class="week-nav-btn" id="weekPrevBtn" onclick="shiftWeek(-1)">
         <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M10 3L5 8L10 13" stroke="#444" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
       <span class="week-nav-label" id="weekLabel">17-23 Apr</span>
-      <button type="button" class="week-nav-btn" onclick="shiftWeek(1)">
+      <button type="button" class="week-nav-btn" id="weekNextBtn" onclick="shiftWeek(1)">
         <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M6 3L11 8L6 13" stroke="#444" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
     </div>
@@ -50,8 +50,11 @@
 <script>
   const STATE = new URLSearchParams(window.location.search).get("state") || "complete";
   const LABELS = ["S", "M", "T", "W", "T", "F", "S"];
+  const WEEKDAY_FULL = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
-  // Each screen state = today's status + the past few days on the strip.
+  // Each screen state = today's status + the past few days on the current week's strip.
+  // Week offset 0 is "this week" and always reflects STATE; other weeks are generated
+  // (see weekData()) so navigating and tapping a day both stay functional.
   const STATE_DATA = {
     complete: {
       banner: { type: "success", title: "Today's recording complete" },
@@ -80,6 +83,18 @@
     },
   };
 
+  // Deterministic day patterns for past weeks, so the strip still looks
+  // believable a few weeks back instead of repeating the same days.
+  const PAST_WEEK_PATTERNS = [
+    ["complete", "complete", "warning", "complete", "muted", "complete", "complete"],
+    ["warning", "complete", "complete", "muted", "complete", "warning", "complete"],
+    ["complete", "muted", "complete", "complete", "warning", "complete", "muted"],
+    ["complete", "complete", "complete", "warning", "complete", "muted", "complete"],
+  ];
+
+  const MIN_WEEK_OFFSET = -4;
+  const MAX_WEEK_OFFSET = 1; // one week ahead, always empty (hasn't happened yet)
+
   const ICONS = {
     check: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 12.5L9.5 18L20 6" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>',
     bang: '<svg width="4" height="14" viewBox="0 0 4 14" fill="none"><rect x="0" y="0" width="4" height="9" rx="2" fill="#fff"/><circle cx="2" cy="12.5" r="1.5" fill="#fff"/></svg>',
@@ -87,8 +102,50 @@
     alertOrange: '<svg width="6" height="20" viewBox="0 0 6 20" fill="none"><rect x="0" y="0" width="6" height="13" rx="3" fill="#F98B00"/><circle cx="3" cy="17.5" r="2.5" fill="#F98B00"/></svg>',
   };
 
+  // "This week" (offset 0) is the URL-driven STATE_DATA. Past weeks get one
+  // of the patterns above, cycled by how far back they are. The one week
+  // ahead is always unrecorded, since it hasn't happened yet.
+  function weekData(offset) {
+    if (offset === 0) {
+      const data = STATE_DATA[STATE] || STATE_DATA.complete;
+      const todayIndex = data.days.findIndex((s) => s.startsWith("today"));
+      return { days: data.days, todayIndex, todayBanner: data.banner };
+    }
+    if (offset > 0) {
+      return { days: ["empty", "empty", "empty", "empty", "empty", "empty", "empty"], todayIndex: -1, todayBanner: null };
+    }
+    const pattern = PAST_WEEK_PATTERNS[Math.abs(offset) % PAST_WEEK_PATTERNS.length];
+    return { days: pattern, todayIndex: -1, todayBanner: null };
+  }
+
+  function weekLabel(offset) {
+    const start = new Date(2026, 3, 17); // Sun, 17 Apr 2026 = week offset 0
+    start.setDate(start.getDate() + offset * 7);
+    const end = new Date(start);
+    end.setDate(start.getDate() + 6);
+    const month = (d) => d.toLocaleString("en-US", { month: "short" });
+    return start.getMonth() === end.getMonth()
+      ? `${start.getDate()}-${end.getDate()} ${month(start)}`
+      : `${start.getDate()} ${month(start)} - ${end.getDate()} ${month(end)}`;
+  }
+
+  // What tapping a given day's dot shows in the banner up top. "Today" uses
+  // the exact banner for the current STATE; any other real day gets a
+  // status message built from its dot color; empty (unrecorded) days aren't
+  // clickable at all.
+  function dayBanner(status, dayIndex, week) {
+    if (dayIndex === week.todayIndex) return week.todayBanner;
+    if (status === "complete") return { type: "success", title: `${WEEKDAY_FULL[dayIndex]} recording complete` };
+    if (status === "warning") {
+      return { type: "info", title: `${WEEKDAY_FULL[dayIndex]} recording needs review`, sub: "Audio wasn't clear enough to analyze" };
+    }
+    if (status === "muted") return { type: "empty", title: `No recording on ${WEEKDAY_FULL[dayIndex]}` };
+    return null;
+  }
+
   function renderBanner(b) {
     const el = document.getElementById("banner");
+    if (!b) return;
     if (b.type === "empty") {
       el.innerHTML = `<div class="rec-banner empty"><p class="rec-banner-title">${b.title}</p></div>`;
       return;
@@ -108,30 +165,65 @@
       </div>`;
   }
 
-  function renderDayStrip(days) {
+  let weekOffset = 0;
+  let selectedIndex = -1;
+
+  function renderDayStrip(week) {
     const el = document.getElementById("dayStrip");
-    el.innerHTML = days
+    el.innerHTML = week.days
       .map((status, i) => {
         const isToday = status.startsWith("today");
         const base = isToday ? status.replace("today-", "") : status;
-        const dotClass = `day-dot is-${base}${isToday ? " is-today" : ""}`;
+        const isClickable = base !== "empty";
+        const isSelected = i === selectedIndex;
+        const dotClass = `day-dot is-${base}${isToday ? " is-today" : ""}${isSelected ? " is-selected" : ""}${isClickable ? " is-clickable" : ""}`;
         const icon = base === "complete" ? ICONS.check : base === "warning" ? ICONS.bang : "";
+        const click = isClickable ? ` onclick="selectDay(${i})"` : "";
         return `
           <div class="day-cell${isToday ? " is-today" : ""}">
-            <div class="${dotClass}">${icon}</div>
+            <div class="${dotClass}"${click}>${icon}</div>
             <span class="day-cell-label">${LABELS[i]}</span>
           </div>`;
       })
       .join("");
   }
 
-  function shiftWeek() {
-    // Weekly navigation is illustrative in this mock; the current week always renders.
+  // Renders one week: picks a default selected day (today, if this week has
+  // one) and shows its banner, then draws the strip with that day highlighted.
+  function renderWeek() {
+    document.getElementById("weekLabel").textContent = weekLabel(weekOffset);
+    document.getElementById("weekPrevBtn").disabled = weekOffset <= MIN_WEEK_OFFSET;
+    document.getElementById("weekNextBtn").disabled = weekOffset >= MAX_WEEK_OFFSET;
+
+    const week = weekData(weekOffset);
+    selectedIndex = week.todayIndex;
+    const banner =
+      selectedIndex >= 0
+        ? dayBanner(week.days[selectedIndex].replace("today-", ""), selectedIndex, week)
+        : weekOffset > 0
+        ? { type: "empty", title: "This week hasn't started yet" }
+        : { type: "empty", title: "Tap a day to see its recording" };
+    renderBanner(banner);
+    renderDayStrip(week);
+    window.currentWeek = week;
   }
 
-  const data = STATE_DATA[STATE] || STATE_DATA.complete;
-  renderBanner(data.banner);
-  renderDayStrip(data.days);
+  function selectDay(i) {
+    const week = window.currentWeek;
+    const status = week.days[i].replace("today-", "");
+    selectedIndex = i;
+    renderBanner(dayBanner(status, i, week));
+    renderDayStrip(week);
+  }
+
+  function shiftWeek(dir) {
+    const next = weekOffset + dir;
+    if (next < MIN_WEEK_OFFSET || next > MAX_WEEK_OFFSET) return;
+    weekOffset = next;
+    renderWeek();
+  }
+
+  renderWeek();
 </script>
 </body>
 </html>
