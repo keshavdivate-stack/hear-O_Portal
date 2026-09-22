@@ -1,4 +1,7 @@
 /* ---------------- Config data (Settings > Config > Components) ---------------- */
+/* Archived items from any tab land here (shared by archived-configs.html) instead
+   of being deleted outright, so a config can be restored without redoing it. */
+let archivedConfigs = [];
 const LANGS = ["AR", "EN", "HE", "RU", "ES", "DE"];
 const YES_NO = ["Yes", "No"];
 const IA_ERROR_OPTIONS = ["No Speech Detected", "Low SNR", "Early Stop", "Late Start", "Network Timeout", "Recording Too Short"];

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>HearO Backoffice | Application Configurations</title>
+<title>HearO Backoffice | Archived Configurations</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;500;600;700;800&display=optional" rel="stylesheet" />
@@ -141,152 +141,46 @@
   <!-- PAGE -->
   <main class="bo-page bo-page-list">
 
-    <div class="bo-list-toolbar" style="margin-bottom:18px;">
-      <h1>Application Configurations:</h1>
-      <div class="bo-tabs bo-seg-toggle" id="componentsTabs" style="flex-wrap:wrap;">
-        <button class="bo-tab bo-seg-btn active" data-tab="main">Main Config</button>
-        <button class="bo-tab bo-seg-btn" data-tab="sentences">Sentences</button>
-        <button class="bo-tab bo-seg-btn" data-tab="questions">Questions</button>
-        <button class="bo-tab bo-seg-btn" data-tab="inputAssessment">Input Assessment</button>
-        <button class="bo-tab bo-seg-btn" data-tab="generalParams">General Params</button>
-        <button class="bo-tab bo-seg-btn" data-tab="reminder">Reminder</button>
-        <button class="bo-tab bo-seg-btn" data-tab="iaErrors">IA Errors</button>
-      </div>
-      <span class="bo-list-toolbar-spacer"></span>
-      <a href="archived-configs.html" class="bo-btn-secondary">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="4" rx="1"/><path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8"/></svg>
-        View Archived
-      </a>
-      <button class="bo-btn-primary bo-add-config-btn" id="addConfigBtn" data-tab="main">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-        <span id="addConfigBtnLabel">Main Config</span>
-      </button>
-    </div>
+    <a href="components.html" class="bo-archive-back-link">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+      Back to configurations
+    </a>
 
-    <!-- MAIN CONFIG -->
-    <div class="bo-tab-panel active" id="tab-main">
-      <div class="bo-table-card">
-        <div class="bo-table-scroll">
-          <table class="bo-list-table bo-list-table--compact">
-            <thead>
-              <tr>
-                <th>FILE NAME</th>
-                <th>SENTENCES CONFIG</th>
-                <th>QUESTIONS CONFIG</th>
-                <th>INPUT ASSESSMENT CONFIG</th>
-                <th>GENERAL PARAMS CONFIG</th>
-                <th>REMINDER CONFIG</th>
-                <th>IA ERRORS CONFIG</th>
-                <th>CREATION DATE</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody id="rows-main"></tbody>
-          </table>
-        </div>
+    <div class="bo-archive-head-row">
+      <div>
+        <h1>Archived Configurations</h1>
+        <p class="bo-archive-sub">Restore a configuration without bringing archived items into the active workspace.</p>
+      </div>
+      <div class="bo-search-pill">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/></svg>
+        <input type="text" id="archConfigSearchInput" placeholder="Search archived..." />
       </div>
     </div>
 
-    <!-- SENTENCES -->
-    <div class="bo-tab-panel" id="tab-sentences">
-      <div class="bo-table-card">
-        <div class="bo-table-scroll">
-          <table class="bo-list-table bo-list-table--compact">
-            <thead><tr><th>FILE NAME</th><th>CREATION DATE</th><th></th></tr></thead>
-            <tbody id="rows-sentences"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- QUESTIONS -->
-    <div class="bo-tab-panel" id="tab-questions">
-      <div class="bo-table-card">
-        <div class="bo-table-scroll">
-          <table class="bo-list-table bo-list-table--compact">
-            <thead><tr><th>FILE NAME</th><th>CREATION DATE</th><th></th></tr></thead>
-            <tbody id="rows-questions"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- INPUT ASSESSMENT -->
-    <div class="bo-tab-panel" id="tab-inputAssessment">
-      <div class="bo-table-card">
-        <div class="bo-table-scroll">
-          <table class="bo-list-table bo-list-table--compact">
-            <thead><tr><th>FILE NAME</th><th>CREATION DATE</th><th></th></tr></thead>
-            <tbody id="rows-inputAssessment"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- GENERAL PARAMS -->
-    <div class="bo-tab-panel" id="tab-generalParams">
-      <div class="bo-table-card">
-        <div class="bo-table-scroll">
-          <table class="bo-list-table bo-list-table--compact">
-            <thead><tr><th>FILE NAME</th><th>CREATION DATE</th><th></th></tr></thead>
-            <tbody id="rows-generalParams"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- REMINDER -->
-    <div class="bo-tab-panel" id="tab-reminder">
-      <div class="bo-table-card">
-        <div class="bo-table-scroll">
-          <table class="bo-list-table bo-list-table--compact">
-            <thead><tr><th>FILE NAME</th><th>CREATION DATE</th><th></th></tr></thead>
-            <tbody id="rows-reminder"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- IA ERRORS -->
-    <div class="bo-tab-panel" id="tab-iaErrors">
-      <div class="bo-table-card">
-        <div class="bo-table-scroll">
-          <table class="bo-list-table bo-list-table--compact">
-            <thead><tr><th>FILE NAME</th><th>CREATION DATE</th><th></th></tr></thead>
-            <tbody id="rows-iaErrors"></tbody>
-          </table>
-        </div>
+    <div class="bo-table-card">
+      <div class="bo-table-scroll">
+        <table class="bo-list-table bo-list-table--compact">
+          <thead>
+            <tr>
+              <th>CONFIGURATION</th>
+              <th>TYPE</th>
+              <th>DATE</th>
+              <th>ACTION</th>
+            </tr>
+          </thead>
+          <tbody id="archConfigRows"></tbody>
+        </table>
       </div>
     </div>
 
   </main>
-
-  <!-- Create/Edit Config drawer (shared by all tabs) -->
-  <div class="bo-drawer-overlay" id="configDrawerOverlay">
-    <div class="bo-drawer">
-      <div class="bo-drawer-head">
-        <h2 id="configDrawerTitle">Create/Edit Config</h2>
-        <button type="button" class="bo-drawer-close" id="closeConfigDrawerX" aria-label="Close">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6L18 18M6 18L18 6"/></svg>
-        </button>
-      </div>
-      <form id="configDrawerForm" class="bo-drawer-form">
-        <div class="bo-drawer-body" id="configDrawerBody"></div>
-        <div class="bo-drawer-foot">
-          <button type="button" class="bo-btn-text" id="cancelConfigDrawer">Cancel</button>
-          <button type="submit" class="bo-btn-primary" id="saveConfigDrawer" disabled>Save As New</button>
-        </div>
-      </form>
-    </div>
-  </div>
 
 <script src="js/dashboard-nav.js"></script>
 <script src="js/support-data.js"></script>
 <script src="js/notifications.js"></script>
 <script src="js/bo-table-scroll.js"></script>
 <script src="js/bo-pagination.js"></script>
-<script src="js/bo-custom-select.js"></script>
 <script src="js/components-data.js"></script>
-<script src="js/components.js"></script>
+<script src="js/archived-configs.js"></script>
 </body>
 </html>

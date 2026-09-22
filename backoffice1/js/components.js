@@ -21,6 +21,7 @@ const TAB_META = {
 
 const compEditIcon = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg>`;
 const compTrashIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>`;
+const compArchiveIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="4" rx="1"/><path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8"/><path d="M10 13h4"/></svg>`;
 const compPlusIcon = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>`;
 
 function esc(v) { return String(v == null ? "" : v).replace(/"/g, "&quot;"); }
@@ -62,7 +63,7 @@ function makeSimplePager(tabKey) {
         <td>
           <div class="bo-row-actions">
             <button class="bo-action-icon config-edit-trigger" data-tab="${tabKey}" data-idx="${e.i}" aria-label="Edit">${compEditIcon}</button>
-            <button class="bo-action-icon danger config-delete-trigger" data-tab="${tabKey}" data-idx="${e.i}" aria-label="Delete">${compTrashIcon}</button>
+            <button class="bo-action-icon archive config-archive-trigger" data-tab="${tabKey}" data-idx="${e.i}" aria-label="Archive">${compArchiveIcon}</button>
           </div>
         </td>
       </tr>`,
@@ -89,7 +90,7 @@ configPagers.main = boCreatePager(
         <td>${esc(e.r.creationDate)}</td>
         <td>
           <div class="bo-row-actions">
-            <button class="bo-action-icon danger main-delete-trigger" data-idx="${e.i}" aria-label="Delete">${compTrashIcon}</button>
+            <button class="bo-action-icon archive main-archive-trigger" data-idx="${e.i}" aria-label="Archive">${compArchiveIcon}</button>
           </div>
         </td>
       </tr>`,
@@ -101,21 +102,26 @@ function renderAllTables() {
 }
 renderAllTables();
 
-/* ---------------- Row actions (edit / delete) ----------------
-   Main Config only ever offers Delete (there's no in-place edit -- the
+/* ---------------- Row actions (edit / archive) ----------------
+   Main Config only ever offers Archive (there's no in-place edit -- the
    drawer's own "Existing main config" + Load lets you start a new one
    from an old one's values, and Save always adds a new row), so it gets
    a direct icon instead of a menu. Every other tab offers two actions
-   (Edit, Delete) shown as direct icon buttons rather than a kebab
-   dropdown. */
+   (Edit, Archive) shown as direct icon buttons rather than a kebab
+   dropdown. Archiving moves the row into archivedConfigs (see
+   components-data.js) instead of deleting it outright, so it can be
+   restored from the "View Archived" page without redoing the config. */
+function archiveConfig(tabKey, idx) {
+  const [record] = DATA[tabKey].splice(idx, 1);
+  archivedConfigs.push({ ...record, _tabKey: tabKey, _type: TAB_META[tabKey].addLabel, archivedDate: nowStamp() });
+  renderAllTables();
+}
+
 document.querySelectorAll(".bo-list-table").forEach((table) => {
   table.addEventListener("click", (e) => {
-    const mainDeleteTrigger = e.target.closest(".main-delete-trigger");
-    if (mainDeleteTrigger) {
-      const idx = Number(mainDeleteTrigger.dataset.idx);
-      if (!confirm(`Delete "${mainConfigs[idx].name}"?`)) return;
-      mainConfigs.splice(idx, 1);
-      renderAllTables();
+    const mainArchiveTrigger = e.target.closest(".main-archive-trigger");
+    if (mainArchiveTrigger) {
+      archiveConfig("main", Number(mainArchiveTrigger.dataset.idx));
       return;
     }
 
@@ -125,13 +131,9 @@ document.querySelectorAll(".bo-list-table").forEach((table) => {
       return;
     }
 
-    const deleteTrigger = e.target.closest(".config-delete-trigger");
-    if (deleteTrigger) {
-      const tabKey = deleteTrigger.dataset.tab;
-      const idx = Number(deleteTrigger.dataset.idx);
-      if (!confirm(`Delete "${DATA[tabKey][idx].name}"?`)) return;
-      DATA[tabKey].splice(idx, 1);
-      renderAllTables();
+    const archiveTrigger = e.target.closest(".config-archive-trigger");
+    if (archiveTrigger) {
+      archiveConfig(archiveTrigger.dataset.tab, Number(archiveTrigger.dataset.idx));
     }
   });
 });

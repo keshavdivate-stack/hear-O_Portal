@@ -17,6 +17,14 @@ const SD_TAB_META = {
 
 const sdEditIcon = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg>`;
 const sdTrashIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>`;
+const sdArchiveIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="4" rx="1"/><path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8"/><path d="M10 13h4"/></svg>`;
+const SD_TAB_LABEL = { sentences: "Sentence", questions: "Question", answers: "Answer", iaErrors: "IA Error", reminderTimeRange: "Reminder Time Range" };
+
+function sdNowStamp() {
+  const d = new Date();
+  const pad = (n) => String(n).padStart(2, "0");
+  return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+}
 
 function sdEsc(v) {
   return String(v == null ? "" : v)
@@ -77,8 +85,17 @@ function sdActions(tabKey, idx) {
   return `
     <div class="bo-row-actions">
       <button class="bo-action-icon sd-edit-trigger" data-tab="${tabKey}" data-idx="${idx}" aria-label="Edit">${sdEditIcon}</button>
-      <button class="bo-action-icon danger sd-delete-trigger" data-tab="${tabKey}" data-idx="${idx}" aria-label="Delete">${sdTrashIcon}</button>
+      <button class="bo-action-icon archive sd-archive-trigger" data-tab="${tabKey}" data-idx="${idx}" aria-label="Archive">${sdArchiveIcon}</button>
     </div>`;
+}
+
+/* Each tab's row shape carries its "name" under a different key -- this
+   picks whichever one that tab actually uses, for the archive list's
+   Configuration column. */
+function sdRecordLabel(tabKey, r) {
+  if (tabKey === "sentences") return r.identifier || r.sentence || "—";
+  if (tabKey === "questions") return r.questions?.EN || r.type || "—";
+  return r.name || "—";
 }
 
 /* ---------------- Tabs ---------------- */
@@ -231,12 +248,12 @@ document.querySelectorAll(".bo-list-table").forEach((table) => {
       return;
     }
 
-    const deleteTrigger = e.target.closest(".sd-delete-trigger");
-    if (deleteTrigger) {
-      const tabKey = deleteTrigger.dataset.tab;
-      const idx = Number(deleteTrigger.dataset.idx);
-      if (!confirm("Delete this entry?")) return;
-      SD_DATA[tabKey].splice(idx, 1);
+    const archiveTrigger = e.target.closest(".sd-archive-trigger");
+    if (archiveTrigger) {
+      const tabKey = archiveTrigger.dataset.tab;
+      const idx = Number(archiveTrigger.dataset.idx);
+      const [record] = SD_DATA[tabKey].splice(idx, 1);
+      archivedSessionData.push({ ...record, _tabKey: tabKey, _type: SD_TAB_LABEL[tabKey], _label: sdRecordLabel(tabKey, record), archivedDate: sdNowStamp() });
       sdRenderAllTables();
     }
   });

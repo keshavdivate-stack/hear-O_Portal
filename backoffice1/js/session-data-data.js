@@ -1,4 +1,7 @@
 /* ---------------- Config data (Settings > Config > Session Data) ---------------- */
+/* Archived entries from any tab land here (shared by archived-session-data.html)
+   instead of being deleted outright. */
+let archivedSessionData = [];
 const SD_LANGS = ["AR", "EN", "HE", "RU", "ES", "DE"];
 const SD_QUESTION_TYPES = ["YES NO", "OPINION", "FREE TEXT"];
 
