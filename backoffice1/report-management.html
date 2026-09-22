@@ -166,7 +166,7 @@
       </div>
     </div>
 
-    <!-- SCHEDULED REPORTS Ã¢â‚¬â€ one row = one schedule (never an accordion); status and
+    <!-- SCHEDULED REPORTS — one row = one schedule (never an accordion); status and
          next run are visible without expanding anything, per the UX brief. -->
     <div class="bo-tab-panel active" id="tab-scheduled">
       <div class="bo-filter-row">
@@ -233,7 +233,7 @@
       </div>
     </div>
 
-    <!-- REPORT HISTORY Ã¢â‚¬â€ separate from schedule configuration: this is the record
+    <!-- REPORT HISTORY — separate from schedule configuration: this is the record
          of what was actually generated and sent, whether by schedule or manually. -->
     <div class="bo-tab-panel" id="tab-history">
       <div class="bo-filter-row">
@@ -367,7 +367,7 @@
 
   </main>
 
-  <!-- Row action dropdown Ã¢â‚¬â€ schedules -->
+  <!-- Row action dropdown — schedules -->
   <div class="bo-row-menu" id="rmScheduleRowMenu">
     <button class="bo-row-menu-item" data-action="view">View Details</button>
     <button class="bo-row-menu-item" data-action="edit">Edit Schedule</button>
@@ -375,7 +375,7 @@
     <button class="bo-row-menu-item danger" data-action="archive" id="rmScheduleRowMenuArchiveBtn">Archive Schedule</button>
   </div>
 
-  <!-- Row action dropdown Ã¢â‚¬â€ history -->
+  <!-- Row action dropdown — history -->
   <div class="bo-row-menu" id="rmHistoryRowMenu">
     <button class="bo-row-menu-item" data-action="view">View Delivery Details</button>
   </div>
@@ -435,13 +435,13 @@
         <div class="bo-modal-section">
           <p class="bo-modal-section-title">Schedule</p>
           <div class="bo-ticket-summary">
-            <div class="bo-ticket-summary-item"><span class="label">Report</span><span class="value" id="rmDetailReport">Ã¢â‚¬â€</span></div>
-            <div class="bo-ticket-summary-item"><span class="label">Schedule name</span><span class="value" id="rmDetailName">Ã¢â‚¬â€</span></div>
-            <div class="bo-ticket-summary-item"><span class="label">Organisation</span><span class="value" id="rmDetailOrg">Ã¢â‚¬â€</span></div>
-            <div class="bo-ticket-summary-item"><span class="label">Tags / filters</span><span class="value" id="rmDetailTags">Ã¢â‚¬â€</span></div>
-            <div class="bo-ticket-summary-item"><span class="label">Frequency</span><span class="value" id="rmDetailFrequency">Ã¢â‚¬â€</span></div>
-            <div class="bo-ticket-summary-item"><span class="label">Time</span><span class="value" id="rmDetailTime">Ã¢â‚¬â€</span></div>
-            <div class="bo-ticket-summary-item"><span class="label">Status</span><span class="value" id="rmDetailStatus">Ã¢â‚¬â€</span></div>
+            <div class="bo-ticket-summary-item"><span class="label">Report</span><span class="value" id="rmDetailReport">—</span></div>
+            <div class="bo-ticket-summary-item"><span class="label">Schedule name</span><span class="value" id="rmDetailName">—</span></div>
+            <div class="bo-ticket-summary-item"><span class="label">Organisation</span><span class="value" id="rmDetailOrg">—</span></div>
+            <div class="bo-ticket-summary-item"><span class="label">Tags / filters</span><span class="value" id="rmDetailTags">—</span></div>
+            <div class="bo-ticket-summary-item"><span class="label">Frequency</span><span class="value" id="rmDetailFrequency">—</span></div>
+            <div class="bo-ticket-summary-item"><span class="label">Time</span><span class="value" id="rmDetailTime">—</span></div>
+            <div class="bo-ticket-summary-item"><span class="label">Status</span><span class="value" id="rmDetailStatus">—</span></div>
           </div>
         </div>
 
@@ -453,9 +453,9 @@
         <div class="bo-modal-section">
           <p class="bo-modal-section-title">Delivery</p>
           <div class="bo-ticket-summary">
-            <div class="bo-ticket-summary-item"><span class="label">Last sent</span><span class="value" id="rmDetailLastSent">Ã¢â‚¬â€</span></div>
-            <div class="bo-ticket-summary-item"><span class="label">Delivery status</span><span class="value" id="rmDetailLastDeliveryStatus">Ã¢â‚¬â€</span></div>
-            <div class="bo-ticket-summary-item"><span class="label">Next scheduled run</span><span class="value" id="rmDetailNextRun">Ã¢â‚¬â€</span></div>
+            <div class="bo-ticket-summary-item"><span class="label">Last sent</span><span class="value" id="rmDetailLastSent">—</span></div>
+            <div class="bo-ticket-summary-item"><span class="label">Delivery status</span><span class="value" id="rmDetailLastDeliveryStatus">—</span></div>
+            <div class="bo-ticket-summary-item"><span class="label">Next scheduled run</span><span class="value" id="rmDetailNextRun">—</span></div>
           </div>
         </div>
       </div>
@@ -480,10 +480,10 @@
       <div class="bo-drawer-body">
         <div class="bo-modal-section">
           <div class="bo-ticket-summary">
-            <div class="bo-ticket-summary-item"><span class="label">Report</span><span class="value" id="rmHistDetailReport">Ã¢â‚¬â€</span></div>
-            <div class="bo-ticket-summary-item"><span class="label">Organisation</span><span class="value" id="rmHistDetailOrg">Ã¢â‚¬â€</span></div>
-            <div class="bo-ticket-summary-item"><span class="label">Sent on</span><span class="value" id="rmHistDetailSentOn">Ã¢â‚¬â€</span></div>
-            <div class="bo-ticket-summary-item"><span class="label">Status</span><span class="value" id="rmHistDetailStatus">Ã¢â‚¬â€</span></div>
+            <div class="bo-ticket-summary-item"><span class="label">Report</span><span class="value" id="rmHistDetailReport">—</span></div>
+            <div class="bo-ticket-summary-item"><span class="label">Organisation</span><span class="value" id="rmHistDetailOrg">—</span></div>
+            <div class="bo-ticket-summary-item"><span class="label">Sent on</span><span class="value" id="rmHistDetailSentOn">—</span></div>
+            <div class="bo-ticket-summary-item"><span class="label">Status</span><span class="value" id="rmHistDetailStatus">—</span></div>
           </div>
         </div>
         <div class="bo-modal-section">
@@ -501,7 +501,7 @@
     </div>
   </div>
 
-  <!-- Schedule Report Ã¢â‚¬â€ 5-step wizard (also reused, prefilled, for Edit Schedule) -->
+  <!-- Schedule Report — 5-step wizard (also reused, prefilled, for Edit Schedule) -->
   <div class="bo-drawer-overlay" id="rmScheduleWizardOverlay">
     <div class="bo-drawer">
       <div class="bo-drawer-head">
@@ -600,7 +600,7 @@
     </div>
   </div>
 
-  <!-- Send Report Ã¢â‚¬â€ immediate, one-time delivery; deliberately not a multi-step
+  <!-- Send Report — immediate, one-time delivery; deliberately not a multi-step
        wizard, to keep it feeling lighter-weight than creating a recurring schedule. -->
   <div class="bo-drawer-overlay" id="rmSendReportOverlay">
     <div class="bo-drawer">
