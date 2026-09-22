@@ -106,12 +106,12 @@ function renderChartStats() {
   document.getElementById("chartStats").innerHTML = `
     <div class="bo-chart-stat">
       <span class="dot" style="background:var(--navy)"></span>
-      Compliance avg <b>${average(complianceSeries)}%</b>
+      Compliance Over Time avg <b>${average(complianceSeries)}%</b>
       ${trendChip(complianceDelta)}
     </div>
     <div class="bo-chart-stat">
       <span class="dot" style="background:var(--orange)"></span>
-      Recording Quality avg <b>${average(qualitySeries)}%</b>
+      Recording Quality Over Time avg <b>${average(qualitySeries)}%</b>
       ${trendChip(qualityDelta)}
     </div>`;
 }
