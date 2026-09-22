@@ -1,7 +1,15 @@
 /* ---------------- Config data (Settings > Config > Components) ---------------- */
 /* Archived items from any tab land here (shared by archived-configs.html) instead
    of being deleted outright, so a config can be restored without redoing it. */
-let archivedConfigs = [];
+let archivedConfigs = [
+  { name: 'Legacy Main 01.03.20', sentencesConfig: 'CordioMedLanguages', questionsConfig: 'Default Questions', inputAssessmentConfig: 'Default IA', generalParamsConfig: 'Default General', reminderConfig: 'Default Reminder', iaErrorsConfig: 'Default IA Errors', creationDate: '01/03/2020 09:12:04', _tabKey: 'main', _type: 'Main Config', archivedDate: '18/08/2026 11:05:22' },
+  { name: 'Old English Sentences', creationDate: '12/02/2020 10:40:11', _tabKey: 'sentences', _type: 'Sentences', archivedDate: '18/08/2026 11:06:40' },
+  { name: 'Legacy Health Questions', creationDate: '15/02/2020 14:22:35', _tabKey: 'questions', _type: 'Questions', archivedDate: '18/08/2026 11:07:15' },
+  { name: 'Old Input Assessment', creationDate: '20/02/2020 08:51:02', _tabKey: 'inputAssessment', _type: 'Input Assessment', archivedDate: '18/08/2026 11:08:03' },
+  { name: 'Old General Params', creationDate: '22/02/2020 16:33:47', _tabKey: 'generalParams', _type: 'General Params', archivedDate: '18/08/2026 11:09:18' },
+  { name: 'Old Reminder Config', creationDate: '25/02/2020 12:10:58', _tabKey: 'reminder', _type: 'Reminder', archivedDate: '18/08/2026 11:10:31' },
+  { name: 'Old IA Errors Set', creationDate: '28/02/2020 09:44:19', _tabKey: 'iaErrors', _type: 'IA Errors', archivedDate: '18/08/2026 11:11:52' },
+];
 const LANGS = ["AR", "EN", "HE", "RU", "ES", "DE"];
 const YES_NO = ["Yes", "No"];
 const IA_ERROR_OPTIONS = ["No Speech Detected", "Low SNR", "Early Stop", "Late Start", "Network Timeout", "Recording Too Short"];
