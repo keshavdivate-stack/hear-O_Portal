@@ -756,7 +756,7 @@ function closeNewRuleDrawer() {
   newRuleDrawerOverlay.classList.remove("open");
 }
 
-document.getElementById("openNewRuleBtn").addEventListener("click", openNewRuleDrawer);
+document.getElementById("openNewRuleBtn")?.addEventListener("click", openNewRuleDrawer);
 document.getElementById("closeNewRuleDrawerX").addEventListener("click", closeNewRuleDrawer);
 document.getElementById("cancelNewRuleDrawer").addEventListener("click", closeNewRuleDrawer);
 newRuleDrawerOverlay.addEventListener("click", (e) => { if (e.target === newRuleDrawerOverlay) closeNewRuleDrawer(); });
