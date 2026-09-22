@@ -169,7 +169,7 @@ const clearableTicketFilters = [
   { name: "category", menu: ticketCategoryMenu, set: selectedCategories, label: "Category" },
   { name: "issueType", menu: ticketIssueMenu, set: selectedIssueTypes, label: "Issue Type" },
   { name: "origin", menu: ticketOriginMenu, set: selectedOrigins, label: "Origin" },
-  { name: "state", menu: ticketStateMenu, set: selectedStates, label: "State" },
+  { name: "state", menu: ticketStateMenu, set: selectedStates, label: "Status" },
 ];
 
 document.getElementById("clearTicketFilters").addEventListener("click", () => {
