@@ -111,7 +111,7 @@ const ISSUE_TYPE_SCOPE = {
 
 const TIERS = ["Level 1", "Level 2", "Level 3"];
 const PRIORITIES = ["Low", "Medium", "High", "Critical"];
-const STATUSES = ["Open", "In Progress", "Escalated", "Resolved"];
+const STATUSES = ["Open", "In Progress", "Resolved"];
 const ORIGINS = ["System", "Patient", "Clinic", "Backoffice"];
 const TICKET_TYPES = ["Patient", "Clinic"];
 
@@ -141,7 +141,7 @@ function agentLabel(name) {
 const patientTickets = [
   { id: 0, ticketNo: "TCK-1042", patientId: "120-2001", organization: "120", issueType: "Missing ASR Results", scope: "Patient", tier: "Level 1", priority: "Critical", status: "Open", origin: "Patient", assignedTo: "Sarah Cohen", createdDate: "02/08/2026 09:14", description: "Patient's recordings aren't producing ASR results -- the app freezes a few seconds into every attempt and no audio file is saved." },
   { id: 1, ticketNo: "TCK-1041", patientId: "121-2002", organization: "121", issueType: "Signed In Not Uploaded", scope: "Patient", tier: "Level 2", priority: "High", status: "In Progress", origin: "Patient", assignedTo: "Daniel Avraham", createdDate: "01/08/2026 16:40", description: "Patient signs in and records, but the file never uploads; a spinning icon never resolves on Wi-Fi or cellular." },
-  { id: 2, ticketNo: "TCK-1038", patientId: "104-3001", organization: "104", issueType: "Other / Manual Report", scope: "Patient", tier: "Level 3", priority: "Critical", status: "Escalated", origin: "Patient", assignedTo: "Maya Gold", createdDate: "30/07/2026 11:02", description: "Patient's tablet will not power on after the last app update; suspected bricked device, needs replacement unit." },
+  { id: 2, ticketNo: "TCK-1038", patientId: "104-3001", organization: "104", issueType: "Other / Manual Report", scope: "Patient", tier: "Level 3", priority: "Critical", status: "In Progress", origin: "Patient", assignedTo: "Maya Gold", createdDate: "30/07/2026 11:02", description: "Patient's tablet will not power on after the last app update; suspected bricked device, needs replacement unit." },
   { id: 3, ticketNo: "TCK-1035", patientId: "B03-4002", organization: "B03", issueType: "Other / Manual Report", scope: "Patient", tier: "Level 1", priority: "Low", status: "Resolved", origin: "Patient", assignedTo: "Tomer Regev", createdDate: "28/07/2026 08:55", description: "Notification reminders were appearing in Hebrew instead of the patient's selected language, English." },
   { id: 4, ticketNo: "TCK-1031", patientId: "105-5001", organization: "105", issueType: "Missing ASR Derived Features", scope: "Patient", tier: "Level 2", priority: "Medium", status: "Open", origin: "System", assignedTo: "Liat Peretz", createdDate: "26/07/2026 14:20", description: "Background noise cancellation seems disabled; breath/distortion features are missing from recordings since Tuesday." },
   { id: 5, ticketNo: "TCK-1027", patientId: "122-2001", organization: "122", issueType: "Signed In Not Uploaded", scope: "Patient", tier: "Level 1", priority: "Low", status: "Resolved", origin: "System", assignedTo: "Sarah Cohen", createdDate: "22/07/2026 10:10", description: "Single recording stuck in upload queue for 3 days; cleared after patient reinstalled the app." },
@@ -152,7 +152,7 @@ const patientTickets = [
 
 /* ---------------- Sample tickets raised by clinics ---------------- */
 const clinicTickets = [
-  { id: 0, ticketNo: "TCK-2018", raisedBy: "Rachel Cohen", organization: "120", issueType: "Sensors Not Uploaded", scope: "Organization", tier: "Level 3", priority: "Critical", status: "Escalated", origin: "System", assignedTo: "Tomer Regev", createdDate: "02/08/2026 08:05", description: "Clinic-wide: patient devices provisioned this week are not syncing sensor data with the dashboard at all." },
+  { id: 0, ticketNo: "TCK-2018", raisedBy: "Rachel Cohen", organization: "120", issueType: "Sensors Not Uploaded", scope: "Organization", tier: "Level 3", priority: "Critical", status: "In Progress", origin: "System", assignedTo: "Tomer Regev", createdDate: "02/08/2026 08:05", description: "Clinic-wide: patient devices provisioned this week are not syncing sensor data with the dashboard at all." },
   { id: 1, ticketNo: "TCK-2015", raisedBy: "David Levi", organization: "121", issueType: "Organization Compliance Drop", scope: "Organization", tier: "Level 2", priority: "Medium", status: "In Progress", origin: "System", assignedTo: "Liat Peretz", createdDate: "31/07/2026 15:18", description: "Compliance chart on the clinic dashboard is showing data one day behind for the whole site." },
   { id: 2, ticketNo: "TCK-2011", raisedBy: "Miriam Katz", organization: "B01", issueType: "Signed In Not Uploaded", scope: "Organization", tier: "Level 1", priority: "Critical", status: "Open", origin: "System", assignedTo: "Sarah Cohen", createdDate: "29/07/2026 12:44", description: "Several patient recordings uploaded overnight are missing from the clinic's session list." },
   { id: 3, ticketNo: "TCK-2006", raisedBy: "Omer Peretz", organization: "104", issueType: "Other / Manual Report", scope: "Patient", tier: "Level 1", priority: "Low", status: "Resolved", origin: "Clinic", assignedTo: "Daniel Avraham", createdDate: "24/07/2026 09:55", description: "Clinic reported one patient's recordings sound sped up; traced to a bad microphone on that device." },
@@ -198,7 +198,6 @@ const SUPPORT_ISSUE_DESCRIPTIONS = {
 };
 const SUPPORT_STATUS_PRIORITIES = {
   Open: ["Low", "Medium", "High", "Critical"],
-  Escalated: ["Critical", "Critical", "High", "Medium"],
   "In Progress": ["Medium", "High", "Low", "Critical"],
   Resolved: ["Low", "Medium", "High", "Critical"],
 };
@@ -231,7 +230,7 @@ function topUpTickets(array, kind, status, count, ticketSeqStart) {
   }
 }
 
-topUpTickets(patientTickets, "patient", "Escalated", 55, 0);
+topUpTickets(patientTickets, "patient", "In Progress", 55, 0);
 topUpTickets(patientTickets, "patient", "In Progress", 122, 55);
 topUpTickets(patientTickets, "patient", "Resolved", 39, 177);
 /* Open only had a handful of hand-authored tickets, which didn't span every
@@ -241,7 +240,7 @@ topUpTickets(patientTickets, "patient", "Resolved", 39, 177);
    status so every filter combination has something to show. */
 topUpTickets(patientTickets, "patient", "Open", 46, 216);
 
-topUpTickets(clinicTickets, "clinic", "Escalated", 37, 0);
+topUpTickets(clinicTickets, "clinic", "In Progress", 37, 0);
 topUpTickets(clinicTickets, "clinic", "In Progress", 81, 37);
 topUpTickets(clinicTickets, "clinic", "Resolved", 26, 118);
 topUpTickets(clinicTickets, "clinic", "Open", 32, 144);

@@ -4,7 +4,7 @@
    which never loads support.js, still gets working badges, dropdowns, and
    device log data. */
 
-const statusPillClass = { "Open": "bo-pill-status-open", "In Progress": "bo-pill-status-inprogress", "Escalated": "bo-pill-status-escalated", "Resolved": "bo-pill-status-resolved" };
+const statusPillClass = { "Open": "bo-pill-status-open", "In Progress": "bo-pill-status-inprogress", "Resolved": "bo-pill-status-resolved" };
 const priorityPillClass = { "Low": "bo-pill-severity-low", "Medium": "bo-pill-severity-medium", "High": "bo-pill-severity-high", "Critical": "bo-pill-severity-critical" };
 const originPillClass = { "System": "bo-pill-origin-system", "Patient": "bo-pill-origin-patient", "Clinic": "bo-pill-origin-clinic", "Backoffice": "bo-pill-origin-backoffice" };
 const typePillClass = { "Patient": "bo-pill-type-patient", "Clinic": "bo-pill-type-clinic" };

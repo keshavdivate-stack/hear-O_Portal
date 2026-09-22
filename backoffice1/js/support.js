@@ -41,8 +41,8 @@ const allTickets = [...patientTickets, ...clinicTickets];
 
 /* ---------------- Tickets KPI row ---------------- */
 function renderTicketKpis() {
-  document.getElementById("ticketKpiOpen").textContent = allTickets.filter((t) => t.status === "Open" || t.status === "In Progress").length;
-  document.getElementById("ticketKpiEscalated").textContent = allTickets.filter((t) => t.status === "Escalated").length;
+  document.getElementById("ticketKpiOpen").textContent = allTickets.filter((t) => t.status === "Open").length;
+  document.getElementById("ticketKpiInProgress").textContent = allTickets.filter((t) => t.status === "In Progress").length;
   document.getElementById("ticketKpiCritical").textContent = allTickets.filter((t) => t.priority === "Critical").length;
   document.getElementById("ticketKpiResolved").textContent = allTickets.filter((t) => t.status === "Resolved").length;
 }

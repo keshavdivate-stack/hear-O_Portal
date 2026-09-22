@@ -1,6 +1,6 @@
 /* ---------------- Notifications bell (shared across all backoffice pages) ----------------
-   Surfaces support tickets that most need attention -- still open and either Critical
-   severity or already Escalated -- from wherever in the app the bell is opened, not just
+   Surfaces support tickets that most need attention -- still open and Critical
+   severity -- from wherever in the app the bell is opened, not just
    the Support page. Recomputed on every click (rather than cached at page load) so it
    stays accurate on Support itself, where tickets change during the session. */
 (function () {
@@ -24,7 +24,7 @@
       .map((t) => ({ ...t, source: "patient" }))
       .concat(clinicTickets.map((t) => ({ ...t, source: "clinic" })));
     return tagged
-      .filter((t) => t.status !== "Resolved" && (t.severity === "Critical" || t.status === "Escalated"))
+      .filter((t) => t.status !== "Resolved" && t.severity === "Critical")
       .sort((a, b) => parseTicketDate(b.createdDate) - parseTicketDate(a.createdDate))
       .slice(0, 8);
   }
