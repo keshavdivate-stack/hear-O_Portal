@@ -2641,18 +2641,17 @@ button, input, select, textarea, optgroup {
 
 .rec-scroll {
   display: flex;
-  gap: 14px;
-  overflow-x: auto;
   flex: 1;
   padding: 4px 2px 6px;
 }
 
 .rec-day {
   display: flex;
+  flex: 1;
+  min-width: 0;
   flex-direction: column;
   align-items: center;
   gap: 8px;
-  min-width: 30px;
 }
 
 .rec-icon {
@@ -3531,7 +3530,8 @@ button, input, select, textarea, optgroup {
   vertical-align: -1px;
 }
 
-.quest-dot-yes, .quest-dot-no { background: var(--blue); display: inline-flex; align-items: center; justify-content: center; }
+.quest-dot-yes { background: var(--green); display: inline-flex; align-items: center; justify-content: center; }
+.quest-dot-no { background: var(--orange, #F2994A); display: inline-flex; align-items: center; justify-content: center; }
 .quest-dot-yes svg, .quest-dot-no svg { width: 8px; height: 8px; }
 
 .quest-legend-note { color: var(--gray-text); }
@@ -3549,8 +3549,8 @@ button, input, select, textarea, optgroup {
    them apart -- so a weight-gain tooltip on a "Yes" answer reads as one
    consistent color family instead of switching to an alert color. */
 .quest-ans-icon { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; position: relative; }
-.quest-ans-yes { background: var(--blue); color: #fff; }
-.quest-ans-no { background: var(--blue); color: #fff; }
+.quest-ans-yes { background: var(--green); color: #fff; }
+.quest-ans-no { background: var(--orange, #F2994A); color: #fff; }
 .quest-ans-none { background: transparent; }
 
 /* .med-adh-scroll (the horizontal-scrolling row these icons sit in) has
