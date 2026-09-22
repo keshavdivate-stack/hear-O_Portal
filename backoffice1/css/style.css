@@ -1156,6 +1156,15 @@ body.bo-page-scroll .bo-list-toolbar {
   right: 0;
   z-index: 3;
   background: #fff;
+  /* Shrink the Action column to its own content instead of stretching with
+     the rest of the table -- on a table with only a few narrow columns,
+     that stretch used to land entirely inside this last cell, pushing the
+     actual icons flush right and leaving a wide dead gap before them. With
+     this column pinned to its content width, that same extra space now
+     goes to the row's other cells instead, showing up as breathing room
+     before the Action column rather than empty space inside it. */
+  width: 1%;
+  white-space: nowrap;
 }
 
 .bo-list-table thead th:first-child,
