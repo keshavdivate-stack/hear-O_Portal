@@ -610,12 +610,12 @@ button, input, select, textarea, optgroup {
 
 .bo-status-pill.priority { color: var(--red-text); }
 .bo-status-pill.unmonitored { color: var(--orange-text); }
-.bo-status-pill.paused { color: var(--navy); }
+.bo-status-pill.paused { color: #9AA5B1; }
 .bo-status-pill.active { color: var(--green-text); }
 .bo-status-pill.registered { color: var(--orange-text); }
 .bo-status-pill.baseline { color: var(--gray-text); }
 .bo-status-pill.insufficient { color: var(--orange-text); }
-.bo-status-pill.discontinued { color: var(--ink); }
+.bo-status-pill.discontinued { color: #8D929A; }
 .bo-status-pill.enabled { color: var(--green-text); }
 .bo-status-pill.monitored { color: var(--green-text); }
 .bo-status-pill.left-study { color: var(--purple-text); }
@@ -2956,8 +2956,8 @@ a.bo-btn-secondary { text-decoration: none; }
 .bo-sc-badge.monitored { color: var(--green-text); }
 .bo-sc-badge.unmonitored { color: var(--orange-text); }
 .bo-sc-badge.enabled { color: var(--green-text); }
-.bo-sc-badge.paused { color: var(--navy); }
-.bo-sc-badge.discontinued { color: var(--ink); }
+.bo-sc-badge.paused { color: #9AA5B1; }
+.bo-sc-badge.discontinued { color: #8D929A; }
 
 /* EHR Connections cell (Organizations table) */
 .bo-ehr-tags {
