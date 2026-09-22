@@ -3773,7 +3773,7 @@ button, input, select, textarea, optgroup {
 .med-legend-dot svg { width: 8px; height: 8px; }
 
 .med-legend-taken { background: var(--green); }
-.med-legend-missed { background: var(--orange, #F2994A); }
+.med-legend-missed { background: var(--red); }
 .med-legend-not-recorded { background: #E7EAEE; }
 
 /* Sits in the same unpadded position as .med-adh-scroll above it (both
@@ -5444,7 +5444,7 @@ label.checkbox-field {
 }
 
 .elig-eligible { color: var(--green-text); }
-.elig-not { color: #7E8993; }
+.elig-not { color: var(--red-text); }
 .elig-pending { color: #7E8993; font-weight: 600; }
 
 .elig-sub {
@@ -5465,7 +5465,7 @@ label.checkbox-field {
 }
 
 .bill-status-ready { color: var(--green-text); }
-.bill-status-not { color: #7E8993; }
+.bill-status-not { color: var(--red-text); }
 
 /* ============================================================
    TIME LOG (billing sub-page)
@@ -7812,7 +7812,7 @@ body.patient-discontinued #chatOpenBtn {
 /* EHR modal: 2-column layout like Backoffice > Add Organization step 5 */
 .ehr-card .form-grid { grid-template-columns: repeat(2, 1fr); }
 .ehr-card .custom-select-trigger:disabled { background: #F3F6F9; cursor: not-allowed; }
-.ehr-status-pill.off { background: #FDECEC; color: #D92D20; }
+.ehr-status-pill.off { background: #FDEDED; color: #D92D20; }
 
 
 /* Scope multiselect: selected values render as removable chips */

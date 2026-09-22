@@ -618,6 +618,7 @@ button, input, select, textarea, optgroup {
 .bo-status-pill.discontinued { color: var(--gray-text); }
 .bo-status-pill.enabled { color: var(--green-text); }
 .bo-status-pill.monitored { color: var(--green-text); }
+.bo-status-pill.left-study { color: var(--gray-text); }
 
 /* Activity Feed */
 .bo-activity-panel { padding-bottom: 8px; }

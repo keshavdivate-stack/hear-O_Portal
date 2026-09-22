@@ -219,8 +219,8 @@ function renderStatusChanges() {
       (s) => `
       <tr>
         <td><span class="bo-name-link">${s.username}</span></td>
-        <td>${s.prev}</td>
-        <td>${s.next}</td>
+        <td>${s.prev ? `<span class="bo-sc-badge ${s.prev.toLowerCase()}">${s.prev}</span>` : ""}</td>
+        <td><span class="bo-sc-badge ${s.next.toLowerCase()}">${s.next}</span></td>
         <td>${formatDate(s.start)}</td>
         <td>${s.days}</td>
         <td>${s.by}</td>

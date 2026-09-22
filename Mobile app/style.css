@@ -4734,7 +4734,7 @@ input[type="password"]:focus {
 .mx-btn--take { border: 2px solid #1a6fd4; background: #f4f8fd; color: #1a6fd4; }
 .mx-dose-status { display: flex; align-items: center; gap: 8px; margin-top: 16px; font-size: calc(17px * var(--font-scale, 1)); }
 .mx-dose-status--taken { color: #1f9d7a; }
-.mx-dose-status--skipped { color: #e07e00; }
+.mx-dose-status--skipped { color: #D92D20; }
 
 /* History */
 .mx-month-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
@@ -4743,14 +4743,14 @@ input[type="password"]:focus {
 .mx-legend-item { display: flex; align-items: center; gap: 8px; font-size: calc(16px * var(--font-scale, 1)); color: #5f6670; }
 .mx-legend-dot { width: 12px; height: 12px; border-radius: 50%; }
 .mx-legend-dot--taken { background: #1f9d7a; }
-.mx-legend-dot--skipped { background: #f98b00; }
+.mx-legend-dot--skipped { background: #F16C6C; }
 .mx-day-card { background: #fff; border-radius: 16px; padding: 18px 18px 14px; margin-bottom: 12px; }
 .mx-day-date { font-size: calc(19px * var(--font-scale, 1)); font-weight: 700; color: #3d3d3d; margin-bottom: 12px; }
 .mx-day-line { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
 .mx-day-time { font-size: calc(17px * var(--font-scale, 1)); color: #666; }
 .mx-pill { flex-shrink: 0; padding: 7px 16px; border-radius: 12px; font-size: calc(17px * var(--font-scale, 1)); font-weight: 600; }
 .mx-pill--taken { background: #e6f8ee; color: #1f9d7a; }
-.mx-pill--skipped { background: #fff1c9; color: #e07e00; }
+.mx-pill--skipped { background: #FDEDED; color: #D92D20; }
 
 /* Medication updates */
 .mx-update-card { background: #fff; border-radius: 18px; padding: 16px 16px 14px; margin-bottom: 12px; }

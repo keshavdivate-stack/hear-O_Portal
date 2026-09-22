@@ -95,6 +95,14 @@ const ucPool = Array.from({ length: ucTotal }, (_, i) => {
 /* ---------------- Render ---------------- */
 document.getElementById("ucTotalLabel").textContent = `Total: ${ucTotal} patients`;
 
+/* Status column color -- reuses the same .bo-status-pill classes/colors as
+   the Patient Management table (Active=green, Priority=red, Baseline/Left
+   study=gray, Insufficient data=orange) instead of inventing new colors. */
+function ucStatusClass(status) {
+  const map = { "Active": "active", "Priority": "priority", "Baseline": "baseline", "Left study": "left-study", "Insufficient data": "insufficient" };
+  return map[status] || "";
+}
+
 function renderUcTable() {
   const rows = ucPool.filter((p) => p.bucket === ucActiveBucket);
   document.getElementById("ucRows").innerHTML = rows
@@ -105,7 +113,7 @@ function renderUcTable() {
         <td>${p.username}</td>
         <td>${p.startDate}</td>
         <td>${p.leavingDate}</td>
-        <td>${p.status}</td>
+        <td><span class="bo-status-pill ${ucStatusClass(p.status)}">${p.status}</span></td>
         <td>${p.statusStartDate}</td>
         <td>${p.totalAvailableDays}</td>
         <td>${p.totalRecordedDays}</td>

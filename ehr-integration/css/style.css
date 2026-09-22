@@ -4,8 +4,11 @@
   --blue: #2AA9E0;
   --blue-light: #EAF6FC;
   --green: #3FBE84;
+  --green-text: #15803D;
   --red: #F16C6C;
   --red-light: #FDEDED;
+  --red-text: #D92D20;
+  --orange-text: #C25E00;
   --gray-text: #57626D;
   --gray-border: #E7EAEE;
   --bg: #F4F7FA;
@@ -1027,7 +1030,7 @@ button, input, select, textarea, optgroup {
 }
 .status-line svg { flex-shrink: 0; }
 .status-priority { color: var(--red); }
-.status-active { color: var(--green); }
+.status-active { color: var(--green-text); }
 .status-muted { color: #7E8993; font-weight: 600; }
 .status-since {
   display: block;
@@ -3073,7 +3076,7 @@ button, input, select, textarea, optgroup {
 
 .rec-table-th-action { text-align: right; }
 .rec-table-actions { display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
-.rec-status-archived { color: #7E8993; }
+.rec-status-archived { color: var(--gray-text); }
 
 /* EHR-integrated data: condition/allergy/goal status variants (plain colored text) */
 .rec-status-active { color: #15803D; }
@@ -3502,7 +3505,7 @@ button, input, select, textarea, optgroup {
 .med-legend-dot svg { width: 8px; height: 8px; }
 
 .med-legend-taken { background: var(--green); }
-.med-legend-missed { background: #F2994A; }
+.med-legend-missed { background: var(--red); }
 .med-legend-not-recorded { background: #E7EAEE; }
 
 .med-adh-day-label { font-size: 11.5px; color: var(--gray-text); }
@@ -4961,7 +4964,7 @@ label.checkbox-field {
 }
 
 .elig-eligible { color: var(--green); }
-.elig-not { color: #7E8993; }
+.elig-not { color: var(--red-text); }
 .elig-pending { color: #7E8993; font-weight: 600; }
 
 .elig-sub {
@@ -4982,7 +4985,7 @@ label.checkbox-field {
 }
 
 .bill-status-ready { color: var(--green); }
-.bill-status-not { color: #7E8993; }
+.bill-status-not { color: var(--red-text); }
 
 /* ============================================================
    AUTH / ONBOARDING FLOW (email preview, EHR login, consent, login)
