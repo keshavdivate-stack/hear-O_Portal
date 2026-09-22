@@ -4955,7 +4955,7 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
   padding: 0;
   border-radius: 0;
 }
-.bo-pill-incident-active { color: var(--green-text); }
+.bo-pill-incident-active { color: var(--blue-text); }
 .bo-pill-incident-escalated { color: var(--red-text); }
 .bo-pill-incident-resolved { color: var(--green-text); }
 

@@ -167,9 +167,9 @@ const CLINIC_STATUS_BADGE_META = {
   "Registered": { color: "var(--orange-text)", icon: "" },
   "Baseline": { color: "#7E8993", icon: "" },
   "Active": { color: "var(--green-text)", icon: "" },
-  "Insufficient Data": { color: "#7E8993", icon: "" },
+  "Insufficient Data": { color: "var(--yellow-text)", icon: "" },
   "On Hold": { color: "#23272E", icon: "" },
-  "Discontinued": { color: "#7E8993", icon: "" },
+  "Discontinued": { color: "#8D929A", icon: "" },
 };
 
 function clinicStatusBadgeHtml(status) {
