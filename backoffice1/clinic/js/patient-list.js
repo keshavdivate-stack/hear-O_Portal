@@ -118,9 +118,8 @@ function statusCell(p) {
        reachable by keyboard) but is only visually revealed on row hover,
        unless the patient is already flagged, in which case it stays visible. */
     const flagMark = `
-        <button type="button" class="status-flag-btn action-icon-wrap ${p.flag ? "flagged" : ""}" data-id="${p.id}" aria-pressed="${p.flag}" aria-label="${p.flag ? "Remove flag" : "Flag patient"}">
+        <button type="button" class="status-flag-btn ${p.flag ? "flagged" : ""}" data-id="${p.id}" aria-pressed="${p.flag}" aria-label="${p.flag ? "Remove flag" : "Flag patient"}">
           ${p.flag ? flagIcon : flagIconOff}
-          <span class="action-tooltip">${p.flag ? "Remove flag" : "Flag patient"}</span>
         </button>`;
     const ackMark = p.acked
       ? `
