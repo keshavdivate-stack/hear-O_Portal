@@ -1325,7 +1325,8 @@ button.bo-name-link { background: none; border: none; padding: 0; font: inherit;
 .bo-archive-back-link { display: inline-flex; align-items: center; gap: 6px; color: var(--blue-text); font-weight: 700; font-size: 13.5px; text-decoration: none; margin-bottom: 14px; }
 .bo-archive-back-link:hover { text-decoration: underline; }
 .bo-archive-sub { color: var(--gray-text); font-size: 13.5px; margin: 4px 0 0; }
-.bo-archive-head-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; flex-wrap: wrap; margin-bottom: 18px; }
+.bo-archive-head-row { display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap; margin-bottom: 18px; }
+.bo-archive-head-row h1 { margin: 0; }
 
 .bo-list-footer {
   display: flex;
