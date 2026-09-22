@@ -1,6 +1,6 @@
 /* ---------------- Color lookups ---------------- */
 const priorityColor = { Critical: "var(--red)", High: "var(--orange)", Medium: "var(--yellow)", Low: "var(--gray)" };
-const statusColor = { Open: "var(--orange)", "In Progress": "var(--orange)", Escalated: "var(--red)", Resolved: "var(--green)" };
+const statusColor = { Open: "var(--orange)", "In Progress": "var(--orange)", Resolved: "var(--green)" };
 const typeColor = { Patient: "var(--cyan)", Clinic: "var(--purple)", System: "var(--navy)", Backoffice: "var(--orange)" };
 
 /* "Tickets by Type" on this dashboard is a different cut than the Patient/Clinic
@@ -56,20 +56,20 @@ function myTicketsHref(extraParams) {
 /* ---------------- KPI row ----------------
    Every count here is scoped to tickets assigned to the current agent --
    this card row answers "what do I personally need to work on", not "how is
-   the support module doing overall". Escalated/Resolved map to a single
+   the support module doing overall". In Progress/Resolved map to a single
    status value so those two cards deep-link straight into the filtered
    ticket list; the others mix statuses/priorities that support.html's
    single-value filters can't express in one URL, so they stay plain cards. */
 function renderKpis(mine) {
   const openTickets = mine.filter((t) => t.status === "Open" || t.status === "In Progress");
   const priorityTickets = mine.filter((t) => (t.priority === "Critical" || t.priority === "High") && t.status !== "Resolved");
-  const escalatedTickets = mine.filter((t) => t.status === "Escalated");
+  const inProgressTickets = mine.filter((t) => t.status === "In Progress");
   const resolvedTickets = mine.filter((t) => t.status === "Resolved");
 
   const cards = [
     { num: openTickets.length, label: "Open Tickets", color: "var(--orange)", icon: `<path d="M18 9.5C18 7.7 17.3 6 16 4.8C14.7 3.6 13 3 11.3 3.1C8.1 3.3 5.6 6.1 5.6 9.4V12.5C5.6 13.1 5.4 13.7 5 14.2L4 15.5C3.4 16.3 4 17.5 5 17.5H19C20 17.5 20.6 16.3 20 15.5L19 14.2C18.6 13.7 18.4 13.1 18.4 12.5"/>` },
     { num: priorityTickets.length, label: "Critical / High Priority", color: "var(--red)", icon: `<path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.73 3h16.9a2 2 0 0 0 1.73-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/>` },
-    { num: escalatedTickets.length, label: "Escalated Tickets", color: "var(--navy)", icon: `<path d="M12 19V5"/><path d="m5 12 7-7 7 7"/>`, href: myTicketsHref({ status: "Escalated" }) },
+    { num: inProgressTickets.length, label: "In Progress Tickets", color: "var(--navy)", icon: `<path d="M12 19V5"/><path d="m5 12 7-7 7 7"/>`, href: myTicketsHref({ status: "In Progress" }) },
     { num: resolvedTickets.length, label: "Tickets Resolved", color: "var(--green)", icon: `<path d="M4 12L9 17L20 6"/>`, href: myTicketsHref({ status: "Resolved" }) },
   ];
 
@@ -93,10 +93,9 @@ function renderKpis(mine) {
 
 /* ---------------- Recent Tickets ----------------
    Every ticket assigned to the agent that isn't Resolved yet, ranked so the
-   most urgent shows first: an Escalated ticket outranks any priority, then
-   Critical, then High, with newest-created breaking ties. */
+   most urgent shows first: Critical, then High, with newest-created breaking
+   ties. */
 function queueWeight(t) {
-  if (t.status === "Escalated") return 4;
   if (t.priority === "Critical") return 3;
   if (t.priority === "High") return 2;
   return 1;

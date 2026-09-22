@@ -368,12 +368,14 @@ const ovCategories = (() => {
     .map(([label, count]) => ({ label, count, color: OV_CATEGORY_COLORS[label] || "var(--gray)" }));
 })();
 
-/* Severity/status use the app's existing SEVERITIES/STATUSES lists (from
-   js/support-data.js) rather than a separately invented vocabulary, so
-   "group by Severity/Status" here lines up with the same values Support's
-   own filters use. */
+/* Severity/status use the app's existing SEVERITIES/INC_STATUSES lists (from
+   js/support-data.js and js/support-incidents-data.js) rather than a
+   separately invented vocabulary, so "group by Severity/Status" here lines
+   up with the same values Support's own filters use -- these are incident
+   records, so status is the incident list (Active/Escalated/Resolved), not
+   the ticket list. */
 const OV_SEVERITY_COLORS = { Critical: "var(--red)", High: "var(--orange)", Medium: "var(--yellow)", Low: "var(--gray)" };
-const OV_STATUS_COLORS = { Open: "var(--red)", "In Progress": "var(--orange)", Escalated: "var(--red)", Resolved: "var(--green)" };
+const OV_STATUS_COLORS = { Active: "var(--orange)", Escalated: "var(--red)", Resolved: "var(--green)" };
 
 /* Deterministic incident records (severity + status) for a category's
    `count`, seeded by category + an arbitrary key (e.g. "donut", or a month
@@ -385,7 +387,7 @@ function ovIncidentRecords(label, seedKey, count) {
     const seed = ovHash(`${label}#${seedKey}#${i}`);
     records.push({
       severity: SEVERITIES[seed % SEVERITIES.length],
-      status: STATUSES[(seed >>> 3) % STATUSES.length],
+      status: INC_STATUSES[(seed >>> 3) % INC_STATUSES.length],
     });
   }
   return records;
@@ -409,7 +411,7 @@ function ovDonutSlices(orgId) {
   if (ovDonutGroupBy === "category") {
     return baseCategories.map((c) => ({ dimension: "category", value: c.label, label: c.label, count: c.count, color: c.color }));
   }
-  const values = ovDonutGroupBy === "severity" ? SEVERITIES : STATUSES;
+  const values = ovDonutGroupBy === "severity" ? SEVERITIES : INC_STATUSES;
   const colors = ovDonutGroupBy === "severity" ? OV_SEVERITY_COLORS : OV_STATUS_COLORS;
   const totals = {};
   values.forEach((v) => (totals[v] = 0));
@@ -516,7 +518,7 @@ function ovTrendSeries(labels, valuesFor) {
   if (ovTrendGroupBy === "category") {
     return ovCategories.map((c) => ({ label: c.label, color: c.color, values: valuesFor(c.label) }));
   }
-  const dimValues = ovTrendGroupBy === "severity" ? SEVERITIES : STATUSES;
+  const dimValues = ovTrendGroupBy === "severity" ? SEVERITIES : INC_STATUSES;
   const colors = ovTrendGroupBy === "severity" ? OV_SEVERITY_COLORS : OV_STATUS_COLORS;
   const monthlyTotals = labels.map(() => {
     const totals = {};
