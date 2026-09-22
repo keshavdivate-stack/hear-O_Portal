@@ -84,7 +84,7 @@ function sdIaErrorDetails(row) {
 function sdActions(tabKey, idx) {
   return `
     <div class="bo-row-actions">
-      <button class="bo-action-icon sd-edit-trigger" data-tab="${tabKey}" data-idx="${idx}" aria-label="Edit">${sdEditIcon}</button>
+      <button class="bo-action-icon blue sd-edit-trigger" data-tab="${tabKey}" data-idx="${idx}" aria-label="Edit">${sdEditIcon}</button>
       <button class="bo-action-icon archive sd-archive-trigger" data-tab="${tabKey}" data-idx="${idx}" aria-label="Archive">${sdArchiveIcon}</button>
     </div>`;
 }

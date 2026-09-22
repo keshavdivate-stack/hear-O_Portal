@@ -67,7 +67,7 @@ function makeSimplePager(tabKey) {
         <td>${esc(e.r.creationDate)}</td>
         <td>
           <div class="bo-row-actions">
-            <button class="bo-action-icon config-edit-trigger" data-tab="${tabKey}" data-idx="${e.i}" aria-label="Edit">${compEditIcon}</button>
+            <button class="bo-action-icon blue config-edit-trigger" data-tab="${tabKey}" data-idx="${e.i}" aria-label="Edit">${compEditIcon}</button>
             <button class="bo-action-icon archive config-archive-trigger" data-tab="${tabKey}" data-idx="${e.i}" aria-label="Archive">${compArchiveIcon}</button>
           </div>
         </td>
