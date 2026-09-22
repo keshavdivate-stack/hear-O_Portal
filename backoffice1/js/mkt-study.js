@@ -38,7 +38,17 @@ const MKT_BIN_KEYS = ["90-100", "80-89", "70-79", "60-69"];
    Each selected organization gets its own hero card + ring, built from its own
    seeded data, so picking multiple orgs shows their charts side by side rather
    than blending them into a single average. */
-function heroCardHtml(title, ring, compact, orgId) {
+/* No real per-org date data exists yet, so the "To Date"/"Today" header
+   above the legend gets a stand-in date seeded off the org so it stays
+   stable per org instead of reshuffling on every render. */
+function mktRandomDateFor(seed, offsetDays) {
+  const d = new Date(2028, 8, 1 + ((seed + offsetDays) % 28));
+  const dd = String(d.getDate()).padStart(2, "0");
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  return `${dd}.${mm}.${d.getFullYear()}`;
+}
+
+function heroCardHtml(title, ring, compact, orgId, seed) {
   const total = ring.reduce((s, seg) => s + seg.value, 0);
   let acc = 0;
   const stops = ring
@@ -57,7 +67,7 @@ function heroCardHtml(title, ring, compact, orgId) {
           <span class="mkt-rb-dot" style="background:${seg.color};"></span>
           <span class="mkt-rb-label">${seg.label}</span>
           <span class="mkt-rb-num">${seg.value}</span>
-          <span class="mkt-rb-pct">${pct}%</span>
+          <span class="mkt-rb-pct">&middot; ${pct}%</span>
         </div>`;
     })
     .join("");
@@ -69,10 +79,9 @@ function heroCardHtml(title, ring, compact, orgId) {
         <div class="mkt-hero-label">
           <h2>${title}</h2>
           <div class="mkt-compliance">
-            <p class="mkt-compliance-title">Compliance</p>
-            <div class="mkt-compliance-row">
-              <span class="mkt-compliance-val">0%</span>
-              <span class="mkt-compliance-none">None</span>
+            <div class="mkt-compliance-dates">
+              <span>${mktRandomDateFor(seed, 0)}</span>
+              <span>${mktRandomDateFor(seed, 3)}</span>
             </div>
             <div class="mkt-compliance-tabs">
               <span class="active">To Date</span>
@@ -104,7 +113,10 @@ function renderHeroCards(orgIds) {
 
   document.getElementById("mktHeroRow").classList.toggle("mkt-hero-row--multi", multi);
   document.getElementById("mktHeroCards").innerHTML = orgs
-    .map((org) => heroCardHtml(org.name, ringFor(org.id === "all" ? 0 : mktHash(org.id)), multi, org.id))
+    .map((org) => {
+      const seed = org.id === "all" ? 0 : mktHash(org.id);
+      return heroCardHtml(org.name, ringFor(seed), multi, org.id, seed);
+    })
     .join("");
 }
 

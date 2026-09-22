@@ -3113,7 +3113,7 @@ a.bo-btn-secondary { text-decoration: none; }
   white-space: nowrap;
 }
 
-.mkt-hero-card--compact .mkt-compliance-row,
+.mkt-hero-card--compact .mkt-compliance-dates,
 .mkt-hero-card--compact .mkt-compliance-tabs { justify-content: center; }
 
 .mkt-hero-card--compact .mkt-gauge-wrap { width: 140px; height: 140px; margin: 22px 0; }
@@ -3163,22 +3163,14 @@ a.bo-btn-secondary { text-decoration: none; }
   color: var(--ink);
 }
 
-.mkt-compliance-title {
-  font-size: 13.5px;
-  font-weight: 600;
-  color: var(--gray-text);
-  margin: 0 0 6px;
-}
-
-.mkt-compliance-row {
+.mkt-compliance-dates {
   display: flex;
-  align-items: baseline;
-  gap: 10px;
-  margin-bottom: 8px;
+  gap: 18px;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 4px;
 }
-
-.mkt-compliance-val { font-size: 20px; font-weight: 800; color: var(--cyan); }
-.mkt-compliance-none { font-size: 15px; font-weight: 700; color: var(--cyan); }
 
 .mkt-compliance-tabs {
   display: flex;
