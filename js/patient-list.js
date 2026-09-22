@@ -198,7 +198,7 @@ function complianceCell(p) {
 }
 
 const careStatusLabels = {
-  recommended: { text: "Recommended", cls: "mon-unmonitored" },
+  recommended: { text: "Recommended", cls: "mon-recommended" },
   in_progress: { text: "In Progress", cls: "mon-progress" },
   completed: { text: "Completed", cls: "status-active" },
 };

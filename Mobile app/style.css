@@ -4791,8 +4791,8 @@ input[type="password"]:focus {
 .mx-issue-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
 .mx-issue-title { flex: 1; font-size: calc(21px * var(--font-scale, 1)); font-weight: 700; line-height: 1.3; color: #3d3d3d; }
 .mx-issue-pill { flex-shrink: 0; padding: 6px 14px; border-radius: 16px; font-size: calc(15px * var(--font-scale, 1)); font-weight: 400; }
-.mx-issue-pill.open { background: #fff4ee; color: #e07e00; }
-.mx-issue-pill.in-progress { background: #f4f8fd; color: #1a6fd4; }
+.mx-issue-pill.open { background: #f4f8fd; color: #1a6fd4; }
+.mx-issue-pill.in-progress { background: #fff4ee; color: #e07e00; }
 .mx-issue-pill.resolved { background: #e3f8ee; color: #2ac19e; }
 .mx-issue-date { font-size: calc(16px * var(--font-scale, 1)); color: #666; margin-top: 4px; }
 .mx-issue-note { background: #ececec; border-radius: 10px; padding: 10px 14px; margin-top: 10px; font-size: calc(19px * var(--font-scale, 1)); line-height: 1.35; color: #4a4a4a; }

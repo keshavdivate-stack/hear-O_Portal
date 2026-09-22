@@ -165,7 +165,7 @@ function clinicPatientsByStatus(status) {
 const CLINIC_STATUS_BADGE_META = {
   "Priority": { color: "var(--red-text)", icon: `<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" class="b01-status-icon"><path d="M12 21C12 21 4 15.5 4 9.8C4 6.6 6.5 4.5 9.2 4.5C10.6 4.5 11.6 5.1 12 5.7C12.4 5.1 13.4 4.5 14.8 4.5C17.5 4.5 20 6.6 20 9.8C20 15.5 12 21 12 21Z"/></svg>` },
   "Registered": { color: "var(--orange-text)", icon: "" },
-  "Baseline": { color: "var(--gray-text)", icon: "" },
+  "Baseline": { color: "#7E8993", icon: "" },
   "Active": { color: "var(--green-text)", icon: "" },
   "Insufficient Data": { color: "#7E8993", icon: "" },
   "On Hold": { color: "#23272E", icon: "" },

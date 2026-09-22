@@ -609,7 +609,7 @@ button, input, select, textarea, optgroup {
 .bo-table tbody tr.bo-row-highlight td { background: var(--blue-light); }
 
 .bo-status-pill.priority { color: var(--red-text); }
-.bo-status-pill.unmonitored { color: var(--orange-text); }
+.bo-status-pill.unmonitored { color: var(--red-text); }
 .bo-status-pill.paused { color: #9AA5B1; }
 .bo-status-pill.active { color: var(--green-text); }
 .bo-status-pill.registered { color: var(--orange-text); }
@@ -2954,7 +2954,7 @@ a.bo-btn-secondary { text-decoration: none; }
 .bo-sc-badge.registered { color: var(--orange-text); }
 .bo-sc-badge.baseline { color: var(--gray-text); }
 .bo-sc-badge.monitored { color: var(--green-text); }
-.bo-sc-badge.unmonitored { color: var(--orange-text); }
+.bo-sc-badge.unmonitored { color: var(--red-text); }
 .bo-sc-badge.enabled { color: var(--green-text); }
 .bo-sc-badge.paused { color: #9AA5B1; }
 .bo-sc-badge.discontinued { color: #8D929A; }
@@ -4763,7 +4763,7 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
   border-radius: 0;
 }
 .bo-pill-active { color: var(--green-text); }
-.bo-pill-paused { color: var(--gray-text); }
+.bo-pill-paused { color: #9AA5B1; }
 .bo-pill-archived { color: var(--orange-text); }
 .bo-pill-delivered { color: var(--green-text); }
 .bo-pill-failed { color: var(--red-text); }
@@ -4963,7 +4963,7 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
   padding: 0;
   border-radius: 0;
 }
-.bo-pill-incident-active { color: var(--orange-text); }
+.bo-pill-incident-active { color: var(--green-text); }
 .bo-pill-incident-escalated { color: var(--red-text); }
 .bo-pill-incident-resolved { color: var(--green-text); }
 

@@ -21,7 +21,7 @@ if (phReturnTo) {
   document.getElementById("patientBackLink").href = decodeURIComponent(phReturnTo);
 }
 
-const phStatusClass = { Active: "healthy", Registered: "info", Priority: "critical", Paused: "neutral" };
+const phStatusClass = { Active: "healthy", Registered: "warning", Priority: "critical", Paused: "neutral" };
 const phSevEl = document.getElementById("patientSeverity");
 phSevEl.classList.add(phStatusClass[ph.status] || "neutral");
 phSevEl.innerHTML = `<span class="dot"></span>${ph.status}`;

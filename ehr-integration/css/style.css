@@ -1029,7 +1029,7 @@ button, input, select, textarea, optgroup {
   font-size: 13.5px;
 }
 .status-line svg { flex-shrink: 0; }
-.status-priority { color: var(--red); }
+.status-priority { color: var(--red-text); }
 .status-active { color: var(--green-text); }
 .status-muted { color: #7E8993; font-weight: 600; }
 .status-registered { color: var(--orange-text); font-weight: 600; }
@@ -1048,8 +1048,8 @@ button, input, select, textarea, optgroup {
   gap: 6px;
   font-weight: 600;
 }
-.mon-unmonitored { color: var(--blue); }
-.mon-monitored { color: #363B42; }
+.mon-unmonitored { color: var(--red-text); }
+.mon-monitored { color: var(--green-text); }
 .mon-none { color: #7E8993; }
 .mon-progress { color: #C25E00; }
 
@@ -1070,7 +1070,7 @@ button, input, select, textarea, optgroup {
   font-weight: 700;
 }
 
-.care-indicator-trigger .mon-line.mon-unmonitored { background: var(--blue-light); color: var(--blue); }
+.care-indicator-trigger .mon-line.mon-unmonitored { background: var(--red-light); color: var(--red-text); }
 .care-indicator-trigger .mon-line.mon-progress { background: #FDF3E7; }
 .care-indicator-trigger .mon-line.status-active { background: #E7F8EF; }
 
@@ -4966,7 +4966,7 @@ label.checkbox-field {
   font-size: 13.5px;
 }
 
-.elig-eligible { color: var(--green); }
+.elig-eligible { color: var(--green-text); }
 .elig-not { color: var(--red-text); }
 .elig-pending { color: var(--orange-text); font-weight: 600; }
 .elig-na { color: #7E8993; font-weight: 600; }
@@ -4988,7 +4988,7 @@ label.checkbox-field {
   max-width: 90px;
 }
 
-.bill-status-ready { color: var(--green); }
+.bill-status-ready { color: var(--green-text); }
 .bill-status-not { color: var(--red-text); }
 
 /* ============================================================
