@@ -2667,7 +2667,7 @@ button, input, select, textarea, optgroup {
   color: #fff;
 }
 
-.rec-valid { background: #2E9A66; }
+.rec-valid { background: var(--green); }
 .rec-low { background: #F2994A; }
 .rec-none { background: #E7EAEE; }
 
@@ -3477,7 +3477,7 @@ button, input, select, textarea, optgroup {
   flex-shrink: 0;
 }
 
-.med-adh-taken { background: #2E9A66; color: #fff; }
+.med-adh-taken { background: var(--green); color: #fff; }
 .med-adh-missed { background: #F2994A; color: #fff; }
 .med-adh-not-recorded { background: #E7EAEE; color: #7E8993; }
 
@@ -3504,7 +3504,7 @@ button, input, select, textarea, optgroup {
 
 .med-legend-dot svg { width: 8px; height: 8px; }
 
-.med-legend-taken { background: #2E9A66; }
+.med-legend-taken { background: var(--green); }
 .med-legend-missed { background: #F2994A; }
 .med-legend-not-recorded { background: #E7EAEE; }
 
