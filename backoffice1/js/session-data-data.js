@@ -1,7 +1,13 @@
 /* ---------------- Config data (Settings > Config > Session Data) ---------------- */
 /* Archived entries from any tab land here (shared by archived-session-data.html)
    instead of being deleted outright. */
-let archivedSessionData = [];
+let archivedSessionData = [
+  { identifier: 'ar-old1', language: 'AR', sentence: 'مرحبا بكم', _tabKey: 'sentences', _type: 'Sentence', _label: 'ar-old1', archivedDate: '18/08/2026 11:15:04' },
+  { type: 'YES NO', decimal: '', min: '', max: '', questions: { AR: 'هل تشعر بالتحسن؟', EN: 'Are you feeling better?', HE: '', RU: '', ES: '', DE: '' }, _tabKey: 'questions', _type: 'Question', _label: 'Are you feeling better?', archivedDate: '18/08/2026 11:16:29' },
+  { name: 'Old Yes Answer', answers: { AR: 'نعم', EN: 'Yes', HE: '', RU: '', ES: '', DE: '' }, _tabKey: 'answers', _type: 'Answer', _label: 'Old Yes Answer', archivedDate: '18/08/2026 11:17:41' },
+  { name: 'Legacy Low SNR', identifier: 'ia-old-1', priority: '2', rerecordAttempts: '3', sessionRerecordAttempts: '5', messages: { AR: { regular: '', successful: '', unsuccessful: '' }, EN: { regular: 'Please try again', successful: 'Thanks!', unsuccessful: 'Session ended' }, HE: { regular: '', successful: '', unsuccessful: '' }, RU: { regular: '', successful: '', unsuccessful: '' }, ES: { regular: '', successful: '', unsuccessful: '' }, DE: { regular: '', successful: '', unsuccessful: '' } }, _tabKey: 'iaErrors', _type: 'IA Error', _label: 'Legacy Low SNR', archivedDate: '18/08/2026 11:18:53' },
+  { name: 'Old Evening Range', start: '18:00:00', end: '21:00:00', defaultTime: '19:00:00', text: { AR: '', EN: '', HE: '', RU: '', ES: '', DE: '' }, _tabKey: 'reminderTimeRange', _type: 'Reminder Time Range', _label: 'Old Evening Range', archivedDate: '18/08/2026 11:19:37' },
+];
 const SD_LANGS = ["AR", "EN", "HE", "RU", "ES", "DE"];
 const SD_QUESTION_TYPES = ["YES NO", "OPINION", "FREE TEXT"];
 
