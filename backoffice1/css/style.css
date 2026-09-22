@@ -4560,7 +4560,7 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
   padding: 0;
   border-radius: 0;
 }
-.bo-pill-status-open { color: var(--orange-text); }
+.bo-pill-status-open { color: var(--blue-text); }
 .bo-pill-status-inprogress { color: var(--orange-text); }
 .bo-pill-status-escalated { color: var(--red-text); }
 .bo-pill-status-resolved { color: var(--green-text); }

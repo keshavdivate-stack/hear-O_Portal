@@ -1,6 +1,6 @@
 /* ---------------- Color lookups ---------------- */
 const priorityColor = { Critical: "var(--red)", High: "var(--orange)", Medium: "var(--yellow)", Low: "var(--gray)" };
-const statusColor = { Open: "var(--orange)", "In Progress": "var(--orange)", Resolved: "var(--green)" };
+const statusColor = { Open: "var(--blue)", "In Progress": "var(--orange)", Resolved: "var(--green)" };
 const typeColor = { Patient: "var(--cyan)", Clinic: "var(--purple)", System: "var(--navy)", Backoffice: "var(--orange)" };
 
 /* "Tickets by Type" on this dashboard is a different cut than the Patient/Clinic
