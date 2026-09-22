@@ -120,7 +120,7 @@ function statusCell(p) {
   if (p.status === "registered") {
     return `
       <div class="status-cell">
-        <span class="status-line status-muted">Registered</span>
+        <span class="status-line status-registered">Registered</span>
         <span class="status-since">${p.since}</span>
       </div>`;
   }

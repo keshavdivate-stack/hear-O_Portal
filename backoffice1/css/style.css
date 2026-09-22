@@ -610,15 +610,15 @@ button, input, select, textarea, optgroup {
 
 .bo-status-pill.priority { color: var(--red-text); }
 .bo-status-pill.unmonitored { color: var(--orange-text); }
-.bo-status-pill.paused { color: var(--gray-text); }
+.bo-status-pill.paused { color: var(--navy); }
 .bo-status-pill.active { color: var(--green-text); }
 .bo-status-pill.registered { color: var(--orange-text); }
 .bo-status-pill.baseline { color: var(--gray-text); }
 .bo-status-pill.insufficient { color: var(--orange-text); }
-.bo-status-pill.discontinued { color: var(--gray-text); }
+.bo-status-pill.discontinued { color: var(--ink); }
 .bo-status-pill.enabled { color: var(--green-text); }
 .bo-status-pill.monitored { color: var(--green-text); }
-.bo-status-pill.left-study { color: var(--gray-text); }
+.bo-status-pill.left-study { color: var(--purple-text); }
 
 /* Activity Feed */
 .bo-activity-panel { padding-bottom: 8px; }
@@ -2956,8 +2956,8 @@ a.bo-btn-secondary { text-decoration: none; }
 .bo-sc-badge.monitored { color: var(--green-text); }
 .bo-sc-badge.unmonitored { color: var(--orange-text); }
 .bo-sc-badge.enabled { color: var(--green-text); }
-.bo-sc-badge.paused { color: var(--gray-text); }
-.bo-sc-badge.discontinued { color: var(--gray-text); }
+.bo-sc-badge.paused { color: var(--navy); }
+.bo-sc-badge.discontinued { color: var(--ink); }
 
 /* EHR Connections cell (Organizations table) */
 .bo-ehr-tags {
@@ -3885,6 +3885,7 @@ a.bo-health-card:hover { border-color: var(--field-border); }
 .bo-severity-pill.warning { background: var(--orange-light); color: var(--orange-text); }
 .bo-severity-pill.healthy { background: var(--green-light); color: var(--green-text); }
 .bo-severity-pill.escalated { background: var(--navy-light); color: var(--navy); }
+.bo-severity-pill.open { background: var(--blue-light); color: var(--blue-text); }
 .bo-severity-pill.info { background: var(--bg); color: var(--gray-text); }
 .bo-severity-pill.neutral { background: var(--bg); color: var(--gray-text); }
 
@@ -4751,6 +4752,7 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
 /* Status / delivery-result columns — plain colored text, no pill/dot. */
 .bo-pill-active,
 .bo-pill-paused,
+.bo-pill-archived,
 .bo-pill-delivered,
 .bo-pill-failed,
 .bo-pill-partial,
@@ -4762,6 +4764,7 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
 }
 .bo-pill-active { color: var(--green-text); }
 .bo-pill-paused { color: var(--gray-text); }
+.bo-pill-archived { color: var(--orange-text); }
 .bo-pill-delivered { color: var(--green-text); }
 .bo-pill-failed { color: var(--red-text); }
 .bo-pill-partial { color: var(--orange-text); }

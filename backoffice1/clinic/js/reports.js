@@ -394,7 +394,7 @@ function clinicalBadge(p) {
     priority: ["Priority", "status-priority"],
     active: ["Active", "status-active"],
     baseline: ["Baseline", "status-muted"],
-    registered: ["Registered", "status-muted"],
+    registered: ["Registered", "status-registered"],
     none: ["None", "status-muted"],
   };
   const [label, cls] = map[p.status] || ["—", "status-muted"];

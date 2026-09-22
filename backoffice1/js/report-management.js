@@ -215,7 +215,7 @@ function rmRenderScheduleRow(s) {
       <td>${s.frequency}</td>
       <td>${rmDaysOfWeekLabel(s)}</td>
       <td>${rmReportTimeLabel(s)}</td>
-      <td>${s.archived ? `<span class="bo-pill bo-pill-paused">Archived</span>` : rmStatusPill(s.status)}</td>
+      <td>${s.archived ? `<span class="bo-pill bo-pill-archived">Archived</span>` : rmStatusPill(s.status)}</td>
       <td>
         <div class="bo-row-actions">
           <button class="bo-action-icon row-menu-trigger" data-id="${s.id}" aria-label="Row actions">${rmKebabIcon}</button>
@@ -718,7 +718,7 @@ function openScheduleDetails(id) {
   document.getElementById("rmDetailTags").textContent = s.tags.join(", ") || "—";
   document.getElementById("rmDetailFrequency").textContent = s.frequency;
   document.getElementById("rmDetailTime").textContent = `${s.time} ${s.timezone}`;
-  document.getElementById("rmDetailStatus").innerHTML = s.archived ? `<span class="bo-pill bo-pill-paused">Archived</span>` : rmStatusPill(s.status);
+  document.getElementById("rmDetailStatus").innerHTML = s.archived ? `<span class="bo-pill bo-pill-archived">Archived</span>` : rmStatusPill(s.status);
   document.getElementById("rmDetailRecipients").innerHTML = s.recipients.length
     ? s.recipients.map((r) => `<div>${rmEsc(r)}</div>`).join("")
     : "—";

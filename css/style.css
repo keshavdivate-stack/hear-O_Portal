@@ -1260,6 +1260,7 @@ button, input, select, textarea, optgroup {
 .status-priority { color: var(--red-text); }
 .status-active { color: var(--green-text); }
 .status-muted { color: #7E8993; font-weight: 600; }
+.status-registered { color: var(--orange-text); font-weight: 600; }
 .status-since {
   display: block;
   margin-top: 2px;
@@ -5445,7 +5446,8 @@ label.checkbox-field {
 
 .elig-eligible { color: var(--green-text); }
 .elig-not { color: var(--red-text); }
-.elig-pending { color: #7E8993; font-weight: 600; }
+.elig-pending { color: var(--orange-text); font-weight: 600; }
+.elig-na { color: #7E8993; font-weight: 600; }
 
 .elig-sub {
   display: block;

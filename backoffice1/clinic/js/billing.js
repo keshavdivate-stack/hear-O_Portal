@@ -64,7 +64,7 @@ function codeCell(c) {
   if (c.t === "pending") {
     return `<div class="bill-elig-cell"><span class="elig-label elig-pending">Pending</span></div>`;
   }
-  return `<div class="bill-elig-cell"><span class="elig-label elig-pending">N/A</span></div>`;
+  return `<div class="bill-elig-cell"><span class="elig-label elig-na">N/A</span></div>`;
 }
 
 function statusCell(status) {
