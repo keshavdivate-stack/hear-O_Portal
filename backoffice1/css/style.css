@@ -1301,24 +1301,20 @@ button.bo-name-link { background: none; border: none; padding: 0; font: inherit;
 .bo-action-icon.archive { color: var(--gray-text); }
 .bo-action-icon.archive:hover { color: var(--ink); }
 
-/* Unarchive: a positive, restoring action (opposite of Delete), so it reads
-   as green rather than the row-actions' usual danger red. */
+/* Unarchive: a plain icon button like every other row action (Edit/Archive),
+   not a labelled pill -- green since it's the positive, restoring
+   counterpart to Archive. */
 .bo-unarchive-link {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  background: var(--green-light, #E9FBF3);
-  color: var(--green-text);
+  justify-content: center;
+  background: none;
   border: none;
-  border-radius: 999px;
-  padding: 6px 14px;
-  font-size: 13px;
-  font-weight: 700;
-  text-decoration: none;
+  padding: 0;
+  color: var(--green-text);
   cursor: pointer;
-  white-space: nowrap;
 }
-.bo-unarchive-link:hover { background: #d9f5e6; }
+.bo-unarchive-link:hover { color: var(--green); }
 
 .bo-pill-archive-type { background: var(--blue-light); color: var(--blue-text); }
 
