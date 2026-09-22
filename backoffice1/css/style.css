@@ -13,9 +13,9 @@
   --navy: #1F3C73;
   --navy-light: #EAEEF7;
   --orange: #F2994A;
-  --orange-light: #FEF3E8;
+  --orange-light: #FEEDDC;
   --yellow: #D9A404;
-  --yellow-light: #FDF6E0;
+  --yellow-light: #FEF8DC;
   --cyan: #7FD3EE;
   --cyan-light: #EAF9FD;
   --purple: #9B7FE8;
@@ -29,10 +29,10 @@
      for icons/borders/links on white and don't pass contrast as small
      bold badge text on their own -light tint. */
   --blue-text: #0E5C99;
-  --green-text: #197A4E;
-  --red-text: #B3261E;
-  --orange-text: #9A4A0F;
-  --yellow-text: #7A5900;
+  --green-text: #15803D;
+  --red-text: #D92D20;
+  --orange-text: #C25E00;
+  --yellow-text: #7A5F00;
   --purple-text: #6438C2;
   --bg: #F4F7FA;
   --ink: #1B2430;
@@ -612,8 +612,8 @@ button, input, select, textarea, optgroup {
 .bo-status-pill.unmonitored { color: var(--orange-text); }
 .bo-status-pill.paused { color: var(--gray-text); }
 .bo-status-pill.active { color: var(--green-text); }
-.bo-status-pill.registered { color: var(--blue-text); }
-.bo-status-pill.baseline { color: var(--navy); }
+.bo-status-pill.registered { color: var(--orange-text); }
+.bo-status-pill.baseline { color: var(--gray-text); }
 .bo-status-pill.insufficient { color: var(--orange-text); }
 .bo-status-pill.discontinued { color: var(--gray-text); }
 .bo-status-pill.enabled { color: var(--green-text); }
@@ -645,7 +645,7 @@ button, input, select, textarea, optgroup {
 }
 
 .bo-activity-icon.priority { background: var(--red-light); color: var(--red); }
-.bo-activity-icon.unmonitored { background: var(--blue-light); color: var(--blue); }
+.bo-activity-icon.unmonitored { background: var(--orange-light); color: var(--orange); }
 .bo-activity-icon.paused { background: var(--bg); color: var(--gray); }
 .bo-activity-icon.error { background: var(--orange-light); color: var(--orange); }
 
@@ -2917,7 +2917,7 @@ a.bo-btn-secondary { text-decoration: none; }
 }
 .bo-sc-badge.active { color: var(--green-text); }
 .bo-sc-badge.priority { color: var(--red-text); }
-.bo-sc-badge.registered { color: var(--blue-text); }
+.bo-sc-badge.registered { color: var(--orange-text); }
 .bo-sc-badge.baseline { color: var(--gray-text); }
 .bo-sc-badge.monitored { color: var(--green-text); }
 .bo-sc-badge.unmonitored { color: var(--orange-text); }
@@ -3851,7 +3851,7 @@ a.bo-health-card:hover { border-color: var(--field-border); }
 .bo-severity-pill.warning { background: var(--orange-light); color: var(--orange-text); }
 .bo-severity-pill.healthy { background: var(--green-light); color: var(--green-text); }
 .bo-severity-pill.escalated { background: var(--navy-light); color: var(--navy); }
-.bo-severity-pill.info { background: var(--blue-light); color: var(--blue-text); }
+.bo-severity-pill.info { background: var(--bg); color: var(--gray-text); }
 .bo-severity-pill.neutral { background: var(--bg); color: var(--gray-text); }
 
 .bo-two-col {
@@ -4527,7 +4527,7 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
   padding: 0;
   border-radius: 0;
 }
-.bo-pill-status-open { color: var(--blue-text); }
+.bo-pill-status-open { color: var(--orange-text); }
 .bo-pill-status-inprogress { color: var(--orange-text); }
 .bo-pill-status-escalated { color: var(--red-text); }
 .bo-pill-status-resolved { color: var(--green-text); }
@@ -4731,7 +4731,7 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
 .bo-pill-delivered { color: var(--green-text); }
 .bo-pill-failed { color: var(--red-text); }
 .bo-pill-partial { color: var(--orange-text); }
-.bo-pill-processing { color: var(--blue-text); }
+.bo-pill-processing { color: var(--orange-text); }
 
 /* Empty state (no schedules yet / no rows match the current filters) */
 .bo-empty-state {
@@ -5054,7 +5054,7 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
   padding: 0;
   border-radius: 0;
 }
-.bo-pill-task-open { color: var(--blue-text); }
+.bo-pill-task-open { color: var(--orange-text); }
 .bo-pill-task-inprogress { color: var(--orange-text); }
 .bo-pill-task-completed { color: var(--green-text); }
 

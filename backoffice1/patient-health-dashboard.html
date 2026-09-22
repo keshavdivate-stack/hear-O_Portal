@@ -154,7 +154,7 @@
       <div class="bo-tabs bo-seg-toggle" id="patientTabs">
         <button class="bo-tab bo-seg-btn active" data-tab="summary">Summary</button>
         <button class="bo-tab bo-seg-btn" data-tab="sessions">Sessions</button>
-        <button class="bo-tab bo-seg-btn" data-tab="compliance">Compliance</button>
+        <button class="bo-tab bo-seg-btn" data-tab="compliance">Current Compliance</button>
         <button class="bo-tab bo-seg-btn" data-tab="events">Events</button>
       </div>
     </div>
@@ -165,7 +165,7 @@
         <div class="bo-panel-col">
           <section class="bo-card bo-panel bo-panel--static bo-recording-quality-card">
             <div class="bo-panel-head" style="margin-bottom:4px;">
-              <h3 class="bo-panel-title" style="margin:0;">Recording Quality</h3>
+              <h3 class="bo-panel-title" style="margin:0;">Compliance Over Time</h3>
               <div class="bo-days-row" style="margin:0;">Last <input type="number" class="bo-days-input" id="patientRecordingQualityDaysInput" value="31" min="1" /> days</div>
             </div>
             <p class="bo-recording-quality-pct" id="patientRecordingQualityPct">0%</p>
@@ -185,8 +185,8 @@
             <div class="bo-panel-head">
               <h3 class="bo-panel-title" style="margin:0;">Monthly Compliance %</h3>
               <div class="bo-legend-row" style="margin:0;">
-                <span><span class="dot" style="background:var(--navy)"></span>Compliance</span>
-                <span><span class="dot" style="background:var(--orange)"></span>Recording Quality</span>
+                <span><span class="dot" style="background:var(--navy)"></span>Current Compliance</span>
+                <span><span class="dot" style="background:var(--orange)"></span>Compliance Over Time</span>
               </div>
             </div>
             <div id="patientComplianceArea" class="bo-chart-area"></div>

@@ -16,7 +16,7 @@ document.getElementById("statActiveCount").textContent = activeCount;
 document.getElementById("statBaselineCount").textContent = baselineCount;
 document.getElementById("statOnHoldCount").textContent = onHoldCount;
 
-/* Donut: Priority (red), Active (green), Baseline (blue), On Hold (near-black),
+/* Donut: Priority (red), Active (green), Baseline (gray), On Hold (near-black),
    drawn as four arcs around the base gray ring already in the markup -- same
    multi-status donut pattern as the main clinic portal's Welcome card. */
 (function renderMonitoredDonut() {
@@ -26,7 +26,7 @@ document.getElementById("statOnHoldCount").textContent = onHoldCount;
   const segments = [
     { count: priorityCount, color: "#F16C6C" },
     { count: activeCount, color: "#3FBE84" },
-    { count: baselineCount, color: "#2AA9E0" },
+    { count: baselineCount, color: "#9AA5B1" },
     { count: onHoldCount, color: "#23272E" },
   ];
 

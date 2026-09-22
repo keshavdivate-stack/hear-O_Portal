@@ -22,6 +22,8 @@
      don't exist in this backoffice redacted copy). */
 
 const flagIcon = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M5 21V4" stroke="#F16C6C" stroke-width="1.8" stroke-linecap="round"/><path d="M5 4H16L13.5 8L16 12H5" stroke="#F16C6C" stroke-width="1.8" stroke-linejoin="round"/></svg>`;
+const flagIconOff = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M5 21V4" stroke="#9AA5B1" stroke-width="1.8" stroke-linecap="round"/><path d="M5 4H16L13.5 8L16 12H5" stroke="#9AA5B1" stroke-width="1.8" stroke-linejoin="round"/></svg>`;
+const pendingAckIcon = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>`;
 const heartIcon = `<svg width="14" height="14" viewBox="0 0 24 24" fill="#F16C6C"><path d="M12 21C12 21 4 15.5 4 9.8C4 6.6 6.5 4.5 9.2 4.5C10.6 4.5 11.6 5.1 12 5.7C12.4 5.1 13.4 4.5 14.8 4.5C17.5 4.5 20 6.6 20 9.8C20 15.5 12 21 12 21Z"/></svg>`;
 const infoIconBlue = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="#2AA9E0"/><rect x="11" y="7" width="2" height="7" rx="1" fill="#fff"/><rect x="11" y="15.5" width="2" height="2" rx="1" fill="#fff"/></svg>`;
 const infoIconGray = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="#C9CFD6"/><rect x="11" y="7" width="2" height="7" rx="1" fill="#fff"/><rect x="11" y="15.5" width="2" height="2" rx="1" fill="#fff"/></svg>`;
@@ -31,12 +33,12 @@ const pencilIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none">
 /* Same demo patients as js/patient-list.js, PHI stripped: no name/mrn/phone,
    no careTitle (medication names), no free-text action note. */
 const patientList = [
-  { username: "ABC-1254", account: "Enabled", enrolledDate: "01.08.2028", ehrSystem: null, source: "Manually Added", status: "priority", flag: true, since: "Since: 2d | 01.08.2028", monitoring: "monitored", compliance: 92, gender: "M", careStatus: "in_progress", team: "Heart Failure Team", teamMember: "Dr. Sarah Mitchell", careTeam: ["Dr. Sarah Mitchell", "Amanda Lee, RN", "Ayelet Er, NP"] },
-  { username: "ABC-1252", account: "Enabled", enrolledDate: "28.07.2028", ehrSystem: "Epic", source: "EHR Imported", status: "priority", flag: false, since: "Since: 2d | 01.08.2028", monitoring: "monitored", compliance: 68, gender: "M", action: { type: "contacted", date: "08/14/2026" }, careStatus: "completed", team: "Remote Monitoring Team", teamMember: "Amanda Lee, RN", careTeam: ["Amanda Lee, RN", "Dr. James Carter"] },
-  { username: "ABC-1251", account: "Enabled", enrolledDate: "28.07.2028", ehrSystem: null, source: "Manually Added", status: "priority", flag: false, since: "Since: 2d | 01.08.2028", monitoring: "unmonitored", monSince: "Since: 1d | 01.09.2028", compliance: 34, gender: "M", team: "Heart Failure Team", teamMember: "Dr. James Carter", careTeam: ["Dr. James Carter"] },
-  { username: "ABC-1238", account: "Enabled", enrolledDate: "27.07.2028", ehrSystem: null, source: "Manually Added", status: "priority", flag: false, since: "Since: 3d | 01.07.2028", monitoring: "monitored", compliance: 81, gender: "F", action: { type: "invite", date: "" }, careStatus: "recommended", team: "Post-Discharge Team", teamMember: "Emily Carter", careTeam: ["Emily Carter", "Sandy Kohl, RN", "Dr. Michael Reyes"] },
-  { username: "ABC-1242", account: "Enabled", enrolledDate: "26.07.2028", ehrSystem: null, source: "Manually Added", status: "priority", flag: false, since: "Since: 4d | 01.06.2028", monitoring: "monitored", compliance: 57, gender: "M", team: "Remote Monitoring Team", teamMember: "Ayelet Er, NP", careTeam: ["Ayelet Er, NP", "Amanda Lee, RN"] },
-  { username: "ABC-1283", account: "Enabled", enrolledDate: "22.07.2028", ehrSystem: null, source: "Manually Added", status: "priority", flag: false, since: "Since: 8d | 01.02.2028", monitoring: "monitored", compliance: 76, gender: "M", careStatus: "in_progress", team: "Heart Failure Team", teamMember: "Ayelet Er, NP", careTeam: ["Ayelet Er, NP", "Dr. Sarah Mitchell", "Sandy Kohl, RN", "Emily Carter"] },
+  { username: "ABC-1254", account: "Enabled", enrolledDate: "01.08.2028", ehrSystem: null, source: "Manually Added", status: "priority", flag: true, acked: false, since: "Since: 2d | 01.08.2028", monitoring: "monitored", compliance: 92, gender: "M", careStatus: "in_progress", team: "Heart Failure Team", teamMember: "Dr. Sarah Mitchell", careTeam: ["Dr. Sarah Mitchell", "Amanda Lee, RN", "Ayelet Er, NP"] },
+  { username: "ABC-1252", account: "Enabled", enrolledDate: "28.07.2028", ehrSystem: "Epic", source: "EHR Imported", status: "priority", flag: false, acked: true, since: "Since: 2d | 01.08.2028", monitoring: "monitored", compliance: 68, gender: "M", action: { type: "contacted", date: "08/14/2026" }, careStatus: "completed", team: "Remote Monitoring Team", teamMember: "Amanda Lee, RN", careTeam: ["Amanda Lee, RN", "Dr. James Carter"] },
+  { username: "ABC-1251", account: "Enabled", enrolledDate: "28.07.2028", ehrSystem: null, source: "Manually Added", status: "priority", flag: false, acked: true, since: "Since: 2d | 01.08.2028", monitoring: "unmonitored", monSince: "Since: 1d | 01.09.2028", compliance: 34, gender: "M", team: "Heart Failure Team", teamMember: "Dr. James Carter", careTeam: ["Dr. James Carter"] },
+  { username: "ABC-1238", account: "Enabled", enrolledDate: "27.07.2028", ehrSystem: null, source: "Manually Added", status: "priority", flag: false, acked: true, since: "Since: 3d | 01.07.2028", monitoring: "monitored", compliance: 81, gender: "F", action: { type: "invite", date: "" }, careStatus: "recommended", team: "Post-Discharge Team", teamMember: "Emily Carter", careTeam: ["Emily Carter", "Sandy Kohl, RN", "Dr. Michael Reyes"] },
+  { username: "ABC-1242", account: "Enabled", enrolledDate: "26.07.2028", ehrSystem: null, source: "Manually Added", status: "priority", flag: false, acked: false, since: "Since: 4d | 01.06.2028", monitoring: "monitored", compliance: 57, gender: "M", team: "Remote Monitoring Team", teamMember: "Ayelet Er, NP", careTeam: ["Ayelet Er, NP", "Amanda Lee, RN"] },
+  { username: "ABC-1283", account: "Enabled", enrolledDate: "22.07.2028", ehrSystem: null, source: "Manually Added", status: "priority", flag: false, acked: true, since: "Since: 8d | 01.02.2028", monitoring: "monitored", compliance: 76, gender: "M", careStatus: "in_progress", team: "Heart Failure Team", teamMember: "Ayelet Er, NP", careTeam: ["Ayelet Er, NP", "Dr. Sarah Mitchell", "Sandy Kohl, RN", "Emily Carter"] },
   { username: "ABC-1222a", account: "Enabled", enrolledDate: "27.07.2028", ehrSystem: "Athena", source: "EHR Imported", status: "active", since: "Since: 3d | 01.07.2028", monitoring: "monitored", compliance: 88, gender: "M", careStatus: "completed", team: "Post-Discharge Team", teamMember: "Emily Carter", careTeam: ["Emily Carter"] },
   { username: "ABC-1222b", account: "Enabled", enrolledDate: "27.07.2028", ehrSystem: null, source: "Manually Added", status: "active", since: "Since: 3d | 01.07.2028", monitoring: "monitored", compliance: 45, gender: "F", team: "Remote Monitoring Team", teamMember: "Sandy Kohl, RN", careTeam: ["Sandy Kohl, RN", "Dr. Emily Chen"] },
   { username: "ABC-1222c", account: "Paused", enrolledDate: "27.07.2028", ehrSystem: null, source: "Manually Added", status: "active", since: "Since: 3d | 01.07.2028", monitoring: "monitored", compliance: 63, gender: "M", careStatus: "recommended", team: "Heart Failure Team", teamMember: "Dr. Michael Reyes", careTeam: ["Dr. Michael Reyes"] },
@@ -109,16 +111,31 @@ function initialsOf(name) {
 
 function statusCell(p) {
   if (p.status === "priority") {
-    const ackMark = p.flag
-      ? flagIcon
-      : `
+    /* The flag is a separate highlight mechanism and does not indicate
+       acknowledgement -- a flagged priority can still be unacknowledged, so
+       both render side by side rather than one replacing the other.
+       The toggle button itself stays in the DOM at all times (so it's
+       reachable by keyboard) but is only visually revealed on row hover,
+       unless the patient is already flagged, in which case it stays visible. */
+    const flagMark = `
+        <button type="button" class="status-flag-btn action-icon-wrap ${p.flag ? "flagged" : ""}" data-id="${p.id}" aria-pressed="${p.flag}" aria-label="${p.flag ? "Remove flag" : "Flag patient"}">
+          ${p.flag ? flagIcon : flagIconOff}
+          <span class="action-tooltip">${p.flag ? "Remove flag" : "Flag patient"}</span>
+        </button>`;
+    const ackMark = p.acked
+      ? `
         <span class="action-icon-wrap status-ack-wrap">
           <span class="status-ack-avatar">${initialsOf(p.teamMember)}</span>
           <span class="action-tooltip">Acknowledged by ${p.teamMember || "—"}</span>
+        </span>`
+      : `
+        <span class="action-icon-wrap status-ack-wrap">
+          <span class="status-ack-pending">${pendingAckIcon}</span>
+          <span class="action-tooltip">Not yet acknowledged</span>
         </span>`;
     return `
       <div class="status-cell">
-        <span class="status-line status-priority">${heartIcon} Priority ${ackMark}</span>
+        <span class="status-line status-priority">${heartIcon} Priority ${flagMark}${ackMark}</span>
         <span class="status-since">${p.since}</span>
       </div>`;
   }
@@ -537,6 +554,18 @@ function openCareTeamListFor(id, trigger) {
 }
 
 rows.addEventListener("click", (e) => {
+  const flagBtn = e.target.closest(".status-flag-btn");
+  if (flagBtn) {
+    e.preventDefault();
+    e.stopPropagation();
+    const patient = patientList.find((p) => p.id === Number(flagBtn.dataset.id));
+    if (patient) {
+      patient.flag = !patient.flag;
+      renderPatientList();
+    }
+    return;
+  }
+
   const addActionBtn = e.target.closest('.action-icon[data-act="addAction"]');
   if (addActionBtn) {
     const patient = patientList.find((p) => p.id === Number(addActionBtn.dataset.id));
