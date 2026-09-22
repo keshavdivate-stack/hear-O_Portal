@@ -785,8 +785,8 @@ function ovMonthlyComplianceFor(orgId) {
 }
 
 document.getElementById("ovClinicComplianceLegend").innerHTML = [
-  { label: "Compliance", color: "#1F3C73" },
-  { label: "Recording Quality", color: "#F2994A" },
+  { label: "Current Compliance", color: "#1F3C73" },
+  { label: "Compliance Over Time", color: "#F2994A" },
 ]
   .map((s) => `<span><span class="dot" style="background:${s.color}"></span>${s.label}</span>`)
   .join("");
@@ -843,8 +843,8 @@ function renderOvClinicComplianceChart(orgId) {
   container.innerHTML = `
     <svg viewBox="0 0 ${width} ${height}" class="bo-area-svg" preserveAspectRatio="none">
       ${gridLines.join("")}
-      ${buildLine(complianceSeries, "#1F3C73", "Compliance")}
-      ${buildLine(qualitySeries, "#F2994A", "Recording Quality")}
+      ${buildLine(complianceSeries, "#1F3C73", "Current Compliance")}
+      ${buildLine(qualitySeries, "#F2994A", "Compliance Over Time")}
       ${xLabels}
     </svg>
     <div class="bo-trend-tooltip" id="ovClinicComplianceTooltip"></div>`;

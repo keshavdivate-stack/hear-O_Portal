@@ -1472,6 +1472,43 @@ button, input, select, textarea, optgroup {
 }
 .status-ack-wrap .action-tooltip { top: calc(100% + 6px); left: 50%; transform: translateX(-50%); white-space: nowrap; min-width: 0; }
 
+/* Flag toggle: stays in the DOM for every priority row (so it's reachable by
+   keyboard) but is only revealed on row hover/focus, unless the patient is
+   already flagged, in which case it stays visible so the flagged state
+   itself doesn't depend on hovering. */
+.status-flag-btn {
+  border: none;
+  background: none;
+  padding: 2px;
+  margin: -2px;
+  border-radius: 4px;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.12s ease;
+}
+.list-table tbody tr:hover .status-flag-btn,
+.status-flag-btn.flagged,
+.status-flag-btn:focus-visible {
+  opacity: 1;
+}
+.status-flag-btn:hover { background: var(--bg); }
+
+/* Priority patients that have not yet been acknowledged by a team member --
+   distinct from the (optional, separate) flag mechanism. Absence of a name
+   isn't a reliable "needs acknowledging" signal on its own, so this renders
+   whenever a priority row has no acknowledging clinician yet. */
+.status-ack-pending {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #EEF0F3;
+  color: #7E8993;
+  cursor: default;
+}
+
 /* The tooltip lives inside a sticky last-column cell, which creates its own
    stacking context per row -- without raising this row's stacking above its
    sibling rows, the next row's sticky cell (same base z-index) paints over
