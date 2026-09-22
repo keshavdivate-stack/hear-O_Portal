@@ -1464,8 +1464,8 @@ button, input, select, textarea, optgroup {
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: #FDF3E7;
-  color: var(--orange-text);
+  background: #E7F8EF;
+  color: var(--green-text);
   font-size: 9px;
   font-weight: 700;
   line-height: 1;
