@@ -76,7 +76,7 @@ document.getElementById("patientComplianceInfoList").innerHTML = [
   boKv("Un-recorded Days", ph.complianceInfo.unrecordedDays),
   boKv("Non-valid ASR Days", ph.complianceInfo.nonValidAsrDays),
   boKv("Total Compliance", `${ph.complianceInfo.totalCompliance}%`),
-  boKv("Recording Quality", `${ph.recordingQuality}%`),
+  boKv("Compliance Over Time", `${ph.recordingQuality}%`),
 ].join("");
 
 document.getElementById("patientRecordingQualityPct").textContent = `${ph.recordingQuality}%`;

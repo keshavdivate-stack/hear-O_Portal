@@ -97,7 +97,7 @@ function renderChartStats() {
     </div>
     <div class="bo-chart-stat">
       <span class="dot" style="background:var(--orange)"></span>
-      Recording Quality avg <b>${average(qualitySeries)}%</b>
+      Compliance Over Time avg <b>${average(qualitySeries)}%</b>
       ${trendChip(qualityDelta)}
     </div>`;
 }
