@@ -3078,8 +3078,8 @@ button, input, select, textarea, optgroup {
   color: #fff;
 }
 
-.rec-valid { background: var(--blue); }
-.rec-low { background: var(--blue); }
+.rec-valid { background: var(--green); }
+.rec-low { background: var(--orange, #F2994A); }
 .rec-none { background: #E7EAEE; }
 
 .rec-day-label { font-size: 11.5px; color: var(--gray-text); }
@@ -3745,8 +3745,8 @@ button, input, select, textarea, optgroup {
   flex-shrink: 0;
 }
 
-.med-adh-taken { background: var(--blue); color: #fff; }
-.med-adh-missed { background: var(--blue); color: #fff; }
+.med-adh-taken { background: var(--green); color: #fff; }
+.med-adh-missed { background: var(--orange, #F2994A); color: #fff; }
 .med-adh-not-recorded { background: #E7EAEE; color: #7E8993; }
 
 .med-legend {
@@ -3772,8 +3772,8 @@ button, input, select, textarea, optgroup {
 
 .med-legend-dot svg { width: 8px; height: 8px; }
 
-.med-legend-taken { background: var(--blue); }
-.med-legend-missed { background: var(--blue); }
+.med-legend-taken { background: var(--green); }
+.med-legend-missed { background: var(--orange, #F2994A); }
 .med-legend-not-recorded { background: #E7EAEE; }
 
 /* Sits in the same unpadded position as .med-adh-scroll above it (both
@@ -3801,7 +3801,8 @@ button, input, select, textarea, optgroup {
   vertical-align: -1px;
 }
 
-.quest-dot-yes, .quest-dot-no { background: var(--blue); display: inline-flex; align-items: center; justify-content: center; }
+.quest-dot-yes { background: var(--green); display: inline-flex; align-items: center; justify-content: center; }
+.quest-dot-no { background: var(--orange, #F2994A); display: inline-flex; align-items: center; justify-content: center; }
 .quest-dot-yes svg, .quest-dot-no svg { width: 8px; height: 8px; }
 
 .quest-legend-note { color: var(--gray-text); }
@@ -3819,8 +3820,8 @@ button, input, select, textarea, optgroup {
    them apart -- so a weight-gain tooltip on a "Yes" answer reads as one
    consistent color family instead of switching to an alert color. */
 .quest-ans-icon { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; position: relative; }
-.quest-ans-yes { background: var(--blue); color: #fff; }
-.quest-ans-no { background: var(--blue); color: #fff; }
+.quest-ans-yes { background: var(--green); color: #fff; }
+.quest-ans-no { background: var(--orange, #F2994A); color: #fff; }
 .quest-ans-none { background: transparent; }
 
 .quest-weight-tooltip {
