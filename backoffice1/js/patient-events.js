@@ -94,16 +94,12 @@ let peReportedByFilter = "";
    from the working list without deleting it, mirroring Organizations Management. */
 let peViewTab = "active";
 
-/* Filters apply as soon as a value changes -- no Apply button to batch them. */
+/* Filters are staged; they only take effect when the Apply button is clicked. */
 const peSiteMultiSelect = wireMultiSelect("peSiteFilter", PE_SITES, (selected) => {
   peSiteFilter = selected;
-  pePager.resetPage();
-  pePager();
 });
 const peEventTypeMultiSelect = wireMultiSelect("peEventTypeFilter", PE_EVENT_TYPES, (selected) => {
   peEventTypeFilter = selected;
-  pePager.resetPage();
-  pePager();
 });
 function peFiltered() {
   return peEvents.filter((r) => {
@@ -231,16 +227,15 @@ peRowMenu.addEventListener("click", (e) => {
 
 document.getElementById("pePatientFilter").addEventListener("input", (e) => {
   pePatientFilter = e.target.value;
-  pePager.resetPage();
-  pePager();
 });
 document.getElementById("peAddedByFilter").addEventListener("input", (e) => {
   peAddedByFilter = e.target.value;
-  pePager.resetPage();
-  pePager();
 });
 document.getElementById("peReportedByFilter").addEventListener("input", (e) => {
   peReportedByFilter = e.target.value;
+});
+
+document.getElementById("peApplyBtn").addEventListener("click", () => {
   pePager.resetPage();
   pePager();
 });

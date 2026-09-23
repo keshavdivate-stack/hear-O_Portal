@@ -371,7 +371,7 @@ function wireCheckboxFilter(wrapEl, menuEl, selectedSet, onChange) {
     else selectedSet.delete(checkbox.value);
 
     label.textContent = selectedSet.size ? `${baseLabel} (${selectedSet.size})` : baseLabel;
-    onChange();
+    /* Apply-gated: just update state + label here; re-render waits for Apply. */
   });
 }
 
@@ -415,6 +415,11 @@ function closeAllFilterPopovers() {
 }
 
 document.addEventListener("click", closeAllFilterPopovers);
+
+/* ---------------- Apply ---------------- */
+document.getElementById("patientListApplyBtn").addEventListener("click", () => {
+  renderPatientList();
+});
 
 /* ---------------- All Patients / My Patients scope ---------------- */
 const scopeTabs = document.getElementById("scopeTabs");

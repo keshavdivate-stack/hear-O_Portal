@@ -128,7 +128,8 @@ function wireCheckboxFilter(wrapEl, menuEl, selectedSet, onChange) {
     else selectedSet.delete(checkbox.value);
 
     label.textContent = selectedSet.size ? `${baseLabel} (${selectedSet.size})` : baseLabel;
-    onChange();
+    /* Apply-gated: checkbox filters just update state + label here. The
+       actual re-render only happens when the Apply button is clicked. */
   });
 }
 
@@ -169,6 +170,10 @@ wireCheckboxFilter(document.querySelector('.checkbox-filter[data-name="state"]')
 /* ---------------- Search ---------------- */
 document.getElementById("ticketSearchInput").addEventListener("input", (e) => {
   ticketSearchTerm = e.target.value;
+});
+
+/* ---------------- Apply ---------------- */
+document.getElementById("ticketApplyBtn").addEventListener("click", () => {
   renderTicketList();
 });
 
@@ -260,9 +265,13 @@ renderRaisedTicketList();
 
 document.getElementById("raisedTicketSearchInput").addEventListener("input", (e) => {
   raisedTicketSearchTerm = e.target.value;
-  renderRaisedTicketList();
 });
 document.querySelectorAll('input[name="org"]').forEach((radio) => radio.addEventListener("change", renderRaisedTicketList));
+
+/* ---------------- Raised by Clinic: Apply ---------------- */
+document.getElementById("raisedTicketApplyBtn").addEventListener("click", () => {
+  renderRaisedTicketList();
+});
 
 /* ---------------- Raised by Clinic: filters ---------------- */
 const raisedCategoryMenu = document.getElementById("raisedCategoryMenu");

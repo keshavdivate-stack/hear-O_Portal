@@ -285,24 +285,21 @@ document.addEventListener("click", (e) => {
   if (!lrVolumeMenu.contains(e.target)) closeLrVolumeMenu();
 });
 
-/* Filters apply as soon as a field changes -- no Apply button to batch them. */
+/* Filters are staged; they only take effect when the Apply button is clicked. */
 document.getElementById("lrSiteFilter").addEventListener("change", (e) => {
   lrSiteFilter = e.target.value;
-  lrPager.resetPage();
-  lrPager();
 });
 document.getElementById("lrLangFilter").addEventListener("change", (e) => {
   lrLangFilter = e.target.value;
-  lrPager.resetPage();
-  lrPager();
 });
 document.getElementById("lrIdentifierFilter").addEventListener("input", (e) => {
   lrIdentifierFilter = e.target.value;
-  lrPager.resetPage();
-  lrPager();
 });
 document.getElementById("lrUsernameFilter").addEventListener("input", (e) => {
   lrUsernameFilter = e.target.value;
+});
+
+document.getElementById("lrApplyBtn").addEventListener("click", () => {
   lrPager.resetPage();
   lrPager();
 });

@@ -51,44 +51,33 @@ const alPager = boCreatePager(
 );
 alPager();
 
-/* Filters apply as soon as a field changes -- no Apply button to batch them. */
+/* Filters are staged; they only take effect when the Apply button is clicked. */
 document.getElementById("alActionFilter").addEventListener("change", (e) => {
   alActionFilter = e.target.value;
-  alPager.resetPage();
-  alPager();
 });
 document.getElementById("alDescriptionFilter").addEventListener("input", (e) => {
   alDescriptionFilter = e.target.value;
-  alPager.resetPage();
-  alPager();
 });
 document.getElementById("alUserFilter").addEventListener("input", (e) => {
   alUserFilter = e.target.value;
-  alPager.resetPage();
-  alPager();
 });
 document.getElementById("alRoleFilter").addEventListener("change", (e) => {
   alRoleFilter = e.target.value;
-  alPager.resetPage();
-  alPager();
 });
 document.getElementById("alOrgFilter").addEventListener("change", (e) => {
   alOrgFilter = e.target.value;
-  alPager.resetPage();
-  alPager();
 });
 document.getElementById("alUsercodeFilter").addEventListener("input", (e) => {
   alUsercodeFilter = e.target.value;
-  alPager.resetPage();
-  alPager();
 });
 document.getElementById("alFromDate").addEventListener("change", (e) => {
   alFromDate = e.target.value;
-  alPager.resetPage();
-  alPager();
 });
 document.getElementById("alToDate").addEventListener("change", (e) => {
   alToDate = e.target.value;
+});
+
+document.getElementById("alApplyBtn").addEventListener("click", () => {
   alPager.resetPage();
   alPager();
 });

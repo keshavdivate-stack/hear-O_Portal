@@ -468,23 +468,27 @@ document.querySelectorAll("#section-patient .custom-select[data-name]").forEach(
     if (name === "clinStatus") patientFilters.clin = val;
     if (name === "monStatus") patientFilters.mon = val;
     if (name === "orgFilter") patientFilters.org = val;
-    renderPatientTable();
+    /* Apply-gated: just update state here; re-render waits for Apply. */
   });
 });
 
 document.getElementById("reportSearchInput").addEventListener("input", (e) => {
   patientFilters.search = e.target.value.trim().toLowerCase();
-  renderPatientTable();
 });
 
 const patFromDateFilter = setupDateFilter("patFromDateWrap", "patFromCalendarPopover", "patFromDateLabel", "From Date", {
   getMax: () => patientFilters.to,
-  onChange: (date) => { patientFilters.from = date; renderPatientTable(); },
+  onChange: (date) => { patientFilters.from = date; },
   onPicked: () => { if (!patientFilters.to) openDateFilter("patToDateWrap"); },
 });
 const patToDateFilter = setupDateFilter("patToDateWrap", "patToCalendarPopover", "patToDateLabel", "To Date", {
   getMin: () => patientFilters.from,
-  onChange: (date) => { patientFilters.to = date; renderPatientTable(); },
+  onChange: (date) => { patientFilters.to = date; },
+});
+
+/* ---------------- Apply ---------------- */
+document.getElementById("patientReportApplyBtn").addEventListener("click", () => {
+  renderPatientTable();
 });
 
 function clearPatientFilters() {

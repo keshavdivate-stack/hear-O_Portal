@@ -14,7 +14,13 @@
      (the seeded auditTrail array) needed forking -- it embeds real patient
      names in its "Related To" field. js/audit-trail.js itself has no patient
      data (it's pure filter/render/pagination logic over whatever auditTrail
-     holds), so it's reused unmodified via ../../js/audit-trail.js. -->
+     holds).
+
+     js/audit-trail.js (this folder) is now ALSO a fork of ../../js/audit-trail.js:
+     the Backoffice filter bars all gate their filters behind an Apply button
+     (state updates on change, re-render only on Apply) while the root app's
+     Audit Trail keeps live-apply-on-every-change. Same auditTrail-driven
+     filter/render/pagination logic otherwise, unchanged. -->
   <div class="app">
 
     <!-- SIDEBAR -->
@@ -233,7 +239,8 @@
             <div class="checkbox-filter-menu" id="madeByMenu"></div>
           </div>
 
-          <button class="clear-filters" id="clearFilters">Clear all filters</button>
+          <button type="button" class="bo-btn-primary" id="auditApplyBtn">Apply</button>
+          <button class="bo-btn-secondary" id="clearFilters">Clear all filters</button>
         </div>
 
         <div class="table-card">
@@ -280,6 +287,6 @@
 <script src="js/topbar.js"></script>
 <script src="../../js/table-scroll.js"></script>
 <script src="js/audit-trail-data.js"></script>
-<script src="../../js/audit-trail.js"></script>
+<script src="js/audit-trail.js"></script>
 </body>
 </html>

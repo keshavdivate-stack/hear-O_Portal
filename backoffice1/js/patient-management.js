@@ -185,22 +185,21 @@ wirePopover("patientColumnsBtn", "patientColumnsMenu");
 
 renderPatients();
 
-/* ---------------- Filters (apply as soon as a field changes) ---------------- */
-function applyPatientFilter(update) {
-  update();
+/* ---------------- Filters (staged; applied when the Apply button is clicked) ---------------- */
+document.getElementById("clinicalSiteFilter").addEventListener("change", (e) => { patientSiteFilter = e.target.value; });
+document.getElementById("tagFilter").addEventListener("change", (e) => { patientTagFilter = e.target.value; });
+document.getElementById("languageFilter").addEventListener("change", (e) => { patientLanguageFilter = e.target.value; });
+document.getElementById("statusFilter").addEventListener("change", (e) => { patientStatusFilter = e.target.value; });
+document.getElementById("activeFilter").addEventListener("change", (e) => { patientActiveFilter = e.target.value; });
+document.getElementById("appVersionFilter").addEventListener("input", (e) => { patientAppVersionFilter = e.target.value.trim().toLowerCase(); });
+document.getElementById("phoneModelFilter").addEventListener("input", (e) => { patientPhoneModelFilter = e.target.value.trim().toLowerCase(); });
+document.getElementById("lastSessionUpToFilter").addEventListener("change", (e) => { patientLastSessionUpTo = e.target.value; });
+document.getElementById("patientSearchInput").addEventListener("input", (e) => { patientSearchTerm = e.target.value.trim().toLowerCase(); });
+
+document.getElementById("patientApplyBtn").addEventListener("click", () => {
   patientCurrentPage = 1;
   renderPatients();
-}
-
-document.getElementById("clinicalSiteFilter").addEventListener("change", (e) => applyPatientFilter(() => { patientSiteFilter = e.target.value; }));
-document.getElementById("tagFilter").addEventListener("change", (e) => applyPatientFilter(() => { patientTagFilter = e.target.value; }));
-document.getElementById("languageFilter").addEventListener("change", (e) => applyPatientFilter(() => { patientLanguageFilter = e.target.value; }));
-document.getElementById("statusFilter").addEventListener("change", (e) => applyPatientFilter(() => { patientStatusFilter = e.target.value; }));
-document.getElementById("activeFilter").addEventListener("change", (e) => applyPatientFilter(() => { patientActiveFilter = e.target.value; }));
-document.getElementById("appVersionFilter").addEventListener("input", (e) => applyPatientFilter(() => { patientAppVersionFilter = e.target.value.trim().toLowerCase(); }));
-document.getElementById("phoneModelFilter").addEventListener("input", (e) => applyPatientFilter(() => { patientPhoneModelFilter = e.target.value.trim().toLowerCase(); }));
-document.getElementById("lastSessionUpToFilter").addEventListener("change", (e) => applyPatientFilter(() => { patientLastSessionUpTo = e.target.value; }));
-document.getElementById("patientSearchInput").addEventListener("input", (e) => applyPatientFilter(() => { patientSearchTerm = e.target.value.trim().toLowerCase(); }));
+});
 
 document.getElementById("patientClearFiltersBtn").addEventListener("click", () => {
   patientSiteFilter = "";

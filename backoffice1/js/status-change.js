@@ -113,8 +113,6 @@ const scSiteCodes = [...new Set(statusChanges.map((s) => s.username.split("-")[0
 let scSiteFilter = new Set(scSiteCodes);
 const scSiteMultiSelect = wireMultiSelect("scSiteFilter", scSiteCodes, (selected) => {
   scSiteFilter = selected;
-  scCurrentPage = 1;
-  renderStatusChanges();
 });
 
 /* ---------------- Status Change To (single-select) ---------------- */
@@ -240,26 +238,23 @@ function renderStatusChanges() {
 
 renderStatusChanges();
 
-/* ---------------- Filters (apply as soon as a field changes) ---------------- */
+/* ---------------- Filters (staged; applied when the Apply button is clicked) ---------------- */
 document.getElementById("scSearchInput").addEventListener("input", (e) => {
   scSearchTerm = e.target.value.trim().toLowerCase();
-  scCurrentPage = 1;
-  renderStatusChanges();
 });
 
 document.getElementById("scFromDate").addEventListener("change", (e) => {
   scFromDate = e.target.value;
-  scCurrentPage = 1;
-  renderStatusChanges();
 });
 document.getElementById("scToDate").addEventListener("change", (e) => {
   scToDate = e.target.value;
-  scCurrentPage = 1;
-  renderStatusChanges();
 });
 
 document.getElementById("scStatusToFilter").addEventListener("change", (e) => {
   scStatusToFilter = e.target.value;
+});
+
+document.getElementById("scApplyBtn").addEventListener("click", () => {
   scCurrentPage = 1;
   renderStatusChanges();
 });

@@ -256,13 +256,16 @@ rmRenderSchedules();
 
 document.getElementById("rmSearchInput").addEventListener("input", (e) => {
   rmScheduleSearch = e.target.value.trim().toLowerCase();
+});
+document.getElementById("rmReportTypeFilter").addEventListener("change", (e) => { rmScheduleTypeFilter = e.target.value; });
+document.getElementById("rmOrgFilter").addEventListener("change", (e) => { rmScheduleOrgFilter = e.target.value; });
+document.getElementById("rmStatusFilter").addEventListener("change", (e) => { rmScheduleStatusFilter = e.target.value; });
+document.getElementById("rmFrequencyFilter").addEventListener("change", (e) => { rmScheduleFrequencyFilter = e.target.value; });
+
+document.getElementById("rmScheduleApplyBtn").addEventListener("click", () => {
   rmSchedulePager.resetPage();
   rmRenderSchedules();
 });
-document.getElementById("rmReportTypeFilter").addEventListener("change", (e) => { rmScheduleTypeFilter = e.target.value; rmSchedulePager.resetPage(); rmRenderSchedules(); });
-document.getElementById("rmOrgFilter").addEventListener("change", (e) => { rmScheduleOrgFilter = e.target.value; rmSchedulePager.resetPage(); rmRenderSchedules(); });
-document.getElementById("rmStatusFilter").addEventListener("change", (e) => { rmScheduleStatusFilter = e.target.value; rmSchedulePager.resetPage(); rmRenderSchedules(); });
-document.getElementById("rmFrequencyFilter").addEventListener("change", (e) => { rmScheduleFrequencyFilter = e.target.value; rmSchedulePager.resetPage(); rmRenderSchedules(); });
 
 function rmClearScheduleFilters() {
   rmScheduleSearch = "";
@@ -344,13 +347,16 @@ rmRenderArchived();
 
 document.getElementById("rmArchivedSearchInput").addEventListener("input", (e) => {
   rmArchivedSearch = e.target.value.trim().toLowerCase();
+});
+document.getElementById("rmArchivedReportTypeFilter").addEventListener("change", (e) => { rmArchivedTypeFilter = e.target.value; });
+document.getElementById("rmArchivedOrgFilter").addEventListener("change", (e) => { rmArchivedOrgFilter = e.target.value; });
+document.getElementById("rmArchivedStatusFilter").addEventListener("change", (e) => { rmArchivedStatusFilter = e.target.value; });
+document.getElementById("rmArchivedFrequencyFilter").addEventListener("change", (e) => { rmArchivedFrequencyFilter = e.target.value; });
+
+document.getElementById("rmArchivedApplyBtn").addEventListener("click", () => {
   rmArchivedPager.resetPage();
   rmRenderArchived();
 });
-document.getElementById("rmArchivedReportTypeFilter").addEventListener("change", (e) => { rmArchivedTypeFilter = e.target.value; rmArchivedPager.resetPage(); rmRenderArchived(); });
-document.getElementById("rmArchivedOrgFilter").addEventListener("change", (e) => { rmArchivedOrgFilter = e.target.value; rmArchivedPager.resetPage(); rmRenderArchived(); });
-document.getElementById("rmArchivedStatusFilter").addEventListener("change", (e) => { rmArchivedStatusFilter = e.target.value; rmArchivedPager.resetPage(); rmRenderArchived(); });
-document.getElementById("rmArchivedFrequencyFilter").addEventListener("change", (e) => { rmArchivedFrequencyFilter = e.target.value; rmArchivedPager.resetPage(); rmRenderArchived(); });
 
 function rmClearArchivedFilters() {
   rmArchivedSearch = "";
@@ -464,12 +470,17 @@ function rmRenderHistory() {
 }
 rmRenderHistory();
 
-document.getElementById("rmHistReportFilter").addEventListener("change", (e) => { rmHistReportFilter = e.target.value; rmHistoryPager.resetPage(); rmRenderHistory(); });
-document.getElementById("rmHistReportNameFilter").addEventListener("input", (e) => { rmHistReportNameFilter = e.target.value.trim(); rmHistoryPager.resetPage(); rmRenderHistory(); });
-document.getElementById("rmHistOrgFilter").addEventListener("change", (e) => { rmHistOrgFilter = e.target.value; rmHistoryPager.resetPage(); rmRenderHistory(); });
-document.getElementById("rmHistStatusFilter").addEventListener("change", (e) => { rmHistStatusFilter = e.target.value; rmHistoryPager.resetPage(); rmRenderHistory(); });
-document.getElementById("rmHistFromDate").addEventListener("change", (e) => { rmHistFromDate = e.target.value; rmHistoryPager.resetPage(); rmRenderHistory(); });
-document.getElementById("rmHistToDate").addEventListener("change", (e) => { rmHistToDate = e.target.value; rmHistoryPager.resetPage(); rmRenderHistory(); });
+document.getElementById("rmHistReportFilter").addEventListener("change", (e) => { rmHistReportFilter = e.target.value; });
+document.getElementById("rmHistReportNameFilter").addEventListener("input", (e) => { rmHistReportNameFilter = e.target.value.trim(); });
+document.getElementById("rmHistOrgFilter").addEventListener("change", (e) => { rmHistOrgFilter = e.target.value; });
+document.getElementById("rmHistStatusFilter").addEventListener("change", (e) => { rmHistStatusFilter = e.target.value; });
+document.getElementById("rmHistFromDate").addEventListener("change", (e) => { rmHistFromDate = e.target.value; });
+document.getElementById("rmHistToDate").addEventListener("change", (e) => { rmHistToDate = e.target.value; });
+
+document.getElementById("rmHistApplyBtn").addEventListener("click", () => {
+  rmHistoryPager.resetPage();
+  rmRenderHistory();
+});
 
 function rmClearHistoryFilters() {
   rmHistReportFilter = "";

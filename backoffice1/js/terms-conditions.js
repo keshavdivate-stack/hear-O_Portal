@@ -63,34 +63,27 @@ document.getElementById("tcRows").addEventListener("click", (e) => {
 
 tcPager();
 
-/* Filters apply as soon as a field changes -- no Apply button to batch them. */
+/* Filters are staged; they only take effect when the Apply button is clicked. */
 document.getElementById("tcUserTypeFilter").addEventListener("change", (e) => {
   tcUserTypeFilter = e.target.value;
-  tcPager.resetPage();
-  tcPager();
 });
 document.getElementById("tcDocTypeFilter").addEventListener("change", (e) => {
   tcDocTypeFilter = e.target.value;
-  tcPager.resetPage();
-  tcPager();
 });
 document.getElementById("tcOrgFilter").addEventListener("change", (e) => {
   tcOrgFilter = e.target.value;
-  tcPager.resetPage();
-  tcPager();
 });
 document.getElementById("tcUserSearch").addEventListener("input", (e) => {
   tcUserSearch = e.target.value;
-  tcPager.resetPage();
-  tcPager();
 });
 document.getElementById("tcFromDate").addEventListener("change", (e) => {
   tcFromDate = e.target.value;
-  tcPager.resetPage();
-  tcPager();
 });
 document.getElementById("tcToDate").addEventListener("change", (e) => {
   tcToDate = e.target.value;
+});
+
+document.getElementById("tcApplyBtn").addEventListener("click", () => {
   tcPager.resetPage();
   tcPager();
 });

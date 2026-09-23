@@ -885,6 +885,52 @@ button, input, select, textarea, optgroup {
 
 .clear-filters:hover { color: #23272E; }
 
+/* Apply / Clear Filters button pair (Backoffice clinic filter bars) -- ported
+   from backoffice1/css/style.css's .bo-btn-primary/.bo-btn-secondary so the
+   two share the exact same look; this stylesheet doesn't define --ink or
+   --field-border, so the equivalent literal/--gray-border values used
+   elsewhere in this file are substituted in below. */
+.bo-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--btn-bg);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 11px 20px;
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  white-space: nowrap;
+}
+
+.bo-btn-primary:hover { background: var(--btn-bg-hover); }
+.bo-btn-primary[hidden] { display: none; }
+.bo-btn-primary:disabled { background: #AEB4BC; cursor: not-allowed; }
+.bo-btn-primary:disabled:hover { background: #AEB4BC; }
+
+.bo-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #fff;
+  color: #23272E;
+  border: 1.5px solid var(--gray-border);
+  border-radius: 10px;
+  padding: 10px 20px;
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  white-space: nowrap;
+}
+
+.bo-btn-secondary:hover { background: var(--bg); border-color: #C9CFD6; }
+.bo-btn-secondary[hidden] { display: none; }
+a.bo-btn-secondary { text-decoration: none; }
+
 .date-filter-btn,
 .checkbox-filter { position: relative; }
 

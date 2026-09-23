@@ -180,34 +180,30 @@ function refreshTicketTables() {
 
 document.getElementById("ticketStatusFilter").addEventListener("change", (e) => {
   ticketStatusValue = e.target.value;
-  refreshTicketTables();
 });
 document.getElementById("ticketPriorityFilter").addEventListener("change", (e) => {
   ticketPriorityValue = e.target.value;
-  refreshTicketTables();
 });
 document.getElementById("ticketCategoryFilter").addEventListener("change", (e) => {
   ticketCategoryValue = e.target.value;
-  refreshTicketTables();
 });
 document.getElementById("ticketIssueFilter").addEventListener("change", (e) => {
   ticketIssueValue = e.target.value;
-  refreshTicketTables();
 });
 document.getElementById("ticketOriginFilter").addEventListener("change", (e) => {
   ticketOriginValue = e.target.value;
-  refreshTicketTables();
 });
 document.getElementById("ticketTypeFilter").addEventListener("change", (e) => {
   ticketTypeValue = e.target.value;
-  refreshTicketTables();
 });
 document.getElementById("ticketAssignedToFilter").addEventListener("change", (e) => {
   ticketAssignedToValue = e.target.value;
-  refreshTicketTables();
 });
 document.getElementById("ticketSearchInput").addEventListener("input", (e) => {
   ticketSearchTerm = e.target.value.trim().toLowerCase();
+});
+
+document.getElementById("ticketApplyBtn").addEventListener("click", () => {
   refreshTicketTables();
 });
 

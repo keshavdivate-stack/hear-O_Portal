@@ -199,7 +199,7 @@ function wireCheckboxFilter(wrapEl, menuEl, selectedSet, onChange) {
     else selectedSet.delete(checkbox.value);
 
     label.textContent = selectedSet.size ? `${baseLabel} (${selectedSet.size})` : baseLabel;
-    onChange();
+    /* Apply-gated: just update state + label here; re-render waits for Apply. */
   });
 }
 
@@ -283,7 +283,7 @@ monthMenu.addEventListener("click", (e) => {
     monthFilterLabel.textContent = `${MONTH_LABELS[Number(monthCell.dataset.month) - 1]} ${monthViewYear}`;
     monthWrap.classList.remove("open");
     closeFilterMenu(monthMenu);
-    resetFilterOnPageChange();
+    /* Apply-gated: wait for Apply to re-render. */
     return;
   }
 
@@ -293,8 +293,13 @@ monthMenu.addEventListener("click", (e) => {
     monthFilterLabel.textContent = "Month";
     monthWrap.classList.remove("open");
     closeFilterMenu(monthMenu);
-    resetFilterOnPageChange();
+    /* Apply-gated: wait for Apply to re-render. */
   }
+});
+
+/* ---------------- Apply ---------------- */
+document.getElementById("timeLogApplyBtn").addEventListener("click", () => {
+  resetFilterOnPageChange();
 });
 
 /* ---------------- Clear all filters ---------------- */

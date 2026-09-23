@@ -75,21 +75,18 @@ allocCurrentPager();
 
 document.getElementById("allocSiteFilter").addEventListener("change", (e) => {
   allocSiteFilterValue = e.target.value;
-  allocCurrentPager.resetPage();
-  allocCurrentPager();
 });
 document.getElementById("allocConfigFilter").addEventListener("change", (e) => {
   allocConfigFilterValue = e.target.value;
-  allocCurrentPager.resetPage();
-  allocCurrentPager();
 });
 document.getElementById("allocLangFilter").addEventListener("change", (e) => {
   allocLangFilterValue = e.target.value;
-  allocCurrentPager.resetPage();
-  allocCurrentPager();
 });
 document.getElementById("allocSearchInput").addEventListener("input", (e) => {
   allocSearchTerm = e.target.value.trim().toLowerCase();
+});
+
+document.getElementById("allocApplyBtn").addEventListener("click", () => {
   allocCurrentPager.resetPage();
   allocCurrentPager();
 });

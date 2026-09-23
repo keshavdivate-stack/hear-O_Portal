@@ -76,13 +76,17 @@ function refreshIncidentTable() {
   incidentPager();
 }
 
-document.getElementById("incStatusFilter").addEventListener("change", (e) => { incStatusValue = e.target.value; refreshIncidentTable(); });
-document.getElementById("incPriorityFilter").addEventListener("change", (e) => { incPriorityValue = e.target.value; refreshIncidentTable(); });
-document.getElementById("incSourceFilter").addEventListener("change", (e) => { incSourceValue = e.target.value; refreshIncidentTable(); });
-document.getElementById("incCategoryFilter").addEventListener("change", (e) => { incCategoryValue = e.target.value; refreshIncidentTable(); });
-document.getElementById("incOwnerFilter").addEventListener("change", (e) => { incOwnerValue = e.target.value; refreshIncidentTable(); });
-document.getElementById("incDateFilter").addEventListener("change", (e) => { incDateValue = e.target.value; refreshIncidentTable(); });
-document.getElementById("incSearchInput").addEventListener("input", (e) => { incSearchTerm = e.target.value.trim().toLowerCase(); refreshIncidentTable(); });
+document.getElementById("incStatusFilter").addEventListener("change", (e) => { incStatusValue = e.target.value; });
+document.getElementById("incPriorityFilter").addEventListener("change", (e) => { incPriorityValue = e.target.value; });
+document.getElementById("incSourceFilter").addEventListener("change", (e) => { incSourceValue = e.target.value; });
+document.getElementById("incCategoryFilter").addEventListener("change", (e) => { incCategoryValue = e.target.value; });
+document.getElementById("incOwnerFilter").addEventListener("change", (e) => { incOwnerValue = e.target.value; });
+document.getElementById("incDateFilter").addEventListener("change", (e) => { incDateValue = e.target.value; });
+document.getElementById("incSearchInput").addEventListener("input", (e) => { incSearchTerm = e.target.value.trim().toLowerCase(); });
+
+document.getElementById("incApplyBtn").addEventListener("click", () => {
+  refreshIncidentTable();
+});
 
 document.getElementById("incClearFiltersBtn").addEventListener("click", () => {
   incStatusValue = "";

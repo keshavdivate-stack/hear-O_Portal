@@ -162,7 +162,9 @@ exportFormatPopover.querySelectorAll(".more-menu-item").forEach((item) => {
   });
 });
 
-document.getElementById("searchInput").addEventListener("input", renderBillingRows);
+/* Apply-gated: just note the field changed; renderBillingRows() (called on
+   Apply) reads document.getElementById("searchInput").value directly. */
+document.getElementById("searchInput").addEventListener("input", () => {});
 
 /* ---------------- Checkbox filter menus (Eligibility Code / Billing Status) ---------------- */
 const portaledFilterMenus = new Map();
@@ -236,7 +238,7 @@ function wireCheckboxFilter(wrapEl, menuEl, selectedSet, onChange) {
     else selectedSet.delete(checkbox.value);
 
     label.textContent = selectedSet.size ? `${baseLabel} (${selectedSet.size})` : baseLabel;
-    onChange();
+    /* Apply-gated: just update state + label here; re-render waits for Apply. */
   });
 }
 
@@ -313,7 +315,7 @@ monthMenu.addEventListener("click", (e) => {
     monthFilterLabel.textContent = `${MONTH_LABELS[Number(monthCell.dataset.month) - 1]}. ${monthViewYear}`;
     monthWrap.classList.remove("open");
     closeFilterMenu(monthMenu);
-    renderBillingRows();
+    /* Apply-gated: wait for Apply to re-render. */
     return;
   }
 
@@ -323,8 +325,13 @@ monthMenu.addEventListener("click", (e) => {
     monthFilterLabel.textContent = "Month";
     monthWrap.classList.remove("open");
     closeFilterMenu(monthMenu);
-    renderBillingRows();
+    /* Apply-gated: wait for Apply to re-render. */
   }
+});
+
+/* ---------------- Apply ---------------- */
+document.getElementById("billingApplyBtn").addEventListener("click", () => {
+  renderBillingRows();
 });
 
 /* ---------------- Clear all filters ---------------- */
