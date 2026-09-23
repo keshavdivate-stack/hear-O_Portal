@@ -252,9 +252,10 @@
     </div>
 
     <!-- INCIDENTS BY CATEGORY OVER TIME (smoothed multi-line trend chart,
-         using the same category list/colors/order as the donut above) -->
+         using the same category list/colors/order as the donut above),
+         alongside SYSTEM HEALTH (per-service status + 30-day uptime history) -->
     <div style="display:flex; align-items:stretch; gap:16px; flex-shrink:0; margin-bottom:20px;">
-      <section class="bo-card bo-panel bo-panel--static" style="flex:1 1 0; display:block;">
+      <section class="bo-card bo-panel bo-panel--static" style="flex:1.6 1 0; display:block;">
         <div class="bo-panel-head">
           <h3 class="bo-panel-title" style="margin:0;">Incidents Over Time</h3>
           <div style="display:flex; align-items:center; gap:10px;">
@@ -284,21 +285,7 @@
         <div id="ovCategoryTrendChart" class="bo-chart-area" style="height:220px;"></div>
         <div class="bo-legend-row" id="ovCategoryTrendLegend" style="justify-content:center; margin:12px 0 0;"></div>
       </section>
-    </div>
 
-    <!-- CLINIC-LEVEL PATIENT COMPLIANCE (monthly trend, scoped by the org filter
-         above like the panels before it -- picking a clinic there swaps this
-         chart to that clinic's own Compliance/Recording Quality trend) -->
-    <div style="display:flex; align-items:stretch; gap:16px; flex-shrink:0; margin-bottom:20px;">
-      <section class="bo-card bo-panel bo-panel--static" style="flex:1.6 1 0; display:block;">
-        <div class="bo-panel-head">
-          <h3 class="bo-panel-title" style="margin:0;" id="ovClinicComplianceTitle">Organization-level Patient Compliance</h3>
-          <div class="bo-legend-row" id="ovClinicComplianceLegend" style="margin:0;"></div>
-        </div>
-        <div id="ovClinicComplianceChart" class="bo-chart-area" style="height:220px;"></div>
-      </section>
-
-      <!-- SYSTEM HEALTH (per-service status + 30-day uptime history) -->
       <section class="bo-card bo-panel bo-panel--static" style="flex:1 1 0; display:block;">
         <div class="bo-panel-head">
           <h3 class="bo-panel-title" style="margin:0;">System Health</h3>
