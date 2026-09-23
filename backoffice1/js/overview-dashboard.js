@@ -374,6 +374,7 @@ const ovCategories = (() => {
    up with the same values Support's own filters use -- these are incident
    records, so status is the incident list (Active/Escalated/Resolved), not
    the ticket list. */
+const SEVERITIES = ["Critical", "High", "Medium", "Low"];
 const OV_SEVERITY_COLORS = { Critical: "var(--red)", High: "var(--orange)", Medium: "var(--yellow)", Low: "var(--gray)" };
 const OV_STATUS_COLORS = { Active: "var(--orange)", Escalated: "var(--red)", Resolved: "var(--green)" };
 
