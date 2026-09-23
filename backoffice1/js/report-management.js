@@ -45,16 +45,11 @@ const rmStatusPillClass = { Active: "bo-pill-active", Paused: "bo-pill-paused" }
 const rmDeliveryPillClass = { Delivered: "bo-pill-delivered", Failed: "bo-pill-failed", Partial: "bo-pill-partial", Processing: "bo-pill-processing" };
 const rmStatusPill = (s) => `<span class="bo-pill ${rmStatusPillClass[s] || ""}">${s}</span>`;
 const rmDeliveryPill = (s) => `<span class="bo-pill ${rmDeliveryPillClass[s] || ""}">${s}</span>`;
-/* "N people"/"1 person" stays the visible label -- hovering reveals who,
-   via a tooltip listing every name, when real names are available (both
-   Scheduled Reports and Report History now carry recipient name arrays). */
+/* "N people"/"1 person" is just a plain label -- no hover tooltip. */
 function rmRecipientsChip(namesOrCount) {
   const names = Array.isArray(namesOrCount) ? namesOrCount : null;
   const count = names ? names.length : namesOrCount;
-  const tooltip = names && names.length
-    ? `<span class="bo-recipients-tooltip">${names.map((n) => `<span class="bo-recipients-tooltip-row">${rmEsc(n)}</span>`).join("")}</span>`
-    : "";
-  return `<span class="bo-recipients-chip">${rmPeopleIcon}${count} ${count === 1 ? "person" : "people"}${tooltip}</span>`;
+  return `<span class="bo-recipients-chip">${rmPeopleIcon}${count} ${count === 1 ? "person" : "people"}</span>`;
 }
 
 function rmEsc(v) { return String(v == null ? "" : v).replace(/"/g, "&quot;"); }
