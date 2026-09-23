@@ -11,6 +11,8 @@ const EHR_SCOPES = ["openid", "fhirUser", "offline_access", "user/Patient.read",
 const CHECK_ICON = `<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 const CHECKBOX_ICON = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 const CARET_ICON = (cls) => `<svg class="${cls}" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>`;
+const CONNECT_ICON = `<svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M11 6L12.5 4.5C14 3 16.5 3 18 4.5C19.5 6 19.5 8.5 18 10L16.5 11.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M13 18L11.5 19.5C10 21 7.5 21 6 19.5C4.5 18 4.5 15.5 6 14L7.5 12.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M9 15L15 9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>`;
+const DISCONNECT_ICON = `<svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M11 6L12.5 4.5C14 3 16.5 3 18 4.5C19.5 6 19.5 8.5 18 10L16.5 11.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M13 18L11.5 19.5C10 21 7.5 21 6 19.5C4.5 18 4.5 15.5 6 14L7.5 12.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 4L20 20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>`;
 
 /* One row per supported EHR. A row is "connected" once its credentials have been
    saved through the Connect EHR modal; Athena keeps previously entered (unsaved)
@@ -40,7 +42,7 @@ function renderConnections() {
         <td>${c.clientId ? escapeHtml(c.clientId) : "—"}</td>
         <td>${c.scope.length ? escapeHtml(c.scope.join(", ")) : "—"}</td>
         <td><span class="ehr-status-pill${c.connected ? "" : " off"}">${c.connected ? "Connected" : "Not Connected"}</span></td>
-        <td class="td-action"><a class="ticket-view-link" href="#" data-${c.connected ? "disconnect" : "connect"}="${i}">${c.connected ? "Disconnect" : "Connect"}</a></td>
+        <td class="td-action"><a class="ehr-action-icon${c.connected ? " disconnect" : ""}" href="#" data-${c.connected ? "disconnect" : "connect"}="${i}" aria-label="${c.connected ? "Disconnect" : "Connect"}">${c.connected ? DISCONNECT_ICON : CONNECT_ICON}</a></td>
       </tr>`
     )
     .join("");

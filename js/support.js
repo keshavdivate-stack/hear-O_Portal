@@ -1,3 +1,4 @@
+const eyeIcon = `<svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M1.5 12C1.5 12 5.5 5 12 5C18.5 5 22.5 12 22.5 12C22.5 12 18.5 19 12 19C5.5 19 1.5 12 1.5 12Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/></svg>`;
 const selectedTypes = new Set();
 const selectedCategories = new Set();
 const selectedIssueTypes = new Set();
@@ -43,7 +44,7 @@ function renderTicketList() {
         <td><span class="ticket-pill ${stateCellClass(t.state)}">${t.state}</span></td>
         <td>${t.created}</td>
         <td>${t.assignedTo}</td>
-        <td><a class="ticket-view-link" href="ticket-detail.html?id=${t.id}">View</a></td>
+        <td><a class="ticket-view-icon" href="ticket-detail.html?id=${t.id}" aria-label="View">${eyeIcon}</a></td>
       </tr>`
     )
     .join("");

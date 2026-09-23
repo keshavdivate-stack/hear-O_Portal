@@ -1,3 +1,4 @@
+const eyeIcon = `<svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M1.5 12C1.5 12 5.5 5 12 5C18.5 5 22.5 12 22.5 12C22.5 12 18.5 19 12 19C5.5 19 1.5 12 1.5 12Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/></svg>`;
 /* Backoffice-safe fork of ../../js/support.js. Why forked instead of shared:
    the root file's ticket list render shows a real patient name
    (t.patientName) for Patient-type tickets. That field no longer exists on
@@ -51,7 +52,7 @@ function renderTicketList() {
         <td><span class="ticket-pill ${stateCellClass(t.state)}">${t.state}</span></td>
         <td>${t.created}</td>
         <td>${t.assignedTo}</td>
-        <td><a class="ticket-view-link" href="ticket-detail.html?id=${t.id}">View</a></td>
+        <td><a class="ticket-view-icon" href="ticket-detail.html?id=${t.id}" aria-label="View">${eyeIcon}</a></td>
       </tr>`
     )
     .join("");
@@ -246,7 +247,7 @@ function renderRaisedTicketList() {
         <td><span class="ticket-pill ${severityCellClass(t.severity)}">${t.severity}</span></td>
         <td><span class="ticket-pill ${stateCellClass(t.state)}">${t.state}</span></td>
         <td>${t.created}</td>
-        <td><a class="ticket-view-link" href="ticket-detail.html?id=${t.id}">View</a></td>
+        <td><a class="ticket-view-icon" href="ticket-detail.html?id=${t.id}" aria-label="View">${eyeIcon}</a></td>
       </tr>`
     )
     .join("");
