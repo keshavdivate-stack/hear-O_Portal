@@ -37,7 +37,7 @@ const binDefs = [
   { key: "80-90", label: "80%-90%", color: "var(--blue)" },
   { key: "70-80", label: "70%-80%", color: "var(--cyan)" },
   { key: "60-70", label: "60%-70%", color: "var(--orange)" },
-  { key: "lt60", label: "Less than 60%", color: "var(--red)" },
+  { key: "lt60", label: "Less than 60%", color: "var(--maroon)" },
 ];
 
 const binDataBase = {

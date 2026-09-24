@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Color Guide</title>
+<style>
+  @font-face {
+    font-family: "Poppins";
+    src: url("fonts/Poppins-Regular.ttf") format("truetype");
+    font-weight: 400;
+  }
+  @font-face {
+    font-family: "Poppins";
+    src: url("fonts/Poppins-Medium.ttf") format("truetype");
+    font-weight: 500;
+  }
+  @font-face {
+    font-family: "Poppins";
+    src: url("fonts/Poppins-SemiBold.ttf") format("truetype");
+    font-weight: 600;
+  }
+  @font-face {
+    font-family: "Poppins";
+    src: url("fonts/Poppins-Bold.ttf") format("truetype");
+    font-weight: 700;
+  }
+  @page { size: A4; margin: 18mm 14mm; }
+  * { box-sizing: border-box; }
+  body {
+    font-family: "Poppins", Arial, sans-serif;
+    color: #1B2430;
+    font-size: 12.5px;
+    line-height: 1.6;
+    margin: 0;
+  }
+  h1 { font-size: 26px; font-weight: 700; margin: 0 0 4px; color: #0E5C99; }
+  .subtitle { color: #57626D; font-size: 13px; margin-bottom: 22px; }
+  h2 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #0E5C99;
+    border-bottom: 2px solid #EAF6FC;
+    padding-bottom: 5px;
+    margin-top: 36px;
+    page-break-after: avoid;
+  }
+  h3 { font-size: 14px; font-weight: 600; color: #1F3C73; margin-top: 22px; page-break-after: avoid; }
+  p { margin: 6px 0; }
+  table { border-collapse: collapse; width: 100%; margin: 10px 0 16px; page-break-inside: avoid; }
+  th, td { border: 1px solid #E7EAEE; padding: 7px 9px; text-align: left; vertical-align: middle; font-size: 11.5px; }
+  th { background: #F4F7FA; color: #1B2430; font-weight: 600; }
+  tr:nth-child(even) td { background: #FAFBFC; }
+  .swatch { display: inline-block; width: 18px; height: 18px; border-radius: 4px; border: 1px solid rgba(0,0,0,.12); vertical-align: middle; }
+  .swatch-grid { display: flex; flex-wrap: wrap; gap: 10px; margin: 10px 0 18px; }
+  .swatch-card { width: 150px; border: 1px solid #E7EAEE; border-radius: 6px; overflow: hidden; page-break-inside: avoid; }
+  .swatch-fill { height: 40px; }
+  .swatch-label { padding: 7px 9px; font-size: 10.5px; }
+  .swatch-label .name { font-weight: 600; display: block; }
+  .swatch-label .hex { color: #57626D; }
+  .pill { display: inline-block; padding: 3px 12px; border-radius: 999px; font-size: 11px; font-weight: 600; }
+  .badge-demo { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 18px; }
+  .note {
+    border-left: 4px solid #2AA9E0; background: #EAF6FC; padding: 10px 14px;
+    border-radius: 4px; margin: 14px 0; font-size: 11.5px; page-break-inside: avoid;
+  }
+  footer.doc-footer { margin-top: 40px; padding-top: 10px; border-top: 1px solid #E7EAEE; font-size: 10px; color: #9AA5B1; }
+</style>
+</head>
+<body>
+
+<h1>Color Guide</h1>
+<div class="subtitle">A simple guide to the colors used, and what each one means.</div>
+
+<h2>1. Primary &amp; Secondary Colors</h2>
+<p>These are the main colors used across the app for buttons, links, and highlights.</p>
+
+<h3>Primary Color — Blue</h3>
+<p>Blue is our main color. It is used for links, buttons, and important actions.</p>
+<div class="swatch-grid">
+  <div class="swatch-card"><div class="swatch-fill" style="background:#2AA9E0"></div><div class="swatch-label"><span class="name">Blue</span><span class="hex">#2AA9E0</span></div></div>
+</div>
+
+<h3>Secondary Colors</h3>
+<p>These extra colors are used for special tags and labels, mostly in the clinic admin screens.</p>
+<div class="swatch-grid">
+  <div class="swatch-card"><div class="swatch-fill" style="background:#2563EB"></div><div class="swatch-label"><span class="name">Button Blue</span><span class="hex">#2563EB</span></div></div>
+</div>
+
+<h3>Neutral Colors</h3>
+<p>Grays are used for backgrounds, borders, and regular text that isn't a color status.</p>
+<div class="swatch-grid">
+  <div class="swatch-card"><div class="swatch-fill" style="background:#F4F7FA"></div><div class="swatch-label"><span class="name">Page Background</span><span class="hex">#F4F7FA</span></div></div>
+  <div class="swatch-card"><div class="swatch-fill" style="background:#E7EAEE"></div><div class="swatch-label"><span class="name">Border Gray</span><span class="hex">#E7EAEE</span></div></div>
+  <div class="swatch-card"><div class="swatch-fill" style="background:#57626D"></div><div class="swatch-label"><span class="name">Body Text</span><span class="hex">#57626D</span></div></div>
+  <div class="swatch-card"><div class="swatch-fill" style="background:#9AA5B1"></div><div class="swatch-label"><span class="name">Mid Gray</span><span class="hex">#9AA5B1</span></div></div>
+  <div class="swatch-card"><div class="swatch-fill" style="background:#1B2430"></div><div class="swatch-label"><span class="name">Dark Text</span><span class="hex">#1B2430</span></div></div>
+</div>
+
+<h2>2. Semantic Colors</h2>
+<p>Semantic colors have a fixed meaning everywhere in the app. Green always means "good," orange/amber always means "warning," maroon always means "error," red always means "critical/priority," and so on. Each color has three versions: a solid color (for icons and dots), a text color (easier to read), and a light background (for badges).</p>
+
+<h3>Green — Good / Success</h3>
+<p>Green means everything is fine: data is complete, a task is done, or the answer is "Yes."</p>
+<div class="swatch-grid">
+  <div class="swatch-card"><div class="swatch-fill" style="background:#3FBE84"></div><div class="swatch-label"><span class="name">Green</span><span class="hex">#3FBE84</span></div></div>
+  <div class="swatch-card"><div class="swatch-fill" style="background:#15803D"></div><div class="swatch-label"><span class="name">Green Text</span><span class="hex">#15803D</span></div></div>
+  <div class="swatch-card"><div class="swatch-fill" style="background:#EAFBF3"></div><div class="swatch-label"><span class="name">Green Background</span><span class="hex">#EAFBF3</span></div></div>
+</div>
+
+<h3>Orange / Amber — Warning</h3>
+<p>Orange and amber mean something needs attention: data is low, a dose was missed, or the answer is "No."</p>
+<div class="swatch-grid">
+  <div class="swatch-card"><div class="swatch-fill" style="background:#F2994A"></div><div class="swatch-label"><span class="name">Orange</span><span class="hex">#F2994A</span></div></div>
+  <div class="swatch-card"><div class="swatch-fill" style="background:#C25E00"></div><div class="swatch-label"><span class="name">Orange Text</span><span class="hex">#C25E00</span></div></div>
+  <div class="swatch-card"><div class="swatch-fill" style="background:#FEEDDC"></div><div class="swatch-label"><span class="name">Orange Background</span><span class="hex">#FEEDDC</span></div></div>
+  <div class="swatch-card"><div class="swatch-fill" style="background:#F59E0B"></div><div class="swatch-label"><span class="name">Amber</span><span class="hex">#F59E0B</span></div></div>
+  <div class="swatch-card"><div class="swatch-fill" style="background:#B45309"></div><div class="swatch-label"><span class="name">Amber Text</span><span class="hex">#B45309</span></div></div>
+  <div class="swatch-card"><div class="swatch-fill" style="background:#FEF3E1"></div><div class="swatch-label"><span class="name">Amber Background</span><span class="hex">#FEF3E1</span></div></div>
+</div>
+
+<h3>Maroon — Error</h3>
+<p>Maroon means something is wrong: a system error, a failed action, or invalid input. It's a deep, muted red — distinct from Priority Red and from the Orange/Amber warning tones — so an error never gets mistaken for a critical patient or a simple warning.</p>
+<div class="swatch-grid">
+  <div class="swatch-card"><div class="swatch-fill" style="background:#9F1C3B"></div><div class="swatch-label"><span class="name">Maroon</span><span class="hex">#9F1C3B</span></div></div>
+  <div class="swatch-card"><div class="swatch-fill" style="background:#7A0F2B"></div><div class="swatch-label"><span class="name">Maroon Text</span><span class="hex">#7A0F2B</span></div></div>
+  <div class="swatch-card"><div class="swatch-fill" style="background:#FCE8EC"></div><div class="swatch-label"><span class="name">Maroon Background</span><span class="hex">#FCE8EC</span></div></div>
+</div>
+
+<h3>Red — Priority / Critical</h3>
+<p>Red is reserved for patient priority: a critical alert or a high-priority patient. It is not used for system errors.</p>
+<div class="swatch-grid">
+  <div class="swatch-card"><div class="swatch-fill" style="background:#F16C6C"></div><div class="swatch-label"><span class="name">Red</span><span class="hex">#F16C6C</span></div></div>
+  <div class="swatch-card"><div class="swatch-fill" style="background:#D92D20"></div><div class="swatch-label"><span class="name">Red Text</span><span class="hex">#D92D20</span></div></div>
+  <div class="swatch-card"><div class="swatch-fill" style="background:#FDEDED"></div><div class="swatch-label"><span class="name">Red Background</span><span class="hex">#FDEDED</span></div></div>
+</div>
+
+<h3>Yellow — Medium Caution</h3>
+<p>Yellow sits between orange and gray. It marks things that are medium priority — not urgent, but not fine either.</p>
+<div class="swatch-grid">
+  <div class="swatch-card"><div class="swatch-fill" style="background:#D9A404"></div><div class="swatch-label"><span class="name">Yellow</span><span class="hex">#D9A404</span></div></div>
+  <div class="swatch-card"><div class="swatch-fill" style="background:#7A5F00"></div><div class="swatch-label"><span class="name">Yellow Text</span><span class="hex">#7A5F00</span></div></div>
+  <div class="swatch-card"><div class="swatch-fill" style="background:#FEF8DC"></div><div class="swatch-label"><span class="name">Yellow Background</span><span class="hex">#FEF8DC</span></div></div>
+</div>
+
+<h3>Gray — Disabled / Not Available</h3>
+<p>Gray means something is turned off, not filled in, or not clickable.</p>
+<div class="swatch-grid">
+  <div class="swatch-card"><div class="swatch-fill" style="background:#E7EAEE"></div><div class="swatch-label"><span class="name">Disabled Border</span><span class="hex">#E7EAEE</span></div></div>
+  <div class="swatch-card"><div class="swatch-fill" style="background:#8D929A"></div><div class="swatch-label"><span class="name">Disabled Text</span><span class="hex">#8D929A</span></div></div>
+  <div class="swatch-card"><div class="swatch-fill" style="background:#9AA5B1"></div><div class="swatch-label"><span class="name">Disabled Input Text</span><span class="hex">#9AA5B1</span></div></div>
+</div>
+
+<h2>3. Badges &amp; Status Pills</h2>
+<p>Badges and status pills are the small rounded labels that show a patient's or task's status at a glance. They use a light background color with matching darker text from the semantic colors above.</p>
+<div class="badge-demo">
+  <span class="pill" style="background:#E7F8EF;color:#15803D">Active / Completed / Healthy</span>
+  <span class="pill" style="background:#FDF3E7;color:#C25E00">Pending / In Progress</span>
+  <span class="pill" style="background:#FDEDED;color:#D92D20">Critical / Priority</span>
+  <span class="pill" style="background:#FCE8EC;color:#7A0F2B">Error</span>
+  <span class="pill" style="background:#FEF8DC;color:#7A5F00">Medium Priority</span>
+  <span class="pill" style="background:#F1F3F5;color:#57626D">Low Priority / Archived</span>
+  <span class="pill" style="background:#FDEDED;color:#D92D20">Escalated</span>
+</div>
+<table>
+  <tr><th>Color</th><th>Status</th><th>What it means</th></tr>
+  <tr><td><span class="swatch" style="background:#E7F8EF"></span></td><td>Active / Completed / Healthy</td><td>Green background, green text. Everything is good.</td></tr>
+  <tr><td><span class="swatch" style="background:#FDF3E7"></span></td><td>Pending / In Progress</td><td>Orange-tinted background, orange text. Waiting or needs action.</td></tr>
+  <tr><td><span class="swatch" style="background:#FDEDED"></span></td><td>Critical / Priority</td><td>Red background, red text. A high-priority or critical patient. Reserved for priority — not used for errors.</td></tr>
+  <tr><td><span class="swatch" style="background:#FCE8EC"></span></td><td>Error</td><td>Maroon background, maroon text. A system error or failed action.</td></tr>
+  <tr><td><span class="swatch" style="background:#FEF8DC"></span></td><td>Medium Priority</td><td>Yellow background, yellow text. Somewhat important.</td></tr>
+  <tr><td><span class="swatch" style="background:#F1F3F5"></span></td><td>Low Priority / Archived</td><td>Light gray background, gray text. Not urgent.</td></tr>
+  <tr><td><span class="swatch" style="background:#FDEDED"></span></td><td>Escalated</td><td>Red background, red text. Sent to a higher level — treated as urgent, same as Critical/Priority.</td></tr>
+</table>
+
+<div class="note">Quick rule of thumb: green = good, orange/amber = warning, maroon = error, red = priority/critical, yellow = medium, gray = low or inactive.</div>
+
+</body>
+</html>

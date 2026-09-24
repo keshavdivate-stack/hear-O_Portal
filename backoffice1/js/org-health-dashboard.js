@@ -36,7 +36,7 @@ if (orgHealthIssueContext) {
   orgHealthStats.push({
     num: orgIssueTicketCount,
     label: `Tickets — ${orgHealthIssueContext}`,
-    color: "var(--red)",
+    color: "var(--maroon)",
     accent: true,
     icon: `<path d="M18 9.5C18 7.7 17.3 6 16 4.8C14.7 3.6 13 3 11.3 3.1C8.1 3.3 5.6 6.1 5.6 9.4V12.5C5.6 13.1 5.4 13.7 5 14.2L4 15.5C3.4 16.3 4 17.5 5 17.5H19C20 17.5 20.6 16.3 20 15.5L19 14.2C18.6 13.7 18.4 13.1 18.4 12.5"/>`,
   });
@@ -45,7 +45,7 @@ orgHealthStats.push(
   { num: orgHealth.patients, label: "Patients", color: "var(--navy)", icon: `<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>` },
   { num: orgHealth.providers, label: "Providers / Users", color: "var(--blue)", icon: `<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83"/>` },
   { num: orgHealth.openIssues, label: "Open Issues", color: "var(--orange)", icon: `<path d="M18 9.5C18 7.7 17.3 6 16 4.8C14.7 3.6 13 3 11.3 3.1C8.1 3.3 5.6 6.1 5.6 9.4V12.5"/><path d="M9.5 20.5C10 21.3 10.9 21.8 12 21.8"/>` },
-  { num: orgHealth.criticalIssues, label: "Critical Issues", color: "var(--red)", icon: `<path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.73 3h16.9a2 2 0 0 0 1.73-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/>` }
+  { num: orgHealth.criticalIssues, label: "Critical Issues", color: "var(--maroon)", icon: `<path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.73 3h16.9a2 2 0 0 0 1.73-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/>` }
 );
 
 orgHealthGridEl.classList.toggle("bo-health-grid--5", orgHealthStats.length === 5);

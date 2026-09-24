@@ -30,7 +30,7 @@ const ovAllOrgsHealthStats = [
 
 const ovDeltaArrow = { up: `<path d="M12 19V5"/><path d="m5 12 7-7 7 7"/>`, down: `<path d="M12 5v14"/><path d="m5 12 7 7 7-7"/>`, flat: `<path d="M5 12h14"/>` };
 const ovDeltaText = (s) => (s.deltaDir === "flat" ? "No change" : `${s.delta} vs yesterday`);
-const ovDeltaColor = (s) => (s.deltaDir === "flat" ? "var(--gray-text)" : s.deltaDir === "up" ? "var(--red)" : "var(--green)");
+const ovDeltaColor = (s) => (s.deltaDir === "flat" ? "var(--gray-text)" : s.deltaDir === "up" ? "var(--maroon)" : "var(--green)");
 
 function ovHealthStatsFor(orgId) {
   if (orgId === "all") return ovAllOrgsHealthStats;
@@ -213,7 +213,7 @@ function renderOvTrendFooter() {
      is good news (badWhen "down"), so the delta color reflects what the
      number *means*, not just which way the arrow points. */
   const footer = [
-    { num: sum(dataset.series.critical), label: "Critical", color: "var(--red-text)", delta: 8, dir: "up", badWhen: "up", param: "severity=Critical" },
+    { num: sum(dataset.series.critical), label: "Critical", color: "var(--maroon-text)", delta: 8, dir: "up", badWhen: "up", param: "severity=Critical" },
     { num: sum(dataset.series.high), label: "High", color: "var(--orange-text)", delta: 6, dir: "up", badWhen: "up", param: "severity=High" },
     { num: sum(dataset.series.medium), label: "Medium", color: "var(--yellow-text)", delta: 3, dir: "down", badWhen: "up", param: "severity=Medium" },
     { num: sum(dataset.series.low), label: "Low", color: "var(--gray-text)", delta: 2, dir: "down", badWhen: "up", param: "severity=Low" },
@@ -376,7 +376,7 @@ const ovCategories = (() => {
    the ticket list. */
 const SEVERITIES = ["Critical", "High", "Medium", "Low"];
 const OV_SEVERITY_COLORS = { Critical: "var(--red)", High: "var(--orange)", Medium: "var(--yellow)", Low: "var(--gray)" };
-const OV_STATUS_COLORS = { Active: "var(--orange)", Escalated: "var(--red)", Resolved: "var(--green)" };
+const OV_STATUS_COLORS = { Active: "var(--orange)", Escalated: "var(--maroon)", Resolved: "var(--green)" };
 
 /* Deterministic incident records (severity + status) for a category's
    `count`, seeded by category + an arbitrary key (e.g. "donut", or a month
@@ -786,7 +786,7 @@ window.addEventListener("resize", () => renderOvDonut(ovSelectedOrgId));
 const OV_UPTIME_STATUS_META = {
   ok: { color: "var(--green)", label: "Operational" },
   degraded: { color: "var(--orange)", label: "Degraded" },
-  down: { color: "var(--red)", label: "Outage" },
+  down: { color: "var(--maroon)", label: "Outage" },
 };
 
 /* Builds a 30-entry day-by-day history ending today. `exceptions` maps a

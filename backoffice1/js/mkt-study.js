@@ -223,7 +223,7 @@ function renderMktBins(tab) {
       (b, i) => `
       <a class="mkt-bin-row" href="${mktUsableComplianceHref(tab, MKT_BIN_KEYS[i])}">
         <span class="mkt-bin-val">${b.val}</span>
-        <div class="bo-bin-bar-track mkt-bin-track"><div class="bo-bin-bar-fill" style="width:${b.val}%; background:${i === 3 ? "var(--red)" : "var(--gray-border)"};"></div></div>
+        <div class="bo-bin-bar-track mkt-bin-track"><div class="bo-bin-bar-fill" style="width:${b.val}%; background:${i === 3 ? "var(--maroon)" : "var(--gray-border)"};"></div></div>
         <span class="mkt-bin-label">${b.label}</span>
       </a>`
     )
