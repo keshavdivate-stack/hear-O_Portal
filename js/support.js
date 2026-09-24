@@ -281,15 +281,69 @@ function refillSelect(select, options, placeholder, emptyPlaceholder) {
   valueEl.classList.add("placeholder");
 }
 
+/* "Create For" is searchable: a search box pinned at the top of its menu
+   filters options as you type. Patient labels are "Name (ID)", so one match
+   against the label covers searching by name or by patient ID. */
+const createForSearchIcon = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8"/><path d="M21 21L16.5 16.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>`;
+
 function refillCreateFor() {
   const isPatient = selectValue(createTicketTypeSelect) !== "Clinic";
   refillSelect(
     createTicketForSelect,
     isPatient ? TICKET_PATIENTS.map(patientOptionLabel) : CLINIC_USERS,
-    isPatient ? "Select Patient" : "Select user",
+    isPatient ? "Search or select patient" : "Search or select user",
     "Select type first"
   );
+  const menu = createTicketForSelect.querySelector(".custom-select-menu");
+  menu.insertAdjacentHTML(
+    "afterbegin",
+    `<div class="custom-select-search">${createForSearchIcon}<input type="text" autocomplete="off" placeholder="${isPatient ? "Search by patient name or ID" : "Search by name"}" /></div>`
+  );
+  menu.insertAdjacentHTML("beforeend", `<div class="custom-select-empty" hidden>${isPatient ? "No patients found" : "No users found"}</div>`);
 }
+
+function filterCreateForOptions(term) {
+  const q = term.trim().toLowerCase();
+  let visible = 0;
+  createTicketForSelect.querySelectorAll(".custom-select-option").forEach((o) => {
+    const match = !q || o.textContent.toLowerCase().includes(q);
+    o.hidden = !match;
+    if (match) visible++;
+  });
+  createTicketForSelect.querySelector(".custom-select-empty").hidden = visible > 0;
+}
+
+/* Opening the menu clears any previous search and focuses the box. */
+createTicketForSelect.querySelector(".custom-select-trigger").addEventListener("click", () => {
+  const input = createTicketForSelect.querySelector(".custom-select-search input");
+  if (!input || !createTicketForSelect.classList.contains("open")) return;
+  input.value = "";
+  filterCreateForOptions("");
+  input.focus();
+});
+
+createTicketForSelect.addEventListener("click", (e) => {
+  if (e.target.closest(".custom-select-search")) e.stopPropagation();
+});
+createTicketForSelect.addEventListener("input", (e) => {
+  if (!e.target.closest(".custom-select-search")) return;
+  e.stopPropagation();
+  filterCreateForOptions(e.target.value);
+});
+/* Enter picks the first match; Escape closes the menu. */
+createTicketForSelect.addEventListener("keydown", (e) => {
+  if (!e.target.closest(".custom-select-search")) return;
+  if (e.key === "Enter") {
+    e.preventDefault();
+    const first = [...createTicketForSelect.querySelectorAll(".custom-select-option")].find((o) => !o.hidden);
+    if (first) {
+      setCustomSelectValue(createTicketForSelect, first.dataset.value);
+      createTicketForSelect.classList.remove("open");
+    }
+  } else if (e.key === "Escape") {
+    createTicketForSelect.classList.remove("open");
+  }
+});
 
 createTicketTypeSelect.querySelector("input[type=hidden]").addEventListener("change", () => {
   refillCreateFor();

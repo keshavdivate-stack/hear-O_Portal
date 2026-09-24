@@ -73,7 +73,12 @@ function initCustomSelects() {
   });
 
   document.addEventListener("click", closeAllCustomSelects);
-  document.addEventListener("scroll", closeAllCustomSelects, true);
+  /* Scrolling the page closes open menus, but scrolling *inside* a menu
+     (a long, searchable option list) must not. */
+  document.addEventListener("scroll", (e) => {
+    if (e.target.closest && e.target.closest(".custom-select-menu")) return;
+    closeAllCustomSelects();
+  }, true);
   window.addEventListener("resize", closeAllCustomSelects);
 }
 

@@ -4977,6 +4977,39 @@ label.checkbox-field {
 }
 
 .custom-select-option:hover { background: var(--bg); }
+.custom-select-option[hidden] { display: none; }
+
+/* Searchable select (New Ticket > Create For): search box stays pinned at
+   the top of the menu while the option list scrolls beneath it. */
+.custom-select-search {
+  position: sticky;
+  top: -6px;
+  margin: -6px -6px 6px;
+  padding: 8px 10px;
+  background: #fff;
+  border-bottom: 1px solid var(--gray-border);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--gray-text);
+  z-index: 1;
+}
+.custom-select-search input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  font-family: inherit;
+  font-size: 14px;
+  color: #23272E;
+  background: transparent;
+}
+.custom-select-empty {
+  padding: 10px 12px;
+  font-size: 13.5px;
+  color: var(--gray-text);
+}
+.custom-select-empty[hidden] { display: none; }
 
 .custom-select-option.selected {
   background: var(--blue-light);
