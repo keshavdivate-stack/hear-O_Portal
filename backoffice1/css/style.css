@@ -611,7 +611,7 @@ button, input, select, textarea, optgroup {
 .bo-table tbody tr:last-child td { border-bottom: none; }
 .bo-table tbody tr.bo-row-highlight td { background: var(--blue-light); }
 
-.bo-status-pill.priority { color: var(--red-text); }
+.bo-status-pill.priority { color: var(--maroon-text); }
 .bo-status-pill.unmonitored { color: var(--maroon-text); }
 .bo-status-pill.paused { color: #9AA5B1; }
 .bo-status-pill.active { color: var(--green-text); }
@@ -648,7 +648,7 @@ button, input, select, textarea, optgroup {
   flex-shrink: 0;
 }
 
-.bo-activity-icon.priority { background: var(--red-light); color: var(--red); }
+.bo-activity-icon.priority { background: var(--maroon-light); color: var(--maroon); }
 .bo-activity-icon.unmonitored { background: var(--orange-light); color: var(--orange); }
 .bo-activity-icon.paused { background: var(--bg); color: var(--gray); }
 .bo-activity-icon.error { background: var(--orange-light); color: var(--orange); }
@@ -2953,7 +2953,7 @@ a.bo-btn-secondary { text-decoration: none; }
   font-weight: 700;
 }
 .bo-sc-badge.active { color: var(--green-text); }
-.bo-sc-badge.priority { color: var(--red-text); }
+.bo-sc-badge.priority { color: var(--maroon-text); }
 .bo-sc-badge.registered { color: var(--orange-text); }
 .bo-sc-badge.baseline { color: var(--gray-text); }
 .bo-sc-badge.monitored { color: var(--green-text); }
@@ -3873,7 +3873,7 @@ a.bo-health-card:hover { border-color: var(--field-border); }
 }
 
 .bo-severity-pill .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
-.bo-severity-pill.critical { background: var(--red-light); color: var(--red-text); }
+.bo-severity-pill.critical { background: var(--maroon-light); color: var(--maroon-text); }
 .bo-severity-pill.high { background: var(--orange-light); color: var(--orange-text); }
 .bo-severity-pill.medium { background: var(--yellow-light); color: var(--yellow-text); }
 .bo-severity-pill.low { background: var(--bg); color: var(--gray-text); }
@@ -4263,7 +4263,7 @@ a.bo-health-card:hover { border-color: var(--field-border); }
 }
 
 a.bo-alert-row:hover { background: var(--gray-border); }
-.bo-alert-row.critical { border-left-color: var(--red); }
+.bo-alert-row.critical { border-left-color: var(--maroon); }
 .bo-alert-row.warning { border-left-color: var(--orange); }
 
 .bo-alert-icon {
@@ -4570,7 +4570,7 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
 .bo-pill-severity-low {
   border-radius: 6px;
 }
-.bo-pill-severity-critical { background: var(--red-light); color: var(--red-text); }
+.bo-pill-severity-critical { background: var(--maroon-light); color: var(--maroon-text); }
 .bo-pill-severity-high { background: var(--orange-light); color: var(--orange-text); }
 .bo-pill-severity-medium { background: var(--yellow-light); color: var(--yellow-text); }
 .bo-pill-severity-low { background: var(--bg); color: var(--gray-text); }
@@ -4920,7 +4920,7 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
 .bo-pill-sev4 {
   border-radius: 6px;
 }
-.bo-pill-sev1 { background: var(--red); color: #fff; }
+.bo-pill-sev1 { background: var(--maroon); color: #fff; }
 .bo-pill-sev2 { background: var(--orange-light); color: var(--orange-text); }
 .bo-pill-sev3 { background: var(--yellow-light); color: var(--yellow-text); }
 .bo-pill-sev4 { background: var(--bg); color: var(--gray-text); }

@@ -6869,7 +6869,7 @@ body.patient-discontinued #chatOpenBtn {
 .ticket-pill-severity-low {
   border-radius: 6px;
 }
-.ticket-pill-severity-critical { background: var(--red-light); color: var(--red-text); }
+.ticket-pill-severity-critical { background: var(--maroon-light); color: var(--maroon-text); }
 .ticket-pill-severity-high { background: #FEEDDC; color: var(--orange-text); }
 .ticket-pill-severity-medium { background: #FEF8DC; color: var(--yellow-text); }
 .ticket-pill-severity-low { background: #F1F3F5; color: var(--gray-text); }

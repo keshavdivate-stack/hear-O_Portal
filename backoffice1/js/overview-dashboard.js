@@ -72,7 +72,7 @@ const ovTrendSeriesMeta = [
   { key: "low", label: "Low", color: "var(--gray)" },
   { key: "medium", label: "Medium", color: "var(--yellow)" },
   { key: "high", label: "High", color: "var(--orange)" },
-  { key: "critical", label: "Critical", color: "var(--red)" },
+  { key: "critical", label: "Critical", color: "var(--maroon)" },
 ];
 
 const ovTrendDatasets = {
@@ -251,8 +251,8 @@ renderOvTrendFooter();
    three disconnected numbers. Org/patient counts and "started" times are
    read from the real per-org records rather than invented separately. */
 const ovCritIssues = [
-  { title: "Compliance drops", desc: "Active-patient compliance falling below threshold", severity: "Critical", started: "2 hrs ago", orgs: 1, patients: 3, color: "var(--red)", category: "Compliance", incidentId: "INC-2026-0044" },
-  { title: "Voice engine errors", desc: "High error rate in voice processing", severity: "Critical", started: "20 min ago", orgs: 1, patients: 2, color: "var(--red)", category: "Voice Engine", incidentId: "INC-2026-0043" },
+  { title: "Compliance drops", desc: "Active-patient compliance falling below threshold", severity: "Critical", started: "2 hrs ago", orgs: 1, patients: 3, color: "var(--maroon)", category: "Compliance", incidentId: "INC-2026-0044" },
+  { title: "Voice engine errors", desc: "High error rate in voice processing", severity: "Critical", started: "20 min ago", orgs: 1, patients: 2, color: "var(--maroon)", category: "Voice Engine", incidentId: "INC-2026-0043" },
   { title: "Missing run: Billing Calc", desc: "The Billing Calc job did not run yesterday", severity: "High", started: "3 hrs ago", orgs: 2, patients: 3, color: "var(--orange)", category: "System Schedule Engine", incidentId: "INC-2026-0046" },
   { title: "Sensor data delays", desc: "Sensor data delayed or missing", severity: "Medium", started: "6 hrs ago", orgs: 3, patients: 3, color: "var(--yellow)", category: "Sensors", incidentId: "INC-2026-0041" },
   { title: "Patients stuck in Registered", desc: "Patients have been stuck in Registered status longer than expected", severity: "Low", started: "1 day ago", orgs: 1, patients: 1, color: "var(--gray)", category: "Patient (Mobile/Web)", incidentId: "INC-2026-0045" },
@@ -375,7 +375,7 @@ const ovCategories = (() => {
    records, so status is the incident list (Active/Escalated/Resolved), not
    the ticket list. */
 const SEVERITIES = ["Critical", "High", "Medium", "Low"];
-const OV_SEVERITY_COLORS = { Critical: "var(--red)", High: "var(--orange)", Medium: "var(--yellow)", Low: "var(--gray)" };
+const OV_SEVERITY_COLORS = { Critical: "var(--maroon)", High: "var(--orange)", Medium: "var(--yellow)", Low: "var(--gray)" };
 const OV_STATUS_COLORS = { Active: "var(--orange)", Escalated: "var(--maroon)", Resolved: "var(--green)" };
 
 /* Deterministic incident records (severity + status) for a category's
@@ -678,7 +678,7 @@ window.addEventListener("load", renderOvCategoryTrendChart);
 window.addEventListener("resize", renderOvCategoryTrendChart);
 
 /* ---------------- Affected Organizations ---------------- */
-const ovOrgDotColor = { critical: "var(--red)", warning: "var(--orange)", healthy: "var(--green)" };
+const ovOrgDotColor = { critical: "var(--maroon)", warning: "var(--orange)", healthy: "var(--green)" };
 const ovOrgIssuesPillClass = { critical: "critical", warning: "warning", healthy: "healthy" };
 
 function renderOvOrgList(orgId) {

@@ -3,7 +3,7 @@ const boStats = [
   { num: 134, label: "Registered", color: "var(--orange)", icon: `<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>` },
   { num: 5, label: "Baseline", color: "var(--navy)", icon: `<path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/>` },
   { num: 118, label: "Active", color: "var(--green)", icon: `<path d="M22 12h-4l-3 9L9 3l-3 9H2"/>` },
-  { num: 3, label: "Priority", color: "var(--red)", icon: `<path d="M12 21C12 21 4 15.5 4 9.8C4 6.6 6.5 4.5 9.2 4.5C10.6 4.5 11.6 5.1 12 5.7C12.4 5.1 13.4 4.5 14.8 4.5C17.5 4.5 20 6.6 20 9.8C20 15.5 12 21 12 21Z"/>` },
+  { num: 3, label: "Priority", color: "var(--maroon)", icon: `<path d="M12 21C12 21 4 15.5 4 9.8C4 6.6 6.5 4.5 9.2 4.5C10.6 4.5 11.6 5.1 12 5.7C12.4 5.1 13.4 4.5 14.8 4.5C17.5 4.5 20 6.6 20 9.8C20 15.5 12 21 12 21Z"/>` },
   { num: 5, label: "Unmonitored", color: "var(--orange)", icon: `<circle cx="12" cy="12" r="9"/><path d="M12 8v4"/><path d="M12 16h.01"/>` },
   { num: 1, label: "Paused", color: "var(--gray)", icon: `<rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/>` },
   { num: 2, label: "Discontinued", color: "var(--orange)", icon: `<circle cx="12" cy="12" r="9"/><path d="M15 9l-6 6"/><path d="M9 9l6 6"/>` },
