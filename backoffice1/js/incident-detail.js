@@ -1,7 +1,7 @@
 /* ---------------- Incident Detail page ----------------
    Deep dive for a single system-generated Incident: Overview -> Impact ->
    Timeline -> Root Cause -> Resolution. Reached from the Incidents tab's
-   Incident ID link (?id=INC-2026-0042). Priority/Status/Owner are changed
+   Incident ID link (?id=INC-000140). Priority/Status/Owner are changed
    from the Incidents list page's row menu, not from this page -- this page
    is read-only except for creating Support Tasks. */
 initBoSelects();
@@ -22,10 +22,8 @@ function renderIncidentSummary() {
   document.getElementById("incDetailDetected").textContent = currentIncident.detectedAt;
   document.getElementById("incDetailPriorityKv").innerHTML = incPriorityPill(currentIncident.priority);
   document.getElementById("incDetailStatusKv").innerHTML = incStatusPill(currentIncident.status);
-  document.getElementById("incDetailSource").textContent = currentIncident.source;
-  document.getElementById("incDetailRelatedTicket").innerHTML = (currentIncident.relatedTickets && currentIncident.relatedTickets.length)
-    ? currentIncident.relatedTickets.map((t) => `<a class="bo-name-link" href="${incTicketHref(t)}">${t.ticketNo}</a>`).join(`<span class="bo-related-tickets-sep">,</span>`)
-    : "—";
+  document.getElementById("incDetailCategory").textContent = currentIncident.category;
+  document.getElementById("incDetailIssueType").textContent = incIssueType(currentIncident);
 }
 
 function renderIncidentImpact() {

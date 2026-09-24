@@ -26,6 +26,7 @@ document.getElementById("ticketCategoryFilterMenu").innerHTML = buildFilterSelec
 document.getElementById("ticketIssueFilterMenu").innerHTML = buildFilterSelectOptions(ISSUE_TYPES, "All issue types");
 document.getElementById("ticketOriginFilterMenu").innerHTML = buildFilterSelectOptions(ORIGINS, "All origins");
 document.getElementById("ticketTypeFilterMenu").innerHTML = buildFilterSelectOptions(TICKET_TYPES, "All types");
+document.getElementById("ticketLevelFilterMenu").innerHTML = buildFilterSelectOptions(TIERS, "All levels");
 document.getElementById("ticketAssignedToFilterMenu").innerHTML = `
       <div class="bo-select-option" data-value="">All agents
         <svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -41,9 +42,9 @@ const allTickets = [...patientTickets, ...clinicTickets];
 
 /* ---------------- Tickets KPI row ---------------- */
 function renderTicketKpis() {
+  document.getElementById("ticketKpiTotal").textContent = allTickets.length;
   document.getElementById("ticketKpiOpen").textContent = allTickets.filter((t) => t.status === "Open").length;
   document.getElementById("ticketKpiInProgress").textContent = allTickets.filter((t) => t.status === "In Progress").length;
-  document.getElementById("ticketKpiCritical").textContent = allTickets.filter((t) => t.priority === "Critical").length;
   document.getElementById("ticketKpiResolved").textContent = allTickets.filter((t) => t.status === "Resolved").length;
 }
 renderTicketKpis();
@@ -58,6 +59,7 @@ let ticketIssueValue = "";
 let ticketOriginValue = "";
 let ticketTypeValue = "";
 let ticketAssignedToValue = "";
+let ticketLevelValue = "";
 let ticketSearchTerm = "";
 
 /* Deep link: ?issueType=<Issue Type>&category=<Category>&type=<Type>&assignedTo=<Agent Name>&q=<search text>
@@ -118,6 +120,7 @@ function matchesFilters(t, extraSearchable) {
   if (ticketOriginValue && t.origin !== ticketOriginValue) return false;
   if (ticketTypeValue && t.type !== ticketTypeValue) return false;
   if (ticketAssignedToValue && t.assignedTo !== ticketAssignedToValue) return false;
+  if (ticketLevelValue && t.tier !== ticketLevelValue) return false;
   if (ticketSearchTerm) {
     const haystack = `${t.ticketNo} ${t.organization} ${extraSearchable}`.toLowerCase();
     if (!haystack.includes(ticketSearchTerm)) return false;
@@ -126,7 +129,7 @@ function matchesFilters(t, extraSearchable) {
 }
 
 /* ---------------- Tickets table ---------------- */
-const PAGE_SIZE = 8;
+const PAGE_SIZE = 10;
 
 /* createdDate is "DD/MM/YYYY HH:mm" -- parse to an actual timestamp so
    sorting is chronological rather than a lexicographic string compare
@@ -161,7 +164,7 @@ const ticketPager = boCreatePager(
       <td>${priorityPill(t.priority)}</td>
       <td>${statusPill(t.status)}</td>
       <td>${t.assignedTo || "&mdash;"}</td>
-      <td>${t.createdDate}</td>
+      <td>${formatTicketCreated(t.createdDate)}</td>
       <td>
         <div class="bo-row-actions">
           <button class="bo-action-icon row-menu-trigger" data-source="${t.source}" data-id="${t.id}" aria-label="Row actions">${ticketKebabIcon}</button>
@@ -199,6 +202,9 @@ document.getElementById("ticketTypeFilter").addEventListener("change", (e) => {
 document.getElementById("ticketAssignedToFilter").addEventListener("change", (e) => {
   ticketAssignedToValue = e.target.value;
 });
+document.getElementById("ticketLevelFilter").addEventListener("change", (e) => {
+  ticketLevelValue = e.target.value;
+});
 document.getElementById("ticketSearchInput").addEventListener("input", (e) => {
   ticketSearchTerm = e.target.value.trim().toLowerCase();
 });
@@ -215,8 +221,10 @@ document.getElementById("ticketClearFiltersBtn").addEventListener("click", () =>
   ticketOriginValue = "";
   ticketTypeValue = "";
   ticketAssignedToValue = "";
+  ticketLevelValue = "";
   ticketSearchTerm = "";
 
+  resetBoSelect(document.querySelector('.bo-select[data-name="ticketTier"]'));
   resetBoSelect(document.querySelector('.bo-select[data-name="ticketStatus"]'));
   resetBoSelect(document.querySelector('.bo-select[data-name="ticketPriority"]'));
   resetBoSelect(document.querySelector('.bo-select[data-name="ticketCategory"]'));
@@ -466,17 +474,19 @@ newTicketForm.addEventListener("submit", (e) => {
 const channelPillLabel = { "Notification": "In App", "Email": "Email", "SMS": "SMS" };
 const channelPills = (channels) => channels.map((c) => channelPillLabel[c] || c).join(", ");
 
-function renderRules() {
-  document.getElementById("ruleRows").innerHTML = alertRules
-    .map(
-      (r) => `
+const ruleSla = (r) => (r.slaResponse || r.slaResolve ? `${r.slaResponse || "—"} / ${r.slaResolve || "—"}` : "&mdash;");
+
+const renderRules = boCreatePager(
+  "ruleRows",
+  () => alertRules,
+  (r) => `
       <tr>
-        <td><b>${r.name}</b></td>
-        <td>${r.category}</td>
-        <td>${r.condition}</td>
+        <td><span class="bo-rule-truncate" title="${r.name}">${r.name}</span></td>
+        <td>${categoryPill(r)}</td>
+        <td><span class="bo-rule-truncate bo-rule-truncate--wide" title="${r.condition}">${r.condition}</span></td>
         <td>${priorityPill(r.priority)}</td>
         <td>${tierPill(r.tier)}</td>
-        <td>${r.slaResponse} / ${r.slaResolve}</td>
+        <td>${ruleSla(r)}</td>
         <td>${channelPills(r.channels)}</td>
         <td>${r.appliesTo}</td>
         <td>
@@ -484,10 +494,9 @@ function renderRules() {
             <button class="bo-action-icon row-menu-trigger" data-id="${r.id}" aria-label="Row actions">${ticketKebabIcon}</button>
           </div>
         </td>
-      </tr>`
-    )
-    .join("");
-}
+      </tr>`,
+  { pageSize: 10, emptyColspan: 9, emptyText: "No rules yet." }
+);
 renderRules();
 
 document.querySelector('#ruleDrawerOverlay .bo-select[data-name="rulePriority"] .bo-select-menu').innerHTML = buildSelectOptions(PRIORITIES);

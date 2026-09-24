@@ -4942,7 +4942,56 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
 .bo-pill-incident-resolved { color: var(--green-text); }
 
 .bo-incident-title { font-weight: 700; color: var(--ink); }
-.bo-incident-source-label { display: block; font-size: 11.5px; color: var(--gray-text); margin-top: 2px; font-weight: 500; }
+
+/* Incidents table: ID reads as plain text (still links to the detail page),
+   Category is a filled gray tag, Priority is plain colored text. */
+.bo-incident-id-link { color: var(--ink); text-decoration: none; }
+.bo-incident-id-link:hover { text-decoration: underline; }
+.bo-incident-category-tag {
+  display: inline-block;
+  background: #E4E4E4;
+  color: var(--ink);
+  border-radius: 6px;
+  padding: 3px 11px;
+  font-size: 12.5px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+/* Rules table: long rule names/conditions truncate with an ellipsis (full
+   text on hover) so every row stays one line. */
+.bo-rule-truncate {
+  display: inline-block;
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+.bo-rule-truncate--wide { max-width: 320px; }
+
+/* Tickets table: Category and Level as filled gray tags, Priority as plain
+   colored text -- same treatment as the developed Tickets list. */
+#ticketRows .bo-pill-tag,
+#ticketRows .bo-pill-tier,
+#ruleRows .bo-pill-tag,
+#ruleRows .bo-pill-tier {
+  background: #E4E4E4;
+  border: none;
+  color: var(--ink);
+  border-radius: 6px;
+  padding: 3px 11px;
+}
+#ticketRows .bo-pill[class*="bo-pill-severity-"],
+#ruleRows .bo-pill[class*="bo-pill-severity-"],
+#ticketDetailPriorityKv .bo-pill[class*="bo-pill-severity-"],
+#incidentRows .bo-pill[class*="bo-pill-severity-"],
+#incDetailPriorityKv .bo-pill[class*="bo-pill-severity-"] {
+  display: inline;
+  background: none;
+  padding: 0;
+  border-radius: 0;
+  font-weight: 700;
+}
 
 .bo-related-ticket-link {
   display: inline-flex;
@@ -4968,8 +5017,8 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
   padding: 0;
   font-family: inherit;
   font-size: 13.5px;
-  font-weight: 600;
-  color: var(--blue-text);
+  font-weight: 500;
+  color: var(--ink);
   cursor: pointer;
   text-align: left;
 }

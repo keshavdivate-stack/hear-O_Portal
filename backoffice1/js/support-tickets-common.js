@@ -12,7 +12,19 @@ const typePillClass = { "Patient": "bo-pill-type-patient", "Clinic": "bo-pill-ty
 const statusPill = (s) => `<span class="bo-pill ${statusPillClass[s] || ""}">${s}</span>`;
 const priorityPill = (p) => `<span class="bo-pill ${priorityPillClass[p] || ""}">${p}</span>`;
 const tierPill = (t) => `<span class="bo-pill bo-pill-tier">${t}</span>`;
-const originPill = (o) => `<span class="bo-pill ${originPillClass[o] || ""}">${o}</span>`;
+const originLabel = { "Backoffice": "Back Office" };
+
+/* createdDate is stored "DD/MM/YYYY HH:mm"; shown as "MM/DD/YYYY, hh:mm AM"
+   in the Tickets list and Ticket Info to match the developed app. */
+function formatTicketCreated(s) {
+  const [datePart, timePart] = s.split(" ");
+  const [day, month, year] = datePart.split("/");
+  const [h, m] = (timePart || "00:00").split(":").map(Number);
+  const suffix = h >= 12 ? "PM" : "AM";
+  const h12 = h % 12 || 12;
+  return `${month}/${day}/${year}, ${String(h12).padStart(2, "0")}:${String(m).padStart(2, "0")} ${suffix}`;
+}
+const originPill = (o) => `<span class="bo-pill ${originPillClass[o] || ""}">${originLabel[o] || o}</span>`;
 const typePill = (s) => `<span class="bo-pill ${typePillClass[s] || ""}">${s}</span>`;
 /* Category is a classification/routing field, not an urgency indicator --
    rendered as a neutral tag so it doesn't visually compete with the

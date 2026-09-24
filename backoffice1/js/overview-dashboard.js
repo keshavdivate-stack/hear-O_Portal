@@ -251,11 +251,11 @@ renderOvTrendFooter();
    three disconnected numbers. Org/patient counts and "started" times are
    read from the real per-org records rather than invented separately. */
 const ovCritIssues = [
-  { title: "Compliance drops", desc: "Active-patient compliance falling below threshold", severity: "Critical", started: "2 hrs ago", orgs: 1, patients: 3, color: "var(--maroon)", category: "Compliance", incidentId: "INC-2026-0044" },
-  { title: "Voice engine errors", desc: "High error rate in voice processing", severity: "Critical", started: "20 min ago", orgs: 1, patients: 2, color: "var(--maroon)", category: "Voice Engine", incidentId: "INC-2026-0043" },
-  { title: "Missing run: Billing Calc", desc: "The Billing Calc job did not run yesterday", severity: "High", started: "3 hrs ago", orgs: 2, patients: 3, color: "var(--orange)", category: "System Schedule Engine", incidentId: "INC-2026-0046" },
-  { title: "Sensor data delays", desc: "Sensor data delayed or missing", severity: "Medium", started: "6 hrs ago", orgs: 3, patients: 3, color: "var(--yellow)", category: "Sensors", incidentId: "INC-2026-0041" },
-  { title: "Patients stuck in Registered", desc: "Patients have been stuck in Registered status longer than expected", severity: "Low", started: "1 day ago", orgs: 1, patients: 1, color: "var(--gray)", category: "Patient (Mobile/Web)", incidentId: "INC-2026-0045" },
+  { title: "Compliance drops", desc: "Active-patient compliance falling below threshold", severity: "Critical", started: "2 hrs ago", orgs: 1, patients: 3, color: "var(--maroon)", category: "Compliance", incidentId: "INC-000137" },
+  { title: "Voice engine errors", desc: "High error rate in voice processing", severity: "Critical", started: "20 min ago", orgs: 1, patients: 2, color: "var(--maroon)", category: "Voice Engine", incidentId: "INC-000139" },
+  { title: "Missing run: Billing Calc", desc: "The Billing Calc job did not run yesterday", severity: "High", started: "3 hrs ago", orgs: 2, patients: 3, color: "var(--orange)", category: "System Schedule Engine", incidentId: "INC-000138" },
+  { title: "Sensor data delays", desc: "Sensor data delayed or missing", severity: "Medium", started: "6 hrs ago", orgs: 3, patients: 3, color: "var(--yellow)", category: "Sensors", incidentId: "INC-000136" },
+  { title: "Patients stuck in Registered", desc: "Patients have been stuck in Registered status longer than expected", severity: "Low", started: "1 day ago", orgs: 1, patients: 1, color: "var(--gray)", category: "Patient (Mobile/Web)", incidentId: "INC-000135" },
 ];
 
 const ovSeverityPillClass = { Critical: "critical", High: "high", Medium: "medium", Low: "low" };

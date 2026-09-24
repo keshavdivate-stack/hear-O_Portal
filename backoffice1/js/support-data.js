@@ -248,13 +248,39 @@ topUpTickets(clinicTickets, "clinic", "Open", 32, 144);
 /* ---------------- Alert rules (Rules tab) ---------------- */
 const RULE_CHANNELS = ["Notification", "Email", "SMS"];
 
+/* One rule per system-health alarm, matching the developed Rules list:
+   no SLA set yet ("—"), In App channel only, applies to all organisations. */
 const alertRules = [
-  { id: 0, name: "Missing sensor data", category: "Sensors", condition: "No sensor data for ≥ 3 consecutive days", priority: "High", tier: "Level 2", slaResponse: "2h", slaResolve: "24h", channels: ["Notification", "Email"], autoCreateTicket: true, appliesTo: "All Commercial orgs" },
-  { id: 1, name: "Recording failure", category: "Voice Engine", condition: "≥ 3 failed sessions in 24h for one patient", priority: "Medium", tier: "Level 1", slaResponse: "8h", slaResolve: "3d", channels: ["Notification"], autoCreateTicket: false, appliesTo: "All organizations" },
-  { id: 2, name: "Compliance drop", category: "Compliance", condition: "Patient compliance < 60% over 14 days", priority: "High", tier: "Level 1", slaResponse: "2h", slaResolve: "24h", channels: ["Notification", "Email"], autoCreateTicket: true, appliesTo: "All Commercial orgs" },
-  { id: 3, name: "Health permission off", category: "Patient (Mobile/Web)", condition: "HealthKit / Health Connect permission revoked", priority: "Medium", tier: "Level 1", slaResponse: "8h", slaResolve: "3d", channels: ["Notification"], autoCreateTicket: false, appliesTo: "All organizations" },
-  { id: 4, name: "Voice engine degradation", category: "Voice Engine", condition: "ASR error rate > 10% over 2h", priority: "Critical", tier: "Level 2", slaResponse: "30m", slaResolve: "4h", channels: ["Notification", "Email", "SMS"], autoCreateTicket: true, appliesTo: "System-wide" },
-  { id: 5, name: "Sync failure", category: "Patient (Mobile/Web)", condition: "Upload queue stalled > 12h", priority: "High", tier: "Level 2", slaResponse: "2h", slaResolve: "24h", channels: ["Notification", "Email"], autoCreateTicket: true, appliesTo: "System-wide" },
-  { id: 6, name: "EHR connection failure", category: "System Schedule Engine", condition: "FHIR / HL7 endpoint unreachable > 30 min", priority: "Critical", tier: "Level 3", slaResponse: "30m", slaResolve: "4h", channels: ["Notification", "Email", "SMS"], autoCreateTicket: true, appliesTo: "Per organization" },
-  { id: 7, name: "System downtime", category: "System Schedule Engine", condition: "Availability below SLO beyond allowed limit", priority: "Critical", tier: "Level 3", slaResponse: "15m", slaResolve: "2h", channels: ["Notification", "Email", "SMS"], autoCreateTicket: true, appliesTo: "System-wide" },
-];
+  ["Total compliance below 60%", "Compliance", "Total compliance across active patients below 60%", "High", "Level 2"],
+  ["Total usable compliance below 60%", "Compliance", "Total usable compliance across active patients below 60%", "High", "Level 2"],
+  ["Organization compliance below 60%", "Compliance", "Total compliance for an organization below 60%", "High", "Level 2"],
+  ["Organization usable compliance below 60%", "Compliance", "Total usable compliance for an organization below 60%", "High", "Level 2"],
+  ["Signed in but not uploaded above 5%", "Compliance", "More than 5% of patients signed in yesterday but did not upload a recording", "Medium", "Level 1"],
+  ["Smart merger mismatch", "Voice Engine", "Active patients without smart merger results", "High", "Level 2"],
+  ["ASR results missing", "Voice Engine", "Not all recordings have ASR results", "High", "Level 2"],
+  ["Algo results missing", "Voice Engine", "Valid ASR recordings missing breath, transcription or feature results", "High", "Level 2"],
+  ["Track results missing", "Voice Engine", "Active patients missing track extractor, graph or feature results", "High", "Level 2"],
+  ["Sensors not uploaded", "Sensors", "Patients signed in but uploaded no sensor data", "Medium", "Level 1"],
+  ["Sensor metrics below threshold", "Sensors", "Patient sensor metrics below the configured threshold", "Medium", "Level 1"],
+  ["Measurements not entered", "Sensors", "Active patients with no measurements entered for 3 days", "Medium", "Level 1"],
+  ["Medication not logged", "Patient (Mobile/Web)", "Active patients with no medication logged for 3 days", "Medium", "Level 1"],
+  ["Clinical questions not answered", "Patient (Mobile/Web)", "Active patients who did not answer clinical questions for 3 days", "Medium", "Level 1"],
+  ["Language changed in app", "Patient (Mobile/Web)", "Patient changed the app language", "Low", "Level 1"],
+  ["Stuck in baseline", "Patient (Mobile/Web)", "Patients in Baseline status longer than expected", "Medium", "Level 1"],
+  ["Stuck in registered", "Patient (Mobile/Web)", "Patients in Registered status longer than expected", "Medium", "Level 1"],
+  ["Stuck in priority", "Patient (Mobile/Web)", "Patients in Priority status longer than expected", "Medium", "Level 1"],
+  ["Missing priority status", "Patient (Mobile/Web)", "Active patients without a priority status", "Medium", "Level 1"],
+  ["Paused too long", "Patient (Mobile/Web)", "Patients paused longer than the allowed period", "Medium", "Level 1"],
+  ["Unmonitored too long", "Patient (Mobile/Web)", "Patients unmonitored longer than the allowed period", "Medium", "Level 1"],
+  ["Missing run: Baseline Completed Engine", "System Schedule Engine", "Baseline Completed Engine did not run in the last 24 hours", "High", "Level 2"],
+  ["Missing run: Start Date Engine", "System Schedule Engine", "Start Date Engine did not run in the last 24 hours", "High", "Level 2"],
+  ["Missing run: Billing Calc", "System Schedule Engine", "Billing Calc did not run in the last 24 hours", "High", "Level 2"],
+  ["Missing run: Insufficient Recalculate", "System Schedule Engine", "Insufficient Recalculate did not run in the last 24 hours", "High", "Level 2"],
+  ["Missing run: Is Valid Engine", "System Schedule Engine", "Is Valid Engine did not run in the last 24 hours", "High", "Level 2"],
+].map(([name, category, condition, priority, tier], id) => ({
+  id, name, category, condition, priority, tier,
+  slaResponse: "", slaResolve: "",
+  channels: ["Notification"],
+  autoCreateTicket: false,
+  appliesTo: "All organisations",
+}));

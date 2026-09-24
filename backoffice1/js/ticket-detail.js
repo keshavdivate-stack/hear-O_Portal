@@ -125,12 +125,10 @@ function renderTicketInfo() {
   document.getElementById("ticketDetailSource").textContent = currentSource === "patient" ? "Patient" : "Clinic";
   document.getElementById("ticketDetailStatusKv").innerHTML = statusPill(currentTicket.status);
   document.getElementById("ticketDetailPriorityKv").innerHTML = priorityPill(currentTicket.priority);
-  document.getElementById("ticketDetailWhoLabel").textContent = currentSource === "patient" ? "Username" : "Clinic User";
   document.getElementById("ticketDetailWho").textContent = currentSource === "patient" ? currentTicket.patientId : currentTicket.raisedBy;
   document.getElementById("ticketDetailOrg").textContent = currentTicket.organization;
-  document.getElementById("ticketDetailOrigin").textContent = currentTicket.origin;
-  document.getElementById("ticketDetailScope").textContent = currentTicket.scope;
-  document.getElementById("ticketDetailCreated").textContent = currentTicket.createdDate;
+  document.getElementById("ticketDetailOrigin").textContent = originLabel[currentTicket.origin] || currentTicket.origin;
+  document.getElementById("ticketDetailCreated").textContent = formatTicketCreated(currentTicket.createdDate);
   document.getElementById("ticketDetailIssueType").textContent = currentTicket.issueType;
   document.getElementById("ticketDetailCategory").textContent = ticketCategory(currentTicket) || "—";
   document.getElementById("ticketDetailDescription").textContent = currentTicket.description;

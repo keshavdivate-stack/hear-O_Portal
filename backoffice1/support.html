@@ -159,16 +159,16 @@
 
       <div class="bo-incident-kpi-grid">
         <div class="bo-incident-kpi-card">
+          <span class="bo-incident-kpi-label">Total Tickets</span>
+          <span class="bo-incident-kpi-value" id="ticketKpiTotal">—</span>
+        </div>
+        <div class="bo-incident-kpi-card">
           <span class="bo-incident-kpi-label">Open Tickets</span>
-          <span class="bo-incident-kpi-value" id="ticketKpiOpen">â€”</span>
+          <span class="bo-incident-kpi-value" id="ticketKpiOpen">—</span>
         </div>
         <div class="bo-incident-kpi-card">
           <span class="bo-incident-kpi-label">In Progress</span>
-          <span class="bo-incident-kpi-value" id="ticketKpiInProgress">â€”</span>
-        </div>
-        <div class="bo-incident-kpi-card">
-          <span class="bo-incident-kpi-label">Critical Priority</span>
-          <span class="bo-incident-kpi-value" id="ticketKpiCritical">â€”</span>
+          <span class="bo-incident-kpi-value" id="ticketKpiInProgress">—</span>
         </div>
         <div class="bo-incident-kpi-card">
           <span class="bo-incident-kpi-label">Resolved</span>
@@ -229,6 +229,14 @@
         <div class="bo-select-menu" id="ticketOriginFilterMenu"></div>
         <input type="hidden" id="ticketOriginFilter" />
       </div>
+      <div class="bo-select bo-toolbar-select" data-name="ticketTier">
+        <button type="button" class="bo-select-trigger">
+          <span class="bo-select-value placeholder">Level</span>
+          <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="bo-select-menu" id="ticketLevelFilterMenu"></div>
+        <input type="hidden" id="ticketLevelFilter" />
+      </div>
       <div class="bo-select bo-toolbar-select" data-name="ticketAssignedTo">
         <button type="button" class="bo-select-trigger">
           <span class="bo-select-value placeholder">Assigned to</span>
@@ -249,7 +257,7 @@
                 <th>TICKET ID</th>
                 <th>ORGANIZATION</th>
                 <th>TYPE</th>
-                <th>USERNAME</th>
+                <th>CREATED FOR</th>
                 <th>CATEGORY</th>
                 <th>ISSUE TYPE</th>
                 <th>ORIGIN</th>

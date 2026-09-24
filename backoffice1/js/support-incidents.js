@@ -20,13 +20,19 @@ let incOwnerValue = "";
 let incDateValue = "";
 let incSearchTerm = "";
 
+/* Date input yields YYYY-MM-DD; detectedAt is stored as MM/DD/YYYY, hh:mm AM. */
+function incDateToDisplay(value) {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
+  return m ? `${m[2]}/${m[3]}/${m[1]}` : value;
+}
+
 function incMatchesFilters(incident) {
   if (incStatusValue && incident.status !== incStatusValue) return false;
   if (incPriorityValue && incident.priority !== incPriorityValue) return false;
   if (incSourceValue && incident.source !== incSourceValue) return false;
   if (incCategoryValue && incident.category !== incCategoryValue) return false;
   if (incOwnerValue && incident.owner !== incOwnerValue) return false;
-  if (incDateValue && incident.detectedAt.indexOf(incDateValue) === -1) return false;
+  if (incDateValue && incident.detectedAt.indexOf(incDateToDisplay(incDateValue)) === -1) return false;
   if (incSearchTerm) {
     const haystack = `${incident.id} ${incident.title} ${incident.orgs.join(" ")} ${incident.patients.join(" ")}`.toLowerCase();
     if (!haystack.includes(incSearchTerm)) return false;
@@ -39,17 +45,14 @@ function filteredIncidents() {
 }
 
 /* ---------------- Table ---------------- */
-const INC_PAGE_SIZE = 8;
+const INC_PAGE_SIZE = 10;
 
 function incidentRowHtml(incident) {
   return `
     <tr data-id="${incident.id}">
-      <td><a class="bo-name-link" href="incident-detail.html?id=${encodeURIComponent(incident.id)}">${incident.id}</a></td>
-      <td>
-        <span class="bo-incident-title">${incident.title}</span>
-        <span class="bo-incident-source-label">${incident.source}</span>
-      </td>
-      <td><span class="bo-pill bo-pill-tag">${incident.category}</span></td>
+      <td><a class="bo-incident-id-link" href="incident-detail.html?id=${encodeURIComponent(incident.id)}">${incident.id}</a></td>
+      <td><span class="bo-incident-title">${incident.title}</span></td>
+      <td><span class="bo-incident-category-tag">${incident.category}</span></td>
       <td>${incPriorityPill(incident.priority)}</td>
       <td>${incStatusPill(incident.status)}${incRelatedTicketLink(incident)}</td>
       <td><button type="button" class="bo-impact-link" data-impact-trigger data-id="${incident.id}">${incImpactLabel(incident)}</button></td>
