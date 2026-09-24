@@ -158,7 +158,10 @@
 
   nextBtn.addEventListener("click", () => {
     if (nextBtn.disabled) return;
-    window.location.href = "/Mobile%20app/medication.html";
+    const outcome = new URLSearchParams(window.location.search).get("outcome");
+    window.location.href = outcome === "fail"
+      ? "/Mobile%20app/medication-add-failed.html"
+      : "/Mobile%20app/medication-add-success.html";
   });
 
   check();
