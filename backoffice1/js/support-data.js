@@ -281,6 +281,7 @@ const alertRules = [
   id, name, category, condition, priority, tier,
   slaResponse: "", slaResolve: "",
   channels: ["Notification"],
-  autoCreateTicket: false,
+  operator: "None",
+  autoCreateTicket: true,
   appliesTo: "All organisations",
 }));

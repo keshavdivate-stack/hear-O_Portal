@@ -1,4 +1,3 @@
-const eyeIcon = `<svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M1.5 12C1.5 12 5.5 5 12 5C18.5 5 22.5 12 22.5 12C22.5 12 18.5 19 12 19C5.5 19 1.5 12 1.5 12Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/></svg>`;
 const selectedTypes = new Set();
 const selectedCategories = new Set();
 const selectedIssueTypes = new Set();
@@ -51,7 +50,7 @@ function renderTicketList() {
     .slice(start, start + TICKET_PAGE_SIZE)
     .map(
       (t) => `
-      <tr>
+      <tr class="ticket-row-link" data-id="${t.id}">
         <td><b>${t.ticketId}</b></td>
         <td><span class="ticket-pill ${typeCellClass(t.type)}">${t.type}</span></td>
         <td>${
@@ -67,7 +66,6 @@ function renderTicketList() {
         <td><span class="ticket-pill ${stateCellClass(t.state)}">${t.state}</span></td>
         <td>${t.assignedTo || "&mdash;"}</td>
         <td>${t.created}</td>
-        <td><a class="ticket-view-icon" href="ticket-detail.html?id=${t.id}" aria-label="View">${eyeIcon}</a></td>
       </tr>`
     )
     .join("");
@@ -77,7 +75,7 @@ function renderTicketList() {
   document.getElementById("ticketNextPage").disabled = ticketCurrentPage === totalPages;
   document.getElementById("ticketLastPage").disabled = ticketCurrentPage === totalPages;
   if (!total) {
-    ticketRows.innerHTML = `<tr><td colspan="10" style="text-align:center; color:var(--gray-text); padding:24px;">No tickets match the current filters.</td></tr>`;
+    ticketRows.innerHTML = `<tr><td colspan="9" style="text-align:center; color:var(--gray-text); padding:24px;">No tickets match the current filters.</td></tr>`;
   }
 }
 
@@ -100,6 +98,15 @@ function applyTicketFilters() {
 });
 
 renderTicketList();
+
+/* Clicking anywhere on a ticket row opens that ticket (the row replaces the
+   old Action/eye column). The patient-name link inside the row still goes to
+   the patient's page instead. */
+ticketRows.addEventListener("click", (e) => {
+  if (e.target.closest("a")) return;
+  const row = e.target.closest("tr[data-id]");
+  if (row) location.href = `ticket-detail.html?id=${row.dataset.id}`;
+});
 
 /* ---------------- Filter menu portaling (matches patient-list.js) ---------------- */
 const portaledFilterMenus = new Map();
@@ -250,7 +257,7 @@ const saveCreateTicketBtn = document.getElementById("saveCreateTicket");
 const modalSelect = (name) => document.querySelector(`#createTicketOverlay .custom-select[data-name="${name}"]`);
 const selectValue = (select) => select.querySelector("input[type=hidden]").value;
 const createTicketTypeSelect = modalSelect("type");
-const createTicketForSelect = modalSelect("patient");
+const createTicketForSelect = document.getElementById("createForSearch");
 const createTicketCategorySelect = modalSelect("category");
 const createTicketIssueSelect = modalSelect("issueType");
 const createTicketPrioritySelect = modalSelect("priority");
@@ -281,70 +288,70 @@ function refillSelect(select, options, placeholder, emptyPlaceholder) {
   valueEl.classList.add("placeholder");
 }
 
-/* "Create For" is searchable: a search box pinned at the top of its menu
-   filters options as you type. Patient labels are "Name (ID)", so one match
-   against the label covers searching by name or by patient ID. */
-const createForSearchIcon = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8"/><path d="M21 21L16.5 16.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>`;
+/* "Create For" is a type-to-search field, not a dropdown: matches appear
+   under the input only while there's search text. Patient labels are
+   "Name (ID)", so one match against the label covers name or patient ID.
+   The hidden input only holds a value once a result is actually picked. */
+const createForInput = createTicketForSelect.querySelector(".search-select-input");
+const createForResults = createTicketForSelect.querySelector(".search-select-results");
+const createForHidden = createTicketForSelect.querySelector("input[type=hidden]");
+
+function createForOptions() {
+  return selectValue(createTicketTypeSelect) === "Clinic" ? CLINIC_USERS : TICKET_PATIENTS.map(patientOptionLabel);
+}
 
 function refillCreateFor() {
   const isPatient = selectValue(createTicketTypeSelect) !== "Clinic";
-  refillSelect(
-    createTicketForSelect,
-    isPatient ? TICKET_PATIENTS.map(patientOptionLabel) : CLINIC_USERS,
-    isPatient ? "Search or select patient" : "Search or select user",
-    "Select type first"
-  );
-  const menu = createTicketForSelect.querySelector(".custom-select-menu");
-  menu.insertAdjacentHTML(
-    "afterbegin",
-    `<div class="custom-select-search">${createForSearchIcon}<input type="text" autocomplete="off" placeholder="${isPatient ? "Search by patient name or ID" : "Search by name"}" /></div>`
-  );
-  menu.insertAdjacentHTML("beforeend", `<div class="custom-select-empty" hidden>${isPatient ? "No patients found" : "No users found"}</div>`);
+  createForInput.value = "";
+  createForHidden.value = "";
+  createForInput.placeholder = isPatient ? "Search patient by name or ID" : "Search user by name";
+  createForResults.hidden = true;
 }
 
-function filterCreateForOptions(term) {
-  const q = term.trim().toLowerCase();
-  let visible = 0;
-  createTicketForSelect.querySelectorAll(".custom-select-option").forEach((o) => {
-    const match = !q || o.textContent.toLowerCase().includes(q);
-    o.hidden = !match;
-    if (match) visible++;
-  });
-  createTicketForSelect.querySelector(".custom-select-empty").hidden = visible > 0;
+function renderCreateForResults() {
+  const q = createForInput.value.trim().toLowerCase();
+  if (!q) { createForResults.hidden = true; return; }
+  const matches = createForOptions().filter((label) => label.toLowerCase().includes(q));
+  const isPatient = selectValue(createTicketTypeSelect) !== "Clinic";
+  createForResults.innerHTML = matches.length
+    ? matches.map((label) => `<div class="search-select-result" data-value="${label}">${label}</div>`).join("")
+    : `<div class="search-select-empty">${isPatient ? "No patients found" : "No users found"}</div>`;
+  createForResults.hidden = false;
 }
 
-/* Opening the menu clears any previous search and focuses the box. */
-createTicketForSelect.querySelector(".custom-select-trigger").addEventListener("click", () => {
-  const input = createTicketForSelect.querySelector(".custom-select-search input");
-  if (!input || !createTicketForSelect.classList.contains("open")) return;
-  input.value = "";
-  filterCreateForOptions("");
-  input.focus();
-});
+function pickCreateFor(label) {
+  createForInput.value = label;
+  createForHidden.value = label;
+  createForResults.hidden = true;
+}
 
-createTicketForSelect.addEventListener("click", (e) => {
-  if (e.target.closest(".custom-select-search")) e.stopPropagation();
-});
-createTicketForSelect.addEventListener("input", (e) => {
-  if (!e.target.closest(".custom-select-search")) return;
+createForInput.addEventListener("input", (e) => {
   e.stopPropagation();
-  filterCreateForOptions(e.target.value);
+  createForHidden.value = "";
+  renderCreateForResults();
 });
-/* Enter picks the first match; Escape closes the menu. */
-createTicketForSelect.addEventListener("keydown", (e) => {
-  if (!e.target.closest(".custom-select-search")) return;
+createForInput.addEventListener("keydown", (e) => {
   if (e.key === "Enter") {
     e.preventDefault();
-    const first = [...createTicketForSelect.querySelectorAll(".custom-select-option")].find((o) => !o.hidden);
-    if (first) {
-      setCustomSelectValue(createTicketForSelect, first.dataset.value);
-      createTicketForSelect.classList.remove("open");
-    }
+    const first = createForResults.querySelector(".search-select-result");
+    if (!createForResults.hidden && first) pickCreateFor(first.dataset.value);
   } else if (e.key === "Escape") {
-    createTicketForSelect.classList.remove("open");
+    createForResults.hidden = true;
   }
 });
-
+/* mousedown (not click) so the pick lands before the input's blur hides the list. */
+createForResults.addEventListener("mousedown", (e) => {
+  const result = e.target.closest(".search-select-result");
+  if (!result) return;
+  e.preventDefault();
+  pickCreateFor(result.dataset.value);
+});
+/* Leaving the field without picking a result discards the typed text, so
+   Create For is always either empty or an actual patient/user. */
+createForInput.addEventListener("blur", () => {
+  createForResults.hidden = true;
+  if (!createForHidden.value) createForInput.value = "";
+});
 createTicketTypeSelect.querySelector("input[type=hidden]").addEventListener("change", () => {
   refillCreateFor();
   validateCreateTicketForm();

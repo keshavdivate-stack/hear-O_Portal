@@ -17,7 +17,7 @@
   --orange: #F2994A;
   --orange-light: #FEEDDC;
   --yellow: #D9A404;
-  --yellow-light: #FEF8DC;
+  --yellow-light: #FFFBE8;
   --cyan: #7FD3EE;
   --cyan-light: #EAF9FD;
   --purple: #9B7FE8;
@@ -35,7 +35,7 @@
   --red-text: #D92D20;
   --maroon-text: #7A0F2B;
   --orange-text: #C25E00;
-  --yellow-text: #7A5F00;
+  --yellow-text: #CA8A04;
   --purple-text: #6438C2;
   --bg: #F4F7FA;
   --ink: #1B2430;
@@ -4959,6 +4959,16 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
   font-weight: 600;
   white-space: nowrap;
 }
+/* Edit Rule: "THRESHOLD" group label above the Operator field. */
+.bo-rule-section-title {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--gray-text);
+  margin: 22px 0 12px;
+}
+
 /* Rules table: long rule names/conditions truncate with an ellipsis (full
    text on hover) so every row stays one line. */
 .bo-rule-truncate {

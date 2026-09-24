@@ -27,7 +27,7 @@
   --red-text: #D92D20;
   --maroon-text: #7A0F2B;
   --orange-text: #C25E00;
-  --yellow-text: #7A5F00;
+  --yellow-text: #CA8A04;
   --purple-text: #6438C2;
 }
 
@@ -4979,37 +4979,36 @@ label.checkbox-field {
 .custom-select-option:hover { background: var(--bg); }
 .custom-select-option[hidden] { display: none; }
 
-/* Searchable select (New Ticket > Create For): search box stays pinned at
-   the top of the menu while the option list scrolls beneath it. */
-.custom-select-search {
-  position: sticky;
-  top: -6px;
-  margin: -6px -6px 6px;
-  padding: 8px 10px;
+/* Type-to-search field (New Ticket > Create For): a plain text input; the
+   matching results list only appears under it while there's search text. */
+.search-select { position: relative; }
+.search-select-results {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
   background: #fff;
-  border-bottom: 1px solid var(--gray-border);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: var(--gray-text);
-  z-index: 1;
+  border-radius: 10px;
+  box-shadow: 0 14px 34px rgba(20, 30, 50, 0.18);
+  padding: 6px;
+  max-height: 220px;
+  overflow-y: auto;
+  z-index: 30;
 }
-.custom-select-search input {
-  flex: 1;
-  min-width: 0;
-  border: none;
-  outline: none;
-  font-family: inherit;
+.search-select-results[hidden] { display: none; }
+.search-select-result {
+  padding: 10px 12px;
+  border-radius: 7px;
   font-size: 14px;
   color: #23272E;
-  background: transparent;
+  cursor: pointer;
 }
-.custom-select-empty {
+.search-select-result:hover { background: var(--bg); }
+.search-select-empty {
   padding: 10px 12px;
   font-size: 13.5px;
   color: var(--gray-text);
 }
-.custom-select-empty[hidden] { display: none; }
 
 .custom-select-option.selected {
   background: var(--blue-light);
@@ -6904,7 +6903,7 @@ body.patient-discontinued #chatOpenBtn {
 }
 .ticket-pill-severity-critical { background: var(--maroon-light); color: var(--maroon-text); }
 .ticket-pill-severity-high { background: #FEEDDC; color: var(--orange-text); }
-.ticket-pill-severity-medium { background: #FEF8DC; color: var(--yellow-text); }
+.ticket-pill-severity-medium { background: #FFFBE8; color: var(--yellow-text); }
 .ticket-pill-severity-low { background: #F1F3F5; color: var(--gray-text); }
 
 /* Lifecycle state -- plain colored text, no pill/dot. */
@@ -6933,16 +6932,9 @@ body.patient-discontinued #chatOpenBtn {
   text-decoration: none;
 }
 
-.ticket-view-icon {
-  display: inline-flex;
-  align-items: center;
-  color: var(--blue-text);
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-  text-decoration: none;
-}
+/* Support ticket list: the whole row opens the ticket. */
+.ticket-row-link { cursor: pointer; }
+.ticket-row-link:hover td { background: var(--bg); }
 
 .ehr-action-icon {
   display: inline-flex;

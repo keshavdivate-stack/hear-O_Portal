@@ -414,13 +414,8 @@
       <form id="ruleDrawerForm" class="bo-drawer-form">
       <div class="bo-drawer-body">
         <div class="bo-modal-grid">
-          <div class="bo-modal-field full">
-            <label>Condition / threshold:<span class="required-star">*</span></label>
-            <input type="text" id="ruleConditionInput" placeholder="e.g. No sensor data for &ge; 3 consecutive days" />
-          </div>
-
           <div class="bo-modal-field">
-            <label>Priority:<span class="required-star">*</span></label>
+            <label>Priority<span class="required-star">*</span></label>
             <div class="bo-select" data-name="rulePriority">
               <button type="button" class="bo-select-trigger">
                 <span class="bo-select-value placeholder">Priority</span>
@@ -432,7 +427,7 @@
           </div>
 
           <div class="bo-modal-field">
-            <label>Routed level:<span class="required-star">*</span></label>
+            <label>Routed level<span class="required-star">*</span></label>
             <div class="bo-select" data-name="ruleTier">
               <button type="button" class="bo-select-trigger">
                 <span class="bo-select-value placeholder">Level</span>
@@ -443,38 +438,41 @@
             </div>
           </div>
 
-          <div class="bo-modal-field">
-            <label>SLA response:</label>
-            <input type="text" id="ruleSlaResponseInput" placeholder="e.g. 2h" />
-          </div>
-
-          <div class="bo-modal-field">
-            <label>SLA resolve:</label>
-            <input type="text" id="ruleSlaResolveInput" placeholder="e.g. 24h" />
-          </div>
-
           <div class="bo-modal-field full">
-            <label>Channels:<span class="required-star">*</span></label>
-            <div class="bo-checkbox-row">
-              <label class="bo-checkbox-item"><input type="checkbox" name="ruleChannel" value="Notification" /> In App</label>
-              <label class="bo-checkbox-item"><input type="checkbox" name="ruleChannel" value="Email" /> Email</label>
-              <label class="bo-checkbox-item"><input type="checkbox" name="ruleChannel" value="SMS" /> SMS</label>
+            <label>Applies to<span class="required-star">*</span></label>
+            <div class="bo-select" data-name="ruleAppliesTo">
+              <button type="button" class="bo-select-trigger">
+                <span class="bo-select-value placeholder">Applies to</span>
+                <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="bo-select-menu"></div>
+              <input type="hidden" />
             </div>
           </div>
+        </div>
 
+        <div class="bo-rule-section-title">Threshold</div>
+        <div class="bo-modal-grid">
           <div class="bo-modal-field full">
-            <label>Applies to:<span class="required-star">*</span></label>
-            <input type="text" id="ruleAppliesToInput" placeholder="e.g. All organizations" />
+            <label>Operator<span class="required-star">*</span></label>
+            <div class="bo-select" data-name="ruleOperator">
+              <button type="button" class="bo-select-trigger">
+                <span class="bo-select-value placeholder">Operator</span>
+                <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="bo-select-menu"></div>
+              <input type="hidden" />
+            </div>
           </div>
         </div>
 
         <div class="bo-modal-switch-row">
           <div class="bo-switch-field">
+            <span>Auto-create ticket</span>
             <label class="bo-switch">
               <input type="checkbox" id="ruleAutoCreateInput" />
               <span class="bo-switch-track"></span>
             </label>
-            <span>Auto-create ticket</span>
           </div>
         </div>
       </div>

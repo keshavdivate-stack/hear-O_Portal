@@ -28,8 +28,6 @@ function renderIncidentSummary() {
 
 function renderIncidentImpact() {
   document.getElementById("incDetailOrgCount").textContent = currentIncident.orgs.length;
-  document.getElementById("incDetailPatientCount").textContent = currentIncident.patients.length;
-  document.getElementById("incDetailRunsCount").textContent = currentIncident.scheduledRunsAffected;
 }
 
 function renderIncidentTimeline() {
@@ -67,16 +65,6 @@ if (location.hash) {
   const target = document.querySelector(location.hash);
   if (target) setTimeout(() => target.scrollIntoView({ behavior: "smooth", block: "start" }), 50);
 }
-
-/* ---------------- Impact popover triggers ---------------- */
-document.getElementById("incDetailViewOrgsBtn").addEventListener("click", (e) => {
-  e.stopPropagation();
-  incImpactPopover.open(e.currentTarget, currentIncident, "orgs");
-});
-document.getElementById("incDetailViewPatientsBtn").addEventListener("click", (e) => {
-  e.stopPropagation();
-  incImpactPopover.open(e.currentTarget, currentIncident, "patients");
-});
 
 /* ---------------- Create Support Task drawer ---------------- */
 const addTaskOverlay = document.getElementById("addTaskOverlay");

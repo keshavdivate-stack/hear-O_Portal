@@ -502,6 +502,13 @@ renderRules();
 document.querySelector('#ruleDrawerOverlay .bo-select[data-name="rulePriority"] .bo-select-menu').innerHTML = buildSelectOptions(PRIORITIES);
 document.querySelector('#ruleDrawerOverlay .bo-select[data-name="ruleTier"] .bo-select-menu').innerHTML = buildSelectOptions(TIERS);
 
+/* Edit Rule only exposes Priority, Routed level, Applies to, the threshold
+   Operator and Auto-create ticket -- matching the developed Edit Rule form. */
+const RULE_EDIT_APPLIES_TO = ["All organisations", "Commercial organisations", "Study organisations"];
+const RULE_OPERATORS = ["None", "Greater than (>)", "Greater than or equal (≥)", "Less than (<)", "Less than or equal (≤)", "Equal to (=)"];
+document.querySelector('#ruleDrawerOverlay .bo-select[data-name="ruleAppliesTo"] .bo-select-menu').innerHTML = buildSelectOptions(RULE_EDIT_APPLIES_TO);
+document.querySelector('#ruleDrawerOverlay .bo-select[data-name="ruleOperator"] .bo-select-menu').innerHTML = buildSelectOptions(RULE_OPERATORS);
+
 const ruleRowMenu = document.getElementById("ruleRowMenu");
 let activeRuleId = null;
 
@@ -527,18 +534,12 @@ let editingRule = null;
 function openRuleDrawer(rule) {
   editingRule = rule;
   document.getElementById("ruleDrawerTitle").textContent = `Edit Rule — ${rule.name}`;
-  document.getElementById("ruleConditionInput").value = rule.condition;
-  document.getElementById("ruleSlaResponseInput").value = rule.slaResponse;
-  document.getElementById("ruleSlaResolveInput").value = rule.slaResolve;
-  document.getElementById("ruleAppliesToInput").value = rule.appliesTo;
   document.getElementById("ruleAutoCreateInput").checked = rule.autoCreateTicket;
 
   setBoSelectValue(ruleDrawerOverlay.querySelector('.bo-select[data-name="rulePriority"]'), rule.priority, { silent: true });
   setBoSelectValue(ruleDrawerOverlay.querySelector('.bo-select[data-name="ruleTier"]'), rule.tier, { silent: true });
-
-  ruleDrawerForm.querySelectorAll('input[name="ruleChannel"]').forEach((box) => {
-    box.checked = rule.channels.includes(box.value);
-  });
+  setBoSelectValue(ruleDrawerOverlay.querySelector('.bo-select[data-name="ruleAppliesTo"]'), rule.appliesTo, { silent: true });
+  setBoSelectValue(ruleDrawerOverlay.querySelector('.bo-select[data-name="ruleOperator"]'), rule.operator || "None", { silent: true });
 
   ruleDrawerOverlay.classList.add("open");
 }
@@ -566,14 +567,12 @@ ruleDrawerForm.addEventListener("submit", (e) => {
   e.preventDefault();
   if (!editingRule) return;
 
-  editingRule.condition = document.getElementById("ruleConditionInput").value.trim();
-  editingRule.slaResponse = document.getElementById("ruleSlaResponseInput").value.trim();
-  editingRule.slaResolve = document.getElementById("ruleSlaResolveInput").value.trim();
-  editingRule.appliesTo = document.getElementById("ruleAppliesToInput").value.trim();
+  const ruleSelectValue = (name) => ruleDrawerOverlay.querySelector(`.bo-select[data-name="${name}"] input[type=hidden]`).value;
   editingRule.autoCreateTicket = document.getElementById("ruleAutoCreateInput").checked;
-  editingRule.priority = ruleDrawerOverlay.querySelector('.bo-select[data-name="rulePriority"] input[type=hidden]').value || editingRule.priority;
-  editingRule.tier = ruleDrawerOverlay.querySelector('.bo-select[data-name="ruleTier"] input[type=hidden]').value || editingRule.tier;
-  editingRule.channels = Array.from(ruleDrawerForm.querySelectorAll('input[name="ruleChannel"]:checked')).map((b) => b.value);
+  editingRule.priority = ruleSelectValue("rulePriority") || editingRule.priority;
+  editingRule.tier = ruleSelectValue("ruleTier") || editingRule.tier;
+  editingRule.appliesTo = ruleSelectValue("ruleAppliesTo") || editingRule.appliesTo;
+  editingRule.operator = ruleSelectValue("ruleOperator") || "None";
 
   closeRuleDrawer();
   renderRules();
