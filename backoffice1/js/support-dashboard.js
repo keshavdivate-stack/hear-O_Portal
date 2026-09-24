@@ -1,6 +1,5 @@
 /* ---------------- Color lookups ---------------- */
 const priorityColor = { Critical: "var(--maroon)", High: "var(--orange)", Medium: "var(--yellow)", Low: "var(--gray)" };
-const statusColor = { Open: "var(--blue)", "In Progress": "var(--orange)", Resolved: "var(--green)" };
 const typeColor = { Patient: "var(--cyan)", Clinic: "var(--purple)", System: "var(--navy)", Backoffice: "var(--orange)" };
 
 /* "Tickets by Origin" on this dashboard is a different cut than the Patient/Clinic
@@ -231,18 +230,6 @@ function renderDashboard() {
   renderKpis(mine);
   renderQueue(mine);
   renderResolved(mine);
-
-  renderDonut(
-    "supDashStatusDonut",
-    "supDashStatusDonutTotal",
-    "supDashStatusDonutLegend",
-    STATUSES.map((status) => ({
-      label: status,
-      count: mine.filter((t) => t.status === status).length,
-      color: statusColor[status],
-      href: myTicketsHref({ status }),
-    }))
-  );
 
   renderDonut(
     "supDashPriorityDonut",
