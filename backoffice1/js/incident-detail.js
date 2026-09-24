@@ -24,7 +24,6 @@ function renderIncidentSummary() {
   document.getElementById("incDetailStatusKv").innerHTML = incStatusPill(currentIncident.status);
   document.getElementById("incDetailSource").textContent = currentIncident.source;
   document.getElementById("incDetailOwnerKv").textContent = currentIncident.owner;
-  document.getElementById("incDetailDuration").textContent = currentIncident.duration;
   document.getElementById("incDetailRelatedTicket").innerHTML = (currentIncident.relatedTickets && currentIncident.relatedTickets.length)
     ? currentIncident.relatedTickets.map((t) => `<a class="bo-name-link" href="${incTicketHref(t)}">${t.ticketNo}</a>`).join(`<span class="bo-related-tickets-sep">,</span>`)
     : "—";

@@ -53,7 +53,6 @@ function incidentRowHtml(incident) {
       <td>${incPriorityPill(incident.priority)}</td>
       <td>${incStatusPill(incident.status)}${incRelatedTicketLink(incident)}</td>
       <td><button type="button" class="bo-impact-link" data-impact-trigger data-id="${incident.id}">${incImpactLabel(incident)}</button></td>
-      <td>${incident.duration}</td>
       <td>${incident.detectedAt}</td>
       <td>
         <div class="bo-row-actions">
@@ -67,7 +66,7 @@ const incidentPager = boCreatePager(
   "incidentRows",
   () => filteredIncidents(),
   incidentRowHtml,
-  { pageSize: INC_PAGE_SIZE, emptyColspan: 9, emptyText: "No incidents match these filters." }
+  { pageSize: INC_PAGE_SIZE, emptyColspan: 8, emptyText: "No incidents match these filters." }
 );
 incidentPager();
 
