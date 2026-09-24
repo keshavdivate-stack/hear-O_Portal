@@ -177,7 +177,7 @@ let rmScheduleStatusFilter = "";
 let rmScheduleFrequencyFilter = "";
 
 document.getElementById("rmReportTypeFilterMenu").innerHTML = buildFilterSelectOptions(rmReportTypeLabelsInUse(rmSchedules.filter((s) => !s.archived)), "All report types");
-document.getElementById("rmOrgFilterMenu").innerHTML = buildFilterSelectOptions(RM_ORGS, "All organisations");
+document.getElementById("rmOrgFilterMenu").innerHTML = buildFilterSelectOptions(RM_ORGS, "All organizations");
 document.getElementById("rmStatusFilterMenu").innerHTML = buildFilterSelectOptions(RM_STATUSES, "All statuses");
 document.getElementById("rmFrequencyFilterMenu").innerHTML = buildFilterSelectOptions(RM_FREQUENCIES, "All frequencies");
 
@@ -291,7 +291,7 @@ let rmArchivedStatusFilter = "";
 let rmArchivedFrequencyFilter = "";
 
 document.getElementById("rmArchivedReportTypeFilterMenu").innerHTML = buildFilterSelectOptions(rmReportTypeLabelsInUse(rmSchedules.filter((s) => s.archived)), "All report types");
-document.getElementById("rmArchivedOrgFilterMenu").innerHTML = buildFilterSelectOptions(RM_ORGS, "All organisations");
+document.getElementById("rmArchivedOrgFilterMenu").innerHTML = buildFilterSelectOptions(RM_ORGS, "All organizations");
 document.getElementById("rmArchivedStatusFilterMenu").innerHTML = buildFilterSelectOptions(RM_STATUSES, "All statuses");
 document.getElementById("rmArchivedFrequencyFilterMenu").innerHTML = buildFilterSelectOptions(RM_FREQUENCIES, "All frequencies");
 
@@ -390,7 +390,7 @@ let rmHistStatusFilter = "";
 const RM_HISTORY_STATUS_OPTIONS = ["Delivered", "Failed", "Partial"];
 
 document.getElementById("rmHistReportFilterMenu").innerHTML = buildFilterSelectOptions(RM_REPORTS.map((r) => r.label), "All reports");
-document.getElementById("rmHistOrgFilterMenu").innerHTML = buildFilterSelectOptions(RM_ORGS, "All organisations");
+document.getElementById("rmHistOrgFilterMenu").innerHTML = buildFilterSelectOptions(RM_ORGS, "All organizations");
 document.getElementById("rmHistStatusFilterMenu").innerHTML = buildFilterSelectOptions(RM_HISTORY_STATUS_OPTIONS, "All statuses");
 
 function rmHistRecordDate(h) {

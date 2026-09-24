@@ -67,7 +67,7 @@ function createReportTable({ pageSize, tbodyId, rangeId, prevId, nextId, selectA
   };
 }
 
-/* Only show the Organisation filter when the logged-in manager has access to
+/* Only show the Organization filter when the logged-in manager has access to
    more than one clinic (this app's org-switcher already implies that). */
 const CLINIC_MANAGER_MULTI_ORG = true;
 
@@ -503,7 +503,7 @@ function describePatientFilters() {
   if (patientFilters.acct) parts.push(`Account Status = ${patientFilters.acct}`);
   if (patientFilters.clin) parts.push(`Clinical Status = ${cap(patientFilters.clin)}`);
   if (patientFilters.mon) parts.push(`Monitoring = ${patientFilters.mon === "monitored" ? "Monitoring" : "Unmonitored"}`);
-  if (patientFilters.org) parts.push(`Organisation = ${patientFilters.org}`);
+  if (patientFilters.org) parts.push(`Organization = ${patientFilters.org}`);
   if (patientFilters.search) parts.push(`Search = "${patientFilters.search}"`);
   if (patientFilters.from) parts.push(`From ${fmtDate(patientFilters.from)}`);
   if (patientFilters.to) parts.push(`To ${fmtDate(patientFilters.to)}`);

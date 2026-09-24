@@ -3,7 +3,7 @@ const priorityColor = { Critical: "var(--maroon)", High: "var(--orange)", Medium
 const statusColor = { Open: "var(--blue)", "In Progress": "var(--orange)", Resolved: "var(--green)" };
 const typeColor = { Patient: "var(--cyan)", Clinic: "var(--purple)", System: "var(--navy)", Backoffice: "var(--orange)" };
 
-/* "Tickets by Type" on this dashboard is a different cut than the Patient/Clinic
+/* "Tickets by Origin" on this dashboard is a different cut than the Patient/Clinic
    Type filter on the main Support ticket list: a ticket raised automatically or
    opened directly by a backoffice agent is bucketed under that instead of
    Patient/Clinic, even though it's still "about" a patient or a clinic --
@@ -286,11 +286,32 @@ function renderDashboard() {
 /* ---------------- Agent switcher ----------------
    Stands in for "the logged-in user" -- picking a name re-scopes every
    section above to that agent's own tickets. */
+const supDashAgentSelect = document.querySelector('.bo-select[data-name="supDashAgent"]');
+const supDashLevelSelect = document.querySelector('.bo-select[data-name="supDashLevel"]');
+
+function agentsForLevel(level) {
+  return level ? TIER_AGENTS[level] || [] : SUPPORT_AGENTS;
+}
+
+document.getElementById("supDashLevelMenu").innerHTML = buildFilterSelectOptions(TIERS, "All levels");
 document.getElementById("supDashAgentMenu").innerHTML = buildAgentSelectOptions(SUPPORT_AGENTS);
 initBoSelects();
-setBoSelectValue(document.querySelector('.bo-select[data-name="supDashAgent"]'), currentAgent, { silent: true });
+setBoSelectValue(supDashLevelSelect, AGENT_LEVEL[currentAgent] || "", { silent: true });
+document.getElementById("supDashAgentMenu").innerHTML = buildAgentSelectOptions(agentsForLevel(AGENT_LEVEL[currentAgent]));
+setBoSelectValue(supDashAgentSelect, currentAgent, { silent: true });
+
+/* Picking a level narrows the agent list to that tier's team; if the agent
+   currently being viewed isn't on it, switch to the tier's first agent. */
+document.getElementById("supDashLevelFilter").addEventListener("change", (e) => {
+  const agents = agentsForLevel(e.target.value);
+  document.getElementById("supDashAgentMenu").innerHTML = buildAgentSelectOptions(agents);
+  if (!agents.includes(currentAgent)) currentAgent = agents[0];
+  setBoSelectValue(supDashAgentSelect, currentAgent, { silent: true });
+  renderDashboard();
+});
+
 document.getElementById("supDashAgentFilter").addEventListener("change", (e) => {
-  currentAgent = e.target.value || SUPPORT_AGENTS[0];
+  currentAgent = e.target.value || agentsForLevel(document.getElementById("supDashLevelFilter").value)[0];
   renderDashboard();
 });
 

@@ -259,7 +259,7 @@ function renderForOrg(orgIds) {
   renderMktBins(activeMktBinsTab);
 
   // These two counters are no longer on the page; skip them rather than throw,
-  // since a throw here aborts the script before the Organisation Type filter is drawn.
+  // since a throw here aborts the script before the Organization Type filter is drawn.
   const sitesEl = document.getElementById("mktSitesEnrolled");
   if (sitesEl) sitesEl.textContent = isAll ? mktStudyHeadBase.sites : orgIds.length;
   const attentionEl = document.getElementById("mktNeedAttention");

@@ -3,7 +3,7 @@
    - Report    = the content being generated (e.g. Missed Recordings).
    - Schedule  = an automated delivery config for a report. One row = one
      schedule (a report can have multiple schedules, e.g. two cadences for
-     two organisations).
+     two organizations).
    - History   = a record of a report that was actually generated and sent,
      whether by schedule or by a one-time Send Report action. */
 

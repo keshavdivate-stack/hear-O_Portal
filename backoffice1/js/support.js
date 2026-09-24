@@ -571,7 +571,7 @@ ruleDrawerForm.addEventListener("submit", (e) => {
 });
 
 /* ---------------- New Rule drawer ---------------- */
-const RULE_APPLIES_TO = ["All organisations", "All Commercial orgs", "Per organisation", "System-wide"];
+const RULE_APPLIES_TO = ["All organizations", "All Commercial orgs", "Per organization", "System-wide"];
 /* Notification channel: which channels a matching rule notifies through.
    Stored/checkbox value stays "Notification" (matches the Edit Rule drawer's
    Channels checkboxes) while the field itself shows the friendlier "In App"
@@ -693,11 +693,11 @@ const newRuleForm = document.getElementById("newRuleForm");
 const saveNewRuleBtn = document.getElementById("saveNewRuleDrawer");
 const newRuleOrgsFieldWrap = document.getElementById("newRuleOrgsFieldWrap");
 
-/* Organisations only makes sense when the rule is scoped to specific orgs --
-   for "System-wide"/"All organisations"/"All Commercial orgs" it's implied. */
+/* Organizations only makes sense when the rule is scoped to specific orgs --
+   for "System-wide"/"All organizations"/"All Commercial orgs" it's implied. */
 function updateNewRuleOrgsVisibility() {
   const appliesTo = newRuleDrawerOverlay.querySelector('.bo-select[data-name="newRuleAppliesTo"] input[type=hidden]').value;
-  const showOrgs = appliesTo === "Per organisation";
+  const showOrgs = appliesTo === "Per organization";
   newRuleOrgsFieldWrap.hidden = !showOrgs;
   if (!showOrgs) newRuleOrgsMultiSelect.clear();
 }
@@ -713,7 +713,7 @@ function validateNewRuleForm() {
   const resolveTimeFilled = document.getElementById("newRuleResolveTimeInput").value.trim() !== "";
   const selectFilled = (name) => newRuleDrawerOverlay.querySelector(`.bo-select[data-name="${name}"] input[type=hidden]`).value !== "";
   const appliesTo = newRuleDrawerOverlay.querySelector('.bo-select[data-name="newRuleAppliesTo"] input[type=hidden]').value;
-  const orgsFilled = appliesTo !== "Per organisation" || newRuleOrgsMultiSelect.getSelected().length > 0;
+  const orgsFilled = appliesTo !== "Per organization" || newRuleOrgsMultiSelect.getSelected().length > 0;
   saveNewRuleBtn.disabled = !(
     nameFilled &&
     conditionFilled &&
@@ -781,7 +781,7 @@ newRuleForm.addEventListener("submit", (e) => {
     channels: newRuleSendByMultiSelect.getSelected().map((label) => NOTIFICATION_CHANNEL_VALUE[label]),
     autoCreateTicket: false,
     appliesTo,
-    organisations: appliesTo === "Per organisation" ? newRuleOrgsMultiSelect.getSelected() : [],
+    organizations: appliesTo === "Per organization" ? newRuleOrgsMultiSelect.getSelected() : [],
   });
 
   closeNewRuleDrawer();
