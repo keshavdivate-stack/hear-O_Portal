@@ -30,6 +30,9 @@
   .am-time.am-other svg { color: #3d3d3d; }
   .am-night { background: #e9e6fb; color: #5b4bdb; }
   .am-body .login-btn { margin-top: 6px; }
+  .am-duration-toggle { margin-bottom: 12px; }
+  .am-date-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .am-date-field label { display: block; font-size: calc(16px * var(--font-scale, 1)); font-weight: 500; color: #6f6f6f; margin-bottom: 6px; }
 </style>
 </head>
 <body>
@@ -45,7 +48,7 @@
     </div>
 
     <div class="mx-header">
-      <button type="button" class="back-btn" aria-label="Back">
+      <button type="button" class="back-btn" aria-label="Back" onclick="window.location.href='/Mobile%20app/medication.html'">
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M12.5 4L6.5 10L12.5 16" stroke="#252424" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
       <h1>Add medication</h1>
@@ -100,7 +103,31 @@
         </div>
       </div>
 
-      <button type="button" class="login-btn" id="nextBtn">Next</button>
+      <div class="am-section">
+        <p class="am-label">4. Reason <small>(optional)</small></p>
+        <div class="am-name">
+          <input type="text" id="medReason" placeholder="e.g. Blood pressure" autocomplete="off" />
+        </div>
+      </div>
+
+      <div class="am-section">
+        <p class="am-label">5. Duration <small>(optional)</small></p>
+        <div class="am-chips am-duration-toggle">
+          <button type="button" class="am-chip" id="ongoingChip" aria-pressed="true">Ongoing (no end date)</button>
+        </div>
+        <div class="am-date-row">
+          <div class="am-date-field">
+            <label for="startDate">Start date</label>
+            <input type="date" id="startDate" />
+          </div>
+          <div class="am-date-field" id="endDateField" style="display:none;">
+            <label for="endDate">End date</label>
+            <input type="date" id="endDate" />
+          </div>
+        </div>
+      </div>
+
+      <button type="button" class="login-btn" id="nextBtn">Add Medication</button>
     </div>
   </div>
 
@@ -119,6 +146,21 @@
   document.querySelectorAll("#timeCards .am-time").forEach((b) => b.addEventListener("click", () => {
     b.setAttribute("aria-pressed", b.getAttribute("aria-pressed") === "true" ? "false" : "true"); check();
   }));
+
+  const ongoingChip = document.getElementById("ongoingChip");
+  const endDateField = document.getElementById("endDateField");
+  ongoingChip.addEventListener("click", () => {
+    const nowOngoing = ongoingChip.getAttribute("aria-pressed") !== "true";
+    ongoingChip.setAttribute("aria-pressed", String(nowOngoing));
+    endDateField.style.display = nowOngoing ? "none" : "";
+    if (nowOngoing) document.getElementById("endDate").value = "";
+  });
+
+  nextBtn.addEventListener("click", () => {
+    if (nextBtn.disabled) return;
+    window.location.href = "/Mobile%20app/medication.html";
+  });
+
   check();
 </script>
 </body>
