@@ -54,7 +54,6 @@ if (!ticket) {
     document.getElementById("ticketDetailPills").innerHTML = `
       <span class="ticket-pill ${typeCellClass(ticket.type)}">${ticket.type}</span>
       <span class="ticket-pill ${stateCellClass(ticket.state)}">${ticket.state}</span>
-      <span class="ticket-pill ${severityCellClass(ticket.severity)}">${ticket.severity}</span>
     `;
     document.title = `HearO | ${ticket.ticketId}`;
   }
@@ -178,7 +177,6 @@ if (!ticket) {
   function applyTicketDetailStatusVisibility(status) {
     const resolved = status === "Resolved";
     document.getElementById("ticketDetailLevelField").hidden = resolved;
-    document.getElementById("ticketDetailSeverityField").hidden = resolved;
     document.getElementById("ticketDetailAssignedToField").hidden = resolved;
     const tier = document.querySelector('.custom-select[data-name="ticketLevel"] input[type=hidden]').value;
     document.getElementById("ticketDetailOrgField").hidden = resolved || tier !== "Level 3";
@@ -216,7 +214,6 @@ if (!ticket) {
     const fields = [`<div class="ticket-detail-field"><label>Status</label><span class="ticket-pill ${stateCellClass(ticket.state)}">${ticket.state}</span></div>`];
     if (!resolved) {
       fields.push(`<div class="ticket-detail-field"><label>Level</label><span>${ticket.tier || "&mdash;"}</span></div>`);
-      fields.push(`<div class="ticket-detail-field"><label>Severity</label><span class="ticket-pill ${severityCellClass(ticket.severity)}">${ticket.severity}</span></div>`);
       if (ticket.tier === "Level 3") {
         fields.push(`<div class="ticket-detail-field"><label>Organization</label><span>${ticket.organization || "&mdash;"}</span></div>`);
       }
@@ -266,17 +263,6 @@ if (!ticket) {
                 <input type="hidden" />
               </div>
             </div>
-            <div class="form-field" style="margin-bottom:0;" id="ticketDetailSeverityField">
-              <label>Severity</label>
-              <div class="custom-select" data-name="ticketSeverityHandling">
-                <button type="button" class="custom-select-trigger">
-                  <span class="custom-select-value placeholder">Select severity</span>
-                  <svg class="custom-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-                </button>
-                <div class="custom-select-menu"></div>
-                <input type="hidden" />
-              </div>
-            </div>
             <div class="form-field" style="margin-bottom:0;" id="ticketDetailOrgField" hidden>
               <label>Organization<span class="required-star">*</span></label>
               <div class="custom-select" data-name="ticketOrgHandling">
@@ -317,7 +303,6 @@ if (!ticket) {
   function wireHandling() {
     document.querySelector('.custom-select[data-name="ticketStatus"] .custom-select-menu').innerHTML = buildCustomSelectOptions(ticketStates.map((s) => s.label));
     document.querySelector('.custom-select[data-name="ticketLevel"] .custom-select-menu').innerHTML = buildCustomSelectOptions(ticketLevels.map((l) => l.label));
-    document.querySelector('.custom-select[data-name="ticketSeverityHandling"] .custom-select-menu').innerHTML = buildCustomSelectOptions(ticketSeverities.map((s) => s.label));
     document.querySelector('.custom-select[data-name="ticketOrgHandling"] .custom-select-menu').innerHTML = buildCustomSelectOptions(TICKET_ORG_CODES);
 
     initCustomSelects();
@@ -337,7 +322,6 @@ if (!ticket) {
     document.getElementById("ticketDetailRootCause").value = ticket.rootCause || "";
     setCustomSelectValue(document.querySelector('.custom-select[data-name="ticketStatus"]'), ticket.state, { silent: true });
     setCustomSelectValue(document.querySelector('.custom-select[data-name="ticketLevel"]'), ticket.tier, { silent: true });
-    setCustomSelectValue(document.querySelector('.custom-select[data-name="ticketSeverityHandling"]'), ticket.severity, { silent: true });
 
     populateTicketDetailAssignees(ticket.tier);
     const tierAgents = TIER_AGENTS[ticket.tier] || SUPPORT_TEAM_MEMBERS;
@@ -384,17 +368,16 @@ if (!ticket) {
       const rootCause = document.getElementById("ticketDetailRootCause").value.trim();
       const nextAssignee = document.querySelector('.custom-select[data-name="ticketAssignedTo"] input[type=hidden]').value;
       const nextTier = document.querySelector('.custom-select[data-name="ticketLevel"] input[type=hidden]').value || ticket.tier;
-      const nextSeverity = document.querySelector('.custom-select[data-name="ticketSeverityHandling"] input[type=hidden]').value || ticket.severity;
       const nextStatus = document.querySelector('.custom-select[data-name="ticketStatus"] input[type=hidden]').value || ticket.state;
       const nextOrg = (nextTier === "Level 3" && document.querySelector('.custom-select[data-name="ticketOrgHandling"] input[type=hidden]').value) || ticket.organization;
 
-      /* Every field a Save touches (reassignment, level/tier transfer, severity,
+      /* Every field a Save touches (reassignment, level/tier transfer,
          status) is folded into a single history entry instead of one line per
          field -- so a ticket transfer and the note explaining it always land
          together, and whoever picks the ticket up next sees the note attached
          directly to the transfer instead of buried in a separate line. The
          entry's title headlines whichever change is most significant
-         (reassignment > level > status > severity); everything that changed,
+         (reassignment > level > status); everything that changed,
          plus the free-text note, goes in the boxed detail underneath. */
       const isReassignment = nextAssignee && nextAssignee !== (ticket.assignedTo || "");
       const changeParts = [];
@@ -410,10 +393,6 @@ if (!ticket) {
       if (nextStatus !== ticket.state) {
         changeParts.push(`Status changed from ${ticket.state} to ${nextStatus}`);
         title = title || `Status Changed to ${nextStatus}`;
-      }
-      if (nextSeverity !== ticket.severity) {
-        changeParts.push(`Severity changed from ${ticket.severity} to ${nextSeverity}`);
-        title = title || `Severity Changed to ${nextSeverity}`;
       }
       if (nextOrg !== ticket.organization) {
         changeParts.push(`Organization changed from ${ticket.organization} to ${nextOrg}`);
@@ -435,7 +414,6 @@ if (!ticket) {
       ticket.rootCause = rootCause;
       if (nextAssignee) ticket.assignedTo = nextAssignee;
       ticket.tier = nextTier;
-      ticket.severity = nextSeverity;
       ticket.state = nextStatus;
       ticket.organization = nextOrg;
 
@@ -767,7 +745,6 @@ if (!ticket) {
         <div class="ticket-detail-grid">
           <div class="ticket-detail-field"><label>Source</label><span>${ticket.type}</span></div>
           <div class="ticket-detail-field"><label>Status</label><span class="ticket-pill ${stateCellClass(ticket.state)}">${ticket.state}</span></div>
-          <div class="ticket-detail-field"><label>Severity</label><span class="ticket-pill ${severityCellClass(ticket.severity)}">${ticket.severity}</span></div>
           <div class="ticket-detail-field"><label>${ticket.type === "Patient" ? "Patient" : "Raised By"}</label><span>${
             ticket.type === "Patient"
               ? `<a class="ticket-view-link" href="patient-data.html">${ticket.patientName || ticket.who}</a>`
