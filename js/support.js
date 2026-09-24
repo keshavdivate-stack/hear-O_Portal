@@ -4,22 +4,18 @@ const selectedCategories = new Set();
 const selectedIssueTypes = new Set();
 const selectedOrigins = new Set();
 const selectedStates = new Set();
-/* This list is always scoped to the current agent's own tickets -- there's
-   no Assigned To filter to widen it to a teammate's queue. */
-const selectedAssignees = new Set([CURRENT_ASSIGNEE]);
+const selectedAssignees = new Set();
 let ticketSearchTerm = "";
-let ticketCreatedDate = null; // Date or null
+const TICKET_PAGE_SIZE = 25;
+let ticketCurrentPage = 1;
 
-/* Ticket "created" values are DD.MM.YYYY. */
-function parseTicketCreated(value) {
-  const [dd, mm, yyyy] = (value || "").split(".").map(Number);
-  return dd && mm && yyyy ? new Date(yyyy, mm - 1, dd) : null;
-}
+/* Open and In Progress tickets come first, Resolved last -- regardless of
+   Created date. Within a status group the original order is kept. */
+const stateRank = (state) => (state === "Resolved" ? 1 : 0);
 
 function filteredTicketList() {
   const term = ticketSearchTerm.trim().toLowerCase();
   return ticketList.filter((t) => {
-    if (ticketCreatedDate && !sameDay(parseTicketCreated(t.created), ticketCreatedDate)) return false;
     if (selectedTypes.size && !selectedTypes.has(t.type)) return false;
     if (selectedCategories.size && !selectedCategories.has(t.category)) return false;
     if (selectedIssueTypes.size && !selectedIssueTypes.has(t.issueType)) return false;
@@ -28,39 +24,80 @@ function filteredTicketList() {
     if (selectedAssignees.size && !selectedAssignees.has(t.assignedTo)) return false;
     if (term && !`${t.ticketId} ${t.who} ${t.patientName || ""} ${t.organization}`.toLowerCase().includes(term)) return false;
     return true;
-  });
+  }).sort((a, b) => stateRank(a.state) - stateRank(b.state));
 }
 
 const ticketRows = document.getElementById("ticketListRows");
 const ticketRangeLabel = document.getElementById("ticketRangeLabel");
 
+/* Stat cards count every ticket in the clinic's queue, not just the rows the
+   current filters leave visible. */
+function renderTicketStats() {
+  const count = (state) => ticketList.filter((t) => t.state === state).length;
+  document.getElementById("ticketStatTotal").textContent = ticketList.length;
+  document.getElementById("ticketStatOpen").textContent = count("Open");
+  document.getElementById("ticketStatInProgress").textContent = count("In Progress");
+  document.getElementById("ticketStatResolved").textContent = count("Resolved");
+}
+
 function renderTicketList() {
+  renderTicketStats();
   const list = filteredTicketList();
+  const total = list.length;
+  const totalPages = Math.max(1, Math.ceil(total / TICKET_PAGE_SIZE));
+  ticketCurrentPage = Math.min(Math.max(ticketCurrentPage, 1), totalPages);
+  const start = (ticketCurrentPage - 1) * TICKET_PAGE_SIZE;
   ticketRows.innerHTML = list
+    .slice(start, start + TICKET_PAGE_SIZE)
     .map(
       (t) => `
       <tr>
         <td><b>${t.ticketId}</b></td>
         <td><span class="ticket-pill ${typeCellClass(t.type)}">${t.type}</span></td>
         <td>${
-          t.type === "Patient"
+          !t.who
+            ? "&mdash;"
+            : t.type === "Patient"
             ? `<a class="ticket-view-link" href="patient-data.html">${t.patientName || t.who}</a><span class="ticket-who-id">${t.who}</span>`
             : t.who
         }</td>
         <td><span class="ticket-pill ticket-pill-category">${t.category}</span></td>
         <td>${t.issueType}</td>
+        <td>${t.origin}</td>
         <td><span class="ticket-pill ${stateCellClass(t.state)}">${t.state}</span></td>
+        <td>${t.assignedTo || "&mdash;"}</td>
         <td>${t.created}</td>
-        <td>${t.assignedTo}</td>
         <td><a class="ticket-view-icon" href="ticket-detail.html?id=${t.id}" aria-label="View">${eyeIcon}</a></td>
       </tr>`
     )
     .join("");
-  ticketRangeLabel.textContent = list.length ? `1-${list.length} of ${list.length}` : "";
-  if (!list.length) {
-    ticketRows.innerHTML = `<tr><td colspan="9" style="text-align:center; color:var(--gray-text); padding:24px;">No tickets match the current filters.</td></tr>`;
+  ticketRangeLabel.textContent = total ? `${start + 1} – ${Math.min(start + TICKET_PAGE_SIZE, total)} of ${total}` : "0 of 0";
+  document.getElementById("ticketFirstPage").disabled = ticketCurrentPage === 1;
+  document.getElementById("ticketPrevPage").disabled = ticketCurrentPage === 1;
+  document.getElementById("ticketNextPage").disabled = ticketCurrentPage === totalPages;
+  document.getElementById("ticketLastPage").disabled = ticketCurrentPage === totalPages;
+  if (!total) {
+    ticketRows.innerHTML = `<tr><td colspan="10" style="text-align:center; color:var(--gray-text); padding:24px;">No tickets match the current filters.</td></tr>`;
   }
 }
+
+/* Any filter/search change starts back on page 1. */
+function applyTicketFilters() {
+  ticketCurrentPage = 1;
+  renderTicketList();
+}
+
+[
+  ["ticketFirstPage", () => 1],
+  ["ticketPrevPage", () => ticketCurrentPage - 1],
+  ["ticketNextPage", () => ticketCurrentPage + 1],
+  ["ticketLastPage", () => Infinity],
+].forEach(([id, nextPage]) => {
+  document.getElementById(id).addEventListener("click", () => {
+    ticketCurrentPage = nextPage();
+    renderTicketList();
+  });
+});
 
 renderTicketList();
 
@@ -133,7 +170,7 @@ function wireCheckboxFilter(wrapEl, menuEl, selectedSet, onChange) {
 }
 
 function closeAllFilterPopovers() {
-  document.querySelectorAll(".checkbox-filter.open, .date-filter-btn.open").forEach((el) => el.classList.remove("open"));
+  document.querySelectorAll(".checkbox-filter.open").forEach((el) => el.classList.remove("open"));
   document.querySelectorAll(".checkbox-filter-menu-portaled").forEach((menuEl) => closeFilterMenu(menuEl));
 }
 
@@ -146,113 +183,33 @@ function buildOptionsHtml(options) {
 
 const ticketTypeMenu = document.getElementById("ticketTypeMenu");
 ticketTypeMenu.innerHTML = buildOptionsHtml(ticketTypes);
-wireCheckboxFilter(document.querySelector('.checkbox-filter[data-name="type"]'), ticketTypeMenu, selectedTypes, renderTicketList);
+wireCheckboxFilter(document.querySelector('.checkbox-filter[data-name="type"]'), ticketTypeMenu, selectedTypes, applyTicketFilters);
 
 const ticketCategoryMenu = document.getElementById("ticketCategoryMenu");
 ticketCategoryMenu.innerHTML = buildOptionsHtml(ticketCategories);
-wireCheckboxFilter(document.querySelector('.checkbox-filter[data-name="category"]'), ticketCategoryMenu, selectedCategories, renderTicketList);
+wireCheckboxFilter(document.querySelector('.checkbox-filter[data-name="category"]'), ticketCategoryMenu, selectedCategories, applyTicketFilters);
 
 const allIssueTypes = [...new Set(ticketList.map((t) => t.issueType))].map((v) => ({ key: v, label: v }));
 const ticketIssueMenu = document.getElementById("ticketIssueMenu");
 ticketIssueMenu.innerHTML = buildOptionsHtml(allIssueTypes);
-wireCheckboxFilter(document.querySelector('.checkbox-filter[data-name="issueType"]'), ticketIssueMenu, selectedIssueTypes, renderTicketList);
+wireCheckboxFilter(document.querySelector('.checkbox-filter[data-name="issueType"]'), ticketIssueMenu, selectedIssueTypes, applyTicketFilters);
 
 const ticketOriginMenu = document.getElementById("ticketOriginMenu");
 ticketOriginMenu.innerHTML = buildOptionsHtml(ticketOrigins);
-wireCheckboxFilter(document.querySelector('.checkbox-filter[data-name="origin"]'), ticketOriginMenu, selectedOrigins, renderTicketList);
+wireCheckboxFilter(document.querySelector('.checkbox-filter[data-name="origin"]'), ticketOriginMenu, selectedOrigins, applyTicketFilters);
 
 const ticketStateMenu = document.getElementById("ticketStateMenu");
 ticketStateMenu.innerHTML = buildOptionsHtml(ticketStates);
-wireCheckboxFilter(document.querySelector('.checkbox-filter[data-name="state"]'), ticketStateMenu, selectedStates, renderTicketList);
+wireCheckboxFilter(document.querySelector('.checkbox-filter[data-name="state"]'), ticketStateMenu, selectedStates, applyTicketFilters);
 
-/* ---------------- Created Date (single day) ----------------
-   Pick one day to show only tickets whose Created date is that day. */
-const MONTH_NAMES = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
-const WEEKDAY_LABELS = ["S", "M", "T", "W", "T", "F", "S"];
-const ticketDateWrap = document.getElementById("ticketDateWrap");
-const ticketDateCalendar = document.getElementById("ticketDateCalendar");
-const ticketDateLabel = document.getElementById("ticketDateLabel");
-
-/* Open the calendar on the month of the most recent ticket, so the data is
-   in view without paging through months. */
-const latestTicketDate = ticketList.map((t) => parseTicketCreated(t.created)).filter(Boolean).sort((a, b) => b - a)[0] || new Date();
-let dateViewYear = latestTicketDate.getFullYear();
-let dateViewMonth = latestTicketDate.getMonth();
-
-function sameDay(a, b) {
-  return Boolean(a && b) && a.getTime() === b.getTime();
-}
-
-function updateTicketDateLabel() {
-  const d = ticketCreatedDate;
-  ticketDateLabel.textContent = d ? `${String(d.getDate()).padStart(2, "0")}.${String(d.getMonth() + 1).padStart(2, "0")}.${d.getFullYear()}` : "Created Date";
-}
-
-function drawTicketDateCalendar() {
-  const firstWeekday = new Date(dateViewYear, dateViewMonth, 1).getDay();
-  const daysInMonth = new Date(dateViewYear, dateViewMonth + 1, 0).getDate();
-  const cells = [];
-  for (let i = 0; i < firstWeekday; i++) cells.push(`<span class="calendar-day muted"></span>`);
-  for (let d = 1; d <= daysInMonth; d++) {
-    const selected = sameDay(new Date(dateViewYear, dateViewMonth, d), ticketCreatedDate);
-    cells.push(`<span class="calendar-day${selected ? " selected" : ""}" data-day="${d}">${d}</span>`);
-  }
-  ticketDateCalendar.innerHTML = `
-    <div class="calendar-head">
-      <span class="calendar-month-label">${MONTH_NAMES[dateViewMonth]} ${dateViewYear}</span>
-      <div class="calendar-nav">
-        <button type="button" class="calendar-nav-btn" data-nav="-1" aria-label="Previous month">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M15 6L9 12L15 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </button>
-        <button type="button" class="calendar-nav-btn" data-nav="1" aria-label="Next month">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M9 6L15 12L9 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </button>
-      </div>
-    </div>
-    <div class="calendar-weekdays">${WEEKDAY_LABELS.map((w) => `<span>${w}</span>`).join("")}</div>
-    <div class="calendar-days">${cells.join("")}</div>
-    <div class="calendar-footer">
-      <button type="button" class="calendar-footer-btn" data-action="clear">Clear</button>
-    </div>`;
-}
-
-function closeTicketDateCalendar() {
-  ticketDateWrap.classList.remove("open");
-  closeFilterMenu(ticketDateCalendar);
-}
-
-ticketDateCalendar.addEventListener("click", (e) => {
-  e.stopPropagation();
-  const nav = e.target.closest(".calendar-nav-btn");
-  if (nav) {
-    dateViewMonth += Number(nav.dataset.nav);
-    if (dateViewMonth < 0) { dateViewMonth = 11; dateViewYear -= 1; }
-    if (dateViewMonth > 11) { dateViewMonth = 0; dateViewYear += 1; }
-    drawTicketDateCalendar();
-    return;
-  }
-  const cell = e.target.closest(".calendar-day[data-day]");
-  if (!cell && !e.target.closest('[data-action="clear"]')) return;
-  ticketCreatedDate = cell ? new Date(dateViewYear, dateViewMonth, Number(cell.dataset.day)) : null;
-  updateTicketDateLabel();
-  closeTicketDateCalendar();
-  renderTicketList();
-});
-
-ticketDateWrap.querySelector(".filter-btn").addEventListener("click", (e) => {
-  e.stopPropagation();
-  const willOpen = !ticketDateWrap.classList.contains("open");
-  closeAllFilterPopovers();
-  if (!willOpen) return;
-  ticketDateWrap.classList.add("open");
-  drawTicketDateCalendar();
-  openFilterMenu(ticketDateWrap, ticketDateCalendar);
-});
+const ticketAssigneeMenu = document.getElementById("ticketAssigneeMenu");
+ticketAssigneeMenu.innerHTML = buildOptionsHtml(SUPPORT_TEAM_MEMBERS.map((m) => ({ key: m, label: m })));
+wireCheckboxFilter(document.querySelector('.checkbox-filter[data-name="assignedTo"]'), ticketAssigneeMenu, selectedAssignees, applyTicketFilters);
 
 /* ---------------- Search ---------------- */
 document.getElementById("ticketSearchInput").addEventListener("input", (e) => {
   ticketSearchTerm = e.target.value;
-  renderTicketList();
+  applyTicketFilters();
 });
 
 /* ---------------- Clear all filters ---------------- */
@@ -262,6 +219,7 @@ const clearableTicketFilters = [
   { name: "issueType", menu: ticketIssueMenu, set: selectedIssueTypes, label: "Issue Type" },
   { name: "origin", menu: ticketOriginMenu, set: selectedOrigins, label: "Origin" },
   { name: "state", menu: ticketStateMenu, set: selectedStates, label: "Status" },
+  { name: "assignedTo", menu: ticketAssigneeMenu, set: selectedAssignees, label: "Assigned To" },
 ];
 
 document.getElementById("clearTicketFilters").addEventListener("click", () => {
@@ -272,9 +230,7 @@ document.getElementById("clearTicketFilters").addEventListener("click", () => {
     menu.querySelectorAll('input[type="checkbox"]').forEach((cb) => (cb.checked = false));
     document.querySelector(`.checkbox-filter[data-name="${name}"] .checkbox-filter-label`).textContent = label;
   });
-  ticketCreatedDate = null;
-  updateTicketDateLabel();
-  renderTicketList();
+  applyTicketFilters();
 });
 
 /* Mirrors the "Support Ticket" floating button's own definition of "this
@@ -285,65 +241,71 @@ function currentOrg() {
   return (checked ? checked.value : "b01").toUpperCase();
 }
 
-/* ---------------- Custom dropdowns (Create Ticket modal) ----------------
+/* ---------------- New Ticket modal ----------------
    The .custom-select engine itself (setCustomSelectValue, initCustomSelects,
-   etc.) now lives in js/custom-select.js, shared with ticket-detail.html. */
-
-/* ---------------- Create Ticket modal ---------------- */
+   etc.) lives in js/custom-select.js, shared with ticket-detail.html. */
 const createTicketOverlay = document.getElementById("createTicketOverlay");
 const createTicketForm = document.getElementById("createTicketForm");
 const saveCreateTicketBtn = document.getElementById("saveCreateTicket");
-const createTicketCategorySelect = document.querySelector('#createTicketOverlay .custom-select[data-name="category"]');
-const createTicketIssueSelect = document.querySelector('#createTicketOverlay .custom-select[data-name="issueType"]');
-const createTicketLevelSelect = document.querySelector('#createTicketOverlay .custom-select[data-name="level"]');
-const createTicketAssignedToSelect = document.querySelector('#createTicketOverlay .custom-select[data-name="assignedTo"]');
+const modalSelect = (name) => document.querySelector(`#createTicketOverlay .custom-select[data-name="${name}"]`);
+const selectValue = (select) => select.querySelector("input[type=hidden]").value;
+const createTicketTypeSelect = modalSelect("type");
+const createTicketForSelect = modalSelect("patient");
+const createTicketCategorySelect = modalSelect("category");
+const createTicketIssueSelect = modalSelect("issueType");
+const createTicketPrioritySelect = modalSelect("priority");
+const createTicketAssignedToSelect = modalSelect("assignedTo");
 
-/* The logged-in clinic user (avatar "EC" in the topbar) raises the ticket --
-   no need to ask them to pick their own name from a list. */
-const CURRENT_USER = "Emily Carter";
-
+createTicketTypeSelect.querySelector(".custom-select-menu").innerHTML = buildCustomSelectOptions(ticketTypes.map((t) => t.label));
 createTicketCategorySelect.querySelector(".custom-select-menu").innerHTML = buildCustomSelectOptions(ticketCategories.map((c) => c.label));
-createTicketLevelSelect.querySelector(".custom-select-menu").innerHTML = buildCustomSelectOptions(ticketLevels.map((l) => l.label));
+createTicketPrioritySelect.querySelector(".custom-select-menu").innerHTML = buildCustomSelectOptions(ticketSeverities.map((s) => s.label));
 createTicketAssignedToSelect.querySelector(".custom-select-menu").innerHTML = buildCustomSelectOptions(SUPPORT_TEAM_MEMBERS);
 
-/* Patients known to the clinic, listed as "First Last (ID)" -- the ID is the
-   same identifier the ticket list shows under the patient's name. */
-const createTicketPatientSelect = document.querySelector('#createTicketOverlay .custom-select[data-name="patient"]');
+/* "Create For" lists the clinic's patients ("First Last (ID)") when Type is
+   Patient, or the clinic's users when Type is Clinic. Optional either way. */
 const TICKET_PATIENTS = [...new Map(
   ticketList.filter((t) => t.type === "Patient" && t.patientName).map((t) => [t.who, { id: t.who, name: t.patientName }])
 ).values()].sort((a, b) => a.name.localeCompare(b.name));
 const patientOptionLabel = (p) => `${p.name} (${p.id})`;
-createTicketPatientSelect.querySelector(".custom-select-menu").innerHTML = buildCustomSelectOptions(TICKET_PATIENTS.map(patientOptionLabel));
+const CLINIC_USERS = [...new Set(ticketList.filter((t) => t.type === "Clinic").map((t) => t.who))].sort();
 
-function resetCreateTicketIssueSelect() {
-  const trigger = createTicketIssueSelect.querySelector(".custom-select-trigger");
-  const valueEl = createTicketIssueSelect.querySelector(".custom-select-value");
-  createTicketIssueSelect.querySelector(".custom-select-menu").innerHTML = "";
-  resetCustomSelect(createTicketIssueSelect);
-  trigger.disabled = true;
-  valueEl.dataset.placeholder = "Choose category first";
-  valueEl.textContent = "Choose category first";
+/* Point a dependent select at a new option list, clearing its value. */
+function refillSelect(select, options, placeholder, emptyPlaceholder) {
+  const trigger = select.querySelector(".custom-select-trigger");
+  const valueEl = select.querySelector(".custom-select-value");
+  select.querySelector(".custom-select-menu").innerHTML = buildCustomSelectOptions(options);
+  resetCustomSelect(select);
+  trigger.disabled = !options.length;
+  valueEl.dataset.placeholder = options.length ? placeholder : emptyPlaceholder;
+  valueEl.textContent = valueEl.dataset.placeholder;
   valueEl.classList.add("placeholder");
 }
 
+function refillCreateFor() {
+  const isPatient = selectValue(createTicketTypeSelect) !== "Clinic";
+  refillSelect(
+    createTicketForSelect,
+    isPatient ? TICKET_PATIENTS.map(patientOptionLabel) : CLINIC_USERS,
+    isPatient ? "Select Patient" : "Select user",
+    "Select type first"
+  );
+}
+
+createTicketTypeSelect.querySelector("input[type=hidden]").addEventListener("change", () => {
+  refillCreateFor();
+  validateCreateTicketForm();
+});
+
 createTicketCategorySelect.querySelector("input[type=hidden]").addEventListener("change", (e) => {
-  const category = e.target.value;
-  const issues = issueTypesByCategory[category] || [];
-  const trigger = createTicketIssueSelect.querySelector(".custom-select-trigger");
-  const valueEl = createTicketIssueSelect.querySelector(".custom-select-value");
-  createTicketIssueSelect.querySelector(".custom-select-menu").innerHTML = buildCustomSelectOptions(issues);
-  resetCustomSelect(createTicketIssueSelect);
-  trigger.disabled = !issues.length;
-  valueEl.dataset.placeholder = issues.length ? "Choose issue type" : "Choose category first";
-  valueEl.textContent = valueEl.dataset.placeholder;
-  valueEl.classList.add("placeholder");
+  refillSelect(createTicketIssueSelect, issueTypesByCategory[e.target.value] || [], "Select issue type", "Select a category first");
   validateCreateTicketForm();
 });
 
 function openCreateTicketModal() {
   createTicketForm.reset();
   createTicketForm.querySelectorAll(".custom-select").forEach(resetCustomSelect);
-  resetCreateTicketIssueSelect();
+  refillCreateFor();
+  refillSelect(createTicketIssueSelect, [], "", "Select a category first");
   validateCreateTicketForm();
   createTicketOverlay.classList.add("open");
 }
@@ -356,47 +318,39 @@ document.getElementById("cancelCreateTicket").addEventListener("click", closeCre
 document.getElementById("closeCreateTicketX").addEventListener("click", closeCreateTicketModal);
 createTicketOverlay.addEventListener("click", (e) => { if (e.target === createTicketOverlay) closeCreateTicketModal(); });
 
+/* Required: Type, Category, Issue Type, Priority. Create For, Assigned To and
+   Description are optional. */
 function validateCreateTicketForm() {
-  const categoryValue = createTicketCategorySelect.querySelector("input[type=hidden]").value;
-  const issueValue = createTicketIssueSelect.querySelector("input[type=hidden]").value;
-  const levelValue = createTicketLevelSelect.querySelector("input[type=hidden]").value;
-  const assignedToValue = createTicketAssignedToSelect.querySelector("input[type=hidden]").value;
-  const valid =
-    categoryValue !== "" &&
-    issueValue !== "" &&
-    levelValue !== "" &&
-    assignedToValue !== "" &&
-    createTicketForm.description.value.trim() !== "";
+  const valid = [createTicketTypeSelect, createTicketCategorySelect, createTicketIssueSelect, createTicketPrioritySelect].every((s) => selectValue(s) !== "");
   saveCreateTicketBtn.disabled = !valid;
+  saveCreateTicketBtn.classList.toggle("enabled", valid);
 }
 createTicketForm.addEventListener("input", validateCreateTicketForm);
 createTicketForm.addEventListener("change", validateCreateTicketForm);
 
 createTicketForm.addEventListener("submit", (e) => {
   e.preventDefault();
-  const categoryValue = createTicketCategorySelect.querySelector("input[type=hidden]").value;
-  const issueValue = createTicketIssueSelect.querySelector("input[type=hidden]").value;
-  const levelValue = createTicketLevelSelect.querySelector("input[type=hidden]").value;
-  const assignedToValue = createTicketAssignedToSelect.querySelector("input[type=hidden]").value;
-  const patientLabel = createTicketPatientSelect.querySelector("input[type=hidden]").value;
-  const patient = TICKET_PATIENTS.find((p) => patientOptionLabel(p) === patientLabel);
+  const type = selectValue(createTicketTypeSelect);
+  const createFor = selectValue(createTicketForSelect);
+  const patient = type === "Patient" ? TICKET_PATIENTS.find((p) => patientOptionLabel(p) === createFor) : null;
+  const assignedTo = selectValue(createTicketAssignedToSelect);
   const today = new Date();
   const created = `${String(today.getDate()).padStart(2, "0")}.${String(today.getMonth() + 1).padStart(2, "0")}.${today.getFullYear()}`;
 
   const newTicket = {
     ticketId: `TCK-${1000 + ticketList.length + 1}`,
     organization: currentOrg(),
-    type: patient ? "Patient" : "Clinic",
-    who: patient ? patient.id : CURRENT_USER,
+    type,
+    who: patient ? patient.id : createFor,
     patientName: patient ? patient.name : undefined,
-    scope: patient ? "Patient" : "Organization",
-    category: categoryValue,
-    issueType: issueValue,
+    scope: type === "Patient" ? "Patient" : "Organization",
+    category: selectValue(createTicketCategorySelect),
+    issueType: selectValue(createTicketIssueSelect),
     origin: "User Created",
-    severity: "Medium",
-    level: levelValue,
+    severity: selectValue(createTicketPrioritySelect),
+    level: AGENT_LEVEL[assignedTo] || "Level 1",
     state: "Open",
-    assignedTo: assignedToValue,
+    assignedTo,
     created,
     description: createTicketForm.description.value.trim(),
   };
@@ -404,6 +358,6 @@ createTicketForm.addEventListener("submit", (e) => {
   newTicket.history = [{ date: created, title: "Ticket Created" }];
   ticketList.push(newTicket);
 
-  renderTicketList();
+  applyTicketFilters();
   closeCreateTicketModal();
 });
