@@ -21,15 +21,8 @@
   .am-chips { display: flex; flex-wrap: wrap; gap: 10px; }
   .am-chip { min-height: 48px; padding: 0 22px; border-radius: 26px; border: 2px solid #d5d5d5; background: #fff; color: #3d3d3d; font-family: inherit; font-size: calc(21px * var(--font-scale, 1)); font-weight: 500; cursor: pointer; }
   .am-chip[aria-pressed="true"] { border-color: #1a6fd4; background: #f4f8fd; color: #1a6fd4; }
-  .am-times { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .am-time { display: flex; align-items: center; gap: 10px; min-height: 68px; padding: 8px 12px; border-radius: 16px; border: 2px solid #d5d5d5; background: #fff; font-family: inherit; text-align: left; cursor: pointer; }
-  .am-time[aria-pressed="true"] { border-color: #1a6fd4; background: #f4f8fd; }
-  .am-time b { display: block; font-size: calc(19px * var(--font-scale, 1)); font-weight: 600; color: #3d3d3d; }
-  .am-time span.am-range { display: block; font-size: calc(14px * var(--font-scale, 1)); color: #666; margin-top: 2px; }
-  .am-night { background: #e9e6fb; color: #5b4bdb; }
   .am-body .login-btn { margin-top: 6px; }
-  .am-duration-toggle { margin-bottom: 12px; }
-  .am-date-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+  .am-date-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .am-date-field { min-width: 0; }
   .am-date-field label { display: block; font-size: calc(16px * var(--font-scale, 1)); font-weight: 500; color: #6f6f6f; margin-bottom: 6px; }
   .am-date-field input[type="date"] { min-width: 0; width: 100%; padding: 0 10px; font-size: calc(19px * var(--font-scale, 1)); }
@@ -78,41 +71,15 @@
       </div>
 
       <div class="am-section">
-        <p class="am-label">3. When do you take it? <small>(required)</small></p>
-        <div class="am-times" id="timeCards">
-          <button type="button" class="am-time" aria-pressed="true">
-            <span class="mx-time-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></span>
-            <span><b>Morning</b><span class="am-range">6 AM – 12 PM</span></span>
-          </button>
-          <button type="button" class="am-time" aria-pressed="false">
-            <span class="mx-time-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></span>
-            <span><b>Afternoon</b><span class="am-range">12 PM – 6 PM</span></span>
-          </button>
-          <button type="button" class="am-time" aria-pressed="true">
-            <span class="mx-time-icon mx-time-icon--pm"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 17a6 6 0 0 1 12 0M2 20h20M12 6v3M4.5 10.5l2 2M19.5 10.5l-2 2"/></svg></span>
-            <span><b>Evening</b><span class="am-range">6 PM – 10 PM</span></span>
-          </button>
-          <button type="button" class="am-time" aria-pressed="false">
-            <span class="mx-time-icon am-night"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5z"/></svg></span>
-            <span><b>Night</b><span class="am-range">10 PM – 6 AM</span></span>
-          </button>
-        </div>
-      </div>
-
-      <div class="am-section">
-        <p class="am-label">4. Reason <small>(optional)</small></p>
+        <p class="am-label">3. Reason <small>(optional)</small></p>
         <div class="am-name">
           <input type="text" id="medReason" placeholder="e.g. Blood pressure" autocomplete="off" />
         </div>
       </div>
 
       <div class="am-section">
-        <p class="am-label">5. Duration <small>(optional)</small></p>
-        <div class="am-chips am-duration-toggle" id="durationChips">
-          <button type="button" class="am-chip" data-duration="ongoing" aria-pressed="true">Ongoing</button>
-          <button type="button" class="am-chip" data-duration="custom" aria-pressed="false">Custom</button>
-        </div>
-        <div class="am-date-row" id="dateRangeRow" style="display:none;">
+        <p class="am-label">4. Duration <small>(optional)</small></p>
+        <div class="am-date-row">
           <div class="am-date-field">
             <label for="startDate">Start date</label>
             <input type="date" id="startDate" />
@@ -132,28 +99,13 @@
   const nameInput = document.getElementById("medName");
   const nextBtn = document.getElementById("nextBtn");
   function check() {
-    nextBtn.disabled = !(nameInput.value.trim() && document.querySelector("#doseChips [aria-pressed='true']") && document.querySelector("#timeCards [aria-pressed='true']"));
+    nextBtn.disabled = !(nameInput.value.trim() && document.querySelector("#doseChips [aria-pressed='true']"));
   }
   nameInput.addEventListener("input", check);
   document.getElementById("clearName").addEventListener("click", () => { nameInput.value = ""; nameInput.focus(); check(); });
   document.querySelectorAll("#doseChips .am-chip").forEach((b) => b.addEventListener("click", () => {
     document.querySelectorAll("#doseChips .am-chip").forEach((x) => x.setAttribute("aria-pressed", "false"));
     b.setAttribute("aria-pressed", "true"); check();
-  }));
-  document.querySelectorAll("#timeCards .am-time").forEach((b) => b.addEventListener("click", () => {
-    b.setAttribute("aria-pressed", b.getAttribute("aria-pressed") === "true" ? "false" : "true"); check();
-  }));
-
-  const dateRangeRow = document.getElementById("dateRangeRow");
-  document.querySelectorAll("#durationChips .am-chip").forEach((b) => b.addEventListener("click", () => {
-    document.querySelectorAll("#durationChips .am-chip").forEach((x) => x.setAttribute("aria-pressed", "false"));
-    b.setAttribute("aria-pressed", "true");
-    const isCustom = b.dataset.duration === "custom";
-    dateRangeRow.style.display = isCustom ? "grid" : "none";
-    if (!isCustom) {
-      document.getElementById("startDate").value = "";
-      document.getElementById("endDate").value = "";
-    }
   }));
 
   nextBtn.addEventListener("click", () => {
