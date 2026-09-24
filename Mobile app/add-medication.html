@@ -26,8 +26,6 @@
   .am-time[aria-pressed="true"] { border-color: #1a6fd4; background: #f4f8fd; }
   .am-time b { display: block; font-size: calc(19px * var(--font-scale, 1)); font-weight: 600; color: #3d3d3d; }
   .am-time span.am-range { display: block; font-size: calc(14px * var(--font-scale, 1)); color: #666; margin-top: 2px; }
-  .am-time.am-other { grid-column: 1 / -1; justify-content: center; min-height: 56px; border-radius: 28px; font-size: calc(21px * var(--font-scale, 1)); font-weight: 500; color: #3d3d3d; }
-  .am-time.am-other svg { color: #3d3d3d; }
   .am-night { background: #e9e6fb; color: #5b4bdb; }
   .am-body .login-btn { margin-top: 6px; }
   .am-duration-toggle { margin-bottom: 12px; }
@@ -95,10 +93,6 @@
           <button type="button" class="am-time" aria-pressed="false">
             <span class="mx-time-icon am-night"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5z"/></svg></span>
             <span><b>Night</b><span class="am-range">10 PM – 6 AM</span></span>
-          </button>
-          <button type="button" class="am-time am-other" aria-pressed="false">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
-            Other time
           </button>
         </div>
       </div>
