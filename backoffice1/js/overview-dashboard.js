@@ -995,9 +995,3 @@ document.addEventListener("click", () => {
   ovOrgSelect.classList.remove("open");
   ovCategoryTrendRangeSelect.classList.remove("open");
 });
-
-document.getElementById("ovRefreshBtn").addEventListener("click", () => {
-  renderOvTrendChart();
-  renderOvTrendFooter();
-  renderOvForOrg(ovSelectedOrgId);
-});

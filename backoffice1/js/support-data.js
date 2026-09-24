@@ -126,16 +126,10 @@ const TIER_AGENTS = {
   "Level 3": ["Liat Peretz"],
 };
 
-/* Reverse lookup so any support agent's name can carry its level wherever
-   it's displayed (ticket lists, Ticket Detail's Assigned To), matching each
-   agent's level to the tier they were defined under above. */
+/* Reverse lookup from agent name to the level they were defined under above
+   (used to filter agents by level). */
 const AGENT_LEVEL = {};
 Object.entries(TIER_AGENTS).forEach(([level, names]) => names.forEach((name) => { AGENT_LEVEL[name] = level; }));
-
-function agentLabel(name) {
-  const level = AGENT_LEVEL[name];
-  return name && level ? `${name} (${level})` : name || "";
-}
 
 /* ---------------- Sample tickets raised by patients ---------------- */
 const patientTickets = [

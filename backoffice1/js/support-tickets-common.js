@@ -55,14 +55,13 @@ function buildSelectOptions(values) {
     .join("");
 }
 
-/* Like buildSelectOptions, but for a list of support agent names -- the
-   option (and the trigger, once selected) displays "Name (Level X)" while
-   the underlying stored value stays the plain agent name. */
+/* Like buildSelectOptions, but for a list of support agent names. Shows the
+   plain name only -- level has its own filter, so it isn't repeated here. */
 function buildAgentSelectOptions(names) {
   return names
     .map(
       (n) => `
-      <div class="bo-select-option" data-value="${n}">${agentLabel(n)}
+      <div class="bo-select-option" data-value="${n}">${n}
         <svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </div>`
     )
