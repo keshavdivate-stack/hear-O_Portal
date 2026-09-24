@@ -259,6 +259,14 @@
             <div class="checkbox-filter-menu" id="ticketStateMenu"></div>
           </div>
 
+          <div class="date-filter-btn" id="ticketDateWrap">
+            <button type="button" class="filter-btn">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="17" rx="2" stroke="#6B7684" stroke-width="1.6"/><path d="M3 9H21" stroke="#6B7684" stroke-width="1.6"/><path d="M8 2V6" stroke="#6B7684" stroke-width="1.6" stroke-linecap="round"/><path d="M16 2V6" stroke="#6B7684" stroke-width="1.6" stroke-linecap="round"/></svg>
+              <span id="ticketDateLabel">Created Date</span>
+              <svg class="caret" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#6B7684" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="calendar-popover" id="ticketDateCalendar"></div>
+          </div>
 
           <button class="clear-filters" id="clearTicketFilters">Clear all filters</button>
           <span class="filters-spacer"></span>
@@ -306,6 +314,17 @@
       </button>
       <form id="createTicketForm">
         <div class="form-grid">
+          <div class="form-field" style="grid-column: 1 / -1;">
+            <label>Patient</label>
+            <div class="custom-select" data-name="patient">
+              <button type="button" class="custom-select-trigger">
+                <span class="custom-select-value placeholder">Select patient (optional)</span>
+                <svg class="custom-select-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="custom-select-menu"></div>
+              <input type="hidden" name="patient" />
+            </div>
+          </div>
           <div class="form-field">
             <label>Category<span class="required-star">*</span></label>
             <div class="custom-select" data-name="category">
