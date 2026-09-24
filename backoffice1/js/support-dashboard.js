@@ -1,6 +1,6 @@
 /* ---------------- Color lookups ---------------- */
 const priorityColor = { Critical: "var(--maroon)", High: "var(--orange)", Medium: "var(--yellow)", Low: "var(--gray)" };
-const typeColor = { Patient: "var(--cyan)", Clinic: "var(--purple)", System: "var(--navy)", Backoffice: "var(--orange)" };
+const typeColor = { Patient: "var(--cyan)", Clinic: "var(--purple)", System: "var(--navy)", Backoffice: "#14B8A6" };
 
 /* "Tickets by Origin" on this dashboard is a different cut than the Patient/Clinic
    Type filter on the main Support ticket list: a ticket raised automatically or

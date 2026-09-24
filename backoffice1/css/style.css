@@ -4578,7 +4578,9 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
 .bo-pill-origin-system { background: var(--navy-light); color: var(--navy); }
 .bo-pill-origin-patient { background: var(--cyan-light); color: #1B8FA8; }
 .bo-pill-origin-clinic { background: var(--purple-light); color: var(--purple-text); }
-.bo-pill-origin-backoffice { background: var(--orange-light); color: var(--orange); }
+/* Teal -- deliberately a hue no Status/Priority uses (blue/orange/green/
+   maroon/yellow), so Back Office never reads as a state or urgency. */
+.bo-pill-origin-backoffice { background: #E3F5F2; color: #0F766E; }
 
 /* Category/tag columns -- simple gray-bordered badge, deliberately the
    quietest style so it never competes with Status or Severity. */
