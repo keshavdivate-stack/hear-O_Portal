@@ -10,10 +10,11 @@
 <link rel="stylesheet" href="/Mobile%20app/style.css?v=31">
 <script src="/Mobile%20app/font-scale.js?v=29"></script>
 <style>
-  /* Deliberately not a filled/primary button -- adding a medication is an
-     optional, occasional action, not something the screen should push the
-     user toward every time they open it. */
-  .mx-add-med-link { display: block; width: 100%; margin: 18px 0 6px; padding: 10px; background: none; border: none; text-align: center; font-family: inherit; font-size: calc(21px * var(--font-scale, 1)); font-weight: 600; color: #1a6fd4; cursor: pointer; }
+  /* Outlined, not filled -- reads as a real button (same pill language as
+     Take/Skip below) without the weight of the primary/filled CTA, since
+     adding a medication is an optional, occasional action rather than
+     something the screen should push the user toward every time. */
+  .mx-add-med-link { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; min-height: 52px; margin: 18px 0 6px; padding: 10px 20px; border-radius: 26px; border: 2px solid #1a6fd4; background: #f4f8fd; text-align: center; font-family: inherit; font-size: calc(21px * var(--font-scale, 1)); font-weight: 600; color: #1a6fd4; cursor: pointer; }
 </style>
 </head>
 <body>
@@ -55,7 +56,10 @@
 
       <div id="medTimeGroups"></div>
 
-      <button type="button" class="mx-add-med-link" onclick="window.location.href='/Mobile%20app/add-medication.html'">Add Medication</button>
+      <button type="button" class="mx-add-med-link" onclick="window.location.href='/Mobile%20app/add-medication.html'">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+        Add Medication
+      </button>
 
     </div>
   </div>
