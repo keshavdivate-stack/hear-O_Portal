@@ -29,8 +29,10 @@
   .am-night { background: #e9e6fb; color: #5b4bdb; }
   .am-body .login-btn { margin-top: 6px; }
   .am-duration-toggle { margin-bottom: 12px; }
-  .am-date-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .am-date-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+  .am-date-field { min-width: 0; }
   .am-date-field label { display: block; font-size: calc(16px * var(--font-scale, 1)); font-weight: 500; color: #6f6f6f; margin-bottom: 6px; }
+  .am-date-field input[type="date"] { min-width: 0; width: 100%; padding: 0 10px; font-size: calc(19px * var(--font-scale, 1)); }
 </style>
 </head>
 <body>
@@ -106,15 +108,16 @@
 
       <div class="am-section">
         <p class="am-label">5. Duration <small>(optional)</small></p>
-        <div class="am-chips am-duration-toggle">
-          <button type="button" class="am-chip" id="ongoingChip" aria-pressed="true">Ongoing (no end date)</button>
+        <div class="am-chips am-duration-toggle" id="durationChips">
+          <button type="button" class="am-chip" data-duration="ongoing" aria-pressed="true">Ongoing</button>
+          <button type="button" class="am-chip" data-duration="custom" aria-pressed="false">Custom</button>
         </div>
-        <div class="am-date-row">
+        <div class="am-date-row" id="dateRangeRow" style="display:none;">
           <div class="am-date-field">
             <label for="startDate">Start date</label>
             <input type="date" id="startDate" />
           </div>
-          <div class="am-date-field" id="endDateField" style="display:none;">
+          <div class="am-date-field">
             <label for="endDate">End date</label>
             <input type="date" id="endDate" />
           </div>
@@ -141,14 +144,17 @@
     b.setAttribute("aria-pressed", b.getAttribute("aria-pressed") === "true" ? "false" : "true"); check();
   }));
 
-  const ongoingChip = document.getElementById("ongoingChip");
-  const endDateField = document.getElementById("endDateField");
-  ongoingChip.addEventListener("click", () => {
-    const nowOngoing = ongoingChip.getAttribute("aria-pressed") !== "true";
-    ongoingChip.setAttribute("aria-pressed", String(nowOngoing));
-    endDateField.style.display = nowOngoing ? "none" : "";
-    if (nowOngoing) document.getElementById("endDate").value = "";
-  });
+  const dateRangeRow = document.getElementById("dateRangeRow");
+  document.querySelectorAll("#durationChips .am-chip").forEach((b) => b.addEventListener("click", () => {
+    document.querySelectorAll("#durationChips .am-chip").forEach((x) => x.setAttribute("aria-pressed", "false"));
+    b.setAttribute("aria-pressed", "true");
+    const isCustom = b.dataset.duration === "custom";
+    dateRangeRow.style.display = isCustom ? "grid" : "none";
+    if (!isCustom) {
+      document.getElementById("startDate").value = "";
+      document.getElementById("endDate").value = "";
+    }
+  }));
 
   nextBtn.addEventListener("click", () => {
     if (nextBtn.disabled) return;
