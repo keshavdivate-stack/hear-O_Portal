@@ -2246,7 +2246,7 @@ input[type="date"]:focus {
 .nav-item-card--lavender { background: #efeafb; }
 .nav-item-card--purple { background: #F2EDFD; }
 .nav-item-card--blue { background: #F0F7FF; }
-.nav-item-card--amber { background: #FEF9C3; }
+.nav-item-card--amber { background: #FEFCE8; }
 /* Kept out of amber -- that tint is reserved for the "needs your attention"
    update banner, so a same-colored nav card next to it reads as another
    alert at a glance (easy to miss for anyone scanning quickly). Also kept
