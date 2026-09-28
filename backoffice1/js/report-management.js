@@ -30,14 +30,12 @@
 const rmKebabIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="1.7" fill="currentColor"/><circle cx="12" cy="12" r="1.7" fill="currentColor"/><circle cx="12" cy="19" r="1.7" fill="currentColor"/></svg>`;
 const rmPeopleIcon = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`;
 
-/* Matches the old system's Scheduled Reports table: Schedule type / Days of
-   week / Report Time (GMT), plain values -- no relative "Tomorrow"/"Mon"
-   phrasing, since Days of week + Report Time already say when it runs. */
+/* "Scheduled On": the frequency, plus the run day(s) for weekly schedules,
+   e.g. "Daily", "Weekly · MON, THU", "Monthly". */
 const RM_DAY_ABBR = { Sunday: "SUN", Monday: "MON", Tuesday: "TUE", Wednesday: "WED", Thursday: "THU", Friday: "FRI", Saturday: "SAT" };
-function rmDaysOfWeekLabel(s) {
-  if (s.frequency === "Daily") return "All days";
-  if (s.frequency === "Weekly") return s.days && s.days.length ? s.days.map((d) => RM_DAY_ABBR[d] || d).join(", ") : "—";
-  return "—";
+function rmScheduledOnLabel(s) {
+  if (s.frequency === "Weekly" && s.days && s.days.length) return `Weekly · ${s.days.map((d) => RM_DAY_ABBR[d] || d).join(", ")}`;
+  return s.frequency || "—";
 }
 const rmReportTimeLabel = (s) => `${s.time} (${s.timezone})`;
 
@@ -207,8 +205,7 @@ function rmRenderScheduleRow(s) {
       <td>${s.tags.length ? `<div class="bo-ehr-tags">${s.tags.map((t) => `<span class="bo-ehr-tag">${rmEsc(t)}</span>`).join("")}</div>` : `<span class="bo-ehr-none">—</span>`}</td>
       <td>${rmEsc(s.org)}</td>
       <td>${rmRecipientsChip(s.recipients)}</td>
-      <td>${s.frequency}</td>
-      <td>${rmDaysOfWeekLabel(s)}</td>
+      <td>${rmScheduledOnLabel(s)}</td>
       <td>${rmReportTimeLabel(s)}</td>
       <td>${s.archived ? `<span class="bo-pill bo-pill-archived">Archived</span>` : rmStatusPill(s.status)}</td>
       <td>
@@ -220,7 +217,7 @@ function rmRenderScheduleRow(s) {
 }
 
 const rmScheduleEmptyHtml = `
-  <tr><td colspan="11">
+  <tr><td colspan="10">
     <div class="bo-empty-state">
       <svg class="bo-empty-state-icon" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9H21"/><path d="M8 2v4"/><path d="M16 2v4"/></svg>
       <p class="bo-empty-state-title" id="rmScheduleEmptyTitle">No scheduled reports yet</p>
@@ -311,7 +308,7 @@ function rmFilteredArchived() {
 }
 
 const rmArchivedEmptyHtml = `
-  <tr><td colspan="11">
+  <tr><td colspan="10">
     <div class="bo-empty-state">
       <svg class="bo-empty-state-icon" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9H21"/><path d="M8 2v4"/><path d="M16 2v4"/></svg>
       <p class="bo-empty-state-title" id="rmArchivedEmptyTitle">No archived reports</p>
