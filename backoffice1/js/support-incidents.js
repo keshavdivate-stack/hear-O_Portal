@@ -55,7 +55,7 @@ function incidentRowHtml(incident) {
       <td><span class="bo-incident-category-tag">${incident.category}</span></td>
       <td>${incPriorityPill(incident.priority)}</td>
       <td>${incStatusPill(incident.status)}${incRelatedTicketLink(incident)}</td>
-      <td><button type="button" class="bo-impact-link" data-impact-trigger data-id="${incident.id}">${incImpactLabel(incident)}</button></td>
+      <td>${incImpactLabel(incident)}</td>
       <td>${incident.detectedAt}</td>
       <td>
         <div class="bo-row-actions">
@@ -110,15 +110,6 @@ document.getElementById("incClearFiltersBtn").addEventListener("click", () => {
   document.getElementById("incSearchInput").value = "";
 
   refreshIncidentTable();
-});
-
-/* ---------------- Impact popover trigger (Impact column) ---------------- */
-document.getElementById("incidentRows").addEventListener("click", (e) => {
-  const trigger = e.target.closest("[data-impact-trigger]");
-  if (!trigger) return;
-  e.stopPropagation();
-  const incident = incidents.find((i) => i.id === trigger.dataset.id);
-  if (incident) incImpactPopover.open(trigger, incident);
 });
 
 function findIncident(id) { return incidents.find((i) => i.id === id); }

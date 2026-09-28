@@ -1,39 +1,47 @@
 /* ---------------- Organization scope (All Organizations vs single org) ---------------- */
 let ovSelectedOrgId = "all";
 
+/* Organization Type filter (All / Commercial / R&D / Study) -- narrows the
+   Organization dropdown and every "All Organizations" total to orgs of that
+   type. Types come from MKT_ORG_LIST (js/mkt-orgs.js), the same source the
+   Screening/Summary dashboards use. */
+let ovOrgType = "all";
+const OV_ORG_TYPE = Object.fromEntries(MKT_ORG_LIST.filter((o) => o.id !== "all").map((o) => [o.id, o.type]));
+
+function ovScopedOrgEntries() {
+  return Object.entries(orgHealthData).filter(([id]) => ovOrgType === "all" || OV_ORG_TYPE[id] === ovOrgType);
+}
+const ovScopedOrgs = () => ovScopedOrgEntries().map(([, o]) => o);
+const ovAffectedOrgCount = () => ovScopedOrgs().filter((o) => o.openIssues > 0).length;
+
 /* ---------------- Incidents by Category / Incidents Over Time: single
    "group by" field (Category / Severity / Status), Category by default. */
 let ovDonutGroupBy = "category";
 let ovTrendGroupBy = "category";
 
 /* ---------------- KPI row (System Health Summary) ---------------- */
-/* "Organizations Affected" is derived from orgHealthData (orgs with at least one
-   open issue) so it always agrees with the Affected Organizations list below
-   instead of drifting out of sync as a separately hand-maintained number. */
-const ovAffectedOrgCount = Object.values(orgHealthData).filter((o) => o.openIssues > 0).length;
-
-/* "Patients Affected" and "Open Incidents Requiring Action" are summed from the
-   same per-organization data (orgHealthData) that backs the Affected
-   Organizations list and every org's own drill-down page -- so the
-   all-organizations KPI row always agrees with what a viewer sees when they
-   add up the org list themselves, instead of being separately hand-tuned
-   numbers that drift out of sync. */
-const ovPatientsAffectedCount = Object.values(orgHealthData).reduce((sum, o) => sum + o.patientsAffected.length, 0);
-const ovOpenIssuesCount = Object.values(orgHealthData).reduce((sum, o) => sum + o.openIssues, 0);
-
-const ovAllOrgsHealthStats = [
-  { num: Object.keys(orgHealthData).length, label: "Total Organizations", color: "var(--navy)", icon: `<rect width="16" height="18" x="4" y="3" rx="1"/><path d="M9 8h1"/><path d="M14 8h1"/><path d="M9 12h1"/><path d="M14 12h1"/><path d="M9 16h1"/><path d="M14 16h1"/><path d="M10 21v-3a2 2 0 0 1 4 0v3"/>`, delta: 0, deltaDir: "flat" },
-  { num: ovAffectedOrgCount, label: "Organizations Affected", color: "var(--blue)", icon: `<rect width="16" height="18" x="4" y="3" rx="1"/><path d="M9 8h1"/><path d="M14 8h1"/><path d="M9 12h1"/><path d="M14 12h1"/>`, delta: 1, deltaDir: "up" },
-  { num: ovPatientsAffectedCount, label: "Patients Affected", color: "var(--purple)", icon: `<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>`, delta: 23, deltaDir: "up" },
-  { num: ovOpenIssuesCount, label: "Open Incidents Requiring Action", color: "var(--orange)", icon: `<path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.73 3h16.9a2 2 0 0 0 1.73-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/>`, delta: 2, deltaDir: "down" },
-];
+/* All-organizations KPIs are summed from the same per-organization data
+   (orgHealthData, narrowed by the Organization Type filter) that backs the
+   Affected Organizations list and every org's drill-down page, so the KPI row
+   always agrees with the org list instead of drifting out of sync. */
+function ovAllOrgsHealthStats() {
+  const orgs = ovScopedOrgs();
+  const patientsAffected = orgs.reduce((sum, o) => sum + o.patientsAffected.length, 0);
+  const openIssues = orgs.reduce((sum, o) => sum + o.openIssues, 0);
+  return [
+  { num: orgs.length, label: "Total Organizations", color: "var(--navy)", icon: `<rect width="16" height="18" x="4" y="3" rx="1"/><path d="M9 8h1"/><path d="M14 8h1"/><path d="M9 12h1"/><path d="M14 12h1"/><path d="M9 16h1"/><path d="M14 16h1"/><path d="M10 21v-3a2 2 0 0 1 4 0v3"/>`, delta: 0, deltaDir: "flat" },
+  { num: ovAffectedOrgCount(), label: "Organizations Affected", color: "var(--blue)", icon: `<rect width="16" height="18" x="4" y="3" rx="1"/><path d="M9 8h1"/><path d="M14 8h1"/><path d="M9 12h1"/><path d="M14 12h1"/>`, delta: 1, deltaDir: "up" },
+  { num: patientsAffected, label: "Patients Affected", color: "var(--purple)", icon: `<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>`, delta: 23, deltaDir: "up" },
+  { num: openIssues, label: "Open Incidents Requiring Action", color: "var(--orange)", icon: `<path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.73 3h16.9a2 2 0 0 0 1.73-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/>`, delta: 2, deltaDir: "down" },
+  ];
+}
 
 const ovDeltaArrow = { up: `<path d="M12 19V5"/><path d="m5 12 7-7 7 7"/>`, down: `<path d="M12 5v14"/><path d="m5 12 7 7 7-7"/>`, flat: `<path d="M5 12h14"/>` };
 const ovDeltaText = (s) => (s.deltaDir === "flat" ? "No change" : `${s.delta} vs yesterday`);
 const ovDeltaColor = (s) => (s.deltaDir === "flat" ? "var(--gray-text)" : s.deltaDir === "up" ? "var(--maroon)" : "var(--green)");
 
 function ovHealthStatsFor(orgId) {
-  if (orgId === "all") return ovAllOrgsHealthStats;
+  if (orgId === "all") return ovAllOrgsHealthStats();
   const o = orgHealthData[orgId];
   return [
     { num: 1, label: "Organization", color: "var(--navy)", icon: `<rect width="16" height="18" x="4" y="3" rx="1"/><path d="M9 8h1"/><path d="M14 8h1"/><path d="M9 12h1"/><path d="M14 12h1"/><path d="M9 16h1"/><path d="M14 16h1"/><path d="M10 21v-3a2 2 0 0 1 4 0v3"/>`, delta: 0, deltaDir: "flat" },
@@ -353,12 +361,12 @@ const OV_CATEGORY_ICONS = {
    appear in orgHealthData) so a category with no open issues right now --
    e.g. Clinic Users (Security), which has no named alarms defined yet --
    still shows up in the donut/legend at 0 instead of silently vanishing. */
-const ovCategories = (() => {
+function ovCategoryTotals(orgs) {
   const totals = {};
   Object.keys(OV_CATEGORY_COLORS).forEach((label) => {
     totals[label] = 0;
   });
-  Object.values(orgHealthData).forEach((o) => {
+  orgs.forEach((o) => {
     o.categories.forEach((c) => {
       totals[c.label] = (totals[c.label] || 0) + c.count;
     });
@@ -366,7 +374,10 @@ const ovCategories = (() => {
   return Object.entries(totals)
     .sort((a, b) => b[1] - a[1])
     .map(([label, count]) => ({ label, count, color: OV_CATEGORY_COLORS[label] || "var(--gray)" }));
-})();
+}
+/* Full category list (every org) -- the trend chart's series; the donut uses
+   ovCategoryTotals(ovScopedOrgs()) so it follows the Organization Type filter. */
+const ovCategories = ovCategoryTotals(Object.values(orgHealthData));
 
 /* Severity/status use the app's existing SEVERITIES/INC_STATUSES lists (from
    js/support-data.js and js/support-incidents-data.js) rather than a
@@ -408,7 +419,7 @@ function ovDrilldownHref(dimension, value, orgId) {
    before), or by Severity/Status (every category's incidents tallied into
    that dimension's values instead). */
 function ovDonutSlices(orgId) {
-  const baseCategories = orgId === "all" ? ovCategories : orgHealthData[orgId].categories.filter((c) => c.count > 0);
+  const baseCategories = orgId === "all" ? ovCategoryTotals(ovScopedOrgs()) : orgHealthData[orgId].categories.filter((c) => c.count > 0);
   if (ovDonutGroupBy === "category") {
     return baseCategories.map((c) => ({ dimension: "category", value: c.label, label: c.label, count: c.count, color: c.color }));
   }
@@ -476,38 +487,11 @@ const ovCategoryTrendData = {
   "Clinic Users (Security)": [0, 1, 0, 2, 1, 3, 2, 4, 3, 5, 4, 6],
 };
 
-/* Range toggle for this chart only (separate from the header's System
-   Health Trend range) -- "Last 6 Months"/"Last 1 Year" show the trailing
-   window of the same 12-month dataset; a specific calendar year (e.g.
-   "2021") instead generates a deterministic Jan-Dec series per category so
-   older years stay browsable without hand-authoring a dataset for each one. */
-let ovCategoryTrendRangeKey = "1y";
-const OV_CATEGORY_TREND_RANGE_MONTHS = { "6mo": 6, "1y": 12 };
-const OV_CATEGORY_TREND_MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-
-function ovCategoryYearSeries(label, year) {
-  const baseMax = Math.max(10, ...(ovCategoryTrendData[label] || [10]));
-  return OV_CATEGORY_TREND_MONTH_NAMES.map((_, m) => {
-    const seed = ovHash(`${label}#${year}#${m}`);
-    const pct = 0.15 + (seed % 71) / 100; // 0.15-0.85 of this category's current peak
-    return Math.round(baseMax * pct);
-  });
-}
-
+/* This chart always shows the trailing 12 months (no range filter). */
 function ovCategoryTrendWindow() {
-  const isYear = /^\d{4}$/.test(ovCategoryTrendRangeKey);
-  if (isYear) {
-    const year = ovCategoryTrendRangeKey;
-    const yy = year.slice(2);
-    return {
-      labels: OV_CATEGORY_TREND_MONTH_NAMES.map((m) => `${m} '${yy}`),
-      valuesFor: (label) => ovCategoryYearSeries(label, year),
-    };
-  }
-  const months = OV_CATEGORY_TREND_RANGE_MONTHS[ovCategoryTrendRangeKey] || 12;
   return {
-    labels: ovCategoryTrendLabels.slice(-months),
-    valuesFor: (label) => (ovCategoryTrendData[label] || ovCategoryTrendLabels.map(() => 0)).slice(-months),
+    labels: ovCategoryTrendLabels.slice(-12),
+    valuesFor: (label) => (ovCategoryTrendData[label] || ovCategoryTrendLabels.map(() => 0)).slice(-12),
   };
 }
 
@@ -686,8 +670,8 @@ function renderOvOrgList(orgId) {
   const listEl = document.getElementById("ovOrgMiniList");
 
   if (orgId === "all") {
-    if (panelTitle) panelTitle.textContent = `Affected Organizations (${ovAffectedOrgCount})`;
-    listEl.innerHTML = Object.entries(orgHealthData)
+    if (panelTitle) panelTitle.textContent = `Affected Organizations (${ovAffectedOrgCount()})`;
+    listEl.innerHTML = ovScopedOrgEntries()
       .sort((a, b) => b[1].openIssues - a[1].openIssues)
       .slice(0, 5)
       .map(
@@ -722,8 +706,8 @@ const ovOrgListModalOverlay = document.getElementById("ovOrgListModalOverlay");
 const ovOrgListModalBody = document.getElementById("ovOrgListModalBody");
 
 function openOvOrgListModal() {
-  document.getElementById("ovOrgListModalTitle").textContent = `Affected Organizations (${ovAffectedOrgCount})`;
-  ovOrgListModalBody.innerHTML = Object.entries(orgHealthData)
+  document.getElementById("ovOrgListModalTitle").textContent = `Affected Organizations (${ovAffectedOrgCount()})`;
+  ovOrgListModalBody.innerHTML = ovScopedOrgEntries()
     .filter(([, o]) => o.openIssues > 0)
     .sort((a, b) => b[1].openIssues - a[1].openIssues)
     .map(
@@ -786,7 +770,7 @@ window.addEventListener("resize", () => renderOvDonut(ovSelectedOrgId));
 const OV_UPTIME_STATUS_META = {
   ok: { color: "var(--green)", label: "Operational" },
   degraded: { color: "var(--orange)", label: "Degraded" },
-  down: { color: "var(--maroon)", label: "Outage" },
+  down: { color: "var(--maroon)", label: "Down" },
 };
 
 /* Builds a 30-entry day-by-day history ending today. `exceptions` maps a
@@ -818,8 +802,9 @@ function ovUptimePercent(days) {
 function renderOvUptimeList() {
   const activeIncidents = OV_UPTIME_SERVICES.filter((s) => s.days[s.days.length - 1] !== "ok").length;
   const summaryEl = document.getElementById("ovUptimeSummary");
-  summaryEl.textContent = activeIncidents ? `${activeIncidents} active incident${activeIncidents === 1 ? "" : "s"}` : "All systems operational";
-  summaryEl.style.color = activeIncidents ? "var(--orange-text)" : "var(--green-text)";
+  summaryEl.textContent = `${activeIncidents} active incident(s)`;
+  summaryEl.style.color = "var(--gray-text)";
+  summaryEl.style.fontWeight = "500";
 
   document.getElementById("ovUptimeRows").innerHTML = OV_UPTIME_SERVICES.map((s) => {
     const today = s.days[s.days.length - 1];
@@ -838,8 +823,9 @@ function renderOvUptimeList() {
       <div class="bo-uptime-row-top">
         <span class="bo-uptime-dot" style="background:${meta.color};"></span>
         <span class="bo-uptime-name">${s.name}</span>
+        <span class="bo-uptime-status-label">Current Status:</span>
         <span class="bo-uptime-status" style="color:${meta.color};">${meta.label}</span>
-        <span class="bo-uptime-pct">${pct.toFixed(2)}% uptime</span>
+        <span class="bo-uptime-pct" title="30-day uptime">${Number(pct.toFixed(2))}%</span>
       </div>
       <div class="bo-uptime-bars">${bars}</div>
     </div>`;
@@ -896,10 +882,43 @@ function renderOvForOrg(orgId) {
 /* ---------------- Header: organization dropdown ---------------- */
 const ovOrgSelect = document.querySelector('.bo-select[data-name="ovOrg"]');
 const ovOrgMenu = document.getElementById("ovOrgMenu");
-ovOrgMenu.innerHTML += Object.entries(orgHealthData)
-  .sort((a, b) => a[1].name.localeCompare(b[1].name))
-  .map(([id, o]) => `<div class="bo-select-option" data-value="${id}">${o.name}</div>`)
-  .join("");
+
+/* Organization options follow the Organization Type filter. */
+function renderOvOrgMenu() {
+  const selected = (id) => (id === ovSelectedOrgId ? " selected" : "");
+  ovOrgMenu.innerHTML =
+    `<div class="bo-select-option${selected("all")}" data-value="all">All Organizations</div>` +
+    ovScopedOrgEntries()
+      .sort((a, b) => a[1].name.localeCompare(b[1].name))
+      .map(([id, o]) => `<div class="bo-select-option${selected(id)}" data-value="${id}">${o.name}</div>`)
+      .join("");
+  ovOrgSelect.querySelector(".bo-select-value").textContent =
+    ovSelectedOrgId === "all" ? "All Organizations" : orgHealthData[ovSelectedOrgId].name;
+}
+renderOvOrgMenu();
+
+/* ---------------- Header: organization type dropdown ---------------- */
+const ovOrgTypeSelect = document.querySelector('.bo-select[data-name="ovOrgType"]');
+ovOrgTypeSelect.querySelector(".bo-select-trigger").addEventListener("click", (e) => {
+  e.stopPropagation();
+  ovOrgSelect.classList.remove("open");
+  ovOrgTypeSelect.classList.toggle("open");
+});
+ovOrgTypeSelect.addEventListener("click", (e) => {
+  const option = e.target.closest(".bo-select-option");
+  if (!option) return;
+  ovOrgTypeSelect.querySelector(".bo-select-value").textContent = option.textContent;
+  ovOrgTypeSelect.querySelectorAll(".bo-select-option").forEach((el) => el.classList.remove("selected"));
+  option.classList.add("selected");
+  ovOrgTypeSelect.classList.remove("open");
+  ovOrgType = option.dataset.value;
+  /* A picked organization of a different type falls back to All Organizations. */
+  const orgStillVisible = ovSelectedOrgId === "all" || ovOrgType === "all" || OV_ORG_TYPE[ovSelectedOrgId] === ovOrgType;
+  const nextOrgId = orgStillVisible ? ovSelectedOrgId : "all";
+  ovSelectedOrgId = nextOrgId;
+  renderOvOrgMenu();
+  renderOvForOrg(nextOrgId);
+});
 
 ovOrgSelect.querySelector(".bo-select-trigger").addEventListener("click", (e) => {
   e.stopPropagation();
@@ -961,37 +980,8 @@ ovRangeSelect.addEventListener("click", (e) => {
     renderOvTrendFooter();
   }
 });
-/* ---------------- Incidents by Category Over Time: range dropdown ---------------- */
-const ovCategoryTrendRangeSelect = document.querySelector('.bo-select[data-name="ovCategoryTrendRange"]');
-/* Trailing 6mo/1y options stay above a divider, followed by a plain list of
-   calendar years (current year back a handful of years) so an older year
-   is one click away instead of only ever showing the trailing window. */
-const ovCurrentYear = new Date("2026-09-09").getFullYear();
-const ovTrendRangeMenu = ovCategoryTrendRangeSelect.querySelector(".bo-select-menu");
-ovTrendRangeMenu.insertAdjacentHTML(
-  "beforeend",
-  `<div class="bo-select-divider"></div>` +
-    Array.from({ length: 6 }, (_, i) => ovCurrentYear - i)
-      .map((year) => `<div class="bo-select-option" data-value="${year}">${year}</div>`)
-      .join("")
-);
-ovCategoryTrendRangeSelect.querySelector(".bo-select-trigger").addEventListener("click", (e) => {
-  e.stopPropagation();
-  ovCategoryTrendRangeSelect.classList.toggle("open");
-});
-ovCategoryTrendRangeSelect.addEventListener("click", (e) => {
-  const option = e.target.closest(".bo-select-option");
-  if (!option) return;
-  ovCategoryTrendRangeSelect.querySelector(".bo-select-value").textContent = option.textContent;
-  ovCategoryTrendRangeSelect.querySelectorAll(".bo-select-option").forEach((el) => el.classList.remove("selected"));
-  option.classList.add("selected");
-  ovCategoryTrendRangeSelect.classList.remove("open");
-  ovCategoryTrendRangeKey = option.dataset.value;
-  renderOvCategoryTrendChart();
-});
-
 document.addEventListener("click", () => {
   ovRangeSelect.classList.remove("open");
   ovOrgSelect.classList.remove("open");
-  ovCategoryTrendRangeSelect.classList.remove("open");
+  ovOrgTypeSelect.classList.remove("open");
 });

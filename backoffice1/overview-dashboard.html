@@ -146,6 +146,19 @@
         <h1>System Health Overview</h1>
       </div>
       <div class="bo-ov-head-actions">
+        <div class="bo-select" data-name="ovOrgType">
+          <button type="button" class="bo-select-trigger bo-ov-org-btn">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 2 7l10 5 10-5-10-5Z"/><path d="m2 17 10 5 10-5"/><path d="m2 12 10 5 10-5"/></svg>
+            <span class="bo-select-value">All Types</span>
+            <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="bo-select-menu">
+            <div class="bo-select-option selected" data-value="all">All Types</div>
+            <div class="bo-select-option" data-value="Commercial">Commercial</div>
+            <div class="bo-select-option" data-value="R&amp;D">R&amp;D</div>
+            <div class="bo-select-option" data-value="Study">Study</div>
+          </div>
+        </div>
         <div class="bo-select" data-name="ovOrg">
           <button type="button" class="bo-select-trigger bo-ov-org-btn">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="18" x="4" y="3" rx="1"/><path d="M9 8h1"/><path d="M14 8h1"/><path d="M9 12h1"/><path d="M14 12h1"/><path d="M9 16h1"/><path d="M14 16h1"/><path d="M10 21v-3a2 2 0 0 1 4 0v3"/></svg>
@@ -266,16 +279,6 @@
                 <div class="bo-select-option" data-value="status">By Status</div>
               </div>
             </div>
-            <div class="bo-select" data-name="ovCategoryTrendRange" style="width:150px; flex-shrink:0;">
-              <button type="button" class="bo-select-trigger">
-                <span class="bo-select-value">Last 1 Year</span>
-                <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </button>
-              <div class="bo-select-menu">
-                <div class="bo-select-option" data-value="6mo">Last 6 Months</div>
-                <div class="bo-select-option selected" data-value="1y">Last 1 Year</div>
-              </div>
-            </div>
           </div>
         </div>
         <div id="ovCategoryTrendChart" class="bo-chart-area" style="height:220px;"></div>
@@ -301,6 +304,7 @@
 <script src="js/support-incidents-data.js"></script>
 <script src="js/notifications.js"></script>
 <script src="js/org-health-data.js"></script>
+<script src="js/mkt-orgs.js"></script>
 <script src="js/overview-dashboard.js"></script>
 </body>
 </html>
