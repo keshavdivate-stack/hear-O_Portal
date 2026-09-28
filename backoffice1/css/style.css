@@ -3966,6 +3966,7 @@ a.bo-health-card:hover { border-color: var(--field-border); }
 
 .bo-row-link { color: var(--blue-text); font-weight: 700; text-decoration: none; cursor: pointer; }
 .bo-row-link:hover { text-decoration: underline; }
+.bo-panel-head .bo-row-link { font-size: 13px; font-family: inherit; }
 
 .bo-select-inline {
   appearance: none;
