@@ -4982,6 +4982,14 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
 }
 .bo-rule-truncate--wide { max-width: 320px; }
 
+/* Rule Status column (Enabled/Disabled) -- plain colored text like the other
+   status columns. A disabled rule's row is dimmed, except its Status and
+   kebab cells, so the state stays readable and it can be re-enabled. */
+.bo-rule-status { font-size: 12px; font-weight: 700; }
+.bo-rule-status--enabled { color: var(--green-text); }
+.bo-rule-status--disabled { color: var(--gray-text); }
+.bo-rule-row-disabled td:not(:last-child):not(.bo-rule-status-cell) { opacity: 0.5; }
+
 /* Tickets table: Category and Level as filled gray tags, Priority as plain
    colored text -- same treatment as the developed Tickets list. */
 #ticketRows .bo-pill-tag,

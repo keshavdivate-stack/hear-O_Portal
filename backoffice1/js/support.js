@@ -480,7 +480,7 @@ const renderRules = boCreatePager(
   "ruleRows",
   () => alertRules,
   (r) => `
-      <tr>
+      <tr${r.enabled === false ? ' class="bo-rule-row-disabled"' : ""}>
         <td><span class="bo-rule-truncate" title="${r.name}">${r.name}</span></td>
         <td>${categoryPill(r)}</td>
         <td><span class="bo-rule-truncate bo-rule-truncate--wide" title="${r.condition}">${r.condition}</span></td>
@@ -489,13 +489,16 @@ const renderRules = boCreatePager(
         <td>${ruleSla(r)}</td>
         <td>${channelPills(r.channels)}</td>
         <td>${r.appliesTo}</td>
+        <td class="bo-rule-status-cell">${r.enabled === false
+          ? '<span class="bo-rule-status bo-rule-status--disabled">Disabled</span>'
+          : '<span class="bo-rule-status bo-rule-status--enabled">Enabled</span>'}</td>
         <td>
           <div class="bo-row-actions">
             <button class="bo-action-icon row-menu-trigger" data-id="${r.id}" aria-label="Row actions">${ticketKebabIcon}</button>
           </div>
         </td>
       </tr>`,
-  { pageSize: 10, emptyColspan: 9, emptyText: "No rules yet." }
+  { pageSize: 10, emptyColspan: 10, emptyText: "No rules yet." }
 );
 renderRules();
 
@@ -517,6 +520,8 @@ document.getElementById("ruleRows").addEventListener("click", (e) => {
   if (!trigger) return;
   e.stopPropagation();
   activeRuleId = Number(trigger.dataset.id);
+  const activeRule = alertRules.find((r) => r.id === activeRuleId);
+  document.getElementById("ruleRowMenuToggleBtn").textContent = activeRule && activeRule.enabled === false ? "Enable Rule" : "Disable Rule";
   const rect = trigger.getBoundingClientRect();
   ruleRowMenu.style.top = `${rect.bottom + 6}px`;
   ruleRowMenu.style.left = `${rect.right - 190}px`;
@@ -553,9 +558,14 @@ ruleRowMenu.addEventListener("click", (e) => {
   const item = e.target.closest(".bo-row-menu-item");
   if (!item || activeRuleId === null) return;
   ruleRowMenu.classList.remove("open");
-  if (item.dataset.action === "edit") {
-    const rule = alertRules.find((r) => r.id === activeRuleId);
-    if (rule) openRuleDrawer(rule);
+  const rule = alertRules.find((r) => r.id === activeRuleId);
+  if (!rule) return;
+  if (item.dataset.action === "edit") openRuleDrawer(rule);
+  /* Disabled rules stay listed (dimmed, Status "Disabled") so they can be
+     re-enabled from the same menu. */
+  if (item.dataset.action === "toggle") {
+    rule.enabled = rule.enabled === false;
+    renderRules();
   }
 });
 
