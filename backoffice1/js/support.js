@@ -476,9 +476,12 @@ const channelPills = (channels) => channels.map((c) => channelPillLabel[c] || c)
 
 const ruleSla = (r) => (r.slaResponse || r.slaResolve ? `${r.slaResponse || "—"} / ${r.slaResolve || "—"}` : "&mdash;");
 
+let ruleCategoryValue = "";
+document.getElementById("ruleCategoryFilterMenu").innerHTML = buildFilterSelectOptions(CATEGORIES, "All categories");
+
 const renderRules = boCreatePager(
   "ruleRows",
-  () => alertRules,
+  () => (ruleCategoryValue ? alertRules.filter((r) => ticketCategory(r) === ruleCategoryValue) : alertRules),
   (r) => `
       <tr${r.enabled === false ? ' class="bo-rule-row-disabled"' : ""}>
         <td><span class="bo-rule-truncate" title="${r.name}">${r.name}</span></td>
@@ -498,9 +501,15 @@ const renderRules = boCreatePager(
           </div>
         </td>
       </tr>`,
-  { pageSize: 10, emptyColspan: 10, emptyText: "No rules yet." }
+  { pageSize: 10, emptyColspan: 10, emptyText: "No rules match this category." }
 );
 renderRules();
+
+document.getElementById("ruleCategoryFilter").addEventListener("change", (e) => {
+  ruleCategoryValue = e.target.value;
+  renderRules.resetPage();
+  renderRules();
+});
 
 document.querySelector('#ruleDrawerOverlay .bo-select[data-name="rulePriority"] .bo-select-menu').innerHTML = buildSelectOptions(PRIORITIES);
 document.querySelector('#ruleDrawerOverlay .bo-select[data-name="ruleTier"] .bo-select-menu').innerHTML = buildSelectOptions(TIERS);

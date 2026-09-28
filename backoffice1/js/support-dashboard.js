@@ -30,8 +30,20 @@ const supDashAllTickets = [
    staff members' personal view can be previewed here. */
 let currentAgent = SUPPORT_AGENTS[0];
 
+/* Start/End date filter on each ticket's created date; values are the
+   date inputs' YYYY-MM-DD strings, "" when unset. */
+let supDashStartDate = "";
+let supDashEndDate = "";
+
 function myTickets() {
-  return supDashAllTickets.filter((t) => t.assignedTo === currentAgent);
+  const start = supDashStartDate ? new Date(`${supDashStartDate}T00:00:00`).getTime() : null;
+  const end = supDashEndDate ? new Date(`${supDashEndDate}T23:59:59`).getTime() : null;
+  return supDashAllTickets.filter((t) => {
+    if (t.assignedTo !== currentAgent) return false;
+    if (start === null && end === null) return true;
+    const created = parseTicketDate(t.createdDate);
+    return (start === null || created >= start) && (end === null || created <= end);
+  });
 }
 
 /* createdDate is "DD/MM/YYYY HH:mm" -- parse to an actual timestamp so
@@ -299,6 +311,19 @@ document.getElementById("supDashLevelFilter").addEventListener("change", (e) => 
 
 document.getElementById("supDashAgentFilter").addEventListener("change", (e) => {
   currentAgent = e.target.value || agentsForLevel(document.getElementById("supDashLevelFilter").value)[0];
+  renderDashboard();
+});
+
+const supDashStartInput = document.getElementById("supDashStartDate");
+const supDashEndInput = document.getElementById("supDashEndDate");
+supDashStartInput.addEventListener("change", (e) => {
+  supDashStartDate = e.target.value;
+  supDashEndInput.min = supDashStartDate;
+  renderDashboard();
+});
+supDashEndInput.addEventListener("change", (e) => {
+  supDashEndDate = e.target.value;
+  supDashStartInput.max = supDashEndDate;
   renderDashboard();
 });
 
