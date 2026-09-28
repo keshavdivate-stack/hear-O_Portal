@@ -1,4 +1,4 @@
-/* ---------------- KPI row ---------------- */
+﻿/* ---------------- KPI row ---------------- */
 const boStats = [
   { num: 134, label: "Registered", color: "var(--orange)", icon: `<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>` },
   { num: 5, label: "Baseline", color: "var(--navy)", icon: `<path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/>` },
@@ -158,7 +158,7 @@ function renderAreaChart(mode) {
 
   const parts = [];
   if (mode !== "quality") parts.push(buildArea(complianceSeries, "#1F3C73", "gradNavy"));
-  if (mode !== "compliance") parts.push(buildArea(qualitySeries, "#F2994A", "gradOrange"));
+  if (mode !== "compliance") parts.push(buildArea(qualitySeries, "#EA580C", "gradOrange"));
 
   document.getElementById("complianceArea").innerHTML = `
     <svg viewBox="0 0 ${width} ${height}" class="bo-area-svg" preserveAspectRatio="none">
@@ -168,8 +168,8 @@ function renderAreaChart(mode) {
           <stop offset="100%" stop-color="#1F3C73" stop-opacity="0"/>
         </linearGradient>
         <linearGradient id="gradOrange" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="#F2994A" stop-opacity="0.25"/>
-          <stop offset="100%" stop-color="#F2994A" stop-opacity="0"/>
+          <stop offset="0%" stop-color="#EA580C" stop-opacity="0.25"/>
+          <stop offset="100%" stop-color="#EA580C" stop-opacity="0"/>
         </linearGradient>
       </defs>
       ${gridLines.join("")}

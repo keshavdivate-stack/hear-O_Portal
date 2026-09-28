@@ -1,4 +1,4 @@
-/* ---------------- Discontinued account banner ---------------- */
+﻿/* ---------------- Discontinued account banner ---------------- */
 (() => {
   const params = new URLSearchParams(window.location.search);
   if (params.get("discontinued") !== "1") return;
@@ -327,8 +327,8 @@ const systolicData = seriesValues(105, 20);
 const diastolicData = seriesValues(65, 15);
 function buildBpChart() {
   buildAxisLineChart("bpChartWrap", "bpDayScale", [
-    { data: systolicData, color: "#D9A628" },
-    { data: diastolicData, color: "#F2994A" },
+    { data: systolicData, color: "#EAB308" },
+    { data: diastolicData, color: "#EA580C" },
   ], 60, 180, 150, "bpMonthRow");
 }
 buildBpChart();
@@ -445,7 +445,7 @@ function buildSleepChart() {
             <div class="seg" style="height:${deepH}px; background:#2E5AAC;"></div>
             <div class="seg" style="height:${lightH}px; background:#3FBE84;"></div>
             <div class="seg" style="height:${remH}px; background:#8B6BD1;"></div>
-            <div class="seg" style="height:${awakeH}px; background:#F2994A;"></div>
+            <div class="seg" style="height:${awakeH}px; background:#EA580C;"></div>
           </div>
           <span class="sleep-col-label">${d.label}</span>
         </div>`;
@@ -493,7 +493,7 @@ const oxygenData = rangeSeries(92, 99, 6);
 const respirationData = rangeSeries(16, 32, 8);
 
 function buildHeartChart() { buildRangeChart("heartChart", heartData, 45, 200, 150, "#1CBFA6", "heartMonthRow"); }
-function buildOxygenChart() { buildRangeChart("oxygenChart", oxygenData, 80, 100, 150, "#F2994A", "oxygenMonthRow"); }
+function buildOxygenChart() { buildRangeChart("oxygenChart", oxygenData, 80, 100, 150, "#EA580C", "oxygenMonthRow"); }
 function buildRespirationChart() { buildRangeChart("respirationChart", respirationData, 10, 50, 150, "#7C7CE0", "respirationMonthRow"); }
 
 buildHeartChart();
@@ -514,7 +514,7 @@ function timeLabel(d) {
   const ampm = h >= 12 ? "PM" : "AM";
   h = h % 12 || 12;
   const m = String(d.getMinutes()).padStart(2, "0");
-  return { short: `${String(d.getDate()).padStart(2, "0")} ${months[d.getMonth()]} · ${h}:${m} ${ampm}`, full: `${String(d.getDate()).padStart(2, "0")} ${months[d.getMonth()]} ${d.getFullYear()}, ${h}:${m} ${ampm}` };
+  return { short: `${String(d.getDate()).padStart(2, "0")} ${months[d.getMonth()]} Â· ${h}:${m} ${ampm}`, full: `${String(d.getDate()).padStart(2, "0")} ${months[d.getMonth()]} ${d.getFullYear()}, ${h}:${m} ${ampm}` };
 }
 
 let careRecIdSeq = 4;
@@ -529,7 +529,7 @@ const careRecs = [
     duration: "3",
     startDate: "2026-08-05",
     instructionsPatient: "Take with breakfast. Weigh yourself each morning and record it in the app.",
-    instructionsCareTeam: "Created in error — duplicate of an existing titration plan.",
+    instructionsCareTeam: "Created in error â€” duplicate of an existing titration plan.",
     invitePatient: false,
     status: "archived",
     createdBy: "Dr. Sarah Mitchell",
@@ -537,8 +537,8 @@ const careRecs = [
     updatedAt: "05 Aug 2026, 09:20 AM",
     pickedUpBy: null,
     activity: [
-      { who: "Dr. Sarah Mitchell", when: "05 Aug · 09:10 AM", text: "Created care recommendation." },
-      { who: "Dr. Sarah Mitchell", when: "05 Aug · 09:20 AM", label: "Archived", short: "Archived", note: "Created in error — duplicate of an existing titration plan." },
+      { who: "Dr. Sarah Mitchell", when: "05 Aug Â· 09:10 AM", text: "Created care recommendation." },
+      { who: "Dr. Sarah Mitchell", when: "05 Aug Â· 09:20 AM", label: "Archived", short: "Archived", note: "Created in error â€” duplicate of an existing titration plan." },
     ],
   },
   {
@@ -559,9 +559,9 @@ const careRecs = [
     updatedAt: "08 Aug 2026, 02:15 PM",
     pickedUpBy: "Amanda Lee, RN",
     activity: [
-      { who: "Dr. Sarah Mitchell", when: "08 Aug · 11:00 AM", text: "Created care recommendation." },
-      { who: "Amanda Lee, RN", when: "08 Aug · 11:20 AM", text: "Picked up recommendation." },
-      { who: "Amanda Lee, RN", when: "08 Aug · 02:15 PM", label: "Action taken: Patient contacted", short: "Patient contacted", note: "Patient reports mild dizziness on standing; no other symptoms. Heart rate readings within range." },
+      { who: "Dr. Sarah Mitchell", when: "08 Aug Â· 11:00 AM", text: "Created care recommendation." },
+      { who: "Amanda Lee, RN", when: "08 Aug Â· 11:20 AM", text: "Picked up recommendation." },
+      { who: "Amanda Lee, RN", when: "08 Aug Â· 02:15 PM", label: "Action taken: Patient contacted", short: "Patient contacted", note: "Patient reports mild dizziness on standing; no other symptoms. Heart rate readings within range." },
     ],
   },
   {
@@ -582,12 +582,12 @@ const careRecs = [
     updatedAt: "07 Aug 2026, 04:10 PM",
     pickedUpBy: "Amanda Lee, RN",
     activity: [
-      { who: "Dr. Sarah Mitchell", when: "07 Aug · 09:00 AM", text: "Created care recommendation." },
-      { who: "Amanda Lee, RN", when: "07 Aug · 09:40 AM", text: "Picked up recommendation." },
-      { who: "Amanda Lee, RN", when: "07 Aug · 11:15 AM", label: "Action taken: Patient contacted", short: "Patient contacted", note: "Patient confirmed the missed doses; reported confusion about the evening dose schedule." },
-      { who: "Dr. Sarah Mitchell", when: "07 Aug · 01:00 PM", label: "Added a note", short: "Added a note", note: "Please clarify the evening dose timing with the patient." },
-      { who: "Amanda Lee, RN", when: "07 Aug · 03:00 PM", label: "Action taken", short: "Reviewed dose timing", note: "Clarified evening dose timing with the patient; adherence confirmed going forward." },
-      { who: "Amanda Lee, RN", when: "07 Aug · 04:10 PM", label: "Marked recommendation as Completed.", short: "Completed" },
+      { who: "Dr. Sarah Mitchell", when: "07 Aug Â· 09:00 AM", text: "Created care recommendation." },
+      { who: "Amanda Lee, RN", when: "07 Aug Â· 09:40 AM", text: "Picked up recommendation." },
+      { who: "Amanda Lee, RN", when: "07 Aug Â· 11:15 AM", label: "Action taken: Patient contacted", short: "Patient contacted", note: "Patient confirmed the missed doses; reported confusion about the evening dose schedule." },
+      { who: "Dr. Sarah Mitchell", when: "07 Aug Â· 01:00 PM", label: "Added a note", short: "Added a note", note: "Please clarify the evening dose timing with the patient." },
+      { who: "Amanda Lee, RN", when: "07 Aug Â· 03:00 PM", label: "Action taken", short: "Reviewed dose timing", note: "Clarified evening dose timing with the patient; adherence confirmed going forward." },
+      { who: "Amanda Lee, RN", when: "07 Aug Â· 04:10 PM", label: "Marked recommendation as Completed.", short: "Completed" },
     ],
   },
 ];
@@ -729,15 +729,15 @@ function openRecDrawer(id) {
   statusEl.textContent = meta.label;
   statusEl.className = `rec-status-chip ${meta.cls}`;
 
-  document.getElementById("recDrawerMedication").textContent = rec.medication || "—";
-  document.getElementById("recDrawerDoseChange").textContent = rec.currentDose ? `${rec.currentDose} → ${rec.newDose} mg` : `${rec.newDose} mg`;
-  document.getElementById("recDrawerFrequency").textContent = rec.frequency || "—";
-  document.getElementById("recDrawerDuration").textContent = rec.duration ? `${rec.duration} days` : "—";
-  document.getElementById("recDrawerStartDate").textContent = rec.startDate || "—";
+  document.getElementById("recDrawerMedication").textContent = rec.medication || "â€”";
+  document.getElementById("recDrawerDoseChange").textContent = rec.currentDose ? `${rec.currentDose} â†’ ${rec.newDose} mg` : `${rec.newDose} mg`;
+  document.getElementById("recDrawerFrequency").textContent = rec.frequency || "â€”";
+  document.getElementById("recDrawerDuration").textContent = rec.duration ? `${rec.duration} days` : "â€”";
+  document.getElementById("recDrawerStartDate").textContent = rec.startDate || "â€”";
   document.getElementById("recDrawerInvite").textContent = rec.invitePatient ? "Yes" : "No";
 
-  document.getElementById("recDrawerInstructionPatient").textContent = rec.instructionsPatient || "—";
-  document.getElementById("recDrawerInstructionCareTeam").textContent = rec.instructionsCareTeam || "—";
+  document.getElementById("recDrawerInstructionPatient").textContent = rec.instructionsPatient || "â€”";
+  document.getElementById("recDrawerInstructionCareTeam").textContent = rec.instructionsCareTeam || "â€”";
 
   document.getElementById("recDrawerCreatedBy").textContent = rec.createdBy;
   document.getElementById("recDrawerCreatedAt").textContent = rec.createdAt;
@@ -906,7 +906,7 @@ const medications = [
     warning: "NSAIDs may worsen fluid retention in HF", adherence: dailyAdherence([1, 3, 5, 7, 9, 11, 13], [15, 17, 19, 21, 23, 25, 27, 29]), source: "Patient", srcClass: "src-patient", status: "past",
     ehrStatus: "Inactive", doseForm: "Tablet", manufacturer: "Other", ingredient: "Ibuprofen", amount: "200 mg",
     effectiveDateTime: "2025-11-02T09:00", route: "Oral", sig: "Take as needed for pain, not to exceed 3 tablets per day",
-    statusReason: "Adverse reaction", lotNumber: "—", expiryDate: "2025-12-01",
+    statusReason: "Adverse reaction", lotNumber: "â€”", expiryDate: "2025-12-01",
   },
   {
     hf: false, name: "Atorvastatin", cls: "Statin", freq: "Daily", dose: "20 mg", schedule: "Once daily, evening",
@@ -936,7 +936,7 @@ function filteredMeds() {
 const medInfoIcon = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.7"/><rect x="11.2" y="10.3" width="1.6" height="6" rx="0.8" fill="currentColor"/><rect x="11.2" y="7" width="1.6" height="1.7" rx="0.8" fill="currentColor"/></svg>`;
 
 function medInfoRow(label, value) {
-  return `<div class="med-info-row"><span class="med-info-label">${label}</span><span class="med-info-value">${value || "—"}</span></div>`;
+  return `<div class="med-info-row"><span class="med-info-label">${label}</span><span class="med-info-value">${value || "â€”"}</span></div>`;
 }
 
 function medInfoDateTime(v) {
@@ -1012,7 +1012,7 @@ function renderMeds() {
               ${m.hf ? `<span class="med-hf-badge">Heart Failure medication</span>` : ""}
               <span class="med-class">${m.cls}</span>
               <span>${m.dose} &middot; ${m.schedule}</span>
-              ${m.warning ? `<span class="med-warning"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 4L2 20H22L12 4Z" stroke="#C77B22" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 10V14M12 17V17.3" stroke="#C77B22" stroke-width="1.6" stroke-linecap="round"/></svg>${m.warning}</span>` : ""}
+              ${m.warning ? `<span class="med-warning"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 4L2 20H22L12 4Z" stroke="#C2410C" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 10V14M12 17V17.3" stroke="#C2410C" stroke-width="1.6" stroke-linecap="round"/></svg>${m.warning}</span>` : ""}
             </div>
           </div>
           <div class="med-block-side">
@@ -1140,7 +1140,7 @@ function renderQuestionnaire() {
       const tags = [];
       if (q.answerType === "value") {
         const unitsNote = q.units?.length ? ` (${q.units.join(" / ")})` : "";
-        tags.push(`Value entry${q.valueLabel ? ` — ${q.valueLabel}` : ""}${unitsNote}`);
+        tags.push(`Value entry${q.valueLabel ? ` â€” ${q.valueLabel}` : ""}${unitsNote}`);
       }
       const tagsHtml = tags.length
         ? `<div class="quest-config-tags">${tags.map((t) => `<span class="quest-config-tag">${t}</span>`).join("")}</div>`

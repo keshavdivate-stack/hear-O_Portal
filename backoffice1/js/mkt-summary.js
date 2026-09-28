@@ -1,4 +1,4 @@
-/* ---------------- Base data (baseline = "All Organizations") ----------------
+﻿/* ---------------- Base data (baseline = "All Organizations") ----------------
    Patient status set mirrors the one used across the rest of the app
    (see js/dashboard.js): Registered, Baseline, Active, Priority,
    Unmonitored, Paused, Discontinued. */
@@ -174,13 +174,13 @@ function renderAreaChart() {
           <stop offset="100%" stop-color="#1F3C73" stop-opacity="0"/>
         </linearGradient>
         <linearGradient id="gradOrange" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="#F2994A" stop-opacity="0.25"/>
-          <stop offset="100%" stop-color="#F2994A" stop-opacity="0"/>
+          <stop offset="0%" stop-color="#EA580C" stop-opacity="0.25"/>
+          <stop offset="100%" stop-color="#EA580C" stop-opacity="0"/>
         </linearGradient>
       </defs>
       ${gridLines.join("")}
       ${buildArea(complianceSeries, "#1F3C73", "gradNavy")}
-      ${buildArea(qualitySeries, "#F2994A", "gradOrange")}
+      ${buildArea(qualitySeries, "#EA580C", "gradOrange")}
       ${xLabels}
     </svg>`;
 }

@@ -1,4 +1,4 @@
-:root {
+﻿:root {
   --font-scale: 1;
 }
 
@@ -1360,7 +1360,7 @@ input[type="date"]:focus {
   background: #186DCE;
 }
 
-.mini-waveform span:nth-child(3n) { background: #f5a623; }
+.mini-waveform span:nth-child(3n) { background: #EAB308; }
 .mini-waveform span:nth-child(3n+2) { background: #e85c5c; }
 
 .mini-timer {
@@ -1533,7 +1533,7 @@ input[type="date"]:focus {
   background: #186DCE;
 }
 
-.waveform span:nth-child(3n) { background: #f5a623; }
+.waveform span:nth-child(3n) { background: #EAB308; }
 .waveform span:nth-child(3n+1) { background: #4a9fd8; }
 .waveform span:nth-child(3n+2) { background: #e85c5c; }
 
@@ -1686,7 +1686,7 @@ input[type="date"]:focus {
 }
 
 .sending-bars span:nth-child(2) { background: #29b6f6; animation-delay: 0.15s; }
-.sending-bars span:nth-child(3) { background: #f5a623; animation-delay: 0.3s; }
+.sending-bars span:nth-child(3) { background: #EAB308; animation-delay: 0.3s; }
 
 @keyframes sending-bar-bounce {
   0%, 100% { transform: scaleY(0.4); }
@@ -1933,7 +1933,7 @@ input[type="date"]:focus {
   width: 16px;
   height: 16px;
   border-radius: 50%;
-  background: #F98B00;
+  background: #EA580C;
   color: #fff;
   font-size: calc(10px * var(--font-scale, 1));
   font-weight: 700;
@@ -2042,7 +2042,7 @@ input[type="date"]:focus {
   white-space: nowrap;
 }
 
-.issue-status-pill.open { background: #FFF5F2; color: #DE7C00; }
+.issue-status-pill.open { background: #FFEDD5; color: #C2410C; }
 .issue-status-pill.in-progress { background: #F6F9FD; color: #186DCE; }
 .issue-status-pill.resolved { background: #dff5ea; color: #2AC19E; }
 
@@ -2152,7 +2152,7 @@ input[type="date"]:focus {
 }
 
 .highlight-orange {
-  box-shadow: 0 0 0 3px #F98B00, 0 10px 24px rgba(0, 0, 0, 0.18);
+  box-shadow: 0 0 0 3px #EA580C, 0 10px 24px rgba(0, 0, 0, 0.18);
 }
 
 .tooltip-popover {
@@ -2246,7 +2246,7 @@ input[type="date"]:focus {
 .nav-item-card--lavender { background: #efeafb; }
 .nav-item-card--purple { background: #F2EDFD; }
 .nav-item-card--blue { background: #F0F7FF; }
-.nav-item-card--amber { background: #fdf3e3; }
+.nav-item-card--amber { background: #FEF9C3; }
 /* Kept out of amber -- that tint is reserved for the "needs your attention"
    update banner, so a same-colored nav card next to it reads as another
    alert at a glance (easy to miss for anyone scanning quickly). Also kept
@@ -2259,7 +2259,7 @@ input[type="date"]:focus {
 }
 
 .nav-item-card.highlight-orange {
-  background: #fdeeea;
+  background: #FFEDD5;
 }
 
 /* ===== Add Blood Pressure screen ===== */
@@ -2967,7 +2967,7 @@ input[type="date"]:focus {
 .measure-icon--blue { background: #E4EEFF; }
 .measure-icon--purple { background: #F2EDFD; }
 .measure-icon--green { background: #E7FCF1; }
-.measure-icon--orange { background: #FEEFDC; }
+.measure-icon--orange { background: #FFEDD5; }
 
 .measure-title {
   flex: 1;
@@ -3095,7 +3095,7 @@ input[type="date"]:focus {
 .measure-add-btn--blue { border-color: #3B82F6; color: #3B82F6; }
 .measure-add-btn--purple { border-color: #501CB3; color: #501CB3; }
 .measure-add-btn--green { border-color: #229A7E; color: #229A7E; }
-.measure-add-btn--orange { border-color: #DE7C00; color: #DE7C00; }
+.measure-add-btn--orange { border-color: #C2410C; color: #C2410C; }
 
 /* ===== Medication screen (larger type for readability) ===== */
 .med-body {
@@ -3390,7 +3390,7 @@ input[type="date"]:focus {
 
 .med-action-btn:active { background: #e9f1ff; }
 
-.med-action-btn.med-action-btn-nottaken { border-color: #F59E0B; background: #FFF5F2; color: #DE7C00; }
+.med-action-btn.med-action-btn-nottaken { border-color: #EA580C; background: #FFEDD5; color: #C2410C; }
 .med-action-btn.med-action-btn-nottaken:active { background: #FFE9DC; }
 
 /* Once a dose has a status, its two choice buttons collapse into this
@@ -3411,7 +3411,7 @@ input[type="date"]:focus {
 }
 
 .med-action-status-taken { background: #F6F9FD; color: #186DCE; }
-.med-action-status-nottaken { background: #FFF5F2; color: #DE7C00; }
+.med-action-status-nottaken { background: #FFEDD5; color: #C2410C; }
 .med-action-status svg { flex-shrink: 0; }
 
 .med-action-undo {
@@ -3862,7 +3862,7 @@ input[type="date"]:focus {
 }
 
 .med-hist-legend-dot.taken { background: #2AC19E; }
-.med-hist-legend-dot.missed { background: #F98B00; }
+.med-hist-legend-dot.missed { background: #EA580C; }
 
 .med-hist-day-card {
   padding: 16px 18px;
@@ -3901,7 +3901,7 @@ input[type="date"]:focus {
 }
 
 .med-hist-status-pill.taken { background: #dff5ea; color: #2AC19E; }
-.med-hist-status-pill.missed { background: #FFF3E5; color: #F98B00; }
+.med-hist-status-pill.missed { background: #FFEDD5; color: #EA580C; }
 
 .fab-add-btn {
   position: absolute;
@@ -4455,7 +4455,7 @@ input[type="date"]:focus {
 }
 
 .day-dot.is-complete { background: #2AC19E; }
-.day-dot.is-warning { background: #f5a623; }
+.day-dot.is-warning { background: #EAB308; }
 .day-dot.is-muted { background: #c9cdd3; }
 .day-dot.is-empty { background: #fff; border-color: #d9dce1; }
 
@@ -4732,7 +4732,7 @@ input[type="date"]:focus {
 .mx-dose-sub { font-size: calc(16px * var(--font-scale, 1)); color: #666; margin-top: 4px; }
 .mx-dose-actions { display: flex; gap: 14px; margin-top: 16px; }
 .mx-btn { flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; border-radius: 26px; font-family: inherit; font-size: calc(21px * var(--font-scale, 1)); font-weight: 500; cursor: pointer; }
-.mx-btn--skip { border: 2px solid #f59e0b; background: #fff4ee; color: #e07e00; }
+.mx-btn--skip { border: 2px solid #EA580C; background: #FFEDD5; color: #C2410C; }
 .mx-btn--take { border: 2px solid #1a6fd4; background: #f4f8fd; color: #1a6fd4; }
 .mx-dose-status { display: flex; align-items: center; gap: 8px; margin-top: 16px; font-size: calc(17px * var(--font-scale, 1)); }
 .mx-dose-status--taken { color: #1f9d7a; }
@@ -4781,7 +4781,7 @@ input[type="date"]:focus {
 .ri-result[hidden] { display: none; }
 .ri-result-icon { width: 104px; height: 104px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-top: 14px; }
 .ri-result-icon--ok { background: #d2f5e4; }
-.ri-result-icon--warn { background: #fff3cd; }
+.ri-result-icon--warn { background: #FFEDD5; }
 .ri-result-title { margin: 34px 0 0; font-size: calc(24px * var(--font-scale, 1)); font-weight: 500; line-height: 1.4; color: #3d3d3d; }
 .ri-result-text { margin: 34px 0 0; font-size: calc(24px * var(--font-scale, 1)); line-height: 1.45; color: #4a4a4a; }
 .ri-result-footer { width: 100%; margin-top: auto; padding-bottom: 96px; }
@@ -4794,7 +4794,7 @@ input[type="date"]:focus {
 .mx-issue-title { flex: 1; font-size: calc(21px * var(--font-scale, 1)); font-weight: 700; line-height: 1.3; color: #3d3d3d; }
 .mx-issue-pill { flex-shrink: 0; padding: 6px 14px; border-radius: 16px; font-size: calc(15px * var(--font-scale, 1)); font-weight: 400; }
 .mx-issue-pill.open { background: #f4f8fd; color: #1a6fd4; }
-.mx-issue-pill.in-progress { background: #fff4ee; color: #e07e00; }
+.mx-issue-pill.in-progress { background: #FFEDD5; color: #C2410C; }
 .mx-issue-pill.resolved { background: #e3f8ee; color: #2ac19e; }
 .mx-issue-date { font-size: calc(16px * var(--font-scale, 1)); color: #666; margin-top: 4px; }
 .mx-issue-note { background: #ececec; border-radius: 10px; padding: 10px 14px; margin-top: 10px; font-size: calc(19px * var(--font-scale, 1)); line-height: 1.35; color: #4a4a4a; }

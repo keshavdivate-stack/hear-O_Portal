@@ -1,6 +1,6 @@
-/* ==========================================================
-   Backoffice — design tokens copied from the main HearO app
-   (colors / font / radii / shadow language only — everything
+﻿/* ==========================================================
+   Backoffice â€” design tokens copied from the main HearO app
+   (colors / font / radii / shadow language only â€” everything
    else on this page is a fresh layout, built for this app).
    ========================================================== */
 :root {
@@ -14,10 +14,10 @@
   --maroon-light: #FCE8EC;
   --navy: #1F3C73;
   --navy-light: #EAEEF7;
-  --orange: #F2994A;
-  --orange-light: #FEEDDC;
-  --yellow: #D9A404;
-  --yellow-light: #FFFBE8;
+  --orange: #EA580C;
+  --orange-light: #FFEDD5;
+  --yellow: #EAB308;
+  --yellow-light: #FEF9C3;
   --cyan: #7FD3EE;
   --cyan-light: #EAF9FD;
   --purple: #9B7FE8;
@@ -34,8 +34,8 @@
   --green-text: #15803D;
   --red-text: #D92D20;
   --maroon-text: #7A0F2B;
-  --orange-text: #C25E00;
-  --yellow-text: #CA8A04;
+  --orange-text: #C2410C;
+  --yellow-text: #A16207;
   --purple-text: #6438C2;
   --bg: #F4F7FA;
   --ink: #1B2430;
@@ -373,7 +373,7 @@ button, input, select, textarea, optgroup {
 
 .bo-config-wrap:hover > .bo-submenu { display: block; }
 
-/* No gap between the trigger and the panel — a hover-only menu can't have a dead
+/* No gap between the trigger and the panel â€” a hover-only menu can't have a dead
    zone the pointer has to cross, or it closes before the user reaches it. The
    box itself sits flush (top: 100%); padding-top (not margin/offset) keeps the
    visual breathing room without opening a gap the pointer could fall through. */
@@ -1145,7 +1145,7 @@ body.bo-page-scroll .bo-list-toolbar {
 /* Sticky first/last columns so long tables keep name + actions visible while
    scrolling horizontally through the columns in between. The depth-cue
    shadow only paints once js/table-scroll.js detects real overflow and
-   flags the wrapper with .has-h-scroll — otherwise a table that already
+   flags the wrapper with .has-h-scroll â€” otherwise a table that already
    fits the viewport shows a shadow with nothing to scroll to. */
 .bo-list-table th:first-child,
 .bo-list-table td:first-child {
@@ -1479,7 +1479,7 @@ button.bo-name-link { background: none; border: none; padding: 0; font: inherit;
 .bo-switch input:checked + .bo-switch-track { background: var(--blue); }
 .bo-switch input:checked + .bo-switch-track::after { transform: translateX(16px); }
 
-/* Compact filter select — shows the field label until a value is chosen, then the selected option */
+/* Compact filter select â€” shows the field label until a value is chosen, then the selected option */
 .bo-filter-field {
   display: flex;
   align-items: center;
@@ -1564,7 +1564,7 @@ button.bo-name-link { background: none; border: none; padding: 0; font: inherit;
   .bo-filter-row .bo-search-pill { flex: 1 1 150px; }
 }
 
-/* Date field — matches .bo-filter-field, with a trailing calendar glyph */
+/* Date field â€” matches .bo-filter-field, with a trailing calendar glyph */
 .bo-date-field {
   display: flex;
   align-items: center;
@@ -1605,7 +1605,7 @@ label.bo-date-field { cursor: text; }
 
 /* ==========================================================
    MODAL (Add / Edit Organization, Add / Edit User, ...)
-   Centered dialog — the "drawer" class names stuck around from an
+   Centered dialog â€” the "drawer" class names stuck around from an
    earlier side-panel layout, kept here so existing markup doesn't
    need renaming.
    ========================================================== */
@@ -1642,7 +1642,7 @@ label.bo-date-field { cursor: text; }
   opacity: 1;
 }
 
-/* Once the open animation settles, drop the transform entirely — any
+/* Once the open animation settles, drop the transform entirely â€” any
    transform (even scale(1)) makes this element a containing block for
    position:fixed descendants, which breaks fixed-positioned dropdown
    menus opened from inside the modal (they'd anchor to the modal's box
@@ -2373,7 +2373,7 @@ a.bo-btn-secondary { text-decoration: none; }
   color: var(--ink);
 }
 
-/* Standalone "Add EHR Connection" popup — same fields, no card elevation */
+/* Standalone "Add EHR Connection" popup â€” same fields, no card elevation */
 .bo-ehr-card--plain {
   background: none;
   padding: 0 0 20px;
@@ -2676,7 +2676,7 @@ a.bo-btn-secondary { text-decoration: none; }
   background: var(--blue);
 }
 
-/* Volume popover — opens on the row's volume icon, holds a slider so the
+/* Volume popover â€” opens on the row's volume icon, holds a slider so the
    level can be adjusted rather than only muted/unmuted. */
 .bo-volume-menu { min-width: 190px; }
 
@@ -3092,7 +3092,7 @@ a.bo-btn-secondary { text-decoration: none; }
 .mkt-hero-row--multi .mkt-hero-card { display: flex; min-width: 0; }
 
 /* Compact (multi-select) cards stack the gauge above its legend instead of
-   sitting side by side — at 3-4 columns there isn't enough width for both,
+   sitting side by side â€” at 3-4 columns there isn't enough width for both,
    and a fixed-width legend column would rather overflow the card than shrink. */
 .mkt-hero-card--compact .mkt-hero {
   flex-direction: column;
@@ -4436,7 +4436,7 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
 
 /* Patient Compliance panel: a single proportional stacked bar (tier sizes at a
    glance) plus a row per tier with its share, patient count, and average
-   compliance/quality figures — a snapshot layout, not the line-chart-with-
+   compliance/quality figures â€” a snapshot layout, not the line-chart-with-
    day-toggle pattern used elsewhere, since this page's own date-range filter
    already covers the time dimension. */
 /* Patient Compliance panel reuses the donut + legend language already
@@ -4473,7 +4473,7 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
   width: 220px;
   height: 110px;
   border-radius: 110px 110px 0 0;
-  background: conic-gradient(from 270deg at 50% 100%, var(--maroon) 0deg, var(--orange) 55deg, #F2C94C 95deg, var(--green) 140deg, var(--green) 180deg);
+  background: conic-gradient(from 270deg at 50% 100%, var(--maroon) 0deg, var(--orange) 55deg, #EAB308 95deg, var(--green) 140deg, var(--green) 180deg);
   position: relative;
 }
 
@@ -4710,7 +4710,7 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
 .bo-btn-icon-only { padding: 11px; }
 
 /* Scheduled Reports / Report History table: one row = one schedule (or one
-   delivery record) — no accordion. Report + Schedule name stack in one
+   delivery record) â€” no accordion. Report + Schedule name stack in one
    cell so the table stays scannable without a dedicated "Name" column. */
 .bo-cell-primary { font-size: 13.5px; font-weight: 700; color: var(--ink); }
 .bo-cell-secondary { font-size: 12px; color: var(--gray-text); margin-top: 2px; }
@@ -4726,7 +4726,7 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
 
 .bo-recipients-chip svg { color: var(--gray-text); flex-shrink: 0; }
 
-/* Status / delivery-result columns — plain colored text, no pill/dot. */
+/* Status / delivery-result columns â€” plain colored text, no pill/dot. */
 .bo-pill-active,
 .bo-pill-paused,
 .bo-pill-archived,
@@ -4762,7 +4762,7 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
 .bo-empty-state-title { font-size: 15px; font-weight: 700; color: var(--ink); }
 .bo-empty-state-sub { font-size: 13px; color: var(--gray-text); max-width: 360px; margin: 0; }
 
-/* Recipient picker — used in both the Schedule Report drawer and Send Report */
+/* Recipient picker â€” used in both the Schedule Report drawer and Send Report */
 .bo-recipient-search {
   display: flex;
   align-items: center;
@@ -4807,7 +4807,7 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
 
 .bo-recipient-item input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--blue); cursor: pointer; }
 
-/* Send Report — explains this is an immediate, one-time send (not a schedule) */
+/* Send Report â€” explains this is an immediate, one-time send (not a schedule) */
 .bo-send-note {
   display: flex;
   gap: 10px;
@@ -4824,7 +4824,7 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
 .bo-send-note svg { flex-shrink: 0; margin-top: 1px; color: var(--blue); }
 
 /* ==========================================================
-   SUPPORT — INCIDENTS TAB
+   SUPPORT â€” INCIDENTS TAB
    System-generated incidents, distinct from manually raised Tickets.
    Reuses .bo-pill / .bo-table-card / .bo-filter-row / .bo-drawer /
    .bo-ticket-history / .bo-kv-grid / .bo-panel so the tab matches the
@@ -4832,7 +4832,7 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
    ========================================================== */
 .bo-list-toolbar-title-wrap { flex-shrink: 0; }
 
-/* Secondary tabs — a lighter-weight underline style for a sub-level tab
+/* Secondary tabs â€” a lighter-weight underline style for a sub-level tab
    strip (Active/Monitoring/Resolved) nested under the primary pill tabs
    (Tickets/Incidents/Rules), so the two tab levels stay visually distinct. */
 .bo-secondary-tabs {
@@ -4914,7 +4914,7 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
   .bo-incident-kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
-/* Severity badges — SEV-1 is solid so it visually outranks the lighter tints
+/* Severity badges â€” SEV-1 is solid so it visually outranks the lighter tints
    used for SEV-2/3/4, without heavily coloring the rest of the row. Smaller
    radius matches the Severity/priority badge style used elsewhere. */
 .bo-pill-sev1,
@@ -4928,7 +4928,7 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
 .bo-pill-sev3 { background: var(--yellow-light); color: var(--yellow-text); }
 .bo-pill-sev4 { background: var(--bg); color: var(--gray-text); }
 
-/* Incident lifecycle status — distinct from Ticket statuses (Open/In
+/* Incident lifecycle status â€” distinct from Ticket statuses (Open/In
    Progress/Escalated/Resolved); Resolved intentionally reuses the same
    green as Ticket Resolved so "done" reads identically across the module.
    Plain colored text, no pill/dot. */
@@ -5072,7 +5072,7 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
 .bo-impact-chip-list { display: flex; flex-wrap: wrap; gap: 6px; }
 .bo-impact-chip { background: var(--bg); border-radius: 8px; padding: 4px 9px; font-size: 12px; font-weight: 600; color: var(--ink); }
 
-/* Tasks column — compact fraction, clickable only while work remains */
+/* Tasks column â€” compact fraction, clickable only while work remains */
 .bo-task-progress {
   display: inline-flex;
   align-items: baseline;
@@ -5105,7 +5105,7 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
   margin-bottom: 16px;
 }
 
-/* Incident Detail page — Support Tasks section */
+/* Incident Detail page â€” Support Tasks section */
 .bo-task-list { display: flex; flex-direction: column; gap: 10px; }
 
 .bo-task-card {
@@ -5141,7 +5141,7 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
 
 .bo-incident-badges { display: flex; align-items: center; gap: 8px; }
 
-/* Attachment field — styled to match the other modal inputs instead of the
+/* Attachment field â€” styled to match the other modal inputs instead of the
    browser's native, unstyled "Choose File" button. */
 .bo-file-field {
   position: relative;

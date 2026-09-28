@@ -1,7 +1,7 @@
-/* ---------------- Base data (baseline = "All Organizations") ---------------- */
+﻿/* ---------------- Base data (baseline = "All Organizations") ---------------- */
 const ringSegmentsBase = [
   { label: "Recorded", value: 21, color: "#1F3C73" },
-  { label: "Did not upload", value: 11, color: "#F2994A" },
+  { label: "Did not upload", value: 11, color: "#EA580C" },
   { label: "Left study", value: 231, color: "#7FD3EE" },
 ];
 
@@ -245,7 +245,7 @@ function renderForOrg(orgIds) {
   const seed = isAll ? 0 : mktHash(orgIds.slice().sort().join(","));
 
   const scope = scopeLabel(orgIds);
-  document.getElementById("mktStudyScope").textContent = scope ? ` — ${scope}` : "";
+  document.getElementById("mktStudyScope").textContent = scope ? ` â€” ${scope}` : "";
 
   renderHeroCards(orgIds);
 

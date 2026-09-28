@@ -1,11 +1,11 @@
-/* ---------------- Resolve current patient from ?patient= ---------------- */
+﻿/* ---------------- Resolve current patient from ?patient= ---------------- */
 const phParams = new URLSearchParams(location.search);
 const phUsername = phParams.get("patient") || PATIENT_HEALTH_DEFAULT;
 const ph = buildPatientProfile(phUsername);
 
 document.title = `HearO Backoffice | ${ph.username}`;
 document.getElementById("patientName").textContent = ph.username;
-document.getElementById("patientSub").textContent = `${ph.org} · ${ph.langName}`;
+document.getElementById("patientSub").textContent = `${ph.org} Â· ${ph.langName}`;
 
 /* If the patient was opened by drilling down from an organization's
    health dashboard, "back" should return there (preserving that
@@ -207,7 +207,7 @@ function renderPatientComplianceChart() {
     <svg viewBox="0 0 ${width} ${height}" class="bo-area-svg" preserveAspectRatio="none">
       ${gridLines.join("")}
       ${buildLine(complianceSeries, "#1F3C73")}
-      ${buildLine(qualitySeries, "#F2994A")}
+      ${buildLine(qualitySeries, "#EA580C")}
       ${xLabels}
     </svg>`;
 }
@@ -221,9 +221,9 @@ document.getElementById("patientSessionRows").innerHTML = ph.sessions
   .map(
     (s) => `
     <tr>
-      <td>${s.date}</td><td>${s.startTime}</td><td>${s.endTime || "—"}</td>
+      <td>${s.date}</td><td>${s.startTime}</td><td>${s.endTime || "â€”"}</td>
       <td>${s.errors ? `<span class="bo-severity-pill critical">${s.errors}</span>` : "0"}</td>
-      <td>${s.vEngineNote || "—"}</td><td>${s.os}</td><td>${s.mobileModel}</td><td>${s.appVersion}</td>
+      <td>${s.vEngineNote || "â€”"}</td><td>${s.os}</td><td>${s.mobileModel}</td><td>${s.appVersion}</td>
     </tr>`
   )
   .join("");
@@ -277,9 +277,9 @@ const phEventsPager = boCreatePager(
       <td>${phEsc(e.reportedVia)}</td>
       <td>${phEsc(e.reportedTime)}</td>
       <td>${phEsc(e.startDate)}</td>
-      <td>${phEsc(e.endDate) || "—"}</td>
+      <td>${phEsc(e.endDate) || "â€”"}</td>
       <td><input type="checkbox" class="bo-cell-checkbox" data-id="${e.id}" data-field="approved" ${e.approved ? "checked" : ""} /></td>
-      <td>${phEsc(e.status) || "—"}</td>
+      <td>${phEsc(e.status) || "â€”"}</td>
       <td>
         <div class="bo-row-actions">
           ${e.eventType !== "MESSAGE_OUT" ? `<button type="button" class="bo-action-icon" data-action="edit" data-id="${e.id}" aria-label="Edit event">${phEventIcons.edit}</button>` : ""}
