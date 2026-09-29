@@ -3684,9 +3684,65 @@ a.bo-btn-secondary { text-decoration: none; }
   white-space: nowrap;
 }
 
-/* Patient-added medications: the reason the patient entered in the app. */
-.med-patient-reason { margin-top: 6px; font-size: 12px; color: var(--ink); }
-.med-patient-reason-label { color: var(--gray-text); font-weight: 600; }
+/* Patient-added medications: collapsible callout for the reason the patient
+   typed in the mobile app when adding it. Sits below the adherence chart
+   inside .med-block, open by default. */
+.med-reason-box {
+  margin-top: 14px;
+  border: 1px solid #E4E1FA;
+  border-radius: 10px;
+  background: #F7F6FE;
+  overflow: hidden;
+}
+.med-reason-toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
+}
+.med-reason-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--purple-light);
+  color: var(--purple-text);
+}
+.med-reason-title { font-size: 13.5px; font-weight: 700; color: var(--ink); }
+.med-reason-date {
+  margin-left: 8px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--purple-light);
+  color: var(--purple-text);
+  font-size: 11.5px;
+  font-weight: 700;
+}
+.med-reason-chevron {
+  margin-left: auto;
+  flex-shrink: 0;
+  display: inline-flex;
+  color: var(--gray-text);
+  transition: transform 150ms ease;
+}
+.med-reason-toggle[aria-expanded="false"] .med-reason-chevron { transform: rotate(180deg); }
+.med-reason-body {
+  padding: 0 14px 14px 52px;
+  font-size: 13.5px;
+  color: var(--ink);
+  line-height: 1.5;
+}
+.med-reason-body p { margin: 0; }
+.med-reason-body.collapsed { display: none; }
 
 .med-dose { font-size: 13.5px; color: #23272E; font-weight: 600; white-space: nowrap; }
 .med-schedule { font-size: 12.5px; color: var(--gray-text); margin-top: 2px; white-space: nowrap; }

@@ -903,7 +903,7 @@ const medications = [
   },
   {
     hf: false, name: "Ibuprofen", cls: "NSAID (OTC)", freq: "As needed", dose: "200 mg", schedule: "As needed",
-    warning: "NSAIDs may worsen fluid retention in HF", adherence: dailyAdherence([1, 3, 5, 7, 9, 11, 13], [15, 17, 19, 21, 23, 25, 27, 29]), source: "Patient", srcClass: "src-patient", patientReason: "Headache and joint pain", status: "past",
+    warning: "NSAIDs may worsen fluid retention in HF", adherence: dailyAdherence([1, 3, 5, 7, 9, 11, 13], [15, 17, 19, 21, 23, 25, 27, 29]), source: "Patient", srcClass: "src-patient", patientReason: "I took this medication because I had a headache and joint pain. It helped with the pain and I felt better after taking it.", patientReasonDate: "2026-12-12", status: "past",
     ehrStatus: "Inactive", doseForm: "Tablet", manufacturer: "Other", ingredient: "Ibuprofen", amount: "200 mg",
     effectiveDateTime: "2025-11-02T09:00", route: "Oral", sig: "Take as needed for pain, not to exceed 3 tablets per day",
     statusReason: "Adverse reaction", lotNumber: "â€”", expiryDate: "2025-12-01",
@@ -951,6 +951,28 @@ function medInfoDate(v) {
   const d = new Date(`${v}T00:00`);
   if (Number.isNaN(d.getTime())) return v;
   return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+}
+
+const patientReasonIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21a8 8 0 0 0-16 0"/><circle cx="12" cy="7" r="4"/></svg>`;
+const patientReasonChevron = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>`;
+
+/* Patient-added medications (source: "Patient") carry the optional reason
+   the patient typed in the mobile app's Add Medication screen. Shown as its
+   own collapsible callout -- open by default -- below the adherence chart,
+   rather than crammed into the meta row, since it's often a full sentence. */
+function patientReasonBoxHtml(m, mi) {
+  return `
+    <div class="med-reason-box">
+      <button type="button" class="med-reason-toggle" data-med-reason="${mi}" aria-expanded="true">
+        <span class="med-reason-icon">${patientReasonIcon}</span>
+        <span class="med-reason-title">Reason added by patient</span>
+        ${m.patientReasonDate ? `<span class="med-reason-date">${medInfoDate(m.patientReasonDate)}</span>` : ""}
+        <span class="med-reason-chevron">${patientReasonChevron}</span>
+      </button>
+      <div class="med-reason-body" id="medReasonBody${mi}">
+        <p>${m.patientReason}</p>
+      </div>
+    </div>`;
 }
 
 function medInfoPopover(m, mi) {
@@ -1012,7 +1034,6 @@ function renderMeds() {
               ${m.hf ? `<span class="med-hf-badge">Heart Failure medication</span>` : ""}
               <span class="med-class">${m.cls}</span>
               <span>${m.dose} &middot; ${m.schedule}</span>
-              ${m.source === "Patient" && m.patientReason ? `<span class="med-patient-reason"><span class="med-patient-reason-label">Reason (added by patient):</span> ${m.patientReason}</span>` : ""}
               ${m.warning ? `<span class="med-warning"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 4L2 20H22L12 4Z" stroke="#C2410C" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 10V14M12 17V17.3" stroke="#C2410C" stroke-width="1.6" stroke-linecap="round"/></svg>${m.warning}</span>` : ""}
             </div>
           </div>
@@ -1029,6 +1050,7 @@ function renderMeds() {
           <div class="chart-day-scale">${dayScaleHtml}</div>
           <div class="chart-month-row">${monthRowHtml(days)}</div>
         </div>
+        ${m.source === "Patient" && m.patientReason ? patientReasonBoxHtml(m, mi) : ""}
       </div>`;
     })
     .join("") || `<p class="empty-state-text">No medications match the selected filters.</p>`;
@@ -1048,6 +1070,14 @@ function renderMeds() {
 
   document.querySelectorAll(".med-info-popover").forEach((pop) => {
     pop.addEventListener("click", (e) => e.stopPropagation());
+  });
+
+  document.querySelectorAll(".med-reason-toggle").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const open = btn.getAttribute("aria-expanded") === "true";
+      btn.setAttribute("aria-expanded", String(!open));
+      document.getElementById(`medReasonBody${btn.dataset.medReason}`).classList.toggle("collapsed", open);
+    });
   });
 }
 
