@@ -204,59 +204,209 @@
       <!-- CONTENT -->
       <div class="list-content ticket-detail-page">
 
-        <div class="ticket-detail-topbar-row">
-          <div class="ticket-detail-title-group">
+        <!-- Header: ticket ID, Status / Priority / Level / Type, meta line -->
+        <section class="ticket-detail-card ticket-detail-header">
+          <div class="ticket-detail-header-top">
             <a href="support.html" class="ticket-detail-back" id="ticketDetailBack" aria-label="Back to Support">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6L9 12L15 18"/></svg>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
             </a>
-            <h1 class="ticket-detail-title" id="ticketDetailTitle"></h1>
-            <div id="ticketDetailPills" class="ticket-detail-pills"></div>
+            <h1 class="ticket-detail-title" id="ticketDetailTitle">&nbsp;</h1>
+            <div class="ticket-detail-badges" id="ticketDetailBadges"></div>
           </div>
-        </div>
+          <p class="ticket-detail-meta" id="ticketDetailMeta"></p>
+        </section>
 
-        <div id="ticketDetailBody"></div>
+        <div class="ticket-detail-layout" id="ticketDetailLayout">
+          <div class="ticket-detail-main">
+
+            <!-- Issue -->
+            <section class="ticket-detail-card" id="issue">
+              <h3 class="ticket-detail-card-title">Issue</h3>
+              <div class="ticket-detail-grid">
+                <div class="ticket-detail-field"><label>Category</label><span id="ticketDetailCategory">&mdash;</span></div>
+                <div class="ticket-detail-field"><label>Issue Type</label><span id="ticketDetailIssueType">&mdash;</span></div>
+              </div>
+              <p class="ticket-detail-description" id="ticketDetailDescription"></p>
+            </section>
+
+            <!-- History / Patient Log / Recording tabs -->
+            <section class="ticket-detail-card ticket-detail-tabs-card">
+              <div class="ticket-detail-tabs" role="tablist">
+                <button type="button" class="ticket-detail-tab active" data-td-tab="history" role="tab">History</button>
+                <button type="button" class="ticket-detail-tab" data-td-tab="patientLog" role="tab" hidden>Patient Log</button>
+                <button type="button" class="ticket-detail-tab" data-td-tab="recording" role="tab" hidden>Recording</button>
+              </div>
+
+              <div class="ticket-detail-tab-panel active" data-td-panel="history">
+                <div class="ticket-history" id="ticketDetailHistory"></div>
+              </div>
+
+              <!-- Recording (Voice Engine tickets only) -->
+              <div class="ticket-detail-tab-panel" data-td-panel="recording">
+                <div id="ticketDetailRecordingWrap" hidden>
+                  <div class="ticket-mic-alert" id="ticketDetailMicAlert" hidden>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.73 3h16.9a2 2 0 0 0 1.73-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/></svg>
+                    <span>Microphone permission is <b>Disabled</b> on this patient's device &mdash; likely cause of the missing recording.</span>
+                  </div>
+                  <div class="ticket-rec-parts" id="ticketDetailRecordingParts"></div>
+                </div>
+              </div>
+
+              <!-- Patient Log (patient-sourced tickets only) -->
+              <div class="ticket-detail-tab-panel" id="patientLog" data-td-panel="patientLog" hidden>
+                <div class="patient-log-snapshot">
+                  <div class="ticket-detail-section-title">App &amp; Device Info</div>
+                  <div class="patient-log-snapshot-fields">
+                    <div class="patient-log-chip-row" id="patientLogAppVersion"></div>
+                    <span class="patient-log-snapshot-divider" aria-hidden="true"></span>
+                    <div class="patient-log-chip-row" id="patientLogDeviceInfo"></div>
+                    <span class="patient-log-snapshot-divider" aria-hidden="true"></span>
+                    <div class="patient-log-chip-row" id="patientLogPermissions"></div>
+                  </div>
+                </div>
+                <div class="patient-log-history">
+                  <div class="ticket-detail-section-title patient-log-history-title">
+                    Log History
+                    <div class="patient-log-history-actions">
+                      <div class="patient-log-range">
+                        <span class="patient-log-range-label">From</span>
+                        <button type="button" class="ticket-date-field" id="patientLogDownloadFromField" data-field="from" aria-label="From date">
+                          <span id="patientLogDownloadFromValue" class="ticket-date-field-value">&mdash;</span>
+                          <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="17" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3 9H21" stroke="currentColor" stroke-width="1.8"/></svg>
+                        </button>
+                        <span class="patient-log-range-label">To</span>
+                        <button type="button" class="ticket-date-field" id="patientLogDownloadToField" data-field="to" aria-label="To date">
+                          <span id="patientLogDownloadToValue" class="ticket-date-field-value">&mdash;</span>
+                          <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="17" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3 9H21" stroke="currentColor" stroke-width="1.8"/></svg>
+                        </button>
+                        <div class="ticket-mini-calendar" id="patientLogDownloadCalendar" hidden>
+                          <div class="ticket-mini-calendar-head">
+                            <span class="ticket-mini-calendar-month" id="patientLogCalendarMonthLabel">&mdash;</span>
+                            <div class="ticket-mini-calendar-nav">
+                              <button type="button" id="patientLogCalendarPrev" aria-label="Previous month">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                              </button>
+                              <button type="button" id="patientLogCalendarNext" aria-label="Next month">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                              </button>
+                            </div>
+                          </div>
+                          <div class="ticket-mini-calendar-weekdays"><span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span></div>
+                          <div class="ticket-mini-calendar-days" id="patientLogCalendarDays"></div>
+                          <div class="ticket-mini-calendar-footer">
+                            <button type="button" id="patientLogCalendarClear">Clear</button>
+                            <button type="button" id="patientLogCalendarToday">Today</button>
+                          </div>
+                        </div>
+                      </div>
+                      <button type="button" class="btn-secondary" id="downloadPatientLogBtn">Download Log</button>
+                    </div>
+                  </div>
+                  <div class="patient-log-console" id="patientLogHistory"></div>
+                </div>
+              </div>
+            </section>
+
+          </div>
+
+          <aside class="ticket-detail-side">
+
+            <!-- Handling: read-only until Edit is clicked -->
+            <section class="ticket-detail-card" id="handling">
+              <div class="ticket-detail-card-head">
+                <h3 class="ticket-detail-card-title">Handling</h3>
+                <button type="button" class="btn-secondary" id="editTicketHandlingBtn">Edit</button>
+              </div>
+              <div id="ticketHandlingInlineSlot">
+                <form id="ticketDetailForm" class="ticket-handling-form is-readonly">
+                  <div class="ticket-handling-row">
+                    <div class="form-field">
+                      <label>Status</label>
+                      <div class="custom-select" data-name="ticketStatus">
+                        <button type="button" class="custom-select-trigger">
+                          <span class="custom-select-value placeholder">Select status</span>
+                          <svg class="custom-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                        </button>
+                        <div class="custom-select-menu"></div>
+                        <input type="hidden" />
+                      </div>
+                    </div>
+                    <div class="form-field" id="ticketDetailLevelField">
+                      <label>Level</label>
+                      <div class="custom-select" data-name="ticketLevel">
+                        <button type="button" class="custom-select-trigger">
+                          <span class="custom-select-value placeholder">Select level</span>
+                          <svg class="custom-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                        </button>
+                        <div class="custom-select-menu"></div>
+                        <input type="hidden" />
+                      </div>
+                    </div>
+                    <div class="form-field" id="ticketDetailPriorityField">
+                      <label>Priority</label>
+                      <div class="custom-select" data-name="ticketPriorityHandling">
+                        <button type="button" class="custom-select-trigger">
+                          <span class="custom-select-value placeholder">Select priority</span>
+                          <svg class="custom-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                        </button>
+                        <div class="custom-select-menu"></div>
+                        <input type="hidden" />
+                      </div>
+                    </div>
+                    <div class="form-field" id="ticketDetailOrgField" hidden>
+                      <label>Organization<span class="required-star">*</span></label>
+                      <div class="custom-select" data-name="ticketOrgHandling">
+                        <button type="button" class="custom-select-trigger">
+                          <span class="custom-select-value placeholder">Select organization</span>
+                          <svg class="custom-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                        </button>
+                        <div class="custom-select-menu"></div>
+                        <input type="hidden" />
+                      </div>
+                    </div>
+                    <div class="form-field" id="ticketDetailAssignedToField">
+                      <label>Assigned To<span class="required-star">*</span></label>
+                      <div class="custom-select" data-name="ticketAssignedTo">
+                        <button type="button" class="custom-select-trigger">
+                          <span class="custom-select-value placeholder">Select team member</span>
+                          <svg class="custom-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                        </button>
+                        <div class="custom-select-menu"></div>
+                        <input type="hidden" />
+                      </div>
+                      <div class="ticket-assigned-org-note" id="ticketDetailAssignedOrgNote" hidden></div>
+                    </div>
+                  </div>
+                  <div class="form-field ticket-handling-note-field">
+                    <label>Note</label>
+                    <textarea id="ticketDetailRootCause" placeholder="What caused this issue? (optional)"></textarea>
+                  </div>
+                </form>
+              </div>
+            </section>
+
+          </aside>
+        </div>
 
       </div>
     </div>
   </div>
 
-  <!-- Chat with Patient (patient-sourced tickets only) -- lives outside
-       #ticketDetailBody (which gets rebuilt wholesale on every Save Changes /
-       Resolve) so the open/closed panel state and message thread survive a
-       re-render. Same chat-panel/chat-tab markup pattern as the clinic
-       portal's own patient-data.html. -->
-  <button class="chat-tab" id="chatOpenBtn" hidden><span class="dot-live"></span>Chat</button>
-
-  <aside class="chat-panel" id="chatPanel">
-    <div class="chat-panel-header">
-      Chat with Patient
-      <button class="chat-close" id="chatCloseBtn" aria-label="Close chat">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M6 6L18 18M18 6L6 18" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
+  <!-- Edit Handling popup: the Handling form above is moved in here while
+       editing (so it stays a single form), and moved back on close. -->
+  <div class="modal-overlay" id="ticketHandlingOverlay">
+    <div class="modal modal-wide ticket-handling-modal">
+      <h2>Edit Handling</h2>
+      <button type="button" class="modal-close-x modal-close-x-top" id="closeTicketHandlingX" aria-label="Close">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6L18 18M6 18L18 6"/></svg>
       </button>
-    </div>
-    <div class="chat-messages" id="chatMessages"></div>
-    <div class="chat-empty-state" id="chatEmptyState" hidden>
-      <p class="chat-empty-title">No messages yet</p>
-      <p class="chat-empty-sub">Start a conversation by sending a message below</p>
-    </div>
-    <div class="chat-input-row">
-      <div class="chat-input-wrap">
-        <input type="text" id="chatInputField" placeholder="Type a message..." />
-      </div>
-      <button class="chat-send" id="chatSendBtn" aria-label="Send">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12H19M19 12L13 6M19 12L13 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </button>
-      <div class="chat-plus-wrap">
-        <button type="button" class="chat-plus" id="chatPlusBtn" aria-label="Add attachment">
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-        </button>
-        <div class="chat-plus-menu" id="chatPlusMenu">
-          <button type="button" class="chat-plus-menu-item" data-request="image">Request an image</button>
-          <button type="button" class="chat-plus-menu-item" data-request="video">Request a video</button>
-        </div>
+      <div id="ticketHandlingModalSlot"></div>
+      <div class="modal-actions">
+        <button type="button" class="btn-text" id="cancelTicketHandling">Cancel</button>
+        <button type="submit" class="btn-save" id="saveTicketDetailBtn" form="ticketDetailForm" disabled>Save</button>
       </div>
     </div>
-  </aside>
+  </div>
 
 <script src="js/topbar.js"></script>
 <script src="js/support-data.js"></script>

@@ -77,7 +77,7 @@ function buildAgentSelectOptions(names) {
 }
 
 /* ---------------- Patient log (app version / device / permissions) ----------------
-   Field set and generation logic ported verbatim from backoffice1/js/
+   Field set and generation logic ported from backoffice1/js/
    support-tickets-common.js's buildPatientLog -- same device list, app
    version list, and raw log-line templates (sampled from a real mobile app
    log export), so the demo data reads the same across both portals. */
@@ -168,31 +168,26 @@ function buildPatientLog(ticket) {
   const device = pickFrom(rand, LOG_DEVICES);
   const appVersion = pickFrom(rand, LOG_APP_VERSIONS);
   const buildNumber = 80 + Math.floor(rand() * 20);
-  const storageMb = 40000 + Math.floor(rand() * 90000);
+  rand(); // was Available Storage -- still drawn so each patient's seeded Microphone value stays the same
 
+  /* Same trimmed field set as backoffice's buildPatientLog: only what the
+     app log really reports, shown as one "App & Device Info" card. */
   return {
     appVersion: [
       { label: "App Version", value: appVersion },
       { label: "Build Number", value: String(buildNumber) },
       { label: "Platform", value: device.platform },
-      { label: "Last Updated", value: ticket.created },
     ],
     deviceInfo: [
       { label: "Device ID", value: device.deviceId },
       { label: "OS Version", value: device.os },
-      { label: "Available Storage", value: `${(storageMb / 1024).toFixed(1)} GB` },
     ],
-    /* Microphone and Health Data Access used to be hardcoded "Granted" in the
-       original backoffice design -- now seeded per patient, same as
-       backoffice's own buildPatientLog, so Voice Engine tickets skew toward
-       "Denied" and the Issue panel's mic-permission callout has something
-       real to demonstrate (e.g. TCK-1050). */
+    /* Microphone is seeded per patient, same as backoffice's own
+       buildPatientLog, so Voice Engine tickets skew toward "Disabled" and the
+       Recording tab's mic-permission callout has something real to
+       demonstrate (e.g. TCK-1050). */
     permissions: [
-      { label: "Microphone", value: rand() < (ticket.category === "Voice Engine" ? 0.6 : 0.1) ? "Denied" : "Granted" },
-      { label: "Notifications", value: "Granted" },
-      { label: "Health Data Access", value: rand() > 0.8 ? "Denied" : "Granted" },
-      { label: "Chat", value: rand() > 0.85 ? "Denied" : "Granted" },
-      { label: "Blood Pressure Data", value: rand() > 0.5 ? "Denied" : "Granted" },
+      { label: "Microphone", value: rand() < (ticket.category === "Voice Engine" ? 0.6 : 0.1) ? "Disabled" : "Enabled" },
     ],
     sessions: buildLogSessions(ticket),
   };
