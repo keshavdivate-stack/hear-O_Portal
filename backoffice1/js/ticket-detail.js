@@ -290,7 +290,7 @@ function renderTicketHistory() {
 /* ---------------- Patient Log (app version / device / permissions) ---------------- */
 function renderPatientLogSection(elId, rows) {
   document.getElementById(elId).innerHTML = rows
-    .map((r) => `<div class="patient-log-chip"><span class="label">${r.label}</span><span class="value">${r.value}</span></div>`)
+    .map((r) => `<div class="patient-log-chip"><span class="label">${r.label}</span><span class="value${r.value === "Disabled" ? " is-disabled" : ""}">${r.value}</span></div>`)
     .join("");
 }
 

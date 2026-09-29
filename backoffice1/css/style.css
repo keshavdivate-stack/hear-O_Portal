@@ -3620,6 +3620,23 @@ a.bo-btn-secondary { text-decoration: none; }
 }
 
 .patient-log-chip .value { font-size: 13px; font-weight: 700; color: var(--ink); }
+.patient-log-chip .value.is-disabled { color: var(--maroon-text); }
+
+/* Single "App & Device Info" card: the App / Device / Permissions groups sit
+   side by side, split by thin vertical dividers (wraps on narrow screens). */
+.patient-log-snapshot {
+  flex-direction: column;
+  gap: 10px;
+  background: #fff;
+  border: 1px solid var(--gray-border);
+  border-radius: 14px;
+  padding: 14px 16px;
+  box-shadow: 0 4px 16px rgba(20, 30, 50, 0.03);
+}
+.patient-log-snapshot > .bo-modal-section-title { margin: 0; padding-top: 0; border-top: none; }
+.patient-log-snapshot-fields { display: flex; flex-wrap: wrap; align-items: stretch; gap: 12px 28px; }
+.patient-log-snapshot-divider { width: 1px; background: var(--gray-border); align-self: stretch; }
+.patient-log-snapshot-fields .patient-log-chip-row { gap: 10px 28px; }
 
 .patient-log-history {
   flex: 1;

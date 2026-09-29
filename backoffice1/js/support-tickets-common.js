@@ -291,19 +291,17 @@ function buildPatientLog(ticket) {
   const device = pickFrom(rand, LOG_DEVICES);
   const appVersion = pickFrom(rand, LOG_APP_VERSIONS);
   const buildNumber = 80 + Math.floor(rand() * 20);
-  const storageMb = 40000 + Math.floor(rand() * 90000);
+  rand(); // was Available Storage -- still drawn so each patient's seeded Microphone value stays the same
 
   return {
     appVersion: [
       { label: "App Version", value: appVersion },
       { label: "Build Number", value: String(buildNumber) },
       { label: "Platform", value: device.platform },
-      { label: "Last Updated", value: ticket.createdDate.split(" ")[0] },
     ],
     deviceInfo: [
       { label: "Device ID", value: device.deviceId },
       { label: "OS Version", value: device.os },
-      { label: "Available Storage", value: `${(storageMb / 1024).toFixed(1)} GB` },
     ],
     /* Microphone and Health Data Access used to be hardcoded "Enabled" --
        that made it impossible to ever see the single most common cause of a
@@ -313,10 +311,6 @@ function buildPatientLog(ticket) {
        permission callout) actually has something to demonstrate. */
     permissions: [
       { label: "Microphone", value: rand() < (ticketCategory(ticket) === "Voice Engine" ? 0.6 : 0.1) ? "Disabled" : "Enabled" },
-      { label: "Notifications", value: "Enabled" },
-      { label: "Health Data Access", value: rand() > 0.8 ? "Disabled" : "Enabled" },
-      { label: "Chat", value: rand() > 0.85 ? "Disabled" : "Enabled" },
-      { label: "Blood Pressure Data", value: rand() > 0.5 ? "Disabled" : "Enabled" },
     ],
     sessions: buildLogSessions(ticket),
   };
