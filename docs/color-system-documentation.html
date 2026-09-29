@@ -179,5 +179,38 @@
 
 <div class="note">Quick rule of thumb: green = good, blue = open/active ticket or incident, orange = warning or in progress, maroon = error, critical or escalated, red = patient priority only, yellow = medium, gray = low or inactive.</div>
 
+<h2>4. Other / Supplementary Colors</h2>
+<p>These colors don't carry a status meaning like the semantic colors above — they label what kind of thing something is (an organization, a patient, the system itself), not how urgent or healthy it is. They show up on summary-card icons (e.g. the "Total Organizations" and "Patients Affected" cards on the System Health Overview) and on Origin/Type tags (whether a ticket came from the System, a Patient, or Clinic staff).</p>
+
+<h3>Navy — Organizations / System</h3>
+<p>Navy marks anything about organizations, or an item that originated from the system itself rather than a person.</p>
+<div class="swatch-grid">
+  <div class="swatch-card"><div class="swatch-fill" style="background:#1F3C73"></div><div class="swatch-label"><span class="name">Navy</span><span class="hex">#1F3C73</span></div></div>
+  <div class="swatch-card"><div class="swatch-fill" style="background:#EAEEF7"></div><div class="swatch-label"><span class="name">Navy Background</span><span class="hex">#EAEEF7</span></div></div>
+</div>
+
+<h3>Purple — Patients / Clinic</h3>
+<p>Purple marks anything about patients (e.g. a Patients Affected count), or an item that originated from clinic staff.</p>
+<div class="swatch-grid">
+  <div class="swatch-card"><div class="swatch-fill" style="background:#9B7FE8"></div><div class="swatch-label"><span class="name">Purple</span><span class="hex">#9B7FE8</span></div></div>
+  <div class="swatch-card"><div class="swatch-fill" style="background:#6438C2"></div><div class="swatch-label"><span class="name">Purple Text</span><span class="hex">#6438C2</span></div></div>
+  <div class="swatch-card"><div class="swatch-fill" style="background:#F3EFFC"></div><div class="swatch-label"><span class="name">Purple Background</span><span class="hex">#F3EFFC</span></div></div>
+</div>
+
+<h3>Cyan — Patient-Sourced Items</h3>
+<p>Cyan marks a ticket or item raised directly by a patient — distinct from Purple's clinic-staff meaning above.</p>
+<div class="swatch-grid">
+  <div class="swatch-card"><div class="swatch-fill" style="background:#7FD3EE"></div><div class="swatch-label"><span class="name">Cyan</span><span class="hex">#7FD3EE</span></div></div>
+  <div class="swatch-card"><div class="swatch-fill" style="background:#1B8FA8"></div><div class="swatch-label"><span class="name">Cyan Text</span><span class="hex">#1B8FA8</span></div></div>
+  <div class="swatch-card"><div class="swatch-fill" style="background:#EAF9FD"></div><div class="swatch-label"><span class="name">Cyan Background</span><span class="hex">#EAF9FD</span></div></div>
+</div>
+
+<p>As Origin/Type tags, they look like this:</p>
+<div class="badge-demo">
+  <span class="pill" style="background:#EAEEF7;color:#1F3C73">System</span>
+  <span class="pill" style="background:#F3EFFC;color:#6438C2">Clinic</span>
+  <span class="pill" style="background:#EAF9FD;color:#1B8FA8">Patient</span>
+</div>
+
 </body>
 </html>
