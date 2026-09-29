@@ -117,18 +117,23 @@ function validateTicketDetailForm() {
 
 function renderTicketHeader() {
   document.getElementById("ticketDetailTitle").textContent = currentTicket.ticketNo;
-  document.getElementById("ticketDetailBadges").innerHTML = typePill(currentSource === "patient" ? "Patient" : "Clinic");
+  const badge = (label, pill) => `<span class="td-badge-group"><span class="td-badge-label">${label}</span>${pill}</span>`;
+  document.getElementById("ticketDetailBadges").innerHTML = [
+    badge("Status", statusPill(currentTicket.status)),
+    badge("Priority", priorityPill(currentTicket.priority)),
+    currentTicket.tier ? badge("Level", tierPill(currentTicket.tier)) : "",
+    badge("Type", typePill(currentSource === "patient" ? "Patient" : "Clinic")),
+  ].join("");
+  const origin = originLabel[currentTicket.origin] || currentTicket.origin;
+  document.getElementById("ticketDetailMeta").innerHTML =
+    `Created ${formatTicketCreated(currentTicket.createdDate)}` +
+    `<span class="td-meta-sep">&middot;</span>Origin: ${origin}` +
+    `<span class="td-meta-sep">&middot;</span>Organization: ${currentTicket.organization}` +
+    `<span class="td-meta-sep">&middot;</span>Created For: ${currentSource === "patient" ? currentTicket.patientId : currentTicket.raisedBy}`;
   document.title = `HearO Backoffice | ${currentTicket.ticketNo}`;
 }
 
 function renderTicketInfo() {
-  document.getElementById("ticketDetailSource").textContent = currentSource === "patient" ? "Patient" : "Clinic";
-  document.getElementById("ticketDetailStatusKv").innerHTML = statusPill(currentTicket.status);
-  document.getElementById("ticketDetailPriorityKv").innerHTML = priorityPill(currentTicket.priority);
-  document.getElementById("ticketDetailWho").textContent = currentSource === "patient" ? currentTicket.patientId : currentTicket.raisedBy;
-  document.getElementById("ticketDetailOrg").textContent = currentTicket.organization;
-  document.getElementById("ticketDetailOrigin").textContent = originLabel[currentTicket.origin] || currentTicket.origin;
-  document.getElementById("ticketDetailCreated").textContent = formatTicketCreated(currentTicket.createdDate);
   document.getElementById("ticketDetailIssueType").textContent = currentTicket.issueType;
   document.getElementById("ticketDetailCategory").textContent = ticketCategory(currentTicket) || "—";
   document.getElementById("ticketDetailDescription").textContent = currentTicket.description;
@@ -518,12 +523,29 @@ document.getElementById("patientLogDownloadConfirm").addEventListener("click", (
   closePatientLogDownloadPopover();
 });
 
+/* ---------------- History / Patient Log tabs ----------------
+   Patient Log only exists for patient-sourced tickets (renderPatientLog
+   hides its panel otherwise), so its tab follows that panel's visibility. */
+function selectDetailTab(name) {
+  document.querySelectorAll(".td-tab").forEach((t) => t.classList.toggle("active", t.dataset.tdTab === name));
+  document.querySelectorAll(".td-tab-panel").forEach((p) => p.classList.toggle("active", p.dataset.tdPanel === name));
+}
+document.querySelectorAll(".td-tab").forEach((tab) => tab.addEventListener("click", () => selectDetailTab(tab.dataset.tdTab)));
+
+/* Recording follows renderTicketRecording(), which only reveals the player
+   for Voice Engine tickets. */
+function syncPatientLogTab() {
+  document.querySelector('.td-tab[data-td-tab="patientLog"]').hidden = document.getElementById("patientLog").hidden;
+  document.querySelector('.td-tab[data-td-tab="recording"]').hidden = document.getElementById("ticketDetailRecordingWrap").hidden;
+}
+
 function renderAll() {
   renderTicketHeader();
   renderTicketInfo();
   renderTicketHandling();
   renderPatientLog();
   renderTicketHistory();
+  syncPatientLogTab();
 }
 renderAll();
 

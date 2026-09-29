@@ -5697,3 +5697,44 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
 }
 .scope-chip-x:hover { background: rgba(11, 111, 164, 0.18); }
 .has-chips { display: flex; flex-wrap: wrap; gap: 6px; white-space: normal !important; overflow: visible !important; }
+
+/* ---------------- Ticket detail (ticket-detail.html) ----------------
+   Header card on top, then a two-column body: Issue + History/Patient Log
+   tabs on the left, Handling + Ticket Info in a narrower right sidebar. */
+.td-header { padding: 18px 22px; margin-bottom: 16px; }
+.td-header-top { display: flex; align-items: center; gap: 12px 18px; flex-wrap: wrap; }
+
+.td-badges { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+.td-badge-group { display: inline-flex; align-items: center; gap: 6px; }
+.td-badge-label { font-size: 12px; font-weight: 600; color: var(--gray-text); }
+.td-badge-label::after { content: ":"; }
+.td-badge-group { padding-left: 18px; border-left: 1px solid var(--gray-border); }
+.td-title { font-size: 22px; font-weight: 800; color: var(--ink); margin: 0; line-height: 1.25; }
+.td-meta { font-size: 12.5px; color: var(--gray-text); margin: 8px 0 0 50px; }
+.td-header-actions { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+.td-meta-sep { margin: 0 8px; color: #C3C9D1; }
+
+.td-layout { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 16px; align-items: start; }
+.td-main, .td-side { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+
+.td-tabs-card { padding: 0; overflow: visible; }
+.td-tabs { display: flex; gap: 22px; padding: 0 22px; border-bottom: 1px solid var(--gray-border); }
+.td-tab {
+  background: none; border: none; font-family: inherit; font-size: 13.5px; font-weight: 700;
+  color: var(--gray-text); padding: 14px 0 12px; margin-bottom: -1px; cursor: pointer;
+  border-bottom: 2px solid transparent;
+}
+.td-tab:hover { color: var(--ink); }
+.td-tab.active { color: var(--blue-text); border-bottom-color: var(--blue); }
+.td-tab-panel { padding: 18px 22px; }
+.td-tab-panel:not(.active) { display: none; }
+.td-tab-panel .bo-ticket-history { max-height: none; }
+
+/* Handling sits in the narrow sidebar: stack its fields one per row. The
+   Edit popup keeps its own two-up layout (.bo-handling-modal). */
+.td-side .bo-handling-row { grid-template-columns: 1fr; gap: 12px; }
+
+
+@media (max-width: 1100px) {
+  .td-layout { grid-template-columns: 1fr; }
+}

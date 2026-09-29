@@ -28,6 +28,7 @@ function renderIncidentSummary() {
 
 function renderIncidentImpact() {
   document.getElementById("incDetailOrgCount").textContent = currentIncident.orgs.length;
+  document.getElementById("incDetailOrgCountMeta").textContent = currentIncident.orgs.length;
 }
 
 function renderIncidentTimeline() {
@@ -51,18 +52,30 @@ function renderIncidentResolution() {
   document.getElementById("incDetailVerification").textContent = fmtBool(r.verificationCompleted);
 }
 
+/* ---------------- Timeline / Resolution tabs ----------------
+   Resolution only exists for resolved incidents (renderIncidentResolution
+   hides its panel otherwise), so its tab follows that panel's visibility. */
+function selectDetailTab(name) {
+  document.querySelectorAll(".td-tab").forEach((t) => t.classList.toggle("active", t.dataset.tdTab === name));
+  document.querySelectorAll(".td-tab-panel").forEach((p) => p.classList.toggle("active", p.dataset.tdPanel === name));
+}
+document.querySelectorAll(".td-tab").forEach((tab) => tab.addEventListener("click", () => selectDetailTab(tab.dataset.tdTab)));
+
 function renderAll() {
   renderIncidentHeader();
   renderIncidentSummary();
   renderIncidentImpact();
   renderIncidentTimeline();
   renderIncidentResolution();
+  document.querySelector('.td-tab[data-td-tab="resolution"]').hidden = document.getElementById("resolution").hidden;
 }
 renderAll();
 
-/* Deep link into a specific section, e.g. incident-detail.html?id=...#timeline */
+/* Deep link into a specific section, e.g. incident-detail.html?id=...#timeline;
+   tabbed sections open their tab first. */
 if (location.hash) {
   const target = document.querySelector(location.hash);
+  if (target && target.dataset.tdPanel && !target.hidden) selectDetailTab(target.dataset.tdPanel);
   if (target) setTimeout(() => target.scrollIntoView({ behavior: "smooth", block: "start" }), 50);
 }
 

@@ -141,63 +141,74 @@
   <!-- PAGE -->
   <main class="bo-page">
 
-    <div class="bo-entity-header">
-      <a href="support.html?tab=incidents" class="bo-back-arrow" aria-label="Back to Incidents">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-      </a>
-      <div>
-        <h1 class="bo-entity-name" id="incDetailId">&nbsp;</h1>
+    <!-- Header -->
+    <section class="bo-card td-header">
+      <div class="td-header-top">
+        <a href="support.html?tab=incidents" class="bo-back-arrow" aria-label="Back to Incidents">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        </a>
+        <h1 class="td-title" id="incDetailId">&nbsp;</h1>
+        <div class="td-badges">
+          <span class="td-badge-group"><span class="td-badge-label">Status</span><span id="incDetailStatusKv">&mdash;</span></span>
+          <span class="td-badge-group"><span class="td-badge-label">Priority</span><span id="incDetailPriorityKv">&mdash;</span></span>
+        </div>
+        <div class="td-header-actions">
+          <button type="button" class="bo-btn-primary" id="incDetailCreateTaskBtn">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            Escalate &amp; Create Ticket
+          </button>
+        </div>
       </div>
-      <span class="bo-list-toolbar-spacer"></span>
-      <div class="bo-list-toolbar-group">
-        <button type="button" class="bo-btn-primary" id="incDetailCreateTaskBtn">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-          Escalate &amp; Create Ticket
-        </button>
+      <p class="td-meta">Detected <span id="incDetailDetected">&mdash;</span><span class="td-meta-sep">&middot;</span>Organizations affected: <span id="incDetailOrgCountMeta">&mdash;</span></p>
+    </section>
+
+    <div class="td-layout">
+      <div class="td-main">
+
+        <!-- Incident Summary -->
+        <section class="bo-card bo-panel" id="summary">
+          <h3 class="bo-panel-title">Incident Summary</h3>
+          <div class="bo-kv-grid bo-kv-grid--3col" style="margin-bottom:14px;">
+            <div class="bo-kv-cell"><span class="k">Category</span><span class="v" id="incDetailCategory">&mdash;</span></div>
+            <div class="bo-kv-cell"><span class="k">Issue Type</span><span class="v" id="incDetailIssueType">&mdash;</span></div>
+          </div>
+          <p class="bo-ticket-description" id="incDetailSummaryText"></p>
+        </section>
+
+        <!-- Timeline / Resolution tabs -->
+        <section class="bo-card td-tabs-card">
+          <div class="td-tabs" role="tablist">
+            <button type="button" class="td-tab active" data-td-tab="timeline" role="tab">Timeline</button>
+            <button type="button" class="td-tab" data-td-tab="resolution" role="tab" hidden>Resolution</button>
+          </div>
+
+          <div class="td-tab-panel active" id="timeline" data-td-panel="timeline">
+            <div class="bo-ticket-history" id="incDetailTimeline"></div>
+          </div>
+
+          <!-- Resolution (resolved incidents only) -->
+          <div class="td-tab-panel" id="resolution" data-td-panel="resolution" hidden>
+            <p class="bo-ticket-description" id="incDetailResolutionSummary" style="margin-bottom:14px;"></p>
+            <div class="bo-kv-grid bo-kv-grid--3col">
+              <div class="bo-kv-cell"><span class="k">Resolved by</span><span class="v" id="incDetailResolvedBy">&mdash;</span></div>
+              <div class="bo-kv-cell"><span class="k">Resolved at</span><span class="v" id="incDetailResolvedAt">&mdash;</span></div>
+              <div class="bo-kv-cell"><span class="k">Fix deployed</span><span class="v" id="incDetailFixDeployed">&mdash;</span></div>
+              <div class="bo-kv-cell"><span class="k">Verification completed</span><span class="v" id="incDetailVerification">&mdash;</span></div>
+            </div>
+          </div>
+        </section>
+
       </div>
-    </div>
 
-    <div class="bo-incident-detail-body">
+      <aside class="td-side">
 
-      <!-- Incident Summary -->
-      <section class="bo-card bo-panel" id="summary">
-        <h3 class="bo-panel-title">Incident Summary</h3>
-        <p class="bo-ticket-description" id="incDetailSummaryText" style="margin-bottom:14px;"></p>
-        <div class="bo-kv-grid bo-kv-grid--3col">
-          <div class="bo-kv-cell"><span class="k">Detected</span><span class="v" id="incDetailDetected">—</span></div>
-          <div class="bo-kv-cell"><span class="k">Priority</span><span class="v" id="incDetailPriorityKv">—</span></div>
-          <div class="bo-kv-cell"><span class="k">Status</span><span class="v" id="incDetailStatusKv">—</span></div>
-          <div class="bo-kv-cell"><span class="k">Category</span><span class="v" id="incDetailCategory">—</span></div>
-          <div class="bo-kv-cell"><span class="k">Issue Type</span><span class="v" id="incDetailIssueType">—</span></div>
-        </div>
-      </section>
+        <!-- Impact -->
+        <section class="bo-card bo-panel" id="impact">
+          <h3 class="bo-panel-title">Impact</h3>
+          <div class="bo-kv-cell"><span class="k">Organizations affected</span><span class="v" id="incDetailOrgCount">&mdash;</span></div>
+        </section>
 
-      <!-- Impact -->
-      <section class="bo-card bo-panel" id="impact">
-        <h3 class="bo-panel-title">Impact</h3>
-        <div class="bo-kv-grid bo-kv-grid--3col" style="margin-bottom:14px;">
-          <div class="bo-kv-cell"><span class="k">Organizations affected</span><span class="v" id="incDetailOrgCount">—</span></div>
-        </div>
-      </section>
-
-      <!-- Timeline -->
-      <section class="bo-card bo-panel" id="timeline">
-        <h3 class="bo-panel-title">Incident Timeline</h3>
-        <div class="bo-ticket-history" id="incDetailTimeline" style="max-height:none;"></div>
-      </section>
-
-      <!-- Resolution (resolved incidents only) -->
-      <section class="bo-card bo-panel" id="resolution" hidden>
-        <h3 class="bo-panel-title">Resolution</h3>
-        <p class="bo-ticket-description" id="incDetailResolutionSummary" style="margin-bottom:14px;"></p>
-        <div class="bo-kv-grid bo-kv-grid--3col">
-          <div class="bo-kv-cell"><span class="k">Resolved by</span><span class="v" id="incDetailResolvedBy">—</span></div>
-          <div class="bo-kv-cell"><span class="k">Resolved at</span><span class="v" id="incDetailResolvedAt">—</span></div>
-          <div class="bo-kv-cell"><span class="k">Fix deployed</span><span class="v" id="incDetailFixDeployed">—</span></div>
-          <div class="bo-kv-cell"><span class="k">Verification completed</span><span class="v" id="incDetailVerification">—</span></div>
-        </div>
-      </section>
-
+      </aside>
     </div>
   </main>
 

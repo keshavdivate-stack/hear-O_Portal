@@ -141,45 +141,46 @@
   <!-- PAGE -->
   <main class="bo-page">
 
-    <div class="bo-entity-header">
-      <a href="support.html?tab=tickets" class="bo-back-arrow" id="ticketDetailBack" aria-label="Back to Tickets">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-      </a>
-      <div>
-        <h1 class="bo-entity-name" id="ticketDetailTitle">&nbsp;</h1>
+    <!-- Header -->
+    <section class="bo-card td-header">
+      <div class="td-header-top">
+        <a href="support.html?tab=tickets" class="bo-back-arrow" id="ticketDetailBack" aria-label="Back to Tickets">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        </a>
+        <h1 class="td-title" id="ticketDetailTitle">&nbsp;</h1>
+        <div class="td-badges" id="ticketDetailBadges"></div>
       </div>
-      <div class="bo-incident-badges" id="ticketDetailBadges"></div>
-    </div>
+      <p class="td-meta" id="ticketDetailMeta"></p>
+    </section>
 
-    <div>
-    <div class="bo-incident-detail-body">
+    <div class="td-layout">
+      <div class="td-main">
 
-      <!-- Ticket Info -->
-      <section class="bo-card bo-panel" id="ticketInfo">
-        <h3 class="bo-panel-title">Ticket Info</h3>
-        <div class="bo-kv-grid bo-kv-grid--3col">
-          <div class="bo-kv-cell"><span class="k">Type</span><span class="v" id="ticketDetailSource">—</span></div>
-          <div class="bo-kv-cell"><span class="k">Status</span><span class="v" id="ticketDetailStatusKv">—</span></div>
-          <div class="bo-kv-cell"><span class="k">Priority</span><span class="v" id="ticketDetailPriorityKv">—</span></div>
-          <div class="bo-kv-cell"><span class="k">Organization</span><span class="v" id="ticketDetailOrg">—</span></div>
-          <div class="bo-kv-cell"><span class="k">Created For</span><span class="v" id="ticketDetailWho">—</span></div>
-          <div class="bo-kv-cell"><span class="k">Origin</span><span class="v" id="ticketDetailOrigin">—</span></div>
-          <div class="bo-kv-cell"><span class="k">Created</span><span class="v" id="ticketDetailCreated">—</span></div>
-        </div>
-      </section>
-
-      <!-- Issue -->
-      <section class="bo-card bo-panel" id="issue">
-        <h3 class="bo-panel-title">Issue</h3>
+        <!-- Issue -->
+        <section class="bo-card bo-panel" id="issue">
+          <h3 class="bo-panel-title">Issue</h3>
         <div class="bo-kv-grid bo-kv-grid--3col" style="margin-bottom:14px;">
           <div class="bo-kv-cell"><span class="k">Category</span><span class="v" id="ticketDetailCategory">—</span></div>
           <div class="bo-kv-cell"><span class="k">Issue Type</span><span class="v" id="ticketDetailIssueType">—</span></div>
         </div>
         <p class="bo-ticket-description" id="ticketDetailDescription"></p>
+        </section>
 
+        <!-- History / Patient Log tabs -->
+        <section class="bo-card td-tabs-card">
+          <div class="td-tabs" role="tablist">
+            <button type="button" class="td-tab active" data-td-tab="history" role="tab">History</button>
+            <button type="button" class="td-tab" data-td-tab="patientLog" role="tab" hidden>Patient Log</button>
+            <button type="button" class="td-tab" data-td-tab="recording" role="tab" hidden>Recording</button>
+          </div>
+
+          <div class="td-tab-panel active" id="history" data-td-panel="history">
+            <div class="bo-ticket-history" id="ticketDetailHistory"></div>
+          </div>
+
+          <!-- Recording (Voice Engine tickets only) -->
+          <div class="td-tab-panel" data-td-panel="recording">
         <div id="ticketDetailRecordingWrap" hidden>
-          <div class="bo-modal-section-title">Recording</div>
-
           <div class="bo-permission-alert" id="ticketDetailMicAlert" hidden>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.73 3h16.9a2 2 0 0 0 1.73-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/></svg>
             <span>Microphone permission is <b>Disabled</b> on this patient's device &mdash; likely cause of the missing recording.</span>
@@ -201,14 +202,94 @@
             </button>
           </div>
         </div>
-      </section>
+          </div>
 
-      <!-- Handling -->
-      <section class="bo-card bo-panel" id="handling">
-        <div class="bo-panel-head">
-          <h3 class="bo-panel-title" style="margin-bottom:0;">Handling</h3>
-          <button type="button" class="bo-btn-secondary" id="editTicketHandlingBtn">Edit</button>
+          <!-- Patient Log (patient-sourced tickets only) -->
+          <div class="td-tab-panel" id="patientLog" data-td-panel="patientLog" hidden>
+        <div class="patient-log-snapshot">
+          <div class="patient-log-snapshot-group">
+            <div class="bo-modal-section-title">App Version</div>
+            <div class="patient-log-chip-row" id="patientLogAppVersion"></div>
+          </div>
+          <div class="patient-log-snapshot-group">
+            <div class="bo-modal-section-title">Device Info</div>
+            <div class="patient-log-chip-row" id="patientLogDeviceInfo"></div>
+          </div>
+          <div class="patient-log-snapshot-group">
+            <div class="bo-modal-section-title">Permissions Info</div>
+            <div class="patient-log-chip-row" id="patientLogPermissions"></div>
+          </div>
         </div>
+
+        <div class="patient-log-history">
+          <div class="bo-modal-section-title patient-log-history-title" style="display:flex; align-items:center; justify-content:space-between; border-top:none; padding-top:0;">
+            Log History
+            <div class="patient-log-history-actions">
+              <div class="bo-select" id="patientLogSessionSelect" data-name="patientLogSession">
+                <button type="button" class="bo-select-trigger" aria-label="Log session">
+                  <span class="bo-select-value placeholder">Select session</span>
+                  <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
+                <div class="bo-select-menu"></div>
+                <input type="hidden" />
+              </div>
+              <div class="patient-log-download-wrap">
+                <button type="button" class="bo-btn-secondary" id="downloadPatientLogBtn">Download Log</button>
+                <div class="patient-log-download-popover" id="patientLogDownloadPopover" hidden>
+                  <p class="patient-log-download-popover-title">Download logs for date range</p>
+                  <div class="patient-log-download-popover-row">
+                    <button type="button" class="bo-date-field bo-date-field-trigger" id="patientLogDownloadFromField" data-field="from" aria-label="From date">
+                      <span id="patientLogDownloadFromValue" class="bo-date-field-value">—</span>
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="17" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3 9H21" stroke="currentColor" stroke-width="1.8"/></svg>
+                    </button>
+                    <button type="button" class="bo-date-field bo-date-field-trigger" id="patientLogDownloadToField" data-field="to" aria-label="To date">
+                      <span id="patientLogDownloadToValue" class="bo-date-field-value">—</span>
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="17" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3 9H21" stroke="currentColor" stroke-width="1.8"/></svg>
+                    </button>
+                  </div>
+                  <div class="bo-mini-calendar" id="patientLogDownloadCalendar" hidden>
+                    <div class="bo-mini-calendar-head">
+                      <span class="bo-mini-calendar-month" id="patientLogCalendarMonthLabel">—</span>
+                      <div class="bo-mini-calendar-nav">
+                        <button type="button" id="patientLogCalendarPrev" aria-label="Previous month">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                        </button>
+                        <button type="button" id="patientLogCalendarNext" aria-label="Next month">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                        </button>
+                      </div>
+                    </div>
+                    <div class="bo-mini-calendar-weekdays"><span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span></div>
+                    <div class="bo-mini-calendar-days" id="patientLogCalendarDays"></div>
+                    <div class="bo-mini-calendar-footer">
+                      <button type="button" id="patientLogCalendarClear">Clear</button>
+                      <button type="button" id="patientLogCalendarToday">Today</button>
+                    </div>
+                  </div>
+                  <p class="patient-log-download-popover-hint" id="patientLogDownloadHint"></p>
+                  <div class="patient-log-download-popover-actions">
+                    <button type="button" class="bo-btn-secondary" id="patientLogDownloadCancel">Cancel</button>
+                    <button type="button" class="bo-btn-primary" id="patientLogDownloadConfirm">Download</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="patient-log-console" id="patientLogHistory"></div>
+        </div>
+          </div>
+        </section>
+
+      </div>
+
+      <aside class="td-side">
+
+        <!-- Handling -->
+        <section class="bo-card bo-panel" id="handling">
+          <div class="bo-panel-head">
+            <h3 class="bo-panel-title" style="margin-bottom:0;">Handling</h3>
+            <button type="button" class="bo-btn-secondary" id="editTicketHandlingBtn">Edit</button>
+          </div>
         <div id="ticketHandlingInlineSlot">
         <form id="ticketDetailForm" class="bo-handling-form is-readonly">
         <div class="bo-modal-grid">
@@ -281,92 +362,10 @@
       </div>
         </form>
         </div>
-      </section>
+        </section>
 
-      <!-- Patient Log (patient-sourced tickets only) -->
-      <section class="bo-card bo-panel" id="patientLog" hidden>
-        <h3 class="bo-panel-title">Patient Log</h3>
 
-        <div class="patient-log-snapshot">
-          <div class="patient-log-snapshot-group">
-            <div class="bo-modal-section-title">App Version</div>
-            <div class="patient-log-chip-row" id="patientLogAppVersion"></div>
-          </div>
-          <div class="patient-log-snapshot-group">
-            <div class="bo-modal-section-title">Device Info</div>
-            <div class="patient-log-chip-row" id="patientLogDeviceInfo"></div>
-          </div>
-          <div class="patient-log-snapshot-group">
-            <div class="bo-modal-section-title">Permissions Info</div>
-            <div class="patient-log-chip-row" id="patientLogPermissions"></div>
-          </div>
-        </div>
-
-        <div class="patient-log-history">
-          <div class="bo-modal-section-title patient-log-history-title" style="display:flex; align-items:center; justify-content:space-between; border-top:none; padding-top:0;">
-            Log History
-            <div class="patient-log-history-actions">
-              <div class="bo-select" id="patientLogSessionSelect" data-name="patientLogSession">
-                <button type="button" class="bo-select-trigger" aria-label="Log session">
-                  <span class="bo-select-value placeholder">Select session</span>
-                  <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-                </button>
-                <div class="bo-select-menu"></div>
-                <input type="hidden" />
-              </div>
-              <div class="patient-log-download-wrap">
-                <button type="button" class="bo-btn-secondary" id="downloadPatientLogBtn">Download Log</button>
-                <div class="patient-log-download-popover" id="patientLogDownloadPopover" hidden>
-                  <p class="patient-log-download-popover-title">Download logs for date range</p>
-                  <div class="patient-log-download-popover-row">
-                    <button type="button" class="bo-date-field bo-date-field-trigger" id="patientLogDownloadFromField" data-field="from" aria-label="From date">
-                      <span id="patientLogDownloadFromValue" class="bo-date-field-value">—</span>
-                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="17" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3 9H21" stroke="currentColor" stroke-width="1.8"/></svg>
-                    </button>
-                    <button type="button" class="bo-date-field bo-date-field-trigger" id="patientLogDownloadToField" data-field="to" aria-label="To date">
-                      <span id="patientLogDownloadToValue" class="bo-date-field-value">—</span>
-                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="17" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3 9H21" stroke="currentColor" stroke-width="1.8"/></svg>
-                    </button>
-                  </div>
-                  <div class="bo-mini-calendar" id="patientLogDownloadCalendar" hidden>
-                    <div class="bo-mini-calendar-head">
-                      <span class="bo-mini-calendar-month" id="patientLogCalendarMonthLabel">—</span>
-                      <div class="bo-mini-calendar-nav">
-                        <button type="button" id="patientLogCalendarPrev" aria-label="Previous month">
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-                        </button>
-                        <button type="button" id="patientLogCalendarNext" aria-label="Next month">
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-                        </button>
-                      </div>
-                    </div>
-                    <div class="bo-mini-calendar-weekdays"><span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span></div>
-                    <div class="bo-mini-calendar-days" id="patientLogCalendarDays"></div>
-                    <div class="bo-mini-calendar-footer">
-                      <button type="button" id="patientLogCalendarClear">Clear</button>
-                      <button type="button" id="patientLogCalendarToday">Today</button>
-                    </div>
-                  </div>
-                  <p class="patient-log-download-popover-hint" id="patientLogDownloadHint"></p>
-                  <div class="patient-log-download-popover-actions">
-                    <button type="button" class="bo-btn-secondary" id="patientLogDownloadCancel">Cancel</button>
-                    <button type="button" class="bo-btn-primary" id="patientLogDownloadConfirm">Download</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="patient-log-console" id="patientLogHistory"></div>
-        </div>
-      </section>
-
-      <!-- History -->
-      <section class="bo-card bo-panel" id="history">
-        <h3 class="bo-panel-title">History</h3>
-        <div class="bo-ticket-history" id="ticketDetailHistory"></div>
-      </section>
-
-    </div>
+      </aside>
     </div>
   </main>
 
