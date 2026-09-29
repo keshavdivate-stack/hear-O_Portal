@@ -1,4 +1,4 @@
-﻿/* ---------------- Discontinued account banner ---------------- */
+/* ---------------- Discontinued account banner ---------------- */
 (() => {
   const params = new URLSearchParams(window.location.search);
   if (params.get("discontinued") !== "1") return;
@@ -903,7 +903,7 @@ const medications = [
   },
   {
     hf: false, name: "Ibuprofen", cls: "NSAID (OTC)", freq: "As needed", dose: "200 mg", schedule: "As needed",
-    warning: "NSAIDs may worsen fluid retention in HF", adherence: dailyAdherence([1, 3, 5, 7, 9, 11, 13], [15, 17, 19, 21, 23, 25, 27, 29]), source: "Patient", srcClass: "src-patient", status: "past",
+    warning: "NSAIDs may worsen fluid retention in HF", adherence: dailyAdherence([1, 3, 5, 7, 9, 11, 13], [15, 17, 19, 21, 23, 25, 27, 29]), source: "Patient", srcClass: "src-patient", patientReason: "Headache and joint pain", status: "past",
     ehrStatus: "Inactive", doseForm: "Tablet", manufacturer: "Other", ingredient: "Ibuprofen", amount: "200 mg",
     effectiveDateTime: "2025-11-02T09:00", route: "Oral", sig: "Take as needed for pain, not to exceed 3 tablets per day",
     statusReason: "Adverse reaction", lotNumber: "â€”", expiryDate: "2025-12-01",
@@ -1012,6 +1012,7 @@ function renderMeds() {
               ${m.hf ? `<span class="med-hf-badge">Heart Failure medication</span>` : ""}
               <span class="med-class">${m.cls}</span>
               <span>${m.dose} &middot; ${m.schedule}</span>
+              ${m.source === "Patient" && m.patientReason ? `<span class="med-patient-reason"><span class="med-patient-reason-label">Reason (added by patient):</span> ${m.patientReason}</span>` : ""}
               ${m.warning ? `<span class="med-warning"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 4L2 20H22L12 4Z" stroke="#C2410C" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 10V14M12 17V17.3" stroke="#C2410C" stroke-width="1.6" stroke-linecap="round"/></svg>${m.warning}</span>` : ""}
             </div>
           </div>
