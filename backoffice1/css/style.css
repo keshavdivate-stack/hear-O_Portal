@@ -2624,6 +2624,52 @@ a.bo-btn-secondary { text-decoration: none; }
 .bo-modal-field textarea:focus { border-color: var(--blue); }
 
 /* ==========================================================
+   TICKET DETAIL: recording parts (Part 1, Part 2, ...)
+   One row per part: play button, time, progress line, label.
+   ========================================================== */
+.bo-rec-parts { display: flex; flex-direction: column; gap: 10px; }
+.bo-rec-part {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 16px;
+  background: #F0F0F0;
+  border-radius: 8px;
+}
+.bo-rec-play {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 50%;
+  background: var(--blue);
+  color: #fff;
+  cursor: pointer;
+  padding: 0 0 0 2px;
+}
+.bo-rec-play.playing { padding-left: 0; }
+.bo-rec-play:hover { filter: brightness(0.95); }
+.bo-rec-time {
+  min-width: 70px;
+  font-size: 13px;
+  color: var(--gray-text);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.bo-rec-track {
+  flex: 1;
+  height: 3px;
+  border-radius: 2px;
+  background: #C9C6C4;
+  overflow: hidden;
+}
+.bo-rec-fill { height: 100%; width: 0%; background: var(--blue); transition: width 100ms linear; }
+.bo-rec-label { font-size: 13px; color: var(--gray-text); white-space: nowrap; }
+
+/* ==========================================================
    LANGUAGE RESOURCES PAGE
    ========================================================== */
 .bo-audio-player {

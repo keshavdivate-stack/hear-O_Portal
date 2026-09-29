@@ -153,54 +153,58 @@ function isRecordingIssue(ticket) {
   return ticketCategory(ticket) === "Voice Engine";
 }
 
-/* Deterministic bar heights (seeded off the ticket number) so the waveform
-   looks like a real recording instead of a flat line, and stays the same
-   shape every time this ticket is opened. */
-const WAVEFORM_BAR_COUNT = 48;
-function buildWaveformBars(rand) {
-  let html = "";
-  for (let i = 0; i < WAVEFORM_BAR_COUNT; i++) {
-    const height = 20 + Math.floor(rand() * 80);
-    html += `<span class="bar" style="height:${height}%"></span>`;
-  }
-  return html;
-}
-
+/* The recording is shown as its separate parts (Part 1, Part 2, ...), each
+   with its own play button, time and progress line. Part count and lengths
+   are seeded off the ticket number so the same ticket always shows the same
+   parts. Only one part plays at a time. */
 let ticketRecordingTimer = null;
 
 function formatRecordingTime(sec) {
-  return `0:${String(Math.floor(sec)).padStart(2, "0")}`;
+  const s = Math.floor(sec);
+  return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
+}
+
+function stopTicketRecording() {
+  clearInterval(ticketRecordingTimer);
+  ticketRecordingTimer = null;
+  document.querySelectorAll("#ticketDetailRecordingParts .bo-rec-part").forEach((row) => {
+    const btn = row.querySelector(".bo-rec-play");
+    btn.classList.remove("playing");
+    btn.innerHTML = lrPlayIcon;
+    btn.setAttribute("aria-label", "Play");
+    row.dataset.elapsedMs = 0;
+    row.querySelector(".bo-rec-fill").style.width = "0%";
+    row.querySelector(".bo-rec-time").textContent = `0:00 / ${formatRecordingTime(Number(row.dataset.durationMs) / 1000)}`;
+  });
 }
 
 function renderTicketRecording() {
   const wrap = document.getElementById("ticketDetailRecordingWrap");
   const micAlert = document.getElementById("ticketDetailMicAlert");
-  const playBtn = document.getElementById("ticketDetailAudioPlay");
-  const timeEl = document.getElementById("ticketDetailAudioTime");
-  const progressEl = document.getElementById("ticketDetailWaveformProgress");
+  const partsEl = document.getElementById("ticketDetailRecordingParts");
 
-  clearInterval(ticketRecordingTimer);
-  playBtn.classList.remove("playing");
-  playBtn.innerHTML = lrPlayIcon;
-  progressEl.style.width = "0%";
+  stopTicketRecording();
   micAlert.hidden = true;
 
   if (!isRecordingIssue(currentTicket)) {
     wrap.hidden = true;
+    partsEl.innerHTML = "";
     return;
   }
 
   wrap.hidden = false;
   const rand = seededRandom(currentTicket.ticketNo);
-  const durationSec = 8 + Math.floor(rand() * 40);
-  const barsHtml = buildWaveformBars(rand);
-  document.getElementById("ticketDetailWaveformBars").innerHTML = barsHtml;
-  document.getElementById("ticketDetailWaveformBarsFill").innerHTML = barsHtml;
-
-  const durationMs = durationSec * 1000;
-  playBtn.dataset.durationMs = durationMs;
-  playBtn.dataset.elapsedMs = 0;
-  timeEl.textContent = `0:00 / ${formatRecordingTime(durationSec)}`;
+  const partCount = 4 + Math.floor(rand() * 3); // 4-6 parts
+  partsEl.innerHTML = Array.from({ length: partCount }, (_, i) => {
+    const durationSec = 2 + Math.floor(rand() * 8); // 2-9 s
+    return `
+      <div class="bo-rec-part" data-duration-ms="${durationSec * 1000}" data-elapsed-ms="0">
+        <button type="button" class="bo-rec-play" aria-label="Play">${lrPlayIcon}</button>
+        <span class="bo-rec-time">0:00 / ${formatRecordingTime(durationSec)}</span>
+        <div class="bo-rec-track"><div class="bo-rec-fill"></div></div>
+        <span class="bo-rec-label">Part ${i + 1}</span>
+      </div>`;
+  }).join("");
 
   /* Root-cause check: this is the same seeded permissions data the
      Patient Log's Permissions Info panel shows -- built independently
@@ -212,37 +216,40 @@ function renderTicketRecording() {
   }
 }
 
-document.getElementById("ticketDetailAudioPlay").addEventListener("click", (e) => {
-  const btn = e.currentTarget;
-  const timeEl = document.getElementById("ticketDetailAudioTime");
-  const progressEl = document.getElementById("ticketDetailWaveformProgress");
-  const durationMs = Number(btn.dataset.durationMs) || 0;
-  const durationSec = durationMs / 1000;
+document.getElementById("ticketDetailRecordingParts").addEventListener("click", (e) => {
+  const btn = e.target.closest(".bo-rec-play");
+  if (!btn) return;
+  const row = btn.closest(".bo-rec-part");
+  const wasPlaying = btn.classList.contains("playing");
+  const resumeFromMs = Number(row.dataset.elapsedMs) || 0;
 
+  /* Pausing keeps this part's position; playing a part stops any other. */
   clearInterval(ticketRecordingTimer);
+  if (wasPlaying) {
+    btn.classList.remove("playing");
+    btn.innerHTML = lrPlayIcon;
+    btn.setAttribute("aria-label", "Play");
+    return;
+  }
+  stopTicketRecording();
+  row.dataset.elapsedMs = resumeFromMs;
 
-  const playing = btn.classList.toggle("playing");
-  btn.innerHTML = playing ? lrPauseIcon : lrPlayIcon;
-  if (!playing) return;
+  const durationMs = Number(row.dataset.durationMs);
+  const fillEl = row.querySelector(".bo-rec-fill");
+  const timeEl = row.querySelector(".bo-rec-time");
+  btn.classList.add("playing");
+  btn.innerHTML = lrPauseIcon;
+  btn.setAttribute("aria-label", "Pause");
 
-  const startedAt = Date.now() - Number(btn.dataset.elapsedMs || 0);
+  const startedAt = Date.now() - resumeFromMs;
   ticketRecordingTimer = setInterval(() => {
     const elapsedMs = Math.min(Date.now() - startedAt, durationMs);
-    btn.dataset.elapsedMs = elapsedMs;
-    progressEl.style.width = `${(elapsedMs / durationMs) * 100}%`;
-    timeEl.textContent = `${formatRecordingTime(elapsedMs / 1000)} / ${formatRecordingTime(durationSec)}`;
-
-    if (elapsedMs >= durationMs) {
-      clearInterval(ticketRecordingTimer);
-      btn.classList.remove("playing");
-      btn.innerHTML = lrPlayIcon;
-      btn.dataset.elapsedMs = 0;
-      progressEl.style.width = "0%";
-      timeEl.textContent = `0:00 / ${formatRecordingTime(durationSec)}`;
-    }
-  }, 200);
+    row.dataset.elapsedMs = elapsedMs;
+    fillEl.style.width = `${(elapsedMs / durationMs) * 100}%`;
+    timeEl.textContent = `${formatRecordingTime(elapsedMs / 1000)} / ${formatRecordingTime(durationMs / 1000)}`;
+    if (elapsedMs >= durationMs) stopTicketRecording();
+  }, 100);
 });
-
 /* Handling shows the same fields as the edit form, but locked until Edit is
    clicked (see "Handling form wiring"). Resolved tickets drop the routing
    fields, same as the form does. */
@@ -548,97 +555,6 @@ function renderAll() {
   syncPatientLogTab();
 }
 renderAll();
-
-/* ---------------- Chat with Patient (patient-sourced tickets only) ----------------
-   Same chat panel pattern as the clinic portal's patient-data.html, so
-   support agents get a familiar UI to message the patient straight from
-   their ticket instead of switching to another tool. Only offered when the
-   ticket was actually raised on behalf of a patient -- clinic-staff tickets
-   have no patient to chat with. */
-const chatMessages = currentSource === "patient"
-  ? [
-      { type: "out", name: "Support Team", time: "10:02 AM", text: `Hi, this is regarding your ticket ${currentTicket.ticketNo}. Can you tell us a bit more about what happened?` },
-      { type: "in", time: "10:06 AM", text: "Sure — it's been happening since yesterday morning." },
-      { type: "out", name: "Support Team", time: "10:08 AM", text: "Thanks, we're looking into it now." },
-    ]
-  : [];
-
-const chatOpenBtn = document.getElementById("chatOpenBtn");
-const chatPanel = document.getElementById("chatPanel");
-const chatMessagesEl = document.getElementById("chatMessages");
-const chatEmptyStateEl = document.getElementById("chatEmptyState");
-
-function renderChatMessages() {
-  chatEmptyStateEl.hidden = chatMessages.length > 0;
-  chatMessagesEl.hidden = chatMessages.length === 0;
-  chatMessagesEl.innerHTML = chatMessages
-    .map(
-      (m) => `
-        <div class="chat-msg ${m.type}">
-          <div class="chat-msg-meta">${m.name ? `<b>${m.name}</b> &middot; ` : ""}${m.time}</div>
-          <div class="chat-bubble">${m.text}</div>
-        </div>`
-    )
-    .join("");
-  chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight;
-}
-
-function chatNowTime() {
-  return new Date().toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
-}
-
-function addOutgoingChatMessage(text) {
-  chatMessages.push({ type: "out", name: "Support Team", time: chatNowTime(), text });
-  renderChatMessages();
-}
-
-if (currentSource === "patient") {
-  chatOpenBtn.hidden = false;
-  renderChatMessages();
-
-  chatOpenBtn.addEventListener("click", (e) => {
-    e.stopPropagation();
-    chatPanel.classList.add("open");
-  });
-  document.getElementById("chatCloseBtn").addEventListener("click", () => chatPanel.classList.remove("open"));
-  document.addEventListener("click", (e) => {
-    if (!chatPanel.classList.contains("open")) return;
-    if (chatPanel.contains(e.target) || chatOpenBtn.contains(e.target)) return;
-    chatPanel.classList.remove("open");
-  });
-
-  const chatInputField = document.getElementById("chatInputField");
-  const chatSendBtn = document.getElementById("chatSendBtn");
-  chatSendBtn.addEventListener("click", () => {
-    const text = chatInputField.value.trim();
-    if (!text) return;
-    addOutgoingChatMessage(text);
-    chatInputField.value = "";
-  });
-  chatInputField.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      chatSendBtn.click();
-    }
-  });
-
-  const chatPlusBtn = document.getElementById("chatPlusBtn");
-  const chatPlusMenu = document.getElementById("chatPlusMenu");
-  chatPlusBtn.addEventListener("click", (e) => {
-    e.stopPropagation();
-    chatPlusMenu.classList.toggle("open");
-  });
-  document.addEventListener("click", (e) => {
-    if (!chatPlusMenu.contains(e.target) && e.target !== chatPlusBtn) chatPlusMenu.classList.remove("open");
-  });
-  chatPlusMenu.addEventListener("click", (e) => {
-    const item = e.target.closest(".chat-plus-menu-item");
-    if (!item) return;
-    chatPlusMenu.classList.remove("open");
-    const label = item.dataset.request === "image" ? "Requested an image" : "Requested a video";
-    addOutgoingChatMessage(label);
-  });
-}
 
 /* ---------------- Handling form wiring ----------------
    The form is always on the page but locked (read-only) until Edit is
