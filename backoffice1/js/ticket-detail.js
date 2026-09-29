@@ -301,10 +301,46 @@ function renderPatientLogHistory(elId, lines) {
 }
 
 let currentPatientLog = null;
-let currentPatientLogSessionId = null;
 
-function currentSession() {
-  return currentPatientLog && currentPatientLog.sessions.find((s) => s.id === currentPatientLogSessionId);
+/* ---------------- Log History: date-range filter ----------------
+   From/To dates (a small self-contained calendar rather than native
+   <input type="date">, which stacked two calendar glyphs and opened the
+   browser's own picker) pick which sessions the log shows. Defaults to the
+   latest session's day. Download Log saves exactly what the filter shows. */
+function formatDisplayDate(d) {
+  return d ? `${String(d.getDate()).padStart(2, "0")}-${String(d.getMonth() + 1).padStart(2, "0")}-${d.getFullYear()}` : "—";
+}
+function sameDay(a, b) {
+  return !!a && !!b && a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+}
+
+let patientLogFromDate = null;
+let patientLogToDate = null;
+let patientLogCalendarField = null;
+let patientLogCalendarViewDate = new Date();
+
+/* Sessions whose day falls inside From..To (either end may be empty = open). */
+function patientLogSessionsInRange() {
+  if (!currentPatientLog) return [];
+  const from = patientLogFromDate;
+  const to = patientLogToDate ? new Date(patientLogToDate.getFullYear(), patientLogToDate.getMonth(), patientLogToDate.getDate(), 23, 59, 59) : null;
+  return currentPatientLog.sessions
+    .filter((s) => (!from || s.dateObj >= from) && (!to || s.dateObj <= to))
+    .sort((a, b) => a.dateObj - b.dateObj);
+}
+
+function renderPatientLogRange() {
+  const el = document.getElementById("patientLogHistory");
+  if (patientLogFromDate && patientLogToDate && patientLogFromDate > patientLogToDate) {
+    el.innerHTML = `<div class="patient-log-empty">From date must be on or before the To date.</div>`;
+    return;
+  }
+  const sessions = patientLogSessionsInRange();
+  if (!sessions.length) {
+    el.innerHTML = `<div class="patient-log-empty">No logs found for this date range.</div>`;
+    return;
+  }
+  renderPatientLogHistory("patientLogHistory", sessions.flatMap((s) => s.lines));
 }
 
 function renderPatientLog() {
@@ -320,51 +356,14 @@ function renderPatientLog() {
   renderPatientLogSection("patientLogDeviceInfo", currentPatientLog.deviceInfo);
   renderPatientLogSection("patientLogPermissions", currentPatientLog.permissions);
 
-  const sessionSelect = document.getElementById("patientLogSessionSelect");
-  sessionSelect.querySelector(".bo-select-menu").innerHTML = currentPatientLog.sessions
-    .map(
-      (s, i) => `
-      <div class="bo-select-option" data-value="${s.id}">${s.date}${i === 0 ? " (latest)" : ""}
-        <svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </div>`
-    )
-    .join("");
-  currentPatientLogSessionId = currentPatientLog.sessions[0].id;
-  setBoSelectValue(sessionSelect, currentPatientLogSessionId, { silent: true });
-  renderPatientLogHistory("patientLogHistory", currentSession().lines);
-
-  const sessionDates = currentPatientLog.sessions.map((s) => s.dateObj).sort((a, b) => a - b);
-  patientLogFromDate = sessionDates[0];
-  patientLogToDate = sessionDates[sessionDates.length - 1];
+  const latest = currentPatientLog.sessions.map((s) => s.dateObj).sort((a, b) => b - a)[0];
+  const latestDay = new Date(latest.getFullYear(), latest.getMonth(), latest.getDate());
+  patientLogFromDate = latestDay;
+  patientLogToDate = latestDay;
   updatePatientLogDateFieldDisplay("from");
   updatePatientLogDateFieldDisplay("to");
+  renderPatientLogRange();
 }
-
-document.querySelector('#patientLogSessionSelect input[type=hidden]').addEventListener("change", (e) => {
-  currentPatientLogSessionId = e.target.value;
-  const session = currentSession();
-  if (session) renderPatientLogHistory("patientLogHistory", session.lines);
-});
-
-/* ---------------- Download Log (date-range picker) ----------------
-   A small self-contained calendar replaces native <input type="date">
-   here -- that had two calendar glyphs stacked (the browser's own
-   picker-indicator plus our SVG) and opened the OS/browser's own date
-   picker, which looked out of place next to the rest of the app's UI. */
-function toIsoDate(d) {
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-}
-function formatDisplayDate(d) {
-  return d ? `${String(d.getDate()).padStart(2, "0")}-${String(d.getMonth() + 1).padStart(2, "0")}-${d.getFullYear()}` : "—";
-}
-function sameDay(a, b) {
-  return !!a && !!b && a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
-}
-
-let patientLogFromDate = null;
-let patientLogToDate = null;
-let patientLogCalendarField = null;
-let patientLogCalendarViewDate = new Date();
 
 function updatePatientLogDateFieldDisplay(field) {
   const date = field === "from" ? patientLogFromDate : patientLogToDate;
@@ -410,6 +409,7 @@ function openPatientLogCalendar(field) {
   patientLogCalendarViewDate = date ? new Date(date.getFullYear(), date.getMonth(), 1) : new Date();
   document.getElementById("patientLogDownloadFromField").classList.toggle("active", field === "from");
   document.getElementById("patientLogDownloadToField").classList.toggle("active", field === "to");
+  patientLogCalendarEl.classList.toggle("align-to", field === "to");
   patientLogCalendarEl.hidden = false;
   renderPatientLogCalendar();
 }
@@ -418,6 +418,14 @@ function closePatientLogCalendar() {
   document.getElementById("patientLogDownloadFromField").classList.remove("active");
   document.getElementById("patientLogDownloadToField").classList.remove("active");
   patientLogCalendarEl.hidden = true;
+}
+
+/* Every date change re-filters the log right away. */
+function setPatientLogDate(field, date) {
+  if (field === "from") patientLogFromDate = date;
+  else if (field === "to") patientLogToDate = date;
+  updatePatientLogDateFieldDisplay(field);
+  renderPatientLogRange();
 }
 
 document.getElementById("patientLogDownloadFromField").addEventListener("click", (e) => { e.stopPropagation(); openPatientLogCalendar("from"); });
@@ -436,73 +444,31 @@ document.getElementById("patientLogCalendarDays").addEventListener("click", (e) 
   e.stopPropagation();
   const btn = e.target.closest(".bo-mini-calendar-day");
   if (!btn || !patientLogCalendarField) return;
-  const picked = new Date(Number(btn.dataset.time));
-  if (patientLogCalendarField === "from") patientLogFromDate = picked;
-  else patientLogToDate = picked;
-  updatePatientLogDateFieldDisplay(patientLogCalendarField);
+  setPatientLogDate(patientLogCalendarField, new Date(Number(btn.dataset.time)));
   closePatientLogCalendar();
 });
 document.getElementById("patientLogCalendarClear").addEventListener("click", (e) => {
   e.stopPropagation();
-  if (patientLogCalendarField === "from") patientLogFromDate = null;
-  else if (patientLogCalendarField === "to") patientLogToDate = null;
-  updatePatientLogDateFieldDisplay(patientLogCalendarField);
+  if (!patientLogCalendarField) return;
+  setPatientLogDate(patientLogCalendarField, null);
   renderPatientLogCalendar();
 });
 document.getElementById("patientLogCalendarToday").addEventListener("click", (e) => {
   e.stopPropagation();
+  if (!patientLogCalendarField) return;
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  if (patientLogCalendarField === "from") patientLogFromDate = today;
-  else if (patientLogCalendarField === "to") patientLogToDate = today;
-  updatePatientLogDateFieldDisplay(patientLogCalendarField);
+  setPatientLogDate(patientLogCalendarField, today);
   closePatientLogCalendar();
 });
-
-const patientLogDownloadPopover = document.getElementById("patientLogDownloadPopover");
-
-function openPatientLogDownloadPopover() {
-  document.getElementById("patientLogDownloadHint").textContent = "";
-  patientLogDownloadPopover.hidden = false;
-}
-function closePatientLogDownloadPopover() {
-  patientLogDownloadPopover.hidden = true;
-  closePatientLogCalendar();
-}
-
-document.getElementById("downloadPatientLogBtn").addEventListener("click", (e) => {
-  e.stopPropagation();
-  if (!currentPatientLog) return;
-  if (patientLogDownloadPopover.hidden) openPatientLogDownloadPopover();
-  else closePatientLogDownloadPopover();
-});
-document.getElementById("patientLogDownloadCancel").addEventListener("click", closePatientLogDownloadPopover);
 document.addEventListener("click", (e) => {
-  if (!patientLogDownloadPopover.hidden && !e.target.closest(".patient-log-download-wrap")) closePatientLogDownloadPopover();
-  else if (!patientLogCalendarEl.hidden && !e.target.closest(".bo-mini-calendar") && !e.target.closest(".bo-date-field-trigger")) closePatientLogCalendar();
+  if (!patientLogCalendarEl.hidden && !e.target.closest(".bo-mini-calendar") && !e.target.closest(".bo-date-field-trigger")) closePatientLogCalendar();
 });
 
-document.getElementById("patientLogDownloadConfirm").addEventListener("click", () => {
-  if (!currentPatientLog) return;
-  const hint = document.getElementById("patientLogDownloadHint");
-  if (!patientLogFromDate || !patientLogToDate) {
-    hint.textContent = "Pick both a from and to date.";
-    return;
-  }
-  const from = patientLogFromDate;
-  const to = patientLogToDate;
-  if (from > to) {
-    hint.textContent = "From date must be before the to date.";
-    return;
-  }
-
-  const sessionsInRange = currentPatientLog.sessions
-    .filter((s) => s.dateObj >= from && s.dateObj <= to)
-    .sort((a, b) => a.dateObj - b.dateObj);
-  if (!sessionsInRange.length) {
-    hint.textContent = "No sessions found in that date range.";
-    return;
-  }
+/* Download Log saves the sessions the date-range filter currently shows. */
+document.getElementById("downloadPatientLogBtn").addEventListener("click", () => {
+  const sessionsInRange = patientLogSessionsInRange();
+  if (!currentPatientLog || !sessionsInRange.length) return;
 
   const section = (title, rows) => `${title}\n${rows.map((r) => `  ${r.label}: ${r.value}`).join("\n")}\n`;
   const historySection = sessionsInRange
@@ -527,9 +493,7 @@ document.getElementById("patientLogDownloadConfirm").addEventListener("click", (
   link.click();
   link.remove();
   URL.revokeObjectURL(url);
-  closePatientLogDownloadPopover();
 });
-
 /* ---------------- History / Patient Log tabs ----------------
    Patient Log only exists for patient-sourced tickets (renderPatientLog
    hides its panel otherwise), so its tab follows that panel's visibility. */

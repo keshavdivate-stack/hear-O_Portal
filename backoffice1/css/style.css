@@ -3656,6 +3656,45 @@ a.bo-btn-secondary { text-decoration: none; }
 .patient-log-line .msg { color: var(--ink); }
 
 .patient-log-history-actions { display: flex; align-items: center; gap: 10px; }
+
+/* Log History date-range filter: From / To fields with the shared mini
+   calendar opening beneath them. The header it sits in is bold uppercase,
+   so text styling is reset for the fields. */
+.patient-log-range { position: relative; display: flex; align-items: center; gap: 8px; }
+.patient-log-range-label {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--gray-text);
+  text-transform: none;
+  letter-spacing: normal;
+}
+.patient-log-range .bo-date-field {
+  min-width: 140px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--ink);
+  text-transform: none;
+  letter-spacing: normal;
+  justify-content: space-between;
+}
+.patient-log-range .bo-date-field.active { border-color: var(--blue); }
+.patient-log-range .bo-mini-calendar {
+  left: auto;
+  right: 0;
+  top: calc(100% + 6px);
+  width: 290px;
+  z-index: 300;
+  text-transform: none;
+  letter-spacing: normal;
+  font-weight: 400;
+}
+.patient-log-empty {
+  padding: 18px 4px;
+  font-family: inherit;
+  color: var(--gray-text);
+}
 .patient-log-history-actions .bo-select { width: 190px; flex-shrink: 0; }
 
 /* This select sits inside .patient-log-history-title (a section-title
