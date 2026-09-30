@@ -2,7 +2,7 @@
 const ringSegmentsBase = [
   { label: "Recorded", value: 21, color: "#2E5AAC" },
   { label: "Did not upload", value: 11, color: "#EA580C" },
-  { label: "Left study", value: 231, color: "#7FD3EE" },
+  { label: "Left study", value: 231, color: "#1CBFA6" },
 ];
 
 const screenedMonths = ["Mar", "Apr", "May", "Jun", "Jul", "Aug"];
