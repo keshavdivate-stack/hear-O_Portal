@@ -245,10 +245,10 @@ function buildActivityChart() {
         </pattern>
       </defs>
       ${hatchRect}
-      <polyline points="${toPoly(stepsPts)}" fill="none" stroke="#8E97F2" stroke-width="2" />
+      <polyline points="${toPoly(stepsPts)}" fill="none" stroke="#9B7FE8" stroke-width="2" />
       <polyline points="${toPoly(distPts)}" fill="none" stroke="#1CBFA6" stroke-width="2" />
       <polyline points="${toPoly(elevPts)}" fill="none" stroke="#B23FD8" stroke-width="2" stroke-dasharray="4 3" />
-      ${dots(stepsPts, "#8E97F2")}
+      ${dots(stepsPts, "#9B7FE8")}
       ${dots(distPts, "#1CBFA6")}
     </svg>`;
 
@@ -343,7 +343,7 @@ buildHrmChart();
 /* -- Blood Saturation (SpO2) -- */
 const spo2Data = seriesValues(98, 2.4);
 function buildSpo2Chart() {
-  buildAxisLineChart("spo2ChartWrap", "spo2DayScale", [{ data: spo2Data, color: "#7C7CE0" }], 96, 100, 150, "spo2MonthRow");
+  buildAxisLineChart("spo2ChartWrap", "spo2DayScale", [{ data: spo2Data, color: "#9B7FE8" }], 96, 100, 150, "spo2MonthRow");
 }
 buildSpo2Chart();
 
@@ -494,7 +494,7 @@ const respirationData = rangeSeries(16, 32, 8);
 
 function buildHeartChart() { buildRangeChart("heartChart", heartData, 45, 200, 150, "#1CBFA6", "heartMonthRow"); }
 function buildOxygenChart() { buildRangeChart("oxygenChart", oxygenData, 80, 100, 150, "#EA580C", "oxygenMonthRow"); }
-function buildRespirationChart() { buildRangeChart("respirationChart", respirationData, 10, 50, 150, "#7C7CE0", "respirationMonthRow"); }
+function buildRespirationChart() { buildRangeChart("respirationChart", respirationData, 10, 50, 150, "#9B7FE8", "respirationMonthRow"); }
 
 buildHeartChart();
 buildOxygenChart();
