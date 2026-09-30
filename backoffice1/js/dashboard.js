@@ -157,15 +157,15 @@ function renderAreaChart(mode) {
   };
 
   const parts = [];
-  if (mode !== "quality") parts.push(buildArea(complianceSeries, "#1F3C73", "gradNavy"));
+  if (mode !== "quality") parts.push(buildArea(complianceSeries, "#2E5AAC", "gradNavy"));
   if (mode !== "compliance") parts.push(buildArea(qualitySeries, "#EA580C", "gradOrange"));
 
   document.getElementById("complianceArea").innerHTML = `
     <svg viewBox="0 0 ${width} ${height}" class="bo-area-svg" preserveAspectRatio="none">
       <defs>
         <linearGradient id="gradNavy" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="#1F3C73" stop-opacity="0.25"/>
-          <stop offset="100%" stop-color="#1F3C73" stop-opacity="0"/>
+          <stop offset="0%" stop-color="#2E5AAC" stop-opacity="0.25"/>
+          <stop offset="100%" stop-color="#2E5AAC" stop-opacity="0"/>
         </linearGradient>
         <linearGradient id="gradOrange" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stop-color="#EA580C" stop-opacity="0.25"/>

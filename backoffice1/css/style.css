@@ -12,7 +12,7 @@
   --red-light: #FDEDED;
   --maroon: #9F1C3B;
   --maroon-light: #FCE8EC;
-  --navy: #1F3C73;
+  --navy: #2E5AAC;
   --navy-light: #EAEEF7;
   --orange: #EA580C;
   --orange-light: #FFEDD5;
@@ -5575,7 +5575,7 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
   flex-direction: column;
   justify-content: space-between;
   padding: 48px 56px;
-  background: linear-gradient(160deg, #0f2547 0%, #1F3C73 48%, #1d7fbf 100%);
+  background: linear-gradient(160deg, #0f2547 0%, #2E5AAC 48%, #1d7fbf 100%);
   color: #fff;
 }
 

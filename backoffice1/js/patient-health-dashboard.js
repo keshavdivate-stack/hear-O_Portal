@@ -206,7 +206,7 @@ function renderPatientComplianceChart() {
   container.innerHTML = `
     <svg viewBox="0 0 ${width} ${height}" class="bo-area-svg" preserveAspectRatio="none">
       ${gridLines.join("")}
-      ${buildLine(complianceSeries, "#1F3C73")}
+      ${buildLine(complianceSeries, "#2E5AAC")}
       ${buildLine(qualitySeries, "#EA580C")}
       ${xLabels}
     </svg>`;

@@ -170,8 +170,8 @@ function renderAreaChart() {
     <svg viewBox="0 0 ${width} ${height}" class="bo-area-svg" preserveAspectRatio="none">
       <defs>
         <linearGradient id="gradNavy" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="#1F3C73" stop-opacity="0.25"/>
-          <stop offset="100%" stop-color="#1F3C73" stop-opacity="0"/>
+          <stop offset="0%" stop-color="#2E5AAC" stop-opacity="0.25"/>
+          <stop offset="100%" stop-color="#2E5AAC" stop-opacity="0"/>
         </linearGradient>
         <linearGradient id="gradOrange" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stop-color="#EA580C" stop-opacity="0.25"/>
@@ -179,7 +179,7 @@ function renderAreaChart() {
         </linearGradient>
       </defs>
       ${gridLines.join("")}
-      ${buildArea(complianceSeries, "#1F3C73", "gradNavy")}
+      ${buildArea(complianceSeries, "#2E5AAC", "gradNavy")}
       ${buildArea(qualitySeries, "#EA580C", "gradOrange")}
       ${xLabels}
     </svg>`;
