@@ -125,11 +125,28 @@ function renderTicketHeader() {
     badge("Type", typePill(currentSource === "patient" ? "Patient" : "Clinic")),
   ].join("");
   const origin = originLabel[currentTicket.origin] || currentTicket.origin;
+  /* Clinic-raised tickets show the Cordio system and Clinic Portal versions
+     the clinic user was running when they raised it -- there's no mobile
+     App/Device info for a clinic ticket the way there is for a patient one.
+     Patient-raised tickets instead show the patient's own contact info, so
+     an agent can reach them directly without leaving the ticket. */
+  let extraMeta = "";
+  if (currentSource === "clinic" && currentTicket.cordioVersion) {
+    extraMeta =
+      `<span class="td-meta-sep">&middot;</span>Cordio Version: ${currentTicket.cordioVersion}` +
+      `<span class="td-meta-sep">&middot;</span>Portal Version: ${currentTicket.portalVersion}`;
+  } else if (currentSource === "patient") {
+    const contact = patientContactInfo(currentTicket.patientId);
+    extraMeta =
+      `<span class="td-meta-sep">&middot;</span>Email: ${contact.email}` +
+      `<span class="td-meta-sep">&middot;</span>Mobile: ${contact.phone}`;
+  }
   document.getElementById("ticketDetailMeta").innerHTML =
     `Created ${formatTicketCreated(currentTicket.createdDate)}` +
     `<span class="td-meta-sep">&middot;</span>Origin: ${origin}` +
     `<span class="td-meta-sep">&middot;</span>Organization: ${currentTicket.organization}` +
-    `<span class="td-meta-sep">&middot;</span>Created For: ${currentSource === "patient" ? currentTicket.patientId : currentTicket.raisedBy}`;
+    `<span class="td-meta-sep">&middot;</span>Created For: ${currentSource === "patient" ? currentTicket.patientId : currentTicket.raisedBy}` +
+    extraMeta;
   document.title = `HearO Backoffice | ${currentTicket.ticketNo}`;
 }
 

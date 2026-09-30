@@ -209,6 +209,23 @@ const LOG_DEVICES = [
 ];
 const LOG_APP_VERSIONS = ["3.1.5", "3.2.0", "3.2.7", "3.3.0", "3.4.1"];
 
+/* Patient contact info shown on a patient ticket's header (email + mobile) --
+   there's no real patient directory here, so name/email/phone are seeded
+   off the patient ID so the same patient always shows the same contact. */
+const PATIENT_CONTACT_NAMES = [
+  ["Meital", "Barak"], ["Noam", "Kessler"], ["Doron", "Sharabi"], ["Amit", "Golan"],
+  ["Eyal", "Peretz"], ["Guy", "Amrani"], ["Liora", "Ben-Ami"], ["Tamar", "Ohana"],
+  ["Boaz", "Gefen"], ["Roni", "Segal"], ["Gil", "Nahum"], ["Lior", "Adler"],
+];
+function patientContactInfo(patientId) {
+  const rand = seededRandom(patientId || "patient");
+  const [first, last] = pickFrom(rand, PATIENT_CONTACT_NAMES);
+  return {
+    email: `${first.toLowerCase()}.${last.toLowerCase().replace("-", "")}@gmail.com`,
+    phone: `+972-5${String(10000000 + Math.floor(rand() * 89999999)).slice(0, 8)}`,
+  };
+}
+
 /* Raw event lines the mobile app's device log actually emits, sampled from a
    real log export -- used to fabricate a plausible "Log History" list. */
 const LOG_HISTORY_TEMPLATES = [

@@ -144,13 +144,20 @@ const patientTickets = [
   { id: 8, ticketNo: "TCK-1050", patientId: "121-2010", organization: "121", issueType: "Missing ASR Results", scope: "Patient", tier: "Level 1", priority: "Critical", status: "Open", origin: "Patient", assignedTo: "Sarah Cohen", createdDate: "28/12/2026 09:15", description: "Patient's latest recording uploaded but never produced ASR results; the voice engine pipeline appears stuck." },
 ];
 
+/* Cordio system (backend) and Clinic Portal (web app) versions -- shown on
+   the ticket header only for clinic-raised tickets, since that's the
+   software the clinic user was actually running when they raised it
+   (patient tickets show App/Device info from the mobile app instead). */
+const CORDIO_SYSTEM_VERSIONS = ["3.1.5", "3.2.0", "3.2.7", "3.3.0", "3.4.1"];
+const CLINIC_PORTAL_VERSIONS = ["2.4.0", "2.5.1", "2.6.0", "2.6.3", "2.7.0"];
+
 /* ---------------- Sample tickets raised by clinics ---------------- */
 const clinicTickets = [
-  { id: 0, ticketNo: "TCK-2018", raisedBy: "Rachel Cohen", organization: "120", issueType: "Sensors Not Uploaded", scope: "Organization", tier: "Level 3", priority: "Critical", status: "In Progress", origin: "System", assignedTo: "Tomer Regev", createdDate: "02/08/2026 08:05", description: "Clinic-wide: patient devices provisioned this week are not syncing sensor data with the dashboard at all." },
-  { id: 1, ticketNo: "TCK-2015", raisedBy: "David Levi", organization: "121", issueType: "Organization Compliance Drop", scope: "Organization", tier: "Level 2", priority: "Medium", status: "In Progress", origin: "System", assignedTo: "Liat Peretz", createdDate: "31/07/2026 15:18", description: "Compliance chart on the clinic dashboard is showing data one day behind for the whole site." },
-  { id: 2, ticketNo: "TCK-2011", raisedBy: "Miriam Katz", organization: "B01", issueType: "Signed In Not Uploaded", scope: "Organization", tier: "Level 1", priority: "Critical", status: "Open", origin: "System", assignedTo: "Sarah Cohen", createdDate: "29/07/2026 12:44", description: "Several patient recordings uploaded overnight are missing from the clinic's session list." },
-  { id: 3, ticketNo: "TCK-2006", raisedBy: "Omer Peretz", organization: "104", issueType: "Other / Manual Report", scope: "Patient", tier: "Level 1", priority: "Low", status: "Resolved", origin: "Clinic", assignedTo: "Daniel Avraham", createdDate: "24/07/2026 09:55", description: "Clinic reported one patient's recordings sound sped up; traced to a bad microphone on that device." },
-  { id: 4, ticketNo: "TCK-2001", raisedBy: "Noa Ben-David", organization: "105", issueType: "Other / Manual Report", scope: "Organization", tier: "Level 2", priority: "High", status: "Open", origin: "Clinic", assignedTo: "Maya Gold", createdDate: "20/07/2026 17:02", description: "Clinic tablet used for onboarding new patients won't connect to the org Wi-Fi after firmware update." },
+  { id: 0, ticketNo: "TCK-2018", raisedBy: "Rachel Cohen", organization: "120", issueType: "Sensors Not Uploaded", scope: "Organization", tier: "Level 3", priority: "Critical", status: "In Progress", origin: "System", assignedTo: "Tomer Regev", createdDate: "02/08/2026 08:05", description: "Clinic-wide: patient devices provisioned this week are not syncing sensor data with the dashboard at all.", cordioVersion: "3.3.0", portalVersion: "2.6.3" },
+  { id: 1, ticketNo: "TCK-2015", raisedBy: "David Levi", organization: "121", issueType: "Organization Compliance Drop", scope: "Organization", tier: "Level 2", priority: "Medium", status: "In Progress", origin: "System", assignedTo: "Liat Peretz", createdDate: "31/07/2026 15:18", description: "Compliance chart on the clinic dashboard is showing data one day behind for the whole site.", cordioVersion: "3.2.7", portalVersion: "2.6.0" },
+  { id: 2, ticketNo: "TCK-2011", raisedBy: "Miriam Katz", organization: "B01", issueType: "Signed In Not Uploaded", scope: "Organization", tier: "Level 1", priority: "Critical", status: "Open", origin: "System", assignedTo: "Sarah Cohen", createdDate: "29/07/2026 12:44", description: "Several patient recordings uploaded overnight are missing from the clinic's session list.", cordioVersion: "3.4.1", portalVersion: "2.7.0" },
+  { id: 3, ticketNo: "TCK-2006", raisedBy: "Omer Peretz", organization: "104", issueType: "Other / Manual Report", scope: "Patient", tier: "Level 1", priority: "Low", status: "Resolved", origin: "Clinic", assignedTo: "Daniel Avraham", createdDate: "24/07/2026 09:55", description: "Clinic reported one patient's recordings sound sped up; traced to a bad microphone on that device.", cordioVersion: "3.2.0", portalVersion: "2.5.1" },
+  { id: 4, ticketNo: "TCK-2001", raisedBy: "Noa Ben-David", organization: "105", issueType: "Other / Manual Report", scope: "Organization", tier: "Level 2", priority: "High", status: "Open", origin: "Clinic", assignedTo: "Maya Gold", createdDate: "20/07/2026 17:02", description: "Clinic tablet used for onboarding new patients won't connect to the org Wi-Fi after firmware update.", cordioVersion: "3.1.5", portalVersion: "2.4.0" },
 ];
 
 /* ---------------- Bulk synthetic tickets ----------------
@@ -218,8 +225,13 @@ function topUpTickets(array, kind, status, count, ticketSeqStart) {
       createdDate: `${String(1 + (n % 27)).padStart(2, "0")}/${String(1 + (n % 12)).padStart(2, "0")}/2026 ${String(8 + (n % 11)).padStart(2, "0")}:${String((n * 7) % 60).padStart(2, "0")}`,
       description: SUPPORT_ISSUE_DESCRIPTIONS[issueType],
     };
-    if (kind === "patient") ticket.patientId = `${org}-${5000 + n}`;
-    else ticket.raisedBy = SUPPORT_CLINIC_STAFF[n % SUPPORT_CLINIC_STAFF.length];
+    if (kind === "patient") {
+      ticket.patientId = `${org}-${5000 + n}`;
+    } else {
+      ticket.raisedBy = SUPPORT_CLINIC_STAFF[n % SUPPORT_CLINIC_STAFF.length];
+      ticket.cordioVersion = CORDIO_SYSTEM_VERSIONS[n % CORDIO_SYSTEM_VERSIONS.length];
+      ticket.portalVersion = CLINIC_PORTAL_VERSIONS[n % CLINIC_PORTAL_VERSIONS.length];
+    }
     array.push(ticket);
   }
 }
