@@ -607,7 +607,9 @@ document.getElementById("downloadPatientLogBtn").addEventListener("click", () =>
 function selectDetailTab(name) {
   document.querySelectorAll(".td-tab").forEach((t) => t.classList.toggle("active", t.dataset.tdTab === name));
   document.querySelectorAll(".td-tab-panel").forEach((p) => p.classList.toggle("active", p.dataset.tdPanel === name));
+  document.getElementById("ticketRecordingDateToolbar").hidden = name !== "recording";
 }
+document.getElementById("ticketRecordingDateToolbar").appendChild(document.querySelector(".bo-rec-date-row"));
 document.querySelectorAll(".td-tab").forEach((tab) => tab.addEventListener("click", () => selectDetailTab(tab.dataset.tdTab)));
 
 /* Recording follows renderTicketRecording(), which only reveals the player

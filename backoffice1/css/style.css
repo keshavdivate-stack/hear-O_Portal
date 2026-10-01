@@ -2627,7 +2627,7 @@ a.bo-btn-secondary { text-decoration: none; }
    TICKET DETAIL: recording parts (Part 1, Part 2, ...)
    One row per part: play button, time, progress line, label.
    ========================================================== */
-.bo-rec-date-row { margin-bottom: 12px; }
+.bo-rec-date-row { margin: 0; }
 .bo-rec-date-row .bo-mini-calendar { top: calc(100% + 6px); left: 0; right: auto; width: 290px; z-index: 300; }
 .bo-rec-parts { display: flex; flex-direction: column; gap: 10px; }
 .bo-rec-part {
@@ -5822,7 +5822,11 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
 .td-main, .td-side { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
 
 .td-tabs-card { padding: 0; overflow: visible; }
-.td-tabs { display: flex; gap: 22px; padding: 0 22px; border-bottom: 1px solid var(--gray-border); }
+.td-tabs { display: flex; align-items: center; gap: 22px; padding: 0 22px; border-bottom: 1px solid var(--gray-border); }
+.bo-rec-date-toolbar { margin-left: auto; padding: 6px 0; }
+.bo-rec-date-toolbar[hidden] { display: none; }
+.bo-rec-date-toolbar .patient-log-range { display: flex; align-items: center; gap: 10px; }
+.bo-rec-date-toolbar .patient-log-range-label { margin: 0; }
 .td-tab {
   background: none; border: none; font-family: inherit; font-size: 13.5px; font-weight: 700;
   color: var(--gray-text); padding: 14px 0 12px; margin-bottom: -1px; cursor: pointer;
