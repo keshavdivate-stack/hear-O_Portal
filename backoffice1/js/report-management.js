@@ -30,11 +30,20 @@
 const rmKebabIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="1.7" fill="currentColor"/><circle cx="12" cy="12" r="1.7" fill="currentColor"/><circle cx="12" cy="19" r="1.7" fill="currentColor"/></svg>`;
 const rmPeopleIcon = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`;
 
-/* "Scheduled On": the frequency, plus the run day(s) for weekly schedules,
-   e.g. "Daily", "Weekly · MON, THU", "Monthly". */
+/* "Scheduled On": the frequency, plus the run day(s) for weekly schedules
+   (e.g. "Weekly · MON, THU") or the run date for monthly ones (e.g.
+   "Monthly · 1st"), so an admin can tell which day(s) without opening the
+   schedule. Daily has nothing further to show. */
 const RM_DAY_ABBR = { Sunday: "SUN", Monday: "MON", Tuesday: "TUE", Wednesday: "WED", Thursday: "THU", Friday: "FRI", Saturday: "SAT" };
+function rmOrdinal(n) {
+  if (n % 10 === 1 && n % 100 !== 11) return `${n}st`;
+  if (n % 10 === 2 && n % 100 !== 12) return `${n}nd`;
+  if (n % 10 === 3 && n % 100 !== 13) return `${n}rd`;
+  return `${n}th`;
+}
 function rmScheduledOnLabel(s) {
   if (s.frequency === "Weekly" && s.days && s.days.length) return `Weekly · ${s.days.map((d) => RM_DAY_ABBR[d] || d).join(", ")}`;
+  if (s.frequency === "Monthly" && s.dayOfMonth) return `Monthly · ${rmOrdinal(s.dayOfMonth)}`;
   return s.frequency || "—";
 }
 const rmReportTimeLabel = (s) => `${s.time} (${s.timezone})`;
