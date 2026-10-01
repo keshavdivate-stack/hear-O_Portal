@@ -2627,6 +2627,8 @@ a.bo-btn-secondary { text-decoration: none; }
    TICKET DETAIL: recording parts (Part 1, Part 2, ...)
    One row per part: play button, time, progress line, label.
    ========================================================== */
+.bo-rec-date-row { margin-bottom: 12px; }
+.bo-rec-date-row .bo-mini-calendar { top: calc(100% + 6px); left: 0; right: auto; width: 290px; z-index: 300; }
 .bo-rec-parts { display: flex; flex-direction: column; gap: 10px; }
 .bo-rec-part {
   display: flex;

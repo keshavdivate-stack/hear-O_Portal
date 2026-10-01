@@ -210,6 +210,12 @@ function renderTicketRecording() {
   }
 
   wrap.hidden = false;
+  /* The recording date filter starts on the ticket's creation day so the
+     calendar opens on a useful date for this ticket. */
+  const createdDate = parseTicketDate(currentTicket.createdDate);
+  ticketRecordingDate = createdDate || new Date();
+  ticketRecordingDate.setHours(0, 0, 0, 0);
+  updateTicketRecordingDateDisplay();
   const rand = seededRandom(currentTicket.ticketNo);
   const partCount = 4 + Math.floor(rand() * 3); // 4-6 parts
   partsEl.innerHTML = Array.from({ length: partCount }, (_, i) => {
@@ -232,6 +238,89 @@ function renderTicketRecording() {
     micAlert.hidden = !micPermission || micPermission.value !== "Disabled";
   }
 }
+
+/* ---------------- Recording date filter ---------------- */
+let ticketRecordingDate = null;
+let ticketRecordingCalendarViewDate = new Date();
+const ticketRecordingCalendarEl = document.getElementById("ticketRecordingCalendar");
+
+function parseTicketDate(value) {
+  if (!value) return null;
+  const match = String(value).match(/^(\d{2})\/(\d{2})\/(\d{4})/);
+  if (!match) return null;
+  return new Date(Number(match[3]), Number(match[2]) - 1, Number(match[1]));
+}
+
+function updateTicketRecordingDateDisplay() {
+  document.getElementById("ticketRecordingDateValue").textContent = formatDisplayDate(ticketRecordingDate);
+  document.getElementById("ticketRecordingDateField").classList.toggle("placeholder", !ticketRecordingDate);
+}
+
+function renderTicketRecordingCalendar() {
+  const year = ticketRecordingCalendarViewDate.getFullYear();
+  const month = ticketRecordingCalendarViewDate.getMonth();
+  document.getElementById("ticketRecordingCalendarMonthLabel").textContent =
+    ticketRecordingCalendarViewDate.toLocaleDateString("en-US", { month: "long", year: "numeric" });
+  const first = new Date(year, month, 1);
+  const cells = [];
+  for (let i = 0; i < first.getDay(); i++) cells.push({ date: new Date(year, month, i - first.getDay() + 1), muted: true });
+  for (let day = 1; day <= new Date(year, month + 1, 0).getDate(); day++) cells.push({ date: new Date(year, month, day), muted: false });
+  while (cells.length % 7) {
+    const last = cells[cells.length - 1].date;
+    cells.push({ date: new Date(last.getFullYear(), last.getMonth(), last.getDate() + 1), muted: true });
+  }
+  document.getElementById("ticketRecordingCalendarDays").innerHTML = cells.map(({ date, muted }) => {
+    const classes = ["bo-mini-calendar-day"];
+    if (muted) classes.push("muted");
+    if (sameDay(date, ticketRecordingDate)) classes.push("selected");
+    return `<button type="button" class="${classes.join(" ")}" data-time="${date.getTime()}" aria-pressed="${sameDay(date, ticketRecordingDate)}">${date.getDate()}</button>`;
+  }).join("");
+}
+
+function openTicketRecordingCalendar() {
+  const date = ticketRecordingDate || new Date();
+  ticketRecordingCalendarViewDate = new Date(date.getFullYear(), date.getMonth(), 1);
+  document.getElementById("ticketRecordingDateField").classList.add("active");
+  ticketRecordingCalendarEl.hidden = false;
+  renderTicketRecordingCalendar();
+}
+
+function closeTicketRecordingCalendar() {
+  document.getElementById("ticketRecordingDateField").classList.remove("active");
+  ticketRecordingCalendarEl.hidden = true;
+}
+
+document.getElementById("ticketRecordingDateField").addEventListener("click", (e) => {
+  e.stopPropagation();
+  if (ticketRecordingCalendarEl.hidden) openTicketRecordingCalendar();
+  else closeTicketRecordingCalendar();
+});
+document.getElementById("ticketRecordingCalendarPrev").addEventListener("click", (e) => {
+  e.stopPropagation();
+  ticketRecordingCalendarViewDate = new Date(ticketRecordingCalendarViewDate.getFullYear(), ticketRecordingCalendarViewDate.getMonth() - 1, 1);
+  renderTicketRecordingCalendar();
+});
+document.getElementById("ticketRecordingCalendarNext").addEventListener("click", (e) => {
+  e.stopPropagation();
+  ticketRecordingCalendarViewDate = new Date(ticketRecordingCalendarViewDate.getFullYear(), ticketRecordingCalendarViewDate.getMonth() + 1, 1);
+  renderTicketRecordingCalendar();
+});
+document.getElementById("ticketRecordingCalendarDays").addEventListener("click", (e) => {
+  e.stopPropagation();
+  const day = e.target.closest(".bo-mini-calendar-day");
+  if (!day) return;
+  ticketRecordingDate = new Date(Number(day.dataset.time));
+  ticketRecordingDate.setHours(0, 0, 0, 0);
+  updateTicketRecordingDateDisplay();
+  closeTicketRecordingCalendar();
+});
+document.getElementById("ticketRecordingCalendarToday").addEventListener("click", (e) => {
+  e.stopPropagation();
+  ticketRecordingDate = new Date();
+  ticketRecordingDate.setHours(0, 0, 0, 0);
+  updateTicketRecordingDateDisplay();
+  closeTicketRecordingCalendar();
+});
 
 document.getElementById("ticketDetailRecordingParts").addEventListener("click", (e) => {
   const btn = e.target.closest(".bo-rec-play");
@@ -480,6 +569,7 @@ document.getElementById("patientLogCalendarToday").addEventListener("click", (e)
 });
 document.addEventListener("click", (e) => {
   if (!patientLogCalendarEl.hidden && !e.target.closest(".bo-mini-calendar") && !e.target.closest(".bo-date-field-trigger")) closePatientLogCalendar();
+  if (!ticketRecordingCalendarEl.hidden && !e.target.closest("#ticketRecordingCalendar") && !e.target.closest("#ticketRecordingDateField")) closeTicketRecordingCalendar();
 });
 
 /* Download Log saves the sessions the date-range filter currently shows. */
