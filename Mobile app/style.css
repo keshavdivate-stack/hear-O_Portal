@@ -4854,5 +4854,5 @@ input[type="date"]:focus {
 .mx-tab.active { background: #f4f8fd; color: #1a6fd4; }
 
 /* Before/after/with-food indication on a dose row. */
-.mx-food-tag { display: inline-flex; align-items: center; gap: 5px; margin-top: 6px; font-size: calc(15px * var(--font-scale, 1)); color: #6f6f6f; }
+.mx-food-tag { display: inline-flex; flex-shrink: 0; align-items: center; gap: 5px; font-size: calc(15px * var(--font-scale, 1)); font-weight: 400; color: #6f6f6f; }
 .mx-food-tag svg { flex-shrink: 0; }

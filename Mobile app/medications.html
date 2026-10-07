@@ -168,9 +168,11 @@
           .map(
             (dose) => `
           <div class="mx-dose">
-            <div class="mx-dose-name">${dose.name}</div>
+            <div class="mx-dose-name">
+              <span>${dose.name}</span>
+              ${dose.food ? `<span class="mx-food-tag">${foodIcon} ${FOOD_LABEL[dose.food]}</span>` : ""}
+            </div>
             <div class="mx-dose-sub">${dose.dose} &middot; Take 1 pill</div>
-            ${dose.food ? `<div class="mx-food-tag">${foodIcon} ${FOOD_LABEL[dose.food]}</div>` : ""}
             ${renderDoseAction(tab, dose)}
           </div>`
           )
