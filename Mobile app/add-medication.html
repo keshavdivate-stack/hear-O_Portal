@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/Mobile%20app/style.css?v=31">
+<link rel="stylesheet" href="/Mobile%20app/style.css?v=33">
 <script src="/Mobile%20app/font-scale.js?v=29"></script>
 <style>
   /* Add-medication screen: built from the existing header, input, chip (mx-btn) and login-btn styles. */
@@ -26,6 +26,10 @@
   .am-date-field { min-width: 0; }
   .am-date-field label { display: block; font-size: calc(16px * var(--font-scale, 1)); font-weight: 500; color: #6f6f6f; margin-bottom: 6px; }
   .am-date-field input[type="date"] { min-width: 0; width: 100%; padding: 0 10px; font-size: calc(19px * var(--font-scale, 1)); }
+  .am-select { height: 52px; width: 100%; padding: 0 16px; border-radius: 14px; border: 2px solid #d5d5d5; background: #fff; color: #3d3d3d; font-family: inherit; font-size: calc(20px * var(--font-scale, 1)); }
+  .am-units-row { display: flex; align-items: center; gap: 12px; }
+  .am-units-row input[type="number"] { width: 90px; flex-shrink: 0; text-align: center; }
+  .am-units-unit { font-size: calc(19px * var(--font-scale, 1)); color: #6f6f6f; }
 </style>
 </head>
 <body>
@@ -41,7 +45,7 @@
     </div>
 
     <div class="mx-header">
-      <button type="button" class="back-btn" aria-label="Back" onclick="window.location.href='/Mobile%20app/my-medications.html'">
+      <button type="button" class="back-btn" aria-label="Back" onclick="window.location.href='/Mobile%20app/medications.html?tab=mine'">
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M12.5 4L6.5 10L12.5 16" stroke="#252424" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
       <h1>Add medication</h1>
@@ -60,25 +64,71 @@
       </div>
 
       <div class="am-section">
-        <p class="am-label">2. Dose <small>(required)</small></p>
-        <div class="am-chips" id="doseChips">
-          <button type="button" class="am-chip" aria-pressed="false">12.5 mg</button>
-          <button type="button" class="am-chip" aria-pressed="true">25 mg</button>
-          <button type="button" class="am-chip" aria-pressed="false">50 mg</button>
-          <button type="button" class="am-chip" aria-pressed="false">100 mg</button>
-          <button type="button" class="am-chip" aria-pressed="false">Custom</button>
+        <p class="am-label">2. Medication form <small>(required)</small></p>
+        <div class="am-chips" id="formChips">
+          <button type="button" class="am-chip" data-form="Tablet" aria-pressed="true">Tablet</button>
+          <button type="button" class="am-chip" data-form="Capsule" aria-pressed="false">Capsule</button>
+          <button type="button" class="am-chip" data-form="Drops" aria-pressed="false">Drops</button>
+          <button type="button" class="am-chip" data-form="Cream" aria-pressed="false">Cream</button>
+          <button type="button" class="am-chip" data-form="Liquid" aria-pressed="false">Liquid</button>
+          <button type="button" class="am-chip" data-form="Inhaler" aria-pressed="false">Inhaler</button>
+          <button type="button" class="am-chip" data-form="Injection" aria-pressed="false">Injection</button>
+          <button type="button" class="am-chip" data-form="Patch" aria-pressed="false">Patch</button>
         </div>
       </div>
 
       <div class="am-section">
-        <p class="am-label">3. Reason <small>(optional)</small></p>
+        <p class="am-label">3. Strength <small>(required)</small></p>
+        <select class="am-select" id="strengthSelect">
+          <option value="">Select strength</option>
+          <option>12.5 mg</option>
+          <option>25 mg</option>
+          <option>50 mg</option>
+          <option>100 mg</option>
+          <option value="__custom">Custom&hellip;</option>
+        </select>
+        <div class="am-name" id="strengthCustomWrap" style="margin-top:10px;" hidden>
+          <input type="text" id="strengthCustom" placeholder="e.g. 40 mg, 0.5%, 10 mg/mL" autocomplete="off" />
+        </div>
+      </div>
+
+      <div class="am-section">
+        <p class="am-label">4. Number of units <small id="unitsHint">(tablets)</small></p>
+        <div class="am-units-row">
+          <input type="number" id="medUnits" min="1" value="1" inputmode="numeric" />
+          <span class="am-units-unit" id="unitsLabel">tablet(s) per dose</span>
+        </div>
+      </div>
+
+      <div class="am-section">
+        <p class="am-label">5. When to take it <small>(required)</small></p>
+        <div class="am-chips" id="whenChips">
+          <button type="button" class="am-chip" data-when="morning" aria-pressed="false">Morning</button>
+          <button type="button" class="am-chip" data-when="afternoon" aria-pressed="false">Afternoon</button>
+          <button type="button" class="am-chip" data-when="evening" aria-pressed="false">Evening</button>
+          <button type="button" class="am-chip" data-when="bedtime" aria-pressed="false">Bedtime</button>
+        </div>
+      </div>
+
+      <div class="am-section">
+        <p class="am-label">6. Additional instructions <small>(optional)</small></p>
+        <div class="am-chips" id="foodChips">
+          <button type="button" class="am-chip" data-food="" aria-pressed="true">No restriction</button>
+          <button type="button" class="am-chip" data-food="before" aria-pressed="false">Before food</button>
+          <button type="button" class="am-chip" data-food="after" aria-pressed="false">After food</button>
+          <button type="button" class="am-chip" data-food="with" aria-pressed="false">With food</button>
+        </div>
+      </div>
+
+      <div class="am-section">
+        <p class="am-label">7. Reason <small>(optional)</small></p>
         <div class="am-name">
           <input type="text" id="medReason" placeholder="e.g. Blood pressure" autocomplete="off" />
         </div>
       </div>
 
       <div class="am-section">
-        <p class="am-label">4. Duration <small>(optional)</small></p>
+        <p class="am-label">8. Duration <small>(optional)</small></p>
         <div class="am-date-row">
           <div class="am-date-field">
             <label for="startDate">Start date</label>
@@ -96,16 +146,66 @@
   </div>
 
 <script>
+  // Unit label shown next to "Number of units" changes with the chosen
+  // medication form, so a cream reads "application(s)" rather than "tablets".
+  const UNIT_LABELS = {
+    Tablet: "tablet(s) per dose",
+    Capsule: "capsule(s) per dose",
+    Drops: "drop(s) per dose",
+    Cream: "application(s) per dose",
+    Liquid: "mL per dose",
+    Inhaler: "puff(s) per dose",
+    Injection: "dose(s)",
+    Patch: "patch(es)",
+  };
+
   const nameInput = document.getElementById("medName");
   const nextBtn = document.getElementById("nextBtn");
-  function check() {
-    nextBtn.disabled = !(nameInput.value.trim() && document.querySelector("#doseChips [aria-pressed='true']"));
+  const strengthSelect = document.getElementById("strengthSelect");
+  const strengthCustomWrap = document.getElementById("strengthCustomWrap");
+  const strengthCustom = document.getElementById("strengthCustom");
+  const unitsHint = document.getElementById("unitsHint");
+  const unitsLabel = document.getElementById("unitsLabel");
+
+  function strengthValue() {
+    if (strengthSelect.value === "__custom") return strengthCustom.value.trim();
+    return strengthSelect.value;
   }
+
+  function check() {
+    const hasForm = !!document.querySelector("#formChips [aria-pressed='true']");
+    const hasWhen = !!document.querySelector("#whenChips [aria-pressed='true']");
+    nextBtn.disabled = !(nameInput.value.trim() && hasForm && strengthValue() && hasWhen);
+  }
+
   nameInput.addEventListener("input", check);
   document.getElementById("clearName").addEventListener("click", () => { nameInput.value = ""; nameInput.focus(); check(); });
-  document.querySelectorAll("#doseChips .am-chip").forEach((b) => b.addEventListener("click", () => {
-    document.querySelectorAll("#doseChips .am-chip").forEach((x) => x.setAttribute("aria-pressed", "false"));
-    b.setAttribute("aria-pressed", "true"); check();
+
+  document.querySelectorAll("#formChips .am-chip").forEach((b) => b.addEventListener("click", () => {
+    document.querySelectorAll("#formChips .am-chip").forEach((x) => x.setAttribute("aria-pressed", "false"));
+    b.setAttribute("aria-pressed", "true");
+    unitsHint.textContent = `(${b.dataset.form.toLowerCase()})`;
+    unitsLabel.textContent = UNIT_LABELS[b.dataset.form] || "unit(s) per dose";
+    check();
+  }));
+
+  strengthSelect.addEventListener("change", () => {
+    strengthCustomWrap.hidden = strengthSelect.value !== "__custom";
+    if (!strengthCustomWrap.hidden) strengthCustom.focus();
+    check();
+  });
+  strengthCustom.addEventListener("input", check);
+
+  // "When to take it" allows more than one time of day (e.g. twice daily).
+  document.querySelectorAll("#whenChips .am-chip").forEach((b) => b.addEventListener("click", () => {
+    b.setAttribute("aria-pressed", b.getAttribute("aria-pressed") === "true" ? "false" : "true");
+    check();
+  }));
+
+  // Food instructions are mutually exclusive, with "No restriction" as the default.
+  document.querySelectorAll("#foodChips .am-chip").forEach((b) => b.addEventListener("click", () => {
+    document.querySelectorAll("#foodChips .am-chip").forEach((x) => x.setAttribute("aria-pressed", "false"));
+    b.setAttribute("aria-pressed", "true");
   }));
 
   nextBtn.addEventListener("click", () => {
