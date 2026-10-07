@@ -4725,7 +4725,7 @@ input[type="date"]:focus {
 .mx-mark-all { border: none; background: none; padding: 0; font-family: inherit; font-size: calc(16px * var(--font-scale, 1)); font-weight: 500; color: #1a6fd4; cursor: pointer; }
 
 .mx-card { background: #fff; border-radius: 16px; padding: 4px 20px; }
-.mx-dose { padding: 18px 0; cursor: pointer; }
+.mx-dose { padding: 18px 0; }
 .mx-dose + .mx-dose { border-top: 1px solid #dedede; }
 .mx-dose-name { display: flex; align-items: center; justify-content: space-between; font-size: calc(21px * var(--font-scale, 1)); font-weight: 500; color: #3d3d3d; }
 .mx-dose-name svg { flex-shrink: 0; color: #3d3d3d; }

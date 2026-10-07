@@ -49,12 +49,9 @@
 
       <div id="medTimeGroups"></div>
 
-      <button type="button" class="mx-footer-link" onclick="window.location.href='/Mobile%20app/add-medication.html'">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
-        Add Medication
-      </button>
-
     </div>
+
+    <button type="button" class="fab-add-btn" aria-label="Add medication" onclick="window.location.href='/Mobile%20app/add-medication.html'">+</button>
   </div>
 
 <script>
@@ -116,7 +113,7 @@
 
   function renderTimeGroups() {
     if (DOSES.length === 0) {
-      document.getElementById("medTimeGroups").innerHTML = `<p style="text-align:center;color:#6f6f6f;padding:24px 0;">No medications yet. Tap "Add Medication" to track one you take on your own.</p>`;
+      document.getElementById("medTimeGroups").innerHTML = `<p style="text-align:center;color:#6f6f6f;padding:24px 0;">No medications yet. Tap + to track one you take on your own.</p>`;
       return;
     }
     const times = [...new Set(DOSES.map((d) => d.time))];
