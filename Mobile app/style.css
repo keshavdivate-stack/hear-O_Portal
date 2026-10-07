@@ -4819,3 +4819,30 @@ input[type="date"]:focus {
 
 /* My medication header: history icon button, positioned like .back-btn but on the right. */
 .mx-header-action { position: absolute; right: 20px; top: 50%; transform: translateY(-50%); background: none; border: none; padding: 6px; display: flex; cursor: pointer; }
+
+/* ===== Medications hub (Clinic Prescribed / My Medications split) ===== */
+.mx-hub-intro { margin: 0 2px 16px; font-size: calc(17px * var(--font-scale, 1)); color: #6f6f6f; }
+.mx-hub-card { width: 100%; display: flex; align-items: center; gap: 14px; padding: 16px; margin-bottom: 16px; border: none; border-radius: 18px; background: #fff; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.1); font-family: inherit; text-align: left; cursor: pointer; }
+.mx-hub-card:last-child { margin-bottom: 0; }
+.mx-hub-icon { flex-shrink: 0; width: 52px; height: 52px; border-radius: 16px; display: flex; align-items: center; justify-content: center; }
+.mx-hub-icon--violet { background: #F2EDFD; }
+.mx-hub-icon--green { background: #E6F8EE; }
+.mx-hub-text { flex: 1; min-width: 0; }
+.mx-hub-title { font-size: calc(21px * var(--font-scale, 1)); font-weight: 700; color: #252424; }
+.mx-hub-sub { margin-top: 2px; font-size: calc(16px * var(--font-scale, 1)); color: #6f6f6f; }
+.mx-hub-badge { flex-shrink: 0; padding: 5px 12px; border-radius: 14px; font-size: calc(14px * var(--font-scale, 1)); font-weight: 600; background: #FFEDD5; color: #C2410C; }
+.mx-hub-card > svg { flex-shrink: 0; color: #A9A8A8; }
+
+/* Footer link button used at the bottom of a medication schedule (either
+   "Add Medication" on My Medications, or "View History" on Clinic
+   Prescribed) -- outlined, not filled, since it's a secondary, occasional
+   action rather than something the screen should push toward every time. */
+.mx-footer-link { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; min-height: 52px; margin: 18px 0 6px; padding: 10px 20px; border-radius: 26px; border: 2px solid #1a6fd4; background: #f4f8fd; text-align: center; font-family: inherit; font-size: calc(21px * var(--font-scale, 1)); font-weight: 600; color: #1a6fd4; cursor: pointer; }
+
+/* Day-level history card grouped by time-of-day period (Morning/Afternoon/
+   Evening), used when a history screen covers more than one medication. */
+.mx-day-period { margin-bottom: 14px; }
+.mx-day-period:last-child { margin-bottom: 0; }
+.mx-day-period-label { display: flex; align-items: center; gap: 6px; font-size: calc(15px * var(--font-scale, 1)); font-weight: 600; color: #6f6f6f; margin-bottom: 8px; }
+.mx-day-period-label svg { flex-shrink: 0; }
+.mx-day-line-name { color: #3d3d3d; font-weight: 500; }
