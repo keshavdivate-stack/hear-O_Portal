@@ -11,6 +11,15 @@
         ],
         "createdAt": "2026-10-08T08:58:44.058Z",
         "reason": "Pre-existing: Inter is the established app-wide font for the entire HearO mobile prototype (linked via Google Fonts in every page's <head> since before this session), not something introduced by my changes or mine to redesign unprompted."
+      },
+      {
+        "rule": "bounce-easing",
+        "value": "sending-bar-bounce",
+        "files": [
+          "Mobile app/style.css"
+        ],
+        "createdAt": "2026-10-08T10:27:40.697Z",
+        "reason": "False positive: detector matched on the animation's identifier name containing 'bounce', not its actual curve. The keyframes use ease-in-out to scaleY-pulse three bars like an audio/sending-indicator meter -- literal, domain-appropriate motion, not an elastic/overshoot bounce."
       }
     ]
   }

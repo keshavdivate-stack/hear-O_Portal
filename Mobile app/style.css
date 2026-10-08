@@ -898,7 +898,10 @@ input[type="date"]:focus {
   padding: 16px 0;
   cursor: pointer;
   font-family: inherit;
-  transition: border-width 0.1s ease;
+  /* The "selected" ring is an inset box-shadow, not a border-width change --
+     animating border-width resizes the box and triggers layout thrash;
+     box-shadow only repaints. */
+  transition: box-shadow 0.1s ease;
 }
 
 .yesno-btn span {
@@ -911,14 +914,14 @@ input[type="date"]:focus {
   background: #EAF2FB;
 }
 .yesno-btn-yes span { color: #186DCE; }
-.yesno-btn-yes.selected { border-width: 2.5px; }
+.yesno-btn-yes.selected { box-shadow: inset 0 0 0 1px #186DCE; }
 
 .yesno-btn-no {
   border: 1.5px solid #2AC19E;
   background: #E7FCF1;
 }
 .yesno-btn-no span { color: #2AC19E; }
-.yesno-btn-no.selected { border-width: 2.5px; }
+.yesno-btn-no.selected { box-shadow: inset 0 0 0 1px #2AC19E; }
 
 .checkin-weight-input {
   margin-top: 40px;
