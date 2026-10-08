@@ -4802,7 +4802,7 @@ input[type="date"]:focus {
    screen so switching between them costs a tap, not a full navigation. */
 .mx-tabs { display: flex; gap: 6px; background: #fff; border-radius: 14px; padding: 4px; margin-bottom: 18px; }
 .mx-tab { flex: 1; min-height: 44px; border: none; border-radius: 11px; background: transparent; font-family: inherit; font-size: calc(17px * var(--font-scale, 1)); font-weight: 600; color: #6f6f6f; cursor: pointer; }
-.mx-tab.active { background: #1a6fd4; color: #fff; }
+.mx-tab.active { background: #5B9BE0; color: #fff; }
 
 /* Before/after/with-food indication on a dose row, or -- for a non-oral
    form where food timing doesn't apply -- a plain application instruction. */
