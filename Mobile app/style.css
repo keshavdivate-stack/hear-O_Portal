@@ -4856,3 +4856,14 @@ input[type="date"]:focus {
 /* Before/after/with-food indication on a dose row. */
 .mx-food-tag { display: inline-flex; flex-shrink: 0; align-items: center; gap: 5px; font-size: calc(15px * var(--font-scale, 1)); font-weight: 400; color: #6f6f6f; }
 .mx-food-tag svg { flex-shrink: 0; }
+
+/* Footer nav on the Medications screen (History / Medication Updates) --
+   same icon-above-label pattern as .home-footer's Chat shortcut, so the
+   icons read as labeled destinations rather than unlabeled header glyphs. */
+.mx-footer-nav { flex-shrink: 0; border-top: 1px solid #e4e6ea; padding: 14px 24px 22px; display: flex; justify-content: center; gap: 36px; background: #fff; }
+.mx-footer-nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; background: none; border: none; padding: 0; font-family: inherit; }
+.mx-footer-nav-item .mx-footer-nav-icon { width: 43px; height: 36px; display: flex; align-items: center; justify-content: center; }
+.mx-footer-nav-item span:last-child { font-size: calc(15px * var(--font-scale, 1)); font-weight: 400; color: #8A8F97; }
+
+/* Lifted clear of .mx-footer-nav so the FAB never overlaps the footer items. */
+.fab-add-btn--above-footer { bottom: 104px; }
