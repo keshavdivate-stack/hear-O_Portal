@@ -4801,11 +4801,8 @@ input[type="date"]:focus {
 .mx-tab { flex: 1; min-height: 44px; border: none; border-radius: 11px; background: transparent; font-family: inherit; font-size: calc(17px * var(--font-scale, 1)); font-weight: 600; color: #6f6f6f; cursor: pointer; }
 .mx-tab.active { background: #f4f8fd; color: #1a6fd4; }
 
-/* Before/after/with-food indication on a dose row. */
+/* Before/after/with-food indication on a dose row, or -- for a non-oral
+   form where food timing doesn't apply -- a plain application instruction. */
 .mx-food-tag { display: inline-flex; flex-shrink: 0; align-items: center; gap: 5px; font-size: calc(15px * var(--font-scale, 1)); font-weight: 400; color: #6f6f6f; }
 .mx-food-tag svg { flex-shrink: 0; }
-
-/* Unseen medication-update marker next to a medication name -- a plain
-   dot, not a number badge: there's nothing to count, just something to
-   notice, and it clears once the patient has opened the Updates tab. */
-.mx-update-dot { display: inline-block; width: 7px; height: 7px; margin-left: 2px; border-radius: 50%; background: #1a6fd4; vertical-align: middle; }
+.mx-instruction-tag { display: flex; margin-top: 4px; }
