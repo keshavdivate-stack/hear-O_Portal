@@ -63,6 +63,12 @@
   const foodIcon = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 2v8a2 2 0 1 1-4 0V2"/><path d="M5 10v12"/><path d="M11 2c2 0 3 2.2 3 5s-1 5-3 5"/><path d="M14 12v10"/></svg>`;
   const chevron = `<svg width="8" height="14" viewBox="0 0 9 15" fill="none"><path d="M1.5 1.5L7.5 7.5L1.5 13.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
   const FOOD_LABEL = { before: "Before food", after: "After food", with: "With food" };
+  // Food timing only makes sense for medications taken by mouth -- a cream
+  // or patch has no "before/after food" instruction, so forms outside this
+  // list never show the food tag even if `food` is set.
+  const FOOD_APPLICABLE_FORMS = ["Tablet", "Capsule", "Liquid", "Drops"];
+  const UNIT_LABEL = { Tablet: "pill", Capsule: "capsule", Drops: "drop", Cream: "application", Liquid: "mL", Inhaler: "puff", Injection: "dose", Patch: "patch" };
+  const ACTION_VERB = { Cream: "Apply", Patch: "Apply", Injection: "Administer" };
 
   // Fixed "today" anchor, matching the mock date the medication-details
   // screen's History/Updates tabs use.
@@ -82,13 +88,13 @@
       showAddFab: false,
       emptyMessage: null,
       doses: [
-        { id: 1, med: "spironolactone", name: "Spironolactone", dose: "40 mg", time: "8:00 AM", sortKey: 480, food: "with" },
-        { id: 2, med: "carvedilol", name: "Carvedilol", dose: "40 mg", time: "8:00 AM", sortKey: 480, food: "with" },
-        { id: 4, med: "furosemide", name: "Furosemide", dose: "40 mg", time: "8:00 AM", sortKey: 480, food: "before", update: true },
-        { id: 3, med: "spironolactone", name: "Spironolactone", dose: "40 mg", time: "2:00 PM", sortKey: 840, food: "with" },
-        { id: 5, med: "carvedilol", name: "Carvedilol", dose: "40 mg", time: "8:00 PM", sortKey: 1200, food: "with" },
-        { id: 6, med: "furosemide", name: "Furosemide", dose: "40 mg", time: "8:00 PM", sortKey: 1200, food: "before", update: true },
-        { id: 7, med: "atorvastatin", name: "Atorvastatin", dose: "40 mg", time: "9:00 PM", sortKey: 1260, food: "after" },
+        { id: 1, med: "spironolactone", name: "Spironolactone", dose: "40 mg", form: "Tablet", time: "8:00 AM", sortKey: 480, food: "with" },
+        { id: 2, med: "carvedilol", name: "Carvedilol", dose: "40 mg", form: "Tablet", time: "8:00 AM", sortKey: 480, food: "with" },
+        { id: 4, med: "furosemide", name: "Furosemide", dose: "40 mg", form: "Tablet", time: "8:00 AM", sortKey: 480, food: "before", update: true },
+        { id: 3, med: "spironolactone", name: "Spironolactone", dose: "40 mg", form: "Tablet", time: "2:00 PM", sortKey: 840, food: "with" },
+        { id: 5, med: "carvedilol", name: "Carvedilol", dose: "40 mg", form: "Tablet", time: "8:00 PM", sortKey: 1200, food: "with" },
+        { id: 6, med: "furosemide", name: "Furosemide", dose: "40 mg", form: "Tablet", time: "8:00 PM", sortKey: 1200, food: "before", update: true },
+        { id: 7, med: "atorvastatin", name: "Atorvastatin", dose: "40 mg", form: "Tablet", time: "9:00 PM", sortKey: 1260, food: "after" },
       ],
       selectedDate: startOfDay(TODAY),
       dayStatus: {
@@ -102,8 +108,8 @@
       showAddFab: true,
       emptyMessage: `No medications yet. Tap + to track one you take on your own.`,
       doses: [
-        { id: 1, med: "vitamin-d3", name: "Vitamin D3", dose: "1000 IU", time: "8:00 AM", sortKey: 480, food: "after" },
-        { id: 2, med: "calcium", name: "Calcium", dose: "600 mg", time: "8:00 PM", sortKey: 1200, food: "with" },
+        { id: 1, med: "vitamin-d3", name: "Vitamin D3", dose: "1000 IU", form: "Tablet", time: "8:00 AM", sortKey: 480, food: "after" },
+        { id: 2, med: "calcium", name: "Calcium", dose: "600 mg", form: "Tablet", time: "8:00 PM", sortKey: 1200, food: "with" },
       ],
       selectedDate: startOfDay(TODAY),
       dayStatus: {
@@ -164,17 +170,20 @@
         const group = tab.doses.filter((d) => d.time === time);
         const pm = group[0].sortKey >= 720;
         const rows = group
-          .map(
-            (dose) => `
+          .map((dose) => {
+            const showFood = dose.food && FOOD_APPLICABLE_FORMS.includes(dose.form);
+            const verb = ACTION_VERB[dose.form] || "Take";
+            const unit = UNIT_LABEL[dose.form] || "unit";
+            return `
           <div class="mx-dose" data-med="${dose.med}" data-update="${dose.update ? "1" : "0"}">
             <div class="mx-dose-name">
               <span>${dose.name} ${chevron}${dose.update ? `<span class="mx-update-dot" aria-label="Has a medication update"></span>` : ""}</span>
-              ${dose.food ? `<span class="mx-food-tag">${foodIcon} ${FOOD_LABEL[dose.food]}</span>` : ""}
+              ${showFood ? `<span class="mx-food-tag">${foodIcon} ${FOOD_LABEL[dose.food]}</span>` : ""}
             </div>
-            <div class="mx-dose-sub">${dose.dose} &middot; Take 1 pill</div>
+            <div class="mx-dose-sub">${dose.dose} &middot; ${verb} 1 ${unit}</div>
             ${renderDoseAction(tab, dose)}
-          </div>`
-          )
+          </div>`;
+          })
           .join("");
         return `
         <div class="mx-time-group">
