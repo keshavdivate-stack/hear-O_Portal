@@ -4726,6 +4726,7 @@ input[type="date"]:focus {
 
 .mx-card { background: #fff; border-radius: 16px; padding: 4px 20px; }
 .mx-dose { padding: 18px 0; }
+.mx-dose[data-med] { cursor: pointer; }
 .mx-dose + .mx-dose { border-top: 1px solid #dedede; }
 .mx-dose-name { display: flex; align-items: center; justify-content: space-between; font-size: calc(21px * var(--font-scale, 1)); font-weight: 500; color: #3d3d3d; }
 .mx-dose-name svg { flex-shrink: 0; color: #3d3d3d; }
@@ -4856,17 +4857,3 @@ input[type="date"]:focus {
 /* Before/after/with-food indication on a dose row. */
 .mx-food-tag { display: inline-flex; flex-shrink: 0; align-items: center; gap: 5px; font-size: calc(15px * var(--font-scale, 1)); font-weight: 400; color: #6f6f6f; }
 .mx-food-tag svg { flex-shrink: 0; }
-
-/* Footer nav on the Medications screen (History / Medication Updates) --
-   same icon-above-label pattern as .home-footer's Chat shortcut, so the
-   icons read as labeled destinations rather than unlabeled header glyphs. */
-.mx-footer-nav { flex-shrink: 0; border-top: 1px solid #e4e6ea; background: #fff; display: flex; }
-.mx-footer-nav-item { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; padding: 12px 8px 18px; cursor: pointer; background: none; border: none; font-family: inherit; }
-.mx-footer-nav-item + .mx-footer-nav-item { border-left: 1px solid #eef0f2; }
-.mx-footer-nav-item:active { background: #f7f9fb; }
-.mx-footer-nav-item .mx-footer-nav-icon { width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; color: #1a6fd4; }
-.mx-footer-nav-item .mx-footer-nav-icon svg { width: 100%; height: 100%; }
-.mx-footer-nav-item span:last-child { font-size: calc(15px * var(--font-scale, 1)); font-weight: 500; color: #3d3d3d; text-align: center; }
-
-/* Lifted clear of .mx-footer-nav so the FAB never overlaps the footer items. */
-.fab-add-btn--above-footer { bottom: 104px; }

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HearO - Medication Details</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/Mobile%20app/style.css?v=35">
+<script src="/Mobile%20app/font-scale.js?v=29"></script>
+<style>
+  .md-card { background: #fff; border-radius: 16px; padding: 16px 18px; margin-bottom: 20px; }
+  .md-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 0; }
+  .md-row + .md-row { border-top: 1px solid #ececec; }
+  .md-row-time { font-size: calc(19px * var(--font-scale, 1)); font-weight: 500; color: #3d3d3d; }
+  .md-section-label { margin: 0 2px 10px; font-size: calc(16px * var(--font-scale, 1)); font-weight: 600; color: #6f6f6f; text-transform: uppercase; letter-spacing: 0.02em; }
+</style>
+</head>
+<body>
+
+  <div class="phone-frame">
+    <div class="status-bar">
+      <span class="status-time">9:27</span>
+      <div class="status-icons">
+        <svg width="18" height="12" viewBox="0 0 18 12" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="0" y="8" width="3" height="4" rx="0.5" fill="black"/><rect x="4.5" y="6" width="3" height="6" rx="0.5" fill="black"/><rect x="9" y="3" width="3" height="9" rx="0.5" fill="black"/><rect x="13.5" y="0" width="3" height="12" rx="0.5" fill="black"/></svg>
+        <svg width="16" height="12" viewBox="0 0 16 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 10.5C8.6 10.5 9.1 10 9.1 9.4C9.1 8.8 8.6 8.3 8 8.3C7.4 8.3 6.9 8.8 6.9 9.4C6.9 10 7.4 10.5 8 10.5Z" fill="black"/><path d="M8 6.5C9 6.5 9.9 6.9 10.6 7.6L11.6 6.6C10.6 5.6 9.4 5 8 5C6.6 5 5.4 5.6 4.4 6.6L5.4 7.6C6.1 6.9 7 6.5 8 6.5Z" fill="black"/><path d="M8 2.5C10.1 2.5 12 3.3 13.5 4.8L14.5 3.8C12.7 2 10.5 1 8 1C5.5 1 3.3 2 1.5 3.8L2.5 4.8C4 3.3 5.9 2.5 8 2.5Z" fill="black"/></svg>
+        <svg width="25" height="12" viewBox="0 0 25 12" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="0.5" y="0.5" width="20" height="11" rx="2.5" stroke="black"/><rect x="2" y="2" width="17" height="8" rx="1.5" fill="black"/><rect x="22" y="4" width="2" height="4" rx="1" fill="black"/></svg>
+      </div>
+    </div>
+
+    <div class="mx-header mx-header--left">
+      <button type="button" class="back-btn" onclick="window.location.href='/Mobile%20app/medications.html?tab=clinic'">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M12.5 4L6.5 10L12.5 16" stroke="#252424" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <h1 id="medTitle">Medication details</h1>
+    </div>
+
+    <div class="mx-body" id="medBody"></div>
+  </div>
+
+<script>
+  const foodIcon = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 2v8a2 2 0 1 1-4 0V2"/><path d="M5 10v12"/><path d="M11 2c2 0 3 2.2 3 5s-1 5-3 5"/><path d="M14 12v10"/></svg>`;
+  const FOOD_LABEL = { before: "Before food", after: "After food", with: "With food" };
+
+  const MED_INFO = {
+    spironolactone: { name: "Spironolactone", dosage: "40 mg", schedule: [{ time: "8:00 AM", food: "with" }, { time: "2:00 PM", food: "with" }] },
+    carvedilol: { name: "Carvedilol", dosage: "40 mg", schedule: [{ time: "8:00 AM", food: "with" }, { time: "8:00 PM", food: "with" }] },
+    furosemide: { name: "Furosemide", dosage: "40 mg", schedule: [{ time: "8:00 AM", food: "before" }, { time: "8:00 PM", food: "before" }] },
+    atorvastatin: { name: "Atorvastatin", dosage: "40 mg", schedule: [{ time: "9:00 PM", food: "after" }] },
+  };
+
+  // The provider dosage-change log, same entries as the old combined
+  // Medication Updates list, filtered here to just this medication.
+  const UPDATES = [
+    { med: "furosemide", date: "Aug 18, 8:15 AM", change: "Dosage increased to 40 mg", note: "Take 2 pills (40 mg) once daily as instructed." },
+    { med: "carvedilol", date: "Aug 18, 8:15 AM", change: "Dosage increased to 40 mg", note: "Take 2 pills (40 mg) once daily as instructed." },
+    { med: "spironolactone", date: "Aug 18, 8:15 AM", change: "Dosage increased to 40 mg", note: "Take 2 pills (40 mg) once daily as instructed." },
+    { med: "atorvastatin", date: "Aug 18, 8:15 AM", change: "Dosage increased to 40 mg", note: "Take 2 pills (40 mg) once daily as instructed." },
+  ];
+
+  const medKey = new URLSearchParams(window.location.search).get("med");
+  const med = MED_INFO[medKey] || MED_INFO.spironolactone;
+  document.getElementById("medTitle").textContent = med.name;
+
+  const scheduleRows = med.schedule
+    .map(
+      (s) => `
+      <div class="md-row">
+        <span class="md-row-time">${s.time}</span>
+        ${s.food ? `<span class="mx-food-tag">${foodIcon} ${FOOD_LABEL[s.food]}</span>` : ""}
+      </div>`
+    )
+    .join("");
+
+  const updates = UPDATES.filter((u) => u.med === medKey || (!MED_INFO[medKey] && u.med === "spironolactone"));
+  const updatesHtml = updates.length
+    ? updates
+        .map(
+          (u) => `
+        <div class="mx-update-card">
+          <div class="mx-update-top"><span class="mx-update-date">${u.date}</span></div>
+          <div class="mx-update-change">${u.change}</div>
+          <div class="mx-update-note">${u.note}</div>
+        </div>`
+        )
+        .join("")
+    : `<p style="text-align:center;color:#6f6f6f;padding:12px 0;">No updates yet.</p>`;
+
+  document.getElementById("medBody").innerHTML = `
+    <div class="md-card">
+      <div class="md-row"><span class="md-row-time">${med.dosage} &middot; Take 1 pill</span></div>
+      ${scheduleRows}
+    </div>
+    <p class="md-section-label">Medication updates</p>
+    ${updatesHtml}
+  `;
+</script>
+</body>
+</html>
