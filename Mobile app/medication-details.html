@@ -15,9 +15,6 @@
      per row, so the screen reads as compact and scannable rather than a
      stack of boxes. */
   .md-card { background: #fff; border-radius: 16px; padding: 4px 18px; margin-bottom: 18px; }
-  .md-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 12px 0; }
-  .md-row + .md-row { border-top: 1px solid #ececec; }
-  .md-row-time { font-size: calc(19px * var(--font-scale, 1)); font-weight: 500; color: #3d3d3d; }
 
   .md-status-chip { flex-shrink: 0; margin-left: 10px; padding: 3px 10px; border-radius: 10px; font-size: calc(13px * var(--font-scale, 1)); font-weight: 600; background: #ececec; color: #6f6f6f; vertical-align: middle; }
 
@@ -84,9 +81,6 @@
     <div class="mx-body">
       <div class="md-card" id="summaryCard"></div>
 
-      <p class="md-section-label">Schedule</p>
-      <div class="md-card" id="scheduleCard"></div>
-
       <div class="mx-tabs" id="detailTabs" hidden>
         <button type="button" class="mx-tab" data-sec="history">History</button>
         <button type="button" class="mx-tab" data-sec="updates">Updates</button>
@@ -98,8 +92,6 @@
   </div>
 
 <script>
-  const foodIcon = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 2v8a2 2 0 1 1-4 0V2"/><path d="M5 10v12"/><path d="M11 2c2 0 3 2.2 3 5s-1 5-3 5"/><path d="M14 12v10"/></svg>`;
-  const FOOD_LABEL = { before: "Before food", after: "After food", with: "With food" };
   const STATUS_LABEL = { taken: "Taken", skipped: "Skipped", missed: "Not Taken" };
 
   const doseIcon = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.5 3.5 3.5 10.5a4.95 4.95 0 0 0 7 7l7-7a4.95 4.95 0 0 0-7-7z"/><path d="M7 7l7 7"/></svg>`;
@@ -223,16 +215,6 @@
       <span class="md-info-text"><span class="md-info-label">Description</span><span class="md-info-value">${med.description}</span></span>
     </div>
   `;
-
-  document.getElementById("scheduleCard").innerHTML = med.schedule
-    .map(
-      (s) => `
-    <div class="md-row">
-      <span class="md-row-time">${s.time}</span>
-      ${s.food ? `<span class="mx-food-tag">${foodIcon} ${FOOD_LABEL[s.food]}</span>` : ""}
-    </div>`
-    )
-    .join("");
 
   function renderHistory() {
     const entries = HISTORY[resolvedKey] || [];
