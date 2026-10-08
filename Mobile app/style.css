@@ -4800,14 +4800,9 @@ input[type="date"]:focus {
 
 /* Medications screen tabs -- Clinic Prescribed / My Medications share one
    screen so switching between them costs a tap, not a full navigation. */
-/* Each tab is its own outlined button rather than a soft highlight inside
-   one bar -- the inactive tab needs a visible edge of its own, and the
-   active one needs a strong fill/contrast change, so the two read as
-   clearly separate, clickable choices at a glance (not just a tint
-   difference easy to miss for older or low-vision users). */
-.mx-tabs { display: flex; gap: 8px; margin-bottom: 18px; }
-.mx-tab { flex: 1; min-height: 48px; border: 2px solid #d5d5d5; border-radius: 12px; background: #fff; font-family: inherit; font-size: calc(18px * var(--font-scale, 1)); font-weight: 600; color: #3d3d3d; cursor: pointer; }
-.mx-tab.active { border-color: #1a6fd4; background: #1a6fd4; color: #fff; }
+.mx-tabs { display: flex; gap: 6px; background: #fff; border-radius: 14px; padding: 4px; margin-bottom: 18px; }
+.mx-tab { flex: 1; min-height: 44px; border: none; border-radius: 11px; background: transparent; font-family: inherit; font-size: calc(17px * var(--font-scale, 1)); font-weight: 600; color: #6f6f6f; cursor: pointer; }
+.mx-tab.active { background: #1a6fd4; color: #fff; }
 
 /* Before/after/with-food indication on a dose row, or -- for a non-oral
    form where food timing doesn't apply -- a plain application instruction. */
