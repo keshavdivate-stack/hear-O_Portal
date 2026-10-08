@@ -7,14 +7,42 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/Mobile%20app/style.css?v=35">
+<link rel="stylesheet" href="/Mobile%20app/style.css?v=36">
 <script src="/Mobile%20app/font-scale.js?v=29"></script>
 <style>
-  .md-card { background: #fff; border-radius: 16px; padding: 16px 18px; margin-bottom: 20px; }
-  .md-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 0; }
+  /* One flat card for the summary/schedule, and one flat card holding a
+     divided list for History/Updates -- rows inside a card, not a card
+     per row, so the screen reads as compact and scannable rather than a
+     stack of boxes. */
+  .md-card { background: #fff; border-radius: 16px; padding: 4px 18px; margin-bottom: 18px; }
+  .md-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 12px 0; }
   .md-row + .md-row { border-top: 1px solid #ececec; }
   .md-row-time { font-size: calc(19px * var(--font-scale, 1)); font-weight: 500; color: #3d3d3d; }
-  .md-section-label { margin: 0 2px 10px; font-size: calc(16px * var(--font-scale, 1)); font-weight: 600; color: #6f6f6f; text-transform: uppercase; letter-spacing: 0.02em; }
+
+  .md-status-chip { flex-shrink: 0; margin-left: 10px; padding: 3px 10px; border-radius: 10px; font-size: calc(13px * var(--font-scale, 1)); font-weight: 600; background: #ececec; color: #6f6f6f; vertical-align: middle; }
+
+  .md-section-label { margin: 2px 2px 10px; font-size: calc(16px * var(--font-scale, 1)); font-weight: 600; color: #6f6f6f; }
+
+  /* History row: date/time on the left, status word on the right -- a
+     quick scan, no icon chips or colored backgrounds needed per row. */
+  .md-hist-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 11px 0; }
+  .md-hist-row + .md-hist-row { border-top: 1px solid #ececec; }
+  .md-hist-when { font-size: calc(18px * var(--font-scale, 1)); color: #3d3d3d; }
+  .md-hist-status { flex-shrink: 0; font-size: calc(17px * var(--font-scale, 1)); font-weight: 600; }
+  .md-hist-status--taken { color: #1f9d7a; }
+  .md-hist-status--skipped { color: #D92D20; }
+  .md-hist-status--missed { color: #8A8F97; }
+
+  /* Update row: a change + its instruction, stacked -- this is the
+     record of what changed, not a quick status, so it reads like a line
+     of text rather than a status badge. */
+  .md-upd-row { padding: 12px 0; }
+  .md-upd-row + .md-upd-row { border-top: 1px solid #ececec; }
+  .md-upd-date { font-size: calc(14px * var(--font-scale, 1)); color: #8A8F97; }
+  .md-upd-change { margin-top: 2px; font-size: calc(18px * var(--font-scale, 1)); font-weight: 500; color: #3d3d3d; }
+  .md-upd-note { margin-top: 4px; font-size: calc(16px * var(--font-scale, 1)); color: #6f6f6f; line-height: 1.35; }
+
+  .md-empty { text-align: center; color: #8A8F97; font-size: calc(17px * var(--font-scale, 1)); padding: 20px 0; }
 </style>
 </head>
 <body>
@@ -30,71 +58,158 @@
     </div>
 
     <div class="mx-header mx-header--left">
-      <button type="button" class="back-btn" onclick="window.location.href='/Mobile%20app/medications.html?tab=clinic'">
+      <button type="button" class="back-btn" id="backBtn">
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M12.5 4L6.5 10L12.5 16" stroke="#252424" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
-      <h1 id="medTitle">Medication details</h1>
+      <h1 id="medTitle">Medication</h1>
     </div>
 
-    <div class="mx-body" id="medBody"></div>
+    <div class="mx-body">
+      <div class="md-card" id="summaryCard"></div>
+
+      <div class="mx-tabs" id="detailTabs" hidden>
+        <button type="button" class="mx-tab" data-sec="history">History</button>
+        <button type="button" class="mx-tab" data-sec="updates">Updates</button>
+      </div>
+      <p class="md-section-label" id="historyOnlyLabel" hidden>History</p>
+
+      <div class="md-card" id="listCard"></div>
+    </div>
   </div>
 
 <script>
   const foodIcon = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 2v8a2 2 0 1 1-4 0V2"/><path d="M5 10v12"/><path d="M11 2c2 0 3 2.2 3 5s-1 5-3 5"/><path d="M14 12v10"/></svg>`;
   const FOOD_LABEL = { before: "Before food", after: "After food", with: "With food" };
+  const STATUS_LABEL = { taken: "Taken", skipped: "Skipped", missed: "Not Taken" };
 
+  // Every medication's current state (what Skip/Take acts on today), keyed
+  // by the same `med` slug used on the Medications list, so Detail is
+  // always this one record's single source of truth.
   const MED_INFO = {
-    spironolactone: { name: "Spironolactone", dosage: "40 mg", schedule: [{ time: "8:00 AM", food: "with" }, { time: "2:00 PM", food: "with" }] },
-    carvedilol: { name: "Carvedilol", dosage: "40 mg", schedule: [{ time: "8:00 AM", food: "with" }, { time: "8:00 PM", food: "with" }] },
-    furosemide: { name: "Furosemide", dosage: "40 mg", schedule: [{ time: "8:00 AM", food: "before" }, { time: "8:00 PM", food: "before" }] },
-    atorvastatin: { name: "Atorvastatin", dosage: "40 mg", schedule: [{ time: "9:00 PM", food: "after" }] },
+    spironolactone: { name: "Spironolactone", dosage: "40 mg", source: "clinic", schedule: [{ time: "8:00 AM", food: "with" }, { time: "2:00 PM", food: "with" }] },
+    carvedilol: { name: "Carvedilol", dosage: "40 mg", source: "clinic", schedule: [{ time: "8:00 AM", food: "with" }, { time: "8:00 PM", food: "with" }] },
+    furosemide: { name: "Furosemide", dosage: "40 mg", source: "clinic", schedule: [{ time: "8:00 AM", food: "before" }, { time: "8:00 PM", food: "before" }] },
+    atorvastatin: { name: "Atorvastatin", dosage: "40 mg", source: "clinic", schedule: [{ time: "9:00 PM", food: "after" }] },
+    "vitamin-d3": { name: "Vitamin D3", dosage: "1000 IU", source: "mine", schedule: [{ time: "8:00 AM", food: "after" }] },
+    calcium: { name: "Calcium", dosage: "600 mg", source: "mine", schedule: [{ time: "8:00 PM", food: "with" }] },
   };
 
-  // The provider dosage-change log, same entries as the old combined
-  // Medication Updates list, filtered here to just this medication.
-  const UPDATES = [
-    { med: "furosemide", date: "Aug 18, 8:15 AM", change: "Dosage increased to 40 mg", note: "Take 2 pills (40 mg) once daily as instructed." },
-    { med: "carvedilol", date: "Aug 18, 8:15 AM", change: "Dosage increased to 40 mg", note: "Take 2 pills (40 mg) once daily as instructed." },
-    { med: "spironolactone", date: "Aug 18, 8:15 AM", change: "Dosage increased to 40 mg", note: "Take 2 pills (40 mg) once daily as instructed." },
-    { med: "atorvastatin", date: "Aug 18, 8:15 AM", change: "Dosage increased to 40 mg", note: "Take 2 pills (40 mg) once daily as instructed." },
-  ];
+  // History = patient activity: Taken / Skipped / Not Taken, with date & time.
+  const HISTORY = {
+    spironolactone: [
+      { date: "Mon, Aug 17", time: "8:00 AM", status: "taken" },
+      { date: "Mon, Aug 17", time: "2:00 PM", status: "taken" },
+      { date: "Sun, Aug 16", time: "8:00 AM", status: "skipped" },
+      { date: "Sun, Aug 16", time: "2:00 PM", status: "taken" },
+    ],
+    carvedilol: [
+      { date: "Mon, Aug 17", time: "8:00 AM", status: "taken" },
+      { date: "Mon, Aug 17", time: "8:00 PM", status: "taken" },
+      { date: "Sun, Aug 16", time: "8:00 AM", status: "taken" },
+      { date: "Sun, Aug 16", time: "8:00 PM", status: "skipped" },
+    ],
+    furosemide: [
+      { date: "Mon, Aug 17", time: "8:00 AM", status: "missed" },
+      { date: "Mon, Aug 17", time: "8:00 PM", status: "taken" },
+      { date: "Sun, Aug 16", time: "8:00 AM", status: "taken" },
+      { date: "Sun, Aug 16", time: "8:00 PM", status: "taken" },
+    ],
+    atorvastatin: [
+      { date: "Mon, Aug 17", time: "9:00 PM", status: "taken" },
+      { date: "Sun, Aug 16", time: "9:00 PM", status: "missed" },
+    ],
+    "vitamin-d3": [
+      { date: "Mon, Aug 17", time: "8:00 AM", status: "taken" },
+      { date: "Sun, Aug 16", time: "8:00 AM", status: "skipped" },
+    ],
+    calcium: [
+      { date: "Mon, Aug 17", time: "8:00 PM", status: "taken" },
+      { date: "Sun, Aug 16", time: "8:00 PM", status: "taken" },
+    ],
+  };
 
-  const medKey = new URLSearchParams(window.location.search).get("med");
+  // Updates = changes to the order itself: dose/frequency changes, new or
+  // discontinued medication, instruction changes. Clinic-prescribed only --
+  // there's no provider changing a self-tracked medication.
+  const UPDATES = {
+    spironolactone: [{ date: "Aug 18, 8:15 AM", change: "Dosage increased to 40 mg", note: "Take 2 pills (40 mg) once daily as instructed." }],
+    carvedilol: [{ date: "Aug 18, 8:15 AM", change: "Dosage increased to 40 mg", note: "Take 2 pills (40 mg) once daily as instructed." }],
+    furosemide: [{ date: "Aug 18, 8:15 AM", change: "Dosage increased to 40 mg", note: "Take 2 pills (40 mg) once daily as instructed." }],
+    atorvastatin: [{ date: "Aug 18, 8:15 AM", change: "Dosage increased to 40 mg", note: "Take 2 pills (40 mg) once daily as instructed." }],
+  };
+
+  const params = new URLSearchParams(window.location.search);
+  const medKey = params.get("med");
   const med = MED_INFO[medKey] || MED_INFO.spironolactone;
-  document.getElementById("medTitle").textContent = med.name;
+  const resolvedKey = MED_INFO[medKey] ? medKey : "spironolactone";
 
-  const scheduleRows = med.schedule
-    .map(
-      (s) => `
+  document.getElementById("medTitle").textContent = med.name;
+  document.getElementById("backBtn").onclick = () => {
+    window.location.href = `/Mobile%20app/medications.html?tab=${med.source === "mine" ? "mine" : "clinic"}`;
+  };
+
+  document.getElementById("summaryCard").innerHTML = `
+    <div class="md-row"><span class="md-row-time">${med.dosage} &middot; Take 1 pill</span></div>
+    ${med.schedule
+      .map(
+        (s) => `
       <div class="md-row">
         <span class="md-row-time">${s.time}</span>
         ${s.food ? `<span class="mx-food-tag">${foodIcon} ${FOOD_LABEL[s.food]}</span>` : ""}
       </div>`
-    )
-    .join("");
-
-  const updates = UPDATES.filter((u) => u.med === medKey || (!MED_INFO[medKey] && u.med === "spironolactone"));
-  const updatesHtml = updates.length
-    ? updates
-        .map(
-          (u) => `
-        <div class="mx-update-card">
-          <div class="mx-update-top"><span class="mx-update-date">${u.date}</span></div>
-          <div class="mx-update-change">${u.change}</div>
-          <div class="mx-update-note">${u.note}</div>
-        </div>`
-        )
-        .join("")
-    : `<p style="text-align:center;color:#6f6f6f;padding:12px 0;">No updates yet.</p>`;
-
-  document.getElementById("medBody").innerHTML = `
-    <div class="md-card">
-      <div class="md-row"><span class="md-row-time">${med.dosage} &middot; Take 1 pill</span></div>
-      ${scheduleRows}
-    </div>
-    <p class="md-section-label">Medication updates</p>
-    ${updatesHtml}
+      )
+      .join("")}
   `;
+
+  function renderHistory() {
+    const entries = HISTORY[resolvedKey] || [];
+    document.getElementById("listCard").innerHTML = entries.length
+      ? entries
+          .map(
+            (h) => `
+          <div class="md-hist-row">
+            <span class="md-hist-when">${h.date} &middot; ${h.time}</span>
+            <span class="md-hist-status md-hist-status--${h.status}">${STATUS_LABEL[h.status]}</span>
+          </div>`
+          )
+          .join("")
+      : `<p class="md-empty">No activity recorded yet.</p>`;
+  }
+
+  function renderUpdates() {
+    const entries = UPDATES[resolvedKey] || [];
+    document.getElementById("listCard").innerHTML = entries.length
+      ? entries
+          .map(
+            (u) => `
+          <div class="md-upd-row">
+            <div class="md-upd-date">${u.date}</div>
+            <div class="md-upd-change">${u.change}</div>
+            <div class="md-upd-note">${u.note}</div>
+          </div>`
+          )
+          .join("")
+      : `<p class="md-empty">No updates yet.</p>`;
+  }
+
+  if (med.source === "mine") {
+    // Self-tracked medications have no provider updates -- show History
+    // only, with a plain label instead of a tab nobody can switch to.
+    document.getElementById("historyOnlyLabel").hidden = false;
+    renderHistory();
+  } else {
+    document.getElementById("detailTabs").hidden = false;
+    const tabsEl = document.getElementById("detailTabs");
+    const setSection = (section) => {
+      tabsEl.querySelectorAll(".mx-tab").forEach((b) => b.classList.toggle("active", b.dataset.sec === section));
+      section === "updates" ? renderUpdates() : renderHistory();
+    };
+    tabsEl.addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-sec]");
+      if (btn) setSection(btn.dataset.sec);
+    });
+    setSection(params.get("section") === "updates" ? "updates" : "history");
+  }
 </script>
 </body>
 </html>

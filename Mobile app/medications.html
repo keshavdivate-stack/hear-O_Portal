@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/Mobile%20app/style.css?v=35">
+<link rel="stylesheet" href="/Mobile%20app/style.css?v=36">
 <script src="/Mobile%20app/font-scale.js?v=29"></script>
 </head>
 <body>
@@ -27,9 +27,6 @@
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M12.5 4L6.5 10L12.5 16" stroke="#252424" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
       <h1>Medications</h1>
-      <button type="button" class="mx-header-action" id="historyBtn" aria-label="History">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#186DCE" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 2.6-6.35"/><path d="M3 4.5V9h4.5"/><path d="M12 8v4.5l3.5 2"/></svg>
-      </button>
     </div>
 
     <div class="mx-body">
@@ -67,27 +64,30 @@
   const chevron = `<svg width="8" height="14" viewBox="0 0 9 15" fill="none"><path d="M1.5 1.5L7.5 7.5L1.5 13.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
   const FOOD_LABEL = { before: "Before food", after: "After food", with: "With food" };
 
-  // Fixed "today" anchor, matching the mock date the history screen uses.
+  // Fixed "today" anchor, matching the mock date the medication-details
+  // screen's History/Updates tabs use.
   const TODAY = new Date(2026, 7, 18);
   const startOfDay = (d) => new Date(d.getFullYear(), d.getMonth(), d.getDate());
   const addDays = (d, delta) => { const n = new Date(d); n.setDate(n.getDate() + delta); return n; };
   const dateKey = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 
-  // Each tab keeps its own doses, dose history and "selected day" --
-  // switching tabs never mixes clinic-prescribed and self-tracked doses.
+  // Every dose carries a `med` slug -- the same id medication-details.html
+  // uses to join this medication's summary, History and Updates, so tapping
+  // any row always lands on that one record. `update: true` marks a medication
+  // with an unseen provider change, shown as a small dot and opened straight
+  // to the Updates tab.
   const TABS = {
     clinic: {
       label: "Clinic Prescribed",
-      historyUrl: "/Mobile%20app/clinic-history.html",
       showAddFab: false,
       emptyMessage: null,
       doses: [
         { id: 1, med: "spironolactone", name: "Spironolactone", dose: "40 mg", time: "8:00 AM", sortKey: 480, food: "with" },
         { id: 2, med: "carvedilol", name: "Carvedilol", dose: "40 mg", time: "8:00 AM", sortKey: 480, food: "with" },
-        { id: 4, med: "furosemide", name: "Furosemide", dose: "40 mg", time: "8:00 AM", sortKey: 480, food: "before" },
+        { id: 4, med: "furosemide", name: "Furosemide", dose: "40 mg", time: "8:00 AM", sortKey: 480, food: "before", update: true },
         { id: 3, med: "spironolactone", name: "Spironolactone", dose: "40 mg", time: "2:00 PM", sortKey: 840, food: "with" },
         { id: 5, med: "carvedilol", name: "Carvedilol", dose: "40 mg", time: "8:00 PM", sortKey: 1200, food: "with" },
-        { id: 6, med: "furosemide", name: "Furosemide", dose: "40 mg", time: "8:00 PM", sortKey: 1200, food: "before" },
+        { id: 6, med: "furosemide", name: "Furosemide", dose: "40 mg", time: "8:00 PM", sortKey: 1200, food: "before", update: true },
         { id: 7, med: "atorvastatin", name: "Atorvastatin", dose: "40 mg", time: "9:00 PM", sortKey: 1260, food: "after" },
       ],
       selectedDate: startOfDay(TODAY),
@@ -99,12 +99,11 @@
     },
     mine: {
       label: "My Medications",
-      historyUrl: "/Mobile%20app/my-medications-history.html",
       showAddFab: true,
       emptyMessage: `No medications yet. Tap + to track one you take on your own.`,
       doses: [
-        { id: 1, name: "Vitamin D3", dose: "1000 IU", time: "8:00 AM", sortKey: 480, food: "after" },
-        { id: 2, name: "Calcium", dose: "600 mg", time: "8:00 PM", sortKey: 1200, food: "with" },
+        { id: 1, med: "vitamin-d3", name: "Vitamin D3", dose: "1000 IU", time: "8:00 AM", sortKey: 480, food: "after" },
+        { id: 2, med: "calcium", name: "Calcium", dose: "600 mg", time: "8:00 PM", sortKey: 1200, food: "with" },
       ],
       selectedDate: startOfDay(TODAY),
       dayStatus: {
@@ -149,7 +148,6 @@
     document.querySelectorAll("#medTabs .mx-tab").forEach((btn) => {
       btn.classList.toggle("active", btn.dataset.tab === activeTab);
     });
-    document.getElementById("historyBtn").onclick = () => { window.location.href = tab.historyUrl; };
     document.getElementById("addFab").style.display = tab.showAddFab ? "" : "none";
 
     document.getElementById("medDateDay").textContent = formatDayLabel(tab.selectedDate);
@@ -168,9 +166,9 @@
         const rows = group
           .map(
             (dose) => `
-          <div class="mx-dose" ${dose.med ? `data-med="${dose.med}"` : ""}>
+          <div class="mx-dose" data-med="${dose.med}" data-update="${dose.update ? "1" : "0"}">
             <div class="mx-dose-name">
-              <span>${dose.name}${dose.med ? ` ${chevron}` : ""}</span>
+              <span>${dose.name} ${chevron}${dose.update ? `<span class="mx-update-dot" aria-label="Has a medication update"></span>` : ""}</span>
               ${dose.food ? `<span class="mx-food-tag">${foodIcon} ${FOOD_LABEL[dose.food]}</span>` : ""}
             </div>
             <div class="mx-dose-sub">${dose.dose} &middot; Take 1 pill</div>
@@ -216,10 +214,13 @@
       renderAll();
       return;
     }
-    // Tapping a clinic-prescribed dose opens that medication's details,
-    // including its provider update history.
+    // Tapping a medication opens its details screen -- an unseen update
+    // jumps straight to the Updates tab there, otherwise it opens on Summary.
     const row = e.target.closest(".mx-dose[data-med]");
-    if (row) window.location.href = `/Mobile%20app/medication-details.html?med=${row.dataset.med}`;
+    if (row) {
+      const section = row.dataset.update === "1" ? "&section=updates" : "";
+      window.location.href = `/Mobile%20app/medication-details.html?med=${row.dataset.med}${section}`;
+    }
   });
 </script>
 </body>
