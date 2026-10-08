@@ -201,12 +201,31 @@
 
   const durationText = med.endDate ? `${med.startDate} &ndash; ${med.endDate}` : `Since ${med.startDate} &middot; Ongoing`;
 
-  document.getElementById("summaryCard").innerHTML = `
-    <div class="md-name">${med.name}</div>
+  // My Medications is self-reported -- Detail only shows what the patient
+  // actually entered on Add Medication (name, dose, reason, duration).
+  // Route and Frequency are clinical fields nobody filled in here, so they
+  // don't appear; Clinic Prescribed keeps the full provider-order summary.
+  const doseRow = `
     <div class="md-info-row">
       <span class="md-info-icon md-info-icon--violet">${doseIcon}</span>
       <span class="md-info-text"><span class="md-info-label">Dose</span><span class="md-info-value">${med.dosage} &middot; Take 1 pill</span></span>
+    </div>`;
+  const durationRow = `
+    <div class="md-info-row">
+      <span class="md-info-icon md-info-icon--green">${durationIcon}</span>
+      <span class="md-info-text"><span class="md-info-label">Duration</span><span class="md-info-value">${durationText}</span></span>
+    </div>`;
+
+  const summaryRows = med.source === "mine"
+    ? `
+    ${doseRow}
+    <div class="md-info-row">
+      <span class="md-info-icon md-info-icon--gray">${descIcon}</span>
+      <span class="md-info-text"><span class="md-info-label">Reason</span><span class="md-info-value">${med.description}</span></span>
     </div>
+    ${durationRow}`
+    : `
+    ${doseRow}
     <div class="md-info-row">
       <span class="md-info-icon md-info-icon--blue">${routeIcon}</span>
       <span class="md-info-text"><span class="md-info-label">Route</span><span class="md-info-value">${med.route}</span></span>
@@ -215,15 +234,13 @@
       <span class="md-info-icon md-info-icon--amber">${freqIcon}</span>
       <span class="md-info-text"><span class="md-info-label">Frequency</span><span class="md-info-value">${med.frequency}</span></span>
     </div>
-    <div class="md-info-row">
-      <span class="md-info-icon md-info-icon--green">${durationIcon}</span>
-      <span class="md-info-text"><span class="md-info-label">Duration</span><span class="md-info-value">${durationText}</span></span>
-    </div>
+    ${durationRow}
     <div class="md-info-row">
       <span class="md-info-icon md-info-icon--gray">${descIcon}</span>
       <span class="md-info-text"><span class="md-info-label">Description</span><span class="md-info-value">${med.description}</span></span>
-    </div>
-  `;
+    </div>`;
+
+  document.getElementById("summaryCard").innerHTML = `<div class="md-name">${med.name}</div>${summaryRows}`;
 
   function renderHistory() {
     const entries = HISTORY[resolvedKey] || [];
