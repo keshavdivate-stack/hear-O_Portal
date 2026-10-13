@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HearO - Dosage Update</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/Mobile%20app/style.css?v=36">
+<script src="/Mobile%20app/font-scale.js?v=29"></script>
+<style>
+  /* Dosage Update: what the doctor changed (before -> now), the new
+     instructions and schedule, and one "Okay" to acknowledge it. */
+  .mx-header { padding: 19px 20px; }
+  .mx-header h1 { font-size: calc(28px * var(--font-scale, 1)); color: #434141; }
+  .du-body { flex: 1; overflow-y: auto; padding: 24px 20px 12px; }
+  .du-med { display: flex; align-items: center; gap: 18px; }
+  .du-med-icon { flex-shrink: 0; width: 60px; height: 60px; border-radius: 50%; background: #F2EDFD; color: #935CFC; display: flex; align-items: center; justify-content: center; }
+  .du-med-name { font-size: calc(26px * var(--font-scale, 1)); font-weight: 600; line-height: 1.2; color: #3D3D3D; }
+  .du-med-by { margin-top: 4px; font-size: calc(16px * var(--font-scale, 1)); line-height: 1.35; color: #6F6F6F; }
+  .du-badge { display: inline-flex; align-items: center; gap: 8px; margin-top: 22px; padding: 9px 14px; border-radius: 10px; background: #F0F7FF; color: #186DCE; font-size: calc(18px * var(--font-scale, 1)); font-weight: 600; }
+  .du-compare { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 12px; margin-top: 21px; }
+  .du-dose { padding: 16px; border-radius: 14px; border: 1px solid #D5D8DE; background: #F4F4F4; }
+  .du-dose--now { border-color: #C5D9F1; background: #F0F7FF; }
+  .du-dose-label { font-size: calc(16px * var(--font-scale, 1)); color: #6F6F6F; }
+  .du-dose--now .du-dose-label { color: #186DCE; }
+  .du-dose-value { margin-top: 6px; font-size: calc(28px * var(--font-scale, 1)); font-weight: 500; line-height: 1.15; color: #6F6F6F; text-decoration: line-through; }
+  .du-dose--now .du-dose-value { font-weight: 700; color: #252424; text-decoration: none; }
+  .du-dose-sub { margin-top: 6px; font-size: calc(17px * var(--font-scale, 1)); color: #6F6F6F; }
+  .du-dose--now .du-dose-sub { color: #3D3D3D; }
+  .du-arrow { color: #A09E9E; }
+  .du-card { margin-top: 21px; padding: 18px 20px; border: 1px solid #D5D8DE; border-radius: 16px; background: #fff; }
+  .du-card-title { display: flex; align-items: center; gap: 10px; font-size: calc(20px * var(--font-scale, 1)); font-weight: 600; color: #3D3D3D; }
+  .du-card-title svg { flex-shrink: 0; color: #186DCE; }
+  .du-card-text { margin-top: 12px; font-size: calc(20px * var(--font-scale, 1)); line-height: 1.4; color: #252424; }
+  .du-time { display: flex; align-items: center; gap: 14px; padding: 6px 0; font-size: calc(20px * var(--font-scale, 1)); color: #252424; }
+  .du-card-title + .du-time { margin-top: 12px; }
+  .du-time-icon { flex-shrink: 0; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+  .du-time-icon--am { background: #FDF1CF; color: #F2A100; }
+  .du-time-icon--pm { background: #E9E6FB; color: #5B4BDB; }
+  .du-footer { flex-shrink: 0; padding: 12px 20px 34px; background: #fff; }
+  .du-footer .login-btn { margin-top: 0; font-weight: 600; }
+</style>
+</head>
+<body>
+
+  <div class="phone-frame">
+    <div class="status-bar">
+      <span class="status-time">9:27</span>
+      <div class="status-icons">
+        <svg width="18" height="12" viewBox="0 0 18 12" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="0" y="8" width="3" height="4" rx="0.5" fill="black"/><rect x="4.5" y="6" width="3" height="6" rx="0.5" fill="black"/><rect x="9" y="3" width="3" height="9" rx="0.5" fill="black"/><rect x="13.5" y="0" width="3" height="12" rx="0.5" fill="black"/></svg>
+        <svg width="16" height="12" viewBox="0 0 16 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 10.5C8.6 10.5 9.1 10 9.1 9.4C9.1 8.8 8.6 8.3 8 8.3C7.4 8.3 6.9 8.8 6.9 9.4C6.9 10 7.4 10.5 8 10.5Z" fill="black"/><path d="M8 6.5C9 6.5 9.9 6.9 10.6 7.6L11.6 6.6C10.6 5.6 9.4 5 8 5C6.6 5 5.4 5.6 4.4 6.6L5.4 7.6C6.1 6.9 7 6.5 8 6.5Z" fill="black"/><path d="M8 2.5C10.1 2.5 12 3.3 13.5 4.8L14.5 3.8C12.7 2 10.5 1 8 1C5.5 1 3.3 2 1.5 3.8L2.5 4.8C4 3.3 5.9 2.5 8 2.5Z" fill="black"/></svg>
+        <svg width="25" height="12" viewBox="0 0 25 12" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="0.5" y="0.5" width="20" height="11" rx="2.5" stroke="black"/><rect x="2" y="2" width="17" height="8" rx="1.5" fill="black"/><rect x="22" y="4" width="2" height="4" rx="1" fill="black"/></svg>
+      </div>
+    </div>
+
+    <div class="mx-header">
+      <!-- Back returns to Home, where the update notice stays until "Okay" here. -->
+      <button type="button" class="back-btn" aria-label="Back" onclick="window.location.href='/Mobile%20app/home.html'">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M12.5 4L6.5 10L12.5 16" stroke="#252424" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <h1>Dosage Update</h1>
+    </div>
+
+    <div class="du-body">
+      <div class="du-med">
+        <span class="du-med-icon">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.5 3.5 3.5 10.5a4.95 4.95 0 0 0 7 7l7-7a4.95 4.95 0 0 0-7-7z"/><path d="M7 7l7 7"/></svg>
+        </span>
+        <div>
+          <div class="du-med-name">Furosemide</div>
+          <div class="du-med-by">Updated by your doctor &middot; 5 Oct 2026 at 1:45 PM</div>
+        </div>
+      </div>
+
+      <div class="du-badge">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+        Dosage increased to 40 mg
+      </div>
+
+      <div class="du-compare">
+        <div class="du-dose">
+          <div class="du-dose-label">Before</div>
+          <div class="du-dose-value">20 mg</div>
+          <div class="du-dose-sub">1 pill</div>
+        </div>
+        <svg class="du-arrow" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        <div class="du-dose du-dose--now">
+          <div class="du-dose-label">Now</div>
+          <div class="du-dose-value">40 mg</div>
+          <div class="du-dose-sub">2 pills</div>
+        </div>
+      </div>
+
+      <div class="du-card">
+        <div class="du-card-title">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3v5a4 4 0 0 0 8 0V3"/><path d="M9 12v3a5 5 0 0 0 10 0v-2"/><circle cx="19" cy="11" r="2"/><path d="M4 3h2M12 3h2"/></svg>
+          Doctor's instructions
+        </div>
+        <p class="du-card-text">Take 2 pills (40 mg) once daily as instructed.</p>
+      </div>
+
+      <div class="du-card">
+        <div class="du-card-title">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+          When to take it
+        </div>
+        <div class="du-time">
+          <span class="du-time-icon du-time-icon--am"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></span>
+          8:00 AM &middot; Morning
+        </div>
+        <div class="du-time">
+          <span class="du-time-icon du-time-icon--pm"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg></span>
+          8:00 PM &middot; Evening
+        </div>
+      </div>
+    </div>
+
+    <div class="du-footer">
+      <button type="button" class="login-btn" id="okayBtn">Okay</button>
+    </div>
+  </div>
+
+<script>
+  // "Okay" acknowledges the update: the Home notice won't come back, and the
+  // patient goes to their (prescribed) medications.
+  document.getElementById("okayBtn").addEventListener("click", () => {
+    localStorage.setItem("hearo_med_update_ack", "1");
+    window.location.href = "/Mobile%20app/medications.html";
+  });
+</script>
+</body>
+</html>

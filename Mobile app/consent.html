@@ -65,7 +65,7 @@
     // "Start session", and the home-screen tutorial runs after their first
     // recorded session.
     ["hearo_recorded_date", "hearo_recorded_time"].forEach((k) => sessionStorage.removeItem(k));
-    localStorage.removeItem("hearo_home_tutorial_done");
+    ["hearo_home_tutorial_done", "hearo_med_update_ack"].forEach((k) => localStorage.removeItem(k));
     window.location.href = "/Mobile%20app/onboarding-1.html";
   });
 </script>

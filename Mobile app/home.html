@@ -19,6 +19,14 @@
   .tooltip-popover.tour-tip { z-index: 50; }
   .tooltip-popover.tour-tip::after { left: var(--tour-arrow-x, 40px); }
   .tooltip-popover.tour-tip.arrow-up::after { top: -10px; bottom: auto; }
+  /* Medication-update notice: blocks Home until the patient reviews it. */
+  .mu-overlay { position: absolute; inset: 0; z-index: 60; display: flex; align-items: center; justify-content: center; padding: 24px; background: rgba(20, 24, 30, 0.5); }
+  .mu-card { width: 100%; padding: 28px 24px 24px; border-radius: 20px; background: #fff; text-align: center; box-shadow: 0 16px 40px rgba(0, 0, 0, 0.25); }
+  .mu-icon { position: relative; width: 72px; height: 72px; margin: 0 auto 18px; border-radius: 50%; background: #F2EDFD; color: #935CFC; display: flex; align-items: center; justify-content: center; }
+  .mu-icon-badge { position: absolute; right: -2px; top: -2px; width: 26px; height: 26px; border-radius: 50%; background: #186DCE; color: #fff; border: 3px solid #fff; display: flex; align-items: center; justify-content: center; }
+  .mu-title { margin: 0; font-size: calc(24px * var(--font-scale, 1)); font-weight: 700; color: #252424; }
+  .mu-text { margin: 10px 0 22px; font-size: calc(18px * var(--font-scale, 1)); line-height: 1.45; color: #4A4A4A; }
+  .mu-card .login-btn { margin-top: 0; font-weight: 600; }
   .tour-tip .tour-skip { display: block; width: 100%; margin-top: 8px; padding: 6px 0; font-size: calc(18px * var(--font-scale, 1)); }
 </style>
 </head>
@@ -220,6 +228,7 @@
       blocker.remove();
       tip.remove();
       body.scrollTop = 0;
+      window.maybeShowMedUpdate();
     }
 
     tip.addEventListener("click", (e) => {
@@ -231,6 +240,32 @@
     });
     show();
   })();
+</script>
+<script>
+  // ---- Medication-update notice ----
+  // Once the home tutorial has been given, Home shows a notice that the
+  // doctor updated a medication. It blocks the screen (no close) until the
+  // patient opens the update and taps Okay there; after that it never returns.
+  window.maybeShowMedUpdate = function () {
+    if (!localStorage.getItem("hearo_home_tutorial_done") || localStorage.getItem("hearo_med_update_ack")) return;
+    if (document.getElementById("medUpdateNotice")) return;
+    document.querySelector(".phone-frame").insertAdjacentHTML("beforeend", `
+      <div class="mu-overlay" id="medUpdateNotice" role="alertdialog" aria-modal="true" aria-labelledby="muTitle" aria-describedby="muText">
+        <div class="mu-card">
+          <div class="mu-icon">
+            <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.5 3.5 3.5 10.5a4.95 4.95 0 0 0 7 7l7-7a4.95 4.95 0 0 0-7-7z"/><path d="M7 7l7 7"/></svg>
+            <span class="mu-icon-badge"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg></span>
+          </div>
+          <h2 class="mu-title" id="muTitle">Medication updated</h2>
+          <p class="mu-text" id="muText">Your doctor changed the dosage of Furosemide. Please review the update before you continue.</p>
+          <button type="button" class="login-btn" id="muViewBtn">View update</button>
+        </div>
+      </div>`);
+    const viewBtn = document.getElementById("muViewBtn");
+    viewBtn.addEventListener("click", () => { window.location.href = "/Mobile%20app/medication-update.html"; });
+    viewBtn.focus();
+  };
+  if (!document.querySelector(".tour-tip")) window.maybeShowMedUpdate();
 </script>
 </body>
 </html>
