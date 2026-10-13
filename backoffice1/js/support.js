@@ -20,6 +20,7 @@ document.querySelectorAll("#supportTabs .bo-tab").forEach((tab) => {
 })();
 
 /* ---------------- Filter option lists ---------------- */
+document.getElementById("ticketOrganizationFilterMenu").innerHTML = buildFilterSelectOptions(SUPPORT_ORG_CODES, "All Organizations");
 document.getElementById("ticketStatusFilterMenu").innerHTML = buildFilterSelectOptions(STATUSES, "All statuses");
 document.getElementById("ticketPriorityFilterMenu").innerHTML = buildFilterSelectOptions(PRIORITIES, "All priorities");
 document.getElementById("ticketCategoryFilterMenu").innerHTML = buildFilterSelectOptions(CATEGORIES, "All categories");
@@ -52,6 +53,7 @@ renderTicketKpis();
 const ticketKebabIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="1.7" fill="currentColor"/><circle cx="12" cy="12" r="1.7" fill="currentColor"/><circle cx="12" cy="19" r="1.7" fill="currentColor"/></svg>`;
 
 /* ---------------- Filter state (shared by both tabs) ---------------- */
+let ticketOrganizationValue = "";
 let ticketStatusValue = "";
 let ticketPriorityValue = "";
 let ticketCategoryValue = "";
@@ -113,6 +115,7 @@ let ticketSearchTerm = "";
 })();
 
 function matchesFilters(t, extraSearchable) {
+  if (ticketOrganizationValue && t.organization !== ticketOrganizationValue) return false;
   if (ticketStatusValue && t.status !== ticketStatusValue) return false;
   if (ticketPriorityValue && t.priority !== ticketPriorityValue) return false;
   if (ticketCategoryValue && ticketCategory(t) !== ticketCategoryValue) return false;
@@ -181,6 +184,9 @@ function refreshTicketTables() {
   renderTicketKpis();
 }
 
+document.getElementById("ticketOrganizationFilter").addEventListener("change", (e) => {
+  ticketOrganizationValue = e.target.value;
+});
 document.getElementById("ticketStatusFilter").addEventListener("change", (e) => {
   ticketStatusValue = e.target.value;
 });
@@ -214,6 +220,7 @@ document.getElementById("ticketApplyBtn").addEventListener("click", () => {
 });
 
 document.getElementById("ticketClearFiltersBtn").addEventListener("click", () => {
+  ticketOrganizationValue = "";
   ticketStatusValue = "";
   ticketPriorityValue = "";
   ticketCategoryValue = "";
@@ -224,6 +231,7 @@ document.getElementById("ticketClearFiltersBtn").addEventListener("click", () =>
   ticketLevelValue = "";
   ticketSearchTerm = "";
 
+  resetBoSelect(document.querySelector('.bo-select[data-name="ticketOrganization"]'));
   resetBoSelect(document.querySelector('.bo-select[data-name="ticketTier"]'));
   resetBoSelect(document.querySelector('.bo-select[data-name="ticketStatus"]'));
   resetBoSelect(document.querySelector('.bo-select[data-name="ticketPriority"]'));
