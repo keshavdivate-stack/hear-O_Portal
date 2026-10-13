@@ -10,7 +10,7 @@ const orgHealthData = {
     lastIncident: "2h ago",
     compliance: 58,
     categories: [
-      { label: "Patient (Mobile/Web)", count: 6, color: "var(--blue)" },
+      { label: "Patient", count: 6, color: "var(--blue)" },
       { label: "Compliance", count: 3, color: "var(--purple)" },
       { label: "System Schedule Engine", count: 2, color: "var(--gray)" },
       { label: "Voice Engine", count: 0, color: "var(--orange)" },
@@ -36,7 +36,7 @@ const orgHealthData = {
     compliance: 64,
     categories: [
       { label: "Voice Engine", count: 4, color: "var(--orange)" },
-      { label: "Patient (Mobile/Web)", count: 1, color: "var(--blue)" },
+      { label: "Patient", count: 1, color: "var(--blue)" },
     ],
     patientsAffected: [
       { id: "p-2231", name: "Itai Ben-David", issue: "Voice engine timeout", severity: "critical", lastRecording: "40m ago", status: "Open" },
@@ -74,7 +74,7 @@ const orgHealthData = {
     compliance: 81,
     categories: [
       { label: "Sensors", count: 3, color: "var(--yellow)" },
-      { label: "Patient (Mobile/Web)", count: 1, color: "var(--blue)" },
+      { label: "Patient", count: 1, color: "var(--blue)" },
     ],
     patientsAffected: [
       { id: "p-3390", name: "Roni Segal", issue: "Sensor disconnect (Bluetooth)", severity: "warning", lastRecording: "1d ago", status: "Investigating" },
@@ -91,7 +91,7 @@ const orgHealthData = {
     lastIncident: "6h ago",
     compliance: 52,
     categories: [
-      { label: "Patient (Mobile/Web)", count: 2, color: "var(--blue)" },
+      { label: "Patient", count: 2, color: "var(--blue)" },
     ],
     patientsAffected: [
       { id: "p-8801", name: "Lior Adler", issue: "App crash on Android 14", severity: "critical", lastRecording: "6h ago", status: "Escalated" },

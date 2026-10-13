@@ -1,18 +1,11 @@
 /* ---------------- Color lookups ---------------- */
 const priorityColor = { Critical: "var(--maroon)", High: "var(--orange)", Medium: "var(--yellow)", Low: "var(--gray)" };
-const typeColor = { Patient: "var(--cyan)", Clinic: "var(--purple)", System: "var(--navy)", Backoffice: "#14B8A6" };
 
-/* "Tickets by Origin" on this dashboard is a different cut than the Patient/Clinic
-   Type filter on the main Support ticket list: a ticket raised automatically or
-   opened directly by a backoffice agent is bucketed under that instead of
-   Patient/Clinic, even though it's still "about" a patient or a clinic --
-   who/what actually opened it is what this chart is answering. Origin is
-   already one of these four values (see support-data.js's ORIGINS), so this
-   is just that field by another name. */
-const SUP_DASH_TYPES = ["Patient", "Clinic", "System", "Backoffice"];
-function dashTicketType(t) {
-  return t.origin;
-}
+/* "Tickets by Origin" counts who/what opened each ticket -- the patient's
+   mobile app, a clinic, a Back Office agent or the system -- which is a
+   different cut than the Patient/Clinic/System Type filter on the Tickets
+   list. Listed in the developed order: Mobile, Clinic, Back Office, System. */
+const SUP_DASH_ORIGINS = ["Patient", "Clinic", "Backoffice", "System"];
 
 /* ---------------- Combine patient + clinic tickets ----------------
    source/who match the lowercase convention support.js and ticket-detail.html
@@ -72,14 +65,15 @@ function myTicketsHref(extraParams) {
    ticket list; the others mix statuses/priorities that support.html's
    single-value filters can't express in one URL, so they stay plain cards. */
 function renderKpis(mine) {
-  const openTickets = mine.filter((t) => t.status === "Open" || t.status === "In Progress");
-  const priorityTickets = mine.filter((t) => (t.priority === "Critical" || t.priority === "High") && t.status !== "Resolved");
+  /* Same four KPIs as the developed Support Dashboard: Total, Open,
+     In Progress and Resolved -- the last three add up to the total. */
+  const openTickets = mine.filter((t) => t.status === "Open");
   const inProgressTickets = mine.filter((t) => t.status === "In Progress");
   const resolvedTickets = mine.filter((t) => t.status === "Resolved");
 
   const cards = [
-    { num: openTickets.length, label: "Open Tickets", color: "var(--orange)", icon: `<path d="M18 9.5C18 7.7 17.3 6 16 4.8C14.7 3.6 13 3 11.3 3.1C8.1 3.3 5.6 6.1 5.6 9.4V12.5C5.6 13.1 5.4 13.7 5 14.2L4 15.5C3.4 16.3 4 17.5 5 17.5H19C20 17.5 20.6 16.3 20 15.5L19 14.2C18.6 13.7 18.4 13.1 18.4 12.5"/>` },
-    { num: priorityTickets.length, label: "Critical / High Priority", color: "var(--maroon)", icon: `<path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.73 3h16.9a2 2 0 0 0 1.73-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/>` },
+    { num: mine.length, label: "Total Tickets", color: "var(--blue)", icon: `<rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8"/><path d="M12 16v4"/>`, href: myTicketsHref({ status: "all" }) },
+    { num: openTickets.length, label: "Open Tickets", color: "var(--orange)", icon: `<path d="M18 9.5C18 7.7 17.3 6 16 4.8C14.7 3.6 13 3 11.3 3.1C8.1 3.3 5.6 6.1 5.6 9.4V12.5C5.6 13.1 5.4 13.7 5 14.2L4 15.5C3.4 16.3 4 17.5 5 17.5H19C20 17.5 20.6 16.3 20 15.5L19 14.2C18.6 13.7 18.4 13.1 18.4 12.5"/>`, href: myTicketsHref({ status: "Open" }) },
     { num: inProgressTickets.length, label: "In Progress Tickets", color: "var(--navy)", icon: `<path d="M12 19V5"/><path d="m5 12 7-7 7 7"/>`, href: myTicketsHref({ status: "In Progress" }) },
     { num: resolvedTickets.length, label: "Tickets Resolved", color: "var(--green)", icon: `<path d="M4 12L9 17L20 6"/>`, href: myTicketsHref({ status: "Resolved" }) },
   ];
@@ -116,65 +110,49 @@ function renderQueue(mine) {
   const items = mine
     .filter((t) => t.status !== "Resolved")
     .sort((a, b) => queueWeight(b) - queueWeight(a) || parseTicketDate(b.createdDate) - parseTicketDate(a.createdDate))
-    .slice(0, 8);
-
-  const ticketIcon = `<path d="M3 11h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H3v-7a9 9 0 0 1 18 0v7h-3a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"/>`;
+    .slice(0, 20);
 
   document.getElementById("supDashQueueList").innerHTML = items.length
-    ? items
-        .map(
-          (t) => `
-      <a class="bo-crit-issue-row" href="${ticketHref(t)}">
-        <span class="bo-crit-issue-icon" style="background:${priorityColor[t.priority] || "var(--gray)"};">
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${ticketIcon}</svg>
-        </span>
-        <span class="bo-crit-issue-body">
-          <span class="bo-crit-issue-title">${t.ticketNo} &middot; ${t.issueType}</span>
-          <span class="bo-crit-issue-desc">${t.organization} &middot; ${t.who}</span>
-          <span class="bo-crit-issue-meta">${t.status} &middot; ${t.createdDate}</span>
-        </span>
-        <span class="bo-crit-issue-right">
-          <span class="bo-severity-pill ${(t.priority || "").toLowerCase()}">${t.priority}</span>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
-        </span>
-      </a>`
-        )
-        .join("")
+    ? items.map((t) => supDashTicketRow(t, `${t.status} &middot; ${formatTicketCreated(t.createdDate)}`)).join("")
     : `<div class="bo-empty-state" style="padding:24px 4px; color:var(--gray-text); font-size:13px;">You're all caught up &mdash; nothing needs attention right now.</div>`;
 }
 
-/* ---------------- Recently Resolved ----------------
-   Tickets carry no separate "resolved on" timestamp, so this reads as
-   "most recently created among what's now Resolved" -- still a useful,
-   honestly-labeled trace of the agent's own recent closures. */
-function renderResolved(mine) {
-  const items = mine
-    .filter((t) => t.status === "Resolved")
-    .sort((a, b) => parseTicketDate(b.createdDate) - parseTicketDate(a.createdDate))
-    .slice(0, 8);
-
-  const checkIcon = `<path d="M4 12L9 17L20 6"/>`;
-
-  document.getElementById("supDashResolvedList").innerHTML = items.length
-    ? items
-        .map(
-          (t) => `
-      <a class="bo-crit-issue-row" href="${ticketHref(t)}">
-        <span class="bo-crit-issue-icon" style="background:var(--green);">
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${checkIcon}</svg>
-        </span>
+/* Rows read like the developed Support Dashboard: "TCK-410 · Issue Type",
+   one meta line underneath, and the priority pill on the right. */
+function supDashTicketRow(t, meta) {
+  return `
+      <a class="bo-crit-issue-row bo-crit-issue-row--plain" href="${ticketHref(t)}">
         <span class="bo-crit-issue-body">
           <span class="bo-crit-issue-title">${t.ticketNo} &middot; ${t.issueType}</span>
-          <span class="bo-crit-issue-desc">${t.organization} &middot; ${t.who}</span>
-          <span class="bo-crit-issue-meta">Resolved &middot; ${t.createdDate}</span>
+          <span class="bo-crit-issue-meta">${meta}</span>
         </span>
         <span class="bo-crit-issue-right">
           <span class="bo-severity-pill ${(t.priority || "").toLowerCase()}">${t.priority}</span>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
         </span>
-      </a>`
-        )
-        .join("")
+      </a>`;
+}
+
+/* ---------------- Recently Resolved ----------------
+   "Who resolved it · Resolved · when", newest first. Tickets carry no
+   resolved timestamp, so one is derived (a few hours after creation,
+   seeded by the ticket so it never changes), and the resolver is the
+   agent the ticket is assigned to. */
+function resolvedAtFor(t) {
+  const created = new Date(parseTicketDate(t.createdDate));
+  created.setHours(created.getHours() + 1 + (t.id % 47));
+  const pad = (n) => String(n).padStart(2, "0");
+  return `${pad(created.getDate())}/${pad(created.getMonth() + 1)}/${created.getFullYear()} ${pad(created.getHours())}:${pad(created.getMinutes())}`;
+}
+
+function renderResolved(mine) {
+  const items = mine
+    .filter((t) => t.status === "Resolved")
+    .map((t) => ({ t, resolvedAt: resolvedAtFor(t) }))
+    .sort((a, b) => parseTicketDate(b.resolvedAt) - parseTicketDate(a.resolvedAt))
+    .slice(0, 20);
+
+  document.getElementById("supDashResolvedList").innerHTML = items.length
+    ? items.map(({ t, resolvedAt }) => supDashTicketRow(t, `${t.assignedTo} &middot; Resolved &middot; ${formatTicketCreated(resolvedAt)}`)).join("")
     : `<div class="bo-empty-state" style="padding:24px 4px; color:var(--gray-text); font-size:13px;">Nothing resolved yet &mdash; closed tickets will show up here.</div>`;
 }
 
@@ -212,14 +190,6 @@ function renderDonut(donutId, totalId, legendId, entries) {
 }
 
 /* ---------------- Category / Type breakdown (horizontal bars) ---------------- */
-const supDashCategoryColors = {
-  Compliance: "var(--purple)",
-  "Voice Engine": "var(--orange)",
-  Sensors: "var(--yellow)",
-  "Patient (Mobile/Web)": "var(--blue)",
-  "Clinic Users (Security)": "var(--navy)",
-  "System Schedule Engine": "var(--gray)",
-};
 
 function renderHbarList(containerId, entries) {
   const max = Math.max(1, ...entries.map((e) => e.count));
@@ -251,33 +221,31 @@ function renderDashboard() {
       label: sev,
       count: mine.filter((t) => t.priority === sev).length,
       color: priorityColor[sev],
-      href: myTicketsHref({ priority: sev }),
+      href: myTicketsHref({ priority: sev, status: "all" }),
     }))
   );
 
+  /* Tickets by Category / Origin: one blue for every bar and a fixed row
+     order (the categories' own order; Mobile, Clinic, Back Office, System),
+     as in the developed dashboard. Every status counts here, so each row
+     opens the agent's tickets of every status. */
   renderHbarList(
     "supDashCategoryBars",
     CATEGORIES.map((category) => ({
       label: category,
       count: mine.filter((t) => ticketCategory(t) === category).length,
-      color: supDashCategoryColors[category] || "var(--gray)",
-      href: myTicketsHref({ category }),
-    })).sort((a, b) => b.count - a.count)
+      color: "var(--blue)",
+      href: myTicketsHref({ category, status: "all" }),
+    }))
   );
 
-  const dashTypeHrefParams = {
-    Patient: { type: "Patient" },
-    Clinic: { type: "Clinic" },
-    System: { origin: "System" },
-    Backoffice: { origin: "Backoffice" },
-  };
   renderHbarList(
     "supDashTypeBars",
-    SUP_DASH_TYPES.map((type) => ({
-      label: type,
-      count: mine.filter((t) => dashTicketType(t) === type).length,
-      color: typeColor[type],
-      href: myTicketsHref(dashTypeHrefParams[type]),
+    SUP_DASH_ORIGINS.map((origin) => ({
+      label: originLabel[origin] || origin,
+      count: mine.filter((t) => t.origin === origin).length,
+      color: "var(--blue)",
+      href: myTicketsHref({ origin, status: "all" }),
     }))
   );
 }

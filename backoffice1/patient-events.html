@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>HearO Backoffice | Patient Events</title>
+<title>HearO Backoffice | Patient Event</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -142,7 +142,7 @@
   <main class="bo-page bo-page-list">
 
     <div class="bo-list-toolbar">
-      <h1>Patient Events</h1>
+      <h1>Patient Event</h1>
       <div class="bo-tabs bo-seg-toggle" id="peViewTabs">
         <button type="button" class="bo-tab bo-seg-btn active" data-view="active">Events</button>
         <button type="button" class="bo-tab bo-seg-btn" data-view="archived">Archived Events</button>
@@ -162,22 +162,33 @@
     </div>
 
     <div class="bo-filter-row">
-      <div class="bo-filter-field">
-        <input type="text" id="pePatientFilter" placeholder="Search patient" />
-      </div>
-      <div class="bo-multiselect" id="peSiteFilter">
+      <div class="bo-multiselect bo-multiselect--filter" id="peSiteFilter">
         <button type="button" class="bo-multiselect-trigger">
           <span class="bo-multiselect-value placeholder">Clinical site</span>
           <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
         </button>
         <div class="bo-multiselect-menu"></div>
       </div>
-      <div class="bo-multiselect" id="peEventTypeFilter">
+      <div class="bo-multiselect bo-multiselect--filter" id="peEventTypeFilter">
         <button type="button" class="bo-multiselect-trigger">
-          <span class="bo-multiselect-value placeholder">Event type</span>
+          <span class="bo-multiselect-value placeholder">Select event type</span>
           <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
         </button>
         <div class="bo-multiselect-menu"></div>
+      </div>
+      <div class="bo-select" data-name="peApproved" id="peApprovedSelect">
+        <button type="button" class="bo-select-trigger">
+          <span class="bo-select-value placeholder">Approved</span>
+          <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="bo-select-menu">
+          <div class="bo-select-option" data-value="false">Not approved<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="bo-select-option" data-value="true">Approved<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </div>
+        <input type="hidden" id="peApprovedFilter" />
+      </div>
+      <div class="bo-filter-field">
+        <input type="text" id="pePatientFilter" placeholder="Search patient" />
       </div>
       <div class="bo-filter-field">
         <input type="text" id="peAddedByFilter" placeholder="Search added by" />
@@ -186,11 +197,11 @@
         <input type="text" id="peReportedByFilter" placeholder="Search reported by" />
       </div>
       <div class="bo-date-field">
-        <input type="text" id="peFromDate" placeholder="mm/dd/yyyy" onfocus="(this.type='date')" onblur="if(!this.value)this.type='text'" />
+        <input type="text" id="peFromDate" placeholder="From date" onfocus="(this.type='date')" onblur="if(!this.value)this.type='text'" />
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="17" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3 9H21" stroke="currentColor" stroke-width="1.8"/></svg>
       </div>
       <div class="bo-date-field">
-        <input type="text" id="peToDate" placeholder="mm/dd/yyyy" onfocus="(this.type='date')" onblur="if(!this.value)this.type='text'" />
+        <input type="text" id="peToDate" placeholder="To date" onfocus="(this.type='date')" onblur="if(!this.value)this.type='text'" />
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="17" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3 9H21" stroke="currentColor" stroke-width="1.8"/></svg>
       </div>
       <button type="button" class="bo-btn-primary" id="peApplyBtn">Apply</button>
@@ -212,6 +223,7 @@
               <th>REPORTED TIME</th>
               <th>START DATE</th>
               <th>END DATE</th>
+              <th>APPROVED</th>
               <th>STATUS</th>
               <th></th>
             </tr>
@@ -377,6 +389,7 @@
 <script src="js/bo-table-scroll.js"></script>
 <script src="js/bo-pagination.js"></script>
 <script src="js/patient-events-data.js"></script>
+<script src="js/support-filters.js"></script>
 <script src="js/patient-events.js"></script>
 </body>
 </html>

@@ -1,12 +1,12 @@
 ﻿/* ---------------- Base data (baseline = "All Organizations") ---------------- */
-const ringSegmentsBase = [
-  { label: "Recorded", value: 21, color: "#2E5AAC" },
-  { label: "Did not upload", value: 11, color: "#EA580C" },
-  { label: "Left study", value: 231, color: "#1CBFA6" },
+const RING_SEGMENTS = [
+  { key: "recorded", label: "Recorded", color: "var(--navy)" },
+  { key: "didNotUpload", label: "Did not upload", color: "var(--orange)" },
+  { key: "leftStudy", label: "Left study", color: "var(--blue)" },
 ];
 
-const screenedMonths = ["Mar", "Apr", "May", "Jun", "Jul", "Aug"];
-const screenedSeriesBase = [252, 253, 253, 262, 263, 263];
+const screenedMonths = ["May", "Jun", "Jul", "Aug", "Sep", "Oct"];
+const screenedSeriesBase = [1002, 1006, 1030, 1044, 1062, 1118];
 
 const mktBinDataBase = {
   quality: [
@@ -34,90 +34,72 @@ let activeMktOrgIds = ["all"];
    Compliance drill-down link for whichever bar was clicked. */
 const MKT_BIN_KEYS = ["90-100", "80-89", "70-79", "60-69"];
 
-/* ---------------- Ring gauge (Recorded / Did not upload / Left study) ----------------
-   Each selected organization gets its own hero card + ring, built from its own
-   seeded data, so picking multiple orgs shows their charts side by side rather
-   than blending them into a single average. */
-/* No real per-org date data exists yet, so the "To Date"/"Today" header
-   above the legend gets a stand-in date seeded off the org so it stays
-   stable per org instead of reshuffling on every render. */
-function mktRandomDateFor(seed, offsetDays) {
-  const d = new Date(2028, 8, 1 + ((seed + offsetDays) % 28));
-  const dd = String(d.getDate()).padStart(2, "0");
-  const mm = String(d.getMonth() + 1).padStart(2, "0");
-  return `${dd}.${mm}.${d.getFullYear()}`;
+/* ---------------- Organization cards (Recorded / Did not upload / Left study) ----------------
+   One card per organization -- every org of the selected type under "All
+   Organizations", otherwise just the picked ones -- showing only what the
+   developed Screening page shows: the org, an enrolled/target ring, To Date
+   and Today compliance, and the three patient counts. */
+const MKT_TARGETS = [40, 50, 50, 100, 150, 200];
+
+/* No real per-org numbers exist yet, so each org's figures are seeded off
+   its id -- stable across renders, different between orgs. */
+function mktOrgCardData(org) {
+  const h = mktHash(org.id);
+  const target = MKT_TARGETS[h % MKT_TARGETS.length];
+  const enrolled = Math.round(target * (0.3 + ((h >>> 3) % 90) / 100));
+  const recorded = (h >>> 5) % 3;
+  const didNotUpload = Math.min(enrolled - recorded, Math.round(enrolled * (((h >>> 7) % 60) / 100)));
+  const leftStudy = Math.max(0, enrolled - recorded - didNotUpload);
+  const toDate = enrolled ? 35 + ((h >>> 9) % 55) : 0;
+  const today = recorded || didNotUpload ? Math.round((recorded / enrolled) * 100) : null;
+  return { target, enrolled, toDate, today, counts: { recorded, didNotUpload, leftStudy } };
 }
 
-function heroCardHtml(title, ring, compact, orgId, seed) {
-  const total = ring.reduce((s, seg) => s + seg.value, 0);
+function orgCardHtml(org) {
+  const d = mktOrgCardData(org);
+  const total = RING_SEGMENTS.reduce((s, seg) => s + d.counts[seg.key], 0);
   let acc = 0;
-  const stops = ring
-    .map((seg) => {
-      const from = (acc / total) * 360;
-      acc += seg.value;
-      const to = (acc / total) * 360;
-      return `${seg.color} ${from}deg ${to}deg`;
-    })
-    .join(", ");
-  const breakdown = ring
-    .map((seg) => {
-      const pct = total ? Math.round((seg.value / total) * 100) : 0;
-      return `
-        <div class="mkt-rb-row">
-          <span class="mkt-rb-dot" style="background:${seg.color};"></span>
-          <span class="mkt-rb-label">${seg.label}</span>
-          <span class="mkt-rb-num">${seg.value}</span>
-          <span class="mkt-rb-pct">&middot; ${pct}%</span>
-        </div>`;
-    })
-    .join("");
-  const topTick = Math.max(...ring.map((seg) => seg.value));
+  const ringBg = total
+    ? `conic-gradient(${RING_SEGMENTS.map((seg) => {
+        const from = (acc / total) * 360;
+        acc += d.counts[seg.key];
+        return `${seg.color} ${from}deg ${(acc / total) * 360}deg`;
+      }).join(", ")})`
+    : "var(--gray-border)";
+  const pctOf = (n) => (d.enrolled ? Math.round((n / d.enrolled) * 100) : 0);
+  const legend = RING_SEGMENTS.map(
+    (seg) => `
+      <div class="mkt-oc-row">
+        <span class="mkt-oc-dot" style="background:${seg.color};"></span>
+        <span class="mkt-oc-label">${seg.label}</span>
+        <span class="mkt-oc-num"><b>${d.counts[seg.key]}</b> (${pctOf(d.counts[seg.key])}%)</span>
+      </div>`
+  ).join("");
+  const ring = RING_SEGMENTS.map((seg) => ({ label: seg.label, value: d.counts[seg.key] }));
 
   return `
-    <section class="bo-card mkt-hero-card${compact ? " mkt-hero-card--compact" : ""}">
-      <div class="mkt-hero">
-        <div class="mkt-hero-label">
-          <h2>${title}</h2>
-          <div class="mkt-compliance">
-            <div class="mkt-compliance-dates">
-              <span>${mktRandomDateFor(seed, 0)}</span>
-              <span>${mktRandomDateFor(seed, 3)}</span>
-            </div>
-            <div class="mkt-compliance-tabs">
-              <span class="active">To Date</span>
-              <span>Today</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="mkt-gauge-wrap" data-org-id="${orgId}" data-ring='${JSON.stringify(ring.map((s) => ({ label: s.label, value: s.value })))}' title="Click a segment to view patients">
-          <span class="mkt-tick mkt-tick-top">${topTick}</span>
-          <div class="mkt-ring" style="background:conic-gradient(${stops})"></div>
-          <div class="mkt-gauge-center"><span>${total}</span><b>/0</b></div>
-          <span class="mkt-tick mkt-tick-bottom">1</span>
-        </div>
-
-        <div class="mkt-ring-breakdown">${breakdown}</div>
+    <section class="bo-card mkt-org-card">
+      <h3 class="mkt-oc-title">${org.name}</h3>
+      <div class="mkt-gauge-wrap" data-org-id="${org.id}" data-ring='${JSON.stringify(ring)}'>
+        <div class="mkt-ring" style="background:${ringBg}"></div>
+        <div class="mkt-gauge-center">${d.enrolled}/${d.target}</div>
       </div>
+      <div class="mkt-oc-rates">
+        <div><b>${d.toDate}%</b><span>To Date</span></div>
+        <div><b>${d.today === null ? "&mdash;" : `${d.today}%`}</b><span>Today</span></div>
+      </div>
+      <div class="mkt-oc-legend">${legend}</div>
     </section>`;
 }
 
-function ringFor(seed) {
-  return ringSegmentsBase.map((seg, i) => ({ ...seg, value: mktScale(seg.value, seed + i, 0.4) }));
-}
+let activeMktType = "Commercial";
 
 function renderHeroCards(orgIds) {
   const isAll = orgIds.length === 1 && orgIds[0] === "all";
-  const orgs = isAll ? [MKT_ORG_LIST[0]] : orgIds.map((id) => MKT_ORG_LIST.find((o) => o.id === id));
-  const multi = orgs.length > 1;
-
-  document.getElementById("mktHeroRow").classList.toggle("mkt-hero-row--multi", multi);
-  document.getElementById("mktHeroCards").innerHTML = orgs
-    .map((org) => {
-      const seed = org.id === "all" ? 0 : mktHash(org.id);
-      return heroCardHtml(org.name, ringFor(seed), multi, org.id, seed);
-    })
-    .join("");
+  const orgs = isAll
+    ? MKT_ORG_LIST.filter((o) => o.id !== "all" && o.type === activeMktType)
+    : orgIds.map((id) => MKT_ORG_LIST.find((o) => o.id === id));
+  document.getElementById("mktHeroCards").innerHTML = orgs.map(orgCardHtml).join("");
 }
 
 /* ---------------- Ring segment click -> drill-down to Study Patients ----------------
@@ -169,25 +151,26 @@ function renderScreenedChart() {
   const container = document.getElementById("screenedChart");
   const width = container.clientWidth || 320;
   const height = container.clientHeight || 200;
-  const padL = 30;
+  const padL = 38;
   const padR = 10;
   const padT = 10;
   const padB = 20;
   const plotW = width - padL - padR;
   const plotH = height - padT - padB;
-  const yMin = Math.min(...screenedSeries) - 2;
-  const yMax = Math.max(...screenedSeries) + 2;
+  /* Area chart from 0 (like the developed page), topped at a round step above the peak. */
+  const step = Math.max(2, Math.ceil(Math.max(...screenedSeries) / 6 / 100) * 100);
+  const yMin = 0;
+  const yMax = Math.ceil(Math.max(...screenedSeries) / step) * step || step;
 
   const xAt = (i) => padL + (plotW * i) / (screenedSeries.length - 1);
   const yAt = (v) => padT + plotH - ((v - yMin) / (yMax - yMin)) * plotH;
 
   const gridLines = [];
-  const step = Math.max(2, Math.ceil((yMax - yMin) / 4 / 2) * 2);
-  for (let v = Math.ceil(yMin / step) * step; v <= yMax; v += step) {
+  for (let v = yMin; v <= yMax; v += step) {
     const y = yAt(v);
     gridLines.push(
       `<line x1="${padL}" y1="${y}" x2="${width - padR}" y2="${y}" stroke="#EEF1F4" stroke-width="1"/>` +
-        `<text x="${padL - 6}" y="${y + 3}" text-anchor="end" font-size="10" fill="#9AA5B1">${v}</text>`
+        `<text x="${padL - 6}" y="${y + 3}" text-anchor="end" font-size="10" fill="#9AA5B1">${v.toLocaleString("en-US")}</text>`
     );
   }
 
@@ -200,7 +183,8 @@ function renderScreenedChart() {
   container.innerHTML = `
     <svg viewBox="0 0 ${width} ${height}" class="bo-area-svg" preserveAspectRatio="none">
       ${gridLines.join("")}
-      <path d="M ${xAt(0)},${yAt(screenedSeries[0])} L ${line}" fill="none" stroke="var(--cyan)" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/>
+      <path d="M ${xAt(0)},${yAt(yMin)} L ${line} L ${xAt(screenedSeries.length - 1)},${yAt(yMin)} Z" fill="var(--blue-light)"/>
+      <path d="M ${xAt(0)},${yAt(screenedSeries[0])} L ${line}" fill="none" stroke="var(--blue)" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/>
       ${xLabels}
     </svg>`;
 }
@@ -245,11 +229,11 @@ function renderForOrg(orgIds) {
   const seed = isAll ? 0 : mktHash(orgIds.slice().sort().join(","));
 
   const scope = scopeLabel(orgIds);
-  document.getElementById("mktStudyScope").textContent = scope ? ` â€” ${scope}` : "";
+  document.getElementById("mktStudyScope").textContent = scope ? ` — ${scope}` : "";
 
   renderHeroCards(orgIds);
 
-  screenedSeries = screenedSeriesBase.map((v, i) => mktScale(v, seed + i, 0.2));
+  screenedSeries = screenedSeriesBase.map((v) => mktScale(v, seed, 0.2));
   renderScreenedChart();
 
   mktBinData = {
@@ -267,4 +251,7 @@ function renderForOrg(orgIds) {
 }
 
 const mktStudyOrgSelectApi = mktRenderOrgSelect("mktStudyOrgSelect", renderForOrg);
-mktRenderOrgTypeSelect("mktStudyTypeSelect", (type) => mktStudyOrgSelectApi.setTypeFilter(type));
+mktRenderOrgTypeSelect("mktStudyTypeSelect", (type) => {
+  activeMktType = type;
+  mktStudyOrgSelectApi.setTypeFilter(type);
+});

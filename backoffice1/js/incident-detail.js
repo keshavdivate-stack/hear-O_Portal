@@ -14,6 +14,8 @@ function fmtBool(v) { return v ? "Yes" : "No"; }
 
 function renderIncidentHeader() {
   document.getElementById("incDetailId").textContent = currentIncident.id;
+  /* Already escalated or resolved: nothing left to escalate. */
+  document.getElementById("incDetailCreateTaskBtn").hidden = currentIncident.status !== "Active";
   document.title = `HearO Backoffice | ${currentIncident.id}`;
 }
 
@@ -27,13 +29,39 @@ function renderIncidentSummary() {
 }
 
 function renderIncidentImpact() {
-  document.getElementById("incDetailOrgCount").textContent = currentIncident.orgs.length;
-  document.getElementById("incDetailOrgCountMeta").textContent = currentIncident.orgs.length;
+  const orgs = currentIncident.orgs;
+  const list = document.getElementById("incDetailOrgList");
+  list.replaceChildren(...orgs.map((name) => Object.assign(document.createElement("span"), { className: "bo-impact-chip", textContent: name })));
+  if (!orgs.length) list.textContent = "None";
+}
+
+/* Timeline entries read like the developed screen: what happened (with who
+   did it), a detail line, the full date and time, and -- for an escalation --
+   a link to the ticket it created. Seeded entries only carry a clock time or
+   a step name, so the date comes from when the incident was detected (or
+   resolved). */
+function incTimelineDate(incident, time) {
+  const detectedDay = incident.detectedAt.split(", ")[0];
+  if (/^\d{1,2}:\d{2} [AP]M$/.test(time)) return `${detectedDay}, ${time}`;
+  if (time === "Resolved" && incident.resolution) return incident.resolution.resolvedAt;
+  if (time === "Detected" || time === "Acknowledged" || time === "Resolved") return incident.detectedAt;
+  return time;
 }
 
 function renderIncidentTimeline() {
-  document.getElementById("incDetailTimeline").innerHTML = currentIncident.timeline
-    .map((t) => `<div class="bo-ticket-history-item"><span class="text">${t.text}</span><span class="meta">${t.time}</span></div>`)
+  const incident = currentIncident;
+  document.getElementById("incDetailTimeline").innerHTML = incident.timeline
+    .map((t) => {
+      const detail = t.detail || (t.text === "Incident detected automatically" ? incident.summary : "");
+      const ticketNo = t.ticketNo || (/escalated incident|moved to Escalated/i.test(t.text) && incident.relatedTickets && incident.relatedTickets.length ? incident.relatedTickets[incident.relatedTickets.length - 1].ticketNo : "");
+      const ticket = ticketNo && (incident.relatedTickets || []).find((r) => r.ticketNo === ticketNo);
+      return `<div class="bo-ticket-history-item">
+        <span class="bo-history-title">${t.text}</span>
+        ${detail ? `<div class="bo-history-detail">${detail}</div>` : ""}
+        ${ticket ? `<a class="bo-history-link" href="${incTicketHref(ticket)}">Ticket ${ticketNo}</a>` : ""}
+        <span class="bo-history-date">${incTimelineDate(incident, t.time)}</span>
+      </div>`;
+    })
     .join("");
 }
 
@@ -79,71 +107,8 @@ if (location.hash) {
   if (target) setTimeout(() => target.scrollIntoView({ behavior: "smooth", block: "start" }), 50);
 }
 
-/* ---------------- Create Support Task drawer ---------------- */
-const addTaskOverlay = document.getElementById("addTaskOverlay");
-const addTaskForm = document.getElementById("addTaskForm");
-const saveAddTaskBtn = document.getElementById("saveAddTask");
-
-document.querySelector('#addTaskOverlay .bo-select[data-name="taskTeam"] .bo-select-menu').innerHTML = buildSelectOptions(["Clinical Team", "Support Team"]);
-document.querySelector('#addTaskOverlay .bo-select[data-name="taskLevel"] .bo-select-menu').innerHTML = buildSelectOptions(["Level 1", "Level 2", "Level 3"]);
-document.querySelector('#addTaskOverlay .bo-select[data-name="taskAssignee"] .bo-select-menu').innerHTML = buildSelectOptions(SUPPORT_TEAM);
-document.querySelector('#addTaskOverlay .bo-select[data-name="taskPriority"] .bo-select-menu').innerHTML = buildSelectOptions(Object.values(INC_PRIORITY_LABEL));
-
-function validateAddTaskForm() {
-  const titleFilled = addTaskForm.taskTitle.value.trim() !== "";
-  const teamFilled = addTaskOverlay.querySelector('.bo-select[data-name="taskTeam"] input[type=hidden]').value !== "";
-  const assigneeFilled = addTaskOverlay.querySelector('.bo-select[data-name="taskAssignee"] input[type=hidden]').value !== "";
-  saveAddTaskBtn.disabled = !(titleFilled && teamFilled && assigneeFilled);
-}
-
-const taskAttachmentInput = document.getElementById("taskAttachmentInput");
-const taskAttachmentName = document.getElementById("taskAttachmentName");
-taskAttachmentInput.addEventListener("change", () => {
-  taskAttachmentName.textContent = taskAttachmentInput.files.length ? taskAttachmentInput.files[0].name : "Click to attach a file";
-});
-
-function openAddTaskDrawer() {
-  addTaskForm.reset();
-  document.querySelector('#addTaskOverlay .bo-select[data-name="taskOrg"] .bo-select-menu').innerHTML = buildFilterSelectOptions(currentIncident.orgs, "Optional");
-  document.querySelector('#addTaskOverlay .bo-select[data-name="taskPatient"] .bo-select-menu').innerHTML = buildFilterSelectOptions(currentIncident.patients, "Optional");
-  addTaskOverlay.querySelectorAll(".bo-select").forEach(resetBoSelect);
-  taskAttachmentName.textContent = "Click to attach a file";
-  document.getElementById("addTaskIncidentTag").textContent = `Incident: ${currentIncident.id}`;
-  validateAddTaskForm();
-  addTaskOverlay.classList.add("open");
-}
-function closeAddTaskDrawer() { addTaskOverlay.classList.remove("open"); }
-
-document.getElementById("incDetailCreateTaskBtn").addEventListener("click", openAddTaskDrawer);
-document.getElementById("closeAddTaskX").addEventListener("click", closeAddTaskDrawer);
-document.getElementById("cancelAddTask").addEventListener("click", closeAddTaskDrawer);
-addTaskOverlay.addEventListener("click", (e) => { if (e.target === addTaskOverlay) closeAddTaskDrawer(); });
-addTaskForm.addEventListener("input", validateAddTaskForm);
-addTaskForm.addEventListener("change", validateAddTaskForm);
-
-addTaskForm.addEventListener("submit", (e) => {
-  e.preventDefault();
-  if (saveAddTaskBtn.disabled) return;
-
-  const team = addTaskOverlay.querySelector('.bo-select[data-name="taskTeam"] input[type=hidden]').value;
-  const level = addTaskOverlay.querySelector('.bo-select[data-name="taskLevel"] input[type=hidden]').value;
-  const assignee = addTaskOverlay.querySelector('.bo-select[data-name="taskAssignee"] input[type=hidden]').value;
-  const isFirstTask = currentIncident.tasks.length === 0;
-  const nextId = currentIncident.tasks.length ? Math.max(...currentIncident.tasks.map((t) => t.id)) + 1 : 1;
-  currentIncident.tasks.push({ id: nextId, title: addTaskForm.taskTitle.value.trim(), team, level, assignee, status: "Open" });
-  currentIncident.timeline.push({ time: "Just now", text: `Ticket "${addTaskForm.taskTitle.value.trim()}" assigned to ${assignee}` });
-
-  /* Incident Owner (overall responsibility) is distinct from a task's
-     Owner/Assignee (responsibility for that one task) -- but when nobody
-     owns the incident yet, the first task's assignee steps into that role
-     rather than leaving the incident unowned. */
-  const hasNoOwner = !currentIncident.owner || currentIncident.owner === "Unassigned";
-  if (isFirstTask && hasNoOwner) {
-    currentIncident.owner = assignee;
-    currentIncident.timeline.push({ time: "Just now", text: `${assignee} became Incident Owner (first ticket assigned)` });
-  }
-
-  closeAddTaskDrawer();
-  renderIncidentTimeline();
-  renderIncidentSummary();
-});
+/* ---------------- Escalate & Create Ticket drawer ----------------
+   Fields and behavior live in support-incidents-common.js (shared with the
+   Incidents list's row menu). */
+const openEscalateDrawer = wireEscalateDrawer(() => currentIncident, renderAll);
+document.getElementById("incDetailCreateTaskBtn").addEventListener("click", () => openEscalateDrawer(currentIncident));

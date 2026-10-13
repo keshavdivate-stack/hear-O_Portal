@@ -147,7 +147,7 @@
 
     <div class="bo-page-head">
       <div>
-        <h1>Summary <span class="mkt-page-date">13 Aug, 2026</span></h1>
+        <h1>Summary<span class="mkt-page-scope" id="mktSummaryScope"></span></h1>
       </div>
       <div style="display:flex; align-items:center; gap:16px; flex-wrap:wrap;">
         <div class="mkt-org-ms" id="mktSummaryTypeSelect"></div>
@@ -163,7 +163,10 @@
 
       <div class="bo-panel-col">
         <section class="bo-card bo-panel bo-panel--fill">
-          <h3 class="bo-panel-title">Status Change</h3>
+          <div class="bo-panel-head">
+            <h3 class="bo-panel-title">Status Change</h3>
+            <a class="bo-row-link" href="status-change.html">View</a>
+          </div>
           <div class="bo-table-scroll">
             <table class="bo-table">
               <thead><tr><th>Username</th><th>Status</th><th>Date</th></tr></thead>
@@ -173,9 +176,12 @@
         </section>
 
         <section class="bo-card bo-panel bo-panel--fill">
-          <h3 class="bo-panel-title">Error Message</h3>
+          <div class="bo-panel-head">
+            <h3 class="bo-panel-title">Patient Event (Recent Error Event)</h3>
+            <a class="bo-row-link" href="patient-events.html" id="errorEventsViewLink">View</a>
+          </div>
           <div class="bo-table-scroll">
-            <table class="bo-table">
+            <table class="bo-table bo-table--fit">
               <thead><tr><th>Username</th><th>Message</th><th>Date</th></tr></thead>
               <tbody id="errorMessageRows"></tbody>
             </table>
@@ -186,7 +192,7 @@
       <div class="bo-panel-col">
         <section class="bo-card bo-panel bo-panel-chart">
           <div class="bo-panel-head">
-            <h3 class="bo-panel-title">Monthly Compliance %</h3>
+            <h3 class="bo-panel-title">Monthly Current Compliance %</h3>
             <div class="bo-chart-stats" id="chartStats"></div>
           </div>
           <div id="complianceArea" class="bo-chart-area"></div>
@@ -212,7 +218,7 @@
 
           <section class="bo-card bo-panel bo-mini-stat">
             <p class="bo-mini-title">Did Not Record last <input type="number" class="bo-days-input bo-days-input-sm" id="dnrDaysInput" value="4" min="1" /> days</p>
-            <p class="bo-mini-num"><span id="dnrCount">180</span> <span class="bo-mini-unit">Patients</span></p>
+            <a class="bo-mini-num bo-mini-num-link" id="dnrLink" href="patient-management.html"><span id="dnrCount">180</span> <span class="bo-mini-unit">Patients</span></a>
           </section>
         </div>
       </div>
@@ -226,6 +232,8 @@
 <script src="js/notifications.js"></script>
 <script src="js/bo-table-scroll.js"></script>
 <script src="js/mkt-orgs.js"></script>
+<script src="js/status-change-data.js"></script>
+<script src="js/patient-events-data.js"></script>
 <script src="js/mkt-summary.js"></script>
 </body>
 </html>

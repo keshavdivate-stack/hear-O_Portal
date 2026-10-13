@@ -397,6 +397,18 @@
         </div>
 
         <div class="bo-modal-field">
+          <label>Organization</label>
+          <div class="bo-select" data-name="exportOrg" id="rmExportOrgSelect">
+            <button type="button" class="bo-select-trigger">
+              <span class="bo-select-value placeholder">All Organizations</span>
+              <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="bo-select-menu" id="rmExportOrgMenu"></div>
+            <input type="hidden" name="org" />
+          </div>
+        </div>
+
+        <div class="bo-modal-field">
           <label>From Date<span class="required-star">*</span></label>
           <div class="bo-date-field">
             <input type="text" name="fromDate" placeholder="mm/dd/yyyy" onfocus="(this.type='date')" onblur="if(!this.value)this.type='text'" required />
@@ -533,10 +545,10 @@
                 <input type="text" name="title" placeholder="Enter report title" />
               </div>
               <div class="bo-modal-field">
-                <label>Commercial<span class="required-star">*</span></label>
+                <label>Commercial Organization<span class="required-star">*</span></label>
                 <div class="bo-select" data-name="wizOrg">
                   <button type="button" class="bo-select-trigger">
-                    <span class="bo-select-value placeholder">Commercial</span>
+                    <span class="bo-select-value placeholder">Commercial Organization</span>
                     <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
                   </button>
                   <div class="bo-select-menu" id="rmWizardOrgMenu"></div>
@@ -578,7 +590,18 @@
                   <div class="bo-multiselect-menu"></div>
                 </div>
               </div>
-              <div class="bo-modal-field">
+              <div class="bo-modal-field" id="rmWizardDayOfMonthField" hidden>
+                <label>Day of month<span class="required-star">*</span></label>
+                <div class="bo-select" data-name="wizDayOfMonth">
+                  <button type="button" class="bo-select-trigger">
+                    <span class="bo-select-value placeholder">Select day</span>
+                    <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                  </button>
+                  <div class="bo-select-menu" id="rmWizardDayOfMonthMenu"></div>
+                  <input type="hidden" name="dayOfMonth" />
+                </div>
+              </div>
+              <div class="bo-modal-field" id="rmWizardTimeField">
                 <label>Time (GMT)<span class="required-star">*</span></label>
                 <div class="bo-time-pair">
                   <input type="number" min="0" max="23" placeholder="HH" name="hh" value="9" />
@@ -633,10 +656,10 @@
                 <input type="text" name="title" placeholder="Enter report title" />
               </div>
               <div class="bo-modal-field">
-                <label>Commercial<span class="required-star">*</span></label>
+                <label>Commercial Organization<span class="required-star">*</span></label>
                 <div class="bo-select" data-name="sendOrg">
                   <button type="button" class="bo-select-trigger">
-                    <span class="bo-select-value placeholder">Commercial</span>
+                    <span class="bo-select-value placeholder">Commercial Organization</span>
                     <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
                   </button>
                   <div class="bo-select-menu" id="rmSendOrgMenu"></div>
@@ -648,8 +671,14 @@
                 <div class="bo-checkbox-row" id="rmSendTags"></div>
               </div>
               <div class="bo-modal-field full">
-                <label>Email</label>
-                <input type="email" name="email" placeholder="you@email.com" />
+                <label>Recipients</label>
+                <div class="bo-multiselect bo-multiselect--filter" id="rmSendRecipientsSelect">
+                  <button type="button" class="bo-multiselect-trigger">
+                    <span class="bo-multiselect-value placeholder">Select recipients</span>
+                    <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                  </button>
+                  <div class="bo-multiselect-menu"></div>
+                </div>
               </div>
               <div class="bo-modal-field">
                 <label>From Date</label>

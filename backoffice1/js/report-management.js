@@ -146,7 +146,10 @@ function wireBoSelect(select) {
 
 document.querySelectorAll(".bo-select").forEach(wireBoSelect);
 document.addEventListener("click", closeAllBoSelects);
-document.addEventListener("scroll", closeAllBoSelects, true);
+document.addEventListener("scroll", (e) => {
+  if (e.target instanceof Element && e.target.closest(".bo-select-menu, .bo-multiselect-menu")) return;
+  closeAllBoSelects();
+}, true);
 window.addEventListener("resize", closeAllBoSelects);
 
 function buildSelectOptions(values) {
@@ -638,6 +641,7 @@ const rmExportOverlay = document.getElementById("rmExportOverlay");
 const rmExportForm = document.getElementById("rmExportForm");
 const rmExportBtn = document.getElementById("rmExportBtn");
 const rmExportReportSelect = document.getElementById("rmExportReportSelect");
+const rmExportOrgSelect = document.getElementById("rmExportOrgSelect");
 let rmExportScheduleId = null;
 
 /* Reused for both entry points: a row's kebab "Download Report" (pre-selects
@@ -657,9 +661,14 @@ function openExportReport(id) {
       </div>`)
     .join("");
 
+  /* Organization (optional, as in the developed app): "All Organizations"
+     by default, or one organization. */
+  document.getElementById("rmExportOrgMenu").innerHTML = buildFilterSelectOptions(rmAllOrgs(), "All Organizations");
+
   const s = rmSchedules.find((x) => x.id === id);
   rmExportScheduleId = s ? id : null;
   setBoSelectValue(rmExportReportSelect, s ? String(id) : "", { silent: true });
+  setBoSelectValue(rmExportOrgSelect, "", { silent: true });
 
   rmExportBtn.disabled = true;
   rmExportOverlay.classList.add("open");
@@ -758,7 +767,12 @@ let rmWizardSelectedTags = new Set();
 document.getElementById("rmWizardReportMenu").innerHTML = RM_REPORTS.map(
   (r) => `<div class="bo-select-option" data-value="${r.key}">${r.label}<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>`
 ).join("");
-document.getElementById("rmWizardOrgMenu").innerHTML = buildSelectOptions(RM_ORGS);
+/* Includes the organizations existing schedules use, so Edit Schedule can
+   show a schedule's own organization. */
+function rmAllOrgs() {
+  return Array.from(new Set([...rmSchedules.map((x) => x.org), ...RM_ORGS]));
+}
+document.getElementById("rmWizardOrgMenu").innerHTML = buildSelectOptions(rmAllOrgs());
 document.getElementById("rmWizardFrequencyMenu").innerHTML = buildSelectOptions(RM_FREQUENCIES);
 
 /* ---------------- Users (multi-select) ----------------
@@ -890,10 +904,16 @@ document.addEventListener("click", (e) => {
   }
 });
 
+/* Weekly picks its Schedule Days; Monthly picks a Day of month, which
+   replaces the Time field. */
 function updateDaysFieldVisibility() {
-  const isWeekly = rmWizardForm.frequency.value === "Weekly";
-  document.getElementById("rmWizardDaysField").hidden = !isWeekly;
+  const frequency = rmWizardForm.frequency.value;
+  document.getElementById("rmWizardDaysField").hidden = frequency !== "Weekly";
+  document.getElementById("rmWizardDayOfMonthField").hidden = frequency !== "Monthly";
+  document.getElementById("rmWizardTimeField").hidden = frequency === "Monthly";
 }
+
+document.getElementById("rmWizardDayOfMonthMenu").innerHTML = buildSelectOptions(Array.from({ length: 31 }, (_, i) => String(i + 1)));
 
 function renderWizardTags() {
   document.getElementById("rmWizardTags").innerHTML = RM_TAGS.map(
@@ -919,7 +939,7 @@ function validateWizardForm() {
   const reportOk = !!rmWizardForm.reportKey.value;
   const configOk = rmWizardForm.name.value.trim() !== "" && !!rmWizardForm.org.value;
   const frequency = rmWizardForm.frequency.value;
-  const daysOk = frequency !== "Weekly" || rmWizardSelectedDays.size > 0;
+  const daysOk = (frequency !== "Weekly" || rmWizardSelectedDays.size > 0) && (frequency !== "Monthly" || !!rmWizardForm.dayOfMonth.value);
   const scheduleOk = !!frequency && daysOk;
   rmWizardSaveBtn.disabled = !(reportOk && configOk && scheduleOk);
 }
@@ -974,6 +994,7 @@ function openWizardForEdit(id) {
   const [hh, mm] = s.time.replace(/\s*[AP]M/i, "").split(":");
   rmWizardForm.hh.value = hh || "9";
   rmWizardForm.mm.value = mm || "0";
+  setBoSelectValue(rmWizardForm.querySelector('.bo-select[data-name="wizDayOfMonth"]'), s.frequency === "Monthly" ? String(s.dayOfMonth || 1) : "", { silent: true });
 
   renderWizardTags();
   renderUsersMenu();
@@ -1007,9 +1028,10 @@ rmWizardForm.addEventListener("submit", (e) => {
   const time = `${hh}:${mm}`;
   const tags = Array.from(rmWizardSelectedTags);
   const days = frequency === "Weekly" ? Array.from(rmWizardSelectedDays) : [];
+  const dayOfMonth = frequency === "Monthly" ? Number(rmWizardForm.dayOfMonth.value) : undefined;
   const existingSchedule = rmSchedules.find((s) => s.id === rmWizardEditingId);
   const recipients = existingSchedule ? existingSchedule.recipients || [] : [];
-  const nextRun = `${computeNextRun(frequency)}, ${time} ${timezone}`;
+  const nextRun = frequency === "Monthly" ? `${computeNextRun(frequency)}, ${rmOrdinal(dayOfMonth)}` : `${computeNextRun(frequency)}, ${time} ${timezone}`;
 
   if (rmWizardEditingId === null) {
     const nextId = rmSchedules.length ? Math.max(...rmSchedules.map((s) => s.id)) + 1 : 0;
@@ -1023,6 +1045,7 @@ rmWizardForm.addEventListener("submit", (e) => {
       tags,
       frequency,
       days,
+      dayOfMonth,
       time,
       timezone,
       recipients,
@@ -1033,7 +1056,7 @@ rmWizardForm.addEventListener("submit", (e) => {
     });
   } else {
     const s = existingSchedule;
-    if (s) Object.assign(s, { reportKey, name: rmWizardForm.name.value.trim(), title, org, usersFilter, tags, frequency, days, time, timezone, recipients, nextRun });
+    if (s) Object.assign(s, { reportKey, name: rmWizardForm.name.value.trim(), title, org, usersFilter, tags, frequency, days, dayOfMonth, time, timezone, recipients, nextRun });
   }
 
   closeWizard();
@@ -1049,7 +1072,7 @@ let rmSendSelectedTags = new Set();
 document.getElementById("rmSendReportMenu").innerHTML = RM_REPORTS.map(
   (r) => `<div class="bo-select-option" data-value="${r.key}">${r.label}<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>`
 ).join("");
-document.getElementById("rmSendOrgMenu").innerHTML = buildSelectOptions(RM_ORGS);
+document.getElementById("rmSendOrgMenu").innerHTML = buildSelectOptions(rmAllOrgs());
 
 function renderSendTags() {
   document.getElementById("rmSendTags").innerHTML = RM_TAGS.map(
@@ -1064,6 +1087,79 @@ document.getElementById("rmSendTags").addEventListener("change", (e) => {
   else rmSendSelectedTags.delete(box.dataset.sendTag);
 });
 
+/* ---------------- Recipients (searchable multi-select) ----------------
+   Everyone who already receives a scheduled report, plus the user
+   directory. Typing in the search box narrows the list; ticked people stay
+   picked while searching. */
+const RM_RECIPIENTS = Array.from(new Set([...RM_DIRECTORY, ...rmSchedules.flatMap((x) => x.recipients || [])])).sort((a, b) => a.localeCompare(b));
+let rmSendSelectedRecipients = new Set();
+let rmRecipientsQuery = "";
+
+const rmRecipientsSelectEl = document.getElementById("rmSendRecipientsSelect");
+const rmRecipientsTrigger = rmRecipientsSelectEl.querySelector(".bo-multiselect-trigger");
+const rmRecipientsValueEl = rmRecipientsSelectEl.querySelector(".bo-multiselect-value");
+const rmRecipientsMenu = rmRecipientsSelectEl.querySelector(".bo-multiselect-menu");
+const rmRecipientsPlaceholder = rmRecipientsValueEl.textContent.trim();
+
+rmRecipientsMenu.innerHTML = `<div class="bo-multiselect-search"><input type="text" placeholder="Search recipients" aria-label="Search recipients" /></div><div class="rm-recipients-list"></div>`;
+const rmRecipientsSearch = rmRecipientsMenu.querySelector(".bo-multiselect-search input");
+const rmRecipientsList = rmRecipientsMenu.querySelector(".rm-recipients-list");
+
+function renderRecipientsList() {
+  const q = rmRecipientsQuery.trim().toLowerCase();
+  const visible = q ? RM_RECIPIENTS.filter((r) => r.toLowerCase().includes(q)) : RM_RECIPIENTS;
+  const allChecked = rmSendSelectedRecipients.size === RM_RECIPIENTS.length;
+  rmRecipientsList.innerHTML =
+    (q ? "" : `<label class="bo-multiselect-option all${allChecked ? " checked" : ""}" data-all="1">
+      <span class="bo-multiselect-checkbox">${rmMultiCheckIcon}</span> All recipients
+    </label>`) +
+    visible.map((r) => `<label class="bo-multiselect-option${rmSendSelectedRecipients.has(r) ? " checked" : ""}" data-value="${rmEsc(r)}">
+      <span class="bo-multiselect-checkbox">${rmMultiCheckIcon}</span> ${rmEsc(r)}
+    </label>`).join("") +
+    (visible.length ? "" : `<div class="bo-multiselect-empty">No recipients found</div>`);
+}
+
+function renderRecipientsTrigger() {
+  const picked = RM_RECIPIENTS.filter((r) => rmSendSelectedRecipients.has(r));
+  rmRecipientsValueEl.textContent = picked.length ? picked.join(", ") : rmRecipientsPlaceholder;
+  rmRecipientsValueEl.classList.toggle("placeholder", !picked.length);
+}
+
+rmRecipientsTrigger.addEventListener("click", (e) => {
+  e.stopPropagation();
+  const willOpen = !rmRecipientsSelectEl.classList.contains("open");
+  document.querySelectorAll(".bo-multiselect.open").forEach((el) => el.classList.remove("open"));
+  if (!willOpen) return;
+  rmRecipientsQuery = "";
+  rmRecipientsSearch.value = "";
+  renderRecipientsList();
+  rmRecipientsSelectEl.classList.add("open");
+  rmRecipientsSearch.focus();
+});
+
+rmRecipientsSearch.addEventListener("input", () => {
+  rmRecipientsQuery = rmRecipientsSearch.value;
+  renderRecipientsList();
+});
+
+rmRecipientsMenu.addEventListener("click", (e) => {
+  e.stopPropagation();
+  const option = e.target.closest(".bo-multiselect-option");
+  if (!option) return;
+  e.preventDefault();
+  if (option.dataset.all) {
+    if (rmSendSelectedRecipients.size === RM_RECIPIENTS.length) rmSendSelectedRecipients.clear();
+    else RM_RECIPIENTS.forEach((r) => rmSendSelectedRecipients.add(r));
+  } else {
+    const r = option.dataset.value;
+    if (rmSendSelectedRecipients.has(r)) rmSendSelectedRecipients.delete(r);
+    else rmSendSelectedRecipients.add(r);
+  }
+  renderRecipientsList();
+  renderRecipientsTrigger();
+  validateSendForm();
+});
+
 function validateSendForm() {
   const ok = !!rmSendForm.reportKey.value && !!rmSendForm.org.value;
   rmSendBtn.disabled = !ok;
@@ -1073,6 +1169,8 @@ rmSendForm.addEventListener("change", validateSendForm);
 
 function openSendReport() {
   rmSendSelectedTags = new Set();
+  rmSendSelectedRecipients = new Set();
+  renderRecipientsTrigger();
   rmSendForm.reset();
   rmSendForm.querySelectorAll(".bo-select").forEach(resetBoSelect);
   renderSendTags();
@@ -1093,14 +1191,14 @@ rmSendForm.addEventListener("submit", (e) => {
   const reportKey = rmSendForm.reportKey.value;
   const org = rmSendForm.org.value;
   const title = rmSendForm.title.value.trim();
-  const email = rmSendForm.email.value.trim();
+  const recipients = RM_RECIPIENTS.filter((r) => rmSendSelectedRecipients.has(r));
   const fromDate = rmSendForm.fromDate.value;
   const toDate = rmSendForm.toDate.value;
   const now = new Date();
   const sentOn = `Today, ${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
 
   const nextId = rmHistory.length ? Math.max(...rmHistory.map((h) => h.id)) + 1 : 0;
-  rmHistory.unshift({ id: nextId, reportKey, org, title, email, fromDate, toDate, sentOn, recipients: 0, status: "Processing" });
+  rmHistory.unshift({ id: nextId, reportKey, org, title, fromDate, toDate, sentOn, recipients, status: "Processing" });
 
   closeSendReport();
   rmRenderHistory();

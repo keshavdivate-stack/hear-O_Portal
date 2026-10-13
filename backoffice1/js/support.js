@@ -19,26 +19,45 @@ document.querySelectorAll("#supportTabs .bo-tab").forEach((tab) => {
   if (tabBtn) tabBtn.click();
 })();
 
-/* ---------------- Filter option lists ---------------- */
+/* ---------------- Filters ----------------
+   Same filters, values and behavior as the developed Tickets tab: every
+   list is a multi-select; Issue Type unlocks once a Category is picked
+   (listing only those categories' issue types) and Assigned To once a Level
+   is picked (listing only that level's agents); nothing applies until
+   "Apply". The list opens on Open + In Progress tickets. */
+const TICKET_FILTER_LEVELS = ["Level 1", "Level 2"];
+const TICKET_DEFAULT_STATUSES = ["Open", "In Progress"];
+
 document.getElementById("ticketOrganizationFilterMenu").innerHTML = buildFilterSelectOptions(SUPPORT_ORG_CODES, "All Organizations");
-document.getElementById("ticketStatusFilterMenu").innerHTML = buildFilterSelectOptions(STATUSES, "All statuses");
-document.getElementById("ticketPriorityFilterMenu").innerHTML = buildFilterSelectOptions(PRIORITIES, "All priorities");
-document.getElementById("ticketCategoryFilterMenu").innerHTML = buildFilterSelectOptions(CATEGORIES, "All categories");
-document.getElementById("ticketIssueFilterMenu").innerHTML = buildFilterSelectOptions(ISSUE_TYPES, "All issue types");
-document.getElementById("ticketOriginFilterMenu").innerHTML = buildFilterSelectOptions(ORIGINS, "All origins");
-document.getElementById("ticketTypeFilterMenu").innerHTML = buildFilterSelectOptions(TICKET_TYPES, "All types");
-document.getElementById("ticketLevelFilterMenu").innerHTML = buildFilterSelectOptions(TIERS, "All levels");
-document.getElementById("ticketAssignedToFilterMenu").innerHTML = `
-      <div class="bo-select-option" data-value="">All agents
-        <svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </div>` + buildAgentSelectOptions(SUPPORT_AGENTS);
+addBoSelectSearch(document.querySelector('.bo-select[data-name="ticketOrganization"]'), "Search organizations");
+
+const ticketTypeFilter = wireSupportMultiFilter("ticketTypeFilter", { options: asFilterOptions(["Patient", "Clinic", "System"]) });
+const ticketPriorityFilter = wireSupportMultiFilter("ticketPriorityFilter", { options: asFilterOptions(PRIORITIES) });
+const ticketCategoryFilter = wireSupportMultiFilter("ticketCategoryFilter", { options: asFilterOptions(CATEGORIES) });
+const ticketIssueFilter = wireSupportMultiFilter("ticketIssueFilter", { disabledPlaceholder: "Select a category first", searchPlaceholder: "Search issue types" });
+const ticketOriginFilter = wireSupportMultiFilter("ticketOriginFilter", { options: asFilterOptions(["Patient", "Clinic", "Backoffice", "System"], originLabel) });
+const ticketStatusFilter = wireSupportMultiFilter("ticketStatusFilter", { options: asFilterOptions(STATUSES), selected: TICKET_DEFAULT_STATUSES });
+const ticketLevelFilter = wireSupportMultiFilter("ticketLevelFilter", { options: asFilterOptions(TICKET_FILTER_LEVELS) });
+const ticketAssignedToFilter = wireSupportMultiFilter("ticketAssignedToFilter", { disabledPlaceholder: "Select a level first" });
+
+const syncTicketIssueFilter = linkIssueTypeToCategory("ticketCategoryFilter", ticketCategoryFilter, ticketIssueFilter);
+
+function syncTicketAssignedToFilter() {
+  const levels = ticketLevelFilter.getSelected();
+  ticketAssignedToFilter.setOptions(asFilterOptions(levels.flatMap((level) => TIER_AGENTS[level] || [])));
+  ticketAssignedToFilter.setDisabled(!levels.length);
+}
+document.getElementById("ticketLevelFilter").addEventListener("change", syncTicketAssignedToFilter);
+syncTicketAssignedToFilter();
 
 /* ---------------- Combine patient + clinic tickets into one list ----------------
    Tags each ticket in place (rather than spreading into copies) so this
    merged view stays in sync with the underlying patientTickets/clinicTickets
    arrays that ticket-detail.html also reads from. */
-patientTickets.forEach((t) => { t.source = "patient"; t.type = "Patient"; t.who = t.patientId; });
-clinicTickets.forEach((t) => { t.source = "clinic"; t.type = "Clinic"; t.who = t.raisedBy; });
+/* System-raised tickets are their own Type (Patient / Clinic / System), as in
+   the developed Tickets list. */
+patientTickets.forEach((t) => { t.source = "patient"; t.type = t.origin === "System" ? "System" : "Patient"; t.who = t.patientId; });
+clinicTickets.forEach((t) => { t.source = "clinic"; t.type = t.origin === "System" ? "System" : "Clinic"; t.who = t.raisedBy; });
 const allTickets = [...patientTickets, ...clinicTickets];
 
 /* ---------------- Tickets KPI row ---------------- */
@@ -52,82 +71,77 @@ renderTicketKpis();
 
 const ticketKebabIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="1.7" fill="currentColor"/><circle cx="12" cy="12" r="1.7" fill="currentColor"/><circle cx="12" cy="19" r="1.7" fill="currentColor"/></svg>`;
 
-/* ---------------- Filter state (shared by both tabs) ---------------- */
-let ticketOrganizationValue = "";
-let ticketStatusValue = "";
-let ticketPriorityValue = "";
-let ticketCategoryValue = "";
-let ticketIssueValue = "";
-let ticketOriginValue = "";
-let ticketTypeValue = "";
-let ticketAssignedToValue = "";
-let ticketLevelValue = "";
-let ticketSearchTerm = "";
+/* ---------------- Filter state ----------------
+   What's picked in the filter row is only staged; ticketFilters holds what
+   was last applied (on load, by Apply, or by Clear filters). */
+function readTicketFilters() {
+  return {
+    search: document.getElementById("ticketSearchInput").value.trim().toLowerCase(),
+    organization: document.getElementById("ticketOrganizationFilter").value,
+    types: ticketTypeFilter.getSelected(),
+    priorities: ticketPriorityFilter.getSelected(),
+    categories: ticketCategoryFilter.getSelected(),
+    issueTypes: ticketIssueFilter.getSelected(),
+    origins: ticketOriginFilter.getSelected(),
+    statuses: ticketStatusFilter.getSelected(),
+    levels: ticketLevelFilter.getSelected(),
+    assignedTo: ticketAssignedToFilter.getSelected(),
+  };
+}
 
-/* Deep link: ?issueType=<Issue Type>&category=<Category>&type=<Type>&assignedTo=<Agent Name>&q=<search text>
-   Lets other screens (e.g. the Overview dashboard's Incidents by Category and
-   Recent Incidents panels, or a support agent's own Support Dashboard) land
-   here with the relevant filter/search already applied, instead of dropping
-   the user on an unfiltered list. */
+/* Deep link: ?issueType=<Issue Type>&category=<Category>&status=<Status>&priority=<Priority>&origin=<Origin>&type=<Type>&assignedTo=<Agent Name>&q=<ticket ID>
+   Lets other screens (e.g. the Overview dashboard's panels, or a support
+   agent's own Support Dashboard) land here with those filters already
+   applied, instead of dropping the user on an unfiltered list. */
 (function applyIncomingTicketFilters() {
   const params = new URLSearchParams(location.search);
   const issueType = params.get("issueType");
   const status = params.get("status");
   const priority = params.get("priority");
-  const category = params.get("category");
+  const category = params.get("category") || (issueType && ISSUE_TYPE_CATEGORY[issueType]);
   const origin = params.get("origin");
   const type = params.get("type");
   const assignedTo = params.get("assignedTo");
   const q = params.get("q");
 
-  if (issueType && ISSUE_TYPES.includes(issueType)) {
-    ticketIssueValue = issueType;
-    setBoSelectValue(document.querySelector('.bo-select[data-name="ticketIssue"]'), issueType, { silent: true });
-  }
-  if (status && STATUSES.includes(status)) {
-    ticketStatusValue = status;
-    setBoSelectValue(document.querySelector('.bo-select[data-name="ticketStatus"]'), status, { silent: true });
-  }
-  if (priority && PRIORITIES.includes(priority)) {
-    ticketPriorityValue = priority;
-    setBoSelectValue(document.querySelector('.bo-select[data-name="ticketPriority"]'), priority, { silent: true });
-  }
+  if (status && STATUSES.includes(status)) ticketStatusFilter.setSelected([status]);
+  if (status === "all") ticketStatusFilter.setSelected([]);
+  if (priority && PRIORITIES.includes(priority)) ticketPriorityFilter.setSelected([priority]);
+  if (origin && ORIGINS.includes(origin)) ticketOriginFilter.setSelected([origin]);
+  if (type) ticketTypeFilter.setSelected([type]);
   if (category && CATEGORIES.includes(category)) {
-    ticketCategoryValue = category;
-    setBoSelectValue(document.querySelector('.bo-select[data-name="ticketCategory"]'), category, { silent: true });
+    ticketCategoryFilter.setSelected([category]);
+    syncTicketIssueFilter();
+    if (issueType) ticketIssueFilter.setSelected([`${category}|${issueType}`]);
   }
-  if (origin && ORIGINS.includes(origin)) {
-    ticketOriginValue = origin;
-    setBoSelectValue(document.querySelector('.bo-select[data-name="ticketOrigin"]'), origin, { silent: true });
-  }
-  if (type && TICKET_TYPES.includes(type)) {
-    ticketTypeValue = type;
-    setBoSelectValue(document.querySelector('.bo-select[data-name="ticketType"]'), type, { silent: true });
-  }
+  /* Filters by the person only -- not their Level too, since a ticket's
+     Level isn't always the assignee's own level, and the Support
+     Dashboard's counts are per person. Assigned To is unlocked with just
+     that person; picking a Level afterwards lists that level's agents. */
   if (assignedTo && SUPPORT_AGENTS.includes(assignedTo)) {
-    ticketAssignedToValue = assignedTo;
-    setBoSelectValue(document.querySelector('.bo-select[data-name="ticketAssignedTo"]'), assignedTo, { silent: true });
+    ticketAssignedToFilter.setOptions(asFilterOptions([assignedTo]));
+    ticketAssignedToFilter.setDisabled(false);
+    ticketAssignedToFilter.setSelected([assignedTo]);
   }
-  if (q) {
-    ticketSearchTerm = q.trim().toLowerCase();
-    document.getElementById("ticketSearchInput").value = q;
-  }
+  if (q) document.getElementById("ticketSearchInput").value = q;
 })();
 
-function matchesFilters(t, extraSearchable) {
-  if (ticketOrganizationValue && t.organization !== ticketOrganizationValue) return false;
-  if (ticketStatusValue && t.status !== ticketStatusValue) return false;
-  if (ticketPriorityValue && t.priority !== ticketPriorityValue) return false;
-  if (ticketCategoryValue && ticketCategory(t) !== ticketCategoryValue) return false;
-  if (ticketIssueValue && t.issueType !== ticketIssueValue) return false;
-  if (ticketOriginValue && t.origin !== ticketOriginValue) return false;
-  if (ticketTypeValue && t.type !== ticketTypeValue) return false;
-  if (ticketAssignedToValue && t.assignedTo !== ticketAssignedToValue) return false;
-  if (ticketLevelValue && t.tier !== ticketLevelValue) return false;
-  if (ticketSearchTerm) {
-    const haystack = `${t.ticketNo} ${t.organization} ${extraSearchable}`.toLowerCase();
-    if (!haystack.includes(ticketSearchTerm)) return false;
-  }
+let ticketFilters = readTicketFilters();
+
+/* An empty list means that filter isn't narrowing anything. Search matches
+   the Ticket ID, like the developed "Search Ticket ID" field. */
+function matchesFilters(t) {
+  const f = ticketFilters;
+  if (f.search && !t.ticketNo.toLowerCase().includes(f.search)) return false;
+  if (f.organization && t.organization !== f.organization) return false;
+  if (!inFilterList(f.types, t.type)) return false;
+  if (!inFilterList(f.priorities, t.priority)) return false;
+  if (!inFilterList(f.categories, ticketCategory(t))) return false;
+  if (!inFilterList(f.issueTypes, `${ticketCategory(t)}|${t.issueType}`)) return false;
+  if (!inFilterList(f.origins, t.origin)) return false;
+  if (!inFilterList(f.statuses, t.status)) return false;
+  if (!inFilterList(f.levels, t.tier)) return false;
+  if (!inFilterList(f.assignedTo, t.assignedTo)) return false;
   return true;
 }
 
@@ -146,9 +160,10 @@ function parseTicketDate(s) {
 
 /* Sorted newest-first so Patient and Clinic tickets -- concatenated in
    allTickets as two separate blocks -- interleave by recency instead of
-   every Patient ticket appearing before any Clinic ticket in the list. */
+   every Patient ticket appearing before any Clinic ticket in the list.
+   Tickets created in this session (New Ticket / Escalate) stay on top. */
 function filteredTickets() {
-  return allTickets.filter((t) => matchesFilters(t, t.who)).sort((a, b) => parseTicketDate(b.createdDate) - parseTicketDate(a.createdDate));
+  return allTickets.filter(matchesFilters).sort((a, b) => (b.justCreated ? 1 : 0) - (a.justCreated ? 1 : 0) || parseTicketDate(b.createdDate) - parseTicketDate(a.createdDate));
 }
 
 const ticketPager = boCreatePager(
@@ -174,7 +189,7 @@ const ticketPager = boCreatePager(
         </div>
       </td>
     </tr>`,
-  { pageSize: PAGE_SIZE, emptyColspan: 13, emptyText: "No tickets match these filters." }
+  { pageSize: PAGE_SIZE, emptyColspan: 13, emptyText: "No tickets found" }
 );
 ticketPager();
 
@@ -184,64 +199,20 @@ function refreshTicketTables() {
   renderTicketKpis();
 }
 
-document.getElementById("ticketOrganizationFilter").addEventListener("change", (e) => {
-  ticketOrganizationValue = e.target.value;
-});
-document.getElementById("ticketStatusFilter").addEventListener("change", (e) => {
-  ticketStatusValue = e.target.value;
-});
-document.getElementById("ticketPriorityFilter").addEventListener("change", (e) => {
-  ticketPriorityValue = e.target.value;
-});
-document.getElementById("ticketCategoryFilter").addEventListener("change", (e) => {
-  ticketCategoryValue = e.target.value;
-});
-document.getElementById("ticketIssueFilter").addEventListener("change", (e) => {
-  ticketIssueValue = e.target.value;
-});
-document.getElementById("ticketOriginFilter").addEventListener("change", (e) => {
-  ticketOriginValue = e.target.value;
-});
-document.getElementById("ticketTypeFilter").addEventListener("change", (e) => {
-  ticketTypeValue = e.target.value;
-});
-document.getElementById("ticketAssignedToFilter").addEventListener("change", (e) => {
-  ticketAssignedToValue = e.target.value;
-});
-document.getElementById("ticketLevelFilter").addEventListener("change", (e) => {
-  ticketLevelValue = e.target.value;
-});
-document.getElementById("ticketSearchInput").addEventListener("input", (e) => {
-  ticketSearchTerm = e.target.value.trim().toLowerCase();
-});
-
 document.getElementById("ticketApplyBtn").addEventListener("click", () => {
+  ticketFilters = readTicketFilters();
   refreshTicketTables();
 });
 
+/* Clears every filter -- Status included, so all tickets show -- and
+   applies straight away, like the developed "Clear filters". */
 document.getElementById("ticketClearFiltersBtn").addEventListener("click", () => {
-  ticketOrganizationValue = "";
-  ticketStatusValue = "";
-  ticketPriorityValue = "";
-  ticketCategoryValue = "";
-  ticketIssueValue = "";
-  ticketOriginValue = "";
-  ticketTypeValue = "";
-  ticketAssignedToValue = "";
-  ticketLevelValue = "";
-  ticketSearchTerm = "";
-
-  resetBoSelect(document.querySelector('.bo-select[data-name="ticketOrganization"]'));
-  resetBoSelect(document.querySelector('.bo-select[data-name="ticketTier"]'));
-  resetBoSelect(document.querySelector('.bo-select[data-name="ticketStatus"]'));
-  resetBoSelect(document.querySelector('.bo-select[data-name="ticketPriority"]'));
-  resetBoSelect(document.querySelector('.bo-select[data-name="ticketCategory"]'));
-  resetBoSelect(document.querySelector('.bo-select[data-name="ticketIssue"]'));
-  resetBoSelect(document.querySelector('.bo-select[data-name="ticketOrigin"]'));
-  resetBoSelect(document.querySelector('.bo-select[data-name="ticketType"]'));
-  resetBoSelect(document.querySelector('.bo-select[data-name="ticketAssignedTo"]'));
   document.getElementById("ticketSearchInput").value = "";
-
+  resetBoSelect(document.querySelector('.bo-select[data-name="ticketOrganization"]'));
+  [ticketTypeFilter, ticketPriorityFilter, ticketCategoryFilter, ticketOriginFilter, ticketStatusFilter, ticketLevelFilter].forEach((f) => f.setSelected([]));
+  syncTicketIssueFilter();
+  syncTicketAssignedToFilter();
+  ticketFilters = readTicketFilters();
   refreshTicketTables();
 });
 
@@ -250,74 +221,57 @@ document.getElementById("ticketClearFiltersBtn").addEventListener("click", () =>
    support-tickets-common.js, shared with ticket-detail.html. */
 initBoSelects();
 
-document.querySelector('#newTicketOverlay .bo-select[data-name="source"] .bo-select-menu').innerHTML = buildSelectOptions(["Patient", "Clinic"]);
-document.querySelector('#newTicketOverlay .bo-select[data-name="issueType"] .bo-select-menu').innerHTML = buildSelectOptions(ISSUE_TYPES);
-document.querySelector('#newTicketOverlay .bo-select[data-name="category"] .bo-select-menu').innerHTML = buildSelectOptions(CATEGORIES);
-document.querySelector('#newTicketOverlay .bo-select[data-name="ticketOrg"] .bo-select-menu').innerHTML = buildSelectOptions(SUPPORT_ORG_CODES);
-document.querySelector('#newTicketOverlay .bo-select[data-name="ticketPriority"] .bo-select-menu').innerHTML = buildSelectOptions(PRIORITIES);
-document.querySelector('#newTicketOverlay .bo-select[data-name="ticketLevel"] .bo-select-menu').innerHTML = buildSelectOptions(TIERS);
+/* ---------------- New Ticket fields ----------------
+   Same fields as the developed "New Ticket" dialog: Type (Patient / Clinic),
+   Organization, Create For (a patient of that organization -- Patient tickets
+   only), then Category -> Issue Type, Priority, Level -> Assigned To and a
+   Description. Every field but Assigned To is required. */
+const newTicketField = (name) => document.querySelector(`#newTicketOverlay .bo-select[data-name="${name}"]`);
+const newTicketValue = (name) => newTicketField(name).querySelector("input[type=hidden]").value;
 
-/* Priority and Level depend on knowing what the ticket actually is, so they
-   stay locked until both Category and Issue Type are set (Issue Type alone
-   is usually enough, since picking it auto-fills Category below). */
-function updateNewTicketPriorityLevelState() {
-  const categoryValue = newTicketOverlay.querySelector('.bo-select[data-name="category"] input[type=hidden]').value;
-  const issueTypeValue = newTicketOverlay.querySelector('.bo-select[data-name="issueType"] input[type=hidden]').value;
-  const ready = !!categoryValue && !!issueTypeValue;
+newTicketField("source").querySelector(".bo-select-menu").innerHTML = buildSelectOptions(["Patient", "Clinic"]);
+newTicketField("ticketOrg").querySelector(".bo-select-menu").innerHTML = buildSelectOptions(SUPPORT_ORG_CODES);
+addBoSelectSearch(newTicketField("ticketOrg"), "Search organizations");
+newTicketField("category").querySelector(".bo-select-menu").innerHTML = buildSelectOptions(CATEGORIES);
+newTicketField("ticketPriority").querySelector(".bo-select-menu").innerHTML = buildSelectOptions(PRIORITIES);
+newTicketField("ticketLevel").querySelector(".bo-select-menu").innerHTML = buildSelectOptions(TICKET_FILTER_LEVELS);
 
-  [
-    { select: newTicketOverlay.querySelector('.bo-select[data-name="ticketPriority"]'), placeholder: "Select priority" },
-    { select: newTicketOverlay.querySelector('.bo-select[data-name="ticketLevel"]'), placeholder: "Select level" },
-  ].forEach(({ select, placeholder }) => {
-    const trigger = select.querySelector(".bo-select-trigger");
-    const valueEl = select.querySelector(".bo-select-value");
-    trigger.disabled = !ready;
-    if (!valueEl.classList.contains("placeholder")) return;
-    valueEl.dataset.placeholder = placeholder;
-    valueEl.textContent = placeholder;
+/* A dependent dropdown (Create For / Issue Type / Assigned To): new
+   options, cleared value, and a placeholder that says what it's waiting
+   on while it's locked. */
+function setNewTicketDependent(name, options, { enabled, placeholder, lockedPlaceholder, search }) {
+  const select = newTicketField(name);
+  const valueEl = select.querySelector(".bo-select-value");
+  select.querySelector(".bo-select-menu").innerHTML = buildSelectOptions(options);
+  if (search) addBoSelectSearch(select, search);
+  valueEl.dataset.placeholder = enabled ? placeholder : lockedPlaceholder;
+  resetBoSelect(select);
+  select.querySelector(".bo-select-trigger").disabled = !enabled;
+}
+
+const NEW_TICKET_PATIENT_IDS = Array.from(new Set(patientTickets.map((t) => t.patientId))).sort();
+
+function renderNewTicketWhoOptions() {
+  const org = newTicketValue("ticketOrg");
+  document.getElementById("newTicketWhoField").hidden = newTicketValue("source") === "Clinic";
+  setNewTicketDependent("ticketWho", NEW_TICKET_PATIENT_IDS.filter((id) => id.startsWith(`${org}-`)), {
+    enabled: !!org, placeholder: "Select Patient", lockedPlaceholder: "Select an organization first", search: "Search patients",
   });
 }
 
-/* The "who" dropdown lists patient IDs when raising on behalf of a patient,
-   or clinic staff names when raising on behalf of a clinic -- same toggle
-   the label already follows. Patient IDs are the org's actual patients when
-   an org is selected, otherwise the full known patient list. */
-const NEW_TICKET_PATIENT_IDS = Array.from(new Set(patientTickets.map((t) => t.patientId))).sort();
-
-/* The label is always "Create For" now -- only the placeholder tells the
-   agent whether they're picking a patient or a clinic staff member, so it
-   has to be updated by hand (the bo-select plumbing only captures a
-   placeholder once, at page load). */
-function updateNewTicketWhoPlaceholder(sourceValue) {
-  const placeholder = sourceValue === "Clinic" ? "Select Clinic member" : "Select Patient";
-  const valueEl = newTicketOverlay.querySelector('.bo-select[data-name="ticketWho"] .bo-select-value');
-  valueEl.dataset.placeholder = placeholder;
-  valueEl.textContent = placeholder;
-  valueEl.classList.add("placeholder");
+function renderNewTicketIssueOptions() {
+  const category = newTicketValue("category");
+  setNewTicketDependent("issueType", ISSUE_TYPES_BY_CATEGORY[category] || [], {
+    enabled: !!category, placeholder: "Select issue type", lockedPlaceholder: "Select a category first",
+  });
 }
 
-function renderNewTicketWhoOptions() {
-  const sourceValue = newTicketOverlay.querySelector('.bo-select[data-name="source"] input[type=hidden]').value || "Patient";
-  const orgValue = newTicketForm.organization.value;
-  const menu = newTicketOverlay.querySelector('.bo-select[data-name="ticketWho"] .bo-select-menu');
-  if (sourceValue === "Clinic") {
-    menu.innerHTML = buildSelectOptions(SUPPORT_CLINIC_STAFF);
-  } else {
-    const ids = orgValue ? NEW_TICKET_PATIENT_IDS.filter((id) => id.startsWith(`${orgValue}-`)) : NEW_TICKET_PATIENT_IDS;
-    menu.innerHTML = buildSelectOptions(ids);
-  }
+function renderNewTicketAssigneeOptions() {
+  const level = newTicketValue("ticketLevel");
+  setNewTicketDependent("ticketAssignee", TIER_AGENTS[level] || [], {
+    enabled: !!level, placeholder: "Select user", lockedPlaceholder: "Select a level first",
+  });
 }
-
-/* Picking an Issue Type defaults Category to that issue's category (same
-   pairing shown in the ticket detail drawer), but Category stays a normal
-   dropdown the user can still override before submitting. */
-document.querySelector('#newTicketOverlay .bo-select[data-name="issueType"] input[type=hidden]').addEventListener("change", (e) => {
-  const category = ISSUE_TYPE_CATEGORY[e.target.value];
-  if (category) setBoSelectValue(newTicketOverlay.querySelector('.bo-select[data-name="category"]'), category, { silent: true });
-  updateNewTicketPriorityLevelState();
-});
-
-document.querySelector('#newTicketOverlay .bo-select[data-name="category"] input[type=hidden]').addEventListener("change", updateNewTicketPriorityLevelState);
 
 /* ---------------- Row action dropdown (view ticket) ----------------
    Clicking the row, or "View Ticket" in the kebab menu, opens the full-page
@@ -375,20 +329,26 @@ const newTicketForm = document.getElementById("newTicketForm");
 const createTicketBtn = document.getElementById("createTicketBtn");
 
 function validateNewTicketForm() {
-  const orgFilled = newTicketForm.organization.value.trim() !== "";
-  const whoFilled = newTicketForm.who.value.trim() !== "";
-  const issueSelect = newTicketOverlay.querySelector('.bo-select[data-name="issueType"] input[type=hidden]');
-  const categorySelect = newTicketOverlay.querySelector('.bo-select[data-name="category"] input[type=hidden]');
-  createTicketBtn.disabled = !(orgFilled && whoFilled && issueSelect.value && categorySelect.value);
+  const isClinic = newTicketValue("source") === "Clinic";
+  createTicketBtn.disabled = !(
+    newTicketValue("source") &&
+    newTicketValue("ticketOrg") &&
+    (isClinic || newTicketValue("ticketWho")) &&
+    newTicketValue("category") &&
+    newTicketValue("issueType") &&
+    newTicketValue("ticketPriority") &&
+    newTicketValue("ticketLevel") &&
+    newTicketForm.description.value.trim()
+  );
 }
 
 function openNewTicketDrawer() {
   newTicketForm.reset();
   newTicketOverlay.querySelectorAll(".bo-select").forEach(resetBoSelect);
-  setBoSelectValue(newTicketOverlay.querySelector('.bo-select[data-name="source"]'), "Patient", { silent: true });
-  updateNewTicketWhoPlaceholder("Patient");
+  setBoSelectValue(newTicketField("source"), "Patient", { silent: true });
   renderNewTicketWhoOptions();
-  updateNewTicketPriorityLevelState();
+  renderNewTicketIssueOptions();
+  renderNewTicketAssigneeOptions();
   validateNewTicketForm();
   newTicketOverlay.classList.add("open");
 }
@@ -402,17 +362,13 @@ document.getElementById("closeNewTicketX").addEventListener("click", closeNewTic
 document.getElementById("cancelNewTicket").addEventListener("click", closeNewTicketDrawer);
 newTicketOverlay.addEventListener("click", (e) => { if (e.target === newTicketOverlay) closeNewTicketDrawer(); });
 
-newTicketOverlay.querySelector('.bo-select[data-name="source"] input[type=hidden]').addEventListener("change", (e) => {
-  updateNewTicketWhoPlaceholder(e.target.value);
-  resetBoSelect(newTicketOverlay.querySelector('.bo-select[data-name="ticketWho"]'));
-  renderNewTicketWhoOptions();
-});
+newTicketField("source").querySelector("input[type=hidden]").addEventListener("change", renderNewTicketWhoOptions);
+newTicketField("ticketOrg").querySelector("input[type=hidden]").addEventListener("change", renderNewTicketWhoOptions);
+newTicketField("category").querySelector("input[type=hidden]").addEventListener("change", renderNewTicketIssueOptions);
+newTicketField("ticketLevel").querySelector("input[type=hidden]").addEventListener("change", renderNewTicketAssigneeOptions);
 
-newTicketOverlay.querySelector('.bo-select[data-name="ticketOrg"] input[type=hidden]').addEventListener("change", () => {
-  resetBoSelect(newTicketOverlay.querySelector('.bo-select[data-name="ticketWho"]'));
-  renderNewTicketWhoOptions();
-});
-
+/* Hidden-input changes bubble as "change" to the form, so every pick
+   re-checks the Create Ticket button. */
 newTicketForm.addEventListener("input", validateNewTicketForm);
 newTicketForm.addEventListener("change", validateNewTicketForm);
 
@@ -420,59 +376,38 @@ newTicketForm.addEventListener("submit", (e) => {
   e.preventDefault();
   if (createTicketBtn.disabled) return;
 
-  const sourceValue = newTicketOverlay.querySelector('.bo-select[data-name="source"] input[type=hidden]').value || "Patient";
-  const issueType = newTicketOverlay.querySelector('.bo-select[data-name="issueType"] input[type=hidden]').value;
-  const priority = newTicketForm.priority.value || "Medium";
-  const tier = newTicketForm.level.value || "Level 1";
-  const category = newTicketOverlay.querySelector('.bo-select[data-name="category"] input[type=hidden]').value || ISSUE_TYPE_CATEGORY[issueType];
+  const isClinic = newTicketValue("source") === "Clinic";
+  const organization = newTicketValue("ticketOrg");
+  const issueType = newTicketValue("issueType");
   const now = new Date();
   const createdDate = `${String(now.getDate()).padStart(2, "0")}/${String(now.getMonth() + 1).padStart(2, "0")}/${now.getFullYear()} ${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
-
-  if (sourceValue === "Clinic") {
-    const nextId = clinicTickets.length ? Math.max(...clinicTickets.map((t) => t.id)) + 1 : 0;
-    const newTicket = {
-      id: nextId,
-      ticketNo: `TCK-${3000 + nextId}`,
-      raisedBy: newTicketForm.who.value.trim(),
-      organization: newTicketForm.organization.value.trim(),
-      issueType,
-      category,
-      scope: ISSUE_TYPE_SCOPE[issueType] || "Patient",
-      tier,
-      priority,
-      origin: "Clinic",
-      status: "Open",
-      createdDate,
-      description: newTicketForm.description.value.trim(),
-      source: "clinic",
-      type: "Clinic",
-      who: newTicketForm.who.value.trim(),
-    };
-    clinicTickets.unshift(newTicket);
-    allTickets.unshift(newTicket);
-  } else {
-    const nextId = patientTickets.length ? Math.max(...patientTickets.map((t) => t.id)) + 1 : 0;
-    const newTicket = {
-      id: nextId,
-      ticketNo: `TCK-${3000 + nextId}`,
-      patientId: newTicketForm.who.value.trim(),
-      organization: newTicketForm.organization.value.trim(),
-      issueType,
-      category,
-      scope: ISSUE_TYPE_SCOPE[issueType] || "Patient",
-      tier,
-      priority,
-      origin: "Patient",
-      status: "Open",
-      createdDate,
-      description: newTicketForm.description.value.trim(),
-      source: "patient",
-      type: "Patient",
-      who: newTicketForm.who.value.trim(),
-    };
-    patientTickets.unshift(newTicket);
-    allTickets.unshift(newTicket);
-  }
+  const list = isClinic ? clinicTickets : patientTickets;
+  const nextId = list.length ? Math.max(...list.map((t) => t.id)) + 1 : 0;
+  /* Raised here in the Backoffice, so its Origin is Back Office. A Clinic
+     ticket is for the organization itself, so it has no Create For. */
+  const newTicket = {
+    id: nextId,
+    ticketNo: `TCK-${3000 + nextId}`,
+    organization,
+    category: newTicketValue("category"),
+    issueType,
+    scope: isClinic ? "Organization" : ISSUE_TYPE_SCOPE[issueType] || "Patient",
+    tier: newTicketValue("ticketLevel"),
+    priority: newTicketValue("ticketPriority"),
+    origin: "Backoffice",
+    status: "Open",
+    justCreated: true,
+    assignedTo: newTicketValue("ticketAssignee"),
+    createdDate,
+    description: newTicketForm.description.value.trim(),
+    source: isClinic ? "clinic" : "patient",
+    type: isClinic ? "Clinic" : "Patient",
+    who: isClinic ? organization : newTicketValue("ticketWho"),
+  };
+  if (isClinic) newTicket.raisedBy = organization;
+  else newTicket.patientId = newTicket.who;
+  list.unshift(newTicket);
+  allTickets.unshift(newTicket);
 
   closeNewTicketDrawer();
   refreshTicketTables();
@@ -484,8 +419,8 @@ const channelPills = (channels) => channels.map((c) => channelPillLabel[c] || c)
 
 const ruleSla = (r) => (r.slaResponse || r.slaResolve ? `${r.slaResponse || "—"} / ${r.slaResolve || "—"}` : "&mdash;");
 
-document.getElementById("ruleCategoryFilterMenu").innerHTML = buildFilterSelectOptions(CATEGORIES, "All categories");
-document.getElementById("ruleStatusFilterMenu").innerHTML = buildFilterSelectOptions(["Enabled", "Disabled"], "All statuses");
+document.getElementById("ruleCategoryFilterMenu").innerHTML = buildSelectOptions(CATEGORIES);
+document.getElementById("ruleStatusFilterMenu").innerHTML = buildSelectOptions(["Enabled", "Disabled"]);
 
 /* Staged, not live -- the filter-row's Apply button commits
    ruleCategoryValue/ruleStatusValue from whatever the two filters
@@ -516,9 +451,12 @@ const renderRules = boCreatePager(
         <td>${ruleSla(r)}</td>
         <td>${channelPills(r.channels)}</td>
         <td>${r.appliesTo}</td>
-        <td class="bo-rule-status-cell">${r.enabled === false
-          ? '<span class="bo-rule-status bo-rule-status--disabled">Disabled</span>'
-          : '<span class="bo-rule-status bo-rule-status--enabled">Enabled</span>'}</td>
+        <td class="bo-rule-status-cell">
+          <label class="bo-switch" title="${r.enabled === false ? "Enable rule" : "Disable rule"}">
+            <input type="checkbox" class="rule-status-toggle" data-id="${r.id}" aria-label="${r.enabled === false ? "Enable" : "Disable"} ${r.name}"${r.enabled === false ? "" : " checked"} />
+            <span class="bo-switch-track"></span>
+          </label>
+        </td>
         <td>
           <div class="bo-row-actions">
             <button class="bo-action-icon row-menu-trigger" data-id="${r.id}" aria-label="Row actions">${ticketKebabIcon}</button>
@@ -549,12 +487,12 @@ document.getElementById("ruleClearFiltersBtn").addEventListener("click", () => {
 });
 
 document.querySelector('#ruleDrawerOverlay .bo-select[data-name="rulePriority"] .bo-select-menu').innerHTML = buildSelectOptions(PRIORITIES);
-document.querySelector('#ruleDrawerOverlay .bo-select[data-name="ruleTier"] .bo-select-menu').innerHTML = buildSelectOptions(TIERS);
+document.querySelector('#ruleDrawerOverlay .bo-select[data-name="ruleTier"] .bo-select-menu').innerHTML = buildSelectOptions(TICKET_FILTER_LEVELS);
 
 /* Edit Rule only exposes Priority, Routed level, Applies to, the threshold
    Operator and Auto-create ticket -- matching the developed Edit Rule form. */
-const RULE_EDIT_APPLIES_TO = ["All organizations", "Commercial organizations", "Study organizations"];
-const RULE_OPERATORS = ["None", "Greater than (>)", "Greater than or equal (≥)", "Less than (<)", "Less than or equal (≤)", "Equal to (=)"];
+const RULE_EDIT_APPLIES_TO = ["All organizations", "All Commercial orgs", "Per organization", "System-wide"];
+const RULE_OPERATORS = ["None", "Less than", "Greater than", "Less than or equal to", "Greater than or equal to", "Equal to"];
 document.querySelector('#ruleDrawerOverlay .bo-select[data-name="ruleAppliesTo"] .bo-select-menu').innerHTML = buildSelectOptions(RULE_EDIT_APPLIES_TO);
 document.querySelector('#ruleDrawerOverlay .bo-select[data-name="ruleOperator"] .bo-select-menu').innerHTML = buildSelectOptions(RULE_OPERATORS);
 
@@ -566,8 +504,6 @@ document.getElementById("ruleRows").addEventListener("click", (e) => {
   if (!trigger) return;
   e.stopPropagation();
   activeRuleId = Number(trigger.dataset.id);
-  const activeRule = alertRules.find((r) => r.id === activeRuleId);
-  document.getElementById("ruleRowMenuToggleBtn").textContent = activeRule && activeRule.enabled === false ? "Enable Rule" : "Disable Rule";
   const rect = trigger.getBoundingClientRect();
   ruleRowMenu.style.top = `${rect.bottom + 6}px`;
   ruleRowMenu.style.left = `${rect.right - 190}px`;
@@ -591,9 +527,21 @@ function openRuleDrawer(rule) {
   setBoSelectValue(ruleDrawerOverlay.querySelector('.bo-select[data-name="ruleTier"]'), rule.tier, { silent: true });
   setBoSelectValue(ruleDrawerOverlay.querySelector('.bo-select[data-name="ruleAppliesTo"]'), rule.appliesTo, { silent: true });
   setBoSelectValue(ruleDrawerOverlay.querySelector('.bo-select[data-name="ruleOperator"]'), rule.operator || "None", { silent: true });
+  document.getElementById("ruleThresholdValue").value = rule.thresholdValue || "";
+  document.getElementById("ruleThresholdWindow").value = rule.thresholdWindow || "";
+  syncRuleThresholdFields();
 
   ruleDrawerOverlay.classList.add("open");
 }
+
+/* Threshold value and window only apply once an Operator is chosen. */
+function syncRuleThresholdFields() {
+  const operator = ruleDrawerOverlay.querySelector('.bo-select[data-name="ruleOperator"] input[type=hidden]').value;
+  const show = !!operator && operator !== "None";
+  document.getElementById("ruleThresholdValueField").hidden = !show;
+  document.getElementById("ruleThresholdWindowField").hidden = !show;
+}
+ruleDrawerOverlay.querySelector('.bo-select[data-name="ruleOperator"] input[type=hidden]').addEventListener("change", syncRuleThresholdFields);
 
 function closeRuleDrawer() {
   ruleDrawerOverlay.classList.remove("open");
@@ -607,13 +555,45 @@ ruleRowMenu.addEventListener("click", (e) => {
   const rule = alertRules.find((r) => r.id === activeRuleId);
   if (!rule) return;
   if (item.dataset.action === "edit") openRuleDrawer(rule);
-  /* Disabled rules stay listed (dimmed, Status "Disabled") so they can be
-     re-enabled from the same menu. */
-  if (item.dataset.action === "toggle") {
-    rule.enabled = rule.enabled === false;
-    renderRules();
-  }
 });
+
+/* ---------------- Status toggle -> Enable / Disable confirmation ----------------
+   Flipping a rule's Status switch asks first, like the developed app; the
+   switch only changes once the change is confirmed. */
+const ruleToggleOverlay = document.getElementById("ruleToggleOverlay");
+let ruleToggleTarget = null;
+
+function closeRuleToggle() {
+  ruleToggleOverlay.classList.remove("open");
+  ruleToggleTarget = null;
+}
+
+document.getElementById("ruleRows").addEventListener("click", (e) => {
+  const toggle = e.target.closest(".rule-status-toggle");
+  if (!toggle) return;
+  e.preventDefault();
+  const rule = alertRules.find((r) => r.id === Number(toggle.dataset.id));
+  if (!rule) return;
+  ruleToggleTarget = rule;
+  const disabling = rule.enabled !== false;
+  document.getElementById("ruleToggleTitle").textContent = disabling ? "Disable rule" : "Enable rule";
+  document.getElementById("ruleToggleText").textContent = disabling
+    ? `Are you sure you want to disable the rule "${rule.name}"? It will stop opening new incidents until re-enabled.`
+    : `Are you sure you want to enable the rule "${rule.name}"? It will start opening new incidents again.`;
+  const confirmBtn = document.getElementById("confirmRuleToggle");
+  confirmBtn.textContent = disabling ? "Disable" : "Enable";
+  confirmBtn.classList.toggle("bo-btn-danger", disabling);
+  ruleToggleOverlay.classList.add("open");
+});
+
+document.getElementById("confirmRuleToggle").addEventListener("click", () => {
+  if (ruleToggleTarget) ruleToggleTarget.enabled = ruleToggleTarget.enabled === false;
+  closeRuleToggle();
+  renderRules();
+});
+document.getElementById("cancelRuleToggle").addEventListener("click", closeRuleToggle);
+document.getElementById("closeRuleToggleX").addEventListener("click", closeRuleToggle);
+ruleToggleOverlay.addEventListener("click", (e) => { if (e.target === ruleToggleOverlay) closeRuleToggle(); });
 
 document.getElementById("closeRuleDrawerX").addEventListener("click", closeRuleDrawer);
 document.getElementById("cancelRuleDrawer").addEventListener("click", closeRuleDrawer);
@@ -629,6 +609,9 @@ ruleDrawerForm.addEventListener("submit", (e) => {
   editingRule.tier = ruleSelectValue("ruleTier") || editingRule.tier;
   editingRule.appliesTo = ruleSelectValue("ruleAppliesTo") || editingRule.appliesTo;
   editingRule.operator = ruleSelectValue("ruleOperator") || "None";
+  const hasOperator = editingRule.operator !== "None";
+  editingRule.thresholdValue = hasOperator ? document.getElementById("ruleThresholdValue").value.trim() : "";
+  editingRule.thresholdWindow = hasOperator ? document.getElementById("ruleThresholdWindow").value.trim() : "";
 
   closeRuleDrawer();
   renderRules();
@@ -747,7 +730,10 @@ function closeAllBoMultiselects() {
 document.addEventListener("click", (e) => {
   if (!e.target.closest(".bo-multiselect")) closeAllBoMultiselects();
 });
-document.addEventListener("scroll", closeAllBoMultiselects, true);
+document.addEventListener("scroll", (e) => {
+  if (e.target instanceof Element && e.target.closest(".bo-multiselect-menu")) return;
+  closeAllBoMultiselects();
+}, true);
 
 const newRuleSendByMultiSelect = wireFormMultiSelect("newRuleSendBySelect", NOTIFICATION_CHANNEL_OPTIONS);
 const newRuleOrgsMultiSelect = wireFormMultiSelect("newRuleOrgsSelect", SUPPORT_ORG_CODES);

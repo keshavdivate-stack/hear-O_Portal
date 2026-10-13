@@ -147,7 +147,15 @@
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
           <span id="ucBackLabel">Back to Screening</span>
         </a>
-        <h1>Compliance Over Time</h1>
+        <h1 id="ucTitle">Compliance Over Time</h1>
+      </div>
+    </div>
+
+    <!-- Compliance type -- maps to the ?metric= param (quality | compliance) -->
+    <div class="uc-tabs-row">
+      <div class="bo-seg-toggle" id="ucTypeToggle">
+        <button type="button" class="bo-seg-btn" data-metric="quality">Compliance Over Time</button>
+        <button type="button" class="bo-seg-btn" data-metric="compliance">Current Compliance</button>
       </div>
     </div>
 
@@ -159,6 +167,9 @@
         <button type="button" class="bo-tab bo-seg-btn" data-bucket="60-69">60-69%</button>
         <button type="button" class="bo-tab bo-seg-btn" data-bucket="lt60">Less than 60%</button>
       </div>
+    </div>
+
+    <div class="uc-tabs-row">
       <span class="uc-total" id="ucTotalLabel"></span>
     </div>
 
@@ -178,8 +189,7 @@
               <th>Total unrecorded days</th>
               <th>NVRD</th>
               <th>Days with justification</th>
-              <th>Compliance %</th>
-              <th>Recording quality %</th>
+              <th id="ucValueHead">Compliance over time</th>
             </tr>
           </thead>
           <tbody id="ucRows"></tbody>
@@ -194,6 +204,7 @@
 <script src="js/notifications.js"></script>
 <script src="js/bo-table-scroll.js"></script>
 <script src="js/mkt-orgs.js"></script>
+<script src="js/bo-pagination.js"></script>
 <script src="js/usable-compliance.js"></script>
 </body>
 </html>

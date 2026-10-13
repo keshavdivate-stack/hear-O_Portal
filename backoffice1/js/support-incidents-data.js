@@ -16,12 +16,13 @@ const INC_SOURCE_CATEGORY = {
   "System Scheduler": "System Schedule Engine",
   "Voice Engine": "Voice Engine",
   "Sensors": "Sensors",
-  "EHR Integration": "Integrations",
-  "Patient Monitoring": "Patient (Mobile/Web)",
+  "EHR Integration": "Clinic Users",
+  "Patient Monitoring": "Patient",
   "System Health": "Compliance",
-  "Other": "Other",
+  "Other": "Mobile App",
 };
-const INC_CATEGORIES = ["System Schedule Engine", "Voice Engine", "Sensors", "Integrations", "Patient (Mobile/Web)", "Compliance", "Platform / Infra", "Localization", "Other"];
+/* Same seven categories (and order) as the developed Incidents filter. */
+const INC_CATEGORIES = ["Compliance", "Voice Engine", "Sensors", "Patient", "Clinic Users", "System Schedule Engine", "Mobile App"];
 
 /* Dedicated Support Team — distinct from SUPPORT_AGENTS (Ticket assignees) so
    the Incident Owner is never confused with who a Ticket is assigned to. */
@@ -56,21 +57,22 @@ function unassignedPatients(n, seed) {
 }
 
 /* Issue Type is the specific detection rule that fired, one level below
-   Category (e.g. Voice Engine > ASR Results Missing). Derived from the
-   incident title unless the record sets issueType explicitly. */
+   Category (e.g. Voice Engine > ASR Results Missing), using the developed
+   app's issue type names. Derived from the incident title unless the record
+   sets issueType explicitly. */
 function incIssueType(incident) {
   if (incident.issueType) return incident.issueType;
   const t = incident.title;
   if (/without ASR results/i.test(t)) return "ASR Results Missing";
-  if (/^Usable compliance/i.test(t)) return "Usable Compliance Below Threshold";
-  if (/compliance/i.test(t)) return "Compliance Below Threshold";
-  if (/Voice Engine/i.test(t)) return "Voice Engine Errors";
-  if (/Billing Calc|Start Date Engine|skipped a run|did not run/i.test(t)) return "Missed Scheduled Run";
-  if (/Sensor/i.test(t)) return "Sensor Data Delays";
-  if (/Registered/i.test(t)) return "Patient Stuck in Registered";
-  if (/locale/i.test(t)) return "Missing Localization";
-  if (/FHIR|EHR/i.test(t)) return "EHR Integration Failure";
-  if (/alert delivery/i.test(t)) return "Alert Delivery Delayed";
+  if (/usable compliance/i.test(t)) return /organization/i.test(t) ? "Org Usable Compliance Drop" : "Total Usable Compliance Drop";
+  if (/compliance/i.test(t)) return /organization/i.test(t) ? "Org Compliance Drop" : "Total Compliance Drop";
+  if (/Billing Calc/i.test(t)) return "Engine Billing Calc Missed";
+  if (/Start Date Engine/i.test(t)) return "Engine Start Date Missed";
+  if (/Sensor upload/i.test(t)) return "Sensors Partial Upload";
+  if (/Registered/i.test(t)) return "Stuck In Registered";
+  if (/paused/i.test(t)) return "Paused Too Long";
+  if (/locale/i.test(t)) return "Text Not In Selected Language";
+  if (/stuck uploading/i.test(t)) return "Recording Upload Stuck";
   return "Other";
 }
 
@@ -275,7 +277,7 @@ const incidents = [
     id: "INC-000135",
     title: "Patients stuck in Registered status",
     source: "Patient Monitoring",
-    category: "Patient (Mobile/Web)",
+    category: "Patient",
     priority: "SEV-4",
     status: "Active",
     owner: "Priya Nair",
@@ -336,7 +338,7 @@ const incidents = [
     id: "INC-000121",
     title: "Hebrew locale strings missing after release",
     source: "Other",
-    category: "Localization",
+    category: "Mobile App",
     priority: "SEV-3",
     status: "Resolved",
     owner: "Daniel Adams",
@@ -379,9 +381,9 @@ const INC_TITLE_TEMPLATES = [
   { title: "Sensor upload latency elevated", source: "Sensors" },
   { title: "3 recording(s) without ASR results", source: "Voice Engine", perPatient: true },
   { title: "Billing Calc job failed to complete", source: "System Scheduler" },
-  { title: "FHIR endpoint unreachable", source: "EHR Integration" },
+  { title: "Recordings stuck uploading from the mobile app", source: "Other" },
   { title: "Compliance 0.4% across the platform", source: "System Health", platform: true },
-  { title: "Patient Monitoring alert delivery delayed", source: "Patient Monitoring" },
+  { title: "Patients paused longer than allowed", source: "Patient Monitoring" },
 ];
 
 function topUpResolvedIncidents(count, startNum) {
@@ -436,3 +438,31 @@ function topUpResolvedIncidents(count, startNum) {
   }
 }
 topUpResolvedIncidents(13, 118);
+
+/* ---------------- Keep the seeded incidents recent ----------------
+   The System Health Overview drills into Incidents with its date range
+   (e.g. Last 7 days, ending today), so the seeded dates are moved forward
+   together -- keeping their spacing -- until the newest detection is
+   today. Otherwise every drill-down would land on an empty list. */
+(function keepIncidentDatesRecent() {
+  const pad = (n) => String(n).padStart(2, "0");
+  const dayOf = (s) => {
+    const m = /^(\d{2})\/(\d{2})\/(\d{4})/.exec(s || "");
+    return m ? new Date(Number(m[3]), Number(m[1]) - 1, Number(m[2])) : null;
+  };
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const newest = Math.max(...incidents.map((i) => dayOf(i.detectedAt)).filter(Boolean));
+  const shiftDays = Math.round((today - newest) / 86400000);
+  if (shiftDays <= 0) return;
+  const shift = (s) => {
+    const d = dayOf(s);
+    if (!d) return s;
+    d.setDate(d.getDate() + shiftDays);
+    return `${pad(d.getMonth() + 1)}/${pad(d.getDate())}/${d.getFullYear()}` + s.slice(10);
+  };
+  incidents.forEach((i) => {
+    i.detectedAt = shift(i.detectedAt);
+    if (i.resolution && i.resolution.resolvedAt) i.resolution.resolvedAt = shift(i.resolution.resolvedAt);
+  });
+})();

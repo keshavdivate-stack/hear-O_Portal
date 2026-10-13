@@ -20,6 +20,24 @@
         ],
         "createdAt": "2026-10-08T10:27:40.697Z",
         "reason": "False positive: detector matched on the animation's identifier name containing 'bounce', not its actual curve. The keyframes use ease-in-out to scaleY-pulse three bars like an audio/sending-indicator meter -- literal, domain-appropriate motion, not an elastic/overshoot bounce."
+      },
+      {
+        "rule": "low-contrast",
+        "value": "*",
+        "files": [
+          "Mobile app/add-medication.html"
+        ],
+        "createdAt": "2026-10-13T08:43:08.811Z",
+        "reason": "Client-approved Add Medication screen: placeholder gray #A9A8A8 sampled from the approved design; user asked for an exact match"
+      },
+      {
+        "rule": "low-contrast",
+        "value": "*",
+        "files": [
+          "Mobile app/medications.html"
+        ],
+        "createdAt": "2026-10-13T08:43:09.269Z",
+        "reason": "Client-approved Medications screen: Skip orange #F5880B on #FFF5F2 sampled from the approved design; user asked for an exact match"
       }
     ]
   }

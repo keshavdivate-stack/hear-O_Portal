@@ -12,37 +12,36 @@ const boStatsBase = [
   { key: "discontinued", num: 2, label: "Discontinued", color: "var(--purple)", icon: `<circle cx="12" cy="12" r="9"/><path d="M15 9l-6 6"/><path d="M9 9l6 6"/>` },
 ];
 
-const statusChangeBase = [
-  { username: "0044", status: "Priority", date: "14.01.28" },
-  { username: "0011", status: "Unmonitored", date: "14.01.28" },
-  { username: "0023", status: "Paused", date: "12.01.28" },
-  { username: "0012", status: "Priority", date: "12.01.28" },
-];
+/* Each tile opens Patient Management pre-filtered the way the developed
+   Summary does: a status tile = that status on an Enabled account,
+   Unmonitored = monitoring status, Paused / Discontinued = account status. */
+const STAT_TILE_FILTERS = {
+  registered: "status=Registered&account=Enabled",
+  baseline: "status=Baseline&account=Enabled",
+  active: "status=Active&account=Enabled",
+  priority: "status=Priority&account=Enabled",
+  unmonitored: "account=Enabled&monitoring=Unmonitored",
+  paused: "account=Paused",
+  discontinued: "account=Discontinued",
+};
 
-const errorMessageBase = [
-  { username: "0219", message: "Mobile data disabled", date: "13.08.26" },
-  { username: "0219", message: "Mobile data disabled", date: "04.08.26" },
-  { username: "0311", message: "Low quality", date: "04.08.26" },
-  { username: "7777", message: "Mobile data disabled", date: "03.08.26" },
-  { username: "0790", message: "Notification off", date: "02.08.26" },
-  { username: "0044", message: "Mobile data disabled", date: "01.08.26" },
-];
 
-const chartMonths = ["Sep", "Oct", "Nov", "Dec", "Jan", "Feb", "Mar", "Apr", "May", "Jun"];
-const complianceSeriesBase = [58, 60, 62, 59, 61, 63, 65, 62, 60, 61];
-const qualitySeriesBase = [52, 55, 57, 54, 56, 58, 60, 57, 55, 56];
+
+const chartMonths = ["Dec", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct"];
+const complianceSeriesBase = [58, 60, 62, 59, 61, 63, 65, 62, 60, 61, 62];
+const qualitySeriesBase = [52, 55, 57, 54, 56, 58, 60, 57, 55, 56, 57];
 
 const binDefs = [
   { key: "90-100", label: "90%-100%", color: "var(--navy)" },
-  { key: "80-90", label: "80%-90%", color: "var(--blue)" },
-  { key: "70-80", label: "70%-80%", color: "var(--cyan)" },
-  { key: "60-70", label: "60%-70%", color: "var(--orange)" },
+  { key: "80-89", label: "80%-89%", color: "var(--blue)" },
+  { key: "70-79", label: "70%-79%", color: "var(--cyan)" },
+  { key: "60-69", label: "60%-69%", color: "var(--orange)" },
   { key: "lt60", label: "Less than 60%", color: "var(--maroon)" },
 ];
 
 const binDataBase = {
-  quality: { "90-100": 3, "80-90": 6, "70-80": 9, "60-70": 12, lt60: 21 },
-  compliance: { "90-100": 5, "80-90": 8, "70-80": 11, "60-70": 14, lt60: 24 },
+  quality: { "90-100": 3, "80-89": 6, "70-79": 9, "60-69": 12, lt60: 21 },
+  compliance: { "90-100": 5, "80-89": 8, "70-79": 11, "60-69": 14, lt60: 24 },
 };
 
 let activeBinsTab = "quality";
@@ -57,7 +56,7 @@ function renderStats(org, seed) {
     .map((s) => {
       const num = mktScale(s.num, seed + s.key.length, 0.4);
       return `
-      <div class="bo-stat-card">
+      <a class="bo-stat-card bo-stat-card--link" href="patient-management.html?${STAT_TILE_FILTERS[s.key]}">
         <span class="bo-stat-icon" style="background:${s.color};">
           <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${s.icon}</svg>
         </span>
@@ -65,22 +64,28 @@ function renderStats(org, seed) {
           <span class="bo-stat-num">${num}</span>
           <span class="bo-stat-label">${s.label}</span>
         </span>
-      </div>`;
+      </a>`;
     })
     .join("");
 }
 
 /* ---------------- Status Change / Error Message ---------------- */
 function renderTables(orgs) {
-  const codeFor = (i) => orgs[i % orgs.length].code;
 
-  document.getElementById("statusChangeRows").innerHTML = statusChangeBase
-    .map((r, i) => `<tr><td>${codeFor(i)}-${r.username}</td><td><span class="bo-status-pill ${r.status.toLowerCase()}">${r.status}</span></td><td>${r.date}</td></tr>`)
+  /* Most recent changes, from the same rows the Status Change page lists. */
+  document.getElementById("statusChangeRows").innerHTML = STATUS_CHANGE_ROWS.slice(0, 20)
+    .map((r) => `<tr class="bo-row-clickable" data-href="status-change.html?statusChange=${encodeURIComponent(r.changedTo)}&patient=${encodeURIComponent(r.username)}"><td>${r.username}</td><td><span class="bo-status-pill ${r.changedTo.toLowerCase()}">${r.changedTo}</span></td><td>${r.since}</td></tr>`)
     .join("");
 
-  document.getElementById("errorMessageRows").innerHTML = errorMessageBase
-    .map((r, i) => `<tr><td>${codeFor(i)}-${r.username}</td><td>${r.message}</td><td>${r.date}</td></tr>`)
+  /* Recent approved error-type events, the same set "View" opens on Patient Event. */
+  document.getElementById("errorMessageRows").innerHTML = peEvents
+    .filter((e) => e.approved && PATIENT_EVENT_ERROR_TYPES.includes(e.eventType))
+    .sort((a, b) => b.reportedAt.localeCompare(a.reportedAt))
+    .slice(0, 20)
+    .map((e) => `<tr class="bo-row-clickable" data-href="patient-events.html?eventTypes=${encodeURIComponent(PATIENT_EVENT_ERROR_TYPES.join(","))}&approved=true&patient=${encodeURIComponent(e.username)}"><td>${e.username}</td><td>${e.eventType}</td><td>${peFormatDate(e.startDate)}</td></tr>`)
     .join("");
+  document.getElementById("errorEventsViewLink").href =
+    `patient-events.html?eventTypes=${encodeURIComponent(PATIENT_EVENT_ERROR_TYPES.join(","))}&approved=true`;
 }
 
 /* ---------------- Monthly Compliance chart ---------------- */
@@ -126,8 +131,8 @@ function renderAreaChart() {
   const padB = 24;
   const plotW = width - padL - padR;
   const plotH = height - padT - padB;
-  const yMin = 30;
-  const yMax = 85;
+  const yMin = 0;
+  const yMax = 100;
   const gridStep = 10;
 
   const xAt = (i) => padL + (plotW * i) / (chartMonths.length - 1);
@@ -221,9 +226,23 @@ document.getElementById("binsToggle").addEventListener("click", (e) => {
   renderBins(btn.dataset.tab);
 });
 
-/* ---------------- "Did not record" mini stat ---------------- */
+/* ---------------- "Did not record" mini stat ----------------
+   The count opens Patient Management on Priority patients (Enabled
+   account) whose last session is on or before N days ago. */
+const dnrDaysInput = document.getElementById("dnrDaysInput");
+
+function updateDnrLink() {
+  const days = Math.max(1, Number(dnrDaysInput.value) || 1);
+  const since = new Date();
+  since.setDate(since.getDate() - days);
+  const ymd = `${since.getFullYear()}-${String(since.getMonth() + 1).padStart(2, "0")}-${String(since.getDate()).padStart(2, "0")}`;
+  document.getElementById("dnrLink").href = `patient-management.html?status=Priority&account=Enabled&lastSessionDate=${ymd}`;
+}
+dnrDaysInput.addEventListener("input", updateDnrLink);
+
 function renderDnr(seed) {
   document.getElementById("dnrCount").textContent = mktScale(180, seed, 0.35);
+  updateDnrLink();
 }
 
 /* ---------------- Wire everything to the organization selector ---------------- */
@@ -232,6 +251,8 @@ function renderForOrg(orgIds) {
   const isAll = orgIds.length === 1 && orgIds[0] === "all";
   const orgs = isAll ? [MKT_ORG_LIST[0]] : orgIds.map((id) => MKT_ORG_LIST.find((o) => o.id === id));
   const seed = isAll ? 0 : mktHash(orgIds.slice().sort().join(","));
+
+  document.getElementById("mktSummaryScope").textContent = isAll ? "" : ` — ${mktOrgsLabel(orgIds)}`;
 
   renderStats(orgs[0], seed);
   renderTables(orgs);
@@ -258,3 +279,13 @@ if (document.fonts && document.fonts.ready) {
 }
 window.addEventListener("load", () => renderAreaChart());
 window.addEventListener("resize", () => renderAreaChart());
+
+/* A row opens the matching page narrowed to that patient, like the developed Summary:
+   Status Change -> that patient + the status they changed to; Patient Event ->
+   the same error-event filters as View + that patient. */
+["statusChangeRows", "errorMessageRows"].forEach((id) => {
+  document.getElementById(id).addEventListener("click", (e) => {
+    const row = e.target.closest("tr[data-href]");
+    if (row) window.location.href = row.dataset.href;
+  });
+});

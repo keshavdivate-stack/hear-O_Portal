@@ -7,12 +7,14 @@
 const statusPillClass = { "Open": "bo-pill-status-open", "In Progress": "bo-pill-status-inprogress", "Resolved": "bo-pill-status-resolved" };
 const priorityPillClass = { "Low": "bo-pill-severity-low", "Medium": "bo-pill-severity-medium", "High": "bo-pill-severity-high", "Critical": "bo-pill-severity-critical" };
 const originPillClass = { "System": "bo-pill-origin-system", "Patient": "bo-pill-origin-patient", "Clinic": "bo-pill-origin-clinic", "Backoffice": "bo-pill-origin-backoffice" };
-const typePillClass = { "Patient": "bo-pill-type-patient", "Clinic": "bo-pill-type-clinic" };
+const typePillClass = { "Patient": "bo-pill-type-patient", "Clinic": "bo-pill-type-clinic", "System": "bo-pill-origin-system" };
 
 const statusPill = (s) => `<span class="bo-pill ${statusPillClass[s] || ""}">${s}</span>`;
 const priorityPill = (p) => `<span class="bo-pill ${priorityPillClass[p] || ""}">${p}</span>`;
 const tierPill = (t) => `<span class="bo-pill bo-pill-tier">${t}</span>`;
-const originLabel = { "Backoffice": "Back Office" };
+/* Origin "Patient" is a ticket raised from the patient's mobile app -- shown
+   as "Mobile", the developed app's name for it. */
+const originLabel = { "Patient": "Mobile", "Backoffice": "Back Office" };
 
 /* createdDate is stored "DD/MM/YYYY HH:mm"; shown as "MM/DD/YYYY, hh:mm AM"
    in the Tickets list and Ticket Info to match the developed app. */
@@ -74,7 +76,7 @@ function setBoSelectValue(select, value, { silent = false } = {}) {
   const options = Array.from(select.querySelectorAll(".bo-select-option"));
   /* Compare dataset.value directly rather than building a
      [data-value="..."] CSS selector -- many values here (statuses like "In
-     Progress", levels like "Level 1", categories like "Patient (Mobile/Web)",
+     Progress", levels like "Level 1", categories like "System Schedule Engine",
      issue types with colons/slashes) contain characters CSS.escape would
      encode, which never matches the plain, unescaped attribute actually
      rendered in the DOM. That silently left the dropdown showing its
@@ -144,7 +146,11 @@ function initBoSelects() {
   });
 
   document.addEventListener("click", closeAllBoSelects);
-  document.addEventListener("scroll", closeAllBoSelects, true);
+  /* Scrolling a long option list inside an open menu mustn't close it. */
+  document.addEventListener("scroll", (e) => {
+    if (e.target instanceof Element && e.target.closest(".bo-select-menu")) return;
+    closeAllBoSelects();
+  }, true);
   window.addEventListener("resize", closeAllBoSelects);
 }
 
@@ -164,13 +170,28 @@ const TICKET_HANDOFF_NOTES = [
   "Attempted the standard fix for this issue but it didn't resolve it -- transferring so it can be looked at with fresh eyes.",
 ];
 
+/* Who raised the ticket: the patient (mobile app), the clinic user, the
+   system, or -- for Back Office tickets -- the support agent. */
+function ticketCreatedBy(ticket) {
+  if (ticket.origin === "System") return "System";
+  if (ticket.origin === "Backoffice") return SUPPORT_AGENTS[ticket.id % SUPPORT_AGENTS.length];
+  if (ticket.patientId && ticket.origin === "Patient") return patientContactInfo(ticket.patientId).name;
+  return ticket.raisedBy || ticket.organization;
+}
+
+/* Patient / Clinic / System, as in the Tickets list. */
+function ticketType(ticket) {
+  if (ticket.origin === "System") return "System";
+  return ticket.patientId ? "Patient" : "Clinic";
+}
+
 function ensureTicketHistory(ticket) {
   if (!ticket.history) {
     const previousAssignee = SUPPORT_AGENTS.find((name) => name !== ticket.assignedTo) || ticket.assignedTo;
     const note = TICKET_HANDOFF_NOTES[ticket.id % TICKET_HANDOFF_NOTES.length];
     ticket.history = [
-      { title: "Ticket Created", date: ticket.createdDate },
-      { title: `Ticket Transferred to ${ticket.assignedTo}`, detail: `Reassigned from ${previousAssignee} to ${ticket.assignedTo}. Note: ${note}`, date: ticket.createdDate },
+      { title: "Ticket Created", date: ticket.createdDate, by: ticketCreatedBy(ticket) },
+      { title: `Ticket Transferred to ${ticket.assignedTo}`, detail: `Reassigned from ${previousAssignee} to ${ticket.assignedTo}. Note: ${note}`, date: ticket.createdDate, by: previousAssignee },
     ];
   }
   return ticket.history;
@@ -221,6 +242,7 @@ function patientContactInfo(patientId) {
   const rand = seededRandom(patientId || "patient");
   const [first, last] = pickFrom(rand, PATIENT_CONTACT_NAMES);
   return {
+    name: `${first} ${last}`,
     email: `${first.toLowerCase()}.${last.toLowerCase().replace("-", "")}@gmail.com`,
     phone: `+972-5${String(10000000 + Math.floor(rand() * 89999999)).slice(0, 8)}`,
   };
@@ -303,6 +325,19 @@ function buildLogSessions(ticket) {
   return sessions; // most-recent-first, sessions[0] matches the ticket's own created date
 }
 
+/* Pass the log's own seeded generator to draw the value in sequence; called
+   without one, it replays the same draws to read the value back. */
+function buildPatientLogMic(ticket, rand) {
+  if (!rand) {
+    rand = seededRandom(ticket.patientId || String(ticket.id));
+    pickFrom(rand, LOG_DEVICES);
+    pickFrom(rand, LOG_APP_VERSIONS);
+    rand();
+    rand();
+  }
+  return rand() < (ticketCategory(ticket) === "Voice Engine" ? 0.6 : 0.1) ? "Disabled" : "Enabled";
+}
+
 function buildPatientLog(ticket) {
   const rand = seededRandom(ticket.patientId || String(ticket.id));
   const device = pickFrom(rand, LOG_DEVICES);
@@ -327,8 +362,40 @@ function buildPatientLog(ticket) {
        skew toward "Disabled" so the diagnostic path (Issue panel's
        permission callout) actually has something to demonstrate. */
     permissions: [
-      { label: "Microphone", value: rand() < (ticketCategory(ticket) === "Voice Engine" ? 0.6 : 0.1) ? "Disabled" : "Enabled" },
+      { label: "Microphone", value: buildPatientLogMic(ticket, rand) },
     ],
     sessions: buildLogSessions(ticket),
+    deviceCard: buildDeviceCard(ticket, { appVersion, buildNumber, device }),
   };
+}
+
+/* Patient Device Info card -- the same fields, in the same order, as the
+   developed ticket screen. Drawn from its own seed so adding these fields
+   didn't change any value the Patient Log already showed (Microphone
+   matches the log's permission). */
+const LOG_DEVICE_LANGUAGES = ["English", "Hebrew", "Arabic", "Russian"];
+function buildDeviceCard(ticket, { appVersion, buildNumber, device }) {
+  const rand = seededRandom(`${ticket.patientId || ticket.id}#device`);
+  const granted = (chanceDenied) => (rand() < chanceDenied ? "Denied" : "Granted");
+  const mic = buildPatientLogMic(ticket);
+  const [datePart, timePart] = ticket.createdDate.split(" ");
+  const [day, month, year] = datePart.split("/").map(Number);
+  const [hour, minute] = (timePart || "00:00").split(":").map(Number);
+  const lastActive = new Date(year, month - 1, day, hour, minute - (20 + Math.floor(rand() * 300)));
+  const pad = (n) => String(n).padStart(2, "0");
+  return [
+    { label: "App Version", value: appVersion },
+    { label: "Build Number", value: String(buildNumber) },
+    { label: "Platform", value: device.platform },
+    { label: "Device Model", value: device.deviceId },
+    { label: "OS Version", value: device.os.replace(/^(iOS|Android) /, "") },
+    { label: "Available Storage", value: `${(4 + rand() * 120).toFixed(1)} GB` },
+    { label: "Device Language", value: pickFrom(rand, LOG_DEVICE_LANGUAGES) },
+    { label: "Last Active", value: formatTicketCreated(`${pad(lastActive.getDate())}/${pad(lastActive.getMonth() + 1)}/${lastActive.getFullYear()} ${pad(lastActive.getHours())}:${pad(lastActive.getMinutes())}`) },
+    { label: "Microphone", value: mic === "Disabled" ? "Denied" : "Granted" },
+    { label: "Notifications", value: granted(0.15) },
+    { label: "Health Data Access", value: granted(0.2) },
+    { label: "Blood Pressure Data Access", value: granted(0.25) },
+    { label: "Chat Consent", value: granted(0.5) },
+  ];
 }

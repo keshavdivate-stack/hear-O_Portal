@@ -1,126 +1,66 @@
-/* ---------------- Non-HMO Patients Events ---------------- */
+/* ---------------- Patient Event ---------------- */
 const PE_PAGE_SIZE = 20;
 
-/* ---------------- Multi-select checkbox filter (Clinical site / Event type) ----------------
-   Every value starts checked (= "All", no filtering). Unchecking items narrows the filter;
-   the "All" row is just a shortcut that selects/clears every option at once. */
-const peCheckIcon = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
-
-function wireMultiSelect(containerId, values, onChange) {
-  const container = document.getElementById(containerId);
-  const trigger = container.querySelector(".bo-multiselect-trigger");
-  const valueEl = container.querySelector(".bo-multiselect-value");
-  const placeholderLabel = valueEl.textContent.trim();
-  const menu = container.querySelector(".bo-multiselect-menu");
-  const selected = new Set(values);
-
-  function renderMenu() {
-    const allChecked = selected.size === values.length;
-    menu.innerHTML =
-      `<label class="bo-multiselect-option all${allChecked ? " checked" : ""}" data-all="1">
-        <span class="bo-multiselect-checkbox">${peCheckIcon}</span> All
-      </label>` +
-      values
-        .map(
-          (v) => `<label class="bo-multiselect-option${selected.has(v) ? " checked" : ""}" data-value="${v}">
-            <span class="bo-multiselect-checkbox">${peCheckIcon}</span> ${v}
-          </label>`
-        )
-        .join("");
-  }
-
-  function renderTrigger() {
-    if (selected.size === values.length || selected.size === 0) {
-      valueEl.textContent = placeholderLabel;
-      valueEl.classList.add("placeholder");
-    } else {
-      valueEl.textContent = values.filter((v) => selected.has(v)).join(", ");
-      valueEl.classList.remove("placeholder");
-    }
-  }
-
-  renderMenu();
-  renderTrigger();
-
-  trigger.addEventListener("click", (e) => {
-    e.stopPropagation();
-    const willOpen = !container.classList.contains("open");
-    document.querySelectorAll(".bo-multiselect.open").forEach((el) => el.classList.remove("open"));
-    if (willOpen) container.classList.add("open");
-  });
-
-  menu.addEventListener("click", (e) => {
-    const option = e.target.closest(".bo-multiselect-option");
-    if (!option) return;
-    e.stopPropagation();
-
-    if (option.dataset.all) {
-      if (selected.size === values.length) selected.clear();
-      else values.forEach((v) => selected.add(v));
-    } else {
-      const v = option.dataset.value;
-      if (selected.has(v)) selected.delete(v);
-      else selected.add(v);
-    }
-
-    renderMenu();
-    renderTrigger();
-    if (onChange) onChange(selected);
-  });
-
-  return {
-    getSelected: () => selected,
-    reset() {
-      selected.clear();
-      values.forEach((v) => selected.add(v));
-      renderMenu();
-      renderTrigger();
-    },
-  };
-}
-
-document.addEventListener("click", (e) => {
-  if (!e.target.closest(".bo-multiselect")) {
-    document.querySelectorAll(".bo-multiselect.open").forEach((el) => el.classList.remove("open"));
-  }
+/* ---------------- Filter bar ----------------
+   Matches the developed Patient Event filters, in our own components:
+   Clinical site (multi-select, defaults to All), Select event type
+   (multi-select over the 24 event types, nothing picked = every type),
+   Approved (single-select: Not approved / Approved, nothing picked = both),
+   three text searches and a From/To start-date range. Picking values only
+   stages them -- the list changes on Apply. */
+const peSiteMultiSelect = wireSupportMultiFilter("peSiteFilter", {
+  options: asFilterOptions(PE_SITES),
+  selected: PE_SITES,
 });
+const peEventTypeMultiSelect = wireSupportMultiFilter("peEventTypeFilter", {
+  options: asFilterOptions(PE_EVENT_TYPES),
+  searchPlaceholder: "Search event type",
+});
+const peApprovedSelect = document.getElementById("peApprovedSelect");
 
-let peSiteFilter = new Set(PE_SITES);
-let peEventTypeFilter = new Set(PE_EVENT_TYPES);
-let pePatientFilter = "";
-let peAddedByFilter = "";
-let peReportedByFilter = "";
+const PE_DEFAULT_FILTERS = { sites: PE_SITES, eventTypes: [], approved: "", patient: "", addedBy: "", reportedBy: "", from: "", to: "" };
+let peFilters = { ...PE_DEFAULT_FILTERS };
 /* Active/Archived is its own tab, not a filter -- archiving an event hides it
    from the working list without deleting it, mirroring Organizations Management. */
 let peViewTab = "active";
 
-/* Filters are staged; they only take effect when the Apply button is clicked. */
-const peSiteMultiSelect = wireMultiSelect("peSiteFilter", PE_SITES, (selected) => {
-  peSiteFilter = selected;
-});
-const peEventTypeMultiSelect = wireMultiSelect("peEventTypeFilter", PE_EVENT_TYPES, (selected) => {
-  peEventTypeFilter = selected;
-});
+/* Copies what the filter controls currently show into peFilters. */
+function peReadFilters() {
+  peFilters = {
+    sites: peSiteMultiSelect.getSelected(),
+    eventTypes: peEventTypeMultiSelect.getSelected(),
+    approved: document.getElementById("peApprovedFilter").value,
+    patient: document.getElementById("pePatientFilter").value,
+    addedBy: document.getElementById("peAddedByFilter").value,
+    reportedBy: document.getElementById("peReportedByFilter").value,
+    from: document.getElementById("peFromDate").value,
+    to: document.getElementById("peToDate").value,
+  };
+}
+
+/* Comma-separated text search: matches when any of the terms is contained. */
+function peMatchesSearch(value, query) {
+  const terms = query.split(",").map((s) => s.trim().toLowerCase()).filter(Boolean);
+  return !terms.length || terms.some((t) => String(value || "").toLowerCase().includes(t));
+}
+
 function peFiltered() {
+  const f = peFilters;
   return peEvents.filter((r) => {
     if (!!r.archived !== (peViewTab === "archived")) return false;
-    if (peSiteFilter.size && peSiteFilter.size < PE_SITES.length) {
-      if (![...peSiteFilter].some((s) => r.username.startsWith(s))) return false;
-    }
-    if (peEventTypeFilter.size && peEventTypeFilter.size < PE_EVENT_TYPES.length && !peEventTypeFilter.has(r.eventType)) return false;
+    /* No site picked behaves like All, same as an empty event-type pick. */
+    if (f.sites.length && f.sites.length < PE_SITES.length && !f.sites.some((s) => r.username.startsWith(s))) return false;
+    if (f.eventTypes.length && !f.eventTypes.includes(r.eventType)) return false;
+    if (f.approved && String(!!r.approved) !== f.approved) return false;
 
-    if (pePatientFilter) {
-      const names = pePatientFilter.split(",").map((s) => s.trim().toLowerCase()).filter(Boolean);
-      if (names.length && !names.some((n) => r.username.toLowerCase().includes(n))) return false;
-    }
-    if (peAddedByFilter) {
-      const names = peAddedByFilter.split(",").map((s) => s.trim().toLowerCase()).filter(Boolean);
-      if (names.length && !names.some((n) => r.addedBy.toLowerCase().includes(n))) return false;
-    }
-    if (peReportedByFilter) {
-      const names = peReportedByFilter.split(",").map((s) => s.trim().toLowerCase()).filter(Boolean);
-      if (names.length && !names.some((n) => r.reportedBy.toLowerCase().includes(n))) return false;
-    }
+    if (!peMatchesSearch(r.username, f.patient)) return false;
+    if (!peMatchesSearch(r.addedBy, f.addedBy)) return false;
+    if (!peMatchesSearch(r.reportedBy, f.reportedBy)) return false;
+
+    /* Date inputs hold ISO "YYYY-MM-DD"; compare against the event's start date. */
+    const start = peToIso(r.startDate).slice(0, 10);
+    if (f.from && (!start || start < f.from)) return false;
+    if (f.to && (!start || start > f.to)) return false;
 
     return true;
   });
@@ -142,9 +82,10 @@ const pePager = boCreatePager(
       <td>${peEsc(e.r.addedBy)}</td>
       <td>${peEsc(e.r.reportedBy)}</td>
       <td>${peEsc(e.r.reportedVia)}</td>
-      <td>${peEsc(e.r.reportedTime)}</td>
-      <td>${peEsc(e.r.startDate)}</td>
-      <td>${peEsc(e.r.endDate)}</td>
+      <td>${peEsc(peFormatDateTime(e.r.reportedTime))}</td>
+      <td>${peEsc(peFormatDate(e.r.startDate))}</td>
+      <td>${peEsc(peFormatDate(e.r.endDate))}</td>
+      <td><input type="checkbox" class="bo-cell-checkbox" data-id="${e.r.id}" data-field="approved" ${e.r.approved ? "checked" : ""} /></td>
       <td>${peEsc(e.r.status)}</td>
       <td>
         <div class="bo-row-actions">
@@ -152,9 +93,8 @@ const pePager = boCreatePager(
         </div>
       </td>
     </tr>`,
-  { pageSize: PE_PAGE_SIZE, emptyColspan: 12, emptyText: "No events found for the selected filters." }
+  { pageSize: PE_PAGE_SIZE, emptyColspan: 13, emptyText: "No events found for the selected filters." }
 );
-pePager();
 
 /* ---------------- Events / Archived Events tabs ---------------- */
 document.getElementById("peViewTabs").addEventListener("click", (e) => {
@@ -225,30 +165,19 @@ peRowMenu.addEventListener("click", (e) => {
   }
 });
 
-document.getElementById("pePatientFilter").addEventListener("input", (e) => {
-  pePatientFilter = e.target.value;
-});
-document.getElementById("peAddedByFilter").addEventListener("input", (e) => {
-  peAddedByFilter = e.target.value;
-});
-document.getElementById("peReportedByFilter").addEventListener("input", (e) => {
-  peReportedByFilter = e.target.value;
-});
-
 document.getElementById("peApplyBtn").addEventListener("click", () => {
+  peReadFilters();
   pePager.resetPage();
   pePager();
 });
 
+/* Back to the defaults: every clinical site, no event type / approved pick,
+   empty searches and dates. */
 document.getElementById("peClearFiltersBtn").addEventListener("click", () => {
-  peSiteMultiSelect.reset();
-  peEventTypeMultiSelect.reset();
-  peSiteFilter = new Set(PE_SITES);
-  peEventTypeFilter = new Set(PE_EVENT_TYPES);
+  peSiteMultiSelect.setSelected(PE_DEFAULT_FILTERS.sites);
+  peEventTypeMultiSelect.setSelected([]);
+  setBoSelectValue(peApprovedSelect, "", { silent: true });
 
-  pePatientFilter = "";
-  peAddedByFilter = "";
-  peReportedByFilter = "";
   document.getElementById("pePatientFilter").value = "";
   document.getElementById("peAddedByFilter").value = "";
   document.getElementById("peReportedByFilter").value = "";
@@ -260,6 +189,7 @@ document.getElementById("peClearFiltersBtn").addEventListener("click", () => {
   toDateEl.value = "";
   toDateEl.type = "text";
 
+  peFilters = { ...PE_DEFAULT_FILTERS };
   pePager.resetPage();
   pePager();
 });
@@ -313,6 +243,7 @@ document.querySelectorAll(".bo-select").forEach((select) => {
     e.stopPropagation();
     const willOpen = !select.classList.contains("open");
     closeAllBoSelects();
+    document.querySelectorAll(".bo-multiselect.open").forEach((el) => el.classList.remove("open"));
     if (willOpen) {
       select.classList.add("open");
       positionBoSelectMenu(select);
@@ -416,17 +347,19 @@ peEventForm.addEventListener("submit", (e) => {
 
   const record = {
     username: peEventForm.username.value.trim(),
-    eventType: editingEventId === null ? "MANUAL" : peEvents.find((r) => r.id === editingEventId).eventType,
+    /* The drawer has no event-type field, so a new event is filed as "Other". */
+    eventType: editingEventId === null ? "Other" : peEvents.find((r) => r.id === editingEventId).eventType,
     influenceCompliance: influenceSelect.querySelector("input[type=hidden]").value === "Yes",
     description: peEventForm.description.value.trim(),
     addedBy: peEventForm.username.value.trim(),
     reportedBy: peEventForm.reportedBy.value.trim(),
     reportedVia: reportedViaSelect.querySelector("input[type=hidden]").value,
     reportedTime: `${dateStr} ${timeStr}`,
+    reportedAt: peToIso(`${dateStr} ${timeStr}`),
     startDate,
     endDate,
     approved: editingEventId === null ? false : peEvents.find((r) => r.id === editingEventId).approved,
-    status: editingEventId === null ? "" : peEvents.find((r) => r.id === editingEventId).status,
+    status: editingEventId === null ? "New" : peEvents.find((r) => r.id === editingEventId).status,
   };
 
   if (editingEventId === null) {
@@ -513,3 +446,26 @@ function syncHmoToggleLabel() {
 peHmoToggle.addEventListener("change", syncHmoToggleLabel);
 syncHmoToggleLabel();
 peMessageDrawerOverlay.addEventListener("click", (e) => { if (e.target === peMessageDrawerOverlay) closeMessageDrawer(); });
+
+/* ---------------- Deep link: ?eventTypes=<Type>,<Type>,...&approved=true|false&patient=<username> ----------------
+   The Summary dashboard's "Patient Event (Recent Error Event) > View" link
+   lands here with the error event types and approved=true. The values are
+   shown in the filter controls ("10 selected", "Approved") and applied, so
+   Clear filters takes the page back to its defaults as usual. Unknown event
+   type names are ignored. */
+(function applyIncomingEventFilters() {
+  const params = new URLSearchParams(location.search);
+  const byName = new Map(PE_EVENT_TYPES.map((t) => [t.toLowerCase(), t]));
+  const eventTypes = (params.get("eventTypes") || "")
+    .split(",")
+    .map((s) => byName.get(s.trim().toLowerCase()))
+    .filter(Boolean);
+  const approved = params.get("approved");
+
+  if (eventTypes.length) peEventTypeMultiSelect.setSelected(eventTypes);
+  if (approved === "true" || approved === "false") setBoSelectValue(peApprovedSelect, approved, { silent: true });
+  /* A Summary row click also narrows to that one patient (Search patient). */
+  if (params.get("patient")) document.getElementById("pePatientFilter").value = params.get("patient");
+  peReadFilters();
+})();
+pePager();

@@ -4,18 +4,52 @@
    (Support > Rules). Incidents are never converted into Tickets -- the
    Support Team works them via lightweight Support Tasks instead. */
 
-/* ---------------- Filter option lists ---------------- */
-document.getElementById("incStatusFilterMenu").innerHTML = buildFilterSelectOptions(INC_STATUSES, "All statuses");
-document.getElementById("incPriorityFilterMenu").innerHTML = buildFilterSelectOptionsLabeled(INC_PRIORITIES, INC_PRIORITIES.map((s) => INC_PRIORITY_LABEL[s]), "All severities");
-document.getElementById("incCategoryFilterMenu").innerHTML = buildFilterSelectOptions(INC_CATEGORIES, "All categories");
+/* ---------------- Filters ----------------
+   Same filters, values and behavior as the developed Incidents tab: Search
+   Incident ID, then Priority / Status / Category / Issue Type multi-selects
+   (Issue Type unlocks once a Category is picked) and a From-To detected date
+   range. Nothing applies until "Apply"; the list opens on Active +
+   Escalated incidents. */
+const INC_DEFAULT_STATUSES = ["Active", "Escalated"];
 
-/* ---------------- Filter state ---------------- */
-let incStatusValue = "";
-let incPriorityValue = "";
-let incCategoryValue = "";
-let incDateFromValue = "";
-let incDateToValue = "";
-let incSearchTerm = "";
+/* Priority is listed Low -> Critical like the developed filter, but filters
+   on the SEV-1..4 key incidents are stored under. */
+const incPriorityFilter = wireSupportMultiFilter("incPriorityFilter", {
+  options: INC_PRIORITIES.slice().reverse().map((sev) => ({ value: sev, label: INC_PRIORITY_LABEL[sev] })),
+});
+const incStatusFilter = wireSupportMultiFilter("incStatusFilter", { options: asFilterOptions(INC_STATUSES), selected: INC_DEFAULT_STATUSES });
+const incCategoryFilter = wireSupportMultiFilter("incCategoryFilter", { options: asFilterOptions(INC_CATEGORIES) });
+const incIssueFilter = wireSupportMultiFilter("incIssueFilter", { disabledPlaceholder: "Select a category first", searchPlaceholder: "Search issue types" });
+const syncIncIssueFilter = linkIssueTypeToCategory("incCategoryFilter", incCategoryFilter, incIssueFilter);
+
+/* No future dates, and To can't be earlier than From. */
+const incDateFromInput = document.getElementById("incDateFromFilter");
+const incDateToInput = document.getElementById("incDateToFilter");
+function syncIncDateLimits() {
+  const today = new Date();
+  const todayIso = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+  incDateFromInput.max = incDateToInput.value || todayIso;
+  incDateToInput.max = todayIso;
+  incDateToInput.min = incDateFromInput.value || "";
+}
+incDateFromInput.addEventListener("change", syncIncDateLimits);
+incDateToInput.addEventListener("change", syncIncDateLimits);
+syncIncDateLimits();
+
+/* What's picked in the filter row is only staged; incFilters holds what was
+   last applied (on load, by Apply, or by Clear filters). */
+function readIncidentFilters() {
+  return {
+    search: document.getElementById("incSearchInput").value.trim().toLowerCase(),
+    priorities: incPriorityFilter.getSelected(),
+    statuses: incStatusFilter.getSelected(),
+    categories: incCategoryFilter.getSelected(),
+    issueTypes: incIssueFilter.getSelected(),
+    from: incDateFromInput.value,
+    to: incDateToInput.value,
+  };
+}
+let incFilters = readIncidentFilters();
 
 /* detectedAt is stored as "MM/DD/YYYY, hh:mm AM" -- pull just the calendar
    day out of it so a From/To range can compare against it. */
@@ -32,21 +66,22 @@ function incParseFilterDate(value) {
   return m ? new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3])) : null;
 }
 
+/* An empty list means that filter isn't narrowing anything. Search matches
+   the Incident ID, like the developed "Search Incident ID" field. */
 function incMatchesFilters(incident) {
-  if (incStatusValue && incident.status !== incStatusValue) return false;
-  if (incPriorityValue && incident.priority !== incPriorityValue) return false;
-  if (incCategoryValue && incident.category !== incCategoryValue) return false;
-  if (incDateFromValue || incDateToValue) {
+  const f = incFilters;
+  if (f.search && !incident.id.toLowerCase().includes(f.search)) return false;
+  if (!inFilterList(f.priorities, incident.priority)) return false;
+  if (!inFilterList(f.statuses, incident.status)) return false;
+  if (!inFilterList(f.categories, incident.category)) return false;
+  if (!inFilterList(f.issueTypes, `${incident.category}|${incIssueType(incident)}`)) return false;
+  if (f.from || f.to) {
     const detected = incDetectedDateOnly(incident);
     if (!detected) return false;
-    const from = incParseFilterDate(incDateFromValue);
-    const to = incParseFilterDate(incDateToValue);
+    const from = incParseFilterDate(f.from);
+    const to = incParseFilterDate(f.to);
     if (from && detected < from) return false;
     if (to && detected > to) return false;
-  }
-  if (incSearchTerm) {
-    const haystack = `${incident.id} ${incident.title} ${incident.orgs.join(" ")} ${incident.patients.join(" ")}`.toLowerCase();
-    if (!haystack.includes(incSearchTerm)) return false;
   }
   return true;
 }
@@ -80,7 +115,7 @@ const incidentPager = boCreatePager(
   "incidentRows",
   () => filteredIncidents(),
   incidentRowHtml,
-  { pageSize: INC_PAGE_SIZE, emptyColspan: 8, emptyText: "No incidents match these filters." }
+  { pageSize: INC_PAGE_SIZE, emptyColspan: 8, emptyText: "No incidents found" }
 );
 incidentPager();
 
@@ -89,34 +124,23 @@ function refreshIncidentTable() {
   incidentPager();
 }
 
-document.getElementById("incStatusFilter").addEventListener("change", (e) => { incStatusValue = e.target.value; });
-document.getElementById("incPriorityFilter").addEventListener("change", (e) => { incPriorityValue = e.target.value; });
-document.getElementById("incCategoryFilter").addEventListener("change", (e) => { incCategoryValue = e.target.value; });
-document.getElementById("incDateFromFilter").addEventListener("change", (e) => { incDateFromValue = e.target.value; });
-document.getElementById("incDateToFilter").addEventListener("change", (e) => { incDateToValue = e.target.value; });
-document.getElementById("incSearchInput").addEventListener("input", (e) => { incSearchTerm = e.target.value.trim().toLowerCase(); });
-
 document.getElementById("incApplyBtn").addEventListener("click", () => {
+  incFilters = readIncidentFilters();
   refreshIncidentTable();
 });
 
+/* Clears every filter -- Status included, so resolved incidents show too --
+   and applies straight away, like the developed "Clear filters". */
 document.getElementById("incClearFiltersBtn").addEventListener("click", () => {
-  incStatusValue = "";
-  incPriorityValue = "";
-  incCategoryValue = "";
-  incDateFromValue = "";
-  incDateToValue = "";
-  incSearchTerm = "";
-
-  resetBoSelect(document.querySelector('.bo-select[data-name="incStatus"]'));
-  resetBoSelect(document.querySelector('.bo-select[data-name="incPriority"]'));
-  resetBoSelect(document.querySelector('.bo-select[data-name="incCategory"]'));
-  [document.getElementById("incDateFromFilter"), document.getElementById("incDateToFilter")].forEach((el) => {
+  document.getElementById("incSearchInput").value = "";
+  [incPriorityFilter, incStatusFilter, incCategoryFilter].forEach((f) => f.setSelected([]));
+  syncIncIssueFilter();
+  [incDateFromInput, incDateToInput].forEach((el) => {
     el.value = "";
     el.type = "text";
   });
-  document.getElementById("incSearchInput").value = "";
-
+  syncIncDateLimits();
+  incFilters = readIncidentFilters();
   refreshIncidentTable();
 });
 
@@ -124,8 +148,8 @@ function findIncident(id) { return incidents.find((i) => i.id === id); }
 
 /* ---------------- Row action menu: Create Task / View Task ---------------- */
 const incidentRowMenu = document.getElementById("incidentRowMenu");
-const incidentRowMenuViewTicketBtn = document.getElementById("incidentRowMenuViewTicketBtn");
 const incidentRowMenuEscalateBtn = document.getElementById("incidentRowMenuEscalateBtn");
+const incidentRowMenuViewTicketBtn = document.getElementById("incidentRowMenuViewTicketBtn");
 let activeIncidentId = null;
 
 document.getElementById("incidentRows").addEventListener("click", (e) => {
@@ -135,7 +159,7 @@ document.getElementById("incidentRows").addEventListener("click", (e) => {
   activeIncidentId = trigger.dataset.id;
   const incident = findIncident(activeIncidentId);
   /* Already escalated or resolved: nothing left to escalate (matches the
-     same rule on the Incident Detail page header button). */
+     same rule on the Incident Detail page's header button). */
   incidentRowMenuEscalateBtn.hidden = !incident || incident.status !== "Active";
   incidentRowMenuViewTicketBtn.hidden = !incident || !(incident.relatedTickets && incident.relatedTickets.length);
   const rect = trigger.getBoundingClientRect();
@@ -161,111 +185,55 @@ incidentRowMenu.addEventListener("click", (e) => {
   if (action === "viewTicket" && incident.relatedTickets && incident.relatedTickets.length) location.href = incTicketHref(incident.relatedTickets[0]);
 });
 
-/* ---------------- Create Support Task drawer ---------------- */
-const addTaskOverlay = document.getElementById("addTaskOverlay");
-const addTaskForm = document.getElementById("addTaskForm");
-const saveAddTaskBtn = document.getElementById("saveAddTask");
-let addTaskTargetIncident = null;
-
-document.querySelector('#addTaskOverlay .bo-select[data-name="taskTeam"] .bo-select-menu').innerHTML = buildSelectOptions(["Clinical Team", "Support Team"]);
-document.querySelector('#addTaskOverlay .bo-select[data-name="taskLevel"] .bo-select-menu').innerHTML = buildSelectOptions(["Level 1", "Level 2", "Level 3"]);
-document.querySelector('#addTaskOverlay .bo-select[data-name="taskAssignee"] .bo-select-menu').innerHTML = buildSelectOptions(SUPPORT_TEAM);
-document.querySelector('#addTaskOverlay .bo-select[data-name="taskPriority"] .bo-select-menu').innerHTML = buildSelectOptions(Object.values(INC_PRIORITY_LABEL));
-
-/* Level defaults from the incident's own priority instead of always
-   starting blank -- a Critical incident should escalate straight to
-   Level 3, not make the support agent re-derive that manually every time. */
-const INC_PRIORITY_TO_LEVEL = { "SEV-1": "Level 3", "SEV-2": "Level 2", "SEV-3": "Level 2", "SEV-4": "Level 1" };
-
-function validateAddTaskForm() {
-  const titleFilled = addTaskForm.taskTitle.value.trim() !== "";
-  const teamFilled = addTaskOverlay.querySelector('.bo-select[data-name="taskTeam"] input[type=hidden]').value !== "";
-  const assigneeFilled = addTaskOverlay.querySelector('.bo-select[data-name="taskAssignee"] input[type=hidden]').value !== "";
-  saveAddTaskBtn.disabled = !(titleFilled && teamFilled && assigneeFilled);
-}
-
-const taskAttachmentInput = document.getElementById("taskAttachmentInput");
-const taskAttachmentName = document.getElementById("taskAttachmentName");
-taskAttachmentInput.addEventListener("change", () => {
-  taskAttachmentName.textContent = taskAttachmentInput.files.length ? taskAttachmentInput.files[0].name : "Click to attach a file";
-});
-
-function openAddTaskDrawer(incident) {
-  addTaskTargetIncident = incident;
-  addTaskForm.reset();
-  document.querySelector('#addTaskOverlay .bo-select[data-name="taskOrg"] .bo-select-menu').innerHTML = buildFilterSelectOptions(incident.orgs, "Optional");
-  document.querySelector('#addTaskOverlay .bo-select[data-name="taskPatient"] .bo-select-menu').innerHTML = buildFilterSelectOptions(incident.patients, "Optional");
-  addTaskOverlay.querySelectorAll(".bo-select").forEach(resetBoSelect);
-  setBoSelectValue(addTaskOverlay.querySelector('.bo-select[data-name="taskLevel"]'), INC_PRIORITY_TO_LEVEL[incident.priority] || "Level 1", { silent: true });
-  setBoSelectValue(addTaskOverlay.querySelector('.bo-select[data-name="taskPriority"]'), INC_PRIORITY_LABEL[incident.priority] || "", { silent: true });
-  taskAttachmentName.textContent = "Click to attach a file";
-  document.getElementById("addTaskIncidentTag").textContent = `Incident: ${incident.id}`;
-  validateAddTaskForm();
-  addTaskOverlay.classList.add("open");
-}
-function closeAddTaskDrawer() { addTaskOverlay.classList.remove("open"); addTaskTargetIncident = null; }
-
-document.getElementById("closeAddTaskX").addEventListener("click", closeAddTaskDrawer);
-document.getElementById("cancelAddTask").addEventListener("click", closeAddTaskDrawer);
-addTaskOverlay.addEventListener("click", (e) => { if (e.target === addTaskOverlay) closeAddTaskDrawer(); });
-addTaskForm.addEventListener("input", validateAddTaskForm);
-addTaskForm.addEventListener("change", validateAddTaskForm);
-
-addTaskForm.addEventListener("submit", (e) => {
-  e.preventDefault();
-  if (saveAddTaskBtn.disabled || !addTaskTargetIncident) return;
-
-  const team = addTaskOverlay.querySelector('.bo-select[data-name="taskTeam"] input[type=hidden]').value;
-  const level = addTaskOverlay.querySelector('.bo-select[data-name="taskLevel"] input[type=hidden]').value;
-  const assignee = addTaskOverlay.querySelector('.bo-select[data-name="taskAssignee"] input[type=hidden]').value;
-  const isFirstTask = addTaskTargetIncident.tasks.length === 0;
-  const nextId = addTaskTargetIncident.tasks.length ? Math.max(...addTaskTargetIncident.tasks.map((t) => t.id)) + 1 : 1;
-  addTaskTargetIncident.tasks.push({ id: nextId, title: addTaskForm.taskTitle.value.trim(), team, level, assignee, status: "Open" });
-  addTaskTargetIncident.timeline.push({ time: "Just now", text: `Ticket "${addTaskForm.taskTitle.value.trim()}" assigned to ${assignee}` });
-
-  /* Incident Owner (overall responsibility) is distinct from a task's
-     Owner/Assignee (responsibility for that one task) -- but when nobody
-     owns the incident yet, the first task's assignee steps into that role
-     rather than leaving the incident unowned. */
-  const hasNoOwner = !addTaskTargetIncident.owner || addTaskTargetIncident.owner === "Unassigned";
-  if (isFirstTask && hasNoOwner) {
-    addTaskTargetIncident.owner = assignee;
-    addTaskTargetIncident.timeline.push({ time: "Just now", text: `${assignee} became Incident Owner (first ticket assigned)` });
-  }
-
-  closeAddTaskDrawer();
+/* ---------------- Escalate & Create Ticket drawer ----------------
+   Fields and behavior live in support-incidents-common.js (shared with the
+   incident detail page). Escalating also adds the new ticket to Tickets. */
+let escalateTarget = null;
+const openEscalateDrawer = wireEscalateDrawer(() => escalateTarget, () => {
   refreshIncidentTable();
+  refreshTicketTables();
 });
+function openAddTaskDrawer(incident) {
+  escalateTarget = incident;
+  openEscalateDrawer(incident);
+}
 
-/* ---------------- Deep link: support.html?tab=incidents&priority=<Critical|High|Medium|Low>&status=<...>&q=<search text>
-   Lets other screens (e.g. the Overview dashboard's System Health Trend /
-   Issues panels) land here on the Incidents tab with the relevant
-   filter/search already applied. `priority` arrives as the human label
-   used elsewhere (Critical/High/Medium/Low) rather than the raw SEV-1..4
-   key incidents are stored under, so it's translated via INC_PRIORITY_LABEL. */
+/* ---------------- Deep link ----------------
+   support.html?tab=incidents&statuses=<Active,Escalated|Resolved>&priority=<Critical|High|Medium|Low>&category=<Category>&from=<YYYY-MM-DD>&to=<YYYY-MM-DD>&q=<incident ID>
+   Lets other screens (e.g. the System Health Overview's trend totals and
+   Incidents legend) land here on the Incidents tab with those filters
+   applied, the same way the developed dashboard opens Support. `status`
+   (one status) and `severity` (= priority) are still accepted. Priority
+   arrives as the human label (Critical/High/Medium/Low) rather than the raw
+   SEV-1..4 key incidents are stored under, so it's translated via
+   INC_PRIORITY_LABEL. */
 (function openIncidentsTabFromUrl() {
   const params = new URLSearchParams(location.search);
   if (params.get("tab") !== "incidents") return;
 
-  const priorityLabel = params.get("priority");
-  const status = params.get("status");
+  const list = (name) => (params.get(name) || "").split(",").map((v) => v.trim()).filter(Boolean);
+  const statuses = [...list("statuses"), ...list("status")].filter((s) => INC_STATUSES.includes(s));
+  const priorities = [...list("priority"), ...list("severity")]
+    .map((label) => INC_PRIORITIES.find((key) => INC_PRIORITY_LABEL[key] === label))
+    .filter(Boolean);
+  const categories = list("category").filter((c) => INC_CATEGORIES.includes(c));
+  const isoDate = (v) => (/^\d{4}-\d{2}-\d{2}$/.test(v || "") ? v : "");
   const q = params.get("q");
 
-  if (priorityLabel) {
-    const priKey = INC_PRIORITIES.find((key) => INC_PRIORITY_LABEL[key] === priorityLabel);
-    if (priKey) {
-      incPriorityValue = priKey;
-      setBoSelectValue(document.querySelector('.bo-select[data-name="incPriority"]'), priKey, { silent: true });
-    }
+  if (statuses.length) incStatusFilter.setSelected(statuses);
+  if (priorities.length) incPriorityFilter.setSelected(priorities);
+  if (categories.length) {
+    incCategoryFilter.setSelected(categories);
+    syncIncIssueFilter();
   }
-  if (status && INC_STATUSES.includes(status)) {
-    incStatusValue = status;
-    setBoSelectValue(document.querySelector('.bo-select[data-name="incStatus"]'), status, { silent: true });
-  }
-  if (q) {
-    incSearchTerm = q.trim().toLowerCase();
-    document.getElementById("incSearchInput").value = q;
-  }
+  [[incDateFromInput, isoDate(params.get("from"))], [incDateToInput, isoDate(params.get("to"))]].forEach(([input, value]) => {
+    if (!value) return;
+    input.type = "date";
+    input.value = value;
+  });
+  syncIncDateLimits();
+  if (q) document.getElementById("incSearchInput").value = q;
+  incFilters = readIncidentFilters();
   refreshIncidentTable();
 
   const tabBtn = document.querySelector('#supportTabs .bo-tab[data-tab="incidents"]');

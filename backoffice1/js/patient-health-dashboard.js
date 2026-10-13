@@ -282,7 +282,7 @@ const phEventsPager = boCreatePager(
       <td>${phEsc(e.status) || "â€”"}</td>
       <td>
         <div class="bo-row-actions">
-          ${e.eventType !== "MESSAGE_OUT" ? `<button type="button" class="bo-action-icon" data-action="edit" data-id="${e.id}" aria-label="Edit event">${phEventIcons.edit}</button>` : ""}
+          ${e.eventType !== "MESSAGE_OUT" && e.eventType !== "Message out" ? `<button type="button" class="bo-action-icon" data-action="edit" data-id="${e.id}" aria-label="Edit event">${phEventIcons.edit}</button>` : ""}
           <button type="button" class="bo-action-icon" data-action="delete" data-id="${e.id}" aria-label="Delete event">${phEventIcons.trash}</button>
         </div>
       </td>

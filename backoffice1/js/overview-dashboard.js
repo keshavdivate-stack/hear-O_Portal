@@ -1,15 +1,15 @@
 /* ---------------- Organization scope (All Organizations vs single org) ---------------- */
 let ovSelectedOrgId = "all";
 
-/* Organization Type filter (All / Commercial / R&D / Study) -- narrows the
-   Organization dropdown and every "All Organizations" total to orgs of that
-   type. Types come from MKT_ORG_LIST (js/mkt-orgs.js), the same source the
+/* Organization Type filter (Commercial / R&D / Study; no "All" option, so
+   Commercial is the default) -- narrows the Organization dropdown and every
+   "All Organizations" total to orgs of that type. Types come from MKT_ORG_LIST (js/mkt-orgs.js), the same source the
    Screening/Summary dashboards use. */
-let ovOrgType = "all";
+let ovOrgType = "Commercial";
 const OV_ORG_TYPE = Object.fromEntries(MKT_ORG_LIST.filter((o) => o.id !== "all").map((o) => [o.id, o.type]));
 
 function ovScopedOrgEntries() {
-  return Object.entries(orgHealthData).filter(([id]) => ovOrgType === "all" || OV_ORG_TYPE[id] === ovOrgType);
+  return Object.entries(orgHealthData).filter(([id]) => OV_ORG_TYPE[id] === ovOrgType);
 }
 const ovScopedOrgs = () => ovScopedOrgEntries().map(([, o]) => o);
 const ovAffectedOrgCount = () => ovScopedOrgs().filter((o) => o.openIssues > 0).length;
@@ -221,17 +221,17 @@ function renderOvTrendFooter() {
      is good news (badWhen "down"), so the delta color reflects what the
      number *means*, not just which way the arrow points. */
   const footer = [
-    { num: sum(dataset.series.critical), label: "Critical", color: "var(--maroon-text)", delta: 8, dir: "up", badWhen: "up", param: "severity=Critical" },
-    { num: sum(dataset.series.high), label: "High", color: "var(--orange-text)", delta: 6, dir: "up", badWhen: "up", param: "severity=High" },
-    { num: sum(dataset.series.medium), label: "Medium", color: "var(--yellow-text)", delta: 3, dir: "down", badWhen: "up", param: "severity=Medium" },
-    { num: sum(dataset.series.low), label: "Low", color: "var(--gray-text)", delta: 2, dir: "down", badWhen: "up", param: "severity=Low" },
-    { num: dataset.resolved, label: "Resolved", color: "var(--green-text)", delta: 15, dir: "up", badWhen: "down", param: "status=Resolved" },
+    { num: sum(dataset.series.critical), label: "Critical", color: "var(--maroon-text)", delta: 8, dir: "up", badWhen: "up", href: ovIncidentsHref({ priority: "Critical" }) },
+    { num: sum(dataset.series.high), label: "High", color: "var(--orange-text)", delta: 6, dir: "up", badWhen: "up", href: ovIncidentsHref({ priority: "High" }) },
+    { num: sum(dataset.series.medium), label: "Medium", color: "var(--yellow-text)", delta: 3, dir: "down", badWhen: "up", href: ovIncidentsHref({ priority: "Medium" }) },
+    { num: sum(dataset.series.low), label: "Low", color: "var(--gray-text)", delta: 2, dir: "down", badWhen: "up", href: ovIncidentsHref({ priority: "Low" }) },
+    { num: dataset.resolved, label: "Resolved", color: "var(--green-text)", delta: 15, dir: "up", badWhen: "down", href: ovIncidentsHref({ statuses: ["Resolved"] }) },
   ];
 
   document.getElementById("ovTrendFooter").innerHTML = footer
     .map(
       (f) => `
-    <a class="bo-mini-stat-cell" href="support.html?tab=incidents&${f.param}">
+    <a class="bo-mini-stat-cell" href="${f.href}">
       <span class="num" style="color:${f.color};">${f.num}</span>
       <span class="lbl">${f.label}</span>
       ${
@@ -263,7 +263,7 @@ const ovCritIssues = [
   { title: "Voice engine errors", desc: "High error rate in voice processing", severity: "Critical", started: "20 min ago", orgs: 1, patients: 2, color: "var(--maroon)", category: "Voice Engine", incidentId: "INC-000139" },
   { title: "Missing run: Billing Calc", desc: "The Billing Calc job did not run yesterday", severity: "High", started: "3 hrs ago", orgs: 2, patients: 3, color: "var(--orange)", category: "System Schedule Engine", incidentId: "INC-000138" },
   { title: "Sensor data delays", desc: "Sensor data delayed or missing", severity: "Medium", started: "6 hrs ago", orgs: 3, patients: 3, color: "var(--yellow)", category: "Sensors", incidentId: "INC-000136" },
-  { title: "Patients stuck in Registered", desc: "Patients have been stuck in Registered status longer than expected", severity: "Low", started: "1 day ago", orgs: 1, patients: 1, color: "var(--gray)", category: "Patient (Mobile/Web)", incidentId: "INC-000135" },
+  { title: "Patients stuck in Registered", desc: "Patients have been stuck in Registered status longer than expected", severity: "Low", started: "1 day ago", orgs: 1, patients: 1, color: "var(--gray)", category: "Patient", incidentId: "INC-000135" },
 ];
 
 const ovSeverityPillClass = { Critical: "critical", High: "high", Medium: "medium", Low: "low" };
@@ -281,7 +281,7 @@ function renderOvCritIssues(orgId) {
 
   const viewAllLink = document.getElementById("ovCritViewAllLink");
   if (viewAllLink) {
-    viewAllLink.href = orgId === "all" ? "support.html?tab=incidents" : `support.html?tab=incidents&q=${encodeURIComponent(orgHealthData[orgId].name)}`;
+    viewAllLink.href = "support.html?tab=incidents";
   }
 
   const issues =
@@ -335,8 +335,8 @@ const OV_CATEGORY_COLORS = {
   Compliance: "var(--purple)",
   "Voice Engine": "var(--orange)",
   Sensors: "var(--yellow)",
-  "Patient (Mobile/Web)": "var(--blue)",
-  "Clinic Users (Security)": "var(--navy)",
+  "Patient": "var(--blue)",
+  "Clinic Users": "var(--navy)",
   "System Schedule Engine": "var(--gray)",
 };
 
@@ -352,14 +352,14 @@ const OV_CATEGORY_ICONS = {
   Compliance: `<rect x="8" y="2" width="8" height="4" rx="1"/><path d="M9 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-3"/><path d="m9 14 2 2 4-4"/>`,
   "Voice Engine": `<path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/>`,
   Sensors: `<path d="M22 12h-4l-3 9L9 3l-3 9H2"/>`,
-  "Patient (Mobile/Web)": `<rect x="6" y="2" width="12" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/>`,
-  "Clinic Users (Security)": `<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-4"/>`,
+  "Patient": `<rect x="6" y="2" width="12" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/>`,
+  "Clinic Users": `<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-4"/>`,
   "System Schedule Engine": `<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/>`,
 };
 
 /* Seeded from every category name up front (not just whatever happens to
    appear in orgHealthData) so a category with no open issues right now --
-   e.g. Clinic Users (Security), which has no named alarms defined yet --
+   e.g. Clinic Users, which has no named alarms defined yet --
    still shows up in the donut/legend at 0 instead of silently vanishing. */
 function ovCategoryTotals(orgs) {
   const totals = {};
@@ -405,14 +405,38 @@ function ovIncidentRecords(label, seedKey, count) {
   return records;
 }
 
-/* Legend/slice links drill into Support's matching filter -- category,
-   severity, or status -- depending on what this view is currently grouped
-   by, instead of always assuming category. */
-function ovDrilldownHref(dimension, value, orgId) {
-  const params = new URLSearchParams();
-  params.set(dimension, value);
-  if (orgId && orgId !== "all") params.set("q", orgHealthData[orgId].name);
+/* ---------------- Drill-down into Support > Incidents ----------------
+   Same redirects as the developed dashboard: a priority or category opens
+   the Incidents tab on open (Active + Escalated) incidents of that priority
+   or category, a status opens just that status, and every drill-down
+   carries the dashboard's date range as the From/To detected dates. */
+function ovRangeDates() {
+  const pad = (n) => String(n).padStart(2, "0");
+  const iso = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+  const to = new Date();
+  const from = new Date(to);
+  if (ovTrendRangeKey === "24h") from.setDate(from.getDate() - 1);
+  else if (ovTrendRangeKey === "30d") from.setDate(from.getDate() - 29);
+  else if (ovTrendRangeKey === "4mo") from.setMonth(from.getMonth() - 4);
+  else if (ovTrendRangeKey === "1y") from.setFullYear(from.getFullYear() - 1);
+  else from.setDate(from.getDate() - 6);
+  return { from: iso(from), to: iso(to) };
+}
+
+function ovIncidentsHref({ statuses = ["Active", "Escalated"], priority, category } = {}) {
+  const params = new URLSearchParams({ tab: "incidents", statuses: statuses.join(",") });
+  if (priority) params.set("priority", priority);
+  if (category) params.set("category", category);
+  const { from, to } = ovRangeDates();
+  params.set("from", from);
+  params.set("to", to);
   return `support.html?${params.toString()}`;
+}
+
+function ovDrilldownHref(dimension, value) {
+  if (dimension === "status") return ovIncidentsHref({ statuses: [value] });
+  if (dimension === "severity") return ovIncidentsHref({ priority: value });
+  return ovIncidentsHref({ category: value });
 }
 
 /* Slices for the donut: by Category (the raw per-category totals, as
@@ -463,7 +487,7 @@ function renderOvDonut(orgId) {
     .map((c) => {
       const pct = Math.round((c.count / total) * 100);
       return `
-      <a class="bo-donut-legend-row" href="${ovDrilldownHref(c.dimension, c.value, orgId)}">
+      <a class="bo-donut-legend-row" href="${ovDrilldownHref(c.dimension, c.value)}">
         <span class="dot" style="background:${c.color};"></span>
         <span class="name">${c.label}</span>
         <span class="val">${c.count} (${pct}%)</span>
@@ -479,12 +503,12 @@ function renderOvDonut(orgId) {
    as a real over-time chart, not a single-week snapshot. */
 const ovCategoryTrendLabels = ["Oct '25", "Nov '25", "Dec '25", "Jan '26", "Feb '26", "Mar '26", "Apr '26", "May '26", "Jun '26", "Jul '26", "Aug '26", "Sep '26"];
 const ovCategoryTrendData = {
-  "Patient (Mobile/Web)": [42, 38, 55, 60, 58, 72, 68, 80, 76, 92, 88, 104],
+  "Patient": [42, 38, 55, 60, 58, 72, 68, 80, 76, 92, 88, 104],
   Compliance: [25, 30, 28, 35, 32, 40, 38, 45, 42, 50, 48, 56],
   "Voice Engine": [12, 15, 14, 18, 16, 20, 19, 24, 22, 28, 26, 32],
   Sensors: [8, 10, 9, 12, 11, 14, 13, 16, 15, 18, 17, 20],
   "System Schedule Engine": [10, 12, 11, 14, 13, 16, 15, 18, 17, 20, 19, 22],
-  "Clinic Users (Security)": [0, 1, 0, 2, 1, 3, 2, 4, 3, 5, 4, 6],
+  "Clinic Users": [0, 1, 0, 2, 1, 3, 2, 4, 3, 5, 4, 6],
 };
 
 /* This chart always shows the trailing 12 months (no range filter). */
@@ -699,37 +723,9 @@ function renderOvOrgList(orgId) {
     <div style="font-size:12px; color:var(--gray-text); padding:6px 4px 2px;">${o.providers} providers &middot; Last incident ${o.lastIncident}</div>`;
 }
 
-/* "View all" opens a modal with every affected organization (not just the
-   top 5 shown in the mini list), scrollable so the count doesn't push the
-   dashboard layout around. */
-const ovOrgListModalOverlay = document.getElementById("ovOrgListModalOverlay");
-const ovOrgListModalBody = document.getElementById("ovOrgListModalBody");
-
-function openOvOrgListModal() {
-  document.getElementById("ovOrgListModalTitle").textContent = `Affected Organizations (${ovAffectedOrgCount()})`;
-  ovOrgListModalBody.innerHTML = ovScopedOrgEntries()
-    .filter(([, o]) => o.openIssues > 0)
-    .sort((a, b) => b[1].openIssues - a[1].openIssues)
-    .map(
-      ([id, o]) => `
-    <a class="bo-org-mini-row" href="org-health-dashboard.html?org=${id}">
-      <span class="dot" style="background:${ovOrgDotColor[o.severity]};"></span>
-      <span class="bo-org-mini-name">${o.name}</span>
-      <span class="bo-severity-pill ${ovOrgIssuesPillClass[o.severity]} bo-org-mini-issues">${o.openIssues} issue${o.openIssues === 1 ? "" : "s"}</span>
-      <span class="bo-org-mini-patients">${o.patients} patients</span>
-    </a>`
-    )
-    .join("");
-  ovOrgListModalOverlay.classList.add("open");
-}
-
-function closeOvOrgListModal() {
-  ovOrgListModalOverlay.classList.remove("open");
-}
-
-document.getElementById("ovOrgListViewAllBtn").addEventListener("click", openOvOrgListModal);
-document.getElementById("ovOrgListModalClose").addEventListener("click", closeOvOrgListModal);
-ovOrgListModalOverlay.addEventListener("click", (e) => { if (e.target === ovOrgListModalOverlay) closeOvOrgListModal(); });
+/* "View all" opens Support > Incidents (open incidents), as in the
+   developed dashboard. */
+document.getElementById("ovOrgListViewAllBtn").addEventListener("click", () => { location.href = "support.html?tab=incidents"; });
 
 function ovHash(str) {
   let h = 0;
@@ -813,7 +809,9 @@ function renderOvUptimeList() {
     const bars = s.days
       .map((status, i) => {
         const daysAgo = s.days.length - 1 - i;
-        const when = daysAgo === 0 ? "Today" : daysAgo === 1 ? "Yesterday" : `${daysAgo} days ago`;
+        const day = new Date();
+        day.setDate(day.getDate() - daysAgo);
+        const when = `${String(day.getMonth() + 1).padStart(2, "0")}/${String(day.getDate()).padStart(2, "0")}/${day.getFullYear()}`;
         return `<span class="bo-uptime-bar" style="background:${OV_UPTIME_STATUS_META[status].color};" data-label="${s.name}" data-status="${OV_UPTIME_STATUS_META[status].label}" data-x="${when}" data-color="${OV_UPTIME_STATUS_META[status].color}"></span>`;
       })
       .join("");
@@ -835,16 +833,16 @@ function renderOvUptimeList() {
 }
 
 /* Same tooltip look as the line charts above (.bo-trend-tooltip), wired to
-   the uptime bars instead of chart dots -- hovering a day shows which
-   service, which day, and its status that day. */
+   the uptime bars instead of chart dots -- hovering a day shows that day's
+   date and status ("09/23/2026: Down"), like the developed System Health. */
 function wireOvUptimeTooltips() {
   const container = document.getElementById("ovUptimeList");
   const tooltip = document.getElementById("ovUptimeTooltip");
 
   container.querySelectorAll(".bo-uptime-bar").forEach((bar) => {
     bar.addEventListener("mouseenter", () => {
-      const { label, status, x, color } = bar.dataset;
-      tooltip.innerHTML = `<span class="dot" style="background:${color};"></span>${label}: <b>${status}</b> &middot; ${x}`;
+      const { status, x } = bar.dataset;
+      tooltip.textContent = `${x}: ${status}`;
       tooltip.style.display = "block";
 
       /* The tooltip is centered on the bar's x position, but for a bar near
@@ -913,7 +911,7 @@ ovOrgTypeSelect.addEventListener("click", (e) => {
   ovOrgTypeSelect.classList.remove("open");
   ovOrgType = option.dataset.value;
   /* A picked organization of a different type falls back to All Organizations. */
-  const orgStillVisible = ovSelectedOrgId === "all" || ovOrgType === "all" || OV_ORG_TYPE[ovSelectedOrgId] === ovOrgType;
+  const orgStillVisible = ovSelectedOrgId === "all" || OV_ORG_TYPE[ovSelectedOrgId] === ovOrgType;
   const nextOrgId = orgStillVisible ? ovSelectedOrgId : "all";
   ovSelectedOrgId = nextOrgId;
   renderOvOrgMenu();
@@ -978,6 +976,7 @@ ovRangeSelect.addEventListener("click", (e) => {
     ovTrendRangeKey = option.dataset.value;
     renderOvTrendChart();
     renderOvTrendFooter();
+    renderOvDonut(ovSelectedOrgId);
   }
 });
 document.addEventListener("click", () => {

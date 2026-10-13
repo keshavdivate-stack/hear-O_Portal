@@ -462,6 +462,14 @@ button, input, select, textarea, optgroup {
   gap: 10px;
 }
 
+/* Summary dashboard: each tile opens Patient Management pre-filtered. */
+.bo-stat-card--link { color: inherit; text-decoration: none; transition: border-color 0.15s, box-shadow 0.15s; }
+.bo-stat-card--link:hover { border-color: var(--blue); box-shadow: 0 6px 18px rgba(20, 30, 50, 0.07); }
+
+/* Did Not Record count doubles as the link to those patients. */
+.bo-mini-num-link { display: inline-block; color: inherit; text-decoration: none; }
+.bo-mini-num-link:hover .bo-mini-unit { text-decoration: underline; }
+
 .bo-stat-icon {
   width: 32px;
   height: 32px;
@@ -622,6 +630,7 @@ button, input, select, textarea, optgroup {
 .bo-status-pill.discontinued { color: #8D929A; }
 .bo-status-pill.enabled { color: var(--green-text); }
 .bo-status-pill.monitored { color: var(--green-text); }
+.bo-status-pill.none { color: var(--gray-text); }
 .bo-status-pill.left-study { color: var(--purple-text); }
 
 /* Activity Feed */
@@ -2246,6 +2255,44 @@ a.bo-btn-secondary { text-decoration: none; }
 
 .bo-multiselect.open .bo-multiselect-menu { display: block; }
 
+/* Filter-bar variant (Support > Tickets / Incidents): a taller menu for long
+   lists like Issue Type, a disabled state for filters that wait on another
+   one ("Select a category first"), and an optional search box on top. */
+.bo-multiselect--filter { min-width: 0; }
+.bo-multiselect--filter .bo-multiselect-menu { min-width: 240px; max-height: 300px; }
+.bo-multiselect--filter .bo-multiselect-trigger:disabled { background: #F4F5F7; cursor: not-allowed; }
+.bo-multiselect--filter .bo-multiselect-trigger:disabled .bo-select-caret { opacity: 0.5; }
+.bo-multiselect-search {
+  position: sticky;
+  top: -6px;
+  z-index: 1;
+  margin: -6px -6px 6px;
+  padding: 8px;
+  background: #fff;
+  border-bottom: 1px solid var(--gray-border);
+}
+.bo-multiselect-search input {
+  width: 100%;
+  padding: 7px 10px;
+  border: 1px solid var(--field-border);
+  border-radius: 7px;
+  font-family: inherit;
+  font-size: 13px;
+  color: var(--ink);
+  outline: none;
+}
+.bo-multiselect-search input:focus { border-color: var(--blue); }
+.bo-multiselect-group {
+  padding: 8px 11px 4px;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--gray-text);
+}
+.bo-multiselect-empty { padding: 9px 11px; font-size: 13px; color: var(--gray-text); }
+.bo-select-option[hidden] { display: none; }
+
 .bo-multiselect-option {
   display: flex;
   align-items: center;
@@ -2309,6 +2356,23 @@ a.bo-btn-secondary { text-decoration: none; }
   flex: 1;
   min-width: 0;
 }
+
+/* Country picker (Manage Users): the trigger shows just the dial code, the
+   menu lists every country by name, so it opens wider than the trigger. */
+.bo-select--country .bo-select-menu { min-width: 290px; }
+.bo-country-option { display: flex; align-items: center; gap: 10px; }
+.bo-country-option .bo-country-name { flex: 1; min-width: 0; }
+.bo-country-option .bo-country-dial { color: var(--gray-text); }
+
+/* Manage Users Create/Edit: Username is read-only once the user exists, and
+   each required field carries its own "This field is required" line. */
+.bo-modal-field input:disabled { background: #F4F5F7; color: var(--gray-text); cursor: not-allowed; }
+.bo-modal-field .bo-field-error { margin: 0; }
+
+/* Items-per-page picker in a list footer */
+.bo-per-page { display: inline-flex; align-items: center; gap: 8px; }
+.bo-select--per-page { width: 74px; }
+.bo-select--per-page .bo-select-trigger { padding-top: 6px; padding-bottom: 6px; }
 
 /* ---------------- Repeatable Organization rows (Create user modal) ---------------- */
 .bo-org-row {
@@ -3132,66 +3196,12 @@ a.bo-btn-secondary { text-decoration: none; }
   gap: 20px;
 }
 
+/* One card per organization; a few picks stretch across the row, a full
+   type's worth wraps at roughly six per row. */
 .mkt-hero-row--multi .mkt-hero-cards {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
 }
-
-.mkt-hero-card {
-  display: inline-flex;
-  padding: 0;
-  max-width: 100%;
-  flex-shrink: 0;
-  overflow: hidden;
-}
-
-.mkt-hero-row--multi .mkt-hero-card { display: flex; min-width: 0; }
-
-/* Compact (multi-select) cards stack the gauge above its legend instead of
-   sitting side by side â€” at 3-4 columns there isn't enough width for both,
-   and a fixed-width legend column would rather overflow the card than shrink. */
-.mkt-hero-card--compact .mkt-hero {
-  flex-direction: column;
-  align-items: center;
-  gap: 16px;
-  padding: 24px 20px;
-  width: 100%;
-  min-width: 0;
-}
-
-.mkt-hero-card--compact .mkt-hero-label {
-  width: 100%;
-  min-width: 0;
-  text-align: center;
-}
-
-.mkt-hero-card--compact .mkt-hero-label h2 {
-  font-size: 17px;
-  margin-bottom: 12px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.mkt-hero-card--compact .mkt-compliance-dates,
-.mkt-hero-card--compact .mkt-compliance-tabs { justify-content: center; }
-
-.mkt-hero-card--compact .mkt-gauge-wrap { width: 140px; height: 140px; margin: 22px 0; }
-.mkt-hero-card--compact .mkt-tick-top { top: -22px; }
-.mkt-hero-card--compact .mkt-tick-bottom { bottom: -22px; }
-.mkt-hero-card--compact .mkt-gauge-center { font-size: 18px; }
-.mkt-hero-card--compact .mkt-gauge-center b { font-size: 12px; }
-
-.mkt-hero-card--compact .mkt-ring-breakdown {
-  width: 100%;
-  min-width: 0;
-  padding: 12px 0 0;
-  gap: 8px;
-  border-left: none;
-  border-top: 1px solid var(--gray-border);
-}
-
-.mkt-hero-card--compact .mkt-rb-row { grid-template-columns: 10px minmax(0, 1fr) auto auto; }
 
 .mkt-page-scope {
   font-size: 15px;
@@ -3208,76 +3218,32 @@ a.bo-btn-secondary { text-decoration: none; }
 
 .mkt-hero-bins .mkt-bins-list { justify-content: center; }
 
-.mkt-hero {
+/* Organization card: name, enrolled/target ring, To Date / Today rates, legend */
+.mkt-org-card {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 60px;
-  padding: 44px 32px;
-  flex-shrink: 0;
+  gap: 16px;
+  min-width: 0;
+  padding: 22px 20px 20px;
 }
 
-.mkt-hero-label h2 {
-  font-size: 26px;
+.mkt-oc-title {
+  max-width: 100%;
+  margin: 0;
+  font-size: 15px;
   font-weight: 800;
-  margin: 0 0 22px;
   color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
-
-.mkt-compliance-dates {
-  display: flex;
-  gap: 18px;
-  font-size: 13.5px;
-  font-weight: 700;
-  color: var(--ink);
-  margin-bottom: 4px;
-}
-
-.mkt-compliance-tabs {
-  display: flex;
-  gap: 18px;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--gray-text);
-}
-
-.mkt-compliance-tabs .active { color: var(--ink); }
 
 .mkt-gauge-wrap {
   position: relative;
-  width: 260px;
-  height: 260px;
+  width: 160px;
+  height: 160px;
   flex-shrink: 0;
-}
-
-.mkt-tick {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--gray-text);
-}
-
-.mkt-tick-top { top: -30px; }
-.mkt-tick-top::after {
-  content: "";
-  position: absolute;
-  left: 50%;
-  top: 20px;
-  width: 1px;
-  height: 20px;
-  background: var(--gray-border);
-}
-
-.mkt-tick-bottom { bottom: -30px; }
-.mkt-tick-bottom::before {
-  content: "";
-  position: absolute;
-  left: 50%;
-  bottom: 20px;
-  width: 1px;
-  height: 20px;
-  background: var(--gray-border);
 }
 
 .mkt-ring {
@@ -3301,48 +3267,54 @@ a.bo-btn-secondary { text-decoration: none; }
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 32px;
+  font-size: 19px;
   font-weight: 800;
   color: var(--ink);
+  pointer-events: none;
 }
 
-.mkt-gauge-center b { font-size: 17px; font-weight: 700; color: var(--gray-text); }
+.mkt-oc-rates {
+  display: flex;
+  justify-content: center;
+  gap: 26px;
+  text-align: center;
+}
 
-.mkt-ring-breakdown {
+.mkt-oc-rates b { display: block; font-size: 15px; font-weight: 800; color: var(--ink); }
+.mkt-oc-rates span { font-size: 12px; font-weight: 600; color: var(--gray-text); }
+
+.mkt-oc-legend {
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  padding: 22px 26px;
-  border-left: 1px solid var(--gray-border);
-  flex-shrink: 0;
+  gap: 8px;
+  width: 100%;
 }
 
-.mkt-rb-row {
+.mkt-oc-row {
   display: grid;
-  grid-template-columns: 10px 130px 34px auto;
+  grid-template-columns: 10px minmax(0, 1fr) auto;
   align-items: center;
   gap: 10px;
-  min-width: 0;
 }
 
-.mkt-rb-dot { width: 10px; height: 10px; border-radius: 50%; }
-.mkt-rb-label {
-  font-size: 13.5px;
+.mkt-oc-dot { width: 9px; height: 9px; border-radius: 50%; }
+.mkt-oc-label {
+  font-size: 13px;
   font-weight: 600;
-  color: var(--gray-text);
+  color: var(--ink);
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.mkt-rb-num { font-size: 17px; font-weight: 800; color: var(--ink); text-align: right; }
-.mkt-rb-pct { font-size: 12.5px; font-weight: 700; color: var(--gray-text); }
+.mkt-oc-num { font-size: 13px; font-weight: 600; color: var(--gray-text); white-space: nowrap; }
+.mkt-oc-num b { font-weight: 800; color: var(--ink); }
 
 
 /* Bottom card row */
 .mkt-cards-row {
   display: grid;
-  grid-template-columns: 1fr 1.8fr 1fr 1.4fr;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 16px;
   align-items: stretch;
   flex-shrink: 0;
@@ -3351,18 +3323,15 @@ a.bo-btn-secondary { text-decoration: none; }
 
 .mkt-card { padding: 18px 20px; display: flex; flex-direction: column; min-width: 0; }
 
-.mkt-stat-block {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding-bottom: 12px;
-  margin-bottom: 12px;
-  border-bottom: 1px solid var(--gray-border);
-}
-
 .mkt-stat-label { font-size: 12.5px; font-weight: 600; color: var(--gray-text); }
-.mkt-stat-big { font-size: 24px; font-weight: 800; color: var(--navy); }
-.mkt-stat-num { font-size: 15px; font-weight: 800; color: var(--navy); min-width: 18px; }
+.mkt-stat-big { display: block; font-size: 24px; font-weight: 800; color: var(--navy); margin-bottom: 10px; }
+.mkt-stat-num { font-size: 15px; font-weight: 800; color: var(--navy); min-width: 18px; text-align: right; }
+/* Screened: this period (bold) next to the previous one (muted), keyed by the legend below. */
+.mkt-stat-num--prev { font-weight: 600; color: var(--gray-text); }
+.mkt-stat-legend { display: flex; gap: 14px; margin-top: 8px; font-size: 12px; font-weight: 600; color: var(--gray-text); }
+.mkt-stat-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.mkt-stat-key { width: 8px; height: 8px; border-radius: 2px; background: var(--navy); }
+.mkt-stat-key--prev { background: var(--gray-text); }
 
 .mkt-stat-row {
   display: grid;
@@ -3375,11 +3344,11 @@ a.bo-btn-secondary { text-decoration: none; }
 .mkt-chart { flex: 1; min-height: 0; }
 .mkt-card-chart { min-height: 190px; }
 
+/* Enrolled: "Active · N" / "Drop Out · N" sit above a bar sized against the total. */
 .mkt-enroll-bar {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: center;
-  gap: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
   margin-bottom: 14px;
 }
 
@@ -3394,12 +3363,6 @@ a.bo-btn-secondary { text-decoration: none; }
   display: flex;
   flex-direction: column;
   gap: 4px;
-}
-
-.mkt-compliance-cell:nth-child(1),
-.mkt-compliance-cell:nth-child(2) {
-  padding-bottom: 14px;
-  border-bottom: 1px solid var(--gray-border);
 }
 
 .mkt-compliance-pct { font-size: 21px; font-weight: 800; color: var(--blue-text); }
@@ -3482,7 +3445,6 @@ a.bo-btn-secondary { text-decoration: none; }
 }
 
 @media (max-width: 760px) {
-  .mkt-hero { flex-direction: column; gap: 24px; align-items: flex-start; }
   .mkt-cards-row { grid-template-columns: 1fr; }
 }
 
@@ -3531,18 +3493,29 @@ a.bo-btn-secondary { text-decoration: none; }
 .bo-center-modal-wide { width: 520px; }
 .bo-center-modal-xl { width: 760px; }
 
-/* "View Version" modal (avatar menu) */
-.bo-version-list { display: flex; flex-direction: column; gap: 14px; max-height: 60vh; overflow-y: auto; padding-right: 4px; }
-.bo-version-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; font-size: 14px; color: var(--ink); }
-.bo-version-row span:first-child { color: var(--gray-text); }
-.bo-version-row span:last-child { font-weight: 700; }
-
-.bo-version-list-summary {
-  margin-bottom: 18px;
-  padding-bottom: 18px;
+/* "View Version" modal (avatar menu) -- same content as the developed
+   Versions dialog: "Label: value" rows, device labelling, caution note. */
+.bo-version-modal { display: flex; flex-direction: column; overflow: hidden; }
+.bo-version-body { overflow-y: auto; margin-right: -12px; padding-right: 12px; }
+.bo-version-list { display: flex; flex-direction: column; gap: 12px; }
+.bo-version-row { font-size: 13.5px; color: var(--gray-text); }
+.bo-version-row b { font-weight: 700; color: var(--ink); }
+.bo-version-label {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 18px;
+  padding: 18px 0;
+  border-top: 1px solid var(--gray-border);
   border-bottom: 1px solid var(--gray-border);
 }
-.bo-version-list-summary .bo-version-row span:first-child { color: var(--ink); font-weight: 700; }
+.bo-version-label-row { display: flex; align-items: flex-start; gap: 14px; font-size: 13.5px; line-height: 1.6; color: var(--ink); }
+.bo-version-icon { flex-shrink: 0; width: 26px; color: var(--ink); }
+.bo-version-icon-md { display: inline-flex; align-items: center; justify-content: center; height: 18px; border: 1.5px solid var(--ink); border-radius: 2px; font-size: 10px; font-weight: 800; }
+.bo-version-caution { padding-top: 14px; font-size: 13px; line-height: 1.6; color: var(--gray-text); }
+.bo-version-caution b { display: block; margin-bottom: 4px; color: var(--ink); }
+.bo-version-caution p { margin: 0; }
+.bo-version-caution-strong { margin-top: 8px !important; font-weight: 700; color: var(--maroon); }
 
 /* Center-modal header with a title + close (x) button, e.g. the Terms &
    Conditions document viewer -- plain .bo-center-modal h2 has no room for
@@ -4488,6 +4461,11 @@ a.bo-crit-issue-row:hover { background: var(--bg); }
 .bo-crit-issue-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
 .bo-crit-issue-right svg { color: var(--gray); }
 
+/* Support Dashboard lists: title + one meta line + priority pill, no row icon. */
+.bo-crit-issue-row--plain { padding: 11px 12px; }
+.bo-crit-issue-row--plain .bo-crit-issue-title,
+.bo-crit-issue-row--plain .bo-crit-issue-meta { display: block; }
+
 .bo-ov-triple { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-top: 16px; }
 .bo-ov-panel-foot { display: block; text-align: center; font-size: 12.5px; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--gray-border); flex-shrink: 0; }
 
@@ -4816,6 +4794,13 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
   margin: 6px 0;
 }
 .bo-history-date { font-size: 11.5px; color: var(--gray-text); }
+.bo-history-by { font-size: 11.5px; color: var(--gray-text); }
+.bo-history-link { font-size: 12.5px; font-weight: 600; color: var(--blue); text-decoration: none; }
+.bo-history-link:hover { text-decoration: underline; }
+
+/* Patient Device Info: a denied permission is the likely cause of missing
+   data, so it stands out (maroon -- red is reserved for Priority). */
+.bo-kv-cell .v.is-denied { color: var(--maroon-text); }
 
 /* ==========================================================
    REPORT MANAGEMENT PAGE
@@ -5098,9 +5083,16 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
 /* Rule Status column (Enabled/Disabled) -- plain colored text like the other
    status columns. A disabled rule's row is dimmed, except its Status and
    kebab cells, so the state stays readable and it can be re-enabled. */
-.bo-rule-status { font-size: 12px; font-weight: 700; }
-.bo-rule-status--enabled { color: var(--green-text); }
-.bo-rule-status--disabled { color: var(--gray-text); }
+/* Enable / Disable rule confirmation (Status toggle). Disable is the
+   destructive choice, so its button is maroon -- red is kept for Priority. */
+.bo-confirm-modal { width: 440px; }
+.bo-confirm-text { margin: 0 0 22px; font-size: 13.5px; line-height: 1.55; color: var(--gray-text); }
+
+/* Rules has only two filters, so they keep a compact width (like the
+   developed Rules filters) instead of stretching across the whole row. */
+#tab-rules .bo-filter-row .bo-select { flex: 0 1 220px; }
+.bo-btn-primary.bo-btn-danger { background: var(--maroon); border-color: var(--maroon); }
+.bo-btn-primary.bo-btn-danger:hover { background: var(--maroon-text); border-color: var(--maroon-text); }
 .bo-rule-row-disabled td:not(:last-child):not(.bo-rule-status-cell) { opacity: 0.5; }
 
 /* Tickets table: Category and Level as filled gray tags, Priority as plain
@@ -5184,6 +5176,9 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
 
 .bo-impact-chip-list { display: flex; flex-wrap: wrap; gap: 6px; }
 .bo-impact-chip { background: var(--bg); border-radius: 8px; padding: 4px 9px; font-size: 12px; font-weight: 600; color: var(--ink); }
+/* Incident detail Impact card: every affected organization by name; a long list scrolls inside the card. */
+.inc-impact-orgs { margin-top: 8px; max-height: 300px; overflow-y: auto; font-size: 13px; font-weight: 600; color: var(--gray-text); }
+.inc-impact-orgs .bo-impact-chip { background: #fff; border: 1px solid var(--gray-border); font-size: 12.5px; }
 
 /* Tasks column â€” compact fraction, clickable only while work remains */
 .bo-task-progress {
@@ -5854,3 +5849,128 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
 @media (max-width: 1100px) {
   .td-layout { grid-template-columns: 1fr; }
 }
+
+/* Patient Management: 14 filters -- wrap onto a second line instead of
+   squeezing every control narrow on a normal wide screen. */
+.bo-filter-row--wrap { flex-wrap: wrap; }
+.bo-filter-row--wrap > .bo-select,
+.bo-filter-row--wrap > .bo-multiselect,
+.bo-filter-row--wrap > .bo-filter-field,
+.bo-filter-row--wrap > .bo-date-field,
+.bo-filter-row--wrap > .bo-search-pill { flex: 1 1 150px; }
+
+/* Summary: long event names truncate so the Date column stays visible. */
+.bo-table--fit { table-layout: fixed; width: 100%; }
+.bo-table--fit th:nth-child(1), .bo-table--fit td:nth-child(1) { width: 30%; }
+.bo-table--fit th:nth-child(3), .bo-table--fit td:nth-child(3) { width: 26%; }
+.bo-table--fit td { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* Table rows that open a detail page (Summary dashboard cards). */
+.bo-row-clickable { cursor: pointer; }
+.bo-row-clickable:hover td { background: var(--bg); }
+
+/* ---------------- Ticket detail: Patient Log tab (ticket-detail.html) ----------------
+   Rebuilt to match the developed screen: From / To date fields + Clear
+   dates, a "Log History" row with Download Log, then a two-pane viewer --
+   log files on the left (~30%), the selected file's lines on the right
+   (~70%) -- and a Recording section underneath. */
+.td-plog-dates { display: flex; align-items: flex-end; flex-wrap: wrap; gap: 12px; margin-bottom: 18px; }
+.td-plog-date { position: relative; display: flex; flex-direction: column; gap: 6px; }
+.td-plog-date-label { font-size: 12.5px; font-weight: 600; color: var(--gray-text); }
+.td-plog-date-field { min-width: 170px; padding: 0 8px 0 0; gap: 0; }
+.td-plog-date-field.active { border-color: var(--blue); }
+.td-plog-date-trigger {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 4px 9px 12px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
+}
+.td-plog-date-field.placeholder .bo-date-field-value { color: #AEB4BC; font-weight: 400; }
+.td-plog-date-clear {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 50%;
+  background: var(--bg);
+  color: var(--gray-text);
+  font-size: 15px;
+  line-height: 1;
+  cursor: pointer;
+  font-family: inherit;
+}
+.td-plog-date-clear:hover { background: var(--gray-border); color: var(--ink); }
+.td-plog-date-clear[hidden] { display: none; }
+.td-plog-date .bo-mini-calendar { top: calc(100% + 6px); left: 0; right: auto; width: 290px; z-index: 300; }
+
+/* Small caps section label ("LOG HISTORY", "RECORDING") without the
+   modal-title divider above it. */
+.td-plog-label { margin: 0; padding-top: 0; border-top: none; }
+.td-plog-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+
+.td-plog-panes { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 7fr); gap: 12px; }
+.td-plog-files,
+.td-plog-viewer {
+  height: 380px;
+  overflow-y: auto;
+  background: var(--bg);
+  border: 1px solid var(--gray-border);
+  border-radius: 10px;
+}
+.td-plog-files { display: flex; flex-direction: column; gap: 6px; padding: 8px; }
+.td-plog-file {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 12px;
+  background: #fff;
+  border: 1px solid var(--gray-border);
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
+  flex-shrink: 0;
+}
+.td-plog-file:hover { border-color: var(--blue); }
+.td-plog-file-name { min-width: 0; font-size: 12.5px; font-weight: 700; color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.td-plog-file-time { flex-shrink: 0; font-size: 11.5px; color: var(--gray-text); white-space: nowrap; }
+.td-plog-file.selected { background: var(--blue); border-color: var(--blue); }
+.td-plog-file.selected .td-plog-file-name,
+.td-plog-file.selected .td-plog-file-time { color: #fff; }
+
+.td-plog-viewer {
+  padding: 4px 14px;
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--ink);
+}
+.td-plog-line { padding: 6px 0; border-bottom: 1px solid var(--gray-border); white-space: pre-wrap; word-break: break-word; }
+.td-plog-line:last-child { border-bottom: none; }
+
+.td-plog-rec { margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--gray-border); }
+.td-plog-rec > .td-plog-label { display: flex; margin-bottom: 14px; }
+.td-plog-rec .td-plog-dates { margin-bottom: 14px; }
+.td-plog-rec-caption { margin: 0 0 12px; font-size: 13px; font-weight: 600; color: var(--ink); }
+.td-plog-rec-caption[hidden] { display: none; }
+.td-plog-rec-parts { max-height: 380px; overflow-y: auto; }
+
+@media (max-width: 900px) {
+  .td-plog-panes { grid-template-columns: 1fr; }
+  .td-plog-files { height: 220px; }
+}
+
+/* Secondary buttons that can be unavailable (e.g. Download Log with no file in range). */
+.bo-btn-secondary:disabled { opacity: 0.5; cursor: not-allowed; }

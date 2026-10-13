@@ -150,3 +150,89 @@ function incRelatedTicketLink(incident) {
   </a>`;
 }
 
+
+/* ---------------- Escalate & Create Ticket (Incidents list + incident detail) ----------------
+   Same fields as the developed dialog: Priority and Routed level start from
+   the incident's own priority, Assigned to lists that level's agents, and
+   Description is optional. Escalating marks the incident Escalated and
+   raises a System ticket linked to it. */
+const INC_ESCALATE_LEVELS = ["Level 1", "Level 2"];
+const INC_PRIORITY_TO_LEVEL = { "SEV-1": "Level 2", "SEV-2": "Level 2", "SEV-3": "Level 1", "SEV-4": "Level 1" };
+
+function wireEscalateDrawer(getIncident, onEscalated) {
+  const overlay = document.getElementById("addTaskOverlay");
+  const form = document.getElementById("addTaskForm");
+  const field = (name) => overlay.querySelector(`.bo-select[data-name="${name}"]`);
+  const value = (name) => field(name).querySelector("input[type=hidden]").value;
+
+  field("taskPriority").querySelector(".bo-select-menu").innerHTML = buildSelectOptions(["Low", "Medium", "High", "Critical"]);
+  field("taskLevel").querySelector(".bo-select-menu").innerHTML = buildSelectOptions(INC_ESCALATE_LEVELS);
+
+  function renderAssignees() {
+    field("taskAssignee").querySelector(".bo-select-menu").innerHTML = buildSelectOptions(TIER_AGENTS[value("taskLevel")] || []);
+    resetBoSelect(field("taskAssignee"));
+  }
+  field("taskLevel").querySelector("input[type=hidden]").addEventListener("change", renderAssignees);
+
+  const close = () => overlay.classList.remove("open");
+  document.getElementById("closeAddTaskX").addEventListener("click", close);
+  document.getElementById("cancelAddTask").addEventListener("click", close);
+  overlay.addEventListener("click", (e) => { if (e.target === overlay) close(); });
+
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const incident = getIncident();
+    if (!incident) return;
+    escalateIncident(incident, {
+      priority: value("taskPriority") || INC_PRIORITY_LABEL[incident.priority],
+      level: value("taskLevel") || INC_PRIORITY_TO_LEVEL[incident.priority],
+      assignee: value("taskAssignee"),
+      description: form.taskDescription.value.trim(),
+    });
+    close();
+    onEscalated(incident);
+  });
+
+  return function open(incident) {
+    form.reset();
+    overlay.querySelectorAll(".bo-select").forEach(resetBoSelect);
+    setBoSelectValue(field("taskPriority"), INC_PRIORITY_LABEL[incident.priority] || "", { silent: true });
+    setBoSelectValue(field("taskLevel"), INC_PRIORITY_TO_LEVEL[incident.priority] || "Level 1", { silent: true });
+    renderAssignees();
+    overlay.classList.add("open");
+  };
+}
+
+function escalateIncident(incident, { priority, level, assignee, description }) {
+  const tickets = typeof clinicTickets !== "undefined" ? clinicTickets : [];
+  const nextId = tickets.length ? Math.max(...tickets.map((t) => t.id)) + 1 : 0;
+  const now = new Date();
+  const pad = (n) => String(n).padStart(2, "0");
+  const ticket = {
+    id: nextId,
+    ticketNo: `TCK-${3000 + nextId}`,
+    raisedBy: "System",
+    organization: incident.orgs.length === 1 ? incident.orgs[0] : "—",
+    category: incident.category,
+    issueType: incIssueType(incident),
+    scope: incident.orgs.length ? "Organization" : "Patient",
+    tier: level,
+    priority,
+    origin: "System",
+    status: "Open",
+    justCreated: true,
+    assignedTo: assignee || "",
+    createdDate: `${pad(now.getDate())}/${pad(now.getMonth() + 1)}/${now.getFullYear()} ${pad(now.getHours())}:${pad(now.getMinutes())}`,
+    description: description || incident.summary,
+    source: "clinic",
+    type: "System",
+    who: `${incident.orgs.length} Organizations`,
+  };
+  tickets.unshift(ticket);
+  if (typeof allTickets !== "undefined") allTickets.unshift(ticket);
+
+  incident.status = "Escalated";
+  incident.relatedTickets = [{ ticketNo: ticket.ticketNo, source: "clinic" }, ...(incident.relatedTickets || [])];
+  incident.timeline.push({ time: "Just now", text: "Emily Carter escalated incident", detail: `Routed to ${level}${assignee ? `, assigned to ${assignee}` : ""}${description ? `. ${description}` : ""}`, ticketNo: ticket.ticketNo });
+  return ticket;
+}

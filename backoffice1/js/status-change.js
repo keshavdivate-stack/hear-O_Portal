@@ -1,26 +1,16 @@
 /* ---------------- Data ---------------- */
-/* start dates stored ISO (YYYY-MM-DD) so From/To date filters compare correctly */
-const statusChanges = [
-  { username: "B01-0335", prev: "Registered", next: "Baseline", start: "2026-09-11", days: 1, by: "System" },
-  { username: "B01-0334", prev: "Registered", next: "Baseline", start: "2026-09-11", days: 1, by: "System" },
-  { username: "B01-0333", prev: "Registered", next: "Baseline", start: "2026-09-11", days: 1, by: "System" },
-  { username: "B01-0335", prev: "", next: "Registered", start: "2026-09-10", days: 2, by: "System" },
-  { username: "B01-0334", prev: "", next: "Registered", start: "2026-09-10", days: 2, by: "System" },
-  { username: "B01-0333", prev: "", next: "Registered", start: "2026-09-10", days: 2, by: "System" },
-  { username: "NTS-0006", prev: "", next: "Registered", start: "2026-09-08", days: 4, by: "System" },
-  { username: "B01-0332", prev: "Registered", next: "Baseline", start: "2026-09-08", days: 4, by: "System" },
-];
-
-const formatDate = (iso) => {
-  const [year, month, day] = iso.split("-");
-  return `${day}/${month}/${year.slice(-2)}`;
+/* rows come from js/status-change-data.js (STATUS_CHANGE_ROWS, newest first, `since` as MM/DD/YYYY);
+   sinceIso is added so the From/To date inputs (YYYY-MM-DD) compare correctly */
+const toIsoDate = (mdy) => {
+  const [month, day, year] = mdy.split("/");
+  return `${year}-${month}-${day}`;
 };
 
-statusChanges.forEach((s, i) => (s.id = i));
+const statusChanges = STATUS_CHANGE_ROWS.map((s, i) => ({ ...s, id: i, sinceIso: toIsoDate(s.since) }));
 
 /* ---------------- State ---------------- */
 const SC_PAGE_SIZE = 20;
-const SC_STATUS_TO_OPTIONS = ["Registered", "Active", "Priority", "Baseline"];
+const SC_STATUS_TO_OPTIONS = ["Registered", "Baseline", "Active", "Priority"];
 let scCurrentPage = 1;
 let scStatusToFilter = "";
 let scSearchTerm = "";
@@ -109,7 +99,7 @@ document.addEventListener("click", (e) => {
   }
 });
 
-const scSiteCodes = [...new Set(statusChanges.map((s) => s.username.split("-")[0]))];
+const scSiteCodes = [...new Set(statusChanges.map((s) => s.site))].sort();
 let scSiteFilter = new Set(scSiteCodes);
 const scSiteMultiSelect = wireMultiSelect("scSiteFilter", scSiteCodes, (selected) => {
   scSiteFilter = selected;
@@ -192,12 +182,12 @@ window.addEventListener("resize", closeAllBoSelects);
 function scFilteredRows() {
   return statusChanges.filter((s) => {
     if (scSiteFilter.size && scSiteFilter.size < scSiteCodes.length) {
-      if (![...scSiteFilter].some((c) => s.username.startsWith(c))) return false;
+      if (!scSiteFilter.has(s.site)) return false;
     }
-    if (scStatusToFilter && s.next !== scStatusToFilter) return false;
+    if (scStatusToFilter && s.changedTo !== scStatusToFilter) return false;
     if (scSearchTerm && !s.username.toLowerCase().includes(scSearchTerm)) return false;
-    if (scFromDate && s.start < scFromDate) return false;
-    if (scToDate && s.start > scToDate) return false;
+    if (scFromDate && s.sinceIso < scFromDate) return false;
+    if (scToDate && s.sinceIso > scToDate) return false;
     return true;
   });
 }
@@ -217,11 +207,11 @@ function renderStatusChanges() {
       (s) => `
       <tr>
         <td><span class="bo-name-link">${s.username}</span></td>
-        <td>${s.prev ? `<span class="bo-sc-badge ${s.prev.toLowerCase()}">${s.prev}</span>` : ""}</td>
-        <td><span class="bo-sc-badge ${s.next.toLowerCase()}">${s.next}</span></td>
-        <td>${formatDate(s.start)}</td>
+        <td>${s.previous ? `<span class="bo-sc-badge ${s.previous.toLowerCase()}">${s.previous}</span>` : "&mdash;"}</td>
+        <td><span class="bo-sc-badge ${s.changedTo.toLowerCase()}">${s.changedTo}</span></td>
+        <td>${s.since}</td>
         <td>${s.days}</td>
-        <td>${s.by}</td>
+        <td>${s.changedBy}</td>
       </tr>`
     )
     .join("");
@@ -279,6 +269,25 @@ document.getElementById("scClearFiltersBtn").addEventListener("click", () => {
   scCurrentPage = 1;
   renderStatusChanges();
 });
+
+/* ---------------- Deep link: ?statusChange=<Status>&patient=<username> ----------------
+   A Summary dashboard row opens this page narrowed to that patient and the
+   status they changed to; both show in the filter controls, and Clear
+   filters goes back to the defaults as usual. */
+(function applyIncomingStatusChangeFilters() {
+  const params = new URLSearchParams(location.search);
+  const status = params.get("statusChange");
+  const patient = (params.get("patient") || "").trim();
+  if (status && scStatusToSelect.querySelector(`.bo-select-option[data-value="${CSS.escape(status)}"]`)) {
+    setBoSelectValue(scStatusToSelect, status, { silent: true });
+    scStatusToFilter = status;
+  }
+  if (patient) {
+    document.getElementById("scSearchInput").value = patient;
+    scSearchTerm = patient.toLowerCase();
+  }
+  if (status || patient) renderStatusChanges();
+})();
 
 /* ---------------- Pagination ---------------- */
 document.getElementById("scFirstPage").addEventListener("click", () => { scCurrentPage = 1; renderStatusChanges(); });

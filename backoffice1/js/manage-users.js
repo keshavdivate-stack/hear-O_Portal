@@ -1,31 +1,44 @@
 /* ---------------- Data ---------------- (see js/users-data.js, loaded before this file) */
 
+/* Role list, in the order the developed Create/Edit User dropdown shows it. */
+const USER_ROLES = [
+  "Supervisor", "Clinical Supervisor", "Linguistic User", "Regular", "Clinical Manager", "Site Coordinator",
+  "Medical Institute Manager", "Clinic Doctor", "Clinic Manager", "Clinic User", "R&D Manager",
+  "Clinic Supervisor", "Product Manager", "Regular Study", "Tech Support", "Report Only",
+];
+
+/* Only these roles get the View Log / View Recording permissions. */
+const ROLES_WITH_VIEW_PERMS = ["Supervisor", "Tech Support", "Clinic Doctor", "Clinic Manager", "Clinic Supervisor", "Clinic User"];
+
+/* users-data.js stores roles upper-case ("CLINIC DOCTOR") for Org Profile;
+   this page shows and edits them by their dropdown label. */
+function roleLabel(role) {
+  return USER_ROLES.find((r) => r.toLowerCase() === String(role || "").toLowerCase()) || role || "—";
+}
+
+/* Stored as DD/MM/YYYY; the list shows MM/DD/YYYY like the developed page. */
+function displayDate(ddmmyyyy) {
+  const [d, m, y] = String(ddmmyyyy).split("/");
+  return y ? `${m}/${d}/${y}` : ddmmyyyy;
+}
+
+const ALL_ORGS = "All Organizations";
+const orgNames = orgs.map((o) => o.name);
+const displayOrgs = (allowedOrgs) => (allowedOrgs === ALL_ORGS ? ALL_ORGS : String(allowedOrgs || "").split(" ").filter(Boolean).join(", ") || "—");
+
 /* ---------------- State ---------------- */
-const USER_PAGE_SIZE = 20;
+let userPageSize = 20;
 let userCurrentPage = 1;
-let userSortDir = "asc";
 let userSearchTerm = "";
-/* Active/Archived is its own tab, not a filter -- archiving a user hides them
-   from the working list without deleting them, mirroring Organizations Management. */
-let userViewTab = "active";
 
 function filteredUsers() {
-  const inView = boUsers.filter((u) => !!u.archived === (userViewTab === "archived"));
-  if (!userSearchTerm) return inView;
+  if (!userSearchTerm) return boUsers;
   const q = userSearchTerm.toLowerCase();
-  return inView.filter(
-    (u) =>
-      u.username.toLowerCase().includes(q) ||
-      u.firstName.toLowerCase().includes(q) ||
-      u.lastName.toLowerCase().includes(q) ||
-      u.email.toLowerCase().includes(q)
-  );
+  return boUsers.filter((u) => u.username.toLowerCase().includes(q));
 }
 
 function sortedUsers() {
-  const list = [...filteredUsers()];
-  list.sort((a, b) => (userSortDir === "asc" ? a.username.localeCompare(b.username, undefined, { numeric: true }) : b.username.localeCompare(a.username, undefined, { numeric: true })));
-  return list;
+  return [...filteredUsers()].sort((a, b) => a.username.localeCompare(b.username, undefined, { numeric: true }));
 }
 
 /* ---------------- Render ---------------- */
@@ -37,11 +50,11 @@ const userKebabIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="non
 function renderUsers() {
   const list = sortedUsers();
   const total = list.length;
-  const totalPages = Math.max(1, Math.ceil(total / USER_PAGE_SIZE));
+  const totalPages = Math.max(1, Math.ceil(total / userPageSize));
   userCurrentPage = Math.min(userCurrentPage, totalPages);
 
-  const start = (userCurrentPage - 1) * USER_PAGE_SIZE;
-  const pageItems = list.slice(start, start + USER_PAGE_SIZE);
+  const start = (userCurrentPage - 1) * userPageSize;
+  const pageItems = list.slice(start, start + userPageSize);
 
   document.getElementById("usersRows").innerHTML = pageItems
     .map(
@@ -52,9 +65,9 @@ function renderUsers() {
         <td>${u.lastName || "—"}</td>
         <td>${u.email || "—"}</td>
         <td>${u.phone || "—"}</td>
-        <td>${u.role}</td>
-        <td>${u.dateCreated}</td>
-        <td>${u.allowedOrgs}</td>
+        <td>${roleLabel(u.role)}</td>
+        <td>${displayDate(u.dateCreated)}</td>
+        <td>${displayOrgs(u.allowedOrgs)}</td>
         <td>${onOff(u.mfa)}</td>
         <td>${yesNo(u.locked)}</td>
         <td>
@@ -66,7 +79,7 @@ function renderUsers() {
     )
     .join("");
 
-  const rangeEnd = total === 0 ? 0 : Math.min(start + USER_PAGE_SIZE, total);
+  const rangeEnd = total === 0 ? 0 : Math.min(start + userPageSize, total);
   const rangeStart = total === 0 ? 0 : start + 1;
   document.getElementById("userPageRangeLabel").textContent = `${rangeStart} – ${rangeEnd} of ${total}`;
 
@@ -78,26 +91,10 @@ function renderUsers() {
 
 renderUsers();
 
-/* ---------------- Search ---------------- */
+/* ---------------- Search (by username) ---------------- */
 document.getElementById("userSearchInput").addEventListener("input", (e) => {
   userSearchTerm = e.target.value.trim();
   userCurrentPage = 1;
-  renderUsers();
-});
-
-/* ---------------- Active / Archived tabs ---------------- */
-document.getElementById("userViewTabs").addEventListener("click", (e) => {
-  const btn = e.target.closest(".bo-tab");
-  if (!btn || btn.classList.contains("active")) return;
-  userViewTab = btn.dataset.view;
-  document.querySelectorAll("#userViewTabs .bo-tab").forEach((b) => b.classList.toggle("active", b === btn));
-  userCurrentPage = 1;
-  renderUsers();
-});
-
-/* ---------------- Sort ---------------- */
-document.querySelector(".bo-list-table th.sortable").addEventListener("click", () => {
-  userSortDir = userSortDir === "asc" ? "desc" : "asc";
   renderUsers();
 });
 
@@ -106,15 +103,12 @@ document.getElementById("userFirstPage").addEventListener("click", () => { userC
 document.getElementById("userPrevPage").addEventListener("click", () => { userCurrentPage -= 1; renderUsers(); });
 document.getElementById("userNextPage").addEventListener("click", () => { userCurrentPage += 1; renderUsers(); });
 document.getElementById("userLastPage").addEventListener("click", () => {
-  userCurrentPage = Math.ceil(filteredUsers().length / USER_PAGE_SIZE);
+  userCurrentPage = Math.ceil(filteredUsers().length / userPageSize);
   renderUsers();
 });
 
-/* ---------------- Row action dropdown (reset password / edit / archive) ---------------- */
+/* ---------------- Row action dropdown (reset password / edit / delete) ---------------- */
 const userRowMenu = document.getElementById("userRowMenu");
-const userRowMenuResetBtn = document.getElementById("userRowMenuResetBtn");
-const userRowMenuEditBtn = document.getElementById("userRowMenuEditBtn");
-const userRowMenuArchiveBtn = document.getElementById("userRowMenuArchiveBtn");
 let activeUserRowId = null;
 
 document.getElementById("usersRows").addEventListener("click", (e) => {
@@ -122,19 +116,6 @@ document.getElementById("usersRows").addEventListener("click", (e) => {
   if (!trigger) return;
   e.stopPropagation();
   activeUserRowId = Number(trigger.dataset.id);
-
-  const user = boUsers.find((u) => u.id === activeUserRowId);
-  const isArchived = !!user?.archived;
-
-  /* An archived user is read-only -- the only action left for them is to
-     bring them back, so every other row action is hidden while archived. */
-  userRowMenuResetBtn.hidden = isArchived;
-  userRowMenuEditBtn.hidden = isArchived;
-  if (user) {
-    userRowMenuArchiveBtn.textContent = isArchived ? "Unarchive User" : "Archive User";
-    userRowMenuArchiveBtn.dataset.action = isArchived ? "unarchive" : "archive";
-    userRowMenuArchiveBtn.classList.toggle("danger", !isArchived);
-  }
 
   const rect = trigger.getBoundingClientRect();
   userRowMenu.style.top = `${rect.bottom + 6}px`;
@@ -154,20 +135,17 @@ userRowMenu.addEventListener("click", (e) => {
   const user = boUsers.find((u) => u.id === activeUserRowId);
   if (!user) return;
 
-  if (item.dataset.action === "archive") {
-    if (!confirm(`Archive user "${user.username}"? They will move to the Archived Users tab.`)) return;
-    user.archived = true;
-    renderUsers();
-  } else if (item.dataset.action === "unarchive") {
-    user.archived = false;
+  if (item.dataset.action === "delete") {
+    if (!confirm(`Delete user "${user.username}"?`)) return;
+    boUsers.splice(boUsers.indexOf(user), 1);
     renderUsers();
   } else if (item.dataset.action === "edit") {
-    openAddUserModal();
+    openUserDrawer(user);
   }
   // "reset" (Reset Password) has no wired behavior in this preview.
 });
 
-/* ---------------- Custom selects (used inside the Create user drawer) ---------------- */
+/* ---------------- Custom selects ---------------- */
 function setBoSelectValue(select, value, { silent = false } = {}) {
   const hiddenInput = select.querySelector("input[type=hidden]");
   const trigger = select.querySelector(".bo-select-value");
@@ -177,7 +155,7 @@ function setBoSelectValue(select, value, { silent = false } = {}) {
 
   if (option) {
     option.classList.add("selected");
-    trigger.textContent = option.textContent.trim();
+    trigger.textContent = option.dataset.display || option.textContent.trim();
     trigger.classList.remove("placeholder");
   } else {
     trigger.textContent = trigger.dataset.placeholder || trigger.textContent;
@@ -203,10 +181,6 @@ function positionBoSelectMenu(select) {
   menu.style.bottom = openUpward ? `${window.innerHeight - rect.top + 6}px` : "auto";
 }
 
-function resetBoSelect(select) {
-  setBoSelectValue(select, "", { silent: true });
-}
-
 function closeAllBoSelects() {
   document.querySelectorAll(".bo-select.open").forEach((s) => s.classList.remove("open"));
 }
@@ -214,12 +188,13 @@ function closeAllBoSelects() {
 function wireBoSelect(select) {
   const trigger = select.querySelector(".bo-select-trigger");
   const valueEl = select.querySelector(".bo-select-value");
-  valueEl.dataset.placeholder = valueEl.textContent.trim();
+  if (valueEl.classList.contains("placeholder")) valueEl.dataset.placeholder = valueEl.textContent.trim();
 
   trigger.addEventListener("click", (e) => {
     e.stopPropagation();
     const willOpen = !select.classList.contains("open");
     closeAllBoSelects();
+    document.querySelectorAll(".bo-multiselect.open").forEach((el) => el.classList.remove("open"));
     if (willOpen) {
       select.classList.add("open");
       positionBoSelectMenu(select);
@@ -234,177 +209,223 @@ function wireBoSelect(select) {
   });
 }
 
-function initBoSelects(root = document) {
-  root.querySelectorAll(".bo-select").forEach(wireBoSelect);
-}
+const checkSvg = `<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 
-initBoSelects();
+document.getElementById("roleSelectMenu").innerHTML = USER_ROLES.map(
+  (r) => `<div class="bo-select-option" data-value="${supFilterEsc(r)}">${supFilterEsc(r)}${checkSvg}</div>`
+).join("");
+
+/* Country options carry the ISO code as their value (several countries share
+   +1, +44 ...); the trigger shows only the dial code. */
+document.getElementById("countrySelectMenu").innerHTML = COUNTRY_CODES.map(
+  ([iso, name, dial]) =>
+    `<div class="bo-select-option bo-country-option" data-value="${iso}" data-display="${dial}"><span class="bo-country-name">${supFilterEsc(name)}</span><span class="bo-country-dial">${dial}</span>${checkSvg}</div>`
+).join("");
+
+document.querySelectorAll(".bo-select").forEach(wireBoSelect);
+
+const userForm = document.getElementById("addUserForm");
+const roleSelect = userForm.querySelector('.bo-select[data-name="role"]');
+const countrySelect = userForm.querySelector('.bo-select[data-name="countryCode"]');
+const mfaMethodSelect = userForm.querySelector('.bo-select[data-name="mfaMethod"]');
+const commPrefSelect = userForm.querySelector('.bo-select[data-name="commPref"]');
+const perPageSelect = document.getElementById("userPerPageSelect");
+
+addBoSelectSearch(roleSelect, "Search...");
+addBoSelectSearch(countrySelect, "Search countries");
+
 document.addEventListener("click", closeAllBoSelects);
-document.addEventListener("scroll", closeAllBoSelects, true);
+/* Scrolling a long menu (Role, country) keeps it open; scrolling anything
+   else closes it, since the menu is fixed under its trigger. */
+document.addEventListener("scroll", (e) => {
+  if (e.target instanceof Element && e.target.closest(".bo-select-menu")) return;
+  closeAllBoSelects();
+}, true);
 window.addEventListener("resize", closeAllBoSelects);
 
-/* ---------------- Repeatable Organization rows ---------------- */
-const orgOptionsHtml = `
-  <div class="bo-select-option" data-value="120">120<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-  <div class="bo-select-option" data-value="B01">B01<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-  <div class="bo-select-option" data-value="ATP">ATP<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-  <div class="bo-select-option" data-value="All Organizations">All Organizations<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-`;
-
-const orgRowsWrap = document.getElementById("orgRowsWrap");
-const addOrgRowBtn = document.getElementById("addOrgRowBtn");
-const addOrgRowBtnField = addOrgRowBtn.closest(".bo-modal-field");
-let orgRowCount = 1;
-
-function orgRowFields() {
-  return Array.from(orgRowsWrap.parentElement.querySelectorAll(".bo-modal-field")).filter((f) => f.querySelector("[data-org-row]"));
-}
-
-function relabelOrgRows() {
-  orgRowFields().forEach((field, i) => {
-    field.querySelector("label").textContent = `Organization ${i + 1}`;
-  });
-}
-
-function addOrgRow() {
-  orgRowCount += 1;
-  const name = `org${orgRowCount}`;
-
-  const field = document.createElement("div");
-  field.className = "bo-modal-field full";
-  field.innerHTML = `
-    <label>Organization ${orgRowCount}</label>
-    <div class="bo-org-row" data-org-row>
-      <div class="bo-select" data-name="${name}">
-        <button type="button" class="bo-select-trigger">
-          <span class="bo-select-value placeholder">Select organization</span>
-          <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-        </button>
-        <div class="bo-select-menu">${orgOptionsHtml}</div>
-        <input type="hidden" name="${name}" />
-      </div>
-      <button type="button" class="bo-org-row-remove" aria-label="Remove organization">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6L18 18M6 18L18 6"/></svg>
-      </button>
-    </div>
-  `;
-
-  orgRowsWrap.parentElement.insertBefore(field, addOrgRowBtnField);
-  initBoSelects(field);
-
-  field.querySelector(".bo-org-row-remove").addEventListener("click", () => {
-    field.remove();
-    orgRowCount -= 1;
-    relabelOrgRows();
-  });
-}
-
-addOrgRowBtn.addEventListener("click", addOrgRow);
-
-function resetOrgRows() {
-  orgRowFields().forEach((field) => {
-    if (field !== orgRowsWrap) field.remove();
-  });
-  orgRowCount = 1;
-  relabelOrgRows();
-}
-
-/* ---------------- Create user drawer ---------------- */
-const addUserOverlay = document.getElementById("addUserOverlay");
-const addUserForm = document.getElementById("addUserForm");
-const saveAddUserBtn = document.getElementById("saveAddUser");
-
-/* Level and the recording/log view permissions only apply to Support
-   users -- everyone else is a clinic-side role that doesn't touch tickets
-   or patient recordings, so those fields stay hidden until Support is picked. */
-const levelFieldWrap = document.getElementById("levelFieldWrap");
-const viewRecordingsFieldWrap = document.getElementById("viewRecordingsFieldWrap");
-const viewLogsFieldWrap = document.getElementById("viewLogsFieldWrap");
-
-function updateSupportFieldsVisibility() {
-  const roleValue = addUserForm.querySelector('.bo-select[data-name="role"] input[type=hidden]').value;
-  const isSupport = roleValue === "SUPPORT";
-  levelFieldWrap.hidden = !isSupport;
-  viewRecordingsFieldWrap.hidden = !isSupport;
-  viewLogsFieldWrap.hidden = !isSupport;
-  const levelSelect = addUserForm.querySelector('.bo-select[data-name="level"]');
-  if (isSupport) {
-    /* Default new Support users to Level 1 -- per the onboarding rules
-       discussion, everything starts at Level 1 until routing is defined
-       more granularly, rather than forcing a level choice up front. */
-    if (levelSelect.querySelector("input[type=hidden]").value === "") {
-      setBoSelectValue(levelSelect, "Level 1", { silent: true });
-    }
-  } else {
-    setBoSelectValue(levelSelect, "", { silent: true });
-    addUserForm.canViewRecordings.checked = false;
-    addUserForm.canViewLogs.checked = false;
-  }
-}
-
-addUserForm.querySelector('.bo-select[data-name="role"] input[type=hidden]').addEventListener("change", updateSupportFieldsVisibility);
-
-function openAddUserModal() {
-  addUserForm.reset();
-  addUserForm.querySelectorAll(".bo-select").forEach(resetBoSelect);
-  setBoSelectValue(addUserForm.querySelector('.bo-select[data-name="countryCode"]'), "+91", { silent: true });
-  setBoSelectValue(addUserForm.querySelector('.bo-select[data-name="language"]'), "English", { silent: true });
-  resetOrgRows();
-  updateSupportFieldsVisibility();
-  validateAddUserForm();
-  addUserOverlay.classList.add("open");
-}
-
-function closeAddUserModal() {
-  addUserOverlay.classList.remove("open");
-}
-
-function validateAddUserForm() {
-  const roleValue = addUserForm.querySelector('.bo-select[data-name="role"] input[type=hidden]').value;
-  const levelValue = addUserForm.querySelector('.bo-select[data-name="level"] input[type=hidden]').value;
-  const levelMissing = roleValue === "SUPPORT" && levelValue === "";
-  saveAddUserBtn.disabled = addUserForm.username.value.trim() === "" || addUserForm.email.value.trim() === "" || roleValue === "" || levelMissing;
-}
-
-addUserForm.addEventListener("input", validateAddUserForm);
-addUserForm.addEventListener("change", validateAddUserForm);
-
-addUserForm.addEventListener("submit", (e) => {
-  e.preventDefault();
-  if (saveAddUserBtn.disabled) return;
-
-  const roleValue = addUserForm.querySelector('.bo-select[data-name="role"] input[type=hidden]').value;
-  const levelValue = addUserForm.querySelector('.bo-select[data-name="level"] input[type=hidden]').value;
-  const commPrefValue = addUserForm.querySelector('.bo-select[data-name="commPref"] input[type=hidden]').value;
-  const countryCode = addUserForm.querySelector('.bo-select[data-name="countryCode"] input[type=hidden]').value;
-  const orgValues = Array.from(orgRowsWrap.parentElement.querySelectorAll('[data-org-row] input[type=hidden]'))
-    .map((i) => i.value)
-    .filter(Boolean);
-
-  boUsers.unshift({
-    id: boUsers.length ? Math.max(...boUsers.map((u) => u.id)) + 1 : 0,
-    username: addUserForm.username.value.trim(),
-    firstName: addUserForm.firstName.value.trim(),
-    lastName: addUserForm.lastName.value.trim(),
-    email: addUserForm.email.value.trim(),
-    phone: addUserForm.mobile.value.trim() ? `${countryCode}-${addUserForm.mobile.value.trim()}` : "",
-    role: roleValue,
-    level: levelValue,
-    commPreference: commPrefValue,
-    dateCreated: new Date().toLocaleDateString("en-GB"),
-    allowedOrgs: orgValues.length ? orgValues.join(", ") : "—",
-    mfa: addUserForm.mfa.checked,
-    locked: false,
-    canViewRecordings: roleValue === "SUPPORT" ? addUserForm.canViewRecordings.checked : false,
-    canViewLogs: roleValue === "SUPPORT" ? addUserForm.canViewLogs.checked : false,
-  });
-
-  closeAddUserModal();
+/* ---------------- Items per page ---------------- */
+perPageSelect.querySelector("input[type=hidden]").addEventListener("change", (e) => {
+  userPageSize = Number(e.target.value);
   userCurrentPage = 1;
   renderUsers();
 });
 
-document.getElementById("openAddUserBtn").addEventListener("click", openAddUserModal);
-document.getElementById("cancelAddUser").addEventListener("click", closeAddUserModal);
-document.getElementById("closeAddUserX").addEventListener("click", closeAddUserModal);
-addUserOverlay.addEventListener("click", (e) => { if (e.target === addUserOverlay) closeAddUserModal(); });
+/* ---------------- Allowed Organizations (multi-select, all ticked by default) ---------------- */
+const allowedOrgsFilter = wireSupportMultiFilter("allowedOrgsSelect", {
+  options: asFilterOptions(orgNames),
+  selected: orgNames,
+  searchPlaceholder: "Search...",
+  allLabel: ALL_ORGS,
+});
+
+/* ---------------- Create / Edit user drawer ---------------- */
+const userOverlay = document.getElementById("addUserOverlay");
+const userDrawerTitle = document.getElementById("userDrawerTitle");
+const saveUserBtn = document.getElementById("saveAddUser");
+const viewLogFieldWrap = document.getElementById("viewLogFieldWrap");
+const viewRecordingFieldWrap = document.getElementById("viewRecordingFieldWrap");
+const mfaMethodFieldWrap = document.getElementById("mfaMethodFieldWrap");
+
+let editingUserId = null;
+let initialFormState = "";
+
+const hiddenValue = (select) => select.querySelector("input[type=hidden]").value;
+
+function updateViewPermsVisibility() {
+  const hasPerms = ROLES_WITH_VIEW_PERMS.includes(hiddenValue(roleSelect));
+  viewLogFieldWrap.hidden = !hasPerms;
+  viewRecordingFieldWrap.hidden = !hasPerms;
+  if (!hasPerms) {
+    userForm.canViewLogs.checked = false;
+    userForm.canViewRecordings.checked = false;
+  }
+}
+
+function updateMfaMethodVisibility() {
+  mfaMethodFieldWrap.hidden = !userForm.mfa.checked;
+}
+
+roleSelect.querySelector("input[type=hidden]").addEventListener("change", updateViewPermsVisibility);
+userForm.mfa.addEventListener("change", updateMfaMethodVisibility);
+
+/* Required-field values, keyed by each field wrapper's data-required. */
+function requiredValues() {
+  return {
+    username: userForm.username.value.trim(),
+    role: hiddenValue(roleSelect),
+    firstName: userForm.firstName.value.trim(),
+    lastName: userForm.lastName.value.trim(),
+    email: userForm.email.value.trim(),
+    mobile: userForm.mobile.value.trim(),
+    allowedOrgs: allowedOrgsFilter.getSelected().join(" "),
+  };
+}
+
+function setFieldError(key, show) {
+  const field = userForm.querySelector(`[data-required="${key}"]`);
+  field.querySelector(".bo-field-error").hidden = !show;
+}
+
+function formState() {
+  return JSON.stringify({
+    ...requiredValues(),
+    country: hiddenValue(countrySelect),
+    mfa: userForm.mfa.checked,
+    mfaMethod: hiddenValue(mfaMethodSelect),
+    commPref: hiddenValue(commPrefSelect),
+    logs: userForm.canViewLogs.checked,
+    recordings: userForm.canViewRecordings.checked,
+  });
+}
+
+function validateUserForm() {
+  const allFilled = Object.values(requiredValues()).every(Boolean);
+  const changed = editingUserId === null || formState() !== initialFormState;
+  saveUserBtn.disabled = !allFilled || !changed;
+}
+
+/* A required text field shows its error once it's left empty. */
+["username", "firstName", "lastName", "email", "mobile"].forEach((name) => {
+  userForm[name].addEventListener("blur", () => setFieldError(name, userForm[name].value.trim() === ""));
+  userForm[name].addEventListener("input", () => { if (userForm[name].value.trim()) setFieldError(name, false); });
+});
+roleSelect.querySelector("input[type=hidden]").addEventListener("change", () => setFieldError("role", false));
+document.getElementById("allowedOrgsSelect").addEventListener("change", () => {
+  setFieldError("allowedOrgs", allowedOrgsFilter.getSelected().length === 0);
+  validateUserForm();
+});
+
+userForm.addEventListener("input", validateUserForm);
+userForm.addEventListener("change", validateUserForm);
+
+/* Several countries share a dial code; an existing number opens on the
+   country most users mean by it. */
+const PREFERRED_COUNTRY_BY_DIAL = { "+1": "US", "+7": "RU", "+39": "IT", "+44": "GB", "+47": "NO", "+61": "AU", "+212": "MA", "+262": "YT", "+590": "GP" };
+function countryForDial(dial) {
+  return PREFERRED_COUNTRY_BY_DIAL[dial] || (COUNTRY_CODES.find((c) => c[2] === dial) || [])[0] || "US";
+}
+
+function openUserDrawer(user = null) {
+  editingUserId = user ? user.id : null;
+  userDrawerTitle.textContent = user ? "Edit User" : "Create User";
+
+  userForm.reset();
+  userForm.querySelectorAll(".bo-field-error").forEach((el) => { el.hidden = true; });
+  userForm.username.disabled = !!user;
+
+  const [dial, number] = user && user.phone ? [user.phone.slice(0, user.phone.indexOf("-")), user.phone.slice(user.phone.indexOf("-") + 1)] : ["", ""];
+
+  userForm.username.value = user ? user.username : "";
+  userForm.firstName.value = user ? user.firstName : "";
+  userForm.lastName.value = user ? user.lastName : "";
+  userForm.email.value = user ? user.email : "";
+  userForm.mobile.value = number;
+  setBoSelectValue(roleSelect, user ? roleLabel(user.role) : "", { silent: true });
+  setBoSelectValue(countrySelect, user ? user.countryIso || countryForDial(dial) : "US", { silent: true });
+  allowedOrgsFilter.setSelected(!user || user.allowedOrgs === ALL_ORGS ? orgNames : user.allowedOrgs.split(" "));
+  userForm.mfa.checked = user ? !!user.mfa : false;
+  setBoSelectValue(mfaMethodSelect, (user && user.mfaMethod) || "SMS", { silent: true });
+  setBoSelectValue(commPrefSelect, (user && user.commPreference) || "Email", { silent: true });
+
+  updateViewPermsVisibility();
+  userForm.canViewLogs.checked = !!(user && user.canViewLogs);
+  userForm.canViewRecordings.checked = !!(user && user.canViewRecordings);
+  updateMfaMethodVisibility();
+
+  initialFormState = formState();
+  validateUserForm();
+  userOverlay.classList.add("open");
+}
+
+function closeUserDrawer() {
+  userOverlay.classList.remove("open");
+  closeAllBoSelects();
+}
+
+userForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  if (saveUserBtn.disabled) return;
+
+  const role = hiddenValue(roleSelect);
+  const iso = hiddenValue(countrySelect);
+  const dial = (COUNTRY_CODES.find((c) => c[0] === iso) || [])[2] || "";
+  const pickedOrgs = allowedOrgsFilter.getSelected();
+  const hasPerms = ROLES_WITH_VIEW_PERMS.includes(role);
+
+  const fields = {
+    firstName: userForm.firstName.value.trim(),
+    lastName: userForm.lastName.value.trim(),
+    email: userForm.email.value.trim(),
+    phone: `${dial}-${userForm.mobile.value.trim()}`,
+    countryIso: iso,
+    role,
+    allowedOrgs: pickedOrgs.length === orgNames.length ? ALL_ORGS : pickedOrgs.join(" "),
+    mfa: userForm.mfa.checked,
+    mfaMethod: userForm.mfa.checked ? hiddenValue(mfaMethodSelect) : "",
+    commPreference: hiddenValue(commPrefSelect),
+    canViewLogs: hasPerms && userForm.canViewLogs.checked,
+    canViewRecordings: hasPerms && userForm.canViewRecordings.checked,
+  };
+
+  const existing = boUsers.find((u) => u.id === editingUserId);
+  if (existing) {
+    Object.assign(existing, fields);
+  } else {
+    boUsers.unshift({
+      id: boUsers.length ? Math.max(...boUsers.map((u) => u.id)) + 1 : 0,
+      username: userForm.username.value.trim(),
+      dateCreated: new Date().toLocaleDateString("en-GB"),
+      locked: false,
+      ...fields,
+    });
+    userCurrentPage = 1;
+  }
+
+  closeUserDrawer();
+  renderUsers();
+});
+
+document.getElementById("openAddUserBtn").addEventListener("click", () => openUserDrawer());
+document.getElementById("cancelAddUser").addEventListener("click", closeUserDrawer);
+document.getElementById("closeAddUserX").addEventListener("click", closeUserDrawer);
+userOverlay.addEventListener("click", (e) => { if (e.target === userOverlay) closeUserDrawer(); });
