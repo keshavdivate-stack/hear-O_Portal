@@ -105,10 +105,12 @@
 
 <script>
   // The "recording complete" state has to survive navigating away and back
-  // (Med Updates, Chat, the nav cards, etc.), so it is not just driven by the
-  // one-time ?recorded=1 redirect from record-saved.html -- it is saved to
-  // localStorage, keyed to today's date, and re-applied on every load of this
-  // page until a new day resets it back to "Start session".
+  // (Medications, Chat, the nav cards, etc.), so it is not just driven by the
+  // one-time ?recorded=1 redirect from record-saved.html -- it is saved for
+  // this visit (sessionStorage), keyed to today's date. A new visit always
+  // starts on "Start session", whichever page it arrives from.
+  localStorage.removeItem("hearo_recorded_date"); // older builds kept it across visits
+  localStorage.removeItem("hearo_recorded_time");
   function todayKey() {
     return new Date().toDateString();
   }
@@ -143,15 +145,15 @@
     hours = hours % 12 || 12;
     const timeStr = `${hours}:${minutes} ${ampm}`;
 
-    localStorage.setItem("hearo_recorded_date", todayKey());
-    localStorage.setItem("hearo_recorded_time", timeStr);
+    sessionStorage.setItem("hearo_recorded_date", todayKey());
+    sessionStorage.setItem("hearo_recorded_time", timeStr);
     showRecordingComplete(timeStr);
 
     // Drop ?recorded=1 from the URL so a plain refresh of this page re-reads
     // the saved state above instead of re-running this one-time branch.
     window.history.replaceState({}, "", "/Mobile%20app/home.html");
-  } else if (localStorage.getItem("hearo_recorded_date") === todayKey()) {
-    showRecordingComplete(localStorage.getItem("hearo_recorded_time"));
+  } else if (sessionStorage.getItem("hearo_recorded_date") === todayKey()) {
+    showRecordingComplete(sessionStorage.getItem("hearo_recorded_time"));
   }
 </script>
 <script>sessionStorage.removeItem("hearo_auth_next");</script>

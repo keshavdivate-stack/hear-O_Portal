@@ -32,7 +32,7 @@
       <p class="success-message">To see the training again, press <strong>Repeat training</strong></p>
 
       <div class="success-footer">
-        <button type="button" class="login-btn" onclick="localStorage.setItem('hearo_onboarding_completed','1'); ['hearo_recorded_date','hearo_recorded_time','hearo_home_tutorial_done'].forEach((k) => localStorage.removeItem(k)); window.location.href='/Mobile%20app/home.html'">Next</button>
+        <button type="button" class="login-btn" onclick="localStorage.setItem('hearo_onboarding_completed','1'); ['hearo_recorded_date','hearo_recorded_time'].forEach((k) => sessionStorage.removeItem(k)); localStorage.removeItem('hearo_home_tutorial_done'); window.location.href='/Mobile%20app/home.html'">Next</button>
         <button type="button" class="btn-outline" onclick="window.location.href='/Mobile%20app/onboarding-1.html'">Repeat training</button>
       </div>
     </div>

@@ -52,7 +52,8 @@
   // after their first recording.
   document.getElementById("skipBtn").addEventListener("click", () => {
     localStorage.setItem("hearo_onboarding_completed", "1");
-    ["hearo_recorded_date", "hearo_recorded_time", "hearo_home_tutorial_done"].forEach((k) => localStorage.removeItem(k));
+    ["hearo_recorded_date", "hearo_recorded_time"].forEach((k) => sessionStorage.removeItem(k));
+    localStorage.removeItem("hearo_home_tutorial_done");
     window.location.href = "/Mobile%20app/home.html";
   });
 </script>
