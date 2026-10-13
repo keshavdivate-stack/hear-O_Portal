@@ -1530,13 +1530,29 @@ button.bo-name-link { background: none; border: none; padding: 0; font: inherit;
   margin: 0 0 8px;
 }
 
+/* Section title above a labeled filter row (e.g. Report Management's
+   "Filters" over Search Reports/Report Type/.../Status). */
+.bo-filters-heading {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 0 0 14px;
+}
+
 /* A filter field with its own label above it (e.g. Support > Rules'
    Category/Status) -- the label sits outside .bo-filter-field, so the row
    needs to align everything to the fields' bottom edge, not vertically
    center against the taller label+field stack. */
 .bo-filter-labeled-field { flex-shrink: 0; }
+.bo-filter-row--labeled,
 .bo-filter-row--rules { align-items: flex-end; }
 .bo-filter-row--rules .bo-filter-field { min-width: 200px; }
+/* A labeled .bo-select (custom dropdown, not a plain <select>) needs its
+   own min-height so the row stays flex-end-aligned with the taller
+   label+field stacks next to it. */
+.bo-filter-row--labeled .bo-filter-labeled-field > .bo-select,
+.bo-filter-row--labeled .bo-filter-labeled-field > .bo-search-pill { min-width: 170px; }
+.bo-filter-row--labeled .bo-filter-row-label { margin-bottom: 6px; }
 
 .bo-filter-row {
   display: flex;
@@ -1552,6 +1568,15 @@ button.bo-name-link { background: none; border: none; padding: 0; font: inherit;
 .bo-filter-row .bo-search-pill {
   flex: 1 1 0;
   width: auto;
+  min-width: 0;
+}
+
+/* Report Management's labeled filter fields (Search Reports/Report
+   Type/.../Delivery Status) grow evenly to fill the row, like the plain
+   .bo-select filters elsewhere -- unlike Rules' fixed-width labeled
+   fields, which stay compact and left-aligned (see .bo-filter-row--rules). */
+.bo-filter-row--labeled > .bo-filter-labeled-field {
+  flex: 1 1 0;
   min-width: 0;
 }
 

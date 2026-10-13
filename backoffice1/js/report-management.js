@@ -180,11 +180,13 @@ function rmReportTypeLabelsInUse(rows) {
 let rmScheduleSearch = "";
 let rmScheduleTypeFilter = "";
 let rmScheduleOrgFilter = "";
+let rmScheduleTagFilter = "";
 let rmScheduleStatusFilter = "";
 let rmScheduleFrequencyFilter = "";
 
 document.getElementById("rmReportTypeFilterMenu").innerHTML = buildFilterSelectOptions(rmReportTypeLabelsInUse(rmSchedules.filter((s) => !s.archived)), "All report types");
 document.getElementById("rmOrgFilterMenu").innerHTML = buildFilterSelectOptions(RM_ORGS, "All organizations");
+document.getElementById("rmTagFilterMenu").innerHTML = buildFilterSelectOptions(RM_TAGS, "All tags");
 document.getElementById("rmStatusFilterMenu").innerHTML = buildFilterSelectOptions(RM_STATUSES, "All statuses");
 document.getElementById("rmFrequencyFilterMenu").innerHTML = buildFilterSelectOptions(RM_FREQUENCIES, "All frequencies");
 
@@ -193,6 +195,7 @@ function rmFilteredSchedules() {
     if (s.archived) return false;
     if (rmScheduleTypeFilter && rmReportLabel(s.reportKey) !== rmScheduleTypeFilter) return false;
     if (rmScheduleOrgFilter && s.org !== rmScheduleOrgFilter) return false;
+    if (rmScheduleTagFilter && !s.tags.includes(rmScheduleTagFilter)) return false;
     if (rmScheduleStatusFilter && s.status !== rmScheduleStatusFilter) return false;
     if (rmScheduleFrequencyFilter && s.frequency !== rmScheduleFrequencyFilter) return false;
     if (rmScheduleSearch) {
@@ -203,7 +206,10 @@ function rmFilteredSchedules() {
   });
 }
 
-function rmRenderScheduleRow(s) {
+/* Scheduled Reports shows a Frequency column; Archived Reports (unchanged,
+   out of this revamp's scope) keeps its original columns -- same row shape
+   otherwise, so one render function covers both via `withFrequency`. */
+function rmRenderScheduleRow(s, withFrequency) {
   return `
     <tr data-id="${s.id}">
       <td class="mono">${rmScheduleIdLabel(s.id)}</td>
@@ -214,6 +220,7 @@ function rmRenderScheduleRow(s) {
       <td>${s.tags.length ? `<div class="bo-ehr-tags">${s.tags.map((t) => `<span class="bo-ehr-tag">${rmEsc(t)}</span>`).join("")}</div>` : `<span class="bo-ehr-none">—</span>`}</td>
       <td>${rmEsc(s.org)}</td>
       <td>${rmRecipientsChip(s.recipients)}</td>
+      ${withFrequency ? `<td>${rmEsc(s.frequency)}</td>` : ""}
       <td>${rmScheduledOnLabel(s)}</td>
       <td>${rmReportTimeLabel(s)}</td>
       <td>${s.archived ? `<span class="bo-pill bo-pill-archived">Archived</span>` : rmStatusPill(s.status)}</td>
@@ -226,7 +233,7 @@ function rmRenderScheduleRow(s) {
 }
 
 const rmScheduleEmptyHtml = `
-  <tr><td colspan="10">
+  <tr><td colspan="11">
     <div class="bo-empty-state">
       <svg class="bo-empty-state-icon" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9H21"/><path d="M8 2v4"/><path d="M16 2v4"/></svg>
       <p class="bo-empty-state-title" id="rmScheduleEmptyTitle">No scheduled reports yet</p>
@@ -234,10 +241,10 @@ const rmScheduleEmptyHtml = `
     </div>
   </td></tr>`;
 
-const rmSchedulePager = boCreatePager("rmScheduleRows", () => rmFilteredSchedules(), rmRenderScheduleRow, { pageSize: 8, emptyHtml: rmScheduleEmptyHtml });
+const rmSchedulePager = boCreatePager("rmScheduleRows", () => rmFilteredSchedules(), (s) => rmRenderScheduleRow(s, true), { pageSize: 8, emptyHtml: rmScheduleEmptyHtml });
 
 function rmScheduleFiltersActive() {
-  return !!(rmScheduleSearch || rmScheduleTypeFilter || rmScheduleOrgFilter || rmScheduleStatusFilter || rmScheduleFrequencyFilter);
+  return !!(rmScheduleSearch || rmScheduleTypeFilter || rmScheduleOrgFilter || rmScheduleTagFilter || rmScheduleStatusFilter || rmScheduleFrequencyFilter);
 }
 
 function rmRefreshScheduleEmptyState() {
@@ -265,6 +272,7 @@ document.getElementById("rmSearchInput").addEventListener("input", (e) => {
 });
 document.getElementById("rmReportTypeFilter").addEventListener("change", (e) => { rmScheduleTypeFilter = e.target.value; });
 document.getElementById("rmOrgFilter").addEventListener("change", (e) => { rmScheduleOrgFilter = e.target.value; });
+document.getElementById("rmTagFilter").addEventListener("change", (e) => { rmScheduleTagFilter = e.target.value; });
 document.getElementById("rmStatusFilter").addEventListener("change", (e) => { rmScheduleStatusFilter = e.target.value; });
 document.getElementById("rmFrequencyFilter").addEventListener("change", (e) => { rmScheduleFrequencyFilter = e.target.value; });
 
@@ -277,6 +285,7 @@ function rmClearScheduleFilters() {
   rmScheduleSearch = "";
   rmScheduleTypeFilter = "";
   rmScheduleOrgFilter = "";
+  rmScheduleTagFilter = "";
   rmScheduleStatusFilter = "";
   rmScheduleFrequencyFilter = "";
   document.getElementById("rmSearchInput").value = "";
@@ -325,7 +334,7 @@ const rmArchivedEmptyHtml = `
     </div>
   </td></tr>`;
 
-const rmArchivedPager = boCreatePager("rmArchivedRows", () => rmFilteredArchived(), rmRenderScheduleRow, { pageSize: 8, emptyHtml: rmArchivedEmptyHtml });
+const rmArchivedPager = boCreatePager("rmArchivedRows", () => rmFilteredArchived(), (s) => rmRenderScheduleRow(s, false), { pageSize: 8, emptyHtml: rmArchivedEmptyHtml });
 
 function rmArchivedFiltersActive() {
   return !!(rmArchivedSearch || rmArchivedTypeFilter || rmArchivedOrgFilter || rmArchivedStatusFilter || rmArchivedFrequencyFilter);
@@ -379,15 +388,7 @@ document.getElementById("rmClearArchivedFiltersBtn").addEventListener("click", r
 
 /* ---------------- Report History ---------------- */
 let rmHistReportFilter = "";
-let rmHistReportNameFilter = "";
 let rmHistOrgFilter = "";
-
-/* From/To date range -- both blank = no date filtering. `daysAgo` is the only
-   date info each history record carries (sentOn is a display-only string, see
-   below), so a record's actual calendar date is derived from it relative to
-   today, then compared against the picked range. */
-let rmHistFromDate = "";
-let rmHistToDate = "";
 let rmHistStatusFilter = "";
 
 /* Processing is a transient in-flight state, not a result -- there's nothing
@@ -399,24 +400,11 @@ document.getElementById("rmHistReportFilterMenu").innerHTML = buildFilterSelectO
 document.getElementById("rmHistOrgFilterMenu").innerHTML = buildFilterSelectOptions(RM_ORGS, "All organizations");
 document.getElementById("rmHistStatusFilterMenu").innerHTML = buildFilterSelectOptions(RM_HISTORY_STATUS_OPTIONS, "All statuses");
 
-function rmHistRecordDate(h) {
-  const d = new Date();
-  d.setHours(0, 0, 0, 0);
-  d.setDate(d.getDate() - h.daysAgo);
-  return d;
-}
-
 function rmFilteredHistory() {
   return rmHistory.filter((h) => {
     if (rmHistReportFilter && rmReportLabel(h.reportKey) !== rmHistReportFilter) return false;
-    if (rmHistReportNameFilter && !h.name.toLowerCase().includes(rmHistReportNameFilter.toLowerCase())) return false;
     if (rmHistOrgFilter && h.org !== rmHistOrgFilter) return false;
     if (rmHistStatusFilter && h.status !== rmHistStatusFilter) return false;
-    if (rmHistFromDate || rmHistToDate) {
-      const recordDate = rmHistRecordDate(h);
-      if (rmHistFromDate && recordDate < new Date(rmHistFromDate)) return false;
-      if (rmHistToDate && recordDate > new Date(rmHistToDate)) return false;
-    }
     return true;
   });
 }
@@ -453,7 +441,7 @@ const rmHistoryEmptyHtml = `
 const rmHistoryPager = boCreatePager("rmHistoryRows", () => rmFilteredHistory(), rmRenderHistoryRow, { pageSize: 8, emptyHtml: rmHistoryEmptyHtml });
 
 function rmHistoryFiltersActive() {
-  return !!(rmHistReportFilter || rmHistReportNameFilter || rmHistOrgFilter || rmHistStatusFilter || rmHistFromDate || rmHistToDate);
+  return !!(rmHistReportFilter || rmHistOrgFilter || rmHistStatusFilter);
 }
 
 function rmRefreshHistoryEmptyState() {
@@ -477,11 +465,8 @@ function rmRenderHistory() {
 rmRenderHistory();
 
 document.getElementById("rmHistReportFilter").addEventListener("change", (e) => { rmHistReportFilter = e.target.value; });
-document.getElementById("rmHistReportNameFilter").addEventListener("input", (e) => { rmHistReportNameFilter = e.target.value.trim(); });
 document.getElementById("rmHistOrgFilter").addEventListener("change", (e) => { rmHistOrgFilter = e.target.value; });
 document.getElementById("rmHistStatusFilter").addEventListener("change", (e) => { rmHistStatusFilter = e.target.value; });
-document.getElementById("rmHistFromDate").addEventListener("change", (e) => { rmHistFromDate = e.target.value; });
-document.getElementById("rmHistToDate").addEventListener("change", (e) => { rmHistToDate = e.target.value; });
 
 document.getElementById("rmHistApplyBtn").addEventListener("click", () => {
   rmHistoryPager.resetPage();
@@ -490,19 +475,9 @@ document.getElementById("rmHistApplyBtn").addEventListener("click", () => {
 
 function rmClearHistoryFilters() {
   rmHistReportFilter = "";
-  rmHistReportNameFilter = "";
   rmHistOrgFilter = "";
   rmHistStatusFilter = "";
-  rmHistFromDate = "";
-  rmHistToDate = "";
   document.querySelectorAll("#tab-history .bo-select").forEach(resetBoSelect);
-  document.getElementById("rmHistReportNameFilter").value = "";
-  const fromDateEl = document.getElementById("rmHistFromDate");
-  const toDateEl = document.getElementById("rmHistToDate");
-  fromDateEl.value = "";
-  fromDateEl.type = "text";
-  toDateEl.value = "";
-  toDateEl.type = "text";
   rmHistoryPager.resetPage();
   rmRenderHistory();
 }
