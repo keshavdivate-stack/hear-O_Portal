@@ -1896,6 +1896,38 @@ label.bo-date-field { cursor: text; }
   color: var(--ink);
 }
 
+/* Read-only identifier shown at the top of a modal (e.g. Edit Reminder's
+   patient username) -- bolder than body text, no input chrome since it
+   can't be edited here. */
+.bo-modal-field-static {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 10px;
+}
+
+/* A read-only label/value pair under a .bo-modal-section-title (e.g. Edit
+   Reminder's "All Day" time row). The manual-time input sits in the same
+   slot, swapped in via [hidden] instead of the static value. */
+.bo-modal-field-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 6px 0;
+  font-size: 13.5px;
+  color: var(--ink);
+}
+
+.bo-modal-field-row input[type="time"] {
+  border: 1px solid var(--gray-border);
+  border-radius: 8px;
+  padding: 7px 10px;
+  font-size: 13.5px;
+  font-family: inherit;
+  color: var(--ink);
+}
+
 .bo-drawer-foot {
   display: flex;
   justify-content: flex-end;

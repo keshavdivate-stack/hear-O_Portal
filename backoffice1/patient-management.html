@@ -300,6 +300,64 @@
     <button class="bo-row-menu-item" data-action="edit">Edit Patient</button>
   </div>
 
+  <!-- Edit Reminder modal -->
+  <div class="bo-center-modal-overlay" id="patientReminderOverlay">
+    <div class="bo-center-modal">
+      <h2>Edit Reminder</h2>
+
+      <form id="patientReminderForm">
+        <div class="bo-modal-field-static" id="patientReminderUsername"></div>
+
+        <div class="bo-modal-toggle-field">
+          <label>Reminder</label>
+          <span class="bo-switch">
+            <input type="checkbox" id="patientReminderEnabled" />
+            <span class="bo-switch-track"></span>
+          </span>
+        </div>
+
+        <div id="patientReminderDetails" hidden>
+          <div class="bo-modal-toggle-field">
+            <label>Reminder set</label>
+            <span class="bo-switch">
+              <input type="checkbox" id="patientReminderManual" />
+              <span class="bo-switch-track"></span>
+            </span>
+          </div>
+
+          <div class="bo-modal-section-title" id="patientReminderModeLabel">Auto time - Calculate</div>
+          <div class="bo-modal-field-row">
+            <span>All Day</span>
+            <span id="patientReminderAutoTime">11:00:00</span>
+            <input type="time" id="patientReminderManualTime" hidden />
+          </div>
+        </div>
+
+        <div class="bo-center-modal-foot">
+          <button type="button" class="bo-btn-text" id="patientReminderCancel">Cancel</button>
+          <button type="submit" class="bo-btn-primary" id="patientReminderSave" disabled>Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Edit Patient modal -->
+  <div class="bo-center-modal-overlay" id="patientEditOverlay">
+    <div class="bo-center-modal">
+      <h2>Edit Patient</h2>
+
+      <div class="bo-modal-field">
+        <label>Username</label>
+        <input type="text" id="patientEditUsername" disabled />
+      </div>
+
+      <div class="bo-center-modal-foot">
+        <button type="button" class="bo-btn-text" id="patientEditCancel">Cancel</button>
+        <button type="button" class="bo-btn-primary" id="patientEditSave" disabled>Save</button>
+      </div>
+    </div>
+  </div>
+
 <script src="js/dashboard-nav.js"></script>
 <script src="js/support-data.js"></script>
 <script src="js/notifications.js"></script>

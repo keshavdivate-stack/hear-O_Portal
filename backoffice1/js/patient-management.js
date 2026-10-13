@@ -324,4 +324,87 @@ patientRowMenu.addEventListener("click", (e) => {
   const item = e.target.closest(".bo-row-menu-item");
   if (!item || activePatientRowId === null) return;
   patientRowMenu.classList.remove("open");
+  const patient = pmPatients.find((p) => p.id === activePatientRowId);
+  if (!patient) return;
+  if (item.dataset.action === "notify") openReminderModal(patient);
+  else if (item.dataset.action === "edit") openEditPatientModal(patient);
 });
+
+/* ---------------- Edit Reminder modal ----------------
+   Mirrors the developed screen: a Reminder toggle that reveals a second
+   "Reminder set" toggle once on -- off shows a read-only auto-calculated
+   time ("Auto time - Calculate"), on swaps it for an editable time field
+   ("Manual reminder time"). Patients aren't seeded with reminder data, so
+   each one defaults to Reminder on / auto time 11:00:00 the first time its
+   modal opens, same as a freshly-created patient would in the developed
+   screen. */
+const patientReminderOverlay = document.getElementById("patientReminderOverlay");
+const patientReminderForm = document.getElementById("patientReminderForm");
+const patientReminderEnabled = document.getElementById("patientReminderEnabled");
+const patientReminderManual = document.getElementById("patientReminderManual");
+const patientReminderDetails = document.getElementById("patientReminderDetails");
+const patientReminderModeLabel = document.getElementById("patientReminderModeLabel");
+const patientReminderAutoTime = document.getElementById("patientReminderAutoTime");
+const patientReminderManualTime = document.getElementById("patientReminderManualTime");
+const patientReminderSave = document.getElementById("patientReminderSave");
+let activeReminderPatient = null;
+
+function updateReminderFormVisibility() {
+  const on = patientReminderEnabled.checked;
+  patientReminderDetails.hidden = !on;
+  if (!on) return;
+  const manual = patientReminderManual.checked;
+  patientReminderModeLabel.textContent = manual ? "Manual reminder time" : "Auto time - Calculate";
+  patientReminderAutoTime.hidden = manual;
+  patientReminderManualTime.hidden = !manual;
+}
+
+function openReminderModal(patient) {
+  activeReminderPatient = patient;
+  document.getElementById("patientReminderUsername").textContent = patient.username;
+  patientReminderEnabled.checked = patient.reminderEnabled !== false;
+  patientReminderManual.checked = !!patient.reminderManual;
+  patientReminderManualTime.value = patient.reminderTime || "11:00";
+  updateReminderFormVisibility();
+  patientReminderSave.disabled = true;
+  patientReminderOverlay.classList.add("open");
+}
+
+function closeReminderModal() {
+  patientReminderOverlay.classList.remove("open");
+  activeReminderPatient = null;
+}
+
+patientReminderEnabled.addEventListener("change", () => { updateReminderFormVisibility(); patientReminderSave.disabled = false; });
+patientReminderManual.addEventListener("change", () => { updateReminderFormVisibility(); patientReminderSave.disabled = false; });
+patientReminderManualTime.addEventListener("input", () => { patientReminderSave.disabled = false; });
+document.getElementById("patientReminderCancel").addEventListener("click", closeReminderModal);
+patientReminderOverlay.addEventListener("click", (e) => { if (e.target === patientReminderOverlay) closeReminderModal(); });
+
+patientReminderForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  if (!activeReminderPatient) return;
+  activeReminderPatient.reminderEnabled = patientReminderEnabled.checked;
+  activeReminderPatient.reminderManual = patientReminderManual.checked;
+  activeReminderPatient.reminderTime = patientReminderManualTime.value || "11:00";
+  closeReminderModal();
+});
+
+/* ---------------- Edit Patient modal ----------------
+   Matches the developed screen: Username is shown read-only (editing a
+   patient's username isn't supported there either), so Save stays
+   disabled -- the modal exists for the patient's record to be reviewed,
+   not changed, from this entry point. */
+const patientEditOverlay = document.getElementById("patientEditOverlay");
+
+function openEditPatientModal(patient) {
+  document.getElementById("patientEditUsername").value = patient.username;
+  patientEditOverlay.classList.add("open");
+}
+
+function closeEditPatientModal() {
+  patientEditOverlay.classList.remove("open");
+}
+
+document.getElementById("patientEditCancel").addEventListener("click", closeEditPatientModal);
+patientEditOverlay.addEventListener("click", (e) => { if (e.target === patientEditOverlay) closeEditPatientModal(); });
