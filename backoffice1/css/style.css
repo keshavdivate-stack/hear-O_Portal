@@ -2471,6 +2471,8 @@ a.bo-btn-secondary { text-decoration: none; }
   font-family: inherit;
 }
 
+.bo-step[hidden] { display: none; }
+
 .bo-step-circle {
   width: 36px;
   height: 36px;
