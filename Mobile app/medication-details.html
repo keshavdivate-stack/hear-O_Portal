@@ -10,51 +10,50 @@
 <link rel="stylesheet" href="/Mobile%20app/style.css?v=36">
 <script src="/Mobile%20app/font-scale.js?v=29"></script>
 <style>
-  /* One flat card for the summary/schedule, and one flat card holding a
-     divided list for History/Updates -- rows inside a card, not a card
-     per row, so the screen reads as compact and scannable rather than a
-     stack of boxes. */
-  .md-card { background: #fff; border-radius: 16px; padding: 4px 18px; margin-bottom: 18px; }
+  /* Medication details -- matches the client-approved My Medication screens:
+     a white page, a bordered summary card of icon + label/value rows, a
+     History/Updates switch, and a bordered card for the selected list. */
+  .status-bar { background: #fff; }
+  .mx-header { padding: 19px 20px; }
+  .mx-header h1 { font-size: calc(28px * var(--font-scale, 1)); color: #434141; }
+  .mx-body { background: #fff; padding: 19px 28px 28px; }
 
-  .md-status-chip { flex-shrink: 0; margin-left: 10px; padding: 3px 10px; border-radius: 10px; font-size: calc(13px * var(--font-scale, 1)); font-weight: 600; background: #ececec; color: #6f6f6f; vertical-align: middle; }
+  .md-card { background: #fff; border: 1px solid #D5D8DE; border-radius: 16px; padding: 3px 12px 2px 15px; margin-bottom: 13px; }
 
-  .md-section-label { margin: 2px 2px 10px; font-size: calc(16px * var(--font-scale, 1)); font-weight: 600; color: #6f6f6f; }
-
-  /* Medication name at the top of the summary card, plus the icon+label/
-     value info rows below it -- dose, route, frequency, duration and a
-     short description, each with its own tinted icon chip so the card
-     scans by color/shape as well as by reading. */
-  .md-name { padding: 14px 0 2px; font-size: calc(23px * var(--font-scale, 1)); font-weight: 700; color: #252424; }
-  .md-info-row { display: flex; align-items: flex-start; gap: 12px; padding: 12px 0; }
-  .md-info-row + .md-info-row { border-top: 1px solid #ececec; }
-  .md-info-icon { flex-shrink: 0; width: 34px; height: 34px; margin-top: 1px; border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+  .md-info-row { display: flex; align-items: flex-start; gap: 8px; padding: 8px 0 11px; }
+  .md-info-row + .md-info-row { border-top: 1px solid #E5E7EB; }
+  .md-info-icon { flex-shrink: 0; width: 31px; height: 31px; margin-top: 2px; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
   .md-info-icon--violet { background: #F2EDFD; color: #8857FF; }
   .md-info-icon--blue { background: #F0F7FF; color: #186DCE; }
   .md-info-icon--amber { background: #FEFCE8; color: #D99400; }
-  .md-info-icon--green { background: #E6F8EE; color: #1f9d7a; }
-  .md-info-icon--gray { background: #ececec; color: #6f6f6f; }
+  .md-info-icon--green { background: #E6F8EE; color: #1F9D7A; }
+  .md-info-icon--gray { background: #ECECEC; color: #6F6F6F; }
   .md-info-text { min-width: 0; flex: 1; }
-  .md-info-label { display: block; font-size: calc(14px * var(--font-scale, 1)); color: #8A8F97; }
-  .md-info-value { display: block; margin-top: 2px; font-size: calc(18px * var(--font-scale, 1)); font-weight: 500; color: #3d3d3d; line-height: 1.3; }
+  .md-info-label { display: block; font-size: calc(16px * var(--font-scale, 1)); line-height: 1.2; color: #8A8F97; }
+  .md-info-value { display: block; margin-top: 3px; font-size: calc(20px * var(--font-scale, 1)); line-height: 1.2; font-weight: 400; color: #3D3D3D; }
 
-  /* History row: date/time on the left, status word on the right -- a
-     quick scan, no icon chips or colored backgrounds needed per row. */
-  .md-hist-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 11px 0; }
-  .md-hist-row + .md-hist-row { border-top: 1px solid #ececec; }
-  .md-hist-when { font-size: calc(18px * var(--font-scale, 1)); color: #3d3d3d; }
-  .md-hist-status { flex-shrink: 0; font-size: calc(17px * var(--font-scale, 1)); font-weight: 600; }
-  .md-hist-status--taken { color: #1f9d7a; }
-  .md-hist-status--skipped { color: #D92D20; }
+  .mx-tabs { background: #F0F1F1; border-radius: 14px; padding: 5px; gap: 5px; margin-bottom: 13px; }
+  .mx-tab { min-height: 48px; border-radius: 10px; font-size: calc(20px * var(--font-scale, 1)); font-weight: 400; color: #3D3B3B; }
+  .mx-tab.active { background: #186DCE; color: #fff; }
+  .md-section-label { margin: 2px 2px 10px; font-size: calc(18px * var(--font-scale, 1)); font-weight: 600; color: #565454; }
+
+  /* History row: date/time on the left, status word on the right. */
+  #listCard { padding: 0 15px; }
+  .md-hist-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 14px 0; }
+  .md-hist-row + .md-hist-row { border-top: 1px solid #ECEDEE; }
+  .md-hist-when { font-size: calc(18px * var(--font-scale, 1)); color: #3D3D3D; }
+  .md-hist-status { flex-shrink: 0; font-size: calc(18px * var(--font-scale, 1)); font-weight: 400; }
+  .md-hist-status--taken { color: #229A7E; }
+  .md-hist-status--skipped { color: #F59E0B; }
   .md-hist-status--missed { color: #8A8F97; }
 
-  /* Update row: a change + its instruction, stacked -- this is the
-     record of what changed, not a quick status, so it reads like a line
-     of text rather than a status badge. */
-  .md-upd-row { padding: 12px 0; }
-  .md-upd-row + .md-upd-row { border-top: 1px solid #ececec; }
-  .md-upd-date { font-size: calc(14px * var(--font-scale, 1)); color: #8A8F97; }
-  .md-upd-change { margin-top: 2px; font-size: calc(18px * var(--font-scale, 1)); font-weight: 500; color: #3d3d3d; }
-  .md-upd-note { margin-top: 4px; font-size: calc(16px * var(--font-scale, 1)); color: #6f6f6f; line-height: 1.35; }
+  /* Update: when it changed, what changed, and the new instruction in a
+     gray note box. */
+  .md-upd-row { padding: 15px 1px 16px; }
+  .md-upd-row + .md-upd-row { border-top: 1px solid #ECEDEE; }
+  .md-upd-date { font-size: calc(16px * var(--font-scale, 1)); line-height: 1.2; color: #302E2E; }
+  .md-upd-change { margin-top: 9px; font-size: calc(18px * var(--font-scale, 1)); line-height: 1.2; color: #565454; }
+  .md-upd-note { margin-top: 12px; padding: 7px 12px 9px; border-radius: 12px; background: #F0F1F1; font-size: calc(20px * var(--font-scale, 1)); line-height: 1.45; color: #3D3B3B; }
 
   .md-empty { text-align: center; color: #8A8F97; font-size: calc(17px * var(--font-scale, 1)); padding: 20px 0; }
 </style>
@@ -71,7 +70,7 @@
       </div>
     </div>
 
-    <div class="mx-header mx-header--left">
+    <div class="mx-header">
       <button type="button" class="back-btn" id="backBtn">
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M12.5 4L6.5 10L12.5 16" stroke="#252424" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
@@ -94,13 +93,13 @@
 <script>
   const STATUS_LABEL = { taken: "Taken", skipped: "Skipped", missed: "Not Taken" };
 
-  const doseIcon = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.5 3.5 3.5 10.5a4.95 4.95 0 0 0 7 7l7-7a4.95 4.95 0 0 0-7-7z"/><path d="M7 7l7 7"/></svg>`;
-  const routeIcon = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3s6 7 6 11a6 6 0 0 1-12 0c0-4 6-11 6-11z"/></svg>`;
-  const freqIcon = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>`;
-  const durationIcon = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="16" rx="2"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/></svg>`;
-  const descIcon = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M8 13h8M8 17h5"/></svg>`;
-  const formIcon = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="5"/></svg>`;
-  const foodIcon = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 2v8a2 2 0 1 1-4 0V2"/><path d="M5 10v12"/><path d="M11 2c2 0 3 2.2 3 5s-1 5-3 5"/><path d="M14 12v10"/></svg>`;
+  const doseIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.5 3.5 3.5 10.5a4.95 4.95 0 0 0 7 7l7-7a4.95 4.95 0 0 0-7-7z"/><path d="M7 7l7 7"/></svg>`;
+  const routeIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3s6 7 6 11a6 6 0 0 1-12 0c0-4 6-11 6-11z"/></svg>`;
+  const freqIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>`;
+  const durationIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="16" rx="2"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/></svg>`;
+  const descIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M8 13h8M8 17h5"/></svg>`;
+  const formIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="5"/></svg>`;
+  const foodIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 2v8a2 2 0 1 1-4 0V2"/><path d="M5 10v12"/><path d="M11 2c2 0 3 2.2 3 5s-1 5-3 5"/><path d="M14 12v10"/></svg>`;
   const FOOD_LABEL = { before: "Before food", after: "After food", with: "With food" };
 
   // Every medication's current state (what Skip/Take acts on today), keyed
@@ -109,18 +108,18 @@
   const MED_INFO = {
     spironolactone: {
       name: "Spironolactone", dosage: "40 mg", route: "Oral", frequency: "Twice daily", startDate: "Aug 1, 2026", endDate: null,
-      description: "Used to reduce fluid buildup and help control blood pressure in heart failure.",
-      source: "clinic", schedule: [{ time: "8:00 AM", food: "with" }, { time: "2:00 PM", food: "with" }],
+      description: "Used to reduce fluid buildup",
+      source: "clinic", schedule: [{ time: "8:00 AM", food: "before" }, { time: "2:00 PM", food: "before" }],
     },
     carvedilol: {
       name: "Carvedilol", dosage: "40 mg", route: "Oral", frequency: "Twice daily", startDate: "Jul 15, 2026", endDate: null,
       description: "A beta-blocker used to lower heart rate and blood pressure.",
-      source: "clinic", schedule: [{ time: "8:00 AM", food: "with" }, { time: "8:00 PM", food: "with" }],
+      source: "clinic", schedule: [{ time: "8:00 AM", food: "after" }, { time: "8:00 PM", food: "after" }],
     },
     furosemide: {
       name: "Furosemide", dosage: "40 mg", route: "Oral", frequency: "Twice daily", startDate: "Jul 15, 2026", endDate: null,
       description: "A diuretic (“water pill”) used to reduce fluid buildup.",
-      source: "clinic", schedule: [{ time: "8:00 AM", food: "before" }, { time: "8:00 PM", food: "before" }],
+      source: "clinic", schedule: [{ time: "8:00 AM", food: "after" }, { time: "8:00 PM", food: "after" }],
     },
     atorvastatin: {
       name: "Atorvastatin", dosage: "40 mg", route: "Oral", frequency: "Once daily", startDate: "Jun 2, 2026", endDate: null,
@@ -133,14 +132,19 @@
       source: "clinic", schedule: [{ time: "8:00 PM" }],
     },
     "vitamin-d3": {
-      name: "Vitamin D3", dosage: "1000 IU", form: "Tablet", whenToTake: "Morning", food: "after", startDate: "Jul 1, 2026", endDate: null,
+      name: "Vitamin D3", form: "Tablet", whenToTake: "Morning", food: "after", startDate: "Jul 1, 2026", endDate: null,
       description: "Supplement to support bone health.",
       source: "mine", schedule: [{ time: "8:00 AM", food: "after" }],
     },
     calcium: {
-      name: "Calcium", dosage: "600 mg", form: "Tablet", whenToTake: "Evening", food: "with", startDate: "Jul 1, 2026", endDate: null,
+      name: "Calcium", form: "Tablet", whenToTake: "Evening", food: "after", startDate: "Jul 1, 2026", endDate: null,
       description: "Supplement to support bone health.",
-      source: "mine", schedule: [{ time: "8:00 PM", food: "with" }],
+      source: "mine", schedule: [{ time: "9:00 PM", food: "after" }],
+    },
+    vitamin: {
+      name: "Vitamin", form: "Tablet", whenToTake: "Evening", food: "after", startDate: "Jul 1, 2026", endDate: null,
+      description: "Daily multivitamin.",
+      source: "mine", schedule: [{ time: "9:00 PM", food: "after" }],
     },
   };
 
@@ -151,6 +155,8 @@
       { date: "Mon, Aug 17", time: "2:00 PM", status: "taken" },
       { date: "Sun, Aug 16", time: "8:00 AM", status: "skipped" },
       { date: "Sun, Aug 16", time: "2:00 PM", status: "taken" },
+      { date: "Sat, Aug 15", time: "8:00 AM", status: "taken" },
+      { date: "Sat, Aug 15", time: "2:00 PM", status: "taken" },
     ],
     carvedilol: [
       { date: "Mon, Aug 17", time: "8:00 AM", status: "taken" },
@@ -177,8 +183,12 @@
       { date: "Sun, Aug 16", time: "8:00 AM", status: "skipped" },
     ],
     calcium: [
-      { date: "Mon, Aug 17", time: "8:00 PM", status: "taken" },
-      { date: "Sun, Aug 16", time: "8:00 PM", status: "taken" },
+      { date: "Mon, Aug 17", time: "9:00 PM", status: "taken" },
+      { date: "Sun, Aug 16", time: "9:00 PM", status: "taken" },
+    ],
+    vitamin: [
+      { date: "Mon, Aug 17", time: "9:00 PM", status: "taken" },
+      { date: "Sun, Aug 16", time: "9:00 PM", status: "taken" },
     ],
   };
 
@@ -211,7 +221,7 @@
   const doseRow = `
     <div class="md-info-row">
       <span class="md-info-icon md-info-icon--violet">${doseIcon}</span>
-      <span class="md-info-text"><span class="md-info-label">Dose</span><span class="md-info-value">${med.dosage} &middot; Take 1 pill</span></span>
+      <span class="md-info-text"><span class="md-info-label">Dose</span><span class="md-info-value">${med.dosage ? `${med.dosage} &middot; ` : ""}Take 1 pill</span></span>
     </div>`;
   const durationRow = `
     <div class="md-info-row">
@@ -256,7 +266,7 @@
       <span class="md-info-text"><span class="md-info-label">Description</span><span class="md-info-value">${med.description}</span></span>
     </div>`;
 
-  document.getElementById("summaryCard").innerHTML = `<div class="md-name">${med.name}</div>${summaryRows}`;
+  document.getElementById("summaryCard").innerHTML = summaryRows;
 
   function renderHistory() {
     const entries = HISTORY[resolvedKey] || [];
