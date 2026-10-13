@@ -243,11 +243,6 @@
           <span class="bo-step-circle">4</span>
           <span class="bo-step-label">Contact &amp; Location</span>
         </button>
-        <span class="bo-step-line"></span>
-        <button type="button" class="bo-step" data-step-nav="5">
-          <span class="bo-step-circle">5</span>
-          <span class="bo-step-label">EHR Connection Details</span>
-        </button>
       </div>
 
       <form id="addOrgForm" class="bo-drawer-form">
@@ -338,15 +333,15 @@
                     <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
                   </button>
                   <div class="bo-select-menu">
-                    <div class="bo-select-option" data-value="Patient Self Registration">Patient Self Registration<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                    <div class="bo-select-option" data-value="Patient Clinic Registration">Patient Clinic Registration<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    <div class="bo-select-option" data-value="Patient Self Report">Patient Self Report<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    <div class="bo-select-option" data-value="Patient Clinic Report">Patient Clinic Report<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
                   </div>
                   <input type="hidden" name="authType" />
                 </div>
               </div>
 
               <div class="bo-modal-field">
-                <label>Type</label>
+                <label>Organization Type</label>
                 <div class="bo-select" data-name="type">
                   <button type="button" class="bo-select-trigger">
                     <span class="bo-select-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 2 7l10 5 10-5-10-5Z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></span>
@@ -428,16 +423,9 @@
                 </span>
               </div>
               <div class="bo-modal-toggle-field">
-                <label>Medication Module</label>
+                <label>Enable EHR connection</label>
                 <span class="bo-switch">
-                  <input type="checkbox" name="medicationModule" />
-                  <span class="bo-switch-track"></span>
-                </span>
-              </div>
-              <div class="bo-modal-toggle-field">
-                <label>Support</label>
-                <span class="bo-switch">
-                  <input type="checkbox" name="supportModule" />
+                  <input type="checkbox" name="enableEhrConnection" />
                   <span class="bo-switch-track"></span>
                 </span>
               </div>
@@ -498,108 +486,11 @@
                 <label>Location Longitude</label>
                 <input type="text" name="lng" placeholder="Longitude" />
               </div>
-              <div class="bo-modal-field">
-                <label>Time Zone</label>
-                <div class="bo-select" data-name="timeZone">
-                  <button type="button" class="bo-select-trigger">
-                    <span class="bo-select-value placeholder">Select time zone</span>
-                    <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-                  </button>
-                  <div class="bo-select-menu">
-                    <div class="bo-select-option" data-value="GMT-8:00 Pacific Time (US &amp; Canada)">GMT-8:00 Pacific Time (US &amp; Canada)<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                    <div class="bo-select-option" data-value="GMT-5:00 Eastern Time (US &amp; Canada)">GMT-5:00 Eastern Time (US &amp; Canada)<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                    <div class="bo-select-option" data-value="GMT+0:00 London">GMT+0:00 London<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                    <div class="bo-select-option" data-value="GMT+2:00 Jerusalem">GMT+2:00 Jerusalem<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                    <div class="bo-select-option" data-value="GMT+3:00 Moscow">GMT+3:00 Moscow<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                    <div class="bo-select-option" data-value="GMT+5:30 India">GMT+5:30 India<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                  </div>
-                  <input type="hidden" name="timeZone" />
-                </div>
-              </div>
               <div class="bo-modal-field full">
                 <label>Consent Folder Path</label>
                 <input type="text" name="consentPath" placeholder="Enter consent folder path" />
               </div>
             </div>
-          </div>
-
-          <div class="bo-modal-section" data-step="5">
-            <p class="bo-modal-section-title">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 5v6c0 5 3.4 8.7 8 10 4.6-1.3 8-5 8-10V5l-8-3Z"/><path d="M9 12l2 2 4-4"/></svg>
-              EHR Connection Details
-            </p>
-            <div id="ehrRowsWrap">
-              <div class="bo-ehr-card" data-ehr-row>
-                <div class="bo-ehr-card-head">
-                  <span class="bo-ehr-card-title">EHR Connection 1</span>
-                  <button type="button" class="bo-org-row-remove" aria-label="Remove EHR connection" disabled>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6L18 18M6 18L18 6"/></svg>
-                  </button>
-                </div>
-                <div class="bo-modal-grid">
-                  <div class="bo-modal-field">
-                    <label>EHR Name</label>
-                    <div class="bo-select" data-name="ehr1Name">
-                      <button type="button" class="bo-select-trigger">
-                        <span class="bo-select-value placeholder">Choose</span>
-                        <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-                      </button>
-                      <div class="bo-select-menu">
-                        <div class="bo-select-option" data-value="Athena">Athena<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                        <div class="bo-select-option" data-value="ECW">ECW<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                        <div class="bo-select-option" data-value="Epic">Epic<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                      </div>
-                      <input type="hidden" name="ehr1Name" />
-                    </div>
-                  </div>
-                  <div class="bo-modal-field">
-                    <label>Environment</label>
-                    <div class="bo-select" data-name="ehr1Env">
-                      <button type="button" class="bo-select-trigger">
-                        <span class="bo-select-value placeholder">Choose</span>
-                        <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-                      </button>
-                      <div class="bo-select-menu">
-                        <div class="bo-select-option" data-value="Sandbox">Sandbox<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                        <div class="bo-select-option" data-value="Production">Production<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                      </div>
-                      <input type="hidden" name="ehr1Env" />
-                    </div>
-                  </div>
-                  <div class="bo-modal-field">
-                    <label>Client Id</label>
-                    <input type="text" name="ehr1ClientId" placeholder="Enter Client ID" />
-                  </div>
-                  <div class="bo-modal-field">
-                    <label>Client Secret</label>
-                    <input type="text" name="ehr1ClientSecret" placeholder="Enter Client Secret" />
-                  </div>
-                  <div class="bo-modal-field">
-                    <label>Connection Name</label>
-                    <input type="text" name="ehr1ConnName" placeholder="Enter Connection Name" />
-                  </div>
-                  <div class="bo-modal-field full">
-                    <label>Scope</label>
-                    <div class="bo-multiselect" data-ehr-scope>
-                      <button type="button" class="bo-multiselect-trigger">
-                        <span class="bo-multiselect-value placeholder">Choose scope</span>
-                        <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-                      </button>
-                      <div class="bo-multiselect-menu"></div>
-                      <input type="hidden" name="ehr1Scope" />
-                    </div>
-                  </div>
-                  <div class="bo-modal-field full" data-base-url-field hidden>
-                    <label>Base URL</label>
-                    <input type="text" name="ehr1Url" placeholder="Enter Base URL" />
-                  </div>
-                </div>
-              </div>
-            </div>
-            <button type="button" class="bo-btn-secondary" id="addEhrRowBtn">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-              Add EHR Connection
-            </button>
           </div>
 
         </div>

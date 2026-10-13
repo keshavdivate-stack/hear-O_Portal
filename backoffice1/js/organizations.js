@@ -430,101 +430,7 @@ document.addEventListener("click", (e) => {
 document.addEventListener("scroll", (e) => { if (!e.target.closest?.(".bo-multiselect")) closeAllEhrScopes(); }, true);
 window.addEventListener("resize", closeAllEhrScopes);
 
-const ehrRowsWrap = document.getElementById("ehrRowsWrap");
-const addEhrRowBtn = document.getElementById("addEhrRowBtn");
-let ehrRowCount = 1;
-
-function ehrRowFields() {
-  return Array.from(ehrRowsWrap.querySelectorAll("[data-ehr-row]"));
-}
-
-function relabelEhrRows() {
-  const fields = ehrRowFields();
-  fields.forEach((field, i) => {
-    field.querySelector(".bo-ehr-card-title").textContent = `EHR Connection ${i + 1}`;
-    const removeBtn = field.querySelector(".bo-org-row-remove");
-    removeBtn.disabled = fields.length === 1;
-  });
-  addEhrRowBtn.disabled = fields.length >= EHR_MAX;
-  addEhrRowBtn.style.display = fields.length >= EHR_MAX ? "none" : "";
-}
-
-function addEhrRow() {
-  if (ehrRowFields().length >= EHR_MAX) return;
-  ehrRowCount += 1;
-  const n = ehrRowCount;
-
-  const card = document.createElement("div");
-  card.className = "bo-ehr-card";
-  card.setAttribute("data-ehr-row", "");
-  card.innerHTML = `
-    <div class="bo-ehr-card-head">
-      <span class="bo-ehr-card-title">EHR Connection ${n}</span>
-      <button type="button" class="bo-org-row-remove" aria-label="Remove EHR connection">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6L18 18M6 18L18 6"/></svg>
-      </button>
-    </div>
-    <div class="bo-modal-grid">
-      <div class="bo-modal-field">
-        <label>EHR Name</label>
-        <div class="bo-select" data-name="ehr${n}Name">
-          <button type="button" class="bo-select-trigger">
-            <span class="bo-select-value placeholder">Choose</span>
-            <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-          </button>
-          <div class="bo-select-menu">${EHR_OPTIONS_HTML}</div>
-          <input type="hidden" name="ehr${n}Name" />
-        </div>
-      </div>
-      <div class="bo-modal-field">
-        <label>Environment</label>
-        <div class="bo-select" data-name="ehr${n}Env">
-          <button type="button" class="bo-select-trigger">
-            <span class="bo-select-value placeholder">Choose</span>
-            <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-          </button>
-          <div class="bo-select-menu">${EHR_ENV_OPTIONS_HTML}</div>
-          <input type="hidden" name="ehr${n}Env" />
-        </div>
-      </div>
-      <div class="bo-modal-field">
-        <label>Client Id</label>
-        <input type="text" name="ehr${n}ClientId" placeholder="Enter Client ID" />
-      </div>
-      <div class="bo-modal-field">
-        <label>Client Secret</label>
-        <input type="text" name="ehr${n}ClientSecret" placeholder="Enter Client Secret" />
-      </div>
-      ${ehrConnNameFieldHtml("ehr", n)}
-      ${ehrScopeFieldHtml("ehr", n)}
-      ${ehrBaseUrlFieldHtml("ehr", n)}
-    </div>
-  `;
-
-  ehrRowsWrap.appendChild(card);
-  initBoSelects(card);
-  initEhrScopes(card);
-  wireEhrBaseUrlToggle(card, "ehr", n);
-
-  card.querySelector(".bo-org-row-remove").addEventListener("click", () => {
-    card.remove();
-    relabelEhrRows();
-  });
-
-  relabelEhrRows();
-}
-
-addEhrRowBtn.addEventListener("click", addEhrRow);
 initEhrScopes();
-ehrRowFields().forEach((card) => wireEhrBaseUrlToggle(card, "ehr", 1));
-
-function resetEhrRows() {
-  ehrRowFields().forEach((field, i) => {
-    if (i > 0) field.remove();
-  });
-  ehrRowCount = 1;
-  relabelEhrRows();
-}
 
 /* ---------------- Add Organization: full-screen stepper panel ---------------- */
 const addOrgOverlay = document.getElementById("addOrgOverlay");
@@ -561,7 +467,6 @@ function openAddOrgModal() {
   addOrgForm.querySelectorAll(".bo-select").forEach(resetBoSelect);
   addOrgForm.querySelectorAll("[data-ehr-scope]").forEach((el) => el.clearScope());
   addOrgForm.querySelectorAll("[data-base-url-field]").forEach((el) => { el.hidden = true; });
-  resetEhrRows();
   validateAddOrgForm();
   goToAddOrgStep(1);
   addOrgOverlay.classList.add("open");
