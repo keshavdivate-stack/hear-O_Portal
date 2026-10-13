@@ -398,13 +398,12 @@
 
         <div class="bo-modal-field">
           <label>Organization</label>
-          <div class="bo-select" data-name="exportOrg" id="rmExportOrgSelect">
-            <button type="button" class="bo-select-trigger">
-              <span class="bo-select-value placeholder">All Organizations</span>
+          <div class="bo-multiselect bo-multiselect--filter" id="rmExportOrgSelect">
+            <button type="button" class="bo-multiselect-trigger">
+              <span class="bo-multiselect-value placeholder">All Organizations</span>
               <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
             </button>
-            <div class="bo-select-menu" id="rmExportOrgMenu"></div>
-            <input type="hidden" name="org" />
+            <div class="bo-multiselect-menu"></div>
           </div>
         </div>
 
@@ -710,6 +709,7 @@
 <script src="js/notifications.js"></script>
 <script src="js/bo-table-scroll.js"></script>
 <script src="js/bo-pagination.js"></script>
+<script src="js/support-filters.js"></script>
 <script src="js/report-management-data.js"></script>
 <script src="js/report-management.js"></script>
 </body>

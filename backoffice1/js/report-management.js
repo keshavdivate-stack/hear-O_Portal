@@ -641,7 +641,7 @@ const rmExportOverlay = document.getElementById("rmExportOverlay");
 const rmExportForm = document.getElementById("rmExportForm");
 const rmExportBtn = document.getElementById("rmExportBtn");
 const rmExportReportSelect = document.getElementById("rmExportReportSelect");
-const rmExportOrgSelect = document.getElementById("rmExportOrgSelect");
+const rmExportOrgFilter = wireSupportMultiFilter("rmExportOrgSelect", { searchPlaceholder: "Search...", allLabel: "All Organizations" });
 let rmExportScheduleId = null;
 
 /* Reused for both entry points: a row's kebab "Download Report" (pre-selects
@@ -662,13 +662,13 @@ function openExportReport(id) {
     .join("");
 
   /* Organization (optional, as in the developed app): "All Organizations"
-     by default, or one organization. */
-  document.getElementById("rmExportOrgMenu").innerHTML = buildFilterSelectOptions(rmAllOrgs(), "All Organizations");
+     by default, or any combination of organizations. */
+  rmExportOrgFilter.setOptions(rmAllOrgs().map((org) => ({ value: org, label: org })));
+  rmExportOrgFilter.setSelected([]);
 
   const s = rmSchedules.find((x) => x.id === id);
   rmExportScheduleId = s ? id : null;
   setBoSelectValue(rmExportReportSelect, s ? String(id) : "", { silent: true });
-  setBoSelectValue(rmExportOrgSelect, "", { silent: true });
 
   rmExportBtn.disabled = true;
   rmExportOverlay.classList.add("open");
