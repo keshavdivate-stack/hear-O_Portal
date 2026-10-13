@@ -61,9 +61,10 @@
   document.getElementById("agreeBtn").addEventListener("click", () => {
     if (document.getElementById("optChat").classList.contains("checked")) localStorage.setItem("hearo_chat_enabled", "1");
     else localStorage.removeItem("hearo_chat_enabled");
-    // A new onboarding means the home-screen tutorial is due again after
-    // this patient's first recorded session.
-    localStorage.removeItem("hearo_home_tutorial_done");
+    // A new onboarding means a patient with no recordings yet: Home starts on
+    // "Start session", and the home-screen tutorial runs after their first
+    // recorded session.
+    ["hearo_recorded_date", "hearo_recorded_time", "hearo_home_tutorial_done"].forEach((k) => localStorage.removeItem(k));
     window.location.href = "/Mobile%20app/onboarding-1.html";
   });
 </script>
