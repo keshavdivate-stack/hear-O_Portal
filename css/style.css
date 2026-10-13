@@ -805,6 +805,11 @@ button, input, select, textarea, optgroup {
    team) that full-width buttons push Add Patient off the right edge. */
 .list-content .filters-bar { gap: 6px; margin-bottom: 10px; }
 .list-content .filters-bar .search-pill { width: 170px; padding: 9px 12px; }
+
+/* Support's ticket list has far fewer filters than Patient List, so the
+   search field can stay at its full, readable width instead of the
+   170px Patient List needs to fit everything else. */
+.list-content .ticket-filters-bar.filters-bar .search-pill { width: 320px; }
 .list-content .filters-bar .filter-btn { padding: 9px 10px; gap: 5px; }
 .list-content .filters-bar .clear-filters { padding: 0 2px; }
 
