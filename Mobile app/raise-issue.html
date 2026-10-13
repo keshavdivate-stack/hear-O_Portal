@@ -38,15 +38,11 @@
       </label>
       <div id="issueList"></div>
       <p class="ri-no-match" id="noMatch" hidden>No matching issues</p>
-      <div class="issue-submit-wrap">
-        <button type="button" class="login-btn" id="nextBtn">Next</button>
+      <!-- Only shown for "Other - Other problem" -->
+      <div id="otherDetails" hidden>
+        <p class="issue-details-label">Describe the problem</p>
+        <textarea class="issue-textarea" id="issueDetails" placeholder="Tell us a bit more..."></textarea>
       </div>
-    </div>
-
-    <!-- STEP 2: Details + submit -->
-    <div class="issue-body" id="detailsStep" hidden>
-      <p class="issue-details-label">Add details (optional)</p>
-      <textarea class="issue-textarea" id="issueDetails" placeholder="Tell us a bit more..."></textarea>
       <div class="issue-submit-wrap">
         <button type="button" class="login-btn" id="submitBtn">Submit Issue</button>
       </div>
@@ -79,10 +75,11 @@
     "App is not working as expected",
     "App is not loading properly",
     "App configuration seems incorrect",
-    "Something else"
+    "Other - Other problem"
   ];
+  const OTHER = "Other - Other problem";
   const $ = (id) => document.getElementById(id);
-  const steps = ["issueStep", "detailsStep", "successStep", "errorStep"];
+  const steps = ["issueStep", "successStep", "errorStep"];
   let selectedIssue = ISSUES[0];
 
   // Result screens are full screens (no header), like the Figma.
@@ -105,14 +102,16 @@
       btn.addEventListener("click", () => { selectedIssue = label; renderIssues(); });
       $("issueList").appendChild(btn);
     });
+    // The text field is only for "Other": the listed issues need no description,
+    // but "Other" does, so Submit waits for some text there.
+    const isOther = selectedIssue === OTHER;
+    $("otherDetails").hidden = !isOther;
+    $("submitBtn").disabled = isOther && !$("issueDetails").value.trim();
   }
   $("issueSearch").addEventListener("input", renderIssues);
+  $("issueDetails").addEventListener("input", renderIssues);
 
-  $("nextBtn").addEventListener("click", () => show("detailsStep"));
-  $("issueBackBtn").addEventListener("click", () => {
-    if (!$("detailsStep").hidden) show("issueStep");
-    else window.location.href = "/Mobile%20app/my-issues.html";
-  });
+  $("issueBackBtn").addEventListener("click", () => { window.location.href = "/Mobile%20app/my-issues.html"; });
 
   // Saved to the same list Raised Issues reads from.
   function saveIssue() {
@@ -121,7 +120,7 @@
     try { issues = JSON.parse(localStorage.getItem(KEY)) || []; } catch (e) {}
     issues.unshift({
       issue: selectedIssue,
-      detail: $("issueDetails").value.trim(),
+      detail: selectedIssue === OTHER ? $("issueDetails").value.trim() : "",
       date: new Date().toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }),
       status: "open",
     });
@@ -134,7 +133,7 @@
     saveIssue();
     show("successStep");
   });
-  $("tryAgainBtn").addEventListener("click", () => show("detailsStep"));
+  $("tryAgainBtn").addEventListener("click", () => show("issueStep"));
   $("continueBtn").addEventListener("click", () => { window.location.href = "/Mobile%20app/raised-issues.html"; });
 
   renderIssues();
