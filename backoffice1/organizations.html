@@ -150,7 +150,7 @@
       <span class="bo-list-toolbar-spacer"></span>
       <div class="bo-search-pill">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8"/><path d="M21 21L16.5 16.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-        <input type="text" id="orgSearchInput" placeholder="Search Organization" />
+        <input type="text" id="orgSearchInput" placeholder="Search By Name" />
       </div>
       <button class="bo-btn-primary" id="openAddOrgBtn">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
@@ -163,21 +163,19 @@
         <table class="bo-list-table">
           <thead>
             <tr>
-              <th class="sortable">NAME <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 19V5M6 11L12 5L18 11"/></svg></th>
+              <th class="sortable" data-field="name">NAME <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 19V5M6 11L12 5L18 11"/></svg></th>
               <th>DEFAULT TAG</th>
-              <th>TYPE</th>
               <th>STUDY</th>
-              <th>TARGET</th>
-              <th>DATE CREATED</th>
+              <th class="sortable" data-field="target">TARGET <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 19V5M6 11L12 5L18 11"/></svg></th>
+              <th class="sortable" data-field="dateCreated">DATE CREATED <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 19V5M6 11L12 5L18 11"/></svg></th>
               <th>DISPLAY ON DASHBOARD</th>
               <th>DISPLAY CARE RECOMMENDATION</th>
               <th>AUTH TYPE</th>
+              <th>ORGANIZATION TYPE</th>
               <th>EHR CONNECTIONS</th>
               <th>PHONE NUMBER 1</th>
               <th>LATITUDE / LONGITUDE</th>
-              <th>DOCUMENT PATH</th>
-              <th>UPDATE SENT</th>
-              <th>DEFAULT LNG</th>
+              <th>DOCUMENT</th>
               <th></th>
             </tr>
           </thead>

@@ -3,6 +3,7 @@
 /* ---------------- State ---------------- */
 const ORG_PAGE_SIZE = 20;
 let orgCurrentPage = 1;
+let orgSortField = "name";
 let orgSortDir = "asc";
 let orgSearchTerm = "";
 /* Active/Archived is its own tab, not a filter dropdown value -- archiving an
@@ -17,9 +18,27 @@ function filteredOrgs() {
   return inView.filter((o) => o.name.toLowerCase().includes(q) || o.tag.toLowerCase().includes(q) || o.study.toLowerCase().includes(q));
 }
 
+/* dateCreated is stored "DD/MM/YYYY" -- parsed to a timestamp so Date
+   Created sorts chronologically instead of lexicographically. */
+function orgSortValue(o, field) {
+  if (field === "target") return Number(o.target) || 0;
+  if (field === "dateCreated") {
+    const [d, m, y] = o.dateCreated.split("/").map(Number);
+    return new Date(y, m - 1, d).getTime();
+  }
+  return o.name;
+}
+
 function sortedOrgs() {
   const list = [...filteredOrgs()];
-  list.sort((a, b) => (orgSortDir === "asc" ? a.name.localeCompare(b.name, undefined, { numeric: true }) : b.name.localeCompare(a.name, undefined, { numeric: true })));
+  list.sort((a, b) => {
+    const av = orgSortValue(a, orgSortField);
+    const bv = orgSortValue(b, orgSortField);
+    if (typeof av === "string") {
+      return orgSortDir === "asc" ? av.localeCompare(bv, undefined, { numeric: true }) : bv.localeCompare(av, undefined, { numeric: true });
+    }
+    return orgSortDir === "asc" ? av - bv : bv - av;
+  });
   return list;
 }
 
@@ -48,19 +67,17 @@ function renderOrgs() {
       <tr>
         <td><a class="bo-name-link" href="org-profile.html?id=${o.id}">${o.name}</a></td>
         <td>${o.tag}</td>
-        <td>${o.type}</td>
-        <td>${o.type === "Commercial" ? "&mdash;" : o.study}</td>
+        <td>${o.study}</td>
         <td>${o.target}</td>
         <td>${o.dateCreated}</td>
         <td>${orgCheck(o.id, "onDashboard", o.onDashboard)}</td>
         <td>${orgCheck(o.id, "careRec", o.careRec)}</td>
         <td>${o.authType}</td>
+        <td>${o.type}</td>
         <td>${orgEhrTags(o.ehr)}</td>
         <td>${o.phone}</td>
         <td class="mono">${o.latLng}</td>
         <td>${o.docPath}</td>
-        <td>${o.updateSent}</td>
-        <td>${o.lng}</td>
         <td>
           <div class="bo-row-actions">
             <button class="bo-action-icon row-menu-trigger" data-id="${o.id}" aria-label="Row actions">${orgKebabIcon}</button>
@@ -100,9 +117,13 @@ document.getElementById("orgViewTabs").addEventListener("click", (e) => {
 });
 
 /* ---------------- Sort ---------------- */
-document.querySelector(".bo-list-table th.sortable").addEventListener("click", () => {
-  orgSortDir = orgSortDir === "asc" ? "desc" : "asc";
-  renderOrgs();
+document.querySelectorAll(".bo-list-table th.sortable").forEach((th) => {
+  th.addEventListener("click", () => {
+    const field = th.dataset.field;
+    orgSortDir = orgSortField === field && orgSortDir === "asc" ? "desc" : "asc";
+    orgSortField = field;
+    renderOrgs();
+  });
 });
 
 /* ---------------- Pagination ---------------- */
