@@ -338,9 +338,15 @@
             </div>
           </div>          <div class="form-field">
             <label>Create For</label>
-            <div class="search-select" id="createForSearch">
-              <input type="text" class="search-select-input" autocomplete="off" placeholder="Search patient by name or ID" />
-              <div class="search-select-results" hidden></div>
+            <div class="custom-select" id="createForSearch" data-name="createFor">
+              <button type="button" class="custom-select-trigger">
+                <span class="custom-select-value placeholder">Select Patient</span>
+                <svg class="custom-select-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="custom-select-menu custom-select-menu--searchable">
+                <input type="text" class="custom-select-search" autocomplete="off" placeholder="Search patients" />
+                <div class="custom-select-options"></div>
+              </div>
               <input type="hidden" name="patient" />
             </div>
           </div>        </div>

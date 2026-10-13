@@ -277,70 +277,61 @@ function refillSelect(select, options, placeholder, emptyPlaceholder) {
   valueEl.classList.add("placeholder");
 }
 
-/* "Create For" is a type-to-search field, not a dropdown: matches appear
-   under the input only while there's search text. Patient labels are
-   "Name (ID)", so one match against the label covers name or patient ID.
-   The hidden input only holds a value once a result is actually picked. */
-const createForInput = createTicketForSelect.querySelector(".search-select-input");
-const createForResults = createTicketForSelect.querySelector(".search-select-results");
-const createForHidden = createTicketForSelect.querySelector("input[type=hidden]");
-
-function createForOptions() {
-  return selectValue(createTicketTypeSelect) === "Clinic" ? CLINIC_USERS : TICKET_PATIENTS.map(patientOptionLabel);
-}
+/* "Create For" is a searchable dropdown (same .custom-select plumbing as
+   Type/Category/etc., plus a search box pinned to the top of its menu):
+   the trigger opens a patient/user list that narrows as you type. Patient
+   rows show the name with their ID underneath; the hidden value stays
+   "Name (ID)" either way, same as before, so the submit handler's
+   TICKET_PATIENTS lookup needs no change. */
+const createForOptionsEl = createTicketForSelect.querySelector(".custom-select-options");
+const createForSearchInput = createTicketForSelect.querySelector(".custom-select-search");
 
 function refillCreateFor() {
   const isPatient = selectValue(createTicketTypeSelect) !== "Clinic";
-  createForInput.value = "";
-  createForHidden.value = "";
-  createForInput.placeholder = isPatient ? "Search patient by name or ID" : "Search user by name";
-  createForResults.hidden = true;
+  createForOptionsEl.innerHTML = isPatient
+    ? TICKET_PATIENTS.map(
+        (p) => `
+      <div class="custom-select-option" data-value="${patientOptionLabel(p)}">
+        <span class="custom-select-option-main">${p.name}</span>
+        <span class="custom-select-option-sub">${p.id}</span>
+      </div>`
+      ).join("")
+    : CLINIC_USERS.map((name) => `<div class="custom-select-option" data-value="${name}">${name}</div>`).join("");
+  resetCustomSelect(createTicketForSelect);
+  createForSearchInput.value = "";
+  createForSearchInput.placeholder = isPatient ? "Search patients" : "Search users";
 }
 
-function renderCreateForResults() {
-  const q = createForInput.value.trim().toLowerCase();
-  if (!q) { createForResults.hidden = true; return; }
-  const matches = createForOptions().filter((label) => label.toLowerCase().includes(q));
+/* Clicking inside the menu's search box must not bubble to the
+   document-level listener that closes every open .custom-select. */
+createForSearchInput.addEventListener("click", (e) => e.stopPropagation());
+createForSearchInput.addEventListener("input", () => {
+  const q = createForSearchInput.value.trim().toLowerCase();
+  createForOptionsEl.querySelectorAll(".custom-select-option").forEach((opt) => {
+    opt.hidden = q ? !opt.textContent.toLowerCase().includes(q) : false;
+  });
+});
+
+/* Reopening the dropdown always starts from a clear search and the full
+   list, and hands focus straight to the search box. */
+createTicketForSelect.querySelector(".custom-select-trigger").addEventListener("click", () => {
+  if (!createTicketForSelect.classList.contains("open")) return;
+  createForSearchInput.value = "";
+  createForOptionsEl.querySelectorAll(".custom-select-option").forEach((opt) => (opt.hidden = false));
+  createForSearchInput.focus();
+});
+
+/* The generic custom-select engine sets the trigger text from the picked
+   option's full textContent (name + ID run together) -- show just the
+   patient's name instead, same as a plain Clinic-user pick already reads. */
+createTicketForSelect.querySelector("input[type=hidden]").addEventListener("change", (e) => {
+  if (!e.target.value) return;
   const isPatient = selectValue(createTicketTypeSelect) !== "Clinic";
-  createForResults.innerHTML = matches.length
-    ? matches.map((label) => `<div class="search-select-result" data-value="${label}">${label}</div>`).join("")
-    : `<div class="search-select-empty">${isPatient ? "No patients found" : "No users found"}</div>`;
-  createForResults.hidden = false;
-}
+  if (!isPatient) return;
+  const patient = TICKET_PATIENTS.find((p) => patientOptionLabel(p) === e.target.value);
+  if (patient) createTicketForSelect.querySelector(".custom-select-value").textContent = patient.name;
+});
 
-function pickCreateFor(label) {
-  createForInput.value = label;
-  createForHidden.value = label;
-  createForResults.hidden = true;
-}
-
-createForInput.addEventListener("input", (e) => {
-  e.stopPropagation();
-  createForHidden.value = "";
-  renderCreateForResults();
-});
-createForInput.addEventListener("keydown", (e) => {
-  if (e.key === "Enter") {
-    e.preventDefault();
-    const first = createForResults.querySelector(".search-select-result");
-    if (!createForResults.hidden && first) pickCreateFor(first.dataset.value);
-  } else if (e.key === "Escape") {
-    createForResults.hidden = true;
-  }
-});
-/* mousedown (not click) so the pick lands before the input's blur hides the list. */
-createForResults.addEventListener("mousedown", (e) => {
-  const result = e.target.closest(".search-select-result");
-  if (!result) return;
-  e.preventDefault();
-  pickCreateFor(result.dataset.value);
-});
-/* Leaving the field without picking a result discards the typed text, so
-   Create For is always either empty or an actual patient/user. */
-createForInput.addEventListener("blur", () => {
-  createForResults.hidden = true;
-  if (!createForHidden.value) createForInput.value = "";
-});
 createTicketTypeSelect.querySelector("input[type=hidden]").addEventListener("change", () => {
   refillCreateFor();
   validateCreateTicketForm();

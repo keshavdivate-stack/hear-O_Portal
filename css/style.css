@@ -5024,6 +5024,32 @@ label.checkbox-field {
 
 .custom-select.open .custom-select-menu { display: block; }
 
+/* Searchable variant (New Ticket > Create For): a search box stays fixed
+   at the top of the menu while the option list below it scrolls, so
+   searching isn't thrown off as the list filters. */
+.custom-select-menu--searchable {
+  display: none;
+  flex-direction: column;
+  padding: 0;
+  overflow: hidden;
+}
+.custom-select.open .custom-select-menu--searchable { display: flex; }
+.custom-select-search {
+  flex-shrink: 0;
+  margin: 6px;
+  padding: 9px 12px;
+  border: 1px solid var(--gray-border);
+  border-radius: 7px;
+  font-size: 14px;
+  font-family: inherit;
+  color: #23272E;
+}
+.custom-select-options {
+  overflow-y: auto;
+  padding: 0 6px 6px;
+  max-height: 220px;
+}
+
 .custom-select-option {
   display: flex;
   align-items: center;
@@ -5035,6 +5061,10 @@ label.checkbox-field {
   color: #23272E;
   cursor: pointer;
 }
+
+.custom-select-option-main { font-weight: 500; color: #23272E; }
+.custom-select-option-sub { font-size: 12.5px; color: var(--gray-text); }
+.custom-select-option:has(.custom-select-option-main) { flex-direction: column; align-items: flex-start; gap: 1px; }
 
 .custom-select-option:hover { background: var(--bg); }
 .custom-select-option[hidden] { display: none; }
