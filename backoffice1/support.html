@@ -372,22 +372,22 @@
 
     <!-- RULES -->
     <div class="bo-tab-panel" id="tab-rules">
-      <div class="bo-filter-row bo-filter-row--rules">
-        <div class="bo-filter-labeled-field">
-          <div class="bo-filter-row-label">Category</div>
-          <div class="bo-filter-field">
-            <select class="bo-filter-select" id="ruleCategoryFilter"></select>
-          </div>
+      <div class="bo-filter-row">
+        <div class="bo-select bo-toolbar-select" data-name="ruleCategory">
+          <button type="button" class="bo-select-trigger">
+            <span class="bo-select-value placeholder">Category</span>
+            <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="bo-select-menu" id="ruleCategoryFilterMenu"></div>
+          <input type="hidden" id="ruleCategoryFilter" />
         </div>
-        <div class="bo-filter-labeled-field">
-          <div class="bo-filter-row-label">Status</div>
-          <div class="bo-filter-field">
-            <select class="bo-filter-select" id="ruleStatusFilter">
-              <option value="">Status</option>
-              <option value="enabled" selected>Enabled</option>
-              <option value="disabled">Disabled</option>
-            </select>
-          </div>
+        <div class="bo-select bo-toolbar-select" data-name="ruleStatus">
+          <button type="button" class="bo-select-trigger">
+            <span class="bo-select-value placeholder">Status</span>
+            <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="bo-select-menu" id="ruleStatusFilterMenu"></div>
+          <input type="hidden" id="ruleStatusFilter" />
         </div>
         <button type="button" class="bo-btn-primary" id="ruleApplyBtn">Apply</button>
         <button type="button" class="bo-btn-secondary" id="ruleClearFiltersBtn">Clear filters</button>

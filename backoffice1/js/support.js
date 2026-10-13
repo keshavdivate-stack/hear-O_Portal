@@ -484,22 +484,22 @@ const channelPills = (channels) => channels.map((c) => channelPillLabel[c] || c)
 
 const ruleSla = (r) => (r.slaResponse || r.slaResolve ? `${r.slaResponse || "—"} / ${r.slaResolve || "—"}` : "&mdash;");
 
-const ruleCategoryFilterEl = document.getElementById("ruleCategoryFilter");
-const ruleStatusFilterEl = document.getElementById("ruleStatusFilter");
-ruleCategoryFilterEl.innerHTML = `<option value="">Category</option>` + CATEGORIES.map((c) => `<option value="${c}">${c}</option>`).join("");
+document.getElementById("ruleCategoryFilterMenu").innerHTML = buildFilterSelectOptions(CATEGORIES, "All categories");
+document.getElementById("ruleStatusFilterMenu").innerHTML = buildFilterSelectOptions(["Enabled", "Disabled"], "All statuses");
 
 /* Staged, not live -- the filter-row's Apply button commits
-   ruleCategoryValue/ruleStatusValue from whatever the two <select>s
-   currently show, same as Tickets/Incidents' Apply buttons do. Status
-   defaults to "Enabled" (the <select>'s own default selection), matching
-   the developed table showing active rules first. */
+   ruleCategoryValue/ruleStatusValue from whatever the two filters
+   currently show, same as Tickets/Incidents' Apply buttons. Status
+   defaults to "Enabled", matching the developed table showing active
+   rules first. */
 let ruleCategoryValue = "";
-let ruleStatusValue = ruleStatusFilterEl.value;
+let ruleStatusValue = "Enabled";
+setBoSelectValue(document.querySelector('.bo-select[data-name="ruleStatus"]'), "Enabled", { silent: true });
 
 function matchesRuleFilters(r) {
   if (ruleCategoryValue && ticketCategory(r) !== ruleCategoryValue) return false;
-  if (ruleStatusValue === "enabled" && r.enabled === false) return false;
-  if (ruleStatusValue === "disabled" && r.enabled !== false) return false;
+  if (ruleStatusValue === "Enabled" && r.enabled === false) return false;
+  if (ruleStatusValue === "Disabled" && r.enabled !== false) return false;
   return true;
 }
 
@@ -535,14 +535,14 @@ function refreshRuleTable() {
 }
 
 document.getElementById("ruleApplyBtn").addEventListener("click", () => {
-  ruleCategoryValue = ruleCategoryFilterEl.value;
-  ruleStatusValue = ruleStatusFilterEl.value;
+  ruleCategoryValue = document.getElementById("ruleCategoryFilter").value;
+  ruleStatusValue = document.getElementById("ruleStatusFilter").value;
   refreshRuleTable();
 });
 
 document.getElementById("ruleClearFiltersBtn").addEventListener("click", () => {
-  ruleCategoryFilterEl.value = "";
-  ruleStatusFilterEl.value = "";
+  resetBoSelect(document.querySelector('.bo-select[data-name="ruleCategory"]'));
+  resetBoSelect(document.querySelector('.bo-select[data-name="ruleStatus"]'));
   ruleCategoryValue = "";
   ruleStatusValue = "";
   refreshRuleTable();
