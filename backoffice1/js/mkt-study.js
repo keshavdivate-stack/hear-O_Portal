@@ -8,31 +8,20 @@ const RING_SEGMENTS = [
 const screenedMonths = ["May", "Jun", "Jul", "Aug", "Sep", "Oct"];
 const screenedSeriesBase = [1002, 1006, 1030, 1044, 1062, 1118];
 
-const mktBinDataBase = {
-  quality: [
-    { label: "90%-100%", val: 32 },
-    { label: "80%-89%", val: 24 },
-    { label: "70%-79%", val: 18 },
-    { label: "60%-69%", val: 9 },
-  ],
-  compliance: [
-    { label: "90%-100%", val: 28 },
-    { label: "80%-89%", val: 21 },
-    { label: "70%-79%", val: 15 },
-    { label: "60%-69%", val: 12 },
-  ],
-};
+/* Compliance ranges, in the order the bins and the patient list use. The
+   counts come from js/compliance-pool.js (see renderForOrg). */
+const MKT_BIN_LABELS = ["90%-100%", "80%-89%", "70%-79%", "60%-69%", "Less than 60%"];
 
 const mktStudyHeadBase = { sites: 5, needAttention: 11 };
 
 let screenedSeries = screenedSeriesBase;
-let mktBinData = mktBinDataBase;
+let mktBinData = { quality: [], compliance: [] };
 let activeMktBinsTab = "quality";
 let activeMktOrgIds = ["all"];
 
-/* Order matches mktBinData[tab]'s array -- used to build the Usable
-   Compliance drill-down link for whichever bar was clicked. */
-const MKT_BIN_KEYS = ["90-100", "80-89", "70-79", "60-69"];
+/* Order matches mktBinData[tab]'s array -- the bucket keys the patient
+   list (usable-compliance.html) understands. */
+const MKT_BIN_KEYS = ["90-100", "80-89", "70-79", "60-69", "lt60"];
 
 /* ---------------- Organization cards (Recorded / Did not upload / Left study) ----------------
    One card per organization -- every org of the selected type under "All
@@ -200,18 +189,28 @@ function mktUsableComplianceHref(tab, bucketKey) {
   return `usable-compliance.html?${params.toString()}`;
 }
 
+/* Same layout as the developed Screening section (and the Summary
+   dashboard): count, then the range label above a blue bar sized against
+   the largest range. The rows themselves aren't links -- "View details"
+   opens the patient list on the first range (90%-100%) for the selected
+   compliance type; the other ranges are tabs on that screen. */
 function renderMktBins(tab) {
   activeMktBinsTab = tab;
-  document.getElementById("mktBinsList").innerHTML = mktBinData[tab]
+  const bins = mktBinData[tab];
+  const maxVal = Math.max(...bins.map((b) => b.val));
+  document.getElementById("mktBinsList").innerHTML = bins
     .map(
-      (b, i) => `
-      <a class="mkt-bin-row" href="${mktUsableComplianceHref(tab, MKT_BIN_KEYS[i])}">
-        <span class="mkt-bin-val">${b.val}</span>
-        <div class="bo-bin-bar-track mkt-bin-track"><div class="bo-bin-bar-fill" style="width:${b.val}%; background:${i === 3 ? "var(--maroon)" : "var(--gray-border)"};"></div></div>
-        <span class="mkt-bin-label">${b.label}</span>
-      </a>`
+      (b) => `
+      <div class="bo-bin-row">
+        <span class="bo-bin-num">${b.val}</span>
+        <div class="bo-bin-body">
+          <span class="bo-bin-label">${b.label}</span>
+          <div class="bo-bin-bar-track"><div class="bo-bin-bar-fill" style="width:${maxVal ? Math.round((b.val / maxVal) * 100) : 0}%; background:var(--blue);"></div></div>
+        </div>
+      </div>`
     )
     .join("");
+  document.getElementById("mktBinsViewDetailsLink").href = mktUsableComplianceHref(tab, MKT_BIN_KEYS[0]);
 }
 
 document.getElementById("mktBinsTabs").addEventListener("click", (e) => {
@@ -236,9 +235,12 @@ function renderForOrg(orgIds) {
   screenedSeries = screenedSeriesBase.map((v) => mktScale(v, seed, 0.2));
   renderScreenedChart();
 
+  /* Counted from the same patient list "View details" opens
+     (js/compliance-pool.js), so each number matches that tab's total. */
+  const pool = buildCompliancePool(orgIds);
   mktBinData = {
-    quality: mktBinDataBase.quality.map((b, i) => ({ ...b, val: Math.min(100, mktScale(b.val, seed + i, 0.4)) })),
-    compliance: mktBinDataBase.compliance.map((b, i) => ({ ...b, val: Math.min(100, mktScale(b.val, seed + i + 4, 0.4)) })),
+    quality: compliancePoolCounts(pool, "quality").map((val, i) => ({ label: MKT_BIN_LABELS[i], val })),
+    compliance: compliancePoolCounts(pool, "compliance").map((val, i) => ({ label: MKT_BIN_LABELS[i], val })),
   };
   renderMktBins(activeMktBinsTab);
 

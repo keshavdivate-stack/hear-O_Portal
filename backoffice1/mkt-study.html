@@ -155,12 +155,15 @@
       <div class="mkt-hero-cards" id="mktHeroCards"></div>
 
       <section class="bo-card mkt-card mkt-card-bins mkt-hero-bins">
-        <div class="mkt-bins-tabs" id="mktBinsTabs">
-          <button type="button" class="active" data-tab="quality">Compliance Over Time</button>
-          <button type="button" data-tab="compliance">Current Compliance</button>
+        <div class="bo-panel-head">
+          <div class="bo-seg-toggle" id="mktBinsTabs">
+            <button type="button" class="bo-seg-btn active" data-tab="quality">Compliance Over Time</button>
+            <button type="button" class="bo-seg-btn" data-tab="compliance">Current Compliance</button>
+          </div>
+          <div class="bo-days-row" style="margin:0;">Last <input type="number" class="bo-days-input" id="mktBinsDaysInput" value="31" min="1" /> days</div>
         </div>
-        <div class="bo-days-row">Last <input type="number" class="bo-days-input" value="31" min="1" /> days</div>
-        <div class="mkt-bins-list" id="mktBinsList"></div>
+        <div class="bo-bins-list" id="mktBinsList"></div>
+        <a href="usable-compliance.html" class="bo-view-details-link" id="mktBinsViewDetailsLink">View details</a>
       </section>
     </div>
 
@@ -233,6 +236,7 @@
 <script src="js/support-data.js"></script>
 <script src="js/notifications.js"></script>
 <script src="js/mkt-orgs.js"></script>
+<script src="js/compliance-pool.js"></script>
 <script src="js/mkt-study.js"></script>
 </body>
 </html>
