@@ -1530,6 +1530,14 @@ button.bo-name-link { background: none; border: none; padding: 0; font: inherit;
   margin: 0 0 8px;
 }
 
+/* A filter field with its own label above it (e.g. Support > Rules'
+   Category/Status) -- the label sits outside .bo-filter-field, so the row
+   needs to align everything to the fields' bottom edge, not vertically
+   center against the taller label+field stack. */
+.bo-filter-labeled-field { flex-shrink: 0; }
+.bo-filter-row--rules { align-items: flex-end; }
+.bo-filter-row--rules .bo-filter-field { min-width: 200px; }
+
 .bo-filter-row {
   display: flex;
   align-items: center;
