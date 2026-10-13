@@ -61,6 +61,9 @@
   document.getElementById("agreeBtn").addEventListener("click", () => {
     if (document.getElementById("optChat").classList.contains("checked")) localStorage.setItem("hearo_chat_enabled", "1");
     else localStorage.removeItem("hearo_chat_enabled");
+    // A new onboarding means the home-screen tutorial is due again after
+    // this patient's first recorded session.
+    localStorage.removeItem("hearo_home_tutorial_done");
     window.location.href = "/Mobile%20app/onboarding-1.html";
   });
 </script>

@@ -33,7 +33,21 @@
   </div>
 
 <script>
-  setTimeout(() => { window.location.href = "/Mobile%20app/home.html?recorded=1"; }, 1500);
+  // The home-screen tutorial runs once, right after the patient's first
+  // recorded session is saved. Today's recording is stored here (the same
+  // keys home.html reads) so Home shows "Recording complete" once the
+  // tutorial ends; later sessions go straight back to Home.
+  setTimeout(() => {
+    if (localStorage.getItem("hearo_home_tutorial_done")) {
+      window.location.href = "/Mobile%20app/home.html?recorded=1";
+      return;
+    }
+    const now = new Date();
+    const hours = now.getHours();
+    localStorage.setItem("hearo_recorded_date", now.toDateString());
+    localStorage.setItem("hearo_recorded_time", `${hours % 12 || 12}:${String(now.getMinutes()).padStart(2, "0")} ${hours >= 12 ? "PM" : "AM"}`);
+    window.location.href = "/Mobile%20app/tutorial-intro.html";
+  }, 1500);
 </script>
 </body>
 </html>
