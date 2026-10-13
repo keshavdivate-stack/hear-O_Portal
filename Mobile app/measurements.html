@@ -31,7 +31,7 @@
 
     <div class="measure-body">
 
-      <div class="measure-section">
+      <div class="measure-section" data-vital="weight">
         <div class="measure-head">
           <div class="measure-icon measure-icon--blue">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="4" y="3" width="16" height="18" rx="2" stroke="#3B82F6" stroke-width="1.8"/><path d="M8 8h8M8 12h5" stroke="#3B82F6" stroke-width="1.8" stroke-linecap="round"/></svg>
@@ -81,7 +81,7 @@
         <button type="button" class="measure-add-btn measure-add-btn--blue" onclick="window.location.href='/Mobile%20app/weight.html'">+ Add weight</button>
       </div>
 
-      <div class="measure-section">
+      <div class="measure-section" data-vital="blood-pressure">
         <div class="measure-head">
           <div class="measure-icon measure-icon--purple">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 21s-7-4.5-9.3-9.2C1.2 8.8 2.6 5.5 5.6 4.6c2-.6 4 .2 5.1 1.9C11.9 4.8 13.9 4 15.9 4.6c3 .9 4.4 4.2 2.9 7.2C16.4 16.5 12 21 12 21z" stroke="#935CFC" stroke-width="1.6" stroke-linejoin="round"/><path d="M6 12h2l1.2-2.4L11 14l1.2-2.4L13 12h5" stroke="#935CFC" stroke-width="1.4" stroke-linejoin="round"/></svg>
@@ -128,7 +128,7 @@
         <button type="button" class="measure-add-btn measure-add-btn--purple" onclick="window.location.href='/Mobile%20app/blood-pressure.html'">+ Add blood pressure</button>
       </div>
 
-      <div class="measure-section">
+      <div class="measure-section" data-vital="heart-rate">
         <div class="measure-head">
           <div class="measure-icon measure-icon--green">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 21s-7-4.5-9.3-9.2C1.2 8.8 2.6 5.5 5.6 4.6c2-.6 4 .2 5.1 1.9C11.9 4.8 13.9 4 15.9 4.6c3 .9 4.4 4.2 2.9 7.2C16.4 16.5 12 21 12 21z" stroke="#2AC19E" stroke-width="1.8" stroke-linejoin="round"/></svg>
@@ -165,10 +165,10 @@
           <span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span><span>Mon</span><span>Tue</span><span class="measure-xaxis-active">Wed</span>
         </div>
 
-        <button type="button" class="measure-add-btn measure-add-btn--green" onclick="window.location.href='/Mobile%20app/measurements.html'">+ Add heart rate</button>
+        <button type="button" class="measure-add-btn measure-add-btn--green" onclick="window.location.href='/Mobile%20app/measurements.html?saved=heart-rate'">+ Add heart rate</button>
       </div>
 
-      <div class="measure-section">
+      <div class="measure-section" data-vital="blood-oxygen">
         <div class="measure-head">
           <div class="measure-icon measure-icon--orange">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11Z" stroke="#EA580C" stroke-width="1.8" stroke-linejoin="round"/></svg>
@@ -205,11 +205,33 @@
           <span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span><span>Mon</span><span>Tue</span><span class="measure-xaxis-active">Wed</span>
         </div>
 
-        <button type="button" class="measure-add-btn measure-add-btn--orange" onclick="window.location.href='/Mobile%20app/measurements.html'">+ Add blood oxygen</button>
+        <button type="button" class="measure-add-btn measure-add-btn--orange" onclick="window.location.href='/Mobile%20app/measurements.html?saved=blood-oxygen'">+ Add blood oxygen</button>
       </div>
 
     </div>
   </div>
 
+<script>
+  // After a value is entered for a vital, open on that vital's chart and then
+  // scroll on to the next vital in the list. Blood Oxygen is last, so after
+  // it the screen just stays on Blood Oxygen.
+  (function () {
+    const saved = new URLSearchParams(window.location.search).get("saved");
+    if (!saved) return;
+    const body = document.querySelector(".measure-body");
+    const sections = [...body.querySelectorAll(".measure-section[data-vital]")];
+    const index = sections.findIndex((s) => s.dataset.vital === saved);
+    if (index === -1) return;
+    // The phone mockup may be scaled to fit the window; on-screen distances
+    // are divided by that scale to get the scroll offset.
+    const scale = body.getBoundingClientRect().height / body.offsetHeight || 1;
+    const topOf = (section) => body.scrollTop + (section.getBoundingClientRect().top - body.getBoundingClientRect().top) / scale;
+    body.scrollTop = topOf(sections[index]);
+    const next = sections[index + 1];
+    if (next) setTimeout(() => body.scrollTo({ top: topOf(next), behavior: "smooth" }), 500);
+    // Drop ?saved= so a refresh does not replay the scroll.
+    window.history.replaceState({}, "", window.location.pathname);
+  })();
+</script>
 </body>
 </html>
