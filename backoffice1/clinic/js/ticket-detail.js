@@ -28,6 +28,12 @@ function getTicketIdFromUrl() {
 const ticket = ticketList.find((t) => t.id === getTicketIdFromUrl());
 const ticketDetailBody = document.getElementById("ticketDetailBody");
 
+/* New tickets (raised from this page) don't carry a tier yet -- fall back to
+   the tier implied by their assignee, or Level 1 for an unassigned ticket. */
+function deriveDefaultTier(t) {
+  if (!t.tier) t.tier = AGENT_LEVEL[t.assignedTo] || "Level 1";
+}
+
 /* The Back arrow returns to wherever the user actually came from instead of
    always landing on the Tickets tab. When the referring page is part of this
    app, that page's URL wins -- history.back() is used on click for a true
@@ -63,7 +69,6 @@ if (!ticket) {
     document.getElementById("ticketDetailPills").innerHTML = `
       <span class="ticket-pill ${typeCellClass(ticket.type)}">${ticket.type}</span>
       <span class="ticket-pill ${stateCellClass(ticket.state)}">${ticket.state}</span>
-      <span class="ticket-pill ${severityCellClass(ticket.severity)}">${ticket.severity}</span>
     `;
     document.title = `HearO | ${ticket.ticketId}`;
   }
@@ -676,15 +681,13 @@ if (!ticket) {
         <div class="ticket-detail-grid">
           <div class="ticket-detail-field"><label>Source</label><span>${ticket.type}</span></div>
           <div class="ticket-detail-field"><label>Status</label><span class="ticket-pill ${stateCellClass(ticket.state)}">${ticket.state}</span></div>
-          <div class="ticket-detail-field"><label>Severity</label><span class="ticket-pill ${severityCellClass(ticket.severity)}">${ticket.severity}</span></div>
-          <div class="ticket-detail-field"><label>${ticket.type === "Patient" ? "Patient" : "Raised By"}</label><span>${
+          <div class="ticket-detail-field"><label>${ticket.type === "Patient" ? "Created For" : "Raised By"}</label><span>${
             ticket.type === "Patient"
               ? `<a class="ticket-view-link" href="patient-data.html">${ticket.who}</a>`
               : ticket.who
           }</span></div>
           <div class="ticket-detail-field"><label>Origin</label><span>${ticket.origin}</span></div>
-          <div class="ticket-detail-field"><label>Scope</label><span>${ticket.scope}</span></div>
-          <div class="ticket-detail-field"><label>Assigned To</label><span>${ticket.assignedTo}</span></div>
+          <div class="ticket-detail-field"><label>Assigned To</label><span>${ticket.assignedTo || "—"}</span></div>
           <div class="ticket-detail-field"><label>Created</label><span>${ticket.created}</span></div>
         </div>
       </div>

@@ -51,7 +51,7 @@ function renderTicketList() {
         <td>${t.issueType}</td>
         <td><span class="ticket-pill ${stateCellClass(t.state)}">${t.state}</span></td>
         <td>${t.created}</td>
-        <td>${t.assignedTo}</td>
+        <td>${t.assignedTo || "—"}</td>
         <td><a class="ticket-view-icon" href="ticket-detail.html?id=${t.id}" aria-label="View">${eyeIcon}</a></td>
       </tr>`
     )
@@ -183,7 +183,7 @@ const clearableTicketFilters = [
   { name: "category", menu: ticketCategoryMenu, set: selectedCategories, label: "Category" },
   { name: "issueType", menu: ticketIssueMenu, set: selectedIssueTypes, label: "Issue Type" },
   { name: "origin", menu: ticketOriginMenu, set: selectedOrigins, label: "Origin" },
-  { name: "state", menu: ticketStateMenu, set: selectedStates, label: "State" },
+  { name: "state", menu: ticketStateMenu, set: selectedStates, label: "Status" },
 ];
 
 document.getElementById("clearTicketFilters").addEventListener("click", () => {
@@ -219,7 +219,6 @@ function currentOrg() {
 let raisedTicketSearchTerm = "";
 const selectedRaisedCategories = new Set();
 const selectedRaisedIssueTypes = new Set();
-const selectedRaisedSeverities = new Set();
 const selectedRaisedStates = new Set();
 
 function raisedTicketList() {
@@ -229,7 +228,6 @@ function raisedTicketList() {
     if (t.type !== "Clinic" || t.organization.toUpperCase() !== org) return false;
     if (selectedRaisedCategories.size && !selectedRaisedCategories.has(t.category)) return false;
     if (selectedRaisedIssueTypes.size && !selectedRaisedIssueTypes.has(t.issueType)) return false;
-    if (selectedRaisedSeverities.size && !selectedRaisedSeverities.has(t.severity)) return false;
     if (selectedRaisedStates.size && !selectedRaisedStates.has(t.state)) return false;
     if (term && !`${t.ticketId} ${t.who} ${t.issueType}`.toLowerCase().includes(term)) return false;
     return true;
@@ -249,7 +247,6 @@ function renderRaisedTicketList() {
         <td>${t.who}</td>
         <td><span class="ticket-pill ticket-pill-category">${t.category}</span></td>
         <td>${t.issueType}</td>
-        <td><span class="ticket-pill ${severityCellClass(t.severity)}">${t.severity}</span></td>
         <td><span class="ticket-pill ${stateCellClass(t.state)}">${t.state}</span></td>
         <td>${t.created}</td>
         <td><a class="ticket-view-icon" href="ticket-detail.html?id=${t.id}" aria-label="View">${eyeIcon}</a></td>
@@ -258,7 +255,7 @@ function renderRaisedTicketList() {
     .join("");
   raisedTicketRangeLabel.textContent = list.length ? `1-${list.length} of ${list.length}` : "";
   if (!list.length) {
-    raisedTicketRows.innerHTML = `<tr><td colspan="8" style="text-align:center; color:var(--gray-text); padding:24px;">No tickets raised by this clinic yet.</td></tr>`;
+    raisedTicketRows.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--gray-text); padding:24px;">No tickets raised by this clinic yet.</td></tr>`;
   }
 }
 renderRaisedTicketList();
@@ -282,10 +279,6 @@ const raisedIssueTypeMenu = document.getElementById("raisedIssueTypeMenu");
 raisedIssueTypeMenu.innerHTML = buildOptionsHtml(allIssueTypes);
 wireCheckboxFilter(document.querySelector('.checkbox-filter[data-name="raisedIssueType"]'), raisedIssueTypeMenu, selectedRaisedIssueTypes, renderRaisedTicketList);
 
-const raisedSeverityMenu = document.getElementById("raisedSeverityMenu");
-raisedSeverityMenu.innerHTML = buildOptionsHtml(ticketSeverities);
-wireCheckboxFilter(document.querySelector('.checkbox-filter[data-name="raisedSeverity"]'), raisedSeverityMenu, selectedRaisedSeverities, renderRaisedTicketList);
-
 const raisedStateMenu = document.getElementById("raisedStateMenu");
 raisedStateMenu.innerHTML = buildOptionsHtml(ticketStates);
 wireCheckboxFilter(document.querySelector('.checkbox-filter[data-name="raisedState"]'), raisedStateMenu, selectedRaisedStates, renderRaisedTicketList);
@@ -293,8 +286,7 @@ wireCheckboxFilter(document.querySelector('.checkbox-filter[data-name="raisedSta
 const clearableRaisedTicketFilters = [
   { name: "raisedCategory", menu: raisedCategoryMenu, set: selectedRaisedCategories, label: "Category" },
   { name: "raisedIssueType", menu: raisedIssueTypeMenu, set: selectedRaisedIssueTypes, label: "Issue Type" },
-  { name: "raisedSeverity", menu: raisedSeverityMenu, set: selectedRaisedSeverities, label: "Severity" },
-  { name: "raisedState", menu: raisedStateMenu, set: selectedRaisedStates, label: "State" },
+  { name: "raisedState", menu: raisedStateMenu, set: selectedRaisedStates, label: "Status" },
 ];
 
 document.getElementById("clearRaisedTicketFilters").addEventListener("click", () => {
@@ -318,16 +310,15 @@ const createTicketForm = document.getElementById("createTicketForm");
 const saveCreateTicketBtn = document.getElementById("saveCreateTicket");
 const createTicketCategorySelect = document.querySelector('#createTicketOverlay .custom-select[data-name="category"]');
 const createTicketIssueSelect = document.querySelector('#createTicketOverlay .custom-select[data-name="issueType"]');
-const createTicketLevelSelect = document.querySelector('#createTicketOverlay .custom-select[data-name="level"]');
-const createTicketAssignedToSelect = document.querySelector('#createTicketOverlay .custom-select[data-name="assignedTo"]');
 
 /* The logged-in clinic user (avatar "EC" in the topbar) raises the ticket --
-   no need to ask them to pick their own name from a list. */
+   no need to ask them to pick their own name from a list. Level and
+   Assigned To aren't collected at creation time (matching the developed
+   New Ticket modal) -- they're set later from the ticket detail page's
+   Handling form, same as any other ticket. */
 const CURRENT_USER = "Emily Carter";
 
 createTicketCategorySelect.querySelector(".custom-select-menu").innerHTML = buildCustomSelectOptions(ticketCategories.map((c) => c.label));
-createTicketLevelSelect.querySelector(".custom-select-menu").innerHTML = buildCustomSelectOptions(ticketLevels.map((l) => l.label));
-createTicketAssignedToSelect.querySelector(".custom-select-menu").innerHTML = buildCustomSelectOptions(SUPPORT_TEAM_MEMBERS);
 
 function resetCreateTicketIssueSelect() {
   const trigger = createTicketIssueSelect.querySelector(".custom-select-trigger");
@@ -372,13 +363,9 @@ createTicketOverlay.addEventListener("click", (e) => { if (e.target === createTi
 function validateCreateTicketForm() {
   const categoryValue = createTicketCategorySelect.querySelector("input[type=hidden]").value;
   const issueValue = createTicketIssueSelect.querySelector("input[type=hidden]").value;
-  const levelValue = createTicketLevelSelect.querySelector("input[type=hidden]").value;
-  const assignedToValue = createTicketAssignedToSelect.querySelector("input[type=hidden]").value;
   const valid =
     categoryValue !== "" &&
     issueValue !== "" &&
-    levelValue !== "" &&
-    assignedToValue !== "" &&
     createTicketForm.description.value.trim() !== "";
   saveCreateTicketBtn.disabled = !valid;
 }
@@ -389,8 +376,6 @@ createTicketForm.addEventListener("submit", (e) => {
   e.preventDefault();
   const categoryValue = createTicketCategorySelect.querySelector("input[type=hidden]").value;
   const issueValue = createTicketIssueSelect.querySelector("input[type=hidden]").value;
-  const levelValue = createTicketLevelSelect.querySelector("input[type=hidden]").value;
-  const assignedToValue = createTicketAssignedToSelect.querySelector("input[type=hidden]").value;
   const today = new Date();
   const created = `${String(today.getDate()).padStart(2, "0")}.${String(today.getMonth() + 1).padStart(2, "0")}.${today.getFullYear()}`;
 
@@ -401,11 +386,11 @@ createTicketForm.addEventListener("submit", (e) => {
     who: CURRENT_USER,
     category: categoryValue,
     issueType: issueValue,
-    origin: "User Created",
+    origin: "Clinic",
     severity: "Medium",
-    level: levelValue,
+    tier: "Level 1",
     state: "Open",
-    assignedTo: assignedToValue,
+    assignedTo: "",
     created,
     description: createTicketForm.description.value.trim(),
   };
