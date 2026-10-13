@@ -7,32 +7,43 @@
 /* ---------------- Filter option lists ---------------- */
 document.getElementById("incStatusFilterMenu").innerHTML = buildFilterSelectOptions(INC_STATUSES, "All statuses");
 document.getElementById("incPriorityFilterMenu").innerHTML = buildFilterSelectOptionsLabeled(INC_PRIORITIES, INC_PRIORITIES.map((s) => INC_PRIORITY_LABEL[s]), "All severities");
-document.getElementById("incSourceFilterMenu").innerHTML = buildFilterSelectOptions(INC_SOURCES, "All sources");
 document.getElementById("incCategoryFilterMenu").innerHTML = buildFilterSelectOptions(INC_CATEGORIES, "All categories");
-document.getElementById("incOwnerFilterMenu").innerHTML = buildFilterSelectOptions(SUPPORT_TEAM, "All owners");
 
 /* ---------------- Filter state ---------------- */
 let incStatusValue = "";
 let incPriorityValue = "";
-let incSourceValue = "";
 let incCategoryValue = "";
-let incOwnerValue = "";
-let incDateValue = "";
+let incDateFromValue = "";
+let incDateToValue = "";
 let incSearchTerm = "";
 
-/* Date input yields YYYY-MM-DD; detectedAt is stored as MM/DD/YYYY, hh:mm AM. */
-function incDateToDisplay(value) {
+/* detectedAt is stored as "MM/DD/YYYY, hh:mm AM" -- pull just the calendar
+   day out of it so a From/To range can compare against it. */
+function incDetectedDateOnly(incident) {
+  const m = /^(\d{2})\/(\d{2})\/(\d{4})/.exec(incident.detectedAt);
+  return m ? new Date(Number(m[3]), Number(m[1]) - 1, Number(m[2])) : null;
+}
+
+/* Date inputs yield YYYY-MM-DD; parsed as local-midnight (not via `new
+   Date(str)`, which reads it as UTC) so it compares cleanly against the
+   local-midnight date above with no timezone-offset surprises. */
+function incParseFilterDate(value) {
   const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
-  return m ? `${m[2]}/${m[3]}/${m[1]}` : value;
+  return m ? new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3])) : null;
 }
 
 function incMatchesFilters(incident) {
   if (incStatusValue && incident.status !== incStatusValue) return false;
   if (incPriorityValue && incident.priority !== incPriorityValue) return false;
-  if (incSourceValue && incident.source !== incSourceValue) return false;
   if (incCategoryValue && incident.category !== incCategoryValue) return false;
-  if (incOwnerValue && incident.owner !== incOwnerValue) return false;
-  if (incDateValue && incident.detectedAt.indexOf(incDateToDisplay(incDateValue)) === -1) return false;
+  if (incDateFromValue || incDateToValue) {
+    const detected = incDetectedDateOnly(incident);
+    if (!detected) return false;
+    const from = incParseFilterDate(incDateFromValue);
+    const to = incParseFilterDate(incDateToValue);
+    if (from && detected < from) return false;
+    if (to && detected > to) return false;
+  }
   if (incSearchTerm) {
     const haystack = `${incident.id} ${incident.title} ${incident.orgs.join(" ")} ${incident.patients.join(" ")}`.toLowerCase();
     if (!haystack.includes(incSearchTerm)) return false;
@@ -80,10 +91,9 @@ function refreshIncidentTable() {
 
 document.getElementById("incStatusFilter").addEventListener("change", (e) => { incStatusValue = e.target.value; });
 document.getElementById("incPriorityFilter").addEventListener("change", (e) => { incPriorityValue = e.target.value; });
-document.getElementById("incSourceFilter").addEventListener("change", (e) => { incSourceValue = e.target.value; });
 document.getElementById("incCategoryFilter").addEventListener("change", (e) => { incCategoryValue = e.target.value; });
-document.getElementById("incOwnerFilter").addEventListener("change", (e) => { incOwnerValue = e.target.value; });
-document.getElementById("incDateFilter").addEventListener("change", (e) => { incDateValue = e.target.value; });
+document.getElementById("incDateFromFilter").addEventListener("change", (e) => { incDateFromValue = e.target.value; });
+document.getElementById("incDateToFilter").addEventListener("change", (e) => { incDateToValue = e.target.value; });
 document.getElementById("incSearchInput").addEventListener("input", (e) => { incSearchTerm = e.target.value.trim().toLowerCase(); });
 
 document.getElementById("incApplyBtn").addEventListener("click", () => {
@@ -93,20 +103,18 @@ document.getElementById("incApplyBtn").addEventListener("click", () => {
 document.getElementById("incClearFiltersBtn").addEventListener("click", () => {
   incStatusValue = "";
   incPriorityValue = "";
-  incSourceValue = "";
   incCategoryValue = "";
-  incOwnerValue = "";
-  incDateValue = "";
+  incDateFromValue = "";
+  incDateToValue = "";
   incSearchTerm = "";
 
   resetBoSelect(document.querySelector('.bo-select[data-name="incStatus"]'));
   resetBoSelect(document.querySelector('.bo-select[data-name="incPriority"]'));
-  resetBoSelect(document.querySelector('.bo-select[data-name="incSource"]'));
   resetBoSelect(document.querySelector('.bo-select[data-name="incCategory"]'));
-  resetBoSelect(document.querySelector('.bo-select[data-name="incOwner"]'));
-  const incDateEl = document.getElementById("incDateFilter");
-  incDateEl.value = "";
-  incDateEl.type = "text";
+  [document.getElementById("incDateFromFilter"), document.getElementById("incDateToFilter")].forEach((el) => {
+    el.value = "";
+    el.type = "text";
+  });
   document.getElementById("incSearchInput").value = "";
 
   refreshIncidentTable();

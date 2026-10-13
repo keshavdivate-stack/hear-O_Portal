@@ -1592,6 +1592,12 @@ button.bo-name-link { background: none; border: none; padding: 0; font: inherit;
 .bo-date-field input::placeholder { color: #AEB4BC; font-weight: 400; }
 .bo-date-field svg { flex-shrink: 0; color: var(--gray); }
 
+/* Two .bo-date-field boxes (From / To) as one filter-row item, e.g.
+   Support > Incidents' date range filter. */
+.bo-date-range { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+.bo-date-range .bo-date-field { flex: 0 0 130px; min-width: 0; }
+.bo-date-range-sep { color: var(--gray-text); }
+
 /* When .bo-date-field is a <label> (e.g. the Add Task modal's Due date
    field) rather than a plain <div>, clicking anywhere in the box --
    including the calendar icon -- focuses the input, instead of only the
