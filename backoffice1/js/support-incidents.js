@@ -125,6 +125,7 @@ function findIncident(id) { return incidents.find((i) => i.id === id); }
 /* ---------------- Row action menu: Create Task / View Task ---------------- */
 const incidentRowMenu = document.getElementById("incidentRowMenu");
 const incidentRowMenuViewTicketBtn = document.getElementById("incidentRowMenuViewTicketBtn");
+const incidentRowMenuEscalateBtn = document.getElementById("incidentRowMenuEscalateBtn");
 let activeIncidentId = null;
 
 document.getElementById("incidentRows").addEventListener("click", (e) => {
@@ -133,6 +134,9 @@ document.getElementById("incidentRows").addEventListener("click", (e) => {
   e.stopPropagation();
   activeIncidentId = trigger.dataset.id;
   const incident = findIncident(activeIncidentId);
+  /* Already escalated or resolved: nothing left to escalate (matches the
+     same rule on the Incident Detail page header button). */
+  incidentRowMenuEscalateBtn.hidden = !incident || incident.status !== "Active";
   incidentRowMenuViewTicketBtn.hidden = !incident || !(incident.relatedTickets && incident.relatedTickets.length);
   const rect = trigger.getBoundingClientRect();
   incidentRowMenu.style.top = `${rect.bottom + 6}px`;
