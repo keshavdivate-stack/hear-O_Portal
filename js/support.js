@@ -52,11 +52,11 @@ function renderTicketList() {
         <td><b>${t.ticketId}</b></td>
         <td><span class="ticket-pill ${typeCellClass(t.type)}">${t.type}</span></td>
         <td>${
-          !t.who
-            ? "&mdash;"
-            : t.type === "Patient"
-            ? `<a class="ticket-view-link" href="patient-data.html">${t.patientName || t.who}</a><span class="ticket-who-id">${t.who}</span>`
-            : t.who
+          t.type === "Patient"
+            ? t.who
+              ? `<a class="ticket-view-link" href="patient-data.html">${t.patientName || t.who}</a><span class="ticket-who-id">${t.who}</span>`
+              : "&mdash;"
+            : t.organization || "&mdash;"
         }</td>
         <td><span class="ticket-pill ticket-pill-category">${t.category}</span></td>
         <td>${t.issueType}</td>
