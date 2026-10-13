@@ -843,7 +843,7 @@ function renderDaysMenu() {
     </label>` +
     RM_DAYS.map(
       (d) => `<label class="bo-multiselect-option${rmWizardSelectedDays.has(d) ? " checked" : ""}" data-value="${d}">
-        <span class="bo-multiselect-checkbox">${rmDaysCheckIcon}</span> ${d}
+        <span class="bo-multiselect-checkbox">${rmDaysCheckIcon}</span> ${RM_DAY_ABBR[d] || d}
       </label>`
     ).join("");
 }
@@ -853,7 +853,7 @@ function renderDaysTrigger() {
     rmDaysValueEl.textContent = rmDaysPlaceholder;
     rmDaysValueEl.classList.add("placeholder");
   } else {
-    rmDaysValueEl.textContent = RM_DAYS.filter((d) => rmWizardSelectedDays.has(d)).join(", ");
+    rmDaysValueEl.textContent = RM_DAYS.filter((d) => rmWizardSelectedDays.has(d)).map((d) => RM_DAY_ABBR[d] || d).join(", ");
     rmDaysValueEl.classList.remove("placeholder");
   }
 }
