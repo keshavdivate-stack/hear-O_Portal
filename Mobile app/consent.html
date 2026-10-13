@@ -56,7 +56,11 @@
     opt.addEventListener("click", () => opt.classList.toggle("checked"));
   });
 
+  /* The chat checkbox decides whether Chat opens directly later on; left
+     unticked, the first tap on Chat shows the Enable Chat consent screen. */
   document.getElementById("agreeBtn").addEventListener("click", () => {
+    if (document.getElementById("optChat").classList.contains("checked")) localStorage.setItem("hearo_chat_enabled", "1");
+    else localStorage.removeItem("hearo_chat_enabled");
     window.location.href = "/Mobile%20app/onboarding-1.html";
   });
 </script>

@@ -41,7 +41,7 @@
       <p class="chatnotify-desc">Tap the button below to read it</p>
 
       <div class="chatnotify-footer">
-        <button type="button" class="login-btn" onclick="window.location.href='/Mobile%20app/chat.html'">View message</button>
+        <button type="button" class="login-btn" onclick="window.location.href=localStorage.getItem('hearo_chat_enabled')?'/Mobile%20app/chat.html':'/Mobile%20app/chat-consent.html'">View message</button>
       </div>
     </div>
   </div>
