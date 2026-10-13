@@ -385,7 +385,7 @@ createTicketForm.addEventListener("submit", (e) => {
     scope: type === "Patient" ? "Patient" : "Organization",
     category: selectValue(createTicketCategorySelect),
     issueType: selectValue(createTicketIssueSelect),
-    origin: "User Created",
+    origin: "Clinic",
     severity: "Medium",
     level: "Level 1",
     state: "Open",

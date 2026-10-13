@@ -4,26 +4,29 @@
 const CURRENT_ASSIGNEE = "Emily Carter";
 
 const ticketCategories = [
-  { key: "Patient (Mobile/Web)", label: "Patient (Mobile/Web)" },
   { key: "Compliance", label: "Compliance" },
   { key: "Voice Engine", label: "Voice Engine" },
   { key: "Sensors", label: "Sensors" },
+  { key: "Patient", label: "Patient" },
+  { key: "Clinic Users", label: "Clinic Users" },
   { key: "System Schedule Engine", label: "System Schedule Engine" },
-  { key: "Clinic Users (Security)", label: "Clinic Users (Security)" },
+  { key: "Mobile App", label: "Mobile App" },
 ];
 
 const issueTypesByCategory = {
-  "Patient (Mobile/Web)": ["Paused Too Long", "Stuck In Baseline", "App Crash On Login"],
-  "Compliance": ["Non-compliance Alert", "Compliance Score Mismatch"],
-  "Voice Engine": ["Missing ASR Results", "Recording Failed to Process"],
-  "Sensors": ["Sensor Data Gap", "Device Sync Failure"],
-  "System Schedule Engine": ["Missing Run: Start Date Engine", "Schedule Conflict"],
-  "Clinic Users (Security)": ["Suspicious Login Attempt", "MFA Reset Request"],
+  "Compliance": ["Total Compliance Drop", "Total Usable Compliance Drop", "Org Compliance Drop", "Org Usable Compliance Drop", "Signed In Not Uploaded", "Other"],
+  "Voice Engine": ["Smart Merger Mismatch", "ASR Results Missing", "Algo Results Missing", "Track Results Missing", "Other"],
+  "Sensors": ["Sensors Not Uploaded", "Sensors Partial Upload", "Measurements Not Entered", "Other"],
+  "Patient": ["Medication Not Entered", "Clinical Questions Unanswered", "App Language Changed", "Stuck In Baseline", "Stuck In Registered", "Stuck In Priority", "No Priority Set", "Paused Too Long", "Unmonitored Too Long", "Other"],
+  "Clinic Users": ["Other"],
+  "System Schedule Engine": ["Engine Baseline Completed Missed", "Engine Start Date Missed", "Engine Billing Calc Missed", "Engine Insufficient Recalc Missed", "Engine Is Valid Missed", "Other"],
+  "Mobile App": ["App Stuck On Splash", "Splash Screen Reappears", "App Closed Unexpectedly", "App Frozen / Unresponsive", "No Internet Error While Online", "Unexpected Logout", "Recording Upload Stuck", "Recordings Not Uploaded Multiple Days", "OTP Verify No Response", "Biometric Verification Failed", "Other"],
 };
 
 const ticketOrigins = [
-  { key: "System Generated", label: "System Generated" },
-  { key: "User Created", label: "User Created" },
+  { key: "Mobile", label: "Mobile" },
+  { key: "Clinic", label: "Clinic" },
+  { key: "Back Office", label: "Back Office" },
 ];
 
 const ticketSeverities = [
@@ -87,20 +90,20 @@ function issueType(category, index) {
    per-category default, since a couple of Clinic-raised tickets are really
    about one specific patient despite being raised by clinic staff. */
 const ticketList = [
-  { ticketId: "TCK-1050", organization: "121", type: "Patient", who: "121-2010", patientName: "Meital Barak", category: "Voice Engine", issueType: issueType("Voice Engine", 0), origin: "System Generated", severity: "Critical", state: "Open", scope: "Patient", assignedTo: "Emily Carter", created: "18.08.2028", description: "The voice engine failed to return ASR results for the patient's daily recording. No transcript was generated for the last 3 sessions." },
-  { ticketId: "TCK-1207", organization: "B03", type: "Patient", who: "B03-5107", patientName: "Noam Kessler", category: "System Schedule Engine", issueType: issueType("System Schedule Engine", 0), origin: "System Generated", severity: "Critical", state: "In Progress", scope: "Patient", assignedTo: "Emily Carter", created: "17.08.2028", description: "Scheduled recording run did not trigger for the patient's start date. Baseline window is at risk of expiring." },
-  { ticketId: "TCK-1315", organization: "ATP", type: "Patient", who: "ATP-5215", patientName: "Yael Ashkenazi", category: "Patient (Mobile/Web)", issueType: issueType("Patient (Mobile/Web)", 0), origin: "System Generated", severity: "Critical", state: "Resolved", scope: "Patient", assignedTo: "Emily Carter", created: "12.08.2028", description: "Patient app remained paused beyond the expected threshold, blocking new recordings." },
-  { ticketId: "TCK-1339", organization: "ATP", type: "Patient", who: "ATP-5239", patientName: "Doron Sharabi", category: "Patient (Mobile/Web)", issueType: issueType("Patient (Mobile/Web)", 1), origin: "System Generated", severity: "Critical", state: "Open", scope: "Patient", assignedTo: "Emily Carter", created: "20.08.2028", description: "Patient onboarding is stuck in baseline collection with no valid recordings for 6 days." },
-  { ticketId: "TCK-1401", organization: "B01", type: "Patient", who: "B01-3312", patientName: "Liora Ben-Ami", category: "Compliance", issueType: issueType("Compliance", 0), origin: "System Generated", severity: "Medium", state: "In Progress", scope: "Patient", assignedTo: "Emily Carter", created: "19.08.2028", description: "Patient compliance score dropped below the configured threshold for two consecutive weeks." },
-  { ticketId: "TCK-1422", organization: "B01", type: "Clinic", who: "Ariel Fox", category: "Clinic Users (Security)", issueType: issueType("Clinic Users (Security)", 0), origin: "System Generated", severity: "High", state: "Open", scope: "Organization", assignedTo: "Emily Carter", created: "21.08.2028", description: "Multiple failed login attempts detected for a clinic user account outside of normal usage hours." },
-  { ticketId: "TCK-1478", organization: "105", type: "Patient", who: "105-4471", patientName: "Amit Golan", category: "Sensors", issueType: issueType("Sensors", 0), origin: "System Generated", severity: "Low", state: "In Progress", scope: "Patient", assignedTo: "Emily Carter", created: "16.08.2028", description: "No sensor readings received from the patient's connected device for the past 24 hours." },
-  { ticketId: "TCK-1502", organization: "B01", type: "Clinic", who: "Dr. Sarah Mitchell", category: "Clinic Users (Security)", issueType: issueType("Clinic Users (Security)", 1), origin: "User Created", severity: "Medium", state: "Resolved", scope: "Organization", assignedTo: "Emily Carter", created: "10.08.2028", description: "Clinic user requested an MFA reset after losing access to their authenticator app." },
-  { ticketId: "TCK-1231", organization: "B03", type: "Patient", who: "B03-5131", patientName: "Shira Nave", category: "Patient (Mobile/Web)", issueType: issueType("Patient (Mobile/Web)", 0), origin: "System Generated", severity: "Critical", state: "In Progress", scope: "Patient", assignedTo: "Daniel Roy", created: "18.08.2028", description: "Patient app remained paused beyond the expected threshold, blocking new recordings." },
-  { ticketId: "TCK-2207", organization: "B03", type: "Clinic", who: "Omer Peretz", category: "System Schedule Engine", issueType: issueType("System Schedule Engine", 0), origin: "User Created", severity: "Critical", state: "In Progress", scope: "Patient", assignedTo: "Maya Cohen", created: "17.08.2028", description: "Clinic reported the scheduling engine did not start the patient's monitoring run on the agreed date." },
-  { ticketId: "TCK-2231", organization: "B03", type: "Clinic", who: "Omer Peretz", category: "Patient (Mobile/Web)", issueType: issueType("Patient (Mobile/Web)", 0), origin: "User Created", severity: "Critical", state: "Resolved", scope: "Patient", assignedTo: "Daniel Roy", created: "13.08.2028", description: "Clinic reported patient app pause issue, since resolved after a forced re-sync." },
-  { ticketId: "TCK-1123", organization: "ATP", type: "Patient", who: "ATP-5023", patientName: "Eyal Peretz", category: "System Schedule Engine", issueType: issueType("System Schedule Engine", 0), origin: "User Created", severity: "Medium", state: "In Progress", scope: "Organization", assignedTo: "Tomer Levi", created: "14.08.2028", description: "Scheduled run missing a start date, escalated after repeated occurrence for this organization." },
-  { ticketId: "TCK-1560", organization: "104", type: "Patient", who: "104-2290", patientName: "Talia Rosen", category: "Voice Engine", issueType: issueType("Voice Engine", 1), origin: "System Generated", severity: "High", state: "Open", scope: "Patient", assignedTo: "Sarah Cline", created: "21.08.2028", description: "Recording uploaded but failed to process through the voice engine pipeline." },
-  { ticketId: "TCK-1588", organization: "B01", type: "Patient", who: "B01-3390", patientName: "Guy Amrani", category: "Sensors", issueType: issueType("Sensors", 1), origin: "System Generated", severity: "Low", state: "Resolved", scope: "Patient", assignedTo: "Maya Cohen", created: "09.08.2028", description: "Connected device failed to sync after a firmware update; resolved by re-pairing the device." },
+  { ticketId: "TCK-1050", organization: "121", type: "Patient", who: "121-2010", patientName: "Meital Barak", category: "Voice Engine", issueType: issueType("Voice Engine", 0), origin: "Back Office", severity: "Critical", state: "Open", scope: "Patient", assignedTo: "Emily Carter", created: "18.08.2028", description: "The voice engine failed to return ASR results for the patient's daily recording. No transcript was generated for the last 3 sessions." },
+  { ticketId: "TCK-1207", organization: "B03", type: "Patient", who: "B03-5107", patientName: "Noam Kessler", category: "System Schedule Engine", issueType: issueType("System Schedule Engine", 0), origin: "Back Office", severity: "Critical", state: "In Progress", scope: "Patient", assignedTo: "Emily Carter", created: "17.08.2028", description: "Scheduled recording run did not trigger for the patient's start date. Baseline window is at risk of expiring." },
+  { ticketId: "TCK-1315", organization: "ATP", type: "Patient", who: "ATP-5215", patientName: "Yael Ashkenazi", category: "Patient", issueType: issueType("Patient", 0), origin: "Back Office", severity: "Critical", state: "Resolved", scope: "Patient", assignedTo: "Emily Carter", created: "12.08.2028", description: "Patient app remained paused beyond the expected threshold, blocking new recordings." },
+  { ticketId: "TCK-1339", organization: "ATP", type: "Patient", who: "ATP-5239", patientName: "Doron Sharabi", category: "Patient", issueType: issueType("Patient", 1), origin: "Back Office", severity: "Critical", state: "Open", scope: "Patient", assignedTo: "Emily Carter", created: "20.08.2028", description: "Patient onboarding is stuck in baseline collection with no valid recordings for 6 days." },
+  { ticketId: "TCK-1401", organization: "B01", type: "Patient", who: "B01-3312", patientName: "Liora Ben-Ami", category: "Compliance", issueType: issueType("Compliance", 0), origin: "Back Office", severity: "Medium", state: "In Progress", scope: "Patient", assignedTo: "Emily Carter", created: "19.08.2028", description: "Patient compliance score dropped below the configured threshold for two consecutive weeks." },
+  { ticketId: "TCK-1422", organization: "B01", type: "Clinic", who: "Ariel Fox", category: "Clinic Users", issueType: issueType("Clinic Users", 0), origin: "Back Office", severity: "High", state: "Open", scope: "Organization", assignedTo: "Emily Carter", created: "21.08.2028", description: "Multiple failed login attempts detected for a clinic user account outside of normal usage hours." },
+  { ticketId: "TCK-1478", organization: "105", type: "Patient", who: "105-4471", patientName: "Amit Golan", category: "Sensors", issueType: issueType("Sensors", 0), origin: "Back Office", severity: "Low", state: "In Progress", scope: "Patient", assignedTo: "Emily Carter", created: "16.08.2028", description: "No sensor readings received from the patient's connected device for the past 24 hours." },
+  { ticketId: "TCK-1502", organization: "B01", type: "Clinic", who: "Dr. Sarah Mitchell", category: "Clinic Users", issueType: issueType("Clinic Users", 1), origin: "Clinic", severity: "Medium", state: "Resolved", scope: "Organization", assignedTo: "Emily Carter", created: "10.08.2028", description: "Clinic user requested an MFA reset after losing access to their authenticator app." },
+  { ticketId: "TCK-1231", organization: "B03", type: "Patient", who: "B03-5131", patientName: "Shira Nave", category: "Patient", issueType: issueType("Patient", 0), origin: "Back Office", severity: "Critical", state: "In Progress", scope: "Patient", assignedTo: "Daniel Roy", created: "18.08.2028", description: "Patient app remained paused beyond the expected threshold, blocking new recordings." },
+  { ticketId: "TCK-2207", organization: "B03", type: "Clinic", who: "Omer Peretz", category: "System Schedule Engine", issueType: issueType("System Schedule Engine", 0), origin: "Clinic", severity: "Critical", state: "In Progress", scope: "Patient", assignedTo: "Maya Cohen", created: "17.08.2028", description: "Clinic reported the scheduling engine did not start the patient's monitoring run on the agreed date." },
+  { ticketId: "TCK-2231", organization: "B03", type: "Clinic", who: "Omer Peretz", category: "Patient", issueType: issueType("Patient", 0), origin: "Clinic", severity: "Critical", state: "Resolved", scope: "Patient", assignedTo: "Daniel Roy", created: "13.08.2028", description: "Clinic reported patient app pause issue, since resolved after a forced re-sync." },
+  { ticketId: "TCK-1123", organization: "ATP", type: "Patient", who: "ATP-5023", patientName: "Eyal Peretz", category: "System Schedule Engine", issueType: issueType("System Schedule Engine", 0), origin: "Clinic", severity: "Medium", state: "In Progress", scope: "Organization", assignedTo: "Tomer Levi", created: "14.08.2028", description: "Scheduled run missing a start date, escalated after repeated occurrence for this organization." },
+  { ticketId: "TCK-1560", organization: "104", type: "Patient", who: "104-2290", patientName: "Talia Rosen", category: "Voice Engine", issueType: issueType("Voice Engine", 1), origin: "Back Office", severity: "High", state: "Open", scope: "Patient", assignedTo: "Sarah Cline", created: "21.08.2028", description: "Recording uploaded but failed to process through the voice engine pipeline." },
+  { ticketId: "TCK-1588", organization: "B01", type: "Patient", who: "B01-3390", patientName: "Guy Amrani", category: "Sensors", issueType: issueType("Sensors", 1), origin: "Back Office", severity: "Low", state: "Resolved", scope: "Patient", assignedTo: "Maya Cohen", created: "09.08.2028", description: "Connected device failed to sync after a firmware update; resolved by re-pairing the device." },
 ];
 
 ticketList.forEach((t, i) => (t.id = i));
@@ -134,7 +137,7 @@ function severityCellClass(severity) {
   return { Critical: "ticket-pill-severity-critical", High: "ticket-pill-severity-high", Medium: "ticket-pill-severity-medium", Low: "ticket-pill-severity-low" }[severity];
 }
 function originCellClass(origin) {
-  return origin === "System Generated" ? "ticket-pill-origin-system" : "ticket-pill-origin-user";
+  return origin === "Back Office" ? "ticket-pill-origin-system" : "ticket-pill-origin-user";
 }
 function typeCellClass(type) {
   return type === "Patient" ? "ticket-pill-type-patient" : "ticket-pill-type-clinic";
