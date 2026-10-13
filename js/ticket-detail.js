@@ -118,9 +118,9 @@ if (!ticket) {
 
   /* ---------------- Issue ---------------- */
   function renderIssue() {
-    /* Same per-category tinted pill as the Support list. */
+    /* Same Category pill as the Support list. */
     document.getElementById("ticketDetailCategory").innerHTML = ticket.category
-      ? `<span class="ticket-pill ticket-pill-category ticket-pill-cat-${ticket.category.toLowerCase().replace(/[^a-z]+/g, "-")}">${ticket.category}</span>`
+      ? `<span class="ticket-pill ticket-pill-category">${ticket.category}</span>`
       : "—";
     document.getElementById("ticketDetailIssueType").textContent = ticket.issueType || "—";
     document.getElementById("ticketDetailDescription").textContent = ticket.description;

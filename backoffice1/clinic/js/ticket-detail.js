@@ -695,7 +695,7 @@ if (!ticket) {
       <div class="ticket-detail-card">
         <h2>Issue</h2>
         <div class="ticket-detail-grid" style="grid-template-columns: 1fr 1fr;">
-          <div class="ticket-detail-field"><label>Category</label><span><span class="ticket-pill ticket-pill-category ticket-pill-cat-${ticket.category.toLowerCase().replace(/[^a-z]+/g, "-")}">${ticket.category}</span></span></div>
+          <div class="ticket-detail-field"><label>Category</label><span><span class="ticket-pill ticket-pill-category">${ticket.category}</span></span></div>
           <div class="ticket-detail-field"><label>Issue Type</label><span>${ticket.issueType}</span></div>
         </div>
         <div class="ticket-detail-description">${ticket.description}</div>

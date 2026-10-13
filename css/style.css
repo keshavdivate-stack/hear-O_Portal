@@ -6981,17 +6981,10 @@ body.patient-discontinued #chatOpenBtn {
 .ticket-pill-type-patient { background: var(--blue-light); color: var(--blue-text); }
 .ticket-pill-type-clinic { background: #F1EAFB; color: var(--purple-text); }
 
-/* Category is a classification, not a status/severity -- each category
-   gets its own soft tint (no reds/oranges, which mean severity below) so
-   the column scans by colour without reading as a disabled grey chip. */
-.ticket-pill-category { background: #F1F3F5; color: var(--gray-text); font-weight: 600; }
-.ticket-pill-cat-compliance { background: var(--blue-light); color: var(--blue-text); }
-.ticket-pill-cat-voice-engine { background: var(--purple-light); color: var(--purple-text); }
-.ticket-pill-cat-sensors { background: #E3F5F2; color: #0F766E; }
-.ticket-pill-cat-patient { background: var(--green-light); color: var(--green-text); }
-.ticket-pill-cat-clinic-users { background: #E7EBFB; color: #4B5FC7; }
-.ticket-pill-cat-system-schedule-engine { background: #FEF6DC; color: #A16207; }
-.ticket-pill-cat-mobile-app { background: #FCE7F3; color: #BE185D; }
+/* Category is a classification, not a status/severity -- one shared light
+   blue tint for every category (not the red/orange severity pills, and
+   not the disabled-looking grey). */
+.ticket-pill-category { background: var(--blue-light); color: var(--blue-text); font-weight: 600; }
 
 .ticket-pill-origin-system { background: #E7EBFB; color: #4B5FC7; }
 .ticket-pill-origin-user { background: var(--blue-light); color: var(--blue-text); }

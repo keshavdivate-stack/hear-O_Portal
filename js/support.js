@@ -58,7 +58,7 @@ function renderTicketList() {
               : "&mdash;"
             : t.organization || "&mdash;"
         }</td>
-        <td><span class="ticket-pill ticket-pill-category ticket-pill-cat-${t.category.toLowerCase().replace(/[^a-z]+/g, "-")}">${t.category}</span></td>
+        <td><span class="ticket-pill ticket-pill-category">${t.category}</span></td>
         <td>${t.issueType}</td>
         <td>${t.origin}</td>
         <td><span class="ticket-pill ${stateCellClass(t.state)}">${t.state}</span></td>
