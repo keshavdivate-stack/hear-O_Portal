@@ -757,12 +757,10 @@ window.addEventListener("resize", () => renderOvDonut(ovSelectedOrgId));
 /* ---------------- System Health (per-service status + 30-day uptime) ---------------- */
 /* A status-page-style widget (service + status dot + uptime% + daily history
    bars) rather than a load chart -- system health here means "is it up",
-   not "how busy is it". Service names mirror the "View Version" avatar-menu
-   modal. Voice Engine's current-day status is deliberately "degraded" to
-   match the real "Voice engine errors" Critical incident already listed in
-   Recent Incidents above (started "20 min ago"), so this panel and that one
-   tell the same story instead of two disconnected numbers. Static like the
-   Workload chart it replaces -- infra status isn't scoped to one org. */
+   not "how busy is it". The services are the four the developed dashboard
+   monitors: API Server, Clinic, Sensors and Statistics. Sensors'
+   current-day status is "degraded", in line with the active "Sensor upload
+   latency elevated" incident. Static -- infra status isn't scoped to one org. */
 const OV_UPTIME_STATUS_META = {
   ok: { color: "var(--green)", label: "Operational" },
   degraded: { color: "var(--orange)", label: "Degraded" },
@@ -780,11 +778,12 @@ function ovUptimeDays(exceptions) {
   return days;
 }
 
+/* The same four services the developed System Health section monitors. */
 const OV_UPTIME_SERVICES = [
-  { name: "Voice Engine", days: ovUptimeDays({ 0: "degraded" }) },
-  { name: "ASR", days: ovUptimeDays({}) },
   { name: "API Server", days: ovUptimeDays({ 22: "down" }) },
-  { name: "Database", days: ovUptimeDays({}) },
+  { name: "Clinic", days: ovUptimeDays({}) },
+  { name: "Sensors", days: ovUptimeDays({ 0: "degraded" }) },
+  { name: "Statistics", days: ovUptimeDays({}) },
 ];
 
 /* A "degraded" day counts as half an outage, not a full one, so a single
