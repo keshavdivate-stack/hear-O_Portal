@@ -118,7 +118,10 @@ if (!ticket) {
 
   /* ---------------- Issue ---------------- */
   function renderIssue() {
-    document.getElementById("ticketDetailCategory").textContent = ticket.category || "—";
+    /* Same per-category tinted pill as the Support list. */
+    document.getElementById("ticketDetailCategory").innerHTML = ticket.category
+      ? `<span class="ticket-pill ticket-pill-category ticket-pill-cat-${ticket.category.toLowerCase().replace(/[^a-z]+/g, "-")}">${ticket.category}</span>`
+      : "—";
     document.getElementById("ticketDetailIssueType").textContent = ticket.issueType || "—";
     document.getElementById("ticketDetailDescription").textContent = ticket.description;
   }
