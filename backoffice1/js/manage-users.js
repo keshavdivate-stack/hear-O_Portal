@@ -47,7 +47,7 @@ function renderUsers() {
     .map(
       (u) => `
       <tr>
-        <td><span class="bo-name-link">${u.username}</span></td>
+        <td>${u.username}</td>
         <td>${u.firstName || "—"}</td>
         <td>${u.lastName || "—"}</td>
         <td>${u.email || "—"}</td>
