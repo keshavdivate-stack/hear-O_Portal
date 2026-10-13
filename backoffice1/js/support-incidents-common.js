@@ -128,8 +128,16 @@ function incPriorityPill(sev) {
 function incStatusPill(status) {
   return `<span class="bo-pill ${INC_STATUS_CLASS[status] || ""}">${status}</span>`;
 }
+/* Affected organizations by name, not a count (team decision): the first
+   three codes, then "+N more" with the full list in the tooltip. */
+function incOrgNamesHtml(orgs, max = 3) {
+  if (!orgs.length) return "No organizations";
+  const shown = orgs.slice(0, max).join(", ");
+  const more = orgs.length > max ? ` +${orgs.length - max} more` : "";
+  return `<span title="${orgs.join(", ")}">${shown}${more}</span>`;
+}
 function incImpactLabel(incident) {
-  return `${incident.orgs.length} orgs · ${incident.patients.length} patients`;
+  return `${incOrgNamesHtml(incident.orgs)} · ${incident.patients.length} patients`;
 }
 
 /* Escalated incidents get a Ticket created via "Escalate & Create Ticket";

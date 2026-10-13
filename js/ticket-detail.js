@@ -1,12 +1,13 @@
 /* ---------------- Ticket Detail page ----------------
    Full-screen deep dive for a single Ticket, laid out like backoffice1's
    ticket-detail.html: a header card (ID, Status / Priority / Level / Type,
-   created/origin/organization/created-for meta line), then Issue and a
-   History / Patient Log / Recording tab card on the left, with a read-only
-   Handling panel on the right that unlocks in a popup via Edit. Ported from
+   created/origin/organization/created-for meta line), then Clinic Info,
+   Issue and a History / Patient Log / Recording tab card. View-only: clinic
+   users don't handle tickets here (no Handling panel) -- status, level,
+   priority and assignment are managed in the back office. Ported from
    backoffice1/js/ticket-detail.js and adapted to the clinic portal's ticket
    shape (ticketList: ticketId, type, who, patientName, severity, state,
-   created "dd.mm.yyyy", ...) and its .custom-select dropdowns. */
+   created "dd.mm.yyyy", ...). */
 
 function getTicketIdFromUrl() {
   const params = new URLSearchParams(window.location.search);
@@ -48,9 +49,6 @@ if (!ticket) {
   ensureTicketHistory(ticket);
   deriveDefaultTier(ticket);
 
-  const selectByName = (name) => document.querySelector(`.custom-select[data-name="${name}"]`);
-  const selectValue = (name) => selectByName(name).querySelector("input[type=hidden]").value;
-
   function escapeHtml(text) {
     return String(text).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
   }
@@ -75,6 +73,47 @@ if (!ticket) {
     document.getElementById("ticketDetailMeta").innerHTML =
       `Created ${ticket.created}${sep}Origin: ${ticket.origin}${sep}Organization: ${ticket.organization}${sep}Created For: ${createdFor}`;
     document.title = `HearO | ${ticket.ticketId}`;
+  }
+
+  /* ---------------- Clinic Info ----------------
+     The clinic/organization the ticket belongs to (ticket.organization is its
+     org code). Values mirror the Organizations page's list
+     (js/organizations.js: 121 / ATP / B01) and, for codes that list doesn't
+     have, the HMO flag and date created from backoffice's org allocation list
+     (backoffice1/js/allocation.js: 104 / B03 / 105). Anything still missing
+     (phone, language) is seeded off the org code, so the same clinic always
+     shows the same details on every one of its tickets. */
+  const CLINIC_DIRECTORY = {
+    "121": { study: "CHF", isHmo: true, phone: "08-6745431", lng: "AR", dateCreated: "06/06/2023" },
+    "ATP": { study: "CHF", isHmo: false, phone: "0542199636", lng: "ES", dateCreated: "14/08/2019" },
+    "B01": { study: "CHF", isHmo: true, phone: "0545030772", lng: "ES", dateCreated: "26/06/2024" },
+    "104": { isHmo: false, dateCreated: "12/06/2023" },
+    "B03": { isHmo: true, dateCreated: "24/04/2022" },
+    "105": { isHmo: false, dateCreated: "03/05/2022" },
+  };
+  const CLINIC_LANGUAGES = { AR: "Arabic", EN: "English", ES: "Spanish" };
+
+  function clinicInfoFor(orgCode) {
+    const rand = seededRandom(`clinic-${orgCode}`);
+    const digits = (n) => Array.from({ length: n }, () => Math.floor(rand() * 10)).join("");
+    const seeded = {
+      study: "CHF",
+      isHmo: rand() < 0.5,
+      phone: `05${Math.floor(rand() * 10)}-${digits(7)}`,
+      lng: pickFrom(rand, Object.keys(CLINIC_LANGUAGES)),
+      dateCreated: `${String(1 + Math.floor(rand() * 28)).padStart(2, "0")}/${String(1 + Math.floor(rand() * 12)).padStart(2, "0")}/${2019 + Math.floor(rand() * 6)}`,
+    };
+    return { ...seeded, ...CLINIC_DIRECTORY[orgCode] };
+  }
+
+  function renderClinicInfo() {
+    const info = clinicInfoFor(ticket.organization);
+    document.getElementById("ticketClinicOrg").textContent = ticket.organization || "—";
+    document.getElementById("ticketClinicStudy").textContent = info.study || "—";
+    document.getElementById("ticketClinicHmo").textContent = info.isHmo ? "Yes" : "No";
+    document.getElementById("ticketClinicPhone").textContent = info.phone || "—";
+    document.getElementById("ticketClinicLanguage").textContent = CLINIC_LANGUAGES[info.lng] || info.lng || "—";
+    document.getElementById("ticketClinicSince").textContent = info.dateCreated || "—";
   }
 
   /* ---------------- Issue ---------------- */
@@ -424,215 +463,14 @@ if (!ticket) {
     document.querySelector('.ticket-detail-tab[data-td-tab="recording"]').hidden = document.getElementById("ticketDetailRecordingWrap").hidden;
   }
 
-  /* ---------------- Handling form ---------------- */
-  selectByName("ticketStatus").querySelector(".custom-select-menu").innerHTML = buildCustomSelectOptions(ticketStates.map((s) => s.label));
-  selectByName("ticketLevel").querySelector(".custom-select-menu").innerHTML = buildCustomSelectOptions(ticketLevels.map((l) => l.label));
-  selectByName("ticketPriorityHandling").querySelector(".custom-select-menu").innerHTML = buildCustomSelectOptions(ticketSeverities.map((s) => s.label));
-  selectByName("ticketOrgHandling").querySelector(".custom-select-menu").innerHTML = buildCustomSelectOptions(TICKET_ORG_CODES);
-
-  /* Assignee choices narrow to whichever tier is currently selected in the
-     Level field, so a ticket always lands on someone who actually works
-     that tier. */
-  function populateTicketDetailAssignees(tier) {
-    selectByName("ticketAssignedTo").querySelector(".custom-select-menu").innerHTML = buildAgentSelectOptions(TIER_AGENTS[tier] || SUPPORT_TEAM_MEMBERS);
-  }
-
-  function defaultAssigneeForTier(tier) {
-    return (TIER_AGENTS[tier] || SUPPORT_TEAM_MEMBERS)[0] || "";
-  }
-
-  /* Resolved tickets no longer need routing info -- hide Level/Priority/
-     Assigned To rather than asking for values that don't matter anymore. */
-  function applyTicketDetailStatusVisibility(status) {
-    const resolved = status === "Resolved";
-    document.getElementById("ticketDetailLevelField").hidden = resolved;
-    document.getElementById("ticketDetailPriorityField").hidden = resolved;
-    document.getElementById("ticketDetailAssignedToField").hidden = resolved;
-    document.getElementById("ticketDetailOrgField").hidden = resolved || selectValue("ticketLevel") !== "Level 3";
-  }
-
-  function updateAssignedOrgNote(orgName) {
-    const note = document.getElementById("ticketDetailAssignedOrgNote");
-    note.textContent = orgName ? `Organization: ${orgName}` : "";
-    note.hidden = !orgName;
-  }
-
-  function validateTicketDetailForm() {
-    const status = selectValue("ticketStatus");
-    applyTicketDetailStatusVisibility(status);
-    const orgFieldVisible = !document.getElementById("ticketDetailOrgField").hidden;
-    const orgFilled = !orgFieldVisible || selectValue("ticketOrgHandling") !== "";
-    const assigneeFilled = status === "Resolved" || selectValue("ticketAssignedTo") !== "";
-    const saveBtn = document.getElementById("saveTicketDetailBtn");
-    saveBtn.disabled = !assigneeFilled || !orgFilled;
-    saveBtn.classList.toggle("enabled", !saveBtn.disabled);
-  }
-
-  /* Handling shows the same fields as the edit form, but locked until Edit
-     is clicked. Also re-run on Cancel so anything typed and then canceled
-     is discarded instead of lingering. */
-  function renderHandling() {
-    document.getElementById("ticketDetailRootCause").value = ticket.rootCause || "";
-    setCustomSelectValue(selectByName("ticketStatus"), ticket.state, { silent: true });
-    setCustomSelectValue(selectByName("ticketLevel"), ticket.tier, { silent: true });
-    setCustomSelectValue(selectByName("ticketPriorityHandling"), ticket.severity, { silent: true });
-    populateTicketDetailAssignees(ticket.tier);
-    const tierAgents = TIER_AGENTS[ticket.tier] || SUPPORT_TEAM_MEMBERS;
-    const assignee = tierAgents.includes(ticket.assignedTo) ? ticket.assignedTo : defaultAssigneeForTier(ticket.tier);
-    setCustomSelectValue(selectByName("ticketAssignedTo"), assignee, { silent: true });
-    if (ticket.tier === "Level 3") {
-      setCustomSelectValue(selectByName("ticketOrgHandling"), ticket.organization, { silent: true });
-      updateAssignedOrgNote(ticket.organization);
-    } else {
-      resetCustomSelect(selectByName("ticketOrgHandling"));
-      updateAssignedOrgNote("");
-    }
-    validateTicketDetailForm();
-  }
-
   function renderAll() {
     renderHeader();
+    renderClinicInfo();
     renderIssue();
     renderRecording();
-    renderHandling();
     renderPatientLog();
     renderHistory();
     syncDetailTabs();
   }
   renderAll();
-
-  /* ---------------- Handling form wiring ----------------
-     The Handling form is a single element that lives inline (read-only) in
-     the side panel and gets physically moved into the Edit popup while
-     editing, then moved back on close -- so there's only ever one form/one
-     set of field state to keep in sync. */
-  const ticketDetailForm = document.getElementById("ticketDetailForm");
-  const ticketHandlingInlineSlot = document.getElementById("ticketHandlingInlineSlot");
-  const ticketHandlingModalSlot = document.getElementById("ticketHandlingModalSlot");
-  const ticketHandlingOverlay = document.getElementById("ticketHandlingOverlay");
-  const ticketNoteInput = document.getElementById("ticketDetailRootCause");
-  const NOTE_PLACEHOLDER = "What caused this issue? (optional)";
-  let ticketHandlingEditing = false;
-
-  function setTicketHandlingEditing(editing) {
-    ticketHandlingEditing = editing;
-    ticketDetailForm.classList.toggle("is-readonly", !editing);
-    ticketDetailForm.querySelectorAll(".custom-select-trigger").forEach((t) => { t.disabled = !editing; });
-    ticketNoteInput.disabled = !editing;
-    ticketNoteInput.placeholder = editing ? NOTE_PLACEHOLDER : "—";
-    if (editing) {
-      ticketHandlingModalSlot.appendChild(ticketDetailForm);
-      ticketHandlingOverlay.classList.add("open");
-    } else {
-      ticketHandlingInlineSlot.appendChild(ticketDetailForm);
-      ticketHandlingOverlay.classList.remove("open");
-      closeAllCustomSelects();
-    }
-  }
-
-  function cancelTicketHandlingEdit() {
-    renderHandling();
-    setTicketHandlingEditing(false);
-  }
-
-  document.getElementById("editTicketHandlingBtn").addEventListener("click", () => setTicketHandlingEditing(true));
-  document.getElementById("cancelTicketHandling").addEventListener("click", cancelTicketHandlingEdit);
-  document.getElementById("closeTicketHandlingX").addEventListener("click", cancelTicketHandlingEdit);
-  ticketHandlingOverlay.addEventListener("click", (e) => { if (e.target === ticketHandlingOverlay) cancelTicketHandlingEdit(); });
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && ticketHandlingEditing) cancelTicketHandlingEdit();
-  });
-
-  selectByName("ticketLevel").querySelector("input[type=hidden]").addEventListener("change", (e) => {
-    const tier = e.target.value;
-    populateTicketDetailAssignees(tier);
-    setCustomSelectValue(selectByName("ticketAssignedTo"), defaultAssigneeForTier(tier), { silent: true });
-    if (tier === "Level 3") {
-      setCustomSelectValue(selectByName("ticketOrgHandling"), ticket.organization, { silent: true });
-      updateAssignedOrgNote(ticket.organization);
-    } else {
-      resetCustomSelect(selectByName("ticketOrgHandling"));
-      updateAssignedOrgNote("");
-    }
-    validateTicketDetailForm();
-  });
-
-  selectByName("ticketOrgHandling").querySelector("input[type=hidden]").addEventListener("change", (e) => {
-    updateAssignedOrgNote(e.target.value);
-    validateTicketDetailForm();
-  });
-
-  ticketDetailForm.addEventListener("input", validateTicketDetailForm);
-  ticketDetailForm.addEventListener("change", validateTicketDetailForm);
-
-  ticketDetailForm.addEventListener("submit", (e) => {
-    e.preventDefault();
-    if (document.getElementById("saveTicketDetailBtn").disabled) return;
-
-    const changeDate = new Date().toLocaleString("en-GB", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit", hour12: false }).replace(",", "");
-
-    const rootCause = ticketNoteInput.value.trim();
-    const nextAssignee = selectValue("ticketAssignedTo");
-    const nextTier = selectValue("ticketLevel") || ticket.tier;
-    const nextPriority = selectValue("ticketPriorityHandling") || ticket.severity;
-    const nextStatus = selectValue("ticketStatus") || ticket.state;
-    const nextOrg = (nextTier === "Level 3" && selectValue("ticketOrgHandling")) || ticket.organization;
-
-    /* Every field a Save touches (reassignment, level/tier transfer,
-       status, priority) is folded into a single history entry instead of
-       one line per field -- so a ticket transfer and the note explaining it
-       always land together. The entry's title headlines whichever change is
-       most significant (reassignment > level > status > priority);
-       everything that changed, plus the free-text note, goes in the boxed
-       detail underneath. */
-    const isReassignment = nextAssignee && nextAssignee !== (ticket.assignedTo || "");
-    const changeParts = [];
-    let title = "";
-    if (isReassignment) {
-      changeParts.push(`Reassigned from ${ticket.assignedTo || "Unassigned"} to ${nextAssignee}`);
-      title = `Ticket Transferred to ${nextAssignee}`;
-    }
-    if (nextTier !== ticket.tier) {
-      changeParts.push(`Level changed from ${ticket.tier} to ${nextTier}`);
-      title = title || `Ticket Escalated to ${nextTier}`;
-    }
-    if (nextStatus !== ticket.state) {
-      changeParts.push(`Status changed from ${ticket.state} to ${nextStatus}`);
-      title = title || `Status Changed to ${nextStatus}`;
-    }
-    if (nextPriority !== ticket.severity) {
-      changeParts.push(`Priority changed from ${ticket.severity} to ${nextPriority}`);
-      title = title || `Priority Changed to ${nextPriority}`;
-    }
-    if (nextOrg !== ticket.organization) {
-      changeParts.push(`Organization changed from ${ticket.organization} to ${nextOrg}`);
-      title = title || `Organization Changed to ${nextOrg}`;
-    }
-
-    const noteChanged = rootCause !== (ticket.rootCause || "");
-    if (!changeParts.length && noteChanged) {
-      changeParts.push("Note updated");
-      title = "Note Updated";
-    }
-
-    if (changeParts.length) {
-      let detail = `${changeParts.join("; ")}.`;
-      if (rootCause) detail += ` Note: ${rootCause}`;
-      ticket.history.push({ date: changeDate, title, detail });
-    }
-
-    ticket.rootCause = rootCause;
-    if (nextAssignee) ticket.assignedTo = nextAssignee;
-    ticket.tier = nextTier;
-    ticket.severity = nextPriority;
-    ticket.state = nextStatus;
-    ticket.organization = nextOrg;
-
-    renderHeader();
-    renderHandling();
-    renderHistory();
-    setTicketHandlingEditing(false);
-  });
-
-  setTicketHandlingEditing(false);
 }

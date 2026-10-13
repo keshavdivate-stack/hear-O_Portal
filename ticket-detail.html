@@ -216,8 +216,21 @@
           <p class="ticket-detail-meta" id="ticketDetailMeta"></p>
         </section>
 
-        <div class="ticket-detail-layout" id="ticketDetailLayout">
+        <div id="ticketDetailLayout">
           <div class="ticket-detail-main">
+
+            <!-- Clinic Info: the clinic/organization this ticket belongs to (read-only) -->
+            <section class="ticket-detail-card" id="clinicInfo">
+              <h3 class="ticket-detail-card-title">Clinic Info</h3>
+              <div class="ticket-detail-grid" style="margin-bottom:0;">
+                <div class="ticket-detail-field"><label>Organization</label><span id="ticketClinicOrg">&mdash;</span></div>
+                <div class="ticket-detail-field"><label>Study</label><span id="ticketClinicStudy">&mdash;</span></div>
+                <div class="ticket-detail-field"><label>HMO</label><span id="ticketClinicHmo">&mdash;</span></div>
+                <div class="ticket-detail-field"><label>Phone</label><span id="ticketClinicPhone">&mdash;</span></div>
+                <div class="ticket-detail-field"><label>Language</label><span id="ticketClinicLanguage">&mdash;</span></div>
+                <div class="ticket-detail-field"><label>Date Created</label><span id="ticketClinicSince">&mdash;</span></div>
+              </div>
+            </section>
 
             <!-- Issue -->
             <section class="ticket-detail-card" id="issue">
@@ -308,102 +321,8 @@
             </section>
 
           </div>
-
-          <aside class="ticket-detail-side">
-
-            <!-- Handling: read-only until Edit is clicked -->
-            <section class="ticket-detail-card" id="handling">
-              <div class="ticket-detail-card-head">
-                <h3 class="ticket-detail-card-title">Handling</h3>
-                <button type="button" class="btn-secondary" id="editTicketHandlingBtn">Edit</button>
-              </div>
-              <div id="ticketHandlingInlineSlot">
-                <form id="ticketDetailForm" class="ticket-handling-form is-readonly">
-                  <div class="ticket-handling-row">
-                    <div class="form-field">
-                      <label>Status</label>
-                      <div class="custom-select" data-name="ticketStatus">
-                        <button type="button" class="custom-select-trigger">
-                          <span class="custom-select-value placeholder">Select status</span>
-                          <svg class="custom-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-                        </button>
-                        <div class="custom-select-menu"></div>
-                        <input type="hidden" />
-                      </div>
-                    </div>
-                    <div class="form-field" id="ticketDetailLevelField">
-                      <label>Level</label>
-                      <div class="custom-select" data-name="ticketLevel">
-                        <button type="button" class="custom-select-trigger">
-                          <span class="custom-select-value placeholder">Select level</span>
-                          <svg class="custom-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-                        </button>
-                        <div class="custom-select-menu"></div>
-                        <input type="hidden" />
-                      </div>
-                    </div>
-                    <div class="form-field" id="ticketDetailPriorityField">
-                      <label>Priority</label>
-                      <div class="custom-select" data-name="ticketPriorityHandling">
-                        <button type="button" class="custom-select-trigger">
-                          <span class="custom-select-value placeholder">Select priority</span>
-                          <svg class="custom-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-                        </button>
-                        <div class="custom-select-menu"></div>
-                        <input type="hidden" />
-                      </div>
-                    </div>
-                    <div class="form-field" id="ticketDetailOrgField" hidden>
-                      <label>Organization<span class="required-star">*</span></label>
-                      <div class="custom-select" data-name="ticketOrgHandling">
-                        <button type="button" class="custom-select-trigger">
-                          <span class="custom-select-value placeholder">Select organization</span>
-                          <svg class="custom-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-                        </button>
-                        <div class="custom-select-menu"></div>
-                        <input type="hidden" />
-                      </div>
-                    </div>
-                    <div class="form-field" id="ticketDetailAssignedToField">
-                      <label>Assigned To<span class="required-star">*</span></label>
-                      <div class="custom-select" data-name="ticketAssignedTo">
-                        <button type="button" class="custom-select-trigger">
-                          <span class="custom-select-value placeholder">Select team member</span>
-                          <svg class="custom-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-                        </button>
-                        <div class="custom-select-menu"></div>
-                        <input type="hidden" />
-                      </div>
-                      <div class="ticket-assigned-org-note" id="ticketDetailAssignedOrgNote" hidden></div>
-                    </div>
-                  </div>
-                  <div class="form-field ticket-handling-note-field">
-                    <label>Note</label>
-                    <textarea id="ticketDetailRootCause" placeholder="What caused this issue? (optional)"></textarea>
-                  </div>
-                </form>
-              </div>
-            </section>
-
-          </aside>
         </div>
 
-      </div>
-    </div>
-  </div>
-
-  <!-- Edit Handling popup: the Handling form above is moved in here while
-       editing (so it stays a single form), and moved back on close. -->
-  <div class="modal-overlay" id="ticketHandlingOverlay">
-    <div class="modal modal-wide ticket-handling-modal">
-      <h2>Edit Handling</h2>
-      <button type="button" class="modal-close-x modal-close-x-top" id="closeTicketHandlingX" aria-label="Close">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6L18 18M6 18L18 6"/></svg>
-      </button>
-      <div id="ticketHandlingModalSlot"></div>
-      <div class="modal-actions">
-        <button type="button" class="btn-text" id="cancelTicketHandling">Cancel</button>
-        <button type="submit" class="btn-save" id="saveTicketDetailBtn" form="ticketDetailForm" disabled>Save</button>
       </div>
     </div>
   </div>
@@ -411,7 +330,6 @@
 <script src="js/topbar.js"></script>
 <script src="js/support-data.js"></script>
 <script src="js/support-tickets-common.js"></script>
-<script src="js/custom-select.js"></script>
 <script src="js/ticket-detail.js"></script>
 </body>
 </html>

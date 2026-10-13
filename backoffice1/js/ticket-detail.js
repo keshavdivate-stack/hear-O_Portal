@@ -73,7 +73,6 @@ if (currentTicket.tier === "Level 3") currentTicket.tier = "Level 2";
 })();
 
 document.querySelector('.bo-select[data-name="ticketLevel"] .bo-select-menu').innerHTML = buildSelectOptions(HANDLING_TIERS);
-document.querySelector('.bo-select[data-name="ticketPriorityHandling"] .bo-select-menu').innerHTML = buildSelectOptions(PRIORITIES);
 document.querySelector('.bo-select[data-name="ticketStatus"] .bo-select-menu').innerHTML = buildSelectOptions(STATUSES);
 
 /* Assignee choices narrow to whichever tier is currently selected in the
@@ -91,12 +90,11 @@ function defaultAssigneeForTier(tier) {
   return (TIER_AGENTS[tier] || SUPPORT_AGENTS)[0] || "";
 }
 
-/* Resolved tickets no longer need routing info -- hide Level/Priority/
-   Assigned To rather than asking for values that don't matter anymore. */
+/* Resolved tickets no longer need routing info -- hide Level/Assigned To
+   rather than asking for values that don't matter anymore. */
 function applyTicketDetailStatusVisibility(status) {
   const resolved = status === "Resolved";
   document.getElementById("ticketDetailLevelField").hidden = resolved;
-  document.getElementById("ticketDetailPriorityField").hidden = resolved;
   document.getElementById("ticketDetailAssignedToField").hidden = resolved;
 }
 
@@ -110,7 +108,6 @@ function readTicketHandlingForm() {
   return {
     status: val("ticketStatus"),
     tier: val("ticketLevel"),
-    priority: val("ticketPriorityHandling"),
     assignedTo: val("ticketAssignedTo"),
     note: document.getElementById("ticketDetailRootCause").value.trim(),
   };
@@ -128,7 +125,7 @@ function validateTicketDetailForm() {
 function renderTicketHeader() {
   document.getElementById("ticketDetailTitle").textContent = currentTicket.ticketNo;
   const badge = (label, pill) => `<span class="td-badge-group"><span class="td-badge-label">${label}</span>${pill}</span>`;
-  /* Status / Priority / Level live in the Handling panel; the header only
+  /* Status / Level live in the Handling panel; the header only
      carries the Type tag, as on the developed screen. */
   document.getElementById("ticketDetailBadges").innerHTML = badge("Type", typePill(ticketType(currentTicket)));
   const origin = originLabel[currentTicket.origin] || currentTicket.origin;
@@ -387,7 +384,6 @@ function renderTicketHandling() {
   document.getElementById("ticketDetailRootCause").value = currentTicket.rootCause || "";
   setBoSelectValue(document.querySelector('.bo-select[data-name="ticketStatus"]'), currentTicket.status, { silent: true });
   setBoSelectValue(document.querySelector('.bo-select[data-name="ticketLevel"]'), currentTicket.tier, { silent: true });
-  setBoSelectValue(document.querySelector('.bo-select[data-name="ticketPriorityHandling"]'), currentTicket.priority, { silent: true });
   populateTicketDetailAssignees(currentTicket.tier);
   const tierAgents = TIER_AGENTS[currentTicket.tier] || SUPPORT_AGENTS;
   const assignee = tierAgents.includes(currentTicket.assignedTo) ? currentTicket.assignedTo : defaultAssigneeForTier(currentTicket.tier);
@@ -856,16 +852,15 @@ ticketDetailForm.addEventListener("submit", (e) => {
   const rootCause = document.getElementById("ticketDetailRootCause").value.trim();
   const nextAssignee = document.querySelector('.bo-select[data-name="ticketAssignedTo"] input[type=hidden]').value;
   const nextTier = document.querySelector('.bo-select[data-name="ticketLevel"] input[type=hidden]').value || currentTicket.tier;
-  const nextPriority = document.querySelector('.bo-select[data-name="ticketPriorityHandling"] input[type=hidden]').value || currentTicket.priority;
   const nextStatus = document.querySelector('.bo-select[data-name="ticketStatus"] input[type=hidden]').value || currentTicket.status;
 
-  /* Every field a Save touches (reassignment, level/tier transfer, priority,
-     status) is folded into a single history entry instead of one line per
+  /* Every field a Save touches (reassignment, level/tier transfer, status)
+     is folded into a single history entry instead of one line per
      field -- so a ticket transfer and the note explaining it always land
      together, and whoever picks the ticket up next sees the note attached
      directly to the transfer instead of buried in a separate line. The
      entry's title headlines whichever change is most significant
-     (reassignment > level > status > priority); everything that changed,
+     (reassignment > level > status); everything that changed,
      plus the free-text note, goes in the boxed detail underneath. */
   const isReassignment = nextAssignee !== (currentTicket.assignedTo || "");
   const changeParts = [];
@@ -881,10 +876,6 @@ ticketDetailForm.addEventListener("submit", (e) => {
   if (nextStatus !== currentTicket.status) {
     changeParts.push(`Status changed from ${currentTicket.status} to ${nextStatus}`);
     title = title || `Status Changed to ${nextStatus}`;
-  }
-  if (nextPriority !== currentTicket.priority) {
-    changeParts.push(`Priority changed from ${currentTicket.priority} to ${nextPriority}`);
-    title = title || `Priority Changed to ${nextPriority}`;
   }
 
   const noteChanged = rootCause !== (currentTicket.rootCause || "");
@@ -902,7 +893,6 @@ ticketDetailForm.addEventListener("submit", (e) => {
   currentTicket.rootCause = rootCause;
   currentTicket.assignedTo = nextAssignee;
   currentTicket.tier = nextTier;
-  currentTicket.priority = nextPriority;
   currentTicket.status = nextStatus;
 
   renderTicketHeader();

@@ -932,9 +932,11 @@ button, input, select, textarea, optgroup {
   font-size: 15px;
   font-weight: 800;
   color: var(--ink);
-  min-width: 22px;
-  text-align: right;
+  /* Fixed width (room for 4 digits) so every bar starts at the same point. */
+  width: 40px;
+  text-align: left;
   flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
 }
 
 .bo-bin-body {
@@ -3248,7 +3250,6 @@ a.bo-btn-secondary { text-decoration: none; }
   padding: 22px 24px;
 }
 
-.mkt-hero-bins .mkt-bins-list { justify-content: center; }
 
 /* Organization card: name, enrolled/target ring, To Date / Today rates, legend */
 .mkt-org-card {
@@ -3399,35 +3400,9 @@ a.bo-btn-secondary { text-decoration: none; }
 
 .mkt-compliance-pct { font-size: 21px; font-weight: 800; color: var(--blue-text); }
 
-.mkt-bins-tabs {
-  display: flex;
-  gap: 18px;
-  margin-bottom: 4px;
-}
 
-.mkt-bins-tabs button {
-  background: none;
-  border: none;
-  padding: 0 0 8px;
-  font-family: inherit;
-  font-size: 13.5px;
-  font-weight: 700;
-  color: var(--gray-text);
-  cursor: pointer;
-  border-bottom: 2px solid transparent;
-}
 
-.mkt-bins-tabs button.active {
-  color: var(--navy);
-  border-bottom-color: var(--navy);
-}
 
-.mkt-bins-list {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-top: 6px;
-}
 
 .uc-back-link {
   display: inline-flex;
@@ -3452,25 +3427,8 @@ a.bo-btn-secondary { text-decoration: none; }
 
 .uc-total { font-size: 14px; font-weight: 700; color: var(--ink); white-space: nowrap; }
 
-.mkt-bin-row {
-  display: grid;
-  grid-template-columns: 16px 1fr auto;
-  align-items: center;
-  gap: 10px;
-  text-decoration: none;
-  color: inherit;
-  border-radius: 6px;
-  padding: 2px 4px;
-  margin: -2px -4px;
-}
 
-.mkt-bin-row:hover {
-  background: var(--bg);
-}
 
-.mkt-bin-val { font-size: 12.5px; font-weight: 700; color: var(--ink); }
-.mkt-bin-label { font-size: 12px; color: var(--gray-text); white-space: nowrap; }
-.mkt-bin-track { height: 5px; }
 
 @media (max-width: 1400px) {
   .mkt-cards-row { grid-template-columns: 1fr 1fr; }
@@ -5141,7 +5099,6 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
 }
 #ticketRows .bo-pill[class*="bo-pill-severity-"],
 #ruleRows .bo-pill[class*="bo-pill-severity-"],
-#ticketDetailPriorityKv .bo-pill[class*="bo-pill-severity-"],
 #incidentRows .bo-pill[class*="bo-pill-severity-"],
 #incDetailPriorityKv .bo-pill[class*="bo-pill-severity-"] {
   display: inline;
@@ -6006,3 +5963,6 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
 
 /* Secondary buttons that can be unavailable (e.g. Download Log with no file in range). */
 .bo-btn-secondary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* Incidents tab: three KPIs (Organizations Impacted removed). */
+.bo-incident-kpi-grid--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
