@@ -112,7 +112,7 @@ function initialsOf(name) {
 function statusCell(p) {
   if (p.status === "priority") {
     /* The flag is a separate highlight mechanism and does not indicate
-       acknowledgement -- a flagged priority can still be unacknowledged, so
+       acknowledgment -- a flagged priority can still be unacknowledged, so
        both render side by side rather than one replacing the other.
        The toggle button itself stays in the DOM at all times (so it's
        reachable by keyboard) but is only visually revealed on row hover,

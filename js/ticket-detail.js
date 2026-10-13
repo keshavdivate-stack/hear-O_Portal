@@ -469,7 +469,7 @@ if (!ticket) {
   }
 
   /* Handling shows the same fields as the edit form, but locked until Edit
-     is clicked. Also re-run on Cancel so anything typed and then cancelled
+     is clicked. Also re-run on Cancel so anything typed and then canceled
      is discarded instead of lingering. */
   function renderHandling() {
     document.getElementById("ticketDetailRootCause").value = ticket.rootCause || "";

@@ -255,7 +255,7 @@ topUpTickets(clinicTickets, "clinic", "Open", 32, 144);
 const RULE_CHANNELS = ["Notification", "Email", "SMS"];
 
 /* One rule per system-health alarm, matching the developed Rules list:
-   no SLA set yet ("—"), In App channel only, applies to all organisations. */
+   no SLA set yet ("—"), In App channel only, applies to all organizations. */
 const alertRules = [
   ["Total compliance below 60%", "Compliance", "Total compliance across active patients below 60%", "High", "Level 2"],
   ["Total usable compliance below 60%", "Compliance", "Total usable compliance across active patients below 60%", "High", "Level 2"],
@@ -289,5 +289,5 @@ const alertRules = [
   channels: ["Notification"],
   operator: "None",
   autoCreateTicket: true,
-  appliesTo: "All organisations",
+  appliesTo: "All organizations",
 }));

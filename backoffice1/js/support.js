@@ -516,7 +516,7 @@ document.querySelector('#ruleDrawerOverlay .bo-select[data-name="ruleTier"] .bo-
 
 /* Edit Rule only exposes Priority, Routed level, Applies to, the threshold
    Operator and Auto-create ticket -- matching the developed Edit Rule form. */
-const RULE_EDIT_APPLIES_TO = ["All organisations", "Commercial organisations", "Study organisations"];
+const RULE_EDIT_APPLIES_TO = ["All organizations", "Commercial organizations", "Study organizations"];
 const RULE_OPERATORS = ["None", "Greater than (>)", "Greater than or equal (≥)", "Less than (<)", "Less than or equal (≤)", "Equal to (=)"];
 document.querySelector('#ruleDrawerOverlay .bo-select[data-name="ruleAppliesTo"] .bo-select-menu').innerHTML = buildSelectOptions(RULE_EDIT_APPLIES_TO);
 document.querySelector('#ruleDrawerOverlay .bo-select[data-name="ruleOperator"] .bo-select-menu').innerHTML = buildSelectOptions(RULE_OPERATORS);

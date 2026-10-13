@@ -632,7 +632,7 @@ renderAll();
 /* ---------------- Handling form wiring ----------------
    The form is always on the page but locked (read-only) until Edit is
    clicked. Cancel re-seeds every field from the ticket, so anything typed
-   and then cancelled is discarded instead of lingering. */
+   and then canceled is discarded instead of lingering. */
 const ticketDetailFormEl = document.getElementById("ticketDetailForm");
 const editTicketHandlingBtn = document.getElementById("editTicketHandlingBtn");
 const ticketHandlingInlineSlot = document.getElementById("ticketHandlingInlineSlot");
