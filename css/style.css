@@ -7150,7 +7150,6 @@ body.patient-discontinued #chatOpenBtn {
   padding: 10px 12px;
 }
 .ticket-detail-field[hidden] { display: none; }
-.ticket-detail-badge-text { font-size: 13px; font-weight: 700; color: var(--ink); }
 .ticket-detail-field label { font-size: 10.5px; letter-spacing: 0.3px; color: var(--gray-text); font-weight: 700; text-transform: uppercase; }
 .ticket-detail-field span { font-size: 14px; color: #23272E; font-weight: 700; overflow-wrap: break-word; }
 

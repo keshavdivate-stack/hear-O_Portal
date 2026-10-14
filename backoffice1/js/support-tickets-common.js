@@ -11,7 +11,7 @@ const typePillClass = { "Patient": "bo-pill-type-patient", "Clinic": "bo-pill-ty
 
 const statusPill = (s) => `<span class="bo-pill ${statusPillClass[s] || ""}">${s}</span>`;
 const priorityPill = (p) => `<span class="bo-pill ${priorityPillClass[p] || ""}">${p}</span>`;
-const tierPill = (t) => t;
+const tierPill = (t) => `<span class="bo-pill bo-pill-tier">${t}</span>`;
 /* Origin "Patient" is a ticket raised from the patient's mobile app -- shown
    as "Mobile", the developed app's name for it. */
 const originLabel = { "Patient": "Mobile", "Backoffice": "Back Office" };
@@ -35,7 +35,7 @@ const typePill = (s) => `<span class="bo-pill ${typePillClass[s] || ""}">${s}</s
    defaulted from Issue Type); older/generated tickets fall back to the
    Issue Type -> category lookup. */
 const ticketCategory = (t) => t.category || ISSUE_TYPE_CATEGORY[t.issueType];
-const categoryPill = (t) => ticketCategory(t) || "—";
+const categoryPill = (t) => `<span class="bo-pill bo-pill-tag">${ticketCategory(t) || "—"}</span>`;
 
 /* ---------------- Custom "bo-select" dropdown plumbing ---------------- */
 function buildFilterSelectOptions(values, clearLabel) {

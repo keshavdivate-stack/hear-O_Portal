@@ -5093,8 +5093,21 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
 .bo-btn-primary.bo-btn-danger:hover { background: var(--maroon-text); border-color: var(--maroon-text); }
 .bo-rule-row-disabled td:not(:last-child):not(.bo-rule-status-cell) { opacity: 0.5; }
 
-/* Tickets/Rules tables: Category and Level are plain text (no badge);
-   Priority is plain colored text. */
+/* Tickets/Rules tables: Category (blue) and Level (indigo) as filled tags, Priority as
+   plain colored text. Deliberately not gray, and clear of the red / orange /
+   green status colors and the teal / cyan / purple Origin and Type pills. */
+#ticketRows .bo-pill-tag,
+#ticketRows .bo-pill-tier,
+#ruleRows .bo-pill-tag,
+#ruleRows .bo-pill-tier {
+  border: none;
+  border-radius: 6px;
+  padding: 3px 11px;
+}
+#ticketRows .bo-pill-tag,
+#ruleRows .bo-pill-tag { background: #E3ECFA; color: #1F4E9C; }
+#ticketRows .bo-pill-tier,
+#ruleRows .bo-pill-tier { background: #E8E9FB; color: #3F3FB5; }
 #ticketRows .bo-pill[class*="bo-pill-severity-"],
 #ruleRows .bo-pill[class*="bo-pill-severity-"],
 #incidentRows .bo-pill[class*="bo-pill-severity-"],
