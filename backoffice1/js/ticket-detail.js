@@ -101,7 +101,8 @@ function applyTicketDetailStatusVisibility(status) {
 
 /* Handling is always editable, so Save Changes (page header) compares the
    form against what was last rendered: it stays disabled until something
-   actually changes, and -- as before -- until Assigned To and Note are set. */
+   actually changes. Assigned To and Note are required, but are checked when
+   Save is clicked (see the submit handler) so the button turns primary on any edit. */
 let ticketHandlingBaseline = null;
 
 function readTicketHandlingForm() {
@@ -118,10 +119,9 @@ function readTicketHandlingForm() {
 function validateTicketDetailForm() {
   const form = readTicketHandlingForm();
   applyTicketDetailStatusVisibility(form.status);
-  const assigneeFilled = form.status === "Resolved" || form.assignedTo !== "";
-  const noteFilled = form.note !== "";
   const changed = !ticketHandlingBaseline || Object.keys(form).some((k) => form[k] !== ticketHandlingBaseline[k]);
-  document.getElementById("saveTicketDetail").disabled = !changed || !assigneeFilled || !noteFilled;
+  document.getElementById("saveTicketDetail").disabled = !changed;
+  if (form.note !== "") document.getElementById("ticketDetailNoteError").hidden = true;
 }
 
 function renderTicketHeader() {
@@ -889,6 +889,15 @@ function formatChangeDate() {
 ticketDetailForm.addEventListener("submit", (e) => {
   e.preventDefault();
   if (document.getElementById("saveTicketDetail").disabled) return;
+
+  /* Required fields are enforced here rather than by disabling Save. */
+  const formNow = readTicketHandlingForm();
+  if (formNow.status !== "Resolved" && formNow.assignedTo === "") return;
+  if (formNow.note === "") {
+    document.getElementById("ticketDetailNoteError").hidden = false;
+    document.getElementById("ticketDetailRootCause").focus();
+    return;
+  }
 
   const history = ensureTicketHistory(currentTicket);
   const changeDate = formatChangeDate();
