@@ -206,8 +206,9 @@ function renderTicketRecording() {
   /* The recording date filter starts on the ticket's creation day so the
      calendar opens on a useful date for this ticket. */
   const createdDate = parseTicketDate(currentTicket.createdDate);
-  ticketRecordingDate = createdDate || new Date();
-  ticketRecordingDate.setHours(0, 0, 0, 0);
+  ticketRecordingFrom = createdDate || new Date();
+  ticketRecordingFrom.setHours(0, 0, 0, 0);
+  ticketRecordingTo = new Date(ticketRecordingFrom);
   updateTicketRecordingDateDisplay();
   const rand = seededRandom(currentTicket.ticketNo);
   const partCount = 4 + Math.floor(rand() * 3); // 4-6 parts
@@ -224,7 +225,9 @@ function renderTicketRecording() {
 }
 
 /* ---------------- Recording date filter ---------------- */
-let ticketRecordingDate = null;
+let ticketRecordingFrom = null;
+let ticketRecordingTo = null;
+let ticketRecordingPickingEnd = false; // true after the first click of a range
 let ticketRecordingCalendarViewDate = new Date();
 const ticketRecordingCalendarEl = document.getElementById("ticketRecordingCalendar");
 
@@ -236,8 +239,10 @@ function parseTicketDate(value) {
 }
 
 function updateTicketRecordingDateDisplay() {
-  document.getElementById("ticketRecordingDateValue").textContent = formatDisplayDate(ticketRecordingDate);
-  document.getElementById("ticketRecordingDateField").classList.toggle("placeholder", !ticketRecordingDate);
+  document.getElementById("ticketRecordingDateValue").textContent = ticketRecordingFrom
+    ? `${formatDisplayDate(ticketRecordingFrom)} – ${formatDisplayDate(ticketRecordingTo)}`
+    : "—";
+  document.getElementById("ticketRecordingDateField").classList.toggle("placeholder", !ticketRecordingFrom);
 }
 
 function renderTicketRecordingCalendar() {
@@ -256,13 +261,16 @@ function renderTicketRecordingCalendar() {
   document.getElementById("ticketRecordingCalendarDays").innerHTML = cells.map(({ date, muted }) => {
     const classes = ["bo-mini-calendar-day"];
     if (muted) classes.push("muted");
-    if (sameDay(date, ticketRecordingDate)) classes.push("selected");
-    return `<button type="button" class="${classes.join(" ")}" data-time="${date.getTime()}" aria-pressed="${sameDay(date, ticketRecordingDate)}">${date.getDate()}</button>`;
+    const isEdge = sameDay(date, ticketRecordingFrom) || sameDay(date, ticketRecordingTo);
+    if (isEdge) classes.push("selected");
+    else if (ticketRecordingFrom && date > ticketRecordingFrom && date < ticketRecordingTo) classes.push("in-range");
+    return `<button type="button" class="${classes.join(" ")}" data-time="${date.getTime()}" aria-pressed="${isEdge}">${date.getDate()}</button>`;
   }).join("");
 }
 
 function openTicketRecordingCalendar() {
-  const date = ticketRecordingDate || new Date();
+  const date = ticketRecordingFrom || new Date();
+  ticketRecordingPickingEnd = false;
   ticketRecordingCalendarViewDate = new Date(date.getFullYear(), date.getMonth(), 1);
   document.getElementById("ticketRecordingDateField").classList.add("active");
   ticketRecordingCalendarEl.hidden = false;
@@ -293,15 +301,29 @@ document.getElementById("ticketRecordingCalendarDays").addEventListener("click",
   e.stopPropagation();
   const day = e.target.closest(".bo-mini-calendar-day");
   if (!day) return;
-  ticketRecordingDate = new Date(Number(day.dataset.time));
-  ticketRecordingDate.setHours(0, 0, 0, 0);
+  const picked = new Date(Number(day.dataset.time));
+  picked.setHours(0, 0, 0, 0);
+  if (!ticketRecordingPickingEnd) {
+    /* First click starts a new range; the calendar stays open for the end. */
+    ticketRecordingFrom = picked;
+    ticketRecordingTo = new Date(picked);
+    ticketRecordingPickingEnd = true;
+    updateTicketRecordingDateDisplay();
+    renderTicketRecordingCalendar();
+    return;
+  }
+  if (picked < ticketRecordingFrom) { ticketRecordingTo = ticketRecordingFrom; ticketRecordingFrom = picked; }
+  else ticketRecordingTo = picked;
+  ticketRecordingPickingEnd = false;
   updateTicketRecordingDateDisplay();
   closeTicketRecordingCalendar();
 });
 document.getElementById("ticketRecordingCalendarToday").addEventListener("click", (e) => {
   e.stopPropagation();
-  ticketRecordingDate = new Date();
-  ticketRecordingDate.setHours(0, 0, 0, 0);
+  ticketRecordingFrom = new Date();
+  ticketRecordingFrom.setHours(0, 0, 0, 0);
+  ticketRecordingTo = new Date(ticketRecordingFrom);
+  ticketRecordingPickingEnd = false;
   updateTicketRecordingDateDisplay();
   closeTicketRecordingCalendar();
 });

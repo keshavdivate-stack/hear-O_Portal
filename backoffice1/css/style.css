@@ -5976,3 +5976,6 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
 .bo-edit-patient-modal .bo-modal-field .bo-date-field input { padding: 0; border: none; }
 .bo-edit-patient-modal .bo-modal-field .bo-select-trigger { width: 100%; }
 @media (max-width: 640px) { .bo-edit-patient-modal .bo-modal-grid { grid-template-columns: 1fr; } }
+
+/* Recording date range ("dd-mm-yyyy – dd-mm-yyyy") needs a wider trigger than a single date */
+#ticketRecordingDateField { min-width: 250px; }
