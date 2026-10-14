@@ -123,8 +123,21 @@ if (!ticket) {
     return { ...seeded, ...CLINIC_DIRECTORY[orgCode] };
   }
 
+  /* Software versions the clinic user was running when they raised a clinic
+     ticket -- seeded off the ticket ID so a ticket always shows the same ones. */
+  const CORDIO_SYSTEM_VERSIONS = ["3.1.5", "3.2.0", "3.2.7", "3.3.0", "3.4.1"];
+  const CLINIC_PORTAL_VERSIONS = ["2.4.0", "2.5.1", "2.6.0", "2.6.3", "2.7.0"];
+
   function renderClinicInfo() {
     const info = clinicInfoFor(ticket.organization);
+    const isClinicTicket = ticket.type === "Clinic";
+    document.getElementById("ticketClinicCordioField").hidden = !isClinicTicket;
+    document.getElementById("ticketClinicPortalField").hidden = !isClinicTicket;
+    if (isClinicTicket) {
+      const rand = seededRandom(`${ticket.ticketId}-versions`);
+      document.getElementById("ticketClinicCordioVersion").textContent = ticket.cordioVersion || pickFrom(rand, CORDIO_SYSTEM_VERSIONS);
+      document.getElementById("ticketClinicPortalVersion").textContent = ticket.portalVersion || pickFrom(rand, CLINIC_PORTAL_VERSIONS);
+    }
     document.getElementById("ticketClinicOrg").textContent = ticket.organization || "—";
     document.getElementById("ticketClinicStudy").textContent = info.study || "—";
     document.getElementById("ticketClinicHmo").textContent = info.isHmo ? "Yes" : "No";

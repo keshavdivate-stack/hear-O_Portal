@@ -137,11 +137,7 @@ function renderTicketHeader() {
      Patient-raised tickets instead show the patient's own contact info, so
      an agent can reach them directly without leaving the ticket. */
   let extraMeta = "";
-  if (currentSource === "clinic" && currentTicket.cordioVersion) {
-    extraMeta =
-      `<span class="td-meta-sep">&middot;</span>Cordio Version: ${currentTicket.cordioVersion}` +
-      `<span class="td-meta-sep">&middot;</span>Portal Version: ${currentTicket.portalVersion}`;
-  } else if (currentSource === "patient") {
+  if (currentSource === "patient") {
     const contact = patientContactInfo(currentTicket.patientId);
     extraMeta =
       `<span class="td-meta-sep">&middot;</span>Email: ${contact.email}` +
@@ -851,8 +847,19 @@ function syncPatientLogTab() {
   document.querySelector('.td-tab[data-td-tab="recording"]').hidden = document.getElementById("ticketDetailRecordingWrap").hidden;
 }
 
+/* Clinic tickets show the Cordio System and Clinic Portal versions the clinic
+   user was running when they raised the ticket (patient tickets have no such card). */
+function renderClinicInfo() {
+  const isClinic = currentSource === "clinic";
+  document.getElementById("clinicInfo").hidden = !isClinic;
+  if (!isClinic) return;
+  document.getElementById("ticketClinicCordioVersion").textContent = currentTicket.cordioVersion || "—";
+  document.getElementById("ticketClinicPortalVersion").textContent = currentTicket.portalVersion || "—";
+}
+
 function renderAll() {
   renderTicketHeader();
+  renderClinicInfo();
   renderTicketInfo();
   renderTicketHandling();
   renderPatientLog();
