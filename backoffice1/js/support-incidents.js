@@ -98,7 +98,7 @@ function incidentRowHtml(incident) {
     <tr data-id="${incident.id}">
       <td><a class="bo-incident-id-link" href="incident-detail.html?id=${encodeURIComponent(incident.id)}">${incident.id}</a></td>
       <td><span class="bo-incident-title">${incident.title}</span></td>
-      <td><span class="bo-incident-category-tag">${incident.category}</span></td>
+      <td>${incident.category}</td>
       <td>${incPriorityPill(incident.priority)}</td>
       <td>${incStatusPill(incident.status)}${incRelatedTicketLink(incident)}</td>
       <td>${incImpactLabel(incident)}</td>
