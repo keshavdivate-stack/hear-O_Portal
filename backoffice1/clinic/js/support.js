@@ -47,7 +47,7 @@ function renderTicketList() {
             ? `<a class="ticket-view-link" href="patient-data.html">${t.who}</a>`
             : t.who
         }</td>
-        <td><span class="ticket-pill ticket-pill-category">${t.category}</span></td>
+        <td>${t.category}</td>
         <td>${t.issueType}</td>
         <td><span class="ticket-pill ${stateCellClass(t.state)}">${t.state}</span></td>
         <td>${t.created}</td>
@@ -245,7 +245,7 @@ function renderRaisedTicketList() {
       <tr>
         <td><b>${t.ticketId}</b></td>
         <td>${t.who}</td>
-        <td><span class="ticket-pill ticket-pill-category">${t.category}</span></td>
+        <td>${t.category}</td>
         <td>${t.issueType}</td>
         <td><span class="ticket-pill ${stateCellClass(t.state)}">${t.state}</span></td>
         <td>${t.created}</td>
