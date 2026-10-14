@@ -5966,3 +5966,13 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
 
 /* Incidents tab: three KPIs (Organizations Impacted removed). */
 .bo-incident-kpi-grid--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+/* Edit Patient modal (Patient Management): fixed header/footer, scrolling two-column body */
+.bo-edit-patient-modal { width: 680px; display: flex; flex-direction: column; overflow: hidden; }
+.bo-edit-patient-form { display: flex; flex-direction: column; min-height: 0; flex: 1; }
+.bo-edit-patient-body { overflow-y: auto; min-height: 0; margin-right: -12px; padding-right: 12px; }
+.bo-edit-patient-body .bo-modal-grid { margin-bottom: 4px; }
+.bo-edit-patient-modal .bo-modal-field .bo-date-field { width: 100%; box-sizing: border-box; }
+.bo-edit-patient-modal .bo-modal-field .bo-date-field input { padding: 0; border: none; }
+.bo-edit-patient-modal .bo-modal-field .bo-select-trigger { width: 100%; }
+@media (max-width: 640px) { .bo-edit-patient-modal .bo-modal-grid { grid-template-columns: 1fr; } }
