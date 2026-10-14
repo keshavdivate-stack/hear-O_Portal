@@ -74,6 +74,7 @@ if (currentTicket.tier === "Level 3") currentTicket.tier = "Level 2";
 
 document.querySelector('.bo-select[data-name="ticketLevel"] .bo-select-menu').innerHTML = buildSelectOptions(HANDLING_TIERS);
 document.querySelector('.bo-select[data-name="ticketStatus"] .bo-select-menu').innerHTML = buildSelectOptions(STATUSES);
+document.querySelector('.bo-select[data-name="ticketPriority"] .bo-select-menu').innerHTML = buildSelectOptions(PRIORITIES);
 
 /* Assignee choices narrow to whichever tier is currently selected in the
    Level field, so a ticket always lands on someone who actually works
@@ -107,6 +108,7 @@ function readTicketHandlingForm() {
   const val = (name) => document.querySelector(`.bo-select[data-name="${name}"] input[type=hidden]`).value;
   return {
     status: val("ticketStatus"),
+    priority: val("ticketPriority"),
     tier: val("ticketLevel"),
     assignedTo: val("ticketAssignedTo"),
     note: document.getElementById("ticketDetailRootCause").value.trim(),
@@ -405,6 +407,7 @@ const ticketRecordingPlayer = createRecordingPlayer(document.getElementById("tic
 function renderTicketHandling() {
   document.getElementById("ticketDetailRootCause").value = currentTicket.rootCause || "";
   setBoSelectValue(document.querySelector('.bo-select[data-name="ticketStatus"]'), currentTicket.status, { silent: true });
+  setBoSelectValue(document.querySelector('.bo-select[data-name="ticketPriority"]'), currentTicket.priority, { silent: true });
   setBoSelectValue(document.querySelector('.bo-select[data-name="ticketLevel"]'), currentTicket.tier, { silent: true });
   populateTicketDetailAssignees(currentTicket.tier);
   const tierAgents = TIER_AGENTS[currentTicket.tier] || SUPPORT_AGENTS;
@@ -876,6 +879,7 @@ ticketDetailForm.addEventListener("submit", (e) => {
   const nextAssignee = document.querySelector('.bo-select[data-name="ticketAssignedTo"] input[type=hidden]').value;
   const nextTier = document.querySelector('.bo-select[data-name="ticketLevel"] input[type=hidden]').value || currentTicket.tier;
   const nextStatus = document.querySelector('.bo-select[data-name="ticketStatus"] input[type=hidden]').value || currentTicket.status;
+  const nextPriority = document.querySelector('.bo-select[data-name="ticketPriority"] input[type=hidden]').value || currentTicket.priority;
 
   /* Every field a Save touches (reassignment, level/tier transfer, status)
      is folded into a single history entry instead of one line per
@@ -895,6 +899,10 @@ ticketDetailForm.addEventListener("submit", (e) => {
   if (nextTier !== currentTicket.tier) {
     changeParts.push(`Level changed from ${currentTicket.tier} to ${nextTier}`);
     title = title || `Ticket Escalated to ${nextTier}`;
+  }
+  if (nextPriority !== currentTicket.priority) {
+    changeParts.push(`Priority changed from ${currentTicket.priority} to ${nextPriority}`);
+    title = title || `Priority Changed to ${nextPriority}`;
   }
   if (nextStatus !== currentTicket.status) {
     changeParts.push(`Status changed from ${currentTicket.status} to ${nextStatus}`);
@@ -917,6 +925,7 @@ ticketDetailForm.addEventListener("submit", (e) => {
   currentTicket.assignedTo = nextAssignee;
   currentTicket.tier = nextTier;
   currentTicket.status = nextStatus;
+  currentTicket.priority = nextPriority;
 
   renderTicketHeader();
   renderTicketInfo();
