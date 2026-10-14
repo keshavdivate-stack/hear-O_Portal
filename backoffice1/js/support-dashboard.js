@@ -260,7 +260,7 @@ function agentsForLevel(level) {
   return level ? TIER_AGENTS[level] || [] : SUPPORT_AGENTS;
 }
 
-document.getElementById("supDashLevelMenu").innerHTML = buildFilterSelectOptions(TIERS, "All levels");
+document.getElementById("supDashLevelMenu").innerHTML = buildFilterSelectOptions(TIERS.filter((t) => t !== "Level 3"), "All levels"); // Level 3 isn't offered on this dashboard
 document.getElementById("supDashAgentMenu").innerHTML = buildAgentSelectOptions(SUPPORT_AGENTS);
 initBoSelects();
 setBoSelectValue(supDashLevelSelect, AGENT_LEVEL[currentAgent] || "", { silent: true });
