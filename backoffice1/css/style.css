@@ -5819,6 +5819,12 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
 .bo-rec-date-toolbar[hidden] { display: none; }
 .bo-rec-date-toolbar .patient-log-range { display: flex; align-items: center; gap: 10px; }
 .bo-rec-date-toolbar .patient-log-range-label { margin: 0; }
+/* Patient Log's From/To/Clear row, moved up into the tabs row: labels sit beside the fields. */
+.bo-rec-date-toolbar .td-plog-dates { flex-wrap: nowrap; align-items: center; margin-bottom: 0; gap: 10px; }
+.bo-rec-date-toolbar .td-plog-date { flex-direction: row; align-items: center; gap: 8px; }
+.bo-rec-date-toolbar .td-plog-date-field { min-width: 150px; }
+.bo-rec-date-toolbar .td-plog-date .bo-mini-calendar { left: auto; right: 0; }
+.bo-rec-date-toolbar .bo-btn-secondary { padding-top: 8px; padding-bottom: 8px; white-space: nowrap; }
 .td-tab {
   background: none; border: none; font-family: inherit; font-size: 13.5px; font-weight: 700;
   color: var(--gray-text); padding: 14px 0 12px; margin-bottom: -1px; cursor: pointer;

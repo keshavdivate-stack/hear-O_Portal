@@ -176,6 +176,7 @@
             <button type="button" class="td-tab" data-td-tab="deviceInfo" role="tab" hidden>Patient Device Info</button>
             <button type="button" class="td-tab" data-td-tab="patientLog" role="tab" hidden>Patient Log</button>
             <button type="button" class="td-tab" data-td-tab="recording" role="tab" hidden>Recording</button>
+            <div class="bo-rec-date-toolbar" id="ticketPatientLogDateToolbar" hidden></div>
             <div class="bo-rec-date-toolbar" id="ticketRecordingDateToolbar" hidden></div>
           </div>
 
@@ -208,6 +209,7 @@
                 <span id="ticketRecordingToValue" class="bo-date-field-value">&mdash;</span>
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="17" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3 9H21" stroke="currentColor" stroke-width="1.8"/></svg>
               </button>
+              <button type="button" class="bo-btn-secondary" id="ticketRecordingClearDates">Clear dates</button>
               <div class="bo-mini-calendar" id="ticketRecordingCalendar" hidden>
                 <div class="bo-mini-calendar-head">
                   <span class="bo-mini-calendar-month" id="ticketRecordingCalendarMonthLabel">&mdash;</span>
@@ -295,6 +297,7 @@
                     <button type="button" class="td-plog-date-clear" aria-label="Clear To Date" hidden>&times;</button>
                   </div>
                 </div>
+                <button type="button" class="bo-btn-secondary" id="plogRecClearDates">Clear dates</button>
               </div>
               <p class="td-plog-rec-caption" id="plogRecCaption"></p>
               <div class="bo-rec-parts td-plog-rec-parts" id="plogRecParts"></div>

@@ -241,8 +241,8 @@ function parseTicketDate(value) {
 }
 
 function updateTicketRecordingDateDisplay() {
-  document.getElementById("ticketRecordingFromValue").textContent = formatDisplayDate(ticketRecordingFrom);
-  document.getElementById("ticketRecordingToValue").textContent = formatDisplayDate(ticketRecordingTo);
+  document.getElementById("ticketRecordingFromValue").textContent = ticketRecordingFrom ? formatDisplayDate(ticketRecordingFrom) : "Select date";
+  document.getElementById("ticketRecordingToValue").textContent = ticketRecordingTo ? formatDisplayDate(ticketRecordingTo) : "Select date";
   document.getElementById("ticketRecordingFromField").classList.toggle("placeholder", !ticketRecordingFrom);
   document.getElementById("ticketRecordingToField").classList.toggle("placeholder", !ticketRecordingTo);
 }
@@ -277,7 +277,8 @@ function openTicketRecordingCalendar(target) {
   document.getElementById("ticketRecordingFromField").classList.toggle("active", target === "from");
   document.getElementById("ticketRecordingToField").classList.toggle("active", target === "to");
   /* Line the calendar up under the field being edited. */
-  ticketRecordingCalendarEl.style.left = `${document.getElementById(target === "to" ? "ticketRecordingToField" : "ticketRecordingFromField").offsetLeft}px`;
+  const fieldEl = document.getElementById(target === "to" ? "ticketRecordingToField" : "ticketRecordingFromField");
+  ticketRecordingCalendarEl.style.left = `${Math.max(0, fieldEl.offsetLeft + fieldEl.offsetWidth - 290)}px`;
   ticketRecordingCalendarEl.hidden = false;
   renderTicketRecordingCalendar();
 }
@@ -295,6 +296,14 @@ document.querySelectorAll("[data-rec-target]").forEach((field) => field.addEvent
   closeTicketRecordingCalendar();
   if (!sameField) openTicketRecordingCalendar(target);
 }));
+
+document.getElementById("ticketRecordingClearDates").addEventListener("click", (e) => {
+  e.stopPropagation();
+  ticketRecordingFrom = null;
+  ticketRecordingTo = null;
+  updateTicketRecordingDateDisplay();
+  closeTicketRecordingCalendar();
+});
 
 /* Sets the From or To date; the other end follows if the range would invert. */
 function setTicketRecordingDate(target, date) {
@@ -794,6 +803,13 @@ document.addEventListener("click", (e) => {
   if (!ticketRecordingCalendarEl.hidden && !e.target.closest("#ticketRecordingCalendar") && !e.target.closest("[data-rec-target]")) closeTicketRecordingCalendar();
 });
 
+/* The Recording section's own "Clear dates" drops its range -- the last session shows. */
+document.getElementById("plogRecClearDates").addEventListener("click", () => {
+  closePatientLogCalendar();
+  setPatientLogDate("recFrom", null);
+  setPatientLogDate("recTo", null);
+});
+
 /* "Clear dates" drops the log range -- every log file shows. */
 document.getElementById("plogClearDates").addEventListener("click", () => {
   closePatientLogCalendar();
@@ -821,8 +837,10 @@ function selectDetailTab(name) {
   document.querySelectorAll(".td-tab").forEach((t) => t.classList.toggle("active", t.dataset.tdTab === name));
   document.querySelectorAll(".td-tab-panel").forEach((p) => p.classList.toggle("active", p.dataset.tdPanel === name));
   document.getElementById("ticketRecordingDateToolbar").hidden = name !== "recording";
+  document.getElementById("ticketPatientLogDateToolbar").hidden = name !== "patientLog";
 }
 document.getElementById("ticketRecordingDateToolbar").appendChild(document.querySelector(".bo-rec-date-row"));
+document.getElementById("ticketPatientLogDateToolbar").appendChild(document.querySelector("#patientLog > .td-plog-dates"));
 document.querySelectorAll(".td-tab").forEach((tab) => tab.addEventListener("click", () => selectDetailTab(tab.dataset.tdTab)));
 
 /* Recording follows renderTicketRecording(), which only reveals the player
