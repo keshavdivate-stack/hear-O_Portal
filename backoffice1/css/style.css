@@ -5053,9 +5053,19 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
 .bo-incident-title { font-weight: 700; color: var(--ink); }
 
 /* Incidents table: ID reads as plain text (still links to the detail page),
-   Category is plain text, Priority is plain colored text. */
+   Category is a filled blue tag (same as the Tickets table), Priority is plain colored text. */
 .bo-incident-id-link { color: var(--ink); text-decoration: none; }
 .bo-incident-id-link:hover { text-decoration: underline; }
+.bo-incident-category-tag {
+  display: inline-block;
+  background: #E3ECFA;
+  color: #1F4E9C;
+  border-radius: 6px;
+  padding: 3px 11px;
+  font-size: 12.5px;
+  font-weight: 600;
+  white-space: nowrap;
+}
 /* Edit Rule: "THRESHOLD" group label above the Operator field. */
 .bo-rule-section-title {
   font-size: 12px;
