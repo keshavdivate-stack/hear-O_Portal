@@ -1,6 +1,6 @@
 /* ---------------- Ticket Detail page ----------------
    Full-screen deep dive for a single Ticket, laid out like backoffice1's
-   ticket-detail.html: a header card (ID, Status / Priority / Level / Type,
+   ticket-detail.html: a header card (ID, Status / Level / Type,
    created/origin/organization/created-for meta line), then Clinic Info,
    Issue and a History / Patient Log / Recording tab card. View-only: clinic
    users don't handle tickets here (no Handling panel) -- status, level,
@@ -59,7 +59,6 @@ if (!ticket) {
     const badge = (label, pill) => `<span class="ticket-detail-badge-group"><span class="ticket-detail-badge-label">${label}</span>${pill}</span>`;
     document.getElementById("ticketDetailBadges").innerHTML = [
       badge("Status", `<span class="ticket-pill ${stateCellClass(ticket.state)}">${ticket.state}</span>`),
-      badge("Priority", `<span class="ticket-pill ${severityCellClass(ticket.severity)}">${ticket.severity}</span>`),
       ticket.tier ? badge("Level", `<span class="ticket-pill ticket-pill-level">${ticket.tier}</span>`) : "",
       badge("Type", `<span class="ticket-pill ${typeCellClass(ticket.type)}">${ticket.type}</span>`),
     ].join("");
