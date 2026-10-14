@@ -69,7 +69,7 @@ function renderTicketKpis() {
 }
 renderTicketKpis();
 
-const ticketKebabIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="1.7" fill="currentColor"/><circle cx="12" cy="12" r="1.7" fill="currentColor"/><circle cx="12" cy="19" r="1.7" fill="currentColor"/></svg>`;
+const ruleEditIcon = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg>`;
 
 /* ---------------- Filter state ----------------
    What's picked in the filter row is only staged; ticketFilters holds what
@@ -418,7 +418,7 @@ const renderRules = boCreatePager(
         </td>
         <td>
           <div class="bo-row-actions">
-            <button class="bo-action-icon row-menu-trigger" data-id="${r.id}" aria-label="Row actions">${ticketKebabIcon}</button>
+            <button class="bo-action-icon blue rule-edit-trigger" data-id="${r.id}" aria-label="Edit rule" title="Edit rule">${ruleEditIcon}</button>
           </div>
         </td>
       </tr>`,
@@ -455,22 +455,12 @@ const RULE_OPERATORS = ["None", "Less than", "Greater than", "Less than or equal
 document.querySelector('#ruleDrawerOverlay .bo-select[data-name="ruleAppliesTo"] .bo-select-menu').innerHTML = buildSelectOptions(RULE_EDIT_APPLIES_TO);
 document.querySelector('#ruleDrawerOverlay .bo-select[data-name="ruleOperator"] .bo-select-menu').innerHTML = buildSelectOptions(RULE_OPERATORS);
 
-const ruleRowMenu = document.getElementById("ruleRowMenu");
-let activeRuleId = null;
-
 document.getElementById("ruleRows").addEventListener("click", (e) => {
-  const trigger = e.target.closest(".row-menu-trigger");
+  const trigger = e.target.closest(".rule-edit-trigger");
   if (!trigger) return;
   e.stopPropagation();
-  activeRuleId = Number(trigger.dataset.id);
-  const rect = trigger.getBoundingClientRect();
-  ruleRowMenu.style.top = `${rect.bottom + 6}px`;
-  ruleRowMenu.style.left = `${rect.right - 190}px`;
-  ruleRowMenu.classList.add("open");
-});
-
-document.addEventListener("click", (e) => {
-  if (!ruleRowMenu.contains(e.target)) ruleRowMenu.classList.remove("open");
+  const rule = alertRules.find((r) => r.id === Number(trigger.dataset.id));
+  if (rule) openRuleDrawer(rule);
 });
 
 const ruleDrawerOverlay = document.getElementById("ruleDrawerOverlay");
@@ -506,15 +496,6 @@ function closeRuleDrawer() {
   ruleDrawerOverlay.classList.remove("open");
   editingRule = null;
 }
-
-ruleRowMenu.addEventListener("click", (e) => {
-  const item = e.target.closest(".bo-row-menu-item");
-  if (!item || activeRuleId === null) return;
-  ruleRowMenu.classList.remove("open");
-  const rule = alertRules.find((r) => r.id === activeRuleId);
-  if (!rule) return;
-  if (item.dataset.action === "edit") openRuleDrawer(rule);
-});
 
 /* ---------------- Status toggle -> Enable / Disable confirmation ----------------
    Flipping a rule's Status switch asks first, like the developed app; the
