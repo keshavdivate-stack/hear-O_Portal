@@ -59,7 +59,7 @@ if (!ticket) {
     const badge = (label, pill) => `<span class="ticket-detail-badge-group"><span class="ticket-detail-badge-label">${label}</span>${pill}</span>`;
     document.getElementById("ticketDetailBadges").innerHTML = [
       badge("Status", `<span class="ticket-pill ${stateCellClass(ticket.state)}">${ticket.state}</span>`),
-      ticket.tier ? badge("Level", `<span class="ticket-pill ticket-pill-level">${ticket.tier}</span>`) : "",
+      ticket.tier ? badge("Level", `<span class="ticket-detail-badge-text">${ticket.tier}</span>`) : "",
       badge("Type", `<span class="ticket-pill ${typeCellClass(ticket.type)}">${ticket.type}</span>`),
     ].join("");
 
@@ -147,9 +147,9 @@ if (!ticket) {
 
   /* ---------------- Issue ---------------- */
   function renderIssue() {
-    /* Same Category pill as the Support list. */
+    /* Category is plain text, same as the Support list. */
     document.getElementById("ticketDetailCategory").innerHTML = ticket.category
-      ? `<span class="ticket-pill ticket-pill-category">${ticket.category}</span>`
+      ? ticket.category
       : "—";
     document.getElementById("ticketDetailIssueType").textContent = ticket.issueType || "—";
     document.getElementById("ticketDetailDescription").textContent = ticket.description;
