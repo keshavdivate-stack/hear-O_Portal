@@ -70,9 +70,26 @@ if (!ticket) {
       ? `<a class="ticket-view-link" href="patient-data.html">${ticket.patientName || ticket.who}</a>${ticket.patientName ? ` (${ticket.who})` : ""}`
       : ticket.who;
     const sep = `<span class="ticket-detail-meta-sep">&middot;</span>`;
+    /* Patient tickets also show the patient's email and mobile so the clinic
+       can reach them straight from the ticket. */
+    const contact = ticket.type === "Patient" ? patientContactInfo(ticket) : null;
+    const contactMeta = contact ? `${sep}Email: ${contact.email}${sep}Mobile: ${contact.phone}` : "";
     document.getElementById("ticketDetailMeta").innerHTML =
-      `Created ${ticket.created}${sep}Origin: ${ticket.origin}${sep}Organization: ${ticket.organization}${sep}Created For: ${createdFor}`;
+      `Created ${ticket.created}${sep}Origin: ${ticket.origin}${sep}Organization: ${ticket.organization}${sep}Created For: ${createdFor}${contactMeta}`;
     document.title = `HearO | ${ticket.ticketId}`;
+  }
+
+  /* Patient contact: there's no real patient directory here, so the email is
+     built from the patient's name on the ticket and the mobile is seeded off
+     the patient ID -- the same patient always shows the same contact. */
+  function patientContactInfo(t) {
+    const rand = seededRandom(t.who || "patient");
+    const [first, ...rest] = (t.patientName || "patient").toLowerCase().split(/s+/);
+    const local = [first, ...rest].join(".").replace(/[^a-z.]/g, "");
+    return {
+      email: `${local}@gmail.com`,
+      phone: `+972-5${String(10000000 + Math.floor(rand() * 89999999)).slice(0, 8)}`,
+    };
   }
 
   /* ---------------- Clinic Info ----------------
