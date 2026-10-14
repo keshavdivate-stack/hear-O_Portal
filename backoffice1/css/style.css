@@ -166,7 +166,7 @@ button, input, select, textarea, optgroup {
   align-items: center;
   gap: 8px;
   padding: 8px 14px;
-  border-radius: 999px;
+  border-radius: 6px;
   border: 1px solid var(--gray-border);
   background: #fff;
   font-size: 13px;
@@ -425,7 +425,7 @@ button, input, select, textarea, optgroup {
   gap: 10px;
   background: #fff;
   border: 1px solid var(--gray-border);
-  border-radius: 14px;
+  border-radius: 6px;
   padding: 9px 18px;
   color: var(--navy);
   box-shadow: 0 6px 20px rgba(20, 30, 50, 0.05);
@@ -799,7 +799,7 @@ button, input, select, textarea, optgroup {
   align-items: center;
   gap: 3px;
   padding: 2px 7px;
-  border-radius: 999px;
+  border-radius: 6px;
   font-size: 11px;
   font-weight: 700;
 }
@@ -3960,7 +3960,7 @@ a.bo-health-card:hover { border-color: var(--field-border); }
   align-items: center;
   gap: 5px;
   padding: 3px 10px;
-  border-radius: 999px;
+  border-radius: 6px;
   font-size: 11.5px;
   font-weight: 700;
   white-space: nowrap;
@@ -4530,7 +4530,7 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
 
 .bo-org-mini-row .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
 .bo-org-mini-name { flex: 1; min-width: 0; font-size: 13px; font-weight: 600; color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.bo-org-mini-issues { font-size: 11.5px; font-weight: 700; padding: 3px 9px; border-radius: 999px; flex-shrink: 0; }
+.bo-org-mini-issues { font-size: 11.5px; font-weight: 700; padding: 3px 9px; border-radius: 6px; flex-shrink: 0; }
 .bo-org-mini-patients { font-size: 11.5px; color: var(--gray-text); flex-shrink: 0; width: 68px; text-align: right; }
 
 /* Patient Compliance panel: a single proportional stacked bar (tier sizes at a
@@ -4640,7 +4640,7 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
 .bo-pill {
   display: inline-block;
   padding: 4px 12px;
-  border-radius: 999px;
+  border-radius: 6px;
   font-size: 12px;
   font-weight: 700;
   white-space: nowrap;
@@ -4970,7 +4970,7 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
   min-width: 18px;
   padding: 1px 6px;
   margin-left: 4px;
-  border-radius: 999px;
+  border-radius: 6px;
   background: var(--bg);
   color: var(--gray-text);
   font-size: 11px;
@@ -5162,7 +5162,7 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
 .bo-impact-popover-title.second { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--gray-border); }
 
 .bo-impact-chip-list { display: flex; flex-wrap: wrap; gap: 6px; }
-.bo-impact-chip { background: var(--bg); border-radius: 8px; padding: 4px 9px; font-size: 12px; font-weight: 600; color: var(--ink); }
+.bo-impact-chip { background: var(--bg); border-radius: 6px; padding: 4px 9px; font-size: 12px; font-weight: 600; color: var(--ink); }
 /* Incident detail Impact card: every affected organization by name; a long list scrolls inside the card. */
 .inc-impact-orgs { margin-top: 8px; max-height: 300px; overflow-y: auto; font-size: 13px; font-weight: 600; color: var(--gray-text); }
 .inc-impact-orgs .bo-impact-chip { background: #fff; border: 1px solid var(--gray-border); font-size: 12.5px; }
@@ -5196,7 +5196,7 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
   font-weight: 700;
   font-size: 12.5px;
   padding: 6px 12px;
-  border-radius: 8px;
+  border-radius: 6px;
   margin-bottom: 16px;
 }
 
