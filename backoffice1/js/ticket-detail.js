@@ -803,6 +803,7 @@ document.querySelectorAll(".td-tab").forEach((tab) => tab.addEventListener("clic
 /* Recording follows renderTicketRecording(), which only reveals the player
    for Voice Engine tickets. */
 function syncPatientLogTab() {
+  document.querySelector('.td-tab[data-td-tab="deviceInfo"]').hidden = document.getElementById("deviceInfo").hidden;
   document.querySelector('.td-tab[data-td-tab="patientLog"]').hidden = document.getElementById("patientLog").hidden;
   document.querySelector('.td-tab[data-td-tab="recording"]').hidden = document.getElementById("ticketDetailRecordingWrap").hidden;
 }

@@ -169,16 +169,11 @@
         <p class="bo-ticket-description" id="ticketDetailDescription"></p>
         </section>
 
-        <!-- Patient Device Info (patient tickets only) -->
-        <section class="bo-card bo-panel" id="deviceInfo" hidden>
-          <h3 class="bo-panel-title">Patient Device Info</h3>
-          <div class="bo-kv-grid bo-kv-grid--3col" id="ticketDetailDeviceInfo"></div>
-        </section>
-
-        <!-- History / Patient Log tabs -->
+        <!-- History / Patient Device Info / Patient Log tabs -->
         <section class="bo-card td-tabs-card">
           <div class="td-tabs" role="tablist">
             <button type="button" class="td-tab active" data-td-tab="history" role="tab">History</button>
+            <button type="button" class="td-tab" data-td-tab="deviceInfo" role="tab" hidden>Patient Device Info</button>
             <button type="button" class="td-tab" data-td-tab="patientLog" role="tab" hidden>Patient Log</button>
             <button type="button" class="td-tab" data-td-tab="recording" role="tab" hidden>Recording</button>
             <div class="bo-rec-date-toolbar" id="ticketRecordingDateToolbar" hidden></div>
@@ -186,6 +181,11 @@
 
           <div class="td-tab-panel active" id="history" data-td-panel="history">
             <div class="bo-ticket-history" id="ticketDetailHistory"></div>
+          </div>
+
+          <!-- Patient Device Info (patient tickets only) -->
+          <div class="td-tab-panel" id="deviceInfo" data-td-panel="deviceInfo" hidden>
+            <div class="bo-kv-grid bo-kv-grid--3col" id="ticketDetailDeviceInfo"></div>
           </div>
 
           <!-- Recording (Voice Engine tickets only) -->
