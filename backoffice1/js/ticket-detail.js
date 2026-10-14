@@ -237,8 +237,8 @@ function parseTicketDate(value) {
 }
 
 function updateTicketRecordingDateDisplay() {
-  document.getElementById("ticketRecordingFromValue").textContent = ticketRecordingFrom ? formatDisplayDate(ticketRecordingFrom) : "Select date";
-  document.getElementById("ticketRecordingToValue").textContent = ticketRecordingTo ? formatDisplayDate(ticketRecordingTo) : "Select date";
+  document.getElementById("ticketRecordingFromValue").textContent = ticketRecordingFrom ? formatDisplayDate(ticketRecordingFrom) : "From";
+  document.getElementById("ticketRecordingToValue").textContent = ticketRecordingTo ? formatDisplayDate(ticketRecordingTo) : "To";
   document.getElementById("ticketRecordingFromField").classList.toggle("placeholder", !ticketRecordingFrom);
   document.getElementById("ticketRecordingToField").classList.toggle("placeholder", !ticketRecordingTo);
 }
@@ -591,7 +591,7 @@ function patientLogRangeFields(field) {
 function updatePatientLogDateField(field) {
   const el = patientLogFieldEl(field);
   const date = patientLogDates[field];
-  el.querySelector(".bo-date-field-value").textContent = date ? formatUsDate(date) : "Select date";
+  el.querySelector(".bo-date-field-value").textContent = date ? formatUsDate(date) : (field.endsWith("From") ? "From" : "To");
   el.classList.toggle("placeholder", !date);
   el.querySelector(".td-plog-date-clear").hidden = !date;
 }

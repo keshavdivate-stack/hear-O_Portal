@@ -5870,7 +5870,7 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
 .td-plog-dates { display: flex; align-items: flex-end; flex-wrap: wrap; gap: 12px; margin-bottom: 18px; }
 .td-plog-date { position: relative; display: flex; flex-direction: column; gap: 6px; }
 .td-plog-date-label { font-size: 12.5px; font-weight: 600; color: var(--gray-text); }
-.td-plog-date-field { min-width: 170px; padding: 0 8px 0 0; gap: 0; }
+.td-plog-date-field { position: relative; min-width: 150px; padding: 0; gap: 0; }
 .td-plog-date-field.active { border-color: var(--blue); }
 .td-plog-date-trigger {
   flex: 1;
@@ -5878,15 +5878,21 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 9px 4px 9px 12px;
+  padding: 9px 12px;
   background: none;
   border: none;
   cursor: pointer;
   font-family: inherit;
   text-align: left;
 }
+.td-plog-date-trigger .bo-date-field-value { flex: 1; }
+.td-plog-date-trigger svg { flex-shrink: 0; color: var(--gray); }
 .td-plog-date-field.placeholder .bo-date-field-value { color: #AEB4BC; font-weight: 400; }
 .td-plog-date-clear {
+  position: absolute;
+  right: 38px;
+  top: 50%;
+  transform: translateY(-50%);
   width: 20px;
   height: 20px;
   flex-shrink: 0;
@@ -5983,3 +5989,9 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
 
 /* Recording date range ("dd-mm-yyyy – dd-mm-yyyy") needs a wider trigger than a single date */
 #ticketRecordingFromField, #ticketRecordingToField { min-width: 150px; }
+
+/* "From – To" date pairs (Patient Log and Recording): no labels, "From" / "To" placeholders, dash between. */
+.td-range-sep { color: var(--gray-text); flex-shrink: 0; }
+#ticketRecordingFromField, #ticketRecordingToField { min-width: 150px; }
+#ticketRecordingFromField.placeholder .bo-date-field-value,
+#ticketRecordingToField.placeholder .bo-date-field-value { color: #AEB4BC; font-weight: 400; }
