@@ -121,7 +121,7 @@ const scMonitoringSelect = document.querySelector('.bo-select[data-name="scMonit
 const scOptionHtml = (value, label) => `<div class="bo-select-option" data-value="${value}">${label}<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>`;
 const scOptionsHtml = (values) => scOptionHtml("", "All") + values.map((v) => scOptionHtml(v, v)).join("");
 document.getElementById("scAccountMenu").innerHTML = scOptionsHtml(["Enabled", "Paused", "Discontinued"]);
-document.getElementById("scMonitoringMenu").innerHTML = scOptionsHtml(["Monitored", "Unmonitored", "None"]);
+document.getElementById("scMonitoringMenu").innerHTML = scOptionsHtml(["Monitored", "Unmonitored", "Nearly Unmonitored"]);
 
 function setBoSelectValue(select, value, { silent = false } = {}) {
   const hiddenInput = select.querySelector("input[type=hidden]");
@@ -222,7 +222,7 @@ function renderStatusChanges() {
         <td>${s.previous ? `<span class="bo-sc-badge ${s.previous.toLowerCase()}">${s.previous}</span>` : "&mdash;"}</td>
         <td><span class="bo-sc-badge ${s.changedTo.toLowerCase()}">${s.changedTo}</span></td>
         <td><span class="bo-status-pill ${s.account.toLowerCase()}">${s.account}</span></td>
-        <td><span class="bo-status-pill ${s.monitoring.toLowerCase()}">${s.monitoring}</span></td>
+        <td><span class="bo-status-pill ${s.monitoring.toLowerCase().replace(/ /g, "-")}">${s.monitoring}</span></td>
         <td>${s.since}</td>
         <td>${s.days}</td>
         <td>${s.changedBy}</td>

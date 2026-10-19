@@ -37,12 +37,13 @@ const STATUS_CHANGE_ROWS = [
 
 /* Account Status / Monitoring Status: the patient's current state, so every row for the same
    username shows the same values. Sample data, derived from the username (mostly Enabled and
-   Monitored; a Discontinued account has no monitoring). */
+   Monitored). Monitoring is Monitored, Unmonitored or Nearly Unmonitored. */
 (function addPatientStates() {
   const hash = (s) => [...s].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7);
   STATUS_CHANGE_ROWS.forEach((r) => {
     const h = hash(r.username);
     r.account = h % 10 < 8 ? "Enabled" : h % 10 < 9 ? "Paused" : "Discontinued";
-    r.monitoring = r.account === "Discontinued" ? "None" : (h >> 4) % 10 < 7 ? "Monitored" : "Unmonitored";
+    const m = (h >> 4) % 20;
+    r.monitoring = m < 12 ? "Monitored" : m < 17 ? "Unmonitored" : "Nearly Unmonitored";
   });
 })();

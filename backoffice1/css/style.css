@@ -630,6 +630,7 @@ button, input, select, textarea, optgroup {
 .bo-status-pill.discontinued { color: #8D929A; }
 .bo-status-pill.enabled { color: var(--green-text); }
 .bo-status-pill.monitored { color: var(--green-text); }
+.bo-status-pill.nearly-unmonitored { color: var(--orange-text); }
 .bo-status-pill.none { color: var(--gray-text); }
 .bo-status-pill.left-study { color: var(--purple-text); }
 
