@@ -209,6 +209,8 @@ function renderStatusChanges() {
         <td><span class="bo-name-link">${s.username}</span></td>
         <td>${s.previous ? `<span class="bo-sc-badge ${s.previous.toLowerCase()}">${s.previous}</span>` : "&mdash;"}</td>
         <td><span class="bo-sc-badge ${s.changedTo.toLowerCase()}">${s.changedTo}</span></td>
+        <td><span class="bo-status-pill ${s.account.toLowerCase()}">${s.account}</span></td>
+        <td><span class="bo-status-pill ${s.monitoring.toLowerCase()}">${s.monitoring}</span></td>
         <td>${s.since}</td>
         <td>${s.days}</td>
         <td>${s.changedBy}</td>
