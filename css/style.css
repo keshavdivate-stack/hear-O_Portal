@@ -1316,7 +1316,7 @@ a.bo-btn-secondary { text-decoration: none; }
 .status-priority { color: var(--red-text); }
 .status-active { color: var(--green-text); }
 .status-muted { color: #7E8993; font-weight: 600; }
-.status-registered { color: var(--blue-text); font-weight: 600; }
+.status-registered { color: var(--orange-text); font-weight: 600; }
 .status-since {
   display: block;
   margin-top: 2px;
