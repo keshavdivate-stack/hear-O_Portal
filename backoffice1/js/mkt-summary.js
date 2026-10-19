@@ -204,7 +204,7 @@ function renderBins(tab) {
           <span class="bo-bin-num">${val}</span>
           <div class="bo-bin-body">
             <span class="bo-bin-label">${b.label}</span>
-            <div class="bo-bin-bar-track"><div class="bo-bin-bar-fill" style="width:${pct}%; background:${b.color};"></div></div>
+            <div class="bo-bin-bar-track"><div class="bo-bin-bar-fill" style="width:${pct}%; background:var(--blue);"></div></div>
           </div>
         </div>`;
     })
