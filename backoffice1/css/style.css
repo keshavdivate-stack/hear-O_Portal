@@ -5999,4 +5999,4 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
 
 /* Summary dashboard, Status Change card: a wider Status column so "Registered" has room before Account Status. */
 .bo-summary-status-table th:nth-child(2),
-.bo-summary-status-table td:nth-child(2) { min-width: 110px; padding-right: 16px; }
+.bo-summary-status-table td:nth-child(2) { min-width: 92px; padding-right: 10px; }
