@@ -391,20 +391,99 @@ patientReminderForm.addEventListener("submit", (e) => {
 });
 
 /* ---------------- Edit Patient modal ----------------
-   Matches the developed screen: Username is shown read-only (editing a
-   patient's username isn't supported there either), so Save stays
-   disabled -- the modal exists for the patient's record to be reviewed,
-   not changed, from this entry point. */
+   Same two-up form as the developed screen. Username stays read-only
+   (renaming a patient isn't supported there either); every other field is
+   a select except Weight. Save only enables once a value differs from what
+   the modal opened with, and writes back to the in-memory record --
+   Algo / Lang / Tag are table columns, so the row re-renders to match. */
+const PATIENT_EDIT_SELECTS = [
+  ["DailyReport", "dailyReport", ["Included", "Not included"]],
+  ["Tag", "tag", PATIENT_TAGS],
+  ["VersionUpdate", "versionUpdate", ["Enabled", "Disabled"]],
+  ["Algo", "algo", ["Enabled", "Disabled"]],
+  ["Religious", "religious", ["Religious", "Not religious"]],
+  ["TrialType", "trialType", ["Daily", "Weekly"]],
+  ["Lang", "lang", PATIENT_LANGUAGES],
+  ["MotherTongue", "motherTongue", PATIENT_LANGUAGES],
+  ["Gender", "gender", ["Male", "Female", "Other"]],
+  ["Environment", "environmentName", ["Quiet", "Opened", "Noisy"]],
+];
+
+/* Neither patient list carries these fields, so each record gets
+   deterministic values (by list position) the first time the page loads --
+   the same patient always opens with the same answers. */
+pmPatients.forEach((p, i) => {
+  if (p.dailyReport === undefined) p.dailyReport = i % 5 === 3 ? "Not included" : "Included";
+  if (p.versionUpdate === undefined) p.versionUpdate = i % 4 === 2 ? "Disabled" : "Enabled";
+  if (p.religious === undefined) p.religious = i % 3 === 1 ? "Religious" : "Not religious";
+  if (p.trialType === undefined) p.trialType = i % 3 === 2 ? "Weekly" : "Daily";
+  if (p.motherTongue === undefined) p.motherTongue = i % 5 === 4 && p.lang !== "HE" ? "HE" : p.lang;
+  if (p.gender === undefined) p.gender = i % 7 === 6 ? "Other" : i % 2 ? "Female" : "Male";
+  if (p.environmentName === undefined) p.environmentName = ["Quiet", "Opened", "Noisy"][i % 3];
+  if (p.weight === undefined) p.weight = 58 + ((i * 7) % 35);
+});
+
 const patientEditOverlay = document.getElementById("patientEditOverlay");
+const patientEditForm = document.getElementById("patientEditForm");
+const patientEditWeight = document.getElementById("patientEditWeight");
+const patientEditSave = document.getElementById("patientEditSave");
+let activeEditPatient = null;
+let patientEditInitial = null;
+
+PATIENT_EDIT_SELECTS.forEach(([key, , values]) => {
+  document.getElementById(`patientEdit${key}Menu`).innerHTML = buildBoSelectOptions(values);
+});
+
+/* Algo is a boolean on the record but an Enabled / Disabled select here. */
+function patientEditFieldValue(patient, field) {
+  return field === "algo" ? (patient.algo ? "Enabled" : "Disabled") : patient[field];
+}
+
+function readPatientEditForm() {
+  const values = {};
+  PATIENT_EDIT_SELECTS.forEach(([key, field]) => { values[field] = document.getElementById(`patientEdit${key}`).value; });
+  values.weight = patientEditWeight.value.trim();
+  return values;
+}
+
+function updatePatientEditSave() {
+  const current = readPatientEditForm();
+  patientEditSave.disabled = Object.keys(current).every((k) => current[k] === patientEditInitial[k]);
+}
 
 function openEditPatientModal(patient) {
+  activeEditPatient = patient;
   document.getElementById("patientEditUsername").value = patient.username;
+  PATIENT_EDIT_SELECTS.forEach(([key, field]) => {
+    setBoSelectValue(document.querySelector(`.bo-select[data-name="patientEdit${key}"]`), patientEditFieldValue(patient, field) || "", { silent: true });
+  });
+  patientEditWeight.value = patient.weight == null ? "" : String(patient.weight);
+  patientEditInitial = readPatientEditForm();
+  patientEditSave.disabled = true;
   patientEditOverlay.classList.add("open");
 }
 
 function closeEditPatientModal() {
+  closeAllBoSelects();
   patientEditOverlay.classList.remove("open");
+  activeEditPatient = null;
 }
 
+patientEditForm.addEventListener("change", updatePatientEditSave);
+patientEditWeight.addEventListener("input", updatePatientEditSave);
 document.getElementById("patientEditCancel").addEventListener("click", closeEditPatientModal);
+document.getElementById("patientEditClose").addEventListener("click", closeEditPatientModal);
 patientEditOverlay.addEventListener("click", (e) => { if (e.target === patientEditOverlay) closeEditPatientModal(); });
+
+patientEditForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  if (!activeEditPatient || patientEditSave.disabled) return;
+  const values = readPatientEditForm();
+  PATIENT_EDIT_SELECTS.forEach(([, field]) => {
+    if (field === "algo") activeEditPatient.algo = values.algo === "Enabled";
+    else activeEditPatient[field] = values[field];
+  });
+  activeEditPatient.weight = values.weight === "" ? null : Number(values.weight);
+  closeEditPatientModal();
+  renderPatients();
+});

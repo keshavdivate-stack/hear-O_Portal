@@ -169,16 +169,11 @@
         <p class="bo-ticket-description" id="ticketDetailDescription"></p>
         </section>
 
-        <!-- Patient Device Info (patient tickets only) -->
-        <section class="bo-card bo-panel" id="deviceInfo" hidden>
-          <h3 class="bo-panel-title">Patient Device Info</h3>
-          <div class="bo-kv-grid bo-kv-grid--3col" id="ticketDetailDeviceInfo"></div>
-        </section>
-
-        <!-- History / Patient Log tabs -->
+        <!-- History / Patient Device Info / Patient Log / Recording tabs -->
         <section class="bo-card td-tabs-card">
           <div class="td-tabs" role="tablist">
             <button type="button" class="td-tab active" data-td-tab="history" role="tab">History</button>
+            <button type="button" class="td-tab" data-td-tab="deviceInfo" role="tab" hidden>Patient Device Info</button>
             <button type="button" class="td-tab" data-td-tab="patientLog" role="tab" hidden>Patient Log</button>
             <button type="button" class="td-tab" data-td-tab="recording" role="tab" hidden>Recording</button>
             <div class="bo-rec-date-toolbar" id="ticketRecordingDateToolbar" hidden></div>
@@ -186,6 +181,11 @@
 
           <div class="td-tab-panel active" id="history" data-td-panel="history">
             <div class="bo-ticket-history" id="ticketDetailHistory"></div>
+          </div>
+
+          <!-- Patient Device Info (patient tickets only) -->
+          <div class="td-tab-panel" id="deviceInfo" data-td-panel="deviceInfo" hidden>
+            <div class="bo-kv-grid bo-kv-grid--3col" id="ticketDetailDeviceInfo"></div>
           </div>
 
           <!-- Recording (Voice Engine tickets only) -->
@@ -196,34 +196,34 @@
             <span>Microphone permission is <b>Disabled</b> on this patient's device &mdash; likely cause of the missing recording.</span>
           </div>
 
+          <!-- From / To range (moved into the tabs row by JS); the latest
+               session inside it is listed, or the last one with no dates. -->
           <div class="bo-rec-date-row">
-            <div class="patient-log-range">
-              <span class="patient-log-range-label">Date</span>
-              <button type="button" class="bo-date-field bo-date-field-trigger" id="ticketRecordingDateField" aria-label="Recording date">
-                <span id="ticketRecordingDateValue" class="bo-date-field-value">&mdash;</span>
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="17" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3 9H21" stroke="currentColor" stroke-width="1.8"/></svg>
-              </button>
-              <div class="bo-mini-calendar" id="ticketRecordingCalendar" hidden>
-                <div class="bo-mini-calendar-head">
-                  <span class="bo-mini-calendar-month" id="ticketRecordingCalendarMonthLabel">&mdash;</span>
-                  <div class="bo-mini-calendar-nav">
-                    <button type="button" id="ticketRecordingCalendarPrev" aria-label="Previous month">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-                    </button>
-                    <button type="button" id="ticketRecordingCalendarNext" aria-label="Next month">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-                    </button>
-                  </div>
+            <div class="td-plog-dates">
+              <div class="td-plog-date">
+                <span class="td-plog-date-label">From Date</span>
+                <div class="bo-date-field td-plog-date-field" data-plog-field="tabRecFrom">
+                  <button type="button" class="td-plog-date-trigger" aria-label="Recording From Date">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="17" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3 9H21" stroke="currentColor" stroke-width="1.8"/></svg>
+                    <span class="bo-date-field-value">Select date</span>
+                  </button>
+                  <button type="button" class="td-plog-date-clear" aria-label="Clear Recording From Date" hidden>&times;</button>
                 </div>
-                <div class="bo-mini-calendar-weekdays"><span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span></div>
-                <div class="bo-mini-calendar-days" id="ticketRecordingCalendarDays"></div>
-                <div class="bo-mini-calendar-footer">
-                  <button type="button" id="ticketRecordingCalendarToday">Today</button>
+              </div>
+              <div class="td-plog-date">
+                <span class="td-plog-date-label">To Date</span>
+                <div class="bo-date-field td-plog-date-field" data-plog-field="tabRecTo">
+                  <button type="button" class="td-plog-date-trigger" aria-label="Recording To Date">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="17" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3 9H21" stroke="currentColor" stroke-width="1.8"/></svg>
+                    <span class="bo-date-field-value">Select date</span>
+                  </button>
+                  <button type="button" class="td-plog-date-clear" aria-label="Clear Recording To Date" hidden>&times;</button>
                 </div>
               </div>
             </div>
           </div>
 
+          <p class="td-plog-rec-caption" id="ticketDetailRecordingCaption" hidden></p>
           <div class="bo-rec-parts" id="ticketDetailRecordingParts"></div>
         </div>
           </div>
@@ -350,6 +350,17 @@
               <div class="bo-select" data-name="ticketLevel">
                 <button type="button" class="bo-select-trigger">
                   <span class="bo-select-value placeholder">Select level</span>
+                  <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
+                <div class="bo-select-menu"></div>
+                <input type="hidden" />
+              </div>
+            </div>
+            <div class="bo-modal-field" id="ticketDetailPriorityField">
+              <label>Priority</label>
+              <div class="bo-select" data-name="ticketPriorityHandling">
+                <button type="button" class="bo-select-trigger">
+                  <span class="bo-select-value placeholder">Select priority</span>
                   <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
                 </button>
                 <div class="bo-select-menu"></div>

@@ -75,45 +75,33 @@ if (!ticket) {
     document.title = `HearO | ${ticket.ticketId}`;
   }
 
-  /* ---------------- Clinic Info ----------------
-     The clinic/organization the ticket belongs to (ticket.organization is its
-     org code). Values mirror the Organizations page's list
-     (js/organizations.js: 121 / ATP / B01) and, for codes that list doesn't
-     have, the HMO flag and date created from backoffice's org allocation list
-     (backoffice1/js/allocation.js: 104 / B03 / 105). Anything still missing
-     (phone, language) is seeded off the org code, so the same clinic always
-     shows the same details on every one of its tickets. */
-  const CLINIC_DIRECTORY = {
-    "121": { study: "CHF", isHmo: true, phone: "08-6745431", lng: "AR", dateCreated: "06/06/2023" },
-    "ATP": { study: "CHF", isHmo: false, phone: "0542199636", lng: "ES", dateCreated: "14/08/2019" },
-    "B01": { study: "CHF", isHmo: true, phone: "0545030772", lng: "ES", dateCreated: "26/06/2024" },
-    "104": { isHmo: false, dateCreated: "12/06/2023" },
-    "B03": { isHmo: true, dateCreated: "24/04/2022" },
-    "105": { isHmo: false, dateCreated: "03/05/2022" },
-  };
-  const CLINIC_LANGUAGES = { AR: "Arabic", EN: "English", ES: "Spanish" };
-
-  function clinicInfoFor(orgCode) {
-    const rand = seededRandom(`clinic-${orgCode}`);
+  /* ---------------- Clinic Info / Patient Info ----------------
+     Clinic tickets show the clinic's software versions (Cordio HearO™ and
+     Portal, as in the avatar menu's Versions dialog); patient tickets show
+     the patient's email and mobile number instead. The contact details are
+     seeded off the patient so the same patient always shows the same ones. */
+  function patientContactFor(t) {
+    const rand = seededRandom(`patient-${t.who}`);
     const digits = (n) => Array.from({ length: n }, () => Math.floor(rand() * 10)).join("");
-    const seeded = {
-      study: "CHF",
-      isHmo: rand() < 0.5,
-      phone: `05${Math.floor(rand() * 10)}-${digits(7)}`,
-      lng: pickFrom(rand, Object.keys(CLINIC_LANGUAGES)),
-      dateCreated: `${String(1 + Math.floor(rand() * 28)).padStart(2, "0")}/${String(1 + Math.floor(rand() * 12)).padStart(2, "0")}/${2019 + Math.floor(rand() * 6)}`,
-    };
-    return { ...seeded, ...CLINIC_DIRECTORY[orgCode] };
+    const name = (t.patientName || t.who || "patient").toLowerCase().replace(/[^a-z0-9]+/g, ".").replace(/^\.|\.$/g, "");
+    return { email: `${name}@gmail.com`, mobile: `+972-5${Math.floor(rand() * 10)}${digits(7)}` };
   }
 
   function renderClinicInfo() {
-    const info = clinicInfoFor(ticket.organization);
-    document.getElementById("ticketClinicOrg").textContent = ticket.organization || "—";
-    document.getElementById("ticketClinicStudy").textContent = info.study || "—";
-    document.getElementById("ticketClinicHmo").textContent = info.isHmo ? "Yes" : "No";
-    document.getElementById("ticketClinicPhone").textContent = info.phone || "—";
-    document.getElementById("ticketClinicLanguage").textContent = CLINIC_LANGUAGES[info.lng] || info.lng || "—";
-    document.getElementById("ticketClinicSince").textContent = info.dateCreated || "—";
+    const field = (label, value) =>
+      `<div class="ticket-detail-field"><label>${label}</label><span>${value || "—"}</span></div>`;
+    const isClinic = ticket.type === "Clinic";
+    document.getElementById("ticketInfoTitle").textContent = isClinic ? "Clinic Info" : "Patient Info";
+    if (isClinic) {
+      document.getElementById("ticketInfoGrid").innerHTML =
+        field("Cordio HearO™ Software Version", ticket.cordioVersion || "3.1.0.0") +
+        field("Portal Software Version", ticket.portalVersion || "3.1.0.0");
+    } else {
+      const contact = patientContactFor(ticket);
+      document.getElementById("ticketInfoGrid").innerHTML =
+        field("Email", ticket.patientEmail || contact.email) +
+        field("Mobile Number", ticket.patientMobile || contact.mobile);
+    }
   }
 
   /* ---------------- Issue ---------------- */

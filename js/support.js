@@ -19,7 +19,7 @@ function filteredTicketList() {
     if (selectedIssueTypes.size && !selectedIssueTypes.has(t.issueType)) return false;
     if (selectedOrigins.size && !selectedOrigins.has(t.origin)) return false;
     if (selectedStates.size && !selectedStates.has(t.state)) return false;
-    if (term && !`${t.ticketId} ${t.who} ${t.patientName || ""} ${t.organization}`.toLowerCase().includes(term)) return false;
+    if (term && !`${t.ticketId} ${t.patientName || ""} ${t.who}`.toLowerCase().includes(term)) return false;
     return true;
   }).sort((a, b) => stateRank(a.state) - stateRank(b.state));
 }

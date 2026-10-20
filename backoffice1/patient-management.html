@@ -343,18 +343,143 @@
 
   <!-- Edit Patient modal -->
   <div class="bo-center-modal-overlay" id="patientEditOverlay">
-    <div class="bo-center-modal">
-      <h2>Edit Patient</h2>
-
-      <div class="bo-modal-field">
-        <label>Username</label>
-        <input type="text" id="patientEditUsername" disabled />
+    <div class="bo-center-modal bo-center-modal-xl" role="dialog" aria-modal="true" aria-labelledby="patientEditTitle">
+      <div class="bo-center-modal-head">
+        <h2 id="patientEditTitle">Edit Patient</h2>
+        <button type="button" class="bo-drawer-close" id="patientEditClose" aria-label="Close">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6L18 18M6 18L18 6"/></svg>
+        </button>
       </div>
 
-      <div class="bo-center-modal-foot">
-        <button type="button" class="bo-btn-text" id="patientEditCancel">Cancel</button>
-        <button type="button" class="bo-btn-primary" id="patientEditSave" disabled>Save</button>
-      </div>
+      <form id="patientEditForm">
+        <!-- Two-up like the developed form; row-gap is zeroed because
+             .bo-center-modal already spaces each .bo-modal-field below. -->
+        <div class="bo-modal-grid" style="row-gap:0; margin-bottom:0;">
+          <div class="bo-modal-field">
+            <label for="patientEditUsername">Username</label>
+            <input type="text" id="patientEditUsername" disabled />
+          </div>
+          <div class="bo-modal-field">
+            <label>Included in daily who did not record report</label>
+            <div class="bo-select" data-name="patientEditDailyReport">
+              <button type="button" class="bo-select-trigger">
+                <span class="bo-select-value placeholder">Select</span>
+                <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="bo-select-menu" id="patientEditDailyReportMenu"></div>
+              <input type="hidden" id="patientEditDailyReport" />
+            </div>
+          </div>
+          <div class="bo-modal-field">
+            <label>Patient tag</label>
+            <div class="bo-select" data-name="patientEditTag">
+              <button type="button" class="bo-select-trigger">
+                <span class="bo-select-value placeholder">Select</span>
+                <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="bo-select-menu" id="patientEditTagMenu"></div>
+              <input type="hidden" id="patientEditTag" />
+            </div>
+          </div>
+          <div class="bo-modal-field">
+            <label>Enable version update</label>
+            <div class="bo-select" data-name="patientEditVersionUpdate">
+              <button type="button" class="bo-select-trigger">
+                <span class="bo-select-value placeholder">Select</span>
+                <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="bo-select-menu" id="patientEditVersionUpdateMenu"></div>
+              <input type="hidden" id="patientEditVersionUpdate" />
+            </div>
+          </div>
+          <div class="bo-modal-field">
+            <label>Is algo enabled</label>
+            <div class="bo-select" data-name="patientEditAlgo">
+              <button type="button" class="bo-select-trigger">
+                <span class="bo-select-value placeholder">Select</span>
+                <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="bo-select-menu" id="patientEditAlgoMenu"></div>
+              <input type="hidden" id="patientEditAlgo" />
+            </div>
+          </div>
+          <div class="bo-modal-field">
+            <label>Religious</label>
+            <div class="bo-select" data-name="patientEditReligious">
+              <button type="button" class="bo-select-trigger">
+                <span class="bo-select-value placeholder">Select</span>
+                <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="bo-select-menu" id="patientEditReligiousMenu"></div>
+              <input type="hidden" id="patientEditReligious" />
+            </div>
+          </div>
+          <div class="bo-modal-field">
+            <label>Trial type</label>
+            <div class="bo-select" data-name="patientEditTrialType">
+              <button type="button" class="bo-select-trigger">
+                <span class="bo-select-value placeholder">Select</span>
+                <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="bo-select-menu" id="patientEditTrialTypeMenu"></div>
+              <input type="hidden" id="patientEditTrialType" />
+            </div>
+          </div>
+          <div class="bo-modal-field">
+            <label>Language</label>
+            <div class="bo-select" data-name="patientEditLang">
+              <button type="button" class="bo-select-trigger">
+                <span class="bo-select-value placeholder">Select</span>
+                <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="bo-select-menu" id="patientEditLangMenu"></div>
+              <input type="hidden" id="patientEditLang" />
+            </div>
+          </div>
+          <div class="bo-modal-field">
+            <label>Mother tongue</label>
+            <div class="bo-select" data-name="patientEditMotherTongue">
+              <button type="button" class="bo-select-trigger">
+                <span class="bo-select-value placeholder">Select</span>
+                <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="bo-select-menu" id="patientEditMotherTongueMenu"></div>
+              <input type="hidden" id="patientEditMotherTongue" />
+            </div>
+          </div>
+          <div class="bo-modal-field">
+            <label>Gender</label>
+            <div class="bo-select" data-name="patientEditGender">
+              <button type="button" class="bo-select-trigger">
+                <span class="bo-select-value placeholder">Select</span>
+                <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="bo-select-menu" id="patientEditGenderMenu"></div>
+              <input type="hidden" id="patientEditGender" />
+            </div>
+          </div>
+          <div class="bo-modal-field">
+            <label>Environment name</label>
+            <div class="bo-select" data-name="patientEditEnvironment">
+              <button type="button" class="bo-select-trigger">
+                <span class="bo-select-value placeholder">Select</span>
+                <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="bo-select-menu" id="patientEditEnvironmentMenu"></div>
+              <input type="hidden" id="patientEditEnvironment" />
+            </div>
+          </div>
+          <div class="bo-modal-field">
+            <label for="patientEditWeight">Weight</label>
+            <input type="number" id="patientEditWeight" min="0" max="300" step="1" placeholder="Weight" />
+          </div>
+        </div>
+
+        <div class="bo-center-modal-foot">
+          <button type="button" class="bo-btn-secondary" id="patientEditCancel">Cancel</button>
+          <button type="submit" class="bo-btn-primary" id="patientEditSave" disabled>Save</button>
+        </div>
+      </form>
     </div>
   </div>
 

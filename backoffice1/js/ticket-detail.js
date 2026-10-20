@@ -73,6 +73,7 @@ if (currentTicket.tier === "Level 3") currentTicket.tier = "Level 2";
 })();
 
 document.querySelector('.bo-select[data-name="ticketLevel"] .bo-select-menu').innerHTML = buildSelectOptions(HANDLING_TIERS);
+document.querySelector('.bo-select[data-name="ticketPriorityHandling"] .bo-select-menu').innerHTML = buildSelectOptions(PRIORITIES);
 document.querySelector('.bo-select[data-name="ticketStatus"] .bo-select-menu').innerHTML = buildSelectOptions(STATUSES);
 
 /* Assignee choices narrow to whichever tier is currently selected in the
@@ -90,11 +91,12 @@ function defaultAssigneeForTier(tier) {
   return (TIER_AGENTS[tier] || SUPPORT_AGENTS)[0] || "";
 }
 
-/* Resolved tickets no longer need routing info -- hide Level/Assigned To
-   rather than asking for values that don't matter anymore. */
+/* Resolved tickets no longer need routing info -- hide Level/Priority/
+   Assigned To rather than asking for values that don't matter anymore. */
 function applyTicketDetailStatusVisibility(status) {
   const resolved = status === "Resolved";
   document.getElementById("ticketDetailLevelField").hidden = resolved;
+  document.getElementById("ticketDetailPriorityField").hidden = resolved;
   document.getElementById("ticketDetailAssignedToField").hidden = resolved;
 }
 
@@ -108,6 +110,7 @@ function readTicketHandlingForm() {
   return {
     status: val("ticketStatus"),
     tier: val("ticketLevel"),
+    priority: val("ticketPriorityHandling"),
     assignedTo: val("ticketAssignedTo"),
     note: document.getElementById("ticketDetailRootCause").value.trim(),
   };
@@ -125,7 +128,7 @@ function validateTicketDetailForm() {
 function renderTicketHeader() {
   document.getElementById("ticketDetailTitle").textContent = currentTicket.ticketNo;
   const badge = (label, pill) => `<span class="td-badge-group"><span class="td-badge-label">${label}</span>${pill}</span>`;
-  /* Status / Level live in the Handling panel; the header only
+  /* Status / Priority / Level live in the Handling panel; the header only
      carries the Type tag, as on the developed screen. */
   document.getElementById("ticketDetailBadges").innerHTML = badge("Type", typePill(ticketType(currentTicket)));
   const origin = originLabel[currentTicket.origin] || currentTicket.origin;
@@ -175,9 +178,9 @@ function isRecordingIssue(ticket) {
 }
 
 /* The recording is shown as its separate parts (Part 1, Part 2, ...), each
-   with its own play button, time and progress line. Part count and lengths
-   are seeded off the ticket number so the same ticket always shows the same
-   parts. Only one part plays at a time. */
+   with its own play button, time and progress line. Sessions and their
+   parts are seeded off the ticket's "Created For" id so the same ticket
+   always shows the same parts. Only one part plays at a time. */
 
 function formatRecordingTime(sec) {
   const s = Math.floor(sec);
@@ -187,6 +190,12 @@ function formatRecordingTime(sec) {
 function stopTicketRecording() {
   ticketRecordingPlayer.stop();
 }
+
+/* The Recording tab lists one recording session's parts. Sessions are the
+   same seeded data the Patient Log's Recording section uses (same "Created
+   For" id, same sessions); the From / To range in the tabs row picks which
+   one: no dates = the last session, a range = the latest session inside it. */
+let ticketRecordingSessions = [];
 
 function renderTicketRecording() {
   const wrap = document.getElementById("ticketDetailRecordingWrap");
@@ -199,19 +208,17 @@ function renderTicketRecording() {
   if (!isRecordingIssue(currentTicket)) {
     wrap.hidden = true;
     partsEl.innerHTML = "";
+    ticketRecordingSessions = [];
     return;
   }
 
   wrap.hidden = false;
-  /* The recording date filter starts on the ticket's creation day so the
-     calendar opens on a useful date for this ticket. */
-  const createdDate = parseTicketDate(currentTicket.createdDate);
-  ticketRecordingDate = createdDate || new Date();
-  ticketRecordingDate.setHours(0, 0, 0, 0);
-  updateTicketRecordingDateDisplay();
-  const rand = seededRandom(currentTicket.ticketNo);
-  const partCount = 4 + Math.floor(rand() * 3); // 4-6 parts
-  partsEl.innerHTML = Array.from({ length: partCount }, (_, i) => recordingPartRow(2 + Math.floor(rand() * 8), i)).join(""); // 2-9 s each
+  ticketRecordingSessions = buildPatientRecordingSessions(currentTicket.who || currentTicket.patientId || currentTicket.ticketNo);
+  patientLogDates.tabRecFrom = null;
+  patientLogDates.tabRecTo = null;
+  updatePatientLogDateField("tabRecFrom");
+  updatePatientLogDateField("tabRecTo");
+  renderTicketRecordingParts();
 
   /* Root-cause check: this is the same seeded permissions data the
      Patient Log's Permissions Info panel shows -- built independently
@@ -223,88 +230,22 @@ function renderTicketRecording() {
   }
 }
 
-/* ---------------- Recording date filter ---------------- */
-let ticketRecordingDate = null;
-let ticketRecordingCalendarViewDate = new Date();
-const ticketRecordingCalendarEl = document.getElementById("ticketRecordingCalendar");
-
-function parseTicketDate(value) {
-  if (!value) return null;
-  const match = String(value).match(/^(\d{2})\/(\d{2})\/(\d{4})/);
-  if (!match) return null;
-  return new Date(Number(match[3]), Number(match[2]) - 1, Number(match[1]));
-}
-
-function updateTicketRecordingDateDisplay() {
-  document.getElementById("ticketRecordingDateValue").textContent = formatDisplayDate(ticketRecordingDate);
-  document.getElementById("ticketRecordingDateField").classList.toggle("placeholder", !ticketRecordingDate);
-}
-
-function renderTicketRecordingCalendar() {
-  const year = ticketRecordingCalendarViewDate.getFullYear();
-  const month = ticketRecordingCalendarViewDate.getMonth();
-  document.getElementById("ticketRecordingCalendarMonthLabel").textContent =
-    ticketRecordingCalendarViewDate.toLocaleDateString("en-US", { month: "long", year: "numeric" });
-  const first = new Date(year, month, 1);
-  const cells = [];
-  for (let i = 0; i < first.getDay(); i++) cells.push({ date: new Date(year, month, i - first.getDay() + 1), muted: true });
-  for (let day = 1; day <= new Date(year, month + 1, 0).getDate(); day++) cells.push({ date: new Date(year, month, day), muted: false });
-  while (cells.length % 7) {
-    const last = cells[cells.length - 1].date;
-    cells.push({ date: new Date(last.getFullYear(), last.getMonth(), last.getDate() + 1), muted: true });
+/* Same rule as the Patient Log's Recording section (renderPatientLogRecording). */
+function renderTicketRecordingParts() {
+  stopTicketRecording();
+  const captionEl = document.getElementById("ticketDetailRecordingCaption");
+  const partsEl = document.getElementById("ticketDetailRecordingParts");
+  const { tabRecFrom, tabRecTo } = patientLogDates;
+  const session = ticketRecordingSessions.find((s) => inPatientLogRange(s.at, tabRecFrom, tabRecTo));
+  if (!session) {
+    captionEl.hidden = true;
+    partsEl.innerHTML = `<div class="patient-log-empty">No recordings in this date range</div>`;
+    return;
   }
-  document.getElementById("ticketRecordingCalendarDays").innerHTML = cells.map(({ date, muted }) => {
-    const classes = ["bo-mini-calendar-day"];
-    if (muted) classes.push("muted");
-    if (sameDay(date, ticketRecordingDate)) classes.push("selected");
-    return `<button type="button" class="${classes.join(" ")}" data-time="${date.getTime()}" aria-pressed="${sameDay(date, ticketRecordingDate)}">${date.getDate()}</button>`;
-  }).join("");
+  captionEl.hidden = false;
+  captionEl.innerHTML = `${tabRecFrom || tabRecTo ? "Session" : "Last Session"} &mdash; ${session.name} &middot; ${formatUsDateTime(session.at)}`;
+  partsEl.innerHTML = session.parts.map((sec, i) => recordingPartRow(sec, i)).join("");
 }
-
-function openTicketRecordingCalendar() {
-  const date = ticketRecordingDate || new Date();
-  ticketRecordingCalendarViewDate = new Date(date.getFullYear(), date.getMonth(), 1);
-  document.getElementById("ticketRecordingDateField").classList.add("active");
-  ticketRecordingCalendarEl.hidden = false;
-  renderTicketRecordingCalendar();
-}
-
-function closeTicketRecordingCalendar() {
-  document.getElementById("ticketRecordingDateField").classList.remove("active");
-  ticketRecordingCalendarEl.hidden = true;
-}
-
-document.getElementById("ticketRecordingDateField").addEventListener("click", (e) => {
-  e.stopPropagation();
-  if (ticketRecordingCalendarEl.hidden) openTicketRecordingCalendar();
-  else closeTicketRecordingCalendar();
-});
-document.getElementById("ticketRecordingCalendarPrev").addEventListener("click", (e) => {
-  e.stopPropagation();
-  ticketRecordingCalendarViewDate = new Date(ticketRecordingCalendarViewDate.getFullYear(), ticketRecordingCalendarViewDate.getMonth() - 1, 1);
-  renderTicketRecordingCalendar();
-});
-document.getElementById("ticketRecordingCalendarNext").addEventListener("click", (e) => {
-  e.stopPropagation();
-  ticketRecordingCalendarViewDate = new Date(ticketRecordingCalendarViewDate.getFullYear(), ticketRecordingCalendarViewDate.getMonth() + 1, 1);
-  renderTicketRecordingCalendar();
-});
-document.getElementById("ticketRecordingCalendarDays").addEventListener("click", (e) => {
-  e.stopPropagation();
-  const day = e.target.closest(".bo-mini-calendar-day");
-  if (!day) return;
-  ticketRecordingDate = new Date(Number(day.dataset.time));
-  ticketRecordingDate.setHours(0, 0, 0, 0);
-  updateTicketRecordingDateDisplay();
-  closeTicketRecordingCalendar();
-});
-document.getElementById("ticketRecordingCalendarToday").addEventListener("click", (e) => {
-  e.stopPropagation();
-  ticketRecordingDate = new Date();
-  ticketRecordingDate.setHours(0, 0, 0, 0);
-  updateTicketRecordingDateDisplay();
-  closeTicketRecordingCalendar();
-});
 
 /* Fake playback for a list of .bo-rec-part rows (no real audio in the
    prototype): play animates that part's time + progress line, pause keeps
@@ -384,6 +325,7 @@ function renderTicketHandling() {
   document.getElementById("ticketDetailRootCause").value = currentTicket.rootCause || "";
   setBoSelectValue(document.querySelector('.bo-select[data-name="ticketStatus"]'), currentTicket.status, { silent: true });
   setBoSelectValue(document.querySelector('.bo-select[data-name="ticketLevel"]'), currentTicket.tier, { silent: true });
+  setBoSelectValue(document.querySelector('.bo-select[data-name="ticketPriorityHandling"]'), currentTicket.priority, { silent: true });
   populateTicketDetailAssignees(currentTicket.tier);
   const tierAgents = TIER_AGENTS[currentTicket.tier] || SUPPORT_AGENTS;
   const assignee = tierAgents.includes(currentTicket.assignedTo) ? currentTicket.assignedTo : defaultAssigneeForTier(currentTicket.tier);
@@ -418,10 +360,6 @@ function renderTicketHistory() {
    relative to today so the default last-30-days range always has files. */
 let currentPatientLog = null;
 
-/* Used by the Recording tab's single-date picker. */
-function formatDisplayDate(d) {
-  return d ? `${String(d.getDate()).padStart(2, "0")}-${String(d.getMonth() + 1).padStart(2, "0")}-${d.getFullYear()}` : "—";
-}
 function sameDay(a, b) {
   return !!a && !!b && a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
 }
@@ -540,9 +478,10 @@ function buildPatientRecordingSessions(createdFor) {
   return sessions;
 }
 
-/* Four date fields share one state object and one mini calendar:
-   logFrom / logTo filter the log files, recFrom / recTo the recordings. */
-const patientLogDates = { logFrom: null, logTo: null, recFrom: null, recTo: null };
+/* Six date fields share one state object and one mini calendar:
+   logFrom / logTo filter the log files, recFrom / recTo the Patient Log's
+   recordings, and tabRecFrom / tabRecTo the separate Recording tab. */
+const patientLogDates = { logFrom: null, logTo: null, recFrom: null, recTo: null, tabRecFrom: null, tabRecTo: null };
 let patientLogFiles = [];
 let patientLogSelectedFile = null;
 let patientRecordingSessions = [];
@@ -555,7 +494,8 @@ function patientLogFieldEl(field) {
   return document.querySelector(`.td-plog-date-field[data-plog-field="${field}"]`);
 }
 function patientLogRangeFields(field) {
-  return field.startsWith("log") ? ["logFrom", "logTo"] : ["recFrom", "recTo"];
+  if (field.startsWith("log")) return ["logFrom", "logTo"];
+  return field.startsWith("rec") ? ["recFrom", "recTo"] : ["tabRecFrom", "tabRecTo"];
 }
 
 function updatePatientLogDateField(field) {
@@ -616,7 +556,7 @@ function renderPatientLogRecording() {
   partsEl.innerHTML = session.parts.map((sec, i) => recordingPartRow(sec, i)).join("");
 }
 
-/* Patient Device Info card: same fields as the developed ticket screen
+/* Patient Device Info tab: same fields as the developed ticket screen
    (which has no Notifications row). A denied permission is highlighted --
    usually the reason the patient's data isn't coming through. */
 function renderDeviceInfo() {
@@ -714,11 +654,13 @@ function setPatientLogDate(field, date) {
   patientLogDates[field] = date ? startOfDay(date) : null;
   updatePatientLogDateField(field);
   if (field.startsWith("log")) renderPatientLogFiles();
-  else renderPatientLogRecording();
+  else if (field.startsWith("rec")) renderPatientLogRecording();
+  else renderTicketRecordingParts();
 }
 
-/* Date field triggers / × clear buttons / log file rows. */
-document.getElementById("patientLog").addEventListener("click", (e) => {
+/* Date field triggers / × clear buttons / log file rows -- in the Patient
+   Log panel and in the Recording tab's From / To range (tabs row). */
+function handlePatientLogClick(e) {
   const trigger = e.target.closest(".td-plog-date-trigger");
   const clearBtn = e.target.closest(".td-plog-date-clear");
   const fileRow = e.target.closest(".td-plog-file");
@@ -734,7 +676,9 @@ document.getElementById("patientLog").addEventListener("click", (e) => {
     patientLogSelectedFile = patientLogFiles.find((f) => f.name === fileRow.dataset.file) || null;
     renderPatientLogFiles();
   }
-});
+}
+document.getElementById("patientLog").addEventListener("click", handlePatientLogClick);
+document.getElementById("ticketRecordingDateToolbar").addEventListener("click", handlePatientLogClick);
 document.getElementById("plogCalendarPrev").addEventListener("click", (e) => {
   e.stopPropagation();
   patientLogCalendarViewDate = new Date(patientLogCalendarViewDate.getFullYear(), patientLogCalendarViewDate.getMonth() - 1, 1);
@@ -766,7 +710,6 @@ document.getElementById("plogCalendarToday").addEventListener("click", (e) => {
 });
 document.addEventListener("click", (e) => {
   if (!patientLogCalendarEl.hidden && !e.target.closest("#plogCalendar") && !e.target.closest(".td-plog-date-trigger")) closePatientLogCalendar();
-  if (!ticketRecordingCalendarEl.hidden && !e.target.closest("#ticketRecordingCalendar") && !e.target.closest("#ticketRecordingDateField")) closeTicketRecordingCalendar();
 });
 
 /* "Clear dates" drops the log range -- every log file shows. */
@@ -789,9 +732,10 @@ document.getElementById("downloadPatientLogBtn").addEventListener("click", () =>
   link.remove();
   URL.revokeObjectURL(url);
 });
-/* ---------------- History / Patient Log tabs ----------------
-   Patient Log only exists for patient-sourced tickets (renderPatientLog
-   hides its panel otherwise), so its tab follows that panel's visibility. */
+/* ---------------- History / Patient Device Info / Patient Log tabs ----------------
+   Patient Device Info and Patient Log only exist for patient-sourced tickets
+   (renderPatientLog hides their panels otherwise), so their tabs follow
+   those panels' visibility. */
 function selectDetailTab(name) {
   document.querySelectorAll(".td-tab").forEach((t) => t.classList.toggle("active", t.dataset.tdTab === name));
   document.querySelectorAll(".td-tab-panel").forEach((p) => p.classList.toggle("active", p.dataset.tdPanel === name));
@@ -803,6 +747,7 @@ document.querySelectorAll(".td-tab").forEach((tab) => tab.addEventListener("clic
 /* Recording follows renderTicketRecording(), which only reveals the player
    for Voice Engine tickets. */
 function syncPatientLogTab() {
+  document.querySelector('.td-tab[data-td-tab="deviceInfo"]').hidden = document.getElementById("deviceInfo").hidden;
   document.querySelector('.td-tab[data-td-tab="patientLog"]').hidden = document.getElementById("patientLog").hidden;
   document.querySelector('.td-tab[data-td-tab="recording"]').hidden = document.getElementById("ticketDetailRecordingWrap").hidden;
 }
@@ -852,15 +797,16 @@ ticketDetailForm.addEventListener("submit", (e) => {
   const rootCause = document.getElementById("ticketDetailRootCause").value.trim();
   const nextAssignee = document.querySelector('.bo-select[data-name="ticketAssignedTo"] input[type=hidden]').value;
   const nextTier = document.querySelector('.bo-select[data-name="ticketLevel"] input[type=hidden]').value || currentTicket.tier;
+  const nextPriority = document.querySelector('.bo-select[data-name="ticketPriorityHandling"] input[type=hidden]').value || currentTicket.priority;
   const nextStatus = document.querySelector('.bo-select[data-name="ticketStatus"] input[type=hidden]').value || currentTicket.status;
 
-  /* Every field a Save touches (reassignment, level/tier transfer, status)
-     is folded into a single history entry instead of one line per
+  /* Every field a Save touches (reassignment, level/tier transfer, priority,
+     status) is folded into a single history entry instead of one line per
      field -- so a ticket transfer and the note explaining it always land
      together, and whoever picks the ticket up next sees the note attached
      directly to the transfer instead of buried in a separate line. The
      entry's title headlines whichever change is most significant
-     (reassignment > level > status); everything that changed,
+     (reassignment > level > status > priority); everything that changed,
      plus the free-text note, goes in the boxed detail underneath. */
   const isReassignment = nextAssignee !== (currentTicket.assignedTo || "");
   const changeParts = [];
@@ -876,6 +822,10 @@ ticketDetailForm.addEventListener("submit", (e) => {
   if (nextStatus !== currentTicket.status) {
     changeParts.push(`Status changed from ${currentTicket.status} to ${nextStatus}`);
     title = title || `Status Changed to ${nextStatus}`;
+  }
+  if (nextPriority !== currentTicket.priority) {
+    changeParts.push(`Priority changed from ${currentTicket.priority} to ${nextPriority}`);
+    title = title || `Priority Changed to ${nextPriority}`;
   }
 
   const noteChanged = rootCause !== (currentTicket.rootCause || "");
@@ -893,6 +843,7 @@ ticketDetailForm.addEventListener("submit", (e) => {
   currentTicket.rootCause = rootCause;
   currentTicket.assignedTo = nextAssignee;
   currentTicket.tier = nextTier;
+  currentTicket.priority = nextPriority;
   currentTicket.status = nextStatus;
 
   renderTicketHeader();
