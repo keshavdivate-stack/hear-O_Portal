@@ -34,3 +34,16 @@ const STATUS_CHANGE_ROWS = [
   { username: "NTS-0006", previous: "Registered", changedTo: "Baseline", since: "09/10/2026", days: 33, changedBy: "System", site: "NTS" },
   { username: "NTS-0006", previous: "", changedTo: "Registered", since: "09/08/2026", days: 35, changedBy: "System", site: "NTS" },
 ];
+
+/* Account Status / Monitoring Status: the patient's current state, so every row for the same
+   username shows the same values. Sample data, derived from the username (mostly Enabled and
+   Monitored). Monitoring is Monitored, Unmonitored or Nearly Unmonitored. */
+(function addPatientStates() {
+  const hash = (s) => [...s].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7);
+  STATUS_CHANGE_ROWS.forEach((r) => {
+    const h = hash(r.username);
+    r.account = h % 10 < 8 ? "Enabled" : h % 10 < 9 ? "Paused" : "Discontinued";
+    const m = (h >> 4) % 20;
+    r.monitoring = m < 12 ? "Monitored" : m < 17 ? "Unmonitored" : "Nearly Unmonitored";
+  });
+})();

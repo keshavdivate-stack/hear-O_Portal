@@ -391,20 +391,112 @@ patientReminderForm.addEventListener("submit", (e) => {
 });
 
 /* ---------------- Edit Patient modal ----------------
-   Matches the developed screen: Username is shown read-only (editing a
-   patient's username isn't supported there either), so Save stays
-   disabled -- the modal exists for the patient's record to be reviewed,
-   not changed, from this entry point. */
+   Username is read-only. Save stays disabled until a field is changed. */
 const patientEditOverlay = document.getElementById("patientEditOverlay");
+const patientEditGrid = document.getElementById("patientEditGrid");
+const patientEditSave = document.getElementById("patientEditSave");
+let activeEditPatient = null;
+
+const EDIT_PATIENT_SELECTS = [
+  { key: "dailyReport", label: "Included in daily who did not record report", options: ["Included", "Not included"], def: "Not included" },
+  { key: "tag", label: "Patient tag", options: ["CURRENT", "NEW"], def: "CURRENT" },
+  { key: "versionUpdate", label: "Enable version update", options: ["Enabled", "Disabled"], def: "Enabled" },
+  { key: "algo", label: "Is algo enabled", options: ["Enabled", "Disabled"], def: "Enabled" },
+  { key: "religious", label: "Religious", options: ["Religious", "Not religious"], def: "Not religious" },
+  { key: "trialType", label: "Trial type", options: ["Daily", "Weekly"], def: "Daily" },
+  { key: "lang", label: "Language", options: PATIENT_LANGUAGES, def: "" },
+  { key: "motherTongue", label: "Mother tongue", options: PATIENT_LANGUAGES, def: "" },
+  { key: "gender", label: "Gender", options: ["Female", "Male", "Other"], def: "Female" },
+  { key: "environment", label: "Environment name", options: ["Opened", "Closed"], def: "Opened" }
+];
+const EDIT_PATIENT_DATES = [
+  ["startDate", "Start date"], ["leavingDate", "Leaving date"],
+  ["followUpDate", "Follow up date"], ["baselineCompletedDate", "Baseline start date"]
+];
+
+const CALENDAR_ICON = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="17" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3 9H21" stroke="currentColor" stroke-width="1.8"/></svg>';
+const CARET_ICON = '<svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>';
+
+patientEditGrid.innerHTML =
+  `<div class="bo-modal-field"><label>Username</label><input type="text" id="patientEditUsername" disabled /></div>` +
+  EDIT_PATIENT_SELECTS.map((f) => `
+    <div class="bo-modal-field">
+      <label>${f.label}</label>
+      <div class="bo-select" data-edit-field="${f.key}">
+        <button type="button" class="bo-select-trigger"><span class="bo-select-value placeholder">Select</span>${CARET_ICON}</button>
+        <div class="bo-select-menu">${buildBoSelectOptions(f.options)}</div>
+        <input type="hidden" id="patientEdit_${f.key}" />
+      </div>
+    </div>`).join("") +
+  `<div class="bo-modal-field"><label>Weight</label><input type="number" min="0" step="any" id="patientEdit_weight" /></div>` +
+  EDIT_PATIENT_DATES.map(([k, label]) => `
+    <div class="bo-modal-field">
+      <label>${label}</label>
+      <div class="bo-date-field"><input type="text" id="patientEdit_${k}" placeholder="Select date" onfocus="this.type='date'" onblur="if(!this.value)this.type='text'" />${CALENDAR_ICON}</div>
+    </div>`).join("");
+patientEditGrid.querySelectorAll(".bo-select").forEach(wireBoSelect);
+
+const editDateToIso = (d) => { const m = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(d || ""); return m ? `${m[3]}-${m[2]}-${m[1]}` : ""; };
+const editIsoToDate = (iso) => { const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso || ""); return m ? `${m[3]}/${m[2]}/${m[1]}` : ""; };
+
+function editPatientValues() {
+  const v = {};
+  EDIT_PATIENT_SELECTS.forEach((f) => { v[f.key] = document.getElementById(`patientEdit_${f.key}`).value; });
+  v.weight = document.getElementById("patientEdit_weight").value;
+  EDIT_PATIENT_DATES.forEach(([k]) => { v[k] = document.getElementById(`patientEdit_${k}`).value; });
+  return v;
+}
+
+let editPatientInitial = "";
+function refreshEditSave() { patientEditSave.disabled = JSON.stringify(editPatientValues()) === editPatientInitial; }
 
 function openEditPatientModal(patient) {
+  activeEditPatient = patient;
   document.getElementById("patientEditUsername").value = patient.username;
+  const current = {
+    dailyReport: patient.dailyReport, tag: patient.tag === "NEW" ? "NEW" : "CURRENT",
+    versionUpdate: patient.versionUpdate, algo: patient.algo === false ? "Disabled" : "Enabled",
+    religious: patient.religious, trialType: patient.trialType, lang: patient.lang,
+    motherTongue: patient.motherTongue, gender: patient.gender, environment: patient.environment
+  };
+  EDIT_PATIENT_SELECTS.forEach((f) => {
+    const sel = patientEditGrid.querySelector(`[data-edit-field="${f.key}"]`);
+    setBoSelectValue(sel, current[f.key] || f.def, { silent: true });
+  });
+  document.getElementById("patientEdit_weight").value = patient.weight || "";
+  EDIT_PATIENT_DATES.forEach(([k]) => {
+    const input = document.getElementById(`patientEdit_${k}`);
+    const iso = editDateToIso(patient[k]);
+    input.type = iso ? "date" : "text";
+    input.value = iso;
+  });
+  editPatientInitial = JSON.stringify(editPatientValues());
+  patientEditSave.disabled = true;
   patientEditOverlay.classList.add("open");
 }
 
 function closeEditPatientModal() {
   patientEditOverlay.classList.remove("open");
+  activeEditPatient = null;
 }
 
+patientEditGrid.addEventListener("change", refreshEditSave);
+patientEditGrid.addEventListener("input", refreshEditSave);
+
+document.getElementById("patientEditForm").addEventListener("submit", (e) => {
+  e.preventDefault();
+  if (!activeEditPatient) return;
+  const v = editPatientValues();
+  Object.assign(activeEditPatient, {
+    dailyReport: v.dailyReport, tag: v.tag === "NEW" ? "NEW" : "CUR", versionUpdate: v.versionUpdate,
+    algo: v.algo === "Enabled", religious: v.religious, trialType: v.trialType, lang: v.lang,
+    motherTongue: v.motherTongue, gender: v.gender, environment: v.environment, weight: v.weight
+  });
+  EDIT_PATIENT_DATES.forEach(([k]) => { activeEditPatient[k] = editIsoToDate(v[k]); });
+  closeEditPatientModal();
+  renderPatients();
+});
+
 document.getElementById("patientEditCancel").addEventListener("click", closeEditPatientModal);
+document.getElementById("patientEditClose").addEventListener("click", closeEditPatientModal);
 patientEditOverlay.addEventListener("click", (e) => { if (e.target === patientEditOverlay) closeEditPatientModal(); });

@@ -74,6 +74,7 @@ if (currentTicket.tier === "Level 3") currentTicket.tier = "Level 2";
 
 document.querySelector('.bo-select[data-name="ticketLevel"] .bo-select-menu').innerHTML = buildSelectOptions(HANDLING_TIERS);
 document.querySelector('.bo-select[data-name="ticketStatus"] .bo-select-menu').innerHTML = buildSelectOptions(STATUSES);
+document.querySelector('.bo-select[data-name="ticketPriority"] .bo-select-menu').innerHTML = buildSelectOptions(PRIORITIES);
 
 /* Assignee choices narrow to whichever tier is currently selected in the
    Level field, so a ticket always lands on someone who actually works
@@ -100,13 +101,15 @@ function applyTicketDetailStatusVisibility(status) {
 
 /* Handling is always editable, so Save Changes (page header) compares the
    form against what was last rendered: it stays disabled until something
-   actually changes, and -- as before -- until Assigned To and Note are set. */
+   actually changes. Assigned To and Note are required, but are checked when
+   Save is clicked (see the submit handler) so the button turns primary on any edit. */
 let ticketHandlingBaseline = null;
 
 function readTicketHandlingForm() {
   const val = (name) => document.querySelector(`.bo-select[data-name="${name}"] input[type=hidden]`).value;
   return {
     status: val("ticketStatus"),
+    priority: val("ticketPriority"),
     tier: val("ticketLevel"),
     assignedTo: val("ticketAssignedTo"),
     note: document.getElementById("ticketDetailRootCause").value.trim(),
@@ -116,10 +119,9 @@ function readTicketHandlingForm() {
 function validateTicketDetailForm() {
   const form = readTicketHandlingForm();
   applyTicketDetailStatusVisibility(form.status);
-  const assigneeFilled = form.status === "Resolved" || form.assignedTo !== "";
-  const noteFilled = form.note !== "";
   const changed = !ticketHandlingBaseline || Object.keys(form).some((k) => form[k] !== ticketHandlingBaseline[k]);
-  document.getElementById("saveTicketDetail").disabled = !changed || !assigneeFilled || !noteFilled;
+  document.getElementById("saveTicketDetail").disabled = !changed;
+  if (form.note !== "") document.getElementById("ticketDetailNoteError").hidden = true;
 }
 
 function renderTicketHeader() {
@@ -135,11 +137,7 @@ function renderTicketHeader() {
      Patient-raised tickets instead show the patient's own contact info, so
      an agent can reach them directly without leaving the ticket. */
   let extraMeta = "";
-  if (currentSource === "clinic" && currentTicket.cordioVersion) {
-    extraMeta =
-      `<span class="td-meta-sep">&middot;</span>Cordio Version: ${currentTicket.cordioVersion}` +
-      `<span class="td-meta-sep">&middot;</span>Portal Version: ${currentTicket.portalVersion}`;
-  } else if (currentSource === "patient") {
+  if (currentSource === "patient") {
     const contact = patientContactInfo(currentTicket.patientId);
     extraMeta =
       `<span class="td-meta-sep">&middot;</span>Email: ${contact.email}` +
@@ -206,8 +204,9 @@ function renderTicketRecording() {
   /* The recording date filter starts on the ticket's creation day so the
      calendar opens on a useful date for this ticket. */
   const createdDate = parseTicketDate(currentTicket.createdDate);
-  ticketRecordingDate = createdDate || new Date();
-  ticketRecordingDate.setHours(0, 0, 0, 0);
+  ticketRecordingFrom = createdDate || new Date();
+  ticketRecordingFrom.setHours(0, 0, 0, 0);
+  ticketRecordingTo = new Date(ticketRecordingFrom);
   updateTicketRecordingDateDisplay();
   const rand = seededRandom(currentTicket.ticketNo);
   const partCount = 4 + Math.floor(rand() * 3); // 4-6 parts
@@ -224,7 +223,9 @@ function renderTicketRecording() {
 }
 
 /* ---------------- Recording date filter ---------------- */
-let ticketRecordingDate = null;
+let ticketRecordingFrom = null;
+let ticketRecordingTo = null;
+let ticketRecordingTarget = "from"; // which field the open calendar is editing
 let ticketRecordingCalendarViewDate = new Date();
 const ticketRecordingCalendarEl = document.getElementById("ticketRecordingCalendar");
 
@@ -236,8 +237,10 @@ function parseTicketDate(value) {
 }
 
 function updateTicketRecordingDateDisplay() {
-  document.getElementById("ticketRecordingDateValue").textContent = formatDisplayDate(ticketRecordingDate);
-  document.getElementById("ticketRecordingDateField").classList.toggle("placeholder", !ticketRecordingDate);
+  document.getElementById("ticketRecordingFromValue").textContent = ticketRecordingFrom ? formatDisplayDate(ticketRecordingFrom) : "From";
+  document.getElementById("ticketRecordingToValue").textContent = ticketRecordingTo ? formatDisplayDate(ticketRecordingTo) : "To";
+  document.getElementById("ticketRecordingFromField").classList.toggle("placeholder", !ticketRecordingFrom);
+  document.getElementById("ticketRecordingToField").classList.toggle("placeholder", !ticketRecordingTo);
 }
 
 function renderTicketRecordingCalendar() {
@@ -256,29 +259,61 @@ function renderTicketRecordingCalendar() {
   document.getElementById("ticketRecordingCalendarDays").innerHTML = cells.map(({ date, muted }) => {
     const classes = ["bo-mini-calendar-day"];
     if (muted) classes.push("muted");
-    if (sameDay(date, ticketRecordingDate)) classes.push("selected");
-    return `<button type="button" class="${classes.join(" ")}" data-time="${date.getTime()}" aria-pressed="${sameDay(date, ticketRecordingDate)}">${date.getDate()}</button>`;
+    const isEdge = sameDay(date, ticketRecordingFrom) || sameDay(date, ticketRecordingTo);
+    if (isEdge) classes.push("selected");
+    else if (ticketRecordingFrom && date > ticketRecordingFrom && date < ticketRecordingTo) classes.push("in-range");
+    return `<button type="button" class="${classes.join(" ")}" data-time="${date.getTime()}" aria-pressed="${isEdge}">${date.getDate()}</button>`;
   }).join("");
 }
 
-function openTicketRecordingCalendar() {
-  const date = ticketRecordingDate || new Date();
+function openTicketRecordingCalendar(target) {
+  ticketRecordingTarget = target;
+  const date = (target === "to" ? ticketRecordingTo : ticketRecordingFrom) || new Date();
   ticketRecordingCalendarViewDate = new Date(date.getFullYear(), date.getMonth(), 1);
-  document.getElementById("ticketRecordingDateField").classList.add("active");
+  document.getElementById("ticketRecordingFromField").classList.toggle("active", target === "from");
+  document.getElementById("ticketRecordingToField").classList.toggle("active", target === "to");
+  /* Line the calendar up under the field being edited. */
+  const fieldEl = document.getElementById(target === "to" ? "ticketRecordingToField" : "ticketRecordingFromField");
+  ticketRecordingCalendarEl.style.left = `${Math.max(0, fieldEl.offsetLeft + fieldEl.offsetWidth - 290)}px`;
   ticketRecordingCalendarEl.hidden = false;
   renderTicketRecordingCalendar();
 }
 
 function closeTicketRecordingCalendar() {
-  document.getElementById("ticketRecordingDateField").classList.remove("active");
+  document.getElementById("ticketRecordingFromField").classList.remove("active");
+  document.getElementById("ticketRecordingToField").classList.remove("active");
   ticketRecordingCalendarEl.hidden = true;
 }
 
-document.getElementById("ticketRecordingDateField").addEventListener("click", (e) => {
+document.querySelectorAll("[data-rec-target]").forEach((field) => field.addEventListener("click", (e) => {
   e.stopPropagation();
-  if (ticketRecordingCalendarEl.hidden) openTicketRecordingCalendar();
-  else closeTicketRecordingCalendar();
+  const target = field.dataset.recTarget;
+  const sameField = !ticketRecordingCalendarEl.hidden && ticketRecordingTarget === target;
+  closeTicketRecordingCalendar();
+  if (!sameField) openTicketRecordingCalendar(target);
+}));
+
+document.getElementById("ticketRecordingClearDates").addEventListener("click", (e) => {
+  e.stopPropagation();
+  ticketRecordingFrom = null;
+  ticketRecordingTo = null;
+  updateTicketRecordingDateDisplay();
+  closeTicketRecordingCalendar();
 });
+
+/* Sets the From or To date; the other end follows if the range would invert. */
+function setTicketRecordingDate(target, date) {
+  date.setHours(0, 0, 0, 0);
+  if (target === "from") {
+    ticketRecordingFrom = date;
+    if (!ticketRecordingTo || ticketRecordingTo < date) ticketRecordingTo = new Date(date);
+  } else {
+    ticketRecordingTo = date;
+    if (!ticketRecordingFrom || ticketRecordingFrom > date) ticketRecordingFrom = new Date(date);
+  }
+  updateTicketRecordingDateDisplay();
+  closeTicketRecordingCalendar();
+}
 document.getElementById("ticketRecordingCalendarPrev").addEventListener("click", (e) => {
   e.stopPropagation();
   ticketRecordingCalendarViewDate = new Date(ticketRecordingCalendarViewDate.getFullYear(), ticketRecordingCalendarViewDate.getMonth() - 1, 1);
@@ -293,17 +328,11 @@ document.getElementById("ticketRecordingCalendarDays").addEventListener("click",
   e.stopPropagation();
   const day = e.target.closest(".bo-mini-calendar-day");
   if (!day) return;
-  ticketRecordingDate = new Date(Number(day.dataset.time));
-  ticketRecordingDate.setHours(0, 0, 0, 0);
-  updateTicketRecordingDateDisplay();
-  closeTicketRecordingCalendar();
+  setTicketRecordingDate(ticketRecordingTarget, new Date(Number(day.dataset.time)));
 });
 document.getElementById("ticketRecordingCalendarToday").addEventListener("click", (e) => {
   e.stopPropagation();
-  ticketRecordingDate = new Date();
-  ticketRecordingDate.setHours(0, 0, 0, 0);
-  updateTicketRecordingDateDisplay();
-  closeTicketRecordingCalendar();
+  setTicketRecordingDate(ticketRecordingTarget, new Date());
 });
 
 /* Fake playback for a list of .bo-rec-part rows (no real audio in the
@@ -383,6 +412,7 @@ const ticketRecordingPlayer = createRecordingPlayer(document.getElementById("tic
 function renderTicketHandling() {
   document.getElementById("ticketDetailRootCause").value = currentTicket.rootCause || "";
   setBoSelectValue(document.querySelector('.bo-select[data-name="ticketStatus"]'), currentTicket.status, { silent: true });
+  setBoSelectValue(document.querySelector('.bo-select[data-name="ticketPriority"]'), currentTicket.priority, { silent: true });
   setBoSelectValue(document.querySelector('.bo-select[data-name="ticketLevel"]'), currentTicket.tier, { silent: true });
   populateTicketDetailAssignees(currentTicket.tier);
   const tierAgents = TIER_AGENTS[currentTicket.tier] || SUPPORT_AGENTS;
@@ -561,7 +591,7 @@ function patientLogRangeFields(field) {
 function updatePatientLogDateField(field) {
   const el = patientLogFieldEl(field);
   const date = patientLogDates[field];
-  el.querySelector(".bo-date-field-value").textContent = date ? formatUsDate(date) : "Select date";
+  el.querySelector(".bo-date-field-value").textContent = date ? formatUsDate(date) : (field.endsWith("From") ? "From" : "To");
   el.classList.toggle("placeholder", !date);
   el.querySelector(".td-plog-date-clear").hidden = !date;
 }
@@ -766,7 +796,14 @@ document.getElementById("plogCalendarToday").addEventListener("click", (e) => {
 });
 document.addEventListener("click", (e) => {
   if (!patientLogCalendarEl.hidden && !e.target.closest("#plogCalendar") && !e.target.closest(".td-plog-date-trigger")) closePatientLogCalendar();
-  if (!ticketRecordingCalendarEl.hidden && !e.target.closest("#ticketRecordingCalendar") && !e.target.closest("#ticketRecordingDateField")) closeTicketRecordingCalendar();
+  if (!ticketRecordingCalendarEl.hidden && !e.target.closest("#ticketRecordingCalendar") && !e.target.closest("[data-rec-target]")) closeTicketRecordingCalendar();
+});
+
+/* The Recording section's own "Clear dates" drops its range -- the last session shows. */
+document.getElementById("plogRecClearDates").addEventListener("click", () => {
+  closePatientLogCalendar();
+  setPatientLogDate("recFrom", null);
+  setPatientLogDate("recTo", null);
 });
 
 /* "Clear dates" drops the log range -- every log file shows. */
@@ -796,19 +833,33 @@ function selectDetailTab(name) {
   document.querySelectorAll(".td-tab").forEach((t) => t.classList.toggle("active", t.dataset.tdTab === name));
   document.querySelectorAll(".td-tab-panel").forEach((p) => p.classList.toggle("active", p.dataset.tdPanel === name));
   document.getElementById("ticketRecordingDateToolbar").hidden = name !== "recording";
+  document.getElementById("ticketPatientLogDateToolbar").hidden = name !== "patientLog";
 }
 document.getElementById("ticketRecordingDateToolbar").appendChild(document.querySelector(".bo-rec-date-row"));
+document.getElementById("ticketPatientLogDateToolbar").appendChild(document.querySelector("#patientLog > .td-plog-dates"));
 document.querySelectorAll(".td-tab").forEach((tab) => tab.addEventListener("click", () => selectDetailTab(tab.dataset.tdTab)));
 
 /* Recording follows renderTicketRecording(), which only reveals the player
    for Voice Engine tickets. */
 function syncPatientLogTab() {
+  document.querySelector('.td-tab[data-td-tab="deviceInfo"]').hidden = document.getElementById("deviceInfo").hidden;
   document.querySelector('.td-tab[data-td-tab="patientLog"]').hidden = document.getElementById("patientLog").hidden;
   document.querySelector('.td-tab[data-td-tab="recording"]').hidden = document.getElementById("ticketDetailRecordingWrap").hidden;
 }
 
+/* Clinic tickets show the Cordio System and Clinic Portal versions the clinic
+   user was running when they raised the ticket (patient tickets have no such card). */
+function renderClinicInfo() {
+  const isClinic = currentSource === "clinic";
+  document.getElementById("clinicInfo").hidden = !isClinic;
+  if (!isClinic) return;
+  document.getElementById("ticketClinicCordioVersion").textContent = currentTicket.cordioVersion || "—";
+  document.getElementById("ticketClinicPortalVersion").textContent = currentTicket.portalVersion || "—";
+}
+
 function renderAll() {
   renderTicketHeader();
+  renderClinicInfo();
   renderTicketInfo();
   renderTicketHandling();
   renderPatientLog();
@@ -846,6 +897,15 @@ ticketDetailForm.addEventListener("submit", (e) => {
   e.preventDefault();
   if (document.getElementById("saveTicketDetail").disabled) return;
 
+  /* Required fields are enforced here rather than by disabling Save. */
+  const formNow = readTicketHandlingForm();
+  if (formNow.status !== "Resolved" && formNow.assignedTo === "") return;
+  if (formNow.note === "") {
+    document.getElementById("ticketDetailNoteError").hidden = false;
+    document.getElementById("ticketDetailRootCause").focus();
+    return;
+  }
+
   const history = ensureTicketHistory(currentTicket);
   const changeDate = formatChangeDate();
 
@@ -853,6 +913,7 @@ ticketDetailForm.addEventListener("submit", (e) => {
   const nextAssignee = document.querySelector('.bo-select[data-name="ticketAssignedTo"] input[type=hidden]').value;
   const nextTier = document.querySelector('.bo-select[data-name="ticketLevel"] input[type=hidden]').value || currentTicket.tier;
   const nextStatus = document.querySelector('.bo-select[data-name="ticketStatus"] input[type=hidden]').value || currentTicket.status;
+  const nextPriority = document.querySelector('.bo-select[data-name="ticketPriority"] input[type=hidden]').value || currentTicket.priority;
 
   /* Every field a Save touches (reassignment, level/tier transfer, status)
      is folded into a single history entry instead of one line per
@@ -872,6 +933,10 @@ ticketDetailForm.addEventListener("submit", (e) => {
   if (nextTier !== currentTicket.tier) {
     changeParts.push(`Level changed from ${currentTicket.tier} to ${nextTier}`);
     title = title || `Ticket Escalated to ${nextTier}`;
+  }
+  if (nextPriority !== currentTicket.priority) {
+    changeParts.push(`Priority changed from ${currentTicket.priority} to ${nextPriority}`);
+    title = title || `Priority Changed to ${nextPriority}`;
   }
   if (nextStatus !== currentTicket.status) {
     changeParts.push(`Status changed from ${currentTicket.status} to ${nextStatus}`);
@@ -894,6 +959,7 @@ ticketDetailForm.addEventListener("submit", (e) => {
   currentTicket.assignedTo = nextAssignee;
   currentTicket.tier = nextTier;
   currentTicket.status = nextStatus;
+  currentTicket.priority = nextPriority;
 
   renderTicketHeader();
   renderTicketInfo();

@@ -1,6 +1,6 @@
 /* ---------------- Audit Log sample data ---------------- */
 const AL_ACTIONS = ["Sign In", "Sign Out", "Status Change", "Create Organization", "Edit Organization"];
-const AL_ROLES = ["CLINIC USER", "SUPERVISOR", "CLINIC SUPERVISOR", "ADMIN"];
+const AL_ROLES = ["SUPERVISOR", "CLINICAL SUPERVISOR", "TECH SUPPORT", "LINGUISTIC USER", "CLINIC SUPERVISOR", "CLINIC MANAGER", "CLINIC USER", "CLINIC DOCTOR"];
 const AL_ORGS = ["120", "121", "122", "ATP", "B01"];
 
 const auditLog = [

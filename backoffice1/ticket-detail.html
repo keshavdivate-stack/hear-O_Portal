@@ -159,6 +159,15 @@
     <div class="td-layout">
       <div class="td-main">
 
+        <!-- Clinic Info (clinic tickets only) -->
+        <section class="bo-card bo-panel" id="clinicInfo" hidden>
+          <h3 class="bo-panel-title">Clinic Info</h3>
+          <div class="bo-kv-grid bo-kv-grid--3col">
+            <div class="bo-kv-cell"><span class="k">Cordio System Software Version</span><span class="v" id="ticketClinicCordioVersion">—</span></div>
+            <div class="bo-kv-cell"><span class="k">Portal Software Version</span><span class="v" id="ticketClinicPortalVersion">—</span></div>
+          </div>
+        </section>
+
         <!-- Issue -->
         <section class="bo-card bo-panel" id="issue">
           <h3 class="bo-panel-title">Issue</h3>
@@ -169,23 +178,24 @@
         <p class="bo-ticket-description" id="ticketDetailDescription"></p>
         </section>
 
-        <!-- Patient Device Info (patient tickets only) -->
-        <section class="bo-card bo-panel" id="deviceInfo" hidden>
-          <h3 class="bo-panel-title">Patient Device Info</h3>
-          <div class="bo-kv-grid bo-kv-grid--3col" id="ticketDetailDeviceInfo"></div>
-        </section>
-
-        <!-- History / Patient Log tabs -->
+        <!-- History / Patient Device Info / Patient Log tabs -->
         <section class="bo-card td-tabs-card">
           <div class="td-tabs" role="tablist">
             <button type="button" class="td-tab active" data-td-tab="history" role="tab">History</button>
+            <button type="button" class="td-tab" data-td-tab="deviceInfo" role="tab" hidden>Patient Device Info</button>
             <button type="button" class="td-tab" data-td-tab="patientLog" role="tab" hidden>Patient Log</button>
             <button type="button" class="td-tab" data-td-tab="recording" role="tab" hidden>Recording</button>
+            <div class="bo-rec-date-toolbar" id="ticketPatientLogDateToolbar" hidden></div>
             <div class="bo-rec-date-toolbar" id="ticketRecordingDateToolbar" hidden></div>
           </div>
 
           <div class="td-tab-panel active" id="history" data-td-panel="history">
             <div class="bo-ticket-history" id="ticketDetailHistory"></div>
+          </div>
+
+          <!-- Patient Device Info (patient tickets only) -->
+          <div class="td-tab-panel" id="deviceInfo" data-td-panel="deviceInfo" hidden>
+            <div class="bo-kv-grid bo-kv-grid--3col" id="ticketDetailDeviceInfo"></div>
           </div>
 
           <!-- Recording (Voice Engine tickets only) -->
@@ -198,11 +208,16 @@
 
           <div class="bo-rec-date-row">
             <div class="patient-log-range">
-              <span class="patient-log-range-label">Date</span>
-              <button type="button" class="bo-date-field bo-date-field-trigger" id="ticketRecordingDateField" aria-label="Recording date">
-                <span id="ticketRecordingDateValue" class="bo-date-field-value">&mdash;</span>
+              <button type="button" class="bo-date-field bo-date-field-trigger" id="ticketRecordingFromField" data-rec-target="from" aria-label="From Date">
+                <span id="ticketRecordingFromValue" class="bo-date-field-value">&mdash;</span>
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="17" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3 9H21" stroke="currentColor" stroke-width="1.8"/></svg>
               </button>
+              <span class="td-range-sep">&ndash;</span>
+              <button type="button" class="bo-date-field bo-date-field-trigger" id="ticketRecordingToField" data-rec-target="to" aria-label="To Date">
+                <span id="ticketRecordingToValue" class="bo-date-field-value">&mdash;</span>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="17" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3 9H21" stroke="currentColor" stroke-width="1.8"/></svg>
+              </button>
+              <button type="button" class="bo-btn-tertiary" id="ticketRecordingClearDates">Clear dates</button>
               <div class="bo-mini-calendar" id="ticketRecordingCalendar" hidden>
                 <div class="bo-mini-calendar-head">
                   <span class="bo-mini-calendar-month" id="ticketRecordingCalendarMonthLabel">&mdash;</span>
@@ -234,26 +249,25 @@
           <div class="td-tab-panel" id="patientLog" data-td-panel="patientLog" hidden>
             <div class="td-plog-dates">
               <div class="td-plog-date">
-                <span class="td-plog-date-label">From Date</span>
                 <div class="bo-date-field td-plog-date-field" data-plog-field="logFrom">
                   <button type="button" class="td-plog-date-trigger" aria-label="From Date">
+                    <span class="bo-date-field-value">From</span>
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="17" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3 9H21" stroke="currentColor" stroke-width="1.8"/></svg>
-                    <span class="bo-date-field-value">Select date</span>
                   </button>
                   <button type="button" class="td-plog-date-clear" aria-label="Clear From Date" hidden>&times;</button>
                 </div>
               </div>
+              <span class="td-range-sep">&ndash;</span>
               <div class="td-plog-date">
-                <span class="td-plog-date-label">To Date</span>
                 <div class="bo-date-field td-plog-date-field" data-plog-field="logTo">
                   <button type="button" class="td-plog-date-trigger" aria-label="To Date">
+                    <span class="bo-date-field-value">To</span>
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="17" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3 9H21" stroke="currentColor" stroke-width="1.8"/></svg>
-                    <span class="bo-date-field-value">Select date</span>
                   </button>
                   <button type="button" class="td-plog-date-clear" aria-label="Clear To Date" hidden>&times;</button>
                 </div>
               </div>
-              <button type="button" class="bo-btn-secondary" id="plogClearDates">Clear dates</button>
+              <button type="button" class="bo-btn-tertiary" id="plogClearDates">Clear dates</button>
             </div>
 
             <div class="td-plog-head">
@@ -271,25 +285,25 @@
               <span class="bo-modal-section-title td-plog-label">Recording</span>
               <div class="td-plog-dates">
                 <div class="td-plog-date">
-                  <span class="td-plog-date-label">From Date</span>
                   <div class="bo-date-field td-plog-date-field" data-plog-field="recFrom">
                     <button type="button" class="td-plog-date-trigger" aria-label="From Date">
+                      <span class="bo-date-field-value">From</span>
                       <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="17" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3 9H21" stroke="currentColor" stroke-width="1.8"/></svg>
-                      <span class="bo-date-field-value">Select date</span>
                     </button>
                     <button type="button" class="td-plog-date-clear" aria-label="Clear From Date" hidden>&times;</button>
                   </div>
                 </div>
+                <span class="td-range-sep">&ndash;</span>
                 <div class="td-plog-date">
-                  <span class="td-plog-date-label">To Date</span>
                   <div class="bo-date-field td-plog-date-field" data-plog-field="recTo">
                     <button type="button" class="td-plog-date-trigger" aria-label="To Date">
+                      <span class="bo-date-field-value">To</span>
                       <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="17" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3 9H21" stroke="currentColor" stroke-width="1.8"/></svg>
-                      <span class="bo-date-field-value">Select date</span>
                     </button>
                     <button type="button" class="td-plog-date-clear" aria-label="Clear To Date" hidden>&times;</button>
                   </div>
                 </div>
+                <button type="button" class="bo-btn-tertiary" id="plogRecClearDates">Clear dates</button>
               </div>
               <p class="td-plog-rec-caption" id="plogRecCaption"></p>
               <div class="bo-rec-parts td-plog-rec-parts" id="plogRecParts"></div>
@@ -345,6 +359,18 @@
               </div>
             </div>
 
+            <div class="bo-modal-field">
+              <label>Priority</label>
+              <div class="bo-select" data-name="ticketPriority">
+                <button type="button" class="bo-select-trigger">
+                  <span class="bo-select-value placeholder">Select priority</span>
+                  <svg class="bo-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
+                <div class="bo-select-menu"></div>
+                <input type="hidden" />
+              </div>
+            </div>
+
             <div class="bo-modal-field" id="ticketDetailLevelField">
               <label>Level</label>
               <div class="bo-select" data-name="ticketLevel">
@@ -373,6 +399,7 @@
         <div class="bo-modal-field full">
           <label>Note<span class="required-star">*</span></label>
           <textarea id="ticketDetailRootCause" maxlength="2000" placeholder="What caused this issue?"></textarea>
+          <p class="bo-field-error" id="ticketDetailNoteError" hidden style="margin:0;">Note is required.</p>
         </div>
       </div>
         </form>

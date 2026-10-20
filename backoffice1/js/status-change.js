@@ -13,6 +13,8 @@ const SC_PAGE_SIZE = 20;
 const SC_STATUS_TO_OPTIONS = ["Registered", "Baseline", "Active", "Priority"];
 let scCurrentPage = 1;
 let scStatusToFilter = "";
+let scAccountFilter = "";
+let scMonitoringFilter = "";
 let scSearchTerm = "";
 let scFromDate = "";
 let scToDate = "";
@@ -113,6 +115,14 @@ document.getElementById("scStatusToMenu").innerHTML =
     (s) => `<div class="bo-select-option" data-value="${s}">${s}<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>`
   ).join("");
 
+/* ---------------- Account / Monitoring status (single-selects) ---------------- */
+const scAccountSelect = document.querySelector('.bo-select[data-name="scAccount"]');
+const scMonitoringSelect = document.querySelector('.bo-select[data-name="scMonitoring"]');
+const scOptionHtml = (value, label) => `<div class="bo-select-option" data-value="${value}">${label}<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>`;
+const scOptionsHtml = (values) => scOptionHtml("", "All") + values.map((v) => scOptionHtml(v, v)).join("");
+document.getElementById("scAccountMenu").innerHTML = scOptionsHtml(["Enabled", "Paused", "Discontinued"]);
+document.getElementById("scMonitoringMenu").innerHTML = scOptionsHtml(["Monitored", "Unmonitored", "Nearly Unmonitored"]);
+
 function setBoSelectValue(select, value, { silent = false } = {}) {
   const hiddenInput = select.querySelector("input[type=hidden]");
   const trigger = select.querySelector(".bo-select-value");
@@ -185,6 +195,8 @@ function scFilteredRows() {
       if (!scSiteFilter.has(s.site)) return false;
     }
     if (scStatusToFilter && s.changedTo !== scStatusToFilter) return false;
+    if (scAccountFilter && s.account !== scAccountFilter) return false;
+    if (scMonitoringFilter && s.monitoring !== scMonitoringFilter) return false;
     if (scSearchTerm && !s.username.toLowerCase().includes(scSearchTerm)) return false;
     if (scFromDate && s.sinceIso < scFromDate) return false;
     if (scToDate && s.sinceIso > scToDate) return false;
@@ -209,6 +221,8 @@ function renderStatusChanges() {
         <td><span class="bo-name-link">${s.username}</span></td>
         <td>${s.previous ? `<span class="bo-sc-badge ${s.previous.toLowerCase()}">${s.previous}</span>` : "&mdash;"}</td>
         <td><span class="bo-sc-badge ${s.changedTo.toLowerCase()}">${s.changedTo}</span></td>
+        <td><span class="bo-status-pill ${s.account.toLowerCase()}">${s.account}</span></td>
+        <td><span class="bo-status-pill ${s.monitoring.toLowerCase().replace(/ /g, "-")}">${s.monitoring}</span></td>
         <td>${s.since}</td>
         <td>${s.days}</td>
         <td>${s.changedBy}</td>
@@ -243,6 +257,12 @@ document.getElementById("scToDate").addEventListener("change", (e) => {
 document.getElementById("scStatusToFilter").addEventListener("change", (e) => {
   scStatusToFilter = e.target.value;
 });
+document.getElementById("scAccountFilter").addEventListener("change", (e) => {
+  scAccountFilter = e.target.value;
+});
+document.getElementById("scMonitoringFilter").addEventListener("change", (e) => {
+  scMonitoringFilter = e.target.value;
+});
 
 document.getElementById("scApplyBtn").addEventListener("click", () => {
   scCurrentPage = 1;
@@ -253,11 +273,15 @@ document.getElementById("scClearFiltersBtn").addEventListener("click", () => {
   scSiteMultiSelect.reset();
   scSiteFilter = new Set(scSiteCodes);
   scStatusToFilter = "";
+  scAccountFilter = "";
+  scMonitoringFilter = "";
   scSearchTerm = "";
   scFromDate = "";
   scToDate = "";
 
   setBoSelectValue(scStatusToSelect, "", { silent: true });
+  setBoSelectValue(scAccountSelect, "", { silent: true });
+  setBoSelectValue(scMonitoringSelect, "", { silent: true });
   document.getElementById("scSearchInput").value = "";
   const fromDateEl = document.getElementById("scFromDate");
   const toDateEl = document.getElementById("scToDate");

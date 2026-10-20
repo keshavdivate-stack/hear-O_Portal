@@ -1,6 +1,6 @@
 /* ---------------- Ticket Detail page ----------------
    Full-screen deep dive for a single Ticket, laid out like backoffice1's
-   ticket-detail.html: a header card (ID, Status / Priority / Level / Type,
+   ticket-detail.html: a header card (ID, Status / Level / Type,
    created/origin/organization/created-for meta line), then Clinic Info,
    Issue and a History / Patient Log / Recording tab card. View-only: clinic
    users don't handle tickets here (no Handling panel) -- status, level,
@@ -59,8 +59,7 @@ if (!ticket) {
     const badge = (label, pill) => `<span class="ticket-detail-badge-group"><span class="ticket-detail-badge-label">${label}</span>${pill}</span>`;
     document.getElementById("ticketDetailBadges").innerHTML = [
       badge("Status", `<span class="ticket-pill ${stateCellClass(ticket.state)}">${ticket.state}</span>`),
-      badge("Priority", `<span class="ticket-pill ${severityCellClass(ticket.severity)}">${ticket.severity}</span>`),
-      ticket.tier ? badge("Level", `<span class="ticket-pill ticket-pill-level">${ticket.tier}</span>`) : "",
+      ticket.tier ? badge("Level", `<span class="ticket-detail-badge-text">${ticket.tier}</span>`) : "",
       badge("Type", `<span class="ticket-pill ${typeCellClass(ticket.type)}">${ticket.type}</span>`),
     ].join("");
 
@@ -70,9 +69,26 @@ if (!ticket) {
       ? `<a class="ticket-view-link" href="patient-data.html">${ticket.patientName || ticket.who}</a>${ticket.patientName ? ` (${ticket.who})` : ""}`
       : ticket.who;
     const sep = `<span class="ticket-detail-meta-sep">&middot;</span>`;
+    /* Patient tickets also show the patient's email and mobile so the clinic
+       can reach them straight from the ticket. */
+    const contact = ticket.type === "Patient" ? patientContactInfo(ticket) : null;
+    const contactMeta = contact ? `${sep}Email: ${contact.email}${sep}Mobile: ${contact.phone}` : "";
     document.getElementById("ticketDetailMeta").innerHTML =
-      `Created ${ticket.created}${sep}Origin: ${ticket.origin}${sep}Organization: ${ticket.organization}${sep}Created For: ${createdFor}`;
+      `Created ${ticket.created}${sep}Origin: ${ticket.origin}${sep}Organization: ${ticket.organization}${sep}Created For: ${createdFor}${contactMeta}`;
     document.title = `HearO | ${ticket.ticketId}`;
+  }
+
+  /* Patient contact: there's no real patient directory here, so the email is
+     built from the patient's name on the ticket and the mobile is seeded off
+     the patient ID -- the same patient always shows the same contact. */
+  function patientContactInfo(t) {
+    const rand = seededRandom(t.who || "patient");
+    const [first, ...rest] = (t.patientName || "patient").toLowerCase().split(/s+/);
+    const local = [first, ...rest].join(".").replace(/[^a-z.]/g, "");
+    return {
+      email: `${local}@gmail.com`,
+      phone: `+972-5${String(10000000 + Math.floor(rand() * 89999999)).slice(0, 8)}`,
+    };
   }
 
   /* ---------------- Clinic Info ----------------
@@ -106,8 +122,21 @@ if (!ticket) {
     return { ...seeded, ...CLINIC_DIRECTORY[orgCode] };
   }
 
+  /* Software versions the clinic user was running when they raised a clinic
+     ticket -- seeded off the ticket ID so a ticket always shows the same ones. */
+  const CORDIO_SYSTEM_VERSIONS = ["3.1.5", "3.2.0", "3.2.7", "3.3.0", "3.4.1"];
+  const CLINIC_PORTAL_VERSIONS = ["2.4.0", "2.5.1", "2.6.0", "2.6.3", "2.7.0"];
+
   function renderClinicInfo() {
     const info = clinicInfoFor(ticket.organization);
+    const isClinicTicket = ticket.type === "Clinic";
+    document.getElementById("ticketClinicCordioField").hidden = !isClinicTicket;
+    document.getElementById("ticketClinicPortalField").hidden = !isClinicTicket;
+    if (isClinicTicket) {
+      const rand = seededRandom(`${ticket.ticketId}-versions`);
+      document.getElementById("ticketClinicCordioVersion").textContent = ticket.cordioVersion || pickFrom(rand, CORDIO_SYSTEM_VERSIONS);
+      document.getElementById("ticketClinicPortalVersion").textContent = ticket.portalVersion || pickFrom(rand, CLINIC_PORTAL_VERSIONS);
+    }
     document.getElementById("ticketClinicOrg").textContent = ticket.organization || "—";
     document.getElementById("ticketClinicStudy").textContent = info.study || "—";
     document.getElementById("ticketClinicHmo").textContent = info.isHmo ? "Yes" : "No";
@@ -118,9 +147,9 @@ if (!ticket) {
 
   /* ---------------- Issue ---------------- */
   function renderIssue() {
-    /* Same Category pill as the Support list. */
+    /* Category is plain text, same as the Support list. */
     document.getElementById("ticketDetailCategory").innerHTML = ticket.category
-      ? `<span class="ticket-pill ticket-pill-category">${ticket.category}</span>`
+      ? ticket.category
       : "—";
     document.getElementById("ticketDetailIssueType").textContent = ticket.issueType || "—";
     document.getElementById("ticketDetailDescription").textContent = ticket.description;

@@ -1,10 +1,11 @@
 /* ---------------- Data ---------------- (see js/users-data.js, loaded before this file) */
 
-/* Role list, in the order the developed Create/Edit User dropdown shows it. */
+/* The eight roles in use: Back Office (Supervisor, Clinical Supervisor, Tech Support,
+   Linguistic User) and Clinic Portal (Clinic Supervisor, Clinic Manager, Clinic User,
+   Clinic Doctor). */
 const USER_ROLES = [
-  "Supervisor", "Clinical Supervisor", "Linguistic User", "Regular", "Clinical Manager", "Site Coordinator",
-  "Medical Institute Manager", "Clinic Doctor", "Clinic Manager", "Clinic User", "R&D Manager",
-  "Clinic Supervisor", "Product Manager", "Regular Study", "Tech Support", "Report Only",
+  "Supervisor", "Clinical Supervisor", "Linguistic User", "Tech Support",
+  "Clinic Doctor", "Clinic Manager", "Clinic User", "Clinic Supervisor",
 ];
 
 /* Only these roles get the View Log / View Recording permissions. */

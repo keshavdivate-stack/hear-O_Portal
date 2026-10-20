@@ -166,7 +166,7 @@ button, input, select, textarea, optgroup {
   align-items: center;
   gap: 8px;
   padding: 8px 14px;
-  border-radius: 999px;
+  border-radius: 6px;
   border: 1px solid var(--gray-border);
   background: #fff;
   font-size: 13px;
@@ -425,7 +425,7 @@ button, input, select, textarea, optgroup {
   gap: 10px;
   background: #fff;
   border: 1px solid var(--gray-border);
-  border-radius: 14px;
+  border-radius: 6px;
   padding: 9px 18px;
   color: var(--navy);
   box-shadow: 0 6px 20px rgba(20, 30, 50, 0.05);
@@ -499,7 +499,7 @@ button, input, select, textarea, optgroup {
 /* ---------------- Panels grid ---------------- */
 .bo-panels-grid {
   display: grid;
-  grid-template-columns: 340px 1fr;
+  grid-template-columns: 440px 1fr;
   grid-template-rows: minmax(0, 1fr);
   gap: 16px;
   align-items: stretch;
@@ -630,6 +630,7 @@ button, input, select, textarea, optgroup {
 .bo-status-pill.discontinued { color: #8D929A; }
 .bo-status-pill.enabled { color: var(--green-text); }
 .bo-status-pill.monitored { color: var(--green-text); }
+.bo-status-pill.nearly-unmonitored { color: var(--orange-text); }
 .bo-status-pill.none { color: var(--gray-text); }
 .bo-status-pill.left-study { color: var(--purple-text); }
 
@@ -799,7 +800,7 @@ button, input, select, textarea, optgroup {
   align-items: center;
   gap: 3px;
   padding: 2px 7px;
-  border-radius: 999px;
+  border-radius: 6px;
   font-size: 11px;
   font-weight: 700;
 }
@@ -1968,6 +1969,24 @@ label.bo-date-field { cursor: text; }
 .bo-btn-secondary:hover { background: var(--bg); border-color: var(--gray); }
 .bo-btn-secondary[hidden] { display: none; }
 a.bo-btn-secondary { text-decoration: none; }
+
+/* Tertiary: text-only action (e.g. "Clear dates") -- no fill, no border. */
+.bo-btn-tertiary {
+  display: inline-flex;
+  align-items: center;
+  background: none;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 10px;
+  color: var(--blue-text);
+  font-size: 13.5px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.bo-btn-tertiary:hover { background: var(--bg); color: var(--ink); }
+.bo-btn-tertiary[hidden] { display: none; }
 
 .bo-btn-text {
   display: inline-flex;
@@ -3942,7 +3961,7 @@ a.bo-health-card:hover { border-color: var(--field-border); }
   align-items: center;
   gap: 5px;
   padding: 3px 10px;
-  border-radius: 999px;
+  border-radius: 6px;
   font-size: 11.5px;
   font-weight: 700;
   white-space: nowrap;
@@ -4512,7 +4531,7 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
 
 .bo-org-mini-row .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
 .bo-org-mini-name { flex: 1; min-width: 0; font-size: 13px; font-weight: 600; color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.bo-org-mini-issues { font-size: 11.5px; font-weight: 700; padding: 3px 9px; border-radius: 999px; flex-shrink: 0; }
+.bo-org-mini-issues { font-size: 11.5px; font-weight: 700; padding: 3px 9px; border-radius: 6px; flex-shrink: 0; }
 .bo-org-mini-patients { font-size: 11.5px; color: var(--gray-text); flex-shrink: 0; width: 68px; text-align: right; }
 
 /* Patient Compliance panel: a single proportional stacked bar (tier sizes at a
@@ -4622,7 +4641,7 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
 .bo-pill {
   display: inline-block;
   padding: 4px 12px;
-  border-radius: 999px;
+  border-radius: 6px;
   font-size: 12px;
   font-weight: 700;
   white-space: nowrap;
@@ -4952,7 +4971,7 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
   min-width: 18px;
   padding: 1px 6px;
   margin-left: 4px;
-  border-radius: 999px;
+  border-radius: 6px;
   background: var(--bg);
   color: var(--gray-text);
   font-size: 11px;
@@ -5035,19 +5054,9 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
 .bo-incident-title { font-weight: 700; color: var(--ink); }
 
 /* Incidents table: ID reads as plain text (still links to the detail page),
-   Category is a filled gray tag, Priority is plain colored text. */
+   Category is plain text, Priority is plain colored text. */
 .bo-incident-id-link { color: var(--ink); text-decoration: none; }
 .bo-incident-id-link:hover { text-decoration: underline; }
-.bo-incident-category-tag {
-  display: inline-block;
-  background: #E4E4E4;
-  color: var(--ink);
-  border-radius: 6px;
-  padding: 3px 11px;
-  font-size: 12.5px;
-  font-weight: 600;
-  white-space: nowrap;
-}
 /* Edit Rule: "THRESHOLD" group label above the Operator field. */
 .bo-rule-section-title {
   font-size: 12px;
@@ -5085,18 +5094,8 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
 .bo-btn-primary.bo-btn-danger:hover { background: var(--maroon-text); border-color: var(--maroon-text); }
 .bo-rule-row-disabled td:not(:last-child):not(.bo-rule-status-cell) { opacity: 0.5; }
 
-/* Tickets table: Category and Level as filled gray tags, Priority as plain
-   colored text -- same treatment as the developed Tickets list. */
-#ticketRows .bo-pill-tag,
-#ticketRows .bo-pill-tier,
-#ruleRows .bo-pill-tag,
-#ruleRows .bo-pill-tier {
-  background: #E4E4E4;
-  border: none;
-  color: var(--ink);
-  border-radius: 6px;
-  padding: 3px 11px;
-}
+/* Tickets/Rules tables: Category and Level are plain text (no badge);
+   Priority is plain colored text. */
 #ticketRows .bo-pill[class*="bo-pill-severity-"],
 #ruleRows .bo-pill[class*="bo-pill-severity-"],
 #incidentRows .bo-pill[class*="bo-pill-severity-"],
@@ -5164,7 +5163,7 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
 .bo-impact-popover-title.second { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--gray-border); }
 
 .bo-impact-chip-list { display: flex; flex-wrap: wrap; gap: 6px; }
-.bo-impact-chip { background: var(--bg); border-radius: 8px; padding: 4px 9px; font-size: 12px; font-weight: 600; color: var(--ink); }
+.bo-impact-chip { background: var(--bg); border-radius: 6px; padding: 4px 9px; font-size: 12px; font-weight: 600; color: var(--ink); }
 /* Incident detail Impact card: every affected organization by name; a long list scrolls inside the card. */
 .inc-impact-orgs { margin-top: 8px; max-height: 300px; overflow-y: auto; font-size: 13px; font-weight: 600; color: var(--gray-text); }
 .inc-impact-orgs .bo-impact-chip { background: #fff; border: 1px solid var(--gray-border); font-size: 12.5px; }
@@ -5198,7 +5197,7 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
   font-weight: 700;
   font-size: 12.5px;
   padding: 6px 12px;
-  border-radius: 8px;
+  border-radius: 6px;
   margin-bottom: 16px;
 }
 
@@ -5819,6 +5818,12 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
 .bo-rec-date-toolbar[hidden] { display: none; }
 .bo-rec-date-toolbar .patient-log-range { display: flex; align-items: center; gap: 10px; }
 .bo-rec-date-toolbar .patient-log-range-label { margin: 0; }
+/* Patient Log's From/To/Clear row, moved up into the tabs row: labels sit beside the fields. */
+.bo-rec-date-toolbar .td-plog-dates { flex-wrap: nowrap; align-items: center; margin-bottom: 0; gap: 10px; }
+.bo-rec-date-toolbar .td-plog-date { flex-direction: row; align-items: center; gap: 8px; }
+.bo-rec-date-toolbar .td-plog-date-field { min-width: 150px; }
+.bo-rec-date-toolbar .td-plog-date .bo-mini-calendar { left: auto; right: 0; }
+
 .td-tab {
   background: none; border: none; font-family: inherit; font-size: 13.5px; font-weight: 700;
   color: var(--gray-text); padding: 14px 0 12px; margin-bottom: -1px; cursor: pointer;
@@ -5866,7 +5871,7 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
 .td-plog-dates { display: flex; align-items: flex-end; flex-wrap: wrap; gap: 12px; margin-bottom: 18px; }
 .td-plog-date { position: relative; display: flex; flex-direction: column; gap: 6px; }
 .td-plog-date-label { font-size: 12.5px; font-weight: 600; color: var(--gray-text); }
-.td-plog-date-field { min-width: 170px; padding: 0 8px 0 0; gap: 0; }
+.td-plog-date-field { position: relative; min-width: 150px; padding: 0; gap: 0; }
 .td-plog-date-field.active { border-color: var(--blue); }
 .td-plog-date-trigger {
   flex: 1;
@@ -5874,15 +5879,21 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 9px 4px 9px 12px;
+  padding: 9px 12px;
   background: none;
   border: none;
   cursor: pointer;
   font-family: inherit;
   text-align: left;
 }
+.td-plog-date-trigger .bo-date-field-value { flex: 1; }
+.td-plog-date-trigger svg { flex-shrink: 0; color: var(--gray); }
 .td-plog-date-field.placeholder .bo-date-field-value { color: #AEB4BC; font-weight: 400; }
 .td-plog-date-clear {
+  position: absolute;
+  right: 38px;
+  top: 50%;
+  transform: translateY(-50%);
   width: 20px;
   height: 20px;
   flex-shrink: 0;
@@ -5967,16 +5978,6 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
 /* Incidents tab: three KPIs (Organizations Impacted removed). */
 .bo-incident-kpi-grid--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 
-/* View Ticket: the Recording tab's From / To range sits in the tabs row --
-   labels inline beside the fields, and the mini calendar opens right-aligned
-   so it stays inside the card. Wraps under the tabs when space runs out. */
-.td-tabs { flex-wrap: wrap; }
-.bo-rec-date-toolbar .td-plog-dates { margin: 0; flex-wrap: nowrap; align-items: center; }
-.bo-rec-date-toolbar .td-plog-date { flex-direction: row; align-items: center; gap: 8px; }
-.bo-rec-date-toolbar .td-plog-date-label { white-space: nowrap; }
-.bo-rec-date-toolbar .td-plog-date-field { min-width: 150px; }
-.bo-rec-date-toolbar .td-plog-date .bo-mini-calendar { left: auto; right: 0; }
-
 /* ==========================================================
    SESSION DETAIL (session-detail.html)
    Opened from a row of the patient page's Sessions tab. Reuses the
@@ -6056,3 +6057,25 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
 .sd-audio .bo-rec-play { width: 28px; height: 28px; }
 
 .sd-question-text { white-space: normal; min-width: 280px; }
+/* Edit Patient modal (Patient Management): fixed header/footer, scrolling two-column body */
+.bo-edit-patient-modal { width: 680px; display: flex; flex-direction: column; overflow: hidden; }
+.bo-edit-patient-form { display: flex; flex-direction: column; min-height: 0; flex: 1; }
+.bo-edit-patient-body { overflow-y: auto; min-height: 0; margin-right: -12px; padding-right: 12px; }
+.bo-edit-patient-body .bo-modal-grid { margin-bottom: 4px; }
+.bo-edit-patient-modal .bo-modal-field .bo-date-field { width: 100%; box-sizing: border-box; }
+.bo-edit-patient-modal .bo-modal-field .bo-date-field input { padding: 0; border: none; }
+.bo-edit-patient-modal .bo-modal-field .bo-select-trigger { width: 100%; }
+@media (max-width: 640px) { .bo-edit-patient-modal .bo-modal-grid { grid-template-columns: 1fr; } }
+
+/* Recording date range ("dd-mm-yyyy – dd-mm-yyyy") needs a wider trigger than a single date */
+#ticketRecordingFromField, #ticketRecordingToField { min-width: 150px; }
+
+/* "From – To" date pairs (Patient Log and Recording): no labels, "From" / "To" placeholders, dash between. */
+.td-range-sep { color: var(--gray-text); flex-shrink: 0; }
+#ticketRecordingFromField, #ticketRecordingToField { min-width: 150px; }
+#ticketRecordingFromField.placeholder .bo-date-field-value,
+#ticketRecordingToField.placeholder .bo-date-field-value { color: #AEB4BC; font-weight: 400; }
+
+/* Summary dashboard, Status Change card: a wider Status column so "Registered" has room before Account Status. */
+.bo-summary-status-table th:nth-child(2),
+.bo-summary-status-table td:nth-child(2) { min-width: 92px; padding-right: 10px; }

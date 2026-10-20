@@ -74,7 +74,7 @@ function renderTables(orgs) {
 
   /* Most recent changes, from the same rows the Status Change page lists. */
   document.getElementById("statusChangeRows").innerHTML = STATUS_CHANGE_ROWS.slice(0, 20)
-    .map((r) => `<tr class="bo-row-clickable" data-href="status-change.html?statusChange=${encodeURIComponent(r.changedTo)}&patient=${encodeURIComponent(r.username)}"><td>${r.username}</td><td><span class="bo-status-pill ${r.changedTo.toLowerCase()}">${r.changedTo}</span></td><td>${r.since}</td></tr>`)
+    .map((r) => `<tr class="bo-row-clickable" data-href="status-change.html?statusChange=${encodeURIComponent(r.changedTo)}&patient=${encodeURIComponent(r.username)}"><td>${r.username}</td><td><span class="bo-status-pill ${r.changedTo.toLowerCase()}">${r.changedTo}</span></td><td><span class="bo-status-pill ${r.account.toLowerCase()}">${r.account}</span></td><td><span class="bo-status-pill ${r.monitoring.toLowerCase().replace(/ /g, "-")}">${r.monitoring}</span></td><td>${r.since}</td></tr>`)
     .join("");
 
   /* Recent approved error-type events, the same set "View" opens on Patient Event. */
@@ -204,7 +204,7 @@ function renderBins(tab) {
           <span class="bo-bin-num">${val}</span>
           <div class="bo-bin-body">
             <span class="bo-bin-label">${b.label}</span>
-            <div class="bo-bin-bar-track"><div class="bo-bin-bar-fill" style="width:${pct}%; background:${b.color};"></div></div>
+            <div class="bo-bin-bar-track"><div class="bo-bin-bar-fill" style="width:${pct}%; background:var(--blue);"></div></div>
           </div>
         </div>`;
     })
