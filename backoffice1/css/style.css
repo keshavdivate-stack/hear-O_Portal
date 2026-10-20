@@ -6079,3 +6079,8 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
 /* Summary dashboard, Status Change card: a wider Status column so "Registered" has room before Account Status. */
 .bo-summary-status-table th:nth-child(2),
 .bo-summary-status-table td:nth-child(2) { min-width: 92px; padding-right: 10px; }
+
+/* Filter rows with only a couple of date fields (e.g. patient Sessions tab):
+   fixed-width fields instead of stretching across the whole row. */
+.bo-filter-row--compact { justify-content: flex-start; }
+.bo-filter-row--compact > .bo-date-field { flex: 0 0 180px; width: 180px; }
