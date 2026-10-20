@@ -307,6 +307,35 @@ const phEventsPager = boCreatePager(
 );
 phEventsPager();
 
+/* Summary tab: the same events, read-only (checkboxes shown, not editable --
+   changes happen on the Events tab). Re-rendered whenever that tab's table
+   re-renders or one of its checkboxes changes. */
+function renderSummaryEvents() {
+  const rows = peEvents.filter((e) => e.username === ph.username);
+  const date = (v) => (v && typeof peFormatDate === "function" ? peFormatDate(v) : v) || "—";
+  const time = (v) => (v && typeof peFormatDateTime === "function" ? peFormatDateTime(v) : v) || "—";
+  const box = (on) => `<input type="checkbox" class="bo-cell-checkbox" disabled ${on ? "checked" : ""} />`;
+  document.getElementById("patientSummaryEventRows").innerHTML = rows.length
+    ? rows.map((e) => `
+      <tr>
+        <td>${phEsc(e.eventType)}</td>
+        <td>${box(e.influenceCompliance)}</td>
+        <td>${phEsc(e.description) || "—"}</td>
+        <td>${phEsc(e.addedBy)}</td>
+        <td>${phEsc(e.reportedBy)}</td>
+        <td>${phEsc(e.reportedVia)}</td>
+        <td>${time(e.reportedTime)}</td>
+        <td>${date(e.startDate)}</td>
+        <td>${date(e.endDate)}</td>
+        <td>${box(e.approved)}</td>
+        <td>${phEsc(e.status) || "—"}</td>
+      </tr>`).join("")
+    : `<tr><td colspan="11" class="bo-summary-events-empty">No patient events found</td></tr>`;
+}
+renderSummaryEvents();
+new MutationObserver(renderSummaryEvents).observe(document.getElementById("patientEventRows"), { childList: true });
+document.getElementById("patientEventRows").addEventListener("change", renderSummaryEvents);
+
 document.getElementById("patientEventRows").addEventListener("change", (e) => {
   const box = e.target.closest(".bo-cell-checkbox");
   if (!box) return;

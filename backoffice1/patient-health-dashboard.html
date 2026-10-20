@@ -225,6 +225,23 @@
           </section>
         </div>
       </div>
+
+      <!-- Events: read-only list of this patient's reported events (edit/delete live on the Events tab) -->
+      <section class="bo-card bo-panel bo-summary-events">
+        <h3 class="bo-panel-title">Events</h3>
+        <div class="bo-table-scroll">
+          <table class="bo-list-table">
+            <thead>
+              <tr>
+                <th>EVENT TYPE</th><th>INFLUENCE COMPLIANCE</th><th>DESCRIPTION</th>
+                <th>ADDED BY USERNAME</th><th>REPORTED BY</th><th>REPORTED VIA</th><th>REPORTED TIME</th>
+                <th>START DATE</th><th>END DATE</th><th>APPROVED</th><th>STATUS</th>
+              </tr>
+            </thead>
+            <tbody id="patientSummaryEventRows"></tbody>
+          </table>
+        </div>
+      </section>
     </div>
 
     <!-- SESSIONS -->

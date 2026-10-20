@@ -6084,3 +6084,11 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
    fixed-width fields instead of stretching across the whole row. */
 .bo-filter-row--compact { justify-content: flex-start; }
 .bo-filter-row--compact > .bo-date-field { flex: 0 0 180px; width: 180px; }
+
+/* Patient page Summary tab: Events card at the bottom */
+/* The Summary grid keeps its full viewport height and the tab scrolls, so the
+   Events card sits below the fold instead of squashing the cards above. */
+#tab-summary { overflow-y: auto; min-height: 0; }
+#tab-summary > .bo-two-col { flex: 0 0 auto; min-height: 100%; }
+.bo-summary-events { margin-top: 16px; flex-shrink: 0; }
+.bo-summary-events-empty { text-align: center; color: var(--gray-text); padding: 28px !important; }
