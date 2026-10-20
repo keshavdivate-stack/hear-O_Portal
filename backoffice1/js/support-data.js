@@ -99,8 +99,7 @@ const TICKET_ISSUE_SEEDS = [
 const ISSUE_TYPE_SCOPE = {};
 TICKET_ISSUE_SEEDS.forEach((s) => { if (ISSUE_TYPE_CATEGORY[s.issueType]) ISSUE_TYPE_SCOPE[s.issueType] = s.scope; });
 
-/* Two support levels only -- Level 3 was dropped per design review. */
-const TIERS = ["Level 1", "Level 2"];
+const TIERS = ["Level 1", "Level 2", "Level 3"];
 const PRIORITIES = ["Low", "Medium", "High", "Critical"];
 const STATUSES = ["Open", "In Progress", "Resolved"];
 const ORIGINS = ["System", "Patient", "Clinic", "Backoffice"];
@@ -113,7 +112,8 @@ const SUPPORT_AGENTS = ["Sarah Cohen", "Daniel Avraham", "Maya Gold", "Tomer Reg
    to -- so picking a tier narrows the assignee list to that tier's team. */
 const TIER_AGENTS = {
   "Level 1": ["Sarah Cohen", "Daniel Avraham"],
-  "Level 2": ["Maya Gold", "Tomer Regev", "Liat Peretz"],
+  "Level 2": ["Maya Gold", "Tomer Regev"],
+  "Level 3": ["Liat Peretz"],
 };
 
 /* Reverse lookup from agent name to the level they were defined under above
@@ -256,6 +256,3 @@ const alertRules = [
   thresholdValue: "",
   thresholdWindow: "",
 }));
-
-/* Seed rows written before Level 3 was retired now sit at Level 2. */
-[patientTickets, clinicTickets].forEach((list) => list.forEach((t) => { if (t.tier === "Level 3") t.tier = "Level 2"; }));

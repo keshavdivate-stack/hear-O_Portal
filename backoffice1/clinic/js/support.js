@@ -26,7 +26,7 @@ function filteredTicketList() {
     if (selectedOrigins.size && !selectedOrigins.has(t.origin)) return false;
     if (selectedStates.size && !selectedStates.has(t.state)) return false;
     if (selectedAssignees.size && !selectedAssignees.has(t.assignedTo)) return false;
-    if (term && !`${t.ticketId} ${t.patientName || ""} ${t.who}`.toLowerCase().includes(term)) return false;
+    if (term && !`${t.ticketId} ${t.who} ${t.organization}`.toLowerCase().includes(term)) return false;
     return true;
   });
 }

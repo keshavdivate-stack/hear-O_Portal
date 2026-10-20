@@ -183,8 +183,13 @@ const ticketPager = boCreatePager(
       <td>${statusPill(t.status)}</td>
       <td>${t.assignedTo || "&mdash;"}</td>
       <td>${formatTicketCreated(t.createdDate)}</td>
+      <td>
+        <div class="bo-row-actions">
+          <button class="bo-action-icon row-menu-trigger" data-source="${t.source}" data-id="${t.id}" aria-label="Row actions">${ticketKebabIcon}</button>
+        </div>
+      </td>
     </tr>`,
-  { pageSize: PAGE_SIZE, emptyColspan: 12, emptyText: "No tickets found" }
+  { pageSize: PAGE_SIZE, emptyColspan: 13, emptyText: "No tickets found" }
 );
 ticketPager();
 
@@ -273,17 +278,49 @@ function renderNewTicketAssigneeOptions() {
    ticket-detail.html (mirrors how Incidents open incident-detail.html)
    instead of a drawer -- that page also renders the Patient Log content
    that used to live in a separate modal here. */
+const ticketRowMenu = document.getElementById("ticketRowMenu");
+let activeTicketSource = null;
+let activeTicketId = null;
 
 function goToTicketDetail(source, id) {
   location.href = `ticket-detail.html?source=${source}&id=${id}`;
 }
 
-/* Clicking a row opens the ticket detail page (no row menu -- the
-   three-dots column was removed per design review). */
-document.getElementById("ticketRows").addEventListener("click", (e) => {
-  const row = e.target.closest("tr[data-source][data-id]");
-  if (!row) return;
-  goToTicketDetail(row.dataset.source, Number(row.dataset.id));
+function wireTicketRowMenu(rowsId) {
+  const rowsEl = document.getElementById(rowsId);
+
+  rowsEl.addEventListener("click", (e) => {
+    const trigger = e.target.closest(".row-menu-trigger");
+    if (!trigger) return;
+    e.stopPropagation();
+    activeTicketSource = trigger.dataset.source;
+    activeTicketId = Number(trigger.dataset.id);
+    const rect = trigger.getBoundingClientRect();
+    ticketRowMenu.style.top = `${rect.bottom + 6}px`;
+    ticketRowMenu.style.left = `${rect.right - 190}px`;
+    ticketRowMenu.classList.add("open");
+  });
+
+  /* Clicking anywhere else in the row opens the ticket detail page
+     directly, so the kebab menu is only needed as a secondary entry point. */
+  rowsEl.addEventListener("click", (e) => {
+    if (e.target.closest(".row-menu-trigger")) return;
+    const row = e.target.closest("tr[data-source][data-id]");
+    if (!row) return;
+    goToTicketDetail(row.dataset.source, Number(row.dataset.id));
+  });
+}
+wireTicketRowMenu("ticketRows");
+
+document.addEventListener("click", (e) => {
+  if (!ticketRowMenu.contains(e.target)) ticketRowMenu.classList.remove("open");
+});
+
+ticketRowMenu.addEventListener("click", (e) => {
+  const item = e.target.closest(".bo-row-menu-item");
+  if (!item || activeTicketId === null) return;
+  ticketRowMenu.classList.remove("open");
+  if (item.dataset.action === "view") goToTicketDetail(activeTicketSource, activeTicketId);
 });
 
 /* ---------------- New ticket drawer ---------------- */

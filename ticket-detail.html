@@ -219,11 +219,17 @@
         <div id="ticketDetailLayout">
           <div class="ticket-detail-main">
 
-            <!-- Ticket info by type: Clinic Info (software versions) for clinic
-                 tickets, Patient Info (email + mobile) for patient tickets. -->
+            <!-- Clinic Info: the clinic/organization this ticket belongs to (read-only) -->
             <section class="ticket-detail-card" id="clinicInfo">
-              <h3 class="ticket-detail-card-title" id="ticketInfoTitle">Clinic Info</h3>
-              <div class="ticket-detail-grid" id="ticketInfoGrid" style="margin-bottom:0;"></div>
+              <h3 class="ticket-detail-card-title">Clinic Info</h3>
+              <div class="ticket-detail-grid" style="margin-bottom:0;">
+                <div class="ticket-detail-field"><label>Organization</label><span id="ticketClinicOrg">&mdash;</span></div>
+                <div class="ticket-detail-field"><label>Study</label><span id="ticketClinicStudy">&mdash;</span></div>
+                <div class="ticket-detail-field"><label>HMO</label><span id="ticketClinicHmo">&mdash;</span></div>
+                <div class="ticket-detail-field"><label>Phone</label><span id="ticketClinicPhone">&mdash;</span></div>
+                <div class="ticket-detail-field"><label>Language</label><span id="ticketClinicLanguage">&mdash;</span></div>
+                <div class="ticket-detail-field"><label>Date Created</label><span id="ticketClinicSince">&mdash;</span></div>
+              </div>
             </section>
 
             <!-- Issue -->
