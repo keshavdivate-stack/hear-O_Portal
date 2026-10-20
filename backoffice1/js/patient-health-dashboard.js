@@ -5,7 +5,7 @@ const ph = buildPatientProfile(phUsername);
 
 document.title = `HearO Backoffice | ${ph.username}`;
 document.getElementById("patientName").textContent = ph.username;
-document.getElementById("patientSub").textContent = `${ph.org} Â· ${ph.langName}`;
+document.getElementById("patientSub").textContent = `${ph.org} · ${ph.langName}`;
 
 /* If the patient was opened by drilling down from an organization's
    health dashboard, "back" should return there (preserving that
@@ -216,17 +216,33 @@ if (document.fonts && document.fonts.ready) document.fonts.ready.then(renderPati
 window.addEventListener("load", renderPatientComplianceChart);
 window.addEventListener("resize", renderPatientComplianceChart);
 
-/* ---------------- Sessions ---------------- */
+/* ---------------- Sessions ----------------
+   Each row opens that session's detail page (recordings + clinical
+   questions). The session is identified by its index in ph.sessions; the
+   org / return context rides along so the detail page's way back lands on
+   this patient exactly as it was opened. */
 document.getElementById("patientSessionRows").innerHTML = ph.sessions
   .map(
-    (s) => `
-    <tr>
-      <td>${s.date}</td><td>${s.startTime}</td><td>${s.endTime || "â€”"}</td>
+    (s, i) => `
+    <tr class="bo-row-clickable" data-session="${i}">
+      <td>${s.date}</td><td>${s.startTime}</td><td>${s.endTime || "—"}</td>
       <td>${s.errors ? `<span class="bo-severity-pill critical">${s.errors}</span>` : "0"}</td>
-      <td>${s.vEngineNote || "â€”"}</td><td>${s.os}</td><td>${s.mobileModel}</td><td>${s.appVersion}</td>
+      <td>${s.vEngineNote || "—"}</td><td>${s.os}</td><td>${s.mobileModel}</td><td>${s.appVersion}</td>
     </tr>`
   )
   .join("");
+
+function phSessionDetailUrl(index) {
+  const params = new URLSearchParams({ patient: ph.username, session: index });
+  if (phOrgContext) params.set("org", phOrgContext);
+  if (phReturnTo) params.set("return", phReturnTo);
+  return `session-detail.html?${params}`;
+}
+
+document.getElementById("patientSessionRows").addEventListener("click", (e) => {
+  const row = e.target.closest("tr[data-session]");
+  if (row) location.href = phSessionDetailUrl(row.dataset.session);
+});
 
 /* ---------------- Compliance: histograms + records info ---------------- */
 function renderHistogram(containerId, buckets) {
@@ -277,9 +293,9 @@ const phEventsPager = boCreatePager(
       <td>${phEsc(e.reportedVia)}</td>
       <td>${phEsc(e.reportedTime)}</td>
       <td>${phEsc(e.startDate)}</td>
-      <td>${phEsc(e.endDate) || "â€”"}</td>
+      <td>${phEsc(e.endDate) || "—"}</td>
       <td><input type="checkbox" class="bo-cell-checkbox" data-id="${e.id}" data-field="approved" ${e.approved ? "checked" : ""} /></td>
-      <td>${phEsc(e.status) || "â€”"}</td>
+      <td>${phEsc(e.status) || "—"}</td>
       <td>
         <div class="bo-row-actions">
           ${e.eventType !== "MESSAGE_OUT" && e.eventType !== "Message out" ? `<button type="button" class="bo-action-icon" data-action="edit" data-id="${e.id}" aria-label="Edit event">${phEventIcons.edit}</button>` : ""}
@@ -527,13 +543,27 @@ document.getElementById("patientCancelMessageDrawer").addEventListener("click", 
 document.getElementById("patientCloseMessageDrawerX").addEventListener("click", closePatientMessageDrawer);
 patientMessageDrawerOverlay.addEventListener("click", (e) => { if (e.target === patientMessageDrawerOverlay) closePatientMessageDrawer(); });
 
-/* ---------------- Tabs ---------------- */
+/* ---------------- Tabs ----------------
+   ?tab=summary|sessions|compliance|events opens the page on that tab (e.g.
+   coming back from a session's detail page lands on Sessions). Switching
+   tabs keeps the URL in step, so browser Back from a drill-in returns to
+   the tab the user left. */
+const PH_TABS = ["summary", "sessions", "compliance", "events"];
+
+function showPatientTab(name) {
+  document.querySelectorAll("#patientTabs .bo-tab").forEach((t) => t.classList.toggle("active", t.dataset.tab === name));
+  document.querySelectorAll(".bo-tab-panel").forEach((p) => p.classList.toggle("active", p.id === `tab-${name}`));
+  if (name === "summary") renderPatientComplianceChart();
+}
+
 document.querySelectorAll("#patientTabs .bo-tab").forEach((tab) => {
   tab.addEventListener("click", () => {
-    document.querySelectorAll("#patientTabs .bo-tab").forEach((t) => t.classList.remove("active"));
-    document.querySelectorAll(".bo-tab-panel").forEach((p) => p.classList.remove("active"));
-    tab.classList.add("active");
-    document.getElementById(`tab-${tab.dataset.tab}`).classList.add("active");
-    if (tab.dataset.tab === "summary") renderPatientComplianceChart();
+    showPatientTab(tab.dataset.tab);
+    const url = new URL(location.href);
+    url.searchParams.set("tab", tab.dataset.tab);
+    history.replaceState(null, "", url);
   });
 });
+
+const phInitialTab = phParams.get("tab");
+if (PH_TABS.includes(phInitialTab)) showPatientTab(phInitialTab);
