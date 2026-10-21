@@ -91,6 +91,25 @@ function isSameDay(a, b) {
   return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
 }
 
+/* What happened on a day, for the calendar dots: a recording session, an
+   invalid recording day (a session whose recordings weren't usable) and/or
+   a patient event. Seeded per patient + day so the same day always shows
+   the same dots; only days up to today can have any. */
+function phCalMarkers(date) {
+  if (date > phCalToday) return [];
+  const key = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+  let seed = phHash(`${ph.username}#${key}`);
+  seed = Math.imul(seed ^ (seed >>> 15), 2246822507) >>> 0; // spread the bits
+  seed = Math.imul(seed ^ (seed >>> 13), 3266489909) >>> 0;
+  const markers = [];
+  if (seed % 10 < 8) {
+    markers.push("session");
+    if ((seed >>> 7) % 7 === 0) markers.push("invalid");
+  }
+  if ((seed >>> 17) % 9 === 0) markers.push("event");
+  return markers;
+}
+
 function renderPatientCalendar() {
   const year = phCalView.getFullYear();
   const month = phCalView.getMonth();
@@ -121,7 +140,8 @@ function renderPatientCalendar() {
       if (c.muted) classes.push("muted");
       if (isSameDay(c.date, phCalToday)) classes.push("today");
       if (isSameDay(c.date, phCalSelected)) classes.push("selected");
-      return `<button type="button" class="${classes.join(" ")}" data-date="${c.date.toISOString()}">${c.day}</button>`;
+      const dots = phCalMarkers(c.date).map((m) => `<i class="bo-cal-dot bo-cal-dot--${m}"></i>`).join("");
+      return `<button type="button" class="${classes.join(" ")}" data-date="${c.date.toISOString()}"><span>${c.day}</span><span class="bo-cal-dots">${dots}</span></button>`;
     })
     .join("");
 }

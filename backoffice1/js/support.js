@@ -376,7 +376,9 @@ newTicketForm.addEventListener("submit", (e) => {
 const channelPillLabel = { "Notification": "In App", "Email": "Email", "SMS": "SMS" };
 const channelPills = (channels) => channels.map((c) => channelPillLabel[c] || c).join(", ");
 
-const ruleSla = (r) => (r.slaResponse || r.slaResolve ? `${r.slaResponse || "—"} / ${r.slaResolve || "—"}` : "&mdash;");
+/* SLA hours entered in Edit Rule show as "15h", like the developed table. */
+const ruleSlaLabel = (v) => (/^\d+(\.\d+)?$/.test(String(v)) ? `${v}h` : v);
+const ruleSla = (r) => (r.slaResponse || r.slaResolve ? `${ruleSlaLabel(r.slaResponse) || "—"} / ${ruleSlaLabel(r.slaResolve) || "—"}` : "&mdash;");
 
 document.getElementById("ruleCategoryFilterMenu").innerHTML = buildSelectOptions(CATEGORIES);
 document.getElementById("ruleStatusFilterMenu").innerHTML = buildSelectOptions(["Enabled", "Disabled"]);
@@ -470,7 +472,10 @@ let editingRule = null;
 function openRuleDrawer(rule) {
   editingRule = rule;
   document.getElementById("ruleDrawerTitle").textContent = `Edit Rule — ${rule.name}`;
-  document.getElementById("ruleAutoCreateInput").checked = rule.autoCreateTicket;
+  document.getElementById("ruleStatusInput").checked = rule.enabled !== false;
+  document.getElementById("ruleConditionInput").value = rule.condition || "";
+  document.getElementById("ruleSlaResponse").value = ruleSlaHours(rule.slaResponse);
+  document.getElementById("ruleSlaResolve").value = ruleSlaHours(rule.slaResolve);
 
   setBoSelectValue(ruleDrawerOverlay.querySelector('.bo-select[data-name="rulePriority"]'), rule.priority, { silent: true });
   setBoSelectValue(ruleDrawerOverlay.querySelector('.bo-select[data-name="ruleTier"]'), rule.tier, { silent: true });
@@ -479,9 +484,50 @@ function openRuleDrawer(rule) {
   document.getElementById("ruleThresholdValue").value = rule.thresholdValue || "";
   document.getElementById("ruleThresholdWindow").value = rule.thresholdWindow || "";
   syncRuleThresholdFields();
+  ruleEditSnapshot = ruleEditState();
+  validateRuleEdit();
 
   ruleDrawerOverlay.classList.add("open");
 }
+
+/* SLA is stored in hours (the developed Edit Rule asks for hours); older
+   values like "2h" are read back as their number. */
+function ruleSlaHours(v) {
+  const m = /^(\d+(?:\.\d+)?)h?$/.exec(String(v || "").trim());
+  return m ? m[1] : "";
+}
+
+/* Save stays disabled until something actually changes (and Condition,
+   which is required, isn't empty) -- like the developed Edit Rule. */
+let ruleEditSnapshot = "";
+function ruleEditState() {
+  const value = (name) => ruleDrawerOverlay.querySelector(`.bo-select[data-name="${name}"] input[type=hidden]`).value;
+  return JSON.stringify([
+    value("rulePriority"), value("ruleTier"), value("ruleAppliesTo"), value("ruleOperator"),
+    document.getElementById("ruleConditionInput").value.trim(),
+    /* Hidden threshold values (Operator "None") don't count as a change. */
+    value("ruleOperator") && value("ruleOperator") !== "None" ? document.getElementById("ruleThresholdValue").value : "",
+    value("ruleOperator") && value("ruleOperator") !== "None" ? document.getElementById("ruleThresholdWindow").value : "",
+    document.getElementById("ruleSlaResponse").value, document.getElementById("ruleSlaResolve").value,
+    document.getElementById("ruleStatusInput").checked,
+  ]);
+}
+/* Same rules as the developed Edit Rule: Condition is required; each SLA
+   field may be left empty, but if filled it must be a whole number of hours,
+   1 or more. Priority, Routed level and Applies to don't affect any other
+   field; Operator only shows/hides the two threshold fields. */
+const ruleSlaOk = (v) => v.trim() === "" || /^[1-9]\d*$/.test(v.trim());
+function validateRuleEdit() {
+  const conditionOk = document.getElementById("ruleConditionInput").value.trim() !== "";
+  const responseOk = ruleSlaOk(document.getElementById("ruleSlaResponse").value);
+  const resolveOk = ruleSlaOk(document.getElementById("ruleSlaResolve").value);
+  document.getElementById("ruleConditionError").hidden = conditionOk;
+  document.getElementById("ruleSlaResponseError").hidden = responseOk;
+  document.getElementById("ruleSlaResolveError").hidden = resolveOk;
+  document.getElementById("saveRuleDrawer").disabled = !conditionOk || !responseOk || !resolveOk || ruleEditState() === ruleEditSnapshot;
+}
+ruleDrawerForm.addEventListener("input", validateRuleEdit);
+ruleDrawerForm.addEventListener("change", validateRuleEdit);
 
 /* Threshold value and window only apply once an Operator is chosen. */
 function syncRuleThresholdFields() {
@@ -541,10 +587,13 @@ ruleDrawerOverlay.addEventListener("click", (e) => { if (e.target === ruleDrawer
 
 ruleDrawerForm.addEventListener("submit", (e) => {
   e.preventDefault();
-  if (!editingRule) return;
+  if (!editingRule || document.getElementById("saveRuleDrawer").disabled) return;
 
   const ruleSelectValue = (name) => ruleDrawerOverlay.querySelector(`.bo-select[data-name="${name}"] input[type=hidden]`).value;
-  editingRule.autoCreateTicket = document.getElementById("ruleAutoCreateInput").checked;
+  editingRule.enabled = document.getElementById("ruleStatusInput").checked;
+  editingRule.condition = document.getElementById("ruleConditionInput").value.trim();
+  editingRule.slaResponse = document.getElementById("ruleSlaResponse").value.trim();
+  editingRule.slaResolve = document.getElementById("ruleSlaResolve").value.trim();
   editingRule.priority = ruleSelectValue("rulePriority") || editingRule.priority;
   editingRule.tier = ruleSelectValue("ruleTier") || editingRule.tier;
   editingRule.appliesTo = ruleSelectValue("ruleAppliesTo") || editingRule.appliesTo;

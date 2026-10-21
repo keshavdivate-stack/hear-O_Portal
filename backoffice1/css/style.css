@@ -4325,6 +4325,18 @@ a.bo-health-card:hover { border-color: var(--field-border); }
 
 .bo-cal-nav { display: flex; gap: 10px; margin-top: 12px; }
 
+/* Day dots + legend: Session (blue), Invalid recording day (amber), Event
+   (maroon -- red is kept for Priority). */
+.bo-cal-day { flex-direction: column; gap: 3px; }
+.bo-cal-dots { display: flex; gap: 3px; height: 5px; }
+.bo-cal-dot { display: inline-block; width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+.bo-cal-dot--session { background: var(--blue); }
+.bo-cal-dot--invalid { background: #D9A21B; }
+.bo-cal-dot--event { background: var(--maroon); }
+.bo-cal-legend { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 14px; font-size: 12px; color: var(--gray-text); }
+.bo-cal-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.bo-cal-legend .bo-cal-dot { width: 8px; height: 8px; }
+
 .bo-cal-nav-btn {
   flex: 1;
   padding: 12px 0;
@@ -5093,6 +5105,10 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
 /* Rules has only two filters, so they keep a compact width (like the
    developed Rules filters) instead of stretching across the whole row. */
 #tab-rules .bo-filter-row .bo-select { flex: 0 1 220px; }
+
+/* Edit Rule popup (centered, like the developed dialog): footer separated
+   from the fields by a divider. */
+.bo-rule-edit-modal .bo-center-modal-foot { margin: 22px -26px 0; padding: 16px 26px 0; border-top: 1px solid var(--gray-border); }
 .bo-btn-primary.bo-btn-danger { background: var(--maroon); border-color: var(--maroon); }
 .bo-btn-primary.bo-btn-danger:hover { background: var(--maroon-text); border-color: var(--maroon-text); }
 .bo-rule-row-disabled td:not(:last-child):not(.bo-rule-status-cell) { opacity: 0.5; }

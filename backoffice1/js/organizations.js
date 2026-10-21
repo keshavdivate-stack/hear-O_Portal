@@ -146,7 +146,6 @@ document.getElementById("orgsRows").addEventListener("change", (e) => {
 const orgRowMenu = document.getElementById("orgRowMenu");
 let activeOrgRowId = null;
 
-const orgRowMenuEhrBtn = document.getElementById("orgRowMenuEhrBtn");
 const orgRowMenuArchiveBtn = document.getElementById("orgRowMenuArchiveBtn");
 const orgRowMenuSendUpdateBtn = document.getElementById("orgRowMenuSendUpdateBtn");
 const orgRowMenuEditBtn = document.getElementById("orgRowMenuEditBtn");
@@ -164,7 +163,6 @@ document.getElementById("orgsRows").addEventListener("click", (e) => {
      to bring it back, so every other row action is hidden while it's archived. */
   orgRowMenuSendUpdateBtn.hidden = isArchived;
   orgRowMenuEditBtn.hidden = isArchived;
-  orgRowMenuEhrBtn.hidden = isArchived || !org || (org.ehr || []).length >= EHR_MAX;
 
   if (org) {
     orgRowMenuArchiveBtn.textContent = isArchived ? "Unarchive Organization" : "Archive Organization";
@@ -186,7 +184,7 @@ orgRowMenu.addEventListener("click", (e) => {
   const item = e.target.closest(".bo-row-menu-item");
   if (!item) return;
   orgRowMenu.classList.remove("open");
-  if (item.dataset.action === "ehr") openEhrConnDrawer(activeOrgRowId);
+  if (item.dataset.action === "edit") openEditOrgModal(activeOrgRowId);
   if (item.dataset.action === "archive") {
     const org = orgs.find((o) => o.id === activeOrgRowId);
     if (!org) return;
@@ -583,7 +581,14 @@ function goToAddOrgStep(step) {
   addOrgForm.closest(".bo-fullscreen-body")?.scrollTo({ top: 0 });
 }
 
+/* Add and Edit share this panel; editingOrgId is the organization being
+   edited, or null when adding a new one. */
+let editingOrgId = null;
+
 function openAddOrgModal() {
+  editingOrgId = null;
+  document.getElementById("addOrgTitle").textContent = "Add Organization";
+  saveAddOrgBtn.textContent = "Save";
   addOrgForm.reset();
   addOrgForm.querySelectorAll(".bo-select").forEach(resetBoSelect);
   addOrgForm.querySelectorAll("[data-ehr-scope]").forEach((el) => el.clearScope());
@@ -593,6 +598,46 @@ function openAddOrgModal() {
   validateAddOrgForm();
   goToAddOrgStep(1);
   addOrgOverlay.classList.add("open");
+}
+
+/* Edit Organization: the same steps and fields as Add Organization,
+   pre-filled with what the organization already has. */
+function openEditOrgModal(id) {
+  const org = orgs.find((o) => o.id === id);
+  if (!org) return;
+  openAddOrgModal();
+  editingOrgId = id;
+  document.getElementById("addOrgTitle").textContent = `Edit Organization — ${org.name}`;
+  saveAddOrgBtn.textContent = "Save Changes";
+
+  const f = addOrgForm;
+  const select = (name, value) => {
+    const el = f.querySelector(`.bo-select[data-name="${name}"]`);
+    if (el && value) setBoSelectValue(el, value, { silent: true });
+  };
+  f.name.value = org.name;
+  f.displayName.value = org.name;
+  f.target.value = org.target ?? "";
+  f.onDashboard.checked = !!org.onDashboard;
+  f.careRec.checked = !!org.careRec;
+  f.phone1.value = org.phone || "";
+  const [lat, lng] = (org.latLng || "").split("/").map((v) => v.trim());
+  f.lat.value = lat || "";
+  f.lng.value = lng || "";
+  f.consentPath.value = org.docPath || "";
+  select("type", org.type);
+  select("study", org.study);
+  select("defaultTag", org.tag);
+  select("authType", org.authType);
+  select("defaultLanguage", org.lng);
+
+  /* Existing EHR connections turn on the EHR step, first one pre-filled. */
+  if ((org.ehr || []).length) {
+    f.enableEhrConnection.checked = true;
+    syncEhrStepVisibility();
+    select("ehr1Name", org.ehr[0]);
+  }
+  validateAddOrgForm();
 }
 
 function closeAddOrgModal() {
@@ -630,6 +675,23 @@ backAddOrgBtn.addEventListener("click", () => {
 addOrgForm.addEventListener("submit", (e) => {
   e.preventDefault();
   if (saveAddOrgBtn.disabled) return;
+  const org = editingOrgId !== null && orgs.find((o) => o.id === editingOrgId);
+  if (org) {
+    const value = (name) => addOrgForm.querySelector(`.bo-select[data-name="${name}"] input[type=hidden]`)?.value;
+    org.name = addOrgForm.name.value.trim();
+    org.target = Number(addOrgForm.target.value) || 0;
+    org.onDashboard = addOrgForm.onDashboard.checked;
+    org.careRec = addOrgForm.careRec.checked;
+    org.phone = addOrgForm.phone1.value.trim();
+    org.latLng = `${addOrgForm.lat.value.trim() || 0} / ${addOrgForm.lng.value.trim() || 0}`;
+    org.docPath = addOrgForm.consentPath.value.trim();
+    org.type = value("type") || org.type;
+    org.study = value("study") || org.study;
+    org.tag = value("defaultTag") || org.tag;
+    org.authType = value("authType") || org.authType;
+    org.lng = value("defaultLanguage") || org.lng;
+    renderOrgs();
+  }
   closeAddOrgModal();
 });
 

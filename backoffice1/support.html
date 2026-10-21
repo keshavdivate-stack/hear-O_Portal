@@ -409,16 +409,17 @@
   </main>
 
   <!-- Edit Rule drawer -->
-  <div class="bo-drawer-overlay" id="ruleDrawerOverlay">
-    <div class="bo-drawer">
-      <div class="bo-drawer-head">
+  <!-- Edit Rule: a centered popup, like the developed Edit Rule dialog. -->
+  <div class="bo-center-modal-overlay" id="ruleDrawerOverlay">
+    <div class="bo-center-modal bo-center-modal-wide bo-rule-edit-modal" role="dialog" aria-modal="true" aria-labelledby="ruleDrawerTitle">
+      <div class="bo-center-modal-head">
         <h2 id="ruleDrawerTitle">Edit Rule</h2>
         <button type="button" class="bo-drawer-close" id="closeRuleDrawerX" aria-label="Close">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M6 6L18 18M6 18L18 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
         </button>
       </div>
-      <form id="ruleDrawerForm" class="bo-drawer-form">
-      <div class="bo-drawer-body">
+      <form id="ruleDrawerForm">
+      <div class="bo-rule-edit-body">
         <div class="bo-modal-grid">
           <div class="bo-modal-field">
             <label>Priority<span class="required-star">*</span></label>
@@ -455,6 +456,12 @@
               <input type="hidden" />
             </div>
           </div>
+
+          <div class="bo-modal-field full">
+            <label for="ruleConditionInput">Condition<span class="required-star">*</span></label>
+            <textarea id="ruleConditionInput" rows="3" maxlength="500"></textarea>
+            <span class="bo-field-error" id="ruleConditionError" hidden>Condition is required</span>
+          </div>
         </div>
 
         <div class="bo-rule-section-title">Threshold</div>
@@ -480,19 +487,33 @@
           </div>
         </div>
 
+        <div class="bo-rule-section-title">SLA</div>
+        <div class="bo-modal-grid">
+          <div class="bo-modal-field">
+            <label for="ruleSlaResponse">SLA response (hours)</label>
+            <input type="number" id="ruleSlaResponse" min="1" step="1" />
+            <span class="bo-field-error" id="ruleSlaResponseError" hidden>Enter a whole number of hours (1 or more)</span>
+          </div>
+          <div class="bo-modal-field">
+            <label for="ruleSlaResolve">SLA resolve (hours)</label>
+            <input type="number" id="ruleSlaResolve" min="1" step="1" />
+            <span class="bo-field-error" id="ruleSlaResolveError" hidden>Enter a whole number of hours (1 or more)</span>
+          </div>
+        </div>
+
         <div class="bo-modal-switch-row">
           <div class="bo-switch-field">
             <span>Status</span>
             <label class="bo-switch">
-              <input type="checkbox" id="ruleAutoCreateInput" />
+              <input type="checkbox" id="ruleStatusInput" />
               <span class="bo-switch-track"></span>
             </label>
           </div>
         </div>
       </div>
-      <div class="bo-drawer-foot">
+      <div class="bo-center-modal-foot">
         <button type="button" class="bo-btn-text" id="cancelRuleDrawer">Cancel</button>
-        <button type="submit" class="bo-btn-primary" id="saveRuleDrawer">Save</button>
+        <button type="submit" class="bo-btn-primary" id="saveRuleDrawer" disabled>Save</button>
       </div>
       </form>
     </div>
