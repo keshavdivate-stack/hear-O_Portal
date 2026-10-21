@@ -47,7 +47,7 @@ const statusOptions = [
 
 const monitoringOptions = [
   { key: "monitored", label: "Monitored" },
-  { key: "nearly-unmonitored", label: "Nearly Unmonitored" },
+  { key: "nearly-unmonitored", label: "Low Compliance" },
   { key: "unmonitored", label: "Unmonitored" },
 ];
 
@@ -147,7 +147,7 @@ function monitoringCell(p) {
   if (p.monitoring === "nearly-unmonitored") {
     return `
       <div class="mon-cell">
-        <span class="mon-line mon-nearly-unmonitored">${infoIconBlue} Nearly Unmonitored</span>
+        <span class="mon-line mon-nearly-unmonitored">${infoIconBlue} Low Compliance</span>
         <span class="status-since">${p.monSince || ""}</span>
       </div>`;
   }

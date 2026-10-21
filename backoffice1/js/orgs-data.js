@@ -17,3 +17,50 @@ const orgs = [
 ];
 
 orgs.forEach((o, i) => (o.id = i));
+
+/* Organization Time Zone (IANA id) -- each org's own zone, used for
+   algorithm-related processing (daily recording windows, compliance
+   calculations). Offsets shown are standard time (no DST); Israel is
+   listed first since most organizations are Israeli. */
+const ORG_TIME_ZONES = [
+  ["Asia/Jerusalem", "+02:00"],
+  ["Pacific/Honolulu", "-10:00"],
+  ["America/Anchorage", "-09:00"],
+  ["America/Los_Angeles", "-08:00"],
+  ["America/Denver", "-07:00"],
+  ["America/Phoenix", "-07:00"],
+  ["America/Chicago", "-06:00"],
+  ["America/Mexico_City", "-06:00"],
+  ["America/New_York", "-05:00"],
+  ["America/Toronto", "-05:00"],
+  ["America/Bogota", "-05:00"],
+  ["America/Halifax", "-04:00"],
+  ["America/Sao_Paulo", "-03:00"],
+  ["America/Argentina/Buenos_Aires", "-03:00"],
+  ["UTC", "+00:00"],
+  ["Europe/London", "+00:00"],
+  ["Europe/Lisbon", "+00:00"],
+  ["Africa/Lagos", "+01:00"],
+  ["Europe/Berlin", "+01:00"],
+  ["Europe/Madrid", "+01:00"],
+  ["Europe/Paris", "+01:00"],
+  ["Europe/Rome", "+01:00"],
+  ["Africa/Cairo", "+02:00"],
+  ["Africa/Johannesburg", "+02:00"],
+  ["Europe/Athens", "+02:00"],
+  ["Europe/Kyiv", "+02:00"],
+  ["Asia/Riyadh", "+03:00"],
+  ["Europe/Istanbul", "+03:00"],
+  ["Europe/Moscow", "+03:00"],
+  ["Asia/Dubai", "+04:00"],
+  ["Asia/Karachi", "+05:00"],
+  ["Asia/Kolkata", "+05:30"],
+  ["Asia/Dhaka", "+06:00"],
+  ["Asia/Bangkok", "+07:00"],
+  ["Asia/Shanghai", "+08:00"],
+  ["Asia/Singapore", "+08:00"],
+  ["Asia/Tokyo", "+09:00"],
+  ["Australia/Sydney", "+10:00"],
+  ["Pacific/Auckland", "+12:00"],
+].map(([id, offset]) => ({ id, label: `(UTC${offset}) ${id}` }));
+

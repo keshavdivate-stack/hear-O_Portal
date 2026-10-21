@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/Mobile%20app/style.css?v=30">
+<link rel="stylesheet" href="/Mobile%20app/style.css?v=33">
 <script src="/Mobile%20app/font-scale.js?v=29"></script>
 </head>
 <body>
@@ -37,29 +37,33 @@
 
   const SEED_ISSUES = [
     {
-      issue: "App is not working as expected",
+      area: "Recordings",
       detail: "The app freezes for a few seconds after I finish a recording.",
       date: "Aug 18, 8:15 AM",
-      status: "in-progress",
     },
     {
-      issue: "App configuration seems incorrect",
-      detail: "",
-      date: "Aug 18, 8:15 AM",
-      status: "resolved",
+      area: "Medications",
+      detail: "I can't mark my evening dose as taken.",
+      date: "Aug 12, 6:40 PM",
     },
   ];
 
+  // Issues saved by the old flow have no area (Recordings, Medications...), so they are dropped.
   function loadIssues() {
     try {
       const raw = localStorage.getItem(ISSUES_KEY);
-      if (raw) return JSON.parse(raw);
+      const saved = raw ? JSON.parse(raw).filter((i) => i.area) : [];
+      if (saved.length) {
+        localStorage.setItem(ISSUES_KEY, JSON.stringify(saved));
+        return saved;
+      }
     } catch (e) {}
     localStorage.setItem(ISSUES_KEY, JSON.stringify(SEED_ISSUES));
     return SEED_ISSUES;
   }
 
-  const STATUS_LABELS = { open: "Open", "in-progress": "In Progress", resolved: "Resolved" };
+  // Descriptions are typed by the patient, so escape them before showing.
+  const esc = (t) => String(t || "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
   const issuesList = document.getElementById("issuesList");
   const issues = loadIssues();
@@ -71,12 +75,9 @@
       .map(
         (i) => `
       <div class="mx-issue-card">
-        <div class="mx-issue-top">
-          <span class="mx-issue-title">${i.issue}</span>
-          <span class="mx-issue-pill ${i.status}">${STATUS_LABELS[i.status] || "Open"}</span>
-        </div>
-        <div class="mx-issue-date">${i.date}</div>
-        ${i.detail ? `<div class="mx-issue-note">${i.detail}</div>` : ""}
+        <div class="mx-issue-title">${esc(i.area)}</div>
+        <div class="mx-issue-date">${esc(i.date)}</div>
+        <div class="mx-issue-note">${esc(i.detail)}</div>
       </div>`
       )
       .join("");

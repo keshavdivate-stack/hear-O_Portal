@@ -630,7 +630,7 @@ button, input, select, textarea, optgroup {
 .bo-status-pill.discontinued { color: #8D929A; }
 .bo-status-pill.enabled { color: var(--green-text); }
 .bo-status-pill.monitored { color: var(--green-text); }
-.bo-status-pill.nearly-unmonitored { color: var(--orange-text); }
+.bo-status-pill.low-compliance { color: var(--orange-text); }
 .bo-status-pill.none { color: var(--gray-text); }
 .bo-status-pill.left-study { color: var(--purple-text); }
 
@@ -3135,6 +3135,9 @@ a.bo-btn-secondary { text-decoration: none; }
 .bo-sc-badge.enabled { color: var(--green-text); }
 .bo-sc-badge.paused { color: #9AA5B1; }
 .bo-sc-badge.discontinued { color: #8D929A; }
+.bo-sc-badge.low-compliance { color: var(--orange-text); }
+/* Status Change (page + Summary card): which status changed -- Account, Status or Monitoring */
+.bo-sc-category { padding: 2px 8px; font-size: 11.5px; }
 
 /* EHR Connections cell (Organizations table) */
 .bo-ehr-tags {
@@ -6076,9 +6079,9 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
 #ticketRecordingFromField.placeholder .bo-date-field-value,
 #ticketRecordingToField.placeholder .bo-date-field-value { color: #AEB4BC; font-weight: 400; }
 
-/* Summary dashboard, Status Change card: a wider Status column so "Registered" has room before Account Status. */
-.bo-summary-status-table th:nth-child(2),
-.bo-summary-status-table td:nth-child(2) { min-width: 92px; padding-right: 10px; }
+/* Summary dashboard, Status Change card: a wider Changed to column so "Registered" has room before Account Status. */
+.bo-summary-status-table th:nth-child(3),
+.bo-summary-status-table td:nth-child(3) { min-width: 92px; padding-right: 10px; }
 
 /* Filter rows with only a couple of date fields (e.g. patient Sessions tab):
    fixed-width fields instead of stretching across the whole row. */

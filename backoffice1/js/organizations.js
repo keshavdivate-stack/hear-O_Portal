@@ -282,6 +282,14 @@ window.addEventListener("resize", closeAllBoSelects);
 
 initBoSelects();
 
+/* Time Zone (Configuration step): options come from the shared
+   ORG_TIME_ZONES list, with a search box since the list is long. */
+const orgTimeZoneSelect = document.getElementById("orgTimeZoneSelect");
+orgTimeZoneSelect.querySelector(".bo-select-menu").innerHTML = ORG_TIME_ZONES.map(
+  (z) => `<div class="bo-select-option" data-value="${z.id}">${z.label}<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>`
+).join("");
+addBoSelectSearch(orgTimeZoneSelect, "Search time zones");
+
 /* ---------------- EHR Connection cards (up to 3 — Athena, ECW, Epic) ---------------- */
 const EHR_OPTIONS_HTML = `
   <div class="bo-select-option" data-value="Athena">Athena<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>

@@ -10,7 +10,9 @@ const statusChanges = STATUS_CHANGE_ROWS.map((s, i) => ({ ...s, id: i, sinceIso:
 
 /* ---------------- State ---------------- */
 const SC_PAGE_SIZE = 20;
-const SC_STATUS_TO_OPTIONS = ["Registered", "Baseline", "Active", "Priority"];
+/* Status (clinical), then Account, then Monitoring values */
+const SC_STATUS_TO_OPTIONS = ["Registered", "Baseline", "Active", "Priority", "Enabled", "Paused", "Discontinued", "Monitored", "Low Compliance", "Unmonitored"];
+const scBadgeClass = (value) => value.toLowerCase().replace(/ /g, "-");
 let scCurrentPage = 1;
 let scStatusToFilter = "";
 let scAccountFilter = "";
@@ -121,7 +123,7 @@ const scMonitoringSelect = document.querySelector('.bo-select[data-name="scMonit
 const scOptionHtml = (value, label) => `<div class="bo-select-option" data-value="${value}">${label}<svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>`;
 const scOptionsHtml = (values) => scOptionHtml("", "All") + values.map((v) => scOptionHtml(v, v)).join("");
 document.getElementById("scAccountMenu").innerHTML = scOptionsHtml(["Enabled", "Paused", "Discontinued"]);
-document.getElementById("scMonitoringMenu").innerHTML = scOptionsHtml(["Monitored", "Unmonitored", "Nearly Unmonitored"]);
+document.getElementById("scMonitoringMenu").innerHTML = scOptionsHtml(["Monitored", "Unmonitored", "Low Compliance"]);
 
 function setBoSelectValue(select, value, { silent = false } = {}) {
   const hiddenInput = select.querySelector("input[type=hidden]");
@@ -219,8 +221,9 @@ function renderStatusChanges() {
       (s) => `
       <tr>
         <td><span class="bo-name-link">${s.username}</span></td>
-        <td>${s.previous ? `<span class="bo-sc-badge ${s.previous.toLowerCase()}">${s.previous}</span>` : "&mdash;"}</td>
-        <td><span class="bo-sc-badge ${s.changedTo.toLowerCase()}">${s.changedTo}</span></td>
+        <td><span class="bo-pill bo-pill-tag bo-sc-category">${s.category}</span></td>
+        <td>${s.previous ? `<span class="bo-sc-badge ${scBadgeClass(s.previous)}">${s.previous}</span>` : "&mdash;"}</td>
+        <td><span class="bo-sc-badge ${scBadgeClass(s.changedTo)}">${s.changedTo}</span></td>
         <td><span class="bo-status-pill ${s.account.toLowerCase()}">${s.account}</span></td>
         <td><span class="bo-status-pill ${s.monitoring.toLowerCase().replace(/ /g, "-")}">${s.monitoring}</span></td>
         <td>${s.since}</td>

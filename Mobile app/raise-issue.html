@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/Mobile%20app/style.css?v=32">
+<link rel="stylesheet" href="/Mobile%20app/style.css?v=34">
 <script src="/Mobile%20app/font-scale.js?v=29"></script>
 </head>
 <body>
@@ -26,25 +26,22 @@
       <button type="button" class="back-btn" id="issueBackBtn">
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M12.5 4L6.5 10L12.5 16" stroke="#252424" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
-      <h1>Select an issue</h1>
+      <h1>Raise an Issue</h1>
     </div>
 
-    <!-- STEP 1: Issue selection -->
+    <!-- One screen: pick the area, describe it, submit -->
     <div class="issue-body" id="issueStep">
-      <p class="issue-label">What seems to be the problem?</p>
-      <label class="ri-search">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6b6b6b" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/></svg>
-        <input type="text" id="issueSearch" placeholder="Search" autocomplete="off" />
-      </label>
-      <div id="issueList"></div>
-      <p class="ri-no-match" id="noMatch" hidden>No matching issues</p>
-      <!-- Only shown for "Other - Other problem" -->
-      <div id="otherDetails" hidden>
-        <p class="issue-details-label">Describe the problem</p>
-        <textarea class="issue-textarea" id="issueDetails" placeholder="Tell us a bit more..."></textarea>
+      <p class="issue-label">Where did the problem happen?</p>
+      <div id="areaList">
+        <button type="button" class="issue-option" data-area="Recordings"><span class="radio-circle"></span><span>Recordings</span></button>
+        <button type="button" class="issue-option" data-area="Measurements"><span class="radio-circle"></span><span>Measurements</span></button>
+        <button type="button" class="issue-option" data-area="Medications"><span class="radio-circle"></span><span>Medications</span></button>
+        <button type="button" class="issue-option" data-area="Chat"><span class="radio-circle"></span><span>Chat</span></button>
       </div>
+      <p class="issue-details-label">Tell us briefly what happened</p>
+      <textarea class="issue-textarea" id="issueDetails" placeholder="Type here..."></textarea>
       <div class="issue-submit-wrap">
-        <button type="button" class="login-btn" id="submitBtn">Submit Issue</button>
+        <button type="button" class="login-btn" id="submitBtn" disabled>Submit</button>
       </div>
     </div>
 
@@ -70,17 +67,9 @@
   </div>
 
 <script>
-  const ISSUES = [
-    "App is not opening",
-    "App is not working as expected",
-    "App is not loading properly",
-    "App configuration seems incorrect",
-    "Other - Other problem"
-  ];
-  const OTHER = "Other - Other problem";
   const $ = (id) => document.getElementById(id);
   const steps = ["issueStep", "successStep", "errorStep"];
-  let selectedIssue = ISSUES[0];
+  let selectedArea = "";
 
   // Result screens are full screens (no header), like the Figma.
   function show(step) {
@@ -88,28 +77,20 @@
     $("issueHeader").hidden = step === "successStep" || step === "errorStep";
   }
 
-  function renderIssues() {
-    const q = $("issueSearch").value.trim().toLowerCase();
-    const list = ISSUES.filter((l) => l.toLowerCase().includes(q));
-    $("noMatch").hidden = list.length > 0;
-    $("issueList").innerHTML = "";
-    list.forEach((label) => {
-      const btn = document.createElement("button");
-      btn.type = "button";
-      btn.className = "issue-option" + (label === selectedIssue ? " selected" : "");
-      btn.innerHTML = '<span class="radio-circle"></span><span></span>';
-      btn.lastChild.textContent = label;
-      btn.addEventListener("click", () => { selectedIssue = label; renderIssues(); });
-      $("issueList").appendChild(btn);
-    });
-    // The text field is only for "Other": the listed issues need no description,
-    // but "Other" does, so Submit waits for some text there.
-    const isOther = selectedIssue === OTHER;
-    $("otherDetails").hidden = !isOther;
-    $("submitBtn").disabled = isOther && !$("issueDetails").value.trim();
+  // Submit waits for both an area and a short description.
+  function updateSubmit() {
+    $("submitBtn").disabled = !selectedArea || !$("issueDetails").value.trim();
   }
-  $("issueSearch").addEventListener("input", renderIssues);
-  $("issueDetails").addEventListener("input", renderIssues);
+
+  const areaButtons = document.querySelectorAll("#areaList .issue-option");
+  areaButtons.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      selectedArea = btn.dataset.area;
+      areaButtons.forEach((b) => b.classList.toggle("selected", b === btn));
+      updateSubmit();
+    });
+  });
+  $("issueDetails").addEventListener("input", updateSubmit);
 
   $("issueBackBtn").addEventListener("click", () => { window.location.href = "/Mobile%20app/my-issues.html"; });
 
@@ -119,10 +100,9 @@
     let issues = [];
     try { issues = JSON.parse(localStorage.getItem(KEY)) || []; } catch (e) {}
     issues.unshift({
-      issue: selectedIssue,
-      detail: selectedIssue === OTHER ? $("issueDetails").value.trim() : "",
+      area: selectedArea,
+      detail: $("issueDetails").value.trim(),
       date: new Date().toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }),
-      status: "open",
     });
     localStorage.setItem(KEY, JSON.stringify(issues));
   }
@@ -135,8 +115,6 @@
   });
   $("tryAgainBtn").addEventListener("click", () => show("issueStep"));
   $("continueBtn").addEventListener("click", () => { window.location.href = "/Mobile%20app/raised-issues.html"; });
-
-  renderIssues();
 </script>
 </body>
 </html>
