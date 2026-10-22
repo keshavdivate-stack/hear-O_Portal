@@ -6098,6 +6098,11 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
 /* Summary dashboard, Status Change card: a wider Changed to column so "Registered" has room before Account Status. */
 .bo-summary-status-table th:nth-child(3),
 .bo-summary-status-table td:nth-child(3) { min-width: 92px; padding-right: 10px; }
+/* Its columns don't all fit the card, so this scroll area shows a thin scrollbar
+   (scrollbars are hidden site-wide). */
+.bo-table-scroll--bar { scrollbar-width: thin; scrollbar-color: #C9D0D8 transparent; }
+.bo-table-scroll--bar::-webkit-scrollbar { display: block; width: 6px; height: 6px; }
+.bo-table-scroll--bar::-webkit-scrollbar-thumb { background: #C9D0D8; border-radius: 3px; }
 
 /* Filter rows with only a couple of date fields (e.g. patient Sessions tab):
    fixed-width fields instead of stretching across the whole row. */
