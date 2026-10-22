@@ -43,14 +43,17 @@ function sortedOrgs() {
 }
 
 /* ---------------- Render ---------------- */
-const orgCheck = (id, field, on) => `<input type="checkbox" class="bo-cell-checkbox" data-id="${id}" data-field="${field}" ${on ? "checked" : ""} />`;
+/* On/off columns are switches, like the developed Organizations table. */
+const orgCheck = (id, field, on) => `<label class="bo-switch"><input type="checkbox" class="bo-cell-checkbox" data-id="${id}" data-field="${field}" ${on ? "checked" : ""} /><span class="bo-switch-track"></span></label>`;
 const orgKebabIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="1.7" fill="currentColor"/><circle cx="12" cy="12" r="1.7" fill="currentColor"/><circle cx="12" cy="19" r="1.7" fill="currentColor"/></svg>`;
 
-const EHR_CLASS = { Athena: "athena", ECW: "ecw", Epic: "epic" };
-function orgEhrTags(ehr) {
-  if (!ehr || !ehr.length) return `<span class="bo-ehr-none">—</span>`;
-  return `<div class="bo-ehr-tags">${ehr.map((e) => `<span class="bo-ehr-tag ${EHR_CLASS[e] || ""}">${e}</span>`).join("")}</div>`;
-}
+/* Organizations without stored values: EHR is on when it has connections,
+   Medication module off and Support on (as the developed table shows). */
+orgs.forEach((o) => {
+  if (o.ehrEnabled === undefined) o.ehrEnabled = (o.ehr || []).length > 0;
+  if (o.medicationModule === undefined) o.medicationModule = false;
+  if (o.supportModule === undefined) o.supportModule = true;
+});
 
 function renderOrgs() {
   const list = sortedOrgs();
@@ -70,14 +73,16 @@ function renderOrgs() {
         <td>${o.study}</td>
         <td>${o.target}</td>
         <td>${o.dateCreated}</td>
-        <td>${orgCheck(o.id, "onDashboard", o.onDashboard)}</td>
-        <td>${orgCheck(o.id, "careRec", o.careRec)}</td>
         <td>${o.authType}</td>
         <td>${o.type}</td>
-        <td>${orgEhrTags(o.ehr)}</td>
-        <td>${o.phone}</td>
+        <td>${o.phone || "&mdash;"}</td>
         <td class="mono">${o.latLng}</td>
-        <td>${o.docPath}</td>
+        <td>${o.docPath || "&mdash;"}</td>
+        <td>${orgCheck(o.id, "onDashboard", o.onDashboard)}</td>
+        <td>${orgCheck(o.id, "careRec", o.careRec)}</td>
+        <td>${orgCheck(o.id, "ehrEnabled", o.ehrEnabled)}</td>
+        <td>${orgCheck(o.id, "medicationModule", o.medicationModule)}</td>
+        <td>${orgCheck(o.id, "supportModule", o.supportModule)}</td>
         <td>
           <div class="bo-row-actions">
             <button class="bo-action-icon row-menu-trigger" data-id="${o.id}" aria-label="Row actions">${orgKebabIcon}</button>
@@ -620,6 +625,8 @@ function openEditOrgModal(id) {
   f.target.value = org.target ?? "";
   f.onDashboard.checked = !!org.onDashboard;
   f.careRec.checked = !!org.careRec;
+  f.medicationModule.checked = !!org.medicationModule;
+  f.supportModule.checked = !!org.supportModule;
   f.phone1.value = org.phone || "";
   const [lat, lng] = (org.latLng || "").split("/").map((v) => v.trim());
   f.lat.value = lat || "";
@@ -631,8 +638,8 @@ function openEditOrgModal(id) {
   select("authType", org.authType);
   select("defaultLanguage", org.lng);
 
-  /* Existing EHR connections turn on the EHR step, first one pre-filled. */
-  if ((org.ehr || []).length) {
+  /* EHR connection on turns on the EHR step, first connection pre-filled. */
+  if (org.ehrEnabled) {
     f.enableEhrConnection.checked = true;
     syncEhrStepVisibility();
     select("ehr1Name", org.ehr[0]);
@@ -682,6 +689,9 @@ addOrgForm.addEventListener("submit", (e) => {
     org.target = Number(addOrgForm.target.value) || 0;
     org.onDashboard = addOrgForm.onDashboard.checked;
     org.careRec = addOrgForm.careRec.checked;
+    org.medicationModule = addOrgForm.medicationModule.checked;
+    org.supportModule = addOrgForm.supportModule.checked;
+    org.ehrEnabled = addOrgForm.enableEhrConnection.checked;
     org.phone = addOrgForm.phone1.value.trim();
     org.latLng = `${addOrgForm.lat.value.trim() || 0} / ${addOrgForm.lng.value.trim() || 0}`;
     org.docPath = addOrgForm.consentPath.value.trim();
