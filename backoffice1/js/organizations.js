@@ -55,6 +55,27 @@ orgs.forEach((o) => {
   if (o.supportModule === undefined) o.supportModule = true;
 });
 
+/* Switch changes are remembered in this browser (keyed by organization name),
+   so flipping one sticks across reloads instead of snapping back. */
+const ORG_SWITCH_FIELDS = ["onDashboard", "careRec", "ehrEnabled", "medicationModule", "supportModule"];
+const ORG_SWITCH_STORE = "hearo_org_switches";
+function loadOrgSwitches() {
+  try { return JSON.parse(localStorage.getItem(ORG_SWITCH_STORE)) || {}; } catch (e) { return {}; }
+}
+function saveOrgSwitches(org) {
+  try {
+    const all = loadOrgSwitches();
+    all[org.name] = Object.fromEntries(ORG_SWITCH_FIELDS.map((k) => [k, !!org[k]]));
+    localStorage.setItem(ORG_SWITCH_STORE, JSON.stringify(all));
+  } catch (e) { /* storage unavailable: the change still applies until reload */ }
+}
+(function applySavedOrgSwitches() {
+  const saved = loadOrgSwitches();
+  orgs.forEach((o) => {
+    if (saved[o.name]) ORG_SWITCH_FIELDS.forEach((k) => { if (k in saved[o.name]) o[k] = saved[o.name][k]; });
+  });
+})();
+
 function renderOrgs() {
   const list = sortedOrgs();
   const total = list.length;
@@ -144,7 +165,9 @@ document.getElementById("orgsRows").addEventListener("change", (e) => {
   const box = e.target.closest(".bo-cell-checkbox");
   if (!box) return;
   const org = orgs.find((o) => o.id === Number(box.dataset.id));
-  if (org) org[box.dataset.field] = box.checked;
+  if (!org) return;
+  org[box.dataset.field] = box.checked;
+  saveOrgSwitches(org);
 });
 
 /* ---------------- Row action dropdown ---------------- */
@@ -692,6 +715,7 @@ addOrgForm.addEventListener("submit", (e) => {
     org.medicationModule = addOrgForm.medicationModule.checked;
     org.supportModule = addOrgForm.supportModule.checked;
     org.ehrEnabled = addOrgForm.enableEhrConnection.checked;
+    saveOrgSwitches(org);
     org.phone = addOrgForm.phone1.value.trim();
     org.latLng = `${addOrgForm.lat.value.trim() || 0} / ${addOrgForm.lng.value.trim() || 0}`;
     org.docPath = addOrgForm.consentPath.value.trim();
