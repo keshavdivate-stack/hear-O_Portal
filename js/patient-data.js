@@ -1454,8 +1454,8 @@ document.querySelectorAll(".data-tab").forEach((tab) => {
     document.querySelector(`.data-tab-panel[data-panel="${target}"]`).classList.add("open");
     /* charts inside a hidden panel measure 0 width when built, so re-run once it's visible */
     if (target === "health-data") rebuildRangedCharts();
-    /* Week/Month only applies to the charted panels -- Patient Information is static */
-    document.getElementById("dataRangeToggle").style.display = target === "info" ? "none" : "";
+    /* Week/Month only applies to the charted panels -- not Recordings, and Patient Information is static */
+    document.getElementById("dataRangeToggle").style.display = target === "info" || target === "recordings" ? "none" : "";
   });
 });
 
@@ -1480,6 +1480,11 @@ document.querySelectorAll(".subtab").forEach((tab) => {
     tab.classList.add("active");
     scope.querySelector(`.subtab-panel[data-subpanel="${target}"]`).classList.add("open");
     rebuildRangedCharts();
+
+    /* Add measurement only belongs to the Measurement subtab, not Wellness */
+    if (target === "measurement" || target === "wellness") {
+      document.getElementById("openAddMeasurementBtn").style.display = target === "wellness" ? "none" : "";
+    }
 
     const medActions = document.getElementById("medSubtabActions");
     const careRecActions = document.getElementById("careRecSubtabActions");
