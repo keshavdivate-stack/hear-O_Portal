@@ -1243,9 +1243,10 @@ button, input, select, textarea, optgroup {
   font-size: 14px;
 }
 
+/* Same blue Care Recommendation button as the other patient charts */
 .btn-care {
-  background: var(--btn-bg);
-  color: var(--btn-text);
+  background: #3b82f6;
+  color: #FFFFFF;
   border: none;
   border-radius: 10px;
   padding: 11px 22px;
@@ -1254,7 +1255,7 @@ button, input, select, textarea, optgroup {
   cursor: pointer;
 }
 
-.btn-care:hover { background: var(--btn-bg-hover); }
+.btn-care:hover { background: #2563eb; }
 
 .btn-care:disabled {
   background: #E3E7EB;
