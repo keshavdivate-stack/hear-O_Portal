@@ -33,6 +33,19 @@
   });
 })();
 
+/* One patient (Ariel Fox, flagged hideCareRecommendation in js/patient-list.js)
+   has no Care Recommendation button in the patient card and no Clinical tab
+   -- every other patient keeps both. */
+(() => {
+  if (new URLSearchParams(window.location.search).get("noCareRec") !== "1") return;
+  const careBtn = document.getElementById("openCareRecBtn");
+  if (careBtn) careBtn.style.display = "none";
+  const clinicalTab = document.querySelector('.data-tab[data-tab="clinical"]');
+  if (clinicalTab) clinicalTab.style.display = "none";
+  const clinicalPanel = document.querySelector('.data-tab-panel[data-panel="clinical"]');
+  if (clinicalPanel) clinicalPanel.style.display = "none";
+})();
+
 /* ---------------- Care Team popover ---------------- */
 wireTopbarToggle("careTeamTrigger", "careTeamPopover");
 
