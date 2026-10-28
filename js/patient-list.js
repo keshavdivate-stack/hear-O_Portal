@@ -96,8 +96,8 @@ function statusCell(p) {
     const ackMark = p.acked
       ? `
         <span class="action-icon-wrap status-ack-wrap">
-          <span class="status-ack-avatar">${initialsOf(p.teamMember)}</span>
-          <span class="action-tooltip">Acknowledged by ${p.teamMember || "—"}</span>
+          <span class="status-ack-avatar">${initialsOf(p.ackBy || p.teamMember)}</span>
+          <span class="action-tooltip">Acknowledged by ${p.ackBy || p.teamMember || "—"}</span>
         </span>`
       : `
         <span class="action-icon-wrap status-ack-wrap">
@@ -1088,6 +1088,9 @@ let activeRowPatientId = null;
 
 function openRowMenuFor(id, trigger) {
   activeRowPatientId = id;
+  /* Acknowledge is offered only on a Priority patient no one has acknowledged yet. */
+  const patient = patientList.find((p) => p.id === id);
+  patientRowMenu.querySelector('[data-action="acknowledge"]').hidden = !(patient && patient.status === "priority" && !patient.acked);
   const rect = trigger.getBoundingClientRect();
   patientRowMenu.style.top = `${rect.bottom + 6}px`;
   patientRowMenu.style.left = `${rect.right - 190}px`;
@@ -1191,7 +1194,12 @@ patientRowMenu.addEventListener("click", (e) => {
   const patient = patientList.find((p) => p.id === activeRowPatientId);
   if (!patient) return;
 
-  if (item.dataset.action === "edit") openEditPatientModal(patient);
+  if (item.dataset.action === "acknowledge") {
+    patient.acked = true;
+    patient.ackBy = CURRENT_TEAM_MEMBER;
+    renderPatientList();
+  }
+  else if (item.dataset.action === "edit") openEditPatientModal(patient);
   else if (item.dataset.action === "account") openUpdateAccountModal(patient);
   else if (item.dataset.action === "medication") window.open(patient.hideMedicationDetails ? "care-recommendation.html?hideMedDetails=1" : "care-recommendation.html", "_blank");
   else if (item.dataset.action === "reset") openResetPasswordModal(patient);
