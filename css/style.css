@@ -643,22 +643,24 @@ button, input, select, textarea, optgroup {
 
 /* Priority table Care Team column: a "✓ Ack" button beside the avatars
    until someone acknowledges; then "Acknowledged by …" under them. */
-.care-team-cell--pending { flex-direction: row; align-items: center; gap: 10px; }
+.care-team-cell--pending { flex-direction: row; align-items: center; gap: 8px; }
+/* Icon-only Ack: same 26px circle as the avatars so the row reads as one line. */
 .care-ack-btn {
+  width: 26px;
+  height: 26px;
+  flex-shrink: 0;
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  justify-content: center;
+  padding: 0;
   background: #EAF6FD;
   border: 1px solid #9BD3F2;
+  border-radius: 50%;
   color: var(--blue-text);
-  font-family: inherit;
-  font-size: 13px;
-  font-weight: 700;
-  padding: 6px 12px;
-  border-radius: 8px;
   cursor: pointer;
+  transition: background var(--transition), border-color var(--transition);
 }
-.care-ack-btn:hover { background: #D7EEFB; }
+.care-ack-btn:hover { background: var(--blue); border-color: var(--blue); color: #fff; }
 /* Visually hidden but read by screen readers (e.g. the acknowledgment announcement). */
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 .care-ack-btn:focus-visible,
@@ -697,7 +699,9 @@ button, input, select, textarea, optgroup {
 
 /* Side by side (not overlapping) so a white "not yet" member is never hidden
    behind a blue one. */
-.care-team-avatars { gap: 4px; }
+/* Packed edge to edge (no gap) to save space, with only a 2px overlap so
+   no circle cuts into its neighbour's initials. */
+.care-team-avatars .care-avatar-sm + .care-avatar-sm { margin-left: -2px; }
 
 /* Phones: the Priority table keeps a readable minimum width and scrolls
    sideways instead of squeezing columns until names and dates overlap. */

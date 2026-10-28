@@ -94,12 +94,14 @@ const openPriorityIdx = new Set();
    yet). Until anyone acknowledges, a "✓ Ack" button sits beside them
    (acknowledges as the signed-in user); after that, "Acknowledged by
    <names>" shows under the avatars. */
-const ackCheckSvg = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const ackCheckSvg = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 
 /* Care Team cell -- one compact pattern that reads the same at any width:
-   - avatars: filled blue = acknowledged, dashed white = not yet; at most 3
+   - avatars stacked with a slight overlap (white ring keeps each readable):
+     filled blue = acknowledged, dashed white = not yet; at most 3
      shown, the rest as "+N" (everyone listed in its tooltip);
-   - before anyone acknowledges: a "✓ Ack" button beside the avatars;
+   - before anyone acknowledges: a round check-icon Ack button, avatar
+     sized, in front of the avatars (tooltip + accessible name, no text);
    - after: one short line, "Acknowledged by <first>" (+N when more have),
      with the full list and times in its tooltip, and for a few seconds
      after acknowledging, an "Undo" on that same line. */
@@ -120,7 +122,7 @@ function careAvatarsHtml(p, i) {
   if (!acknowledged.length) {
     return `
     <div class="care-team-cell care-team-cell--pending">
-      <button type="button" class="care-ack-btn" data-idx="${i}" aria-label="Acknowledge priority for ${p.name}" title="Acknowledge this priority">${ackCheckSvg} Ack</button>${avatars}
+      <button type="button" class="care-ack-btn" data-idx="${i}" aria-label="Acknowledge priority for ${p.name}" title="Acknowledge">${ackCheckSvg}</button>${avatars}
     </div>`;
   }
   const undoOpen = p.lastAck && p.lastAck.until > Date.now();
