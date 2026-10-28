@@ -641,26 +641,58 @@ button, input, select, textarea, optgroup {
 
 .care-team-cell { display: flex; flex-direction: column; gap: 4px; }
 
-.care-team-avatars { display: flex; }
-
-.care-team-ack-names { font-size: 11.5px; color: var(--blue-text); font-weight: 600; }
-
-.care-avatar-sm {
-  width: 26px;
-  height: 26px;
+/* Priority table Care Team column: "✓ Ack" until someone acknowledges,
+   then "Acknowledged / by <name>"; members' initials beside it. */
+.priority-row .care-team-cell { flex-direction: row; align-items: center; gap: 10px; flex-wrap: wrap; }
+.care-ack-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: #EAF6FD;
+  border: 1px solid #9BD3F2;
+  color: var(--blue-text);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.care-ack-btn:hover { background: #D7EEFB; }
+.care-ack-done { display: flex; align-items: center; gap: 7px; }
+.care-ack-done-icon {
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
-  display: flex;
+  background: #22A06B;
+  color: #fff;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 10.5px;
-  font-weight: 700;
-  border: 2px solid #fff;
-  margin-left: -8px;
+  flex-shrink: 0;
 }
+.care-ack-done-text { display: flex; flex-direction: column; line-height: 1.25; }
+.care-ack-done-label { font-size: 13px; font-weight: 700; color: var(--green-text); }
+.care-ack-done-by { font-size: 11.5px; color: var(--gray-text); }
+.care-team-initials {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #F1F3F6;
+  border: 1px solid #DDE2E8;
+  color: #4B5563;
+  font-size: 11px;
+  font-weight: 700;
+}
+.priority-row .care-team-avatars { gap: 4px; }
 
-.care-avatar-sm:first-child { margin-left: 0; }
-.care-avatar-sm.ack { background: var(--blue); color: #fff; }
-.care-avatar-sm.pending { background: #fff; border: 1.5px dashed #C9CFD6; color: #9AA5B1; }
+.care-team-avatars { display: flex; }
+
+
+
 
 .handling-status-pill {
   display: inline-block;
@@ -674,29 +706,9 @@ button, input, select, textarea, optgroup {
 
 .handling-meta { font-size: 12px; color: var(--gray-text); margin-top: 4px; }
 
-.priority-ack-row { margin-top: 12px; }
 
-.priority-acknowledge-btn {
-  background: none;
-  border: 1.5px solid var(--blue);
-  color: var(--blue-text);
-  font-size: 13px;
-  font-weight: 700;
-  padding: 7px 14px;
-  border-radius: 8px;
-  cursor: pointer;
-}
 
-.priority-acknowledge-btn:hover { background: var(--blue-light); }
 
-.priority-acknowledged-note {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--green-text);
-}
 
 .view-details {
   display: block;

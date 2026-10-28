@@ -91,33 +91,31 @@ function renderPatientRows(elId, items, iconSvg) {
    doesn't collapse another the clinician already had open. */
 const openPriorityIdx = new Set();
 
-function careAvatarsHtml(p) {
-  const acknowledgedNames = p.careTeam.filter((m) => m.acknowledged).map((m) => m.name);
+/* Care Team cell: until someone on the care team acknowledges the priority
+   it shows a "✓ Ack" button (acknowledges as the signed-in user); after
+   that, a green "Acknowledged / by <name>" note. The members' initials
+   follow either way. */
+const ackCheckSvg = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+
+function careAvatarsHtml(p, i) {
+  const acknowledged = p.careTeam.filter((m) => m.acknowledged);
+  const status = acknowledged.length
+    ? `<div class="care-ack-done">
+        <span class="care-ack-done-icon">${ackCheckSvg}</span>
+        <span class="care-ack-done-text"><span class="care-ack-done-label">Acknowledged</span><span class="care-ack-done-by">by ${acknowledged.map((m) => m.name).join(", ")}</span></span>
+      </div>`
+    : `<button type="button" class="care-ack-btn" data-idx="${i}">${ackCheckSvg} Ack</button>`;
   return `
     <div class="care-team-cell">
+      ${status}
       <div class="care-team-avatars">
-        ${p.careTeam
-          .map(
-            (m) => `<span class="care-avatar-sm ${m.acknowledged ? "ack" : "pending"}" title="${m.name} · ${m.acknowledged ? "Acknowledged" : "Not yet acknowledged"}">${m.initials}</span>`
-          )
-          .join("")}
+        ${p.careTeam.map((m) => `<span class="care-team-initials" title="${m.name} · ${m.acknowledged ? "Acknowledged" : "Not yet acknowledged"}">${m.initials}</span>`).join("")}
       </div>
-      ${acknowledgedNames.length ? `<div class="care-team-ack-names">Acknowledged by ${acknowledgedNames.join(", ")}</div>` : ""}
     </div>`;
 }
 
-function priorityDetailRowHtml(p, i) {
-  const mine = p.careTeam.find((m) => m.name === CURRENT_USER);
-  const iAcknowledged = mine && mine.acknowledged;
-  return `
-    ${patientDetailRowHtml(p)}
-    <div class="priority-ack-row">
-      ${
-        iAcknowledged
-          ? `<span class="priority-acknowledged-note"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="#197A4E" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg> You acknowledged this${mine.ackTime ? ` &middot; ${mine.ackTime}` : ""}</span>`
-          : `<button type="button" class="priority-acknowledge-btn" data-idx="${i}">+ Acknowledge</button>`
-      }
-    </div>`;
+function priorityDetailRowHtml(p) {
+  return patientDetailRowHtml(p);
 }
 
 function updatePriorityNewBadges() {
@@ -145,10 +143,10 @@ function renderPriorityRows(elId, items) {
           </div>
         </td>
         <td class="p-since">${p.since}</td>
-        <td>${careAvatarsHtml(p)}</td>
+        <td>${careAvatarsHtml(p, i)}</td>
       </tr>
       <tr class="p-detail-row" data-idx="${i}" ${openPriorityIdx.has(i) ? "" : "hidden"}>
-        <td colspan="3">${priorityDetailRowHtml(p, i)}</td>
+        <td colspan="3">${priorityDetailRowHtml(p)}</td>
       </tr>`
     )
     .join("");
@@ -172,7 +170,6 @@ function acknowledgePriority(i) {
   if (!p.handling) p.handling = { status: "In Progress", name: CURRENT_USER, since: ackTime };
   p.unseen = false;
 
-  openPriorityIdx.add(i);
   renderPriorityRows("priorityRows", priorityPatients);
 }
 
@@ -190,7 +187,7 @@ document.getElementById("priorityRows").addEventListener("click", (e) => {
     return;
   }
 
-  const ackBtn = e.target.closest(".priority-acknowledge-btn");
+  const ackBtn = e.target.closest(".care-ack-btn");
   if (ackBtn) {
     acknowledgePriority(Number(ackBtn.dataset.idx));
     return;
