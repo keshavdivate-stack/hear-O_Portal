@@ -644,19 +644,22 @@ button, input, select, textarea, optgroup {
 /* Priority table Care Team column: a "✓ Ack" button beside the avatars
    until someone acknowledges; then "Acknowledged by …" under them. */
 .care-team-cell--pending { flex-direction: row; align-items: center; gap: 8px; }
-/* Icon-only Ack: same 26px circle as the avatars so the row reads as one line. */
+/* Small "✓ Ack": same 26px height as the avatars so the row reads as one line. */
 .care-ack-btn {
-  width: 26px;
   height: 26px;
   flex-shrink: 0;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0;
+  gap: 4px;
+  padding: 0 9px;
   background: #EAF6FD;
   border: 1px solid #9BD3F2;
-  border-radius: 50%;
+  border-radius: 6px;
   color: var(--blue-text);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
   cursor: pointer;
   transition: background var(--transition), border-color var(--transition);
 }
