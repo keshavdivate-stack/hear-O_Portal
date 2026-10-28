@@ -96,25 +96,40 @@ const openPriorityIdx = new Set();
    <names>" shows under the avatars. */
 const ackCheckSvg = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 
+/* Care Team cell -- one compact pattern that reads the same at any width:
+   - avatars: filled blue = acknowledged, dashed white = not yet; at most 3
+     shown, the rest as "+N" (everyone listed in its tooltip);
+   - before anyone acknowledges: a "✓ Ack" button beside the avatars;
+   - after: one short line, "Acknowledged by <first>" (+N when more have),
+     with the full list and times in its tooltip, and for a few seconds
+     after acknowledging, an "Undo" on that same line. */
+const CARE_TEAM_MAX_AVATARS = 3;
+
 function careAvatarsHtml(p, i) {
-  const acknowledgedNames = p.careTeam.filter((m) => m.acknowledged).map((m) => m.name);
+  const team = p.careTeam;
+  const memberLabel = (m) => `${m.name} · ${m.acknowledged ? `Acknowledged${m.ackTime ? ` ${m.ackTime}` : ""}` : "Not yet acknowledged"}`;
+  const shown = team.length > CARE_TEAM_MAX_AVATARS ? team.slice(0, CARE_TEAM_MAX_AVATARS - 1) : team;
+  const hidden = team.slice(shown.length);
   const avatars = `
       <div class="care-team-avatars">
-        ${p.careTeam
-          .map(
-            (m) => `<span class="care-avatar-sm ${m.acknowledged ? "ack" : "pending"}" title="${m.name} · ${m.acknowledged ? "Acknowledged" : "Not yet acknowledged"}">${m.initials}</span>`
-          )
-          .join("")}
+        ${shown.map((m) => `<span class="care-avatar-sm ${m.acknowledged ? "ack" : "pending"}" title="${memberLabel(m)}">${m.initials}</span>`).join("")}
+        ${hidden.length ? `<span class="care-avatar-sm more" title="${hidden.map(memberLabel).join("&#10;")}">+${hidden.length}</span>` : ""}
       </div>`;
-  if (!acknowledgedNames.length) {
+
+  const acknowledged = team.filter((m) => m.acknowledged);
+  if (!acknowledged.length) {
     return `
     <div class="care-team-cell care-team-cell--pending">
-      <button type="button" class="care-ack-btn" data-idx="${i}">${ackCheckSvg} Ack</button>${avatars}
+      <button type="button" class="care-ack-btn" data-idx="${i}" aria-label="Acknowledge priority for ${p.name}" title="Acknowledge this priority">${ackCheckSvg} Ack</button>${avatars}
     </div>`;
   }
+  const undoOpen = p.lastAck && p.lastAck.until > Date.now();
+  const extra = acknowledged.length - 1;
   return `
     <div class="care-team-cell">${avatars}
-      <div class="care-team-ack-names">Acknowledged by ${acknowledgedNames.join(", ")}</div>
+      <div class="care-team-ack-names" title="${acknowledged.map(memberLabel).join("&#10;")}">
+        <span class="care-team-ack-text">Acknowledged by ${acknowledged[0].name}${extra ? ` +${extra}` : ""}</span>${undoOpen ? `<button type="button" class="care-ack-undo" data-idx="${i}">Undo</button>` : ""}
+      </div>
     </div>`;
 }
 
@@ -171,6 +186,7 @@ function acknowledgePriority(i) {
     p.careTeam.find((m) => m.name === CURRENT_USER && !m.acknowledged) ||
     p.careTeam.find((m) => !m.acknowledged);
   if (!member) return;
+  p.lastAck = { member, handlingSet: !p.handling, until: Date.now() + ACK_UNDO_MS };
   member.acknowledged = true;
   member.ackTime = ackTime;
 
@@ -178,6 +194,49 @@ function acknowledgePriority(i) {
   p.unseen = false;
 
   renderPriorityRows("priorityRows", priorityPatients);
+  announcePriority(`${p.name}: acknowledged by ${member.name}.`);
+  focusPriorityControl(i, ".care-ack-undo");
+  /* Close the undo window: drop the Undo link once it has passed. */
+  setTimeout(() => {
+    if (p.lastAck && p.lastAck.until <= Date.now()) {
+      p.lastAck = null;
+      renderPriorityRows("priorityRows", priorityPatients);
+    }
+  }, ACK_UNDO_MS + 50);
+}
+
+/* Undo puts the member back to not-acknowledged (and clears the Handling it
+   started), bringing the Ack button back. */
+function undoAcknowledgePriority(i) {
+  const p = priorityPatients[i];
+  const last = p.lastAck;
+  if (!last) return;
+  last.member.acknowledged = false;
+  delete last.member.ackTime;
+  if (last.handlingSet) p.handling = null;
+  p.lastAck = null;
+  renderPriorityRows("priorityRows", priorityPatients);
+  announcePriority(`${p.name}: acknowledgment undone.`);
+  focusPriorityControl(i, ".care-ack-btn");
+}
+
+const ACK_UNDO_MS = 6000;
+
+/* Screen readers hear the change, since the button itself disappears. */
+function announcePriority(text) {
+  let live = document.getElementById("priorityLiveRegion");
+  if (!live) {
+    live = Object.assign(document.createElement("div"), { id: "priorityLiveRegion", className: "sr-only" });
+    live.setAttribute("aria-live", "polite");
+    document.body.appendChild(live);
+  }
+  live.textContent = text;
+}
+
+/* Keep keyboard focus on the row's control after it re-renders. */
+function focusPriorityControl(i, selector) {
+  const el = document.querySelector(`#priorityRows ${selector}[data-idx="${i}"]`);
+  if (el) el.focus();
 }
 
 document.getElementById("priorityRows").addEventListener("click", (e) => {
@@ -197,6 +256,12 @@ document.getElementById("priorityRows").addEventListener("click", (e) => {
   const ackBtn = e.target.closest(".care-ack-btn");
   if (ackBtn) {
     acknowledgePriority(Number(ackBtn.dataset.idx));
+    return;
+  }
+
+  const undoBtn = e.target.closest(".care-ack-undo");
+  if (undoBtn) {
+    undoAcknowledgePriority(Number(undoBtn.dataset.idx));
     return;
   }
 });
