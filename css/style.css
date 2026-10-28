@@ -646,25 +646,22 @@ button, input, select, textarea, optgroup {
 .care-team-cell--pending { flex-direction: row; align-items: center; gap: 8px; }
 /* Small "✓ Ack": same 26px height as the avatars so the row reads as one line. */
 .care-ack-btn {
+  width: 26px;
   height: 26px;
   flex-shrink: 0;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 4px;
-  padding: 0 9px;
-  background: #fff;
-  border: 1px dashed #7CC4EC;
+  padding: 0;
+  background: #EAF6FD;
+  border: 1px solid #9BD3F2;
   border-radius: 6px;
   color: var(--blue-text);
-  font-family: inherit;
-  font-size: 12px;
-  font-weight: 700;
   cursor: pointer;
   transition: background var(--transition), border-color var(--transition);
 }
-/* Dashed like the "not yet" avatars; hover only tints it lightly. */
-.care-ack-btn:hover { background: #EAF6FD; border-color: var(--blue); }
+/* Icon-only rounded square; hover only deepens the light tint (never solid blue). */
+.care-ack-btn:hover { background: #D7EEFB; border-color: var(--blue); }
 .care-ack-tooltip {
   position: fixed;
   z-index: 2000;
