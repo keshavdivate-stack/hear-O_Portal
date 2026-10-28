@@ -122,7 +122,7 @@ function careAvatarsHtml(p, i) {
   if (!acknowledged.length) {
     return `
     <div class="care-team-cell care-team-cell--pending">
-      <button type="button" class="care-ack-btn" data-idx="${i}" aria-label="Acknowledge priority for ${p.name}" title="Acknowledge this priority">${ackCheckSvg} Ack</button>${avatars}
+      <button type="button" class="care-ack-btn" data-idx="${i}" aria-label="Acknowledge priority for ${p.name}" data-tooltip="Acknowledge this priority">${ackCheckSvg} Ack</button>${avatars}
     </div>`;
   }
   const undoOpen = p.lastAck && p.lastAck.until > Date.now();
@@ -223,6 +223,31 @@ function undoAcknowledgePriority(i) {
 }
 
 const ACK_UNDO_MS = 6000;
+
+/* Ack tooltip: a small dark label above the button on hover / keyboard
+   focus. Fixed-positioned so the table's scroll area can't clip it. */
+let ackTooltip = null;
+function showAckTooltip(btn) {
+  hideAckTooltip();
+  ackTooltip = Object.assign(document.createElement("div"), { className: "care-ack-tooltip", textContent: btn.dataset.tooltip });
+  ackTooltip.setAttribute("role", "tooltip");
+  document.body.appendChild(ackTooltip);
+  const r = btn.getBoundingClientRect();
+  const t = ackTooltip.getBoundingClientRect();
+  ackTooltip.style.left = `${Math.max(8, r.left + r.width / 2 - t.width / 2)}px`;
+  ackTooltip.style.top = `${r.top - t.height - 8}px`;
+}
+function hideAckTooltip() {
+  if (ackTooltip) ackTooltip.remove();
+  ackTooltip = null;
+}
+const priorityRowsEl = document.getElementById("priorityRows");
+priorityRowsEl.addEventListener("mouseover", (e) => { const b = e.target.closest(".care-ack-btn"); if (b) showAckTooltip(b); });
+priorityRowsEl.addEventListener("mouseout", (e) => { const b = e.target.closest(".care-ack-btn"); if (b && !b.contains(e.relatedTarget)) hideAckTooltip(); });
+priorityRowsEl.addEventListener("focusin", (e) => { const b = e.target.closest(".care-ack-btn"); if (b && b.matches(":focus-visible")) showAckTooltip(b); });
+priorityRowsEl.addEventListener("focusout", hideAckTooltip);
+priorityRowsEl.addEventListener("click", hideAckTooltip, true);
+window.addEventListener("scroll", hideAckTooltip, true);
 
 /* Screen readers hear the change, since the button itself disappears. */
 function announcePriority(text) {
