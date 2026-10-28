@@ -33,7 +33,6 @@ const infoSvg = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none"><ci
    Drives which priorities show as unseen-by-me and whose name the
    "Acknowledge" action records against. */
 const CURRENT_USER = "Emily Carter";
-const CURRENT_USER_INITIALS = "EC";
 
 function patientDetailRowHtml(p) {
   return `
@@ -164,15 +163,18 @@ function acknowledgePriority(i) {
   const now = new Date();
   const ackTime = now.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
 
-  let mine = p.careTeam.find((m) => m.name === CURRENT_USER);
-  if (!mine) {
-    mine = { initials: CURRENT_USER_INITIALS, name: CURRENT_USER, acknowledged: false };
-    p.careTeam.push(mine);
-  }
-  mine.acknowledged = true;
-  mine.ackTime = ackTime;
+  /* Ack marks one of the patient's own care team members as acknowledged
+     (the signed-in user if they're on the team, otherwise the first member
+     who hasn't yet) -- it never adds anyone to the team. That member's
+     avatar turns blue; the rest stay white. */
+  const member =
+    p.careTeam.find((m) => m.name === CURRENT_USER && !m.acknowledged) ||
+    p.careTeam.find((m) => !m.acknowledged);
+  if (!member) return;
+  member.acknowledged = true;
+  member.ackTime = ackTime;
 
-  if (!p.handling) p.handling = { status: "In Progress", name: CURRENT_USER, since: ackTime };
+  if (!p.handling) p.handling = { status: "In Progress", name: member.name, since: ackTime };
   p.unseen = false;
 
   renderPriorityRows("priorityRows", priorityPatients);
