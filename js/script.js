@@ -91,26 +91,31 @@ function renderPatientRows(elId, items, iconSvg) {
    doesn't collapse another the clinician already had open. */
 const openPriorityIdx = new Set();
 
-/* Care Team cell: until someone on the care team acknowledges the priority
-   it shows a "✓ Ack" button (acknowledges as the signed-in user); after
-   that, a green "Acknowledged / by <name>" note. The members' initials
-   follow either way. */
+/* Care Team cell: the members' avatars (filled = acknowledged, dashed = not
+   yet). Until anyone acknowledges, a "✓ Ack" button sits beside them
+   (acknowledges as the signed-in user); after that, "Acknowledged by
+   <names>" shows under the avatars. */
 const ackCheckSvg = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 
 function careAvatarsHtml(p, i) {
-  const acknowledged = p.careTeam.filter((m) => m.acknowledged);
-  const status = acknowledged.length
-    ? `<div class="care-ack-done">
-        <span class="care-ack-done-icon">${ackCheckSvg}</span>
-        <span class="care-ack-done-text"><span class="care-ack-done-label">Acknowledged</span><span class="care-ack-done-by">by ${acknowledged.map((m) => m.name).join(", ")}</span></span>
-      </div>`
-    : `<button type="button" class="care-ack-btn" data-idx="${i}">${ackCheckSvg} Ack</button>`;
-  return `
-    <div class="care-team-cell">
-      ${status}
+  const acknowledgedNames = p.careTeam.filter((m) => m.acknowledged).map((m) => m.name);
+  const avatars = `
       <div class="care-team-avatars">
-        ${p.careTeam.map((m) => `<span class="care-team-initials" title="${m.name} · ${m.acknowledged ? "Acknowledged" : "Not yet acknowledged"}">${m.initials}</span>`).join("")}
-      </div>
+        ${p.careTeam
+          .map(
+            (m) => `<span class="care-avatar-sm ${m.acknowledged ? "ack" : "pending"}" title="${m.name} · ${m.acknowledged ? "Acknowledged" : "Not yet acknowledged"}">${m.initials}</span>`
+          )
+          .join("")}
+      </div>`;
+  if (!acknowledgedNames.length) {
+    return `
+    <div class="care-team-cell care-team-cell--pending">
+      <button type="button" class="care-ack-btn" data-idx="${i}">${ackCheckSvg} Ack</button>${avatars}
+    </div>`;
+  }
+  return `
+    <div class="care-team-cell">${avatars}
+      <div class="care-team-ack-names">Acknowledged by ${acknowledgedNames.join(", ")}</div>
     </div>`;
 }
 
