@@ -1491,6 +1491,18 @@ button.bo-name-link { background: none; border: none; padding: 0; font: inherit;
 .bo-switch input:checked + .bo-switch-track { background: var(--blue); }
 .bo-switch input:checked + .bo-switch-track::after { transform: translateX(16px); }
 
+/* Read-only yes/no flag (Organizations table) */
+.bo-flag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+}
+.bo-flag-on { background: var(--green-light); color: var(--green-text); }
+.bo-flag-off { background: var(--red-light); color: var(--red-text); }
+
 /* Compact filter select â€” shows the field label until a value is chosen, then the selected option */
 .bo-filter-field {
   display: flex;

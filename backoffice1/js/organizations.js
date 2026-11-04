@@ -43,8 +43,11 @@ function sortedOrgs() {
 }
 
 /* ---------------- Render ---------------- */
-/* On/off columns are switches, like the developed Organizations table. */
-const orgCheck = (id, field, on) => `<label class="bo-switch"><input type="checkbox" class="bo-cell-checkbox" data-id="${id}" data-field="${field}" ${on ? "checked" : ""} /><span class="bo-switch-track"></span></label>`;
+/* On/off columns are read-only: a green check for on, a red cross for off.
+   Values are changed from Edit Organization, not from the table. */
+const orgCheck = (id, field, on) => on
+  ? `<span class="bo-flag bo-flag-on" role="img" aria-label="Yes"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.5 4.5L19 7.5" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>`
+  : `<span class="bo-flag bo-flag-off" role="img" aria-label="No"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M7 7l10 10M17 7L7 17" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg></span>`;
 const orgKebabIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="1.7" fill="currentColor"/><circle cx="12" cy="12" r="1.7" fill="currentColor"/><circle cx="12" cy="19" r="1.7" fill="currentColor"/></svg>`;
 
 /* Organizations without stored values: EHR is on when it has connections,
@@ -89,7 +92,7 @@ function renderOrgs() {
     .map(
       (o) => `
       <tr>
-        <td><a class="bo-name-link" href="org-profile.html?id=${o.id}">${o.name}</a></td>
+        <td>${o.name}</td>
         <td>${o.tag}</td>
         <td>${o.study}</td>
         <td>${o.target}</td>
@@ -159,15 +162,6 @@ document.getElementById("orgNextPage").addEventListener("click", () => { orgCurr
 document.getElementById("orgLastPage").addEventListener("click", () => {
   orgCurrentPage = Math.ceil(filteredOrgs().length / ORG_PAGE_SIZE);
   renderOrgs();
-});
-
-document.getElementById("orgsRows").addEventListener("change", (e) => {
-  const box = e.target.closest(".bo-cell-checkbox");
-  if (!box) return;
-  const org = orgs.find((o) => o.id === Number(box.dataset.id));
-  if (!org) return;
-  org[box.dataset.field] = box.checked;
-  saveOrgSwitches(org);
 });
 
 /* ---------------- Row action dropdown ---------------- */
