@@ -1199,7 +1199,6 @@ patientRowMenu.addEventListener("click", (e) => {
   }
   else if (item.dataset.action === "edit") openEditPatientModal(patient);
   else if (item.dataset.action === "account") openUpdateAccountModal(patient);
-  else if (item.dataset.action === "medication") window.open(patient.hideMedicationDetails ? "care-recommendation.html?hideMedDetails=1" : "care-recommendation.html", "_blank");
   else if (item.dataset.action === "reset") openResetPasswordModal(patient);
 });
 
