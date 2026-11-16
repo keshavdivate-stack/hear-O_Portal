@@ -301,7 +301,6 @@ const columnOptions = [
   { key: "source", label: "Source" },
   { key: "status", label: "Status" },
   { key: "monitoring", label: "Monitoring" },
-  { key: "careRecommendation", label: "Care Recommendation" },
   { key: "careTeam", label: "Care Team" },
 ];
 const hiddenColumns = new Set();
@@ -330,7 +329,6 @@ function renderPatientList() {
         <td data-col="source">${p.source === "EHR Imported" ? `<span class="source-outline-badge">EHR</span>` : `<span class="source-outline-badge">Manual</span>`}</td>
         <td data-col="status">${statusCell(p)}</td>
         <td data-col="monitoring">${monitoringCell(p)}</td>
-        <td data-col="careRecommendation">${careCell(p)}</td>
         <td data-col="careTeam">${careTeamCell(p)}</td>
         <td data-col="action">${actionCell(p)}</td>
       </tr>`
