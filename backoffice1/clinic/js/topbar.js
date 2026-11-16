@@ -67,8 +67,12 @@
     back.className = "bo-back-btn";
     back.href = safeGet(RETURN_KEY) || FALLBACK;
     back.title = "Back to Backoffice";
-    back.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><polyline points="12 19 5 12 12 5"/></svg>Back to Backoffice<span class="bo-back-org">${org}</span>`;
-    topbar.insertBefore(back, topbar.firstChild);
+    back.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><polyline points="12 19 5 12 12 5"/></svg>Back<span class="bo-back-org">${org}</span>`;
+    /* Right side of the navbar: first item of the actions group (before the
+       org/language/notification icons); falls back to the end of the topbar. */
+    const actions = topbar.querySelector(".topbar-actions");
+    if (actions) actions.insertBefore(back, actions.firstChild);
+    else topbar.appendChild(back);
   }
 
   /* Org switcher: make sure the clinic opened from Backoffice is listed and selected. */
