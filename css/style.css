@@ -8310,3 +8310,70 @@ body.patient-discontinued #chatOpenBtn {
 /* Questionnaire range bar */
 .quest-range-nav { display: flex; align-items: center; gap: 14px; margin-left: auto; }
 .quest-range-label { min-width: 120px; text-align: center; font-size: 13.5px; font-weight: 600; color: #23272E; }
+
+/* ============================================================
+   Clinical tab: EHR sections (js/clinical-ehr.js) -- same rules as
+   ehr-integration/css/style.css, using the existing tokens only.
+   ============================================================ */
+.ehr-connected-dot { width: 7px; height: 7px; border-radius: 50%; background: #2E9A66; }
+.profile-field-source {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 11.5px; font-weight: 600; color: var(--gray-text);
+}
+.btn-sync .sync-icon { transition: transform 220ms ease; }
+.btn-sync.is-syncing { pointer-events: none; opacity: 0.75; }
+.btn-sync.is-syncing .sync-icon { animation: sync-spin 900ms linear infinite; }
+@keyframes sync-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+.rec-status-active { color: #15803D; }
+.rec-status-resolved, .rec-status-inactive { color: #7E8993; }
+.rec-status-mild { color: #7E8993; }
+.rec-status-moderate { color: #C2410C; }
+.rec-status-severe { color: #D92D20; }
+
+.ehr-sync-meta { gap: 12px; }
+.ehr-sync-meta-text { font-size: 12.5px; color: var(--gray-text); white-space: nowrap; }
+.ehr-sync-meta-text strong { color: #363B42; font-weight: 600; }
+
+.med-source-row {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px 20px; flex-wrap: wrap; margin-bottom: 14px;
+}
+.med-source-row .med-legend { margin-bottom: 0; }
+.med-source-row .unit-toggle span:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+
+.rec-muted { color: var(--gray-text); }
+.rec-table td.rec-cell-wide { min-width: 280px; max-width: 420px; line-height: 1.45; }
+
+.cp-summary { display: block; margin-top: 3px; font-size: 12.5px; color: var(--gray-text); }
+.cp-toggle {
+  margin-top: 4px; padding: 0; border: 0; background: none;
+  color: var(--blue); font: inherit; font-size: 12.5px; font-weight: 700; cursor: pointer;
+}
+.cp-toggle:hover { text-decoration: underline; }
+.cp-toggle:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; border-radius: 2px; }
+.rec-table tbody tr.cp-detail-row td { padding-top: 0; background: transparent; }
+.cp-detail {
+  display: grid; grid-template-columns: minmax(220px, 1fr) minmax(0, 2fr);
+  gap: 16px 28px; padding: 14px 16px; border-radius: 10px; background: var(--bg);
+}
+.cp-h { margin: 0 0 6px; font-size: 12px; font-weight: 700; letter-spacing: 0.3px; color: #23272E; }
+.cp-h:not(:first-child) { margin-top: 12px; }
+.cp-list { margin: 0; padding-left: 18px; font-size: 13px; color: #363B42; line-height: 1.6; }
+.cp-sub { font-size: 12px; font-weight: 400; color: var(--gray-text); }
+.cp-appts { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 6px 18px; }
+.cp-appt { font-size: 13px; color: #363B42; white-space: nowrap; }
+.cp-appt b { font-weight: 600; color: #23272E; }
+@media (max-width: 760px) { .cp-detail { grid-template-columns: 1fr; } }
+
+.rec-table tbody tr.rec-more-row td { text-align: center; padding: 10px; }
+.rec-table tbody tr.rec-more-row:hover td { background: transparent; }
+.rec-more-btn {
+  border: 0; background: none; padding: 4px 8px;
+  color: var(--blue); font: inherit; font-size: 13px; font-weight: 700; cursor: pointer;
+}
+.rec-more-btn:hover { text-decoration: underline; }
+.rec-more-btn:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; border-radius: 4px; }
+
+/* author display rules (e.g. .med-legend { display:flex }) would override [hidden] */
+#medList[hidden], .med-legend[hidden], .ehr-med-wrap[hidden], .cp-detail-row[hidden] { display: none; }
