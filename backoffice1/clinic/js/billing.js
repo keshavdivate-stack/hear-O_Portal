@@ -3,7 +3,8 @@
    render logic. Only the `name` field is changed here (real name -> a
    same-format placeholder Patient ID, since billing's own "id" column is a
    shared placeholder MRN, not a per-patient identifier reused from
-   patientList); the eligibility-code cells, billing-status cells, and the
+   patientList). That ID NUMBER cell is not rendered at all (direct patient
+   identifier); the eligibility-code cells, billing-status cells, and the
    Schedule Billing Report modal are all administrative/aggregate and are
    otherwise unchanged from the root file. */
 
@@ -93,7 +94,6 @@ function renderBillingRows() {
     <tr data-patient="${b.patientId}">
       <td><span class="bill-checkbox row-check${b.codes[0].t === "pending" ? " disabled" : ""}"></span></td>
       <td><span class="lt-name active-name">${b.patientId}</span></td>
-      <td>${b.id}</td>
       <td>${b.enrolled}</td>
       <td>${codeCell(b.codes[0])}</td>
       <td>${codeCell(b.codes[1])}</td>

@@ -1,23 +1,18 @@
-/* Backoffice-safe fork of ../../js/ticket-detail.js. Why forked instead of
-   shared: this file renders the Recording player (an actual patient voice
-   recording -- clinical PHI) and a Chat-with-Patient panel (patient-authored
-   conversation content), and shows the ticket's real patient name. Changes
-   from the root file:
-   - recordingMarkup()/wireRecording() and every reference to them are
-     removed -- Voice Engine tickets now show Issue + Handling + Patient Log
-     + History + Resolution with no Recording section at all.
-   - The Patient field always shows `ticket.who` (already an anonymous
-     per-org patient identifier, e.g. "121-2010") instead of
-     `ticket.patientName || ticket.who` -- there is no patientName field on
-     this backoffice copy's ticketList (see js/support-data.js) to fall back
-     from.
-   - The entire Chat-with-Patient block (chatMessages seed data, panel
-     open/close, send/attachment wiring) is removed -- its markup is already
-     gone from ticket-detail.html.
-   Handling, Patient Log (device/app-version/permissions/session-log
-   history -- all operational, no clinical content), and History are
-   unchanged, and still call into the unmodified, reused
-   js/support-tickets-common.js. */
+/* Backoffice-safe fork of ../../js/ticket-detail.js (re-synced with the
+   root file). Why forked instead of shared: the root file shows the patient
+   name on Patient tickets, adds the patient e-mail / mobile to the meta line,
+   and renders the Recording tab (a patient voice recording). Changes from the
+   root file:
+   - "Created For" on Patient tickets shows only `ticket.who` (the patient's
+     user number) -- there is no patientName on this copy's ticketList (see
+     js/support-data.js). The patient e-mail / mobile (patientContactInfo) are
+     dropped entirely.
+   - The Recording tab (renderRecording, the play/pause wiring and the
+     microphone-permission alert) is removed; its markup is gone from
+     ticket-detail.html too.
+   Header, Clinic Info, Issue, History and Patient Log (device / app version /
+   permissions / session log -- operational, no clinical content) match the
+   root file and still call into the shared ../../js/support-tickets-common.js. */
 
 function getTicketIdFromUrl() {
   const params = new URLSearchParams(window.location.search);
@@ -26,20 +21,14 @@ function getTicketIdFromUrl() {
 }
 
 const ticket = ticketList.find((t) => t.id === getTicketIdFromUrl());
-const ticketDetailBody = document.getElementById("ticketDetailBody");
 
-/* New tickets (raised from this page) don't carry a tier yet -- fall back to
-   the tier implied by their assignee, or Level 1 for an unassigned ticket. */
-function deriveDefaultTier(t) {
-  if (!t.tier) t.tier = AGENT_LEVEL[t.assignedTo] || "Level 1";
-}
-
-/* The Back arrow returns to wherever the user actually came from instead of
-   always landing on the Tickets tab. When the referring page is part of this
-   app, that page's URL wins -- history.back() is used on click for a true
-   back-nav, and the link's href falls back to that same URL for reload/
-   new-tab cases with no history entry to go back to. With no usable in-app
-   referrer, the link keeps its default "Support" destination. */
+/* The Back arrow returns to wherever the user actually came from (Support
+   list, a notification, etc.) instead of always landing on the Tickets tab.
+   When the referring page is part of this app, that page's URL wins --
+   history.back() is used on click for a true back-nav, and the link's href
+   falls back to that same URL for reload/new-tab cases with no history entry
+   to go back to. With no usable in-app referrer, the link keeps its default
+   "Support" destination. */
 (function initTicketDetailBackLink() {
   const backLink = document.getElementById("ticketDetailBack");
   if (!backLink) return;
@@ -59,395 +48,125 @@ function deriveDefaultTier(t) {
 })();
 
 if (!ticket) {
-  ticketDetailBody.innerHTML = `<div class="ticket-detail-card"><h2>Ticket not found</h2><p style="color:var(--gray-text);">This ticket doesn't exist or has been removed. <a href="support.html">Back to Support</a></p></div>`;
+  document.getElementById("ticketDetailTitle").textContent = "Ticket not found";
+  document.getElementById("ticketDetailLayout").innerHTML = `<div class="ticket-detail-card"><p style="margin:0; color:var(--gray-text);">This ticket doesn't exist or has been removed. <a href="support.html">Back to Support</a></p></div>`;
 } else {
   ensureTicketHistory(ticket);
   deriveDefaultTier(ticket);
 
-  function renderHeader() {
-    document.getElementById("ticketDetailTitle").textContent = ticket.ticketId;
-    document.getElementById("ticketDetailPills").innerHTML = `
-      <span class="ticket-pill ${typeCellClass(ticket.type)}">${ticket.type}</span>
-      <span class="ticket-pill ${stateCellClass(ticket.state)}">${ticket.state}</span>
-    `;
-    document.title = `HearO | ${ticket.ticketId}`;
-  }
-
-  /* Recording player (Voice Engine tickets) removed entirely -- see file
-     header comment. recordingMarkup()/wireRecording() no longer exist;
-     renderBody()/renderAll() below call neither. */
-
-  /* ---------------- Handling form ---------------- */
-  function populateTicketDetailAssignees(tier) {
-    const menu = document.querySelector('.custom-select[data-name="ticketAssignedTo"] .custom-select-menu');
-    menu.innerHTML = buildAgentSelectOptions(TIER_AGENTS[tier] || SUPPORT_TEAM_MEMBERS);
-  }
-
-  function defaultAssigneeForTier(tier) {
-    return (TIER_AGENTS[tier] || SUPPORT_TEAM_MEMBERS)[0] || "";
-  }
-
-  function applyTicketDetailStatusVisibility(status) {
-    const resolved = status === "Resolved";
-    document.getElementById("ticketDetailLevelField").hidden = resolved;
-    document.getElementById("ticketDetailSeverityField").hidden = resolved;
-    document.getElementById("ticketDetailAssignedToField").hidden = resolved;
-    const tier = document.querySelector('.custom-select[data-name="ticketLevel"] input[type=hidden]').value;
-    document.getElementById("ticketDetailOrgField").hidden = resolved || tier !== "Level 3";
-  }
-
-  function updateAssignedOrgNote(orgName) {
-    const note = document.getElementById("ticketDetailAssignedOrgNote");
-    note.textContent = orgName ? `Organization: ${orgName}` : "";
-    note.hidden = !orgName;
-  }
-
-  function validateTicketDetailForm() {
-    const status = document.querySelector('.custom-select[data-name="ticketStatus"] input[type=hidden]').value;
-    applyTicketDetailStatusVisibility(status);
-    const orgFieldVisible = !document.getElementById("ticketDetailOrgField").hidden;
-    const orgFilled = !orgFieldVisible || document.querySelector('.custom-select[data-name="ticketOrgHandling"] input[type=hidden]').value !== "";
-    const assigneeFilled = status === "Resolved" || document.querySelector('.custom-select[data-name="ticketAssignedTo"] input[type=hidden]').value !== "";
-    const saveTicketDetailBtn = document.getElementById("saveTicketDetailBtn");
-    saveTicketDetailBtn.disabled = !assigneeFilled || !orgFilled;
-    saveTicketDetailBtn.classList.toggle("enabled", !saveTicketDetailBtn.disabled);
-  }
-
-  /* Handling is read-only on the page itself; the Edit button opens the
-     popup below, which holds the actual form and its Save button. The popup
-     is a sibling of the card (not a child) so the card's own h2 styling
-     doesn't leak into the modal title. */
-  function escapeHandlingText(text) {
+  function escapeHtml(text) {
     return String(text).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
   }
 
-  function handlingSummaryFields() {
-    const resolved = ticket.state === "Resolved";
-    const tierAgents = TIER_AGENTS[ticket.tier] || SUPPORT_TEAM_MEMBERS;
-    const assignee = tierAgents.includes(ticket.assignedTo) ? ticket.assignedTo : defaultAssigneeForTier(ticket.tier);
-    const fields = [`<div class="ticket-detail-field"><label>Status</label><span class="ticket-pill ${stateCellClass(ticket.state)}">${ticket.state}</span></div>`];
-    if (!resolved) {
-      fields.push(`<div class="ticket-detail-field"><label>Level</label><span>${ticket.tier || "&mdash;"}</span></div>`);
-      fields.push(`<div class="ticket-detail-field"><label>Severity</label><span class="ticket-pill ${severityCellClass(ticket.severity)}">${ticket.severity}</span></div>`);
-      if (ticket.tier === "Level 3") {
-        fields.push(`<div class="ticket-detail-field"><label>Organization</label><span>${ticket.organization || "&mdash;"}</span></div>`);
-      }
-      fields.push(`<div class="ticket-detail-field"><label>Assigned To</label><span>${assignee || "&mdash;"}</span></div>`);
-    }
-    fields.push(`<div class="ticket-detail-field ticket-handling-note"><label>Note</label><span>${ticket.rootCause ? escapeHandlingText(ticket.rootCause) : "&mdash;"}</span></div>`);
-    return fields.join("");
+  /* ---------------- Header ---------------- */
+  function renderHeader() {
+    document.getElementById("ticketDetailTitle").textContent = ticket.ticketId;
+    const badge = (label, pill) => `<span class="ticket-detail-badge-group"><span class="ticket-detail-badge-label">${label}</span>${pill}</span>`;
+    document.getElementById("ticketDetailBadges").innerHTML = [
+      badge("Status", `<span class="ticket-pill ${stateCellClass(ticket.state)}">${ticket.state}</span>`),
+      ticket.tier ? badge("Level", `<span class="ticket-detail-badge-text">${ticket.tier}</span>`) : "",
+      badge("Type", `<span class="ticket-pill ${typeCellClass(ticket.type)}">${ticket.type}</span>`),
+    ].join("");
+
+    /* Patient tickets link the patient's user number through to their chart;
+       clinic tickets were raised by a clinic user. No name, e-mail or mobile. */
+    const createdFor = ticket.type === "Patient"
+      ? `<a class="ticket-view-link" href="patient-data.html">${ticket.who}</a>`
+      : ticket.who;
+    const sep = `<span class="ticket-detail-meta-sep">&middot;</span>`;
+    document.getElementById("ticketDetailMeta").innerHTML =
+      `Created ${ticket.created}${sep}Origin: ${ticket.origin}${sep}Organization: ${ticket.organization}${sep}Created For: ${createdFor}`;
+    document.title = `HearO | ${ticket.ticketId} (Backoffice)`;
   }
 
-  function handlingMarkup() {
-    return `
-      <div class="ticket-detail-card">
-        <div class="ticket-handling-head">
-          <h2>Handling</h2>
-          <button type="button" class="btn-secondary" id="editTicketHandlingBtn">Edit</button>
-        </div>
-        <div class="ticket-detail-grid">${handlingSummaryFields()}</div>
-      </div>
+  /* ---------------- Clinic Info ----------------
+     The clinic/organization the ticket belongs to (ticket.organization is its
+     org code). Values mirror the Organizations page's list
+     (js/organizations.js: 121 / ATP / B01) and, for codes that list doesn't
+     have, the HMO flag and date created from backoffice's org allocation list
+     (backoffice1/js/allocation.js: 104 / B03 / 105). Anything still missing
+     (phone, language) is seeded off the org code, so the same clinic always
+     shows the same details on every one of its tickets. */
+  const CLINIC_DIRECTORY = {
+    "121": { study: "CHF", isHmo: true, phone: "08-6745431", lng: "AR", dateCreated: "06/06/2023" },
+    "ATP": { study: "CHF", isHmo: false, phone: "0542199636", lng: "ES", dateCreated: "14/08/2019" },
+    "B01": { study: "CHF", isHmo: true, phone: "0545030772", lng: "ES", dateCreated: "26/06/2024" },
+    "104": { isHmo: false, dateCreated: "12/06/2023" },
+    "B03": { isHmo: true, dateCreated: "24/04/2022" },
+    "105": { isHmo: false, dateCreated: "03/05/2022" },
+  };
+  const CLINIC_LANGUAGES = { AR: "Arabic", EN: "English", ES: "Spanish" };
 
-      <div class="modal-overlay" id="ticketHandlingOverlay">
-      <div class="modal modal-wide ticket-handling-modal">
-        <h2>Edit Handling</h2>
-        <button type="button" class="modal-close-x modal-close-x-top" id="closeTicketHandlingX" aria-label="Close">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6L18 18M6 18L18 6"/></svg>
-        </button>
-        <form id="ticketDetailForm">
-          <div class="ticket-handling-row">
-            <div class="form-field" style="margin-bottom:0;">
-              <label>Status</label>
-              <div class="custom-select" data-name="ticketStatus">
-                <button type="button" class="custom-select-trigger">
-                  <span class="custom-select-value placeholder">Select status</span>
-                  <svg class="custom-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-                </button>
-                <div class="custom-select-menu"></div>
-                <input type="hidden" />
-              </div>
-            </div>
-            <div class="form-field" style="margin-bottom:0;" id="ticketDetailLevelField">
-              <label>Level</label>
-              <div class="custom-select" data-name="ticketLevel">
-                <button type="button" class="custom-select-trigger">
-                  <span class="custom-select-value placeholder">Select level</span>
-                  <svg class="custom-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-                </button>
-                <div class="custom-select-menu"></div>
-                <input type="hidden" />
-              </div>
-            </div>
-            <div class="form-field" style="margin-bottom:0;" id="ticketDetailSeverityField">
-              <label>Severity</label>
-              <div class="custom-select" data-name="ticketSeverityHandling">
-                <button type="button" class="custom-select-trigger">
-                  <span class="custom-select-value placeholder">Select severity</span>
-                  <svg class="custom-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-                </button>
-                <div class="custom-select-menu"></div>
-                <input type="hidden" />
-              </div>
-            </div>
-            <div class="form-field" style="margin-bottom:0;" id="ticketDetailOrgField" hidden>
-              <label>Organization<span class="required-star">*</span></label>
-              <div class="custom-select" data-name="ticketOrgHandling">
-                <button type="button" class="custom-select-trigger">
-                  <span class="custom-select-value placeholder">Select organization</span>
-                  <svg class="custom-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-                </button>
-                <div class="custom-select-menu"></div>
-                <input type="hidden" />
-              </div>
-            </div>
-            <div class="form-field" style="margin-bottom:0;" id="ticketDetailAssignedToField">
-              <label>Assigned To<span class="required-star">*</span></label>
-              <div class="custom-select" data-name="ticketAssignedTo">
-                <button type="button" class="custom-select-trigger">
-                  <span class="custom-select-value placeholder">Select team member</span>
-                  <svg class="custom-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-                </button>
-                <div class="custom-select-menu"></div>
-                <input type="hidden" />
-              </div>
-              <div class="ticket-assigned-org-note" id="ticketDetailAssignedOrgNote" hidden></div>
-            </div>
-          </div>
-          <div class="form-field" style="margin-top:16px; margin-bottom:0;">
-            <label>Note</label>
-            <textarea id="ticketDetailRootCause" placeholder="What caused this issue? (optional)"></textarea>
-          </div>
-          <div class="modal-actions">
-            <button type="button" class="btn-text" id="cancelTicketHandling">Cancel</button>
-            <button type="submit" class="btn-save" id="saveTicketDetailBtn" disabled>Save</button>
-          </div>
-        </form>
-      </div>
-      </div>`;
+  function clinicInfoFor(orgCode) {
+    const rand = seededRandom(`clinic-${orgCode}`);
+    const digits = (n) => Array.from({ length: n }, () => Math.floor(rand() * 10)).join("");
+    const seeded = {
+      study: "CHF",
+      isHmo: rand() < 0.5,
+      phone: `05${Math.floor(rand() * 10)}-${digits(7)}`,
+      lng: pickFrom(rand, Object.keys(CLINIC_LANGUAGES)),
+      dateCreated: `${String(1 + Math.floor(rand() * 28)).padStart(2, "0")}/${String(1 + Math.floor(rand() * 12)).padStart(2, "0")}/${2019 + Math.floor(rand() * 6)}`,
+    };
+    return { ...seeded, ...CLINIC_DIRECTORY[orgCode] };
   }
 
-  function wireHandling() {
-    document.querySelector('.custom-select[data-name="ticketStatus"] .custom-select-menu').innerHTML = buildCustomSelectOptions(ticketStates.map((s) => s.label));
-    document.querySelector('.custom-select[data-name="ticketLevel"] .custom-select-menu').innerHTML = buildCustomSelectOptions(ticketLevels.map((l) => l.label));
-    document.querySelector('.custom-select[data-name="ticketSeverityHandling"] .custom-select-menu').innerHTML = buildCustomSelectOptions(ticketSeverities.map((s) => s.label));
-    document.querySelector('.custom-select[data-name="ticketOrgHandling"] .custom-select-menu').innerHTML = buildCustomSelectOptions(TICKET_ORG_CODES);
+  /* Software versions the clinic user was running when they raised a clinic
+     ticket -- seeded off the ticket ID so a ticket always shows the same ones. */
+  const CORDIO_SYSTEM_VERSIONS = ["3.1.5", "3.2.0", "3.2.7", "3.3.0", "3.4.1"];
+  const CLINIC_PORTAL_VERSIONS = ["2.4.0", "2.5.1", "2.6.0", "2.6.3", "2.7.0"];
 
-    initCustomSelects();
-
-    /* The whole body (popup included) is rebuilt on every renderAll(), so
-       closing without saving just needs a re-render to throw away whatever
-       was changed in the form. */
-    const handlingOverlay = document.getElementById("ticketHandlingOverlay");
-    const closeHandlingModal = () => renderAll();
-    document.getElementById("editTicketHandlingBtn").addEventListener("click", () => handlingOverlay.classList.add("open"));
-    document.getElementById("closeTicketHandlingX").addEventListener("click", closeHandlingModal);
-    document.getElementById("cancelTicketHandling").addEventListener("click", closeHandlingModal);
-    handlingOverlay.addEventListener("click", (e) => {
-      if (e.target === handlingOverlay) closeHandlingModal();
-    });
-
-    document.getElementById("ticketDetailRootCause").value = ticket.rootCause || "";
-    setCustomSelectValue(document.querySelector('.custom-select[data-name="ticketStatus"]'), ticket.state, { silent: true });
-    setCustomSelectValue(document.querySelector('.custom-select[data-name="ticketLevel"]'), ticket.tier, { silent: true });
-    setCustomSelectValue(document.querySelector('.custom-select[data-name="ticketSeverityHandling"]'), ticket.severity, { silent: true });
-
-    populateTicketDetailAssignees(ticket.tier);
-    const tierAgents = TIER_AGENTS[ticket.tier] || SUPPORT_TEAM_MEMBERS;
-    const assignee = tierAgents.includes(ticket.assignedTo) ? ticket.assignedTo : defaultAssigneeForTier(ticket.tier);
-    setCustomSelectValue(document.querySelector('.custom-select[data-name="ticketAssignedTo"]'), assignee, { silent: true });
-
-    if (ticket.tier === "Level 3") {
-      setCustomSelectValue(document.querySelector('.custom-select[data-name="ticketOrgHandling"]'), ticket.organization, { silent: true });
-      updateAssignedOrgNote(ticket.organization);
-    } else {
-      updateAssignedOrgNote("");
+  function renderClinicInfo() {
+    const info = clinicInfoFor(ticket.organization);
+    const isClinicTicket = ticket.type === "Clinic";
+    document.getElementById("ticketClinicCordioField").hidden = !isClinicTicket;
+    document.getElementById("ticketClinicPortalField").hidden = !isClinicTicket;
+    if (isClinicTicket) {
+      const rand = seededRandom(`${ticket.ticketId}-versions`);
+      document.getElementById("ticketClinicCordioVersion").textContent = ticket.cordioVersion || pickFrom(rand, CORDIO_SYSTEM_VERSIONS);
+      document.getElementById("ticketClinicPortalVersion").textContent = ticket.portalVersion || pickFrom(rand, CLINIC_PORTAL_VERSIONS);
     }
-    validateTicketDetailForm();
+    document.getElementById("ticketClinicOrg").textContent = ticket.organization || "—";
+    document.getElementById("ticketClinicStudy").textContent = info.study || "—";
+    document.getElementById("ticketClinicHmo").textContent = info.isHmo ? "Yes" : "No";
+    document.getElementById("ticketClinicPhone").textContent = info.phone || "—";
+    document.getElementById("ticketClinicLanguage").textContent = CLINIC_LANGUAGES[info.lng] || info.lng || "—";
+    document.getElementById("ticketClinicSince").textContent = info.dateCreated || "—";
+  }
 
-    document.querySelector('.custom-select[data-name="ticketLevel"] input[type=hidden]').addEventListener("change", (e) => {
-      const tier = e.target.value;
-      populateTicketDetailAssignees(tier);
-      setCustomSelectValue(document.querySelector('.custom-select[data-name="ticketAssignedTo"]'), defaultAssigneeForTier(tier), { silent: true });
-      if (tier === "Level 3") {
-        setCustomSelectValue(document.querySelector('.custom-select[data-name="ticketOrgHandling"]'), ticket.organization, { silent: true });
-        updateAssignedOrgNote(ticket.organization);
-      } else {
-        resetCustomSelect(document.querySelector('.custom-select[data-name="ticketOrgHandling"]'));
-        updateAssignedOrgNote("");
-      }
-      validateTicketDetailForm();
-    });
+  /* ---------------- Issue ---------------- */
+  function renderIssue() {
+    /* Category is plain text, same as the Support list. */
+    document.getElementById("ticketDetailCategory").innerHTML = ticket.category
+      ? ticket.category
+      : "—";
+    document.getElementById("ticketDetailIssueType").textContent = ticket.issueType || "—";
+    document.getElementById("ticketDetailDescription").textContent = ticket.description;
+  }
 
-    document.querySelector('.custom-select[data-name="ticketOrgHandling"] input[type=hidden]').addEventListener("change", (e) => {
-      updateAssignedOrgNote(e.target.value);
-      validateTicketDetailForm();
-    });
+  /* Recording tab (Voice Engine tickets) removed -- see file header. */
 
-    const form = document.getElementById("ticketDetailForm");
-    form.addEventListener("input", validateTicketDetailForm);
-    form.addEventListener("change", validateTicketDetailForm);
-
-    form.addEventListener("submit", (e) => {
-      e.preventDefault();
-      if (document.getElementById("saveTicketDetailBtn").disabled) return;
-
-      const changeDate = new Date().toLocaleString("en-GB", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit", hour12: false }).replace(",", "");
-
-      const rootCause = document.getElementById("ticketDetailRootCause").value.trim();
-      const nextAssignee = document.querySelector('.custom-select[data-name="ticketAssignedTo"] input[type=hidden]').value;
-      const nextTier = document.querySelector('.custom-select[data-name="ticketLevel"] input[type=hidden]').value || ticket.tier;
-      const nextSeverity = document.querySelector('.custom-select[data-name="ticketSeverityHandling"] input[type=hidden]').value || ticket.severity;
-      const nextStatus = document.querySelector('.custom-select[data-name="ticketStatus"] input[type=hidden]').value || ticket.state;
-      const nextOrg = (nextTier === "Level 3" && document.querySelector('.custom-select[data-name="ticketOrgHandling"] input[type=hidden]').value) || ticket.organization;
-
-      /* Every field a Save touches (reassignment, level/tier transfer, severity,
-         status) is folded into a single history entry instead of one line per
-         field -- so a ticket transfer and the note explaining it always land
-         together, and whoever picks the ticket up next sees the note attached
-         directly to the transfer instead of buried in a separate line. The
-         entry's title headlines whichever change is most significant
-         (reassignment > level > status > severity); everything that changed,
-         plus the free-text note, goes in the boxed detail underneath. */
-      const isReassignment = nextAssignee && nextAssignee !== (ticket.assignedTo || "");
-      const changeParts = [];
-      let title = "";
-      if (isReassignment) {
-        changeParts.push(`Reassigned from ${ticket.assignedTo || "Unassigned"} to ${nextAssignee}`);
-        title = `Ticket Transferred to ${nextAssignee}`;
-      }
-      if (nextTier !== ticket.tier) {
-        changeParts.push(`Level changed from ${ticket.tier} to ${nextTier}`);
-        title = title || `Ticket Escalated to ${nextTier}`;
-      }
-      if (nextStatus !== ticket.state) {
-        changeParts.push(`Status changed from ${ticket.state} to ${nextStatus}`);
-        title = title || `Status Changed to ${nextStatus}`;
-      }
-      if (nextSeverity !== ticket.severity) {
-        changeParts.push(`Severity changed from ${ticket.severity} to ${nextSeverity}`);
-        title = title || `Severity Changed to ${nextSeverity}`;
-      }
-      if (nextOrg !== ticket.organization) {
-        changeParts.push(`Organization changed from ${ticket.organization} to ${nextOrg}`);
-        title = title || `Organization Changed to ${nextOrg}`;
-      }
-
-      const noteChanged = rootCause !== (ticket.rootCause || "");
-      if (!changeParts.length && noteChanged) {
-        changeParts.push("Note updated");
-        title = "Note Updated";
-      }
-
-      if (changeParts.length) {
-        let detail = `${changeParts.join("; ")}.`;
-        if (rootCause) detail += ` Note: ${rootCause}`;
-        ticket.history.push({ date: changeDate, title, detail });
-      }
-
-      ticket.rootCause = rootCause;
-      if (nextAssignee) ticket.assignedTo = nextAssignee;
-      ticket.tier = nextTier;
-      ticket.severity = nextSeverity;
-      ticket.state = nextStatus;
-      ticket.organization = nextOrg;
-
-      renderAll();
-    });
+  /* ---------------- History ---------------- */
+  function renderHistory() {
+    document.getElementById("ticketDetailHistory").innerHTML = ticket.history
+      .slice()
+      .reverse()
+      .map(
+        (h) => `
+        <div class="ticket-history-item">
+          <span class="ticket-history-title">${h.title}</span>
+          ${h.detail ? `<div class="ticket-history-detail">${escapeHtml(h.detail)}</div>` : ""}
+          <span class="ticket-history-date">${h.date}</span>
+        </div>`
+      )
+      .join("");
   }
 
   /* ---------------- Patient Log (patient-sourced tickets only) ---------------- */
   let currentPatientLog = null;
-  let currentPatientLogSessionId = null;
-  let patientLogFromDate = null;
-  let patientLogToDate = null;
-  let patientLogCalendarField = null;
-  let patientLogCalendarViewDate = new Date();
-
-  function currentPatientLogSession() {
-    return currentPatientLog && currentPatientLog.sessions.find((s) => s.id === currentPatientLogSessionId);
-  }
-
-  function patientLogMarkup() {
-    if (ticket.type !== "Patient") return "";
-    return `
-      <div class="ticket-detail-card" id="patientLog">
-        <h2>Patient Log</h2>
-        <div class="patient-log-snapshot">
-          <div class="patient-log-snapshot-group">
-            <div class="ticket-detail-section-title">App Version</div>
-            <div class="patient-log-chip-row" id="patientLogAppVersion"></div>
-          </div>
-          <div class="patient-log-snapshot-group">
-            <div class="ticket-detail-section-title">Device Info</div>
-            <div class="patient-log-chip-row" id="patientLogDeviceInfo"></div>
-          </div>
-          <div class="patient-log-snapshot-group">
-            <div class="ticket-detail-section-title">Permissions Info</div>
-            <div class="patient-log-chip-row" id="patientLogPermissions"></div>
-          </div>
-        </div>
-        <div class="patient-log-history">
-          <div class="ticket-detail-section-title patient-log-history-title">
-            Log History
-            <div class="patient-log-history-actions">
-              <div class="custom-select" id="patientLogSessionSelect" data-name="patientLogSession">
-                <button type="button" class="custom-select-trigger" aria-label="Log session">
-                  <span class="custom-select-value placeholder">Select session</span>
-                  <svg class="custom-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-                </button>
-                <div class="custom-select-menu"></div>
-                <input type="hidden" />
-              </div>
-              <div class="patient-log-download-wrap">
-                <button type="button" class="btn-secondary" id="downloadPatientLogBtn">Download Log</button>
-                <div class="patient-log-download-popover" id="patientLogDownloadPopover" hidden>
-                  <p class="patient-log-download-popover-title">Download logs for date range</p>
-                  <div class="patient-log-download-popover-row">
-                    <button type="button" class="ticket-date-field" id="patientLogDownloadFromField" data-field="from" aria-label="From date">
-                      <span id="patientLogDownloadFromValue" class="ticket-date-field-value">&mdash;</span>
-                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="17" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3 9H21" stroke="currentColor" stroke-width="1.8"/></svg>
-                    </button>
-                    <button type="button" class="ticket-date-field" id="patientLogDownloadToField" data-field="to" aria-label="To date">
-                      <span id="patientLogDownloadToValue" class="ticket-date-field-value">&mdash;</span>
-                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="17" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3 9H21" stroke="currentColor" stroke-width="1.8"/></svg>
-                    </button>
-                  </div>
-                  <div class="ticket-mini-calendar" id="patientLogDownloadCalendar" hidden>
-                    <div class="ticket-mini-calendar-head">
-                      <span class="ticket-mini-calendar-month" id="patientLogCalendarMonthLabel">&mdash;</span>
-                      <div class="ticket-mini-calendar-nav">
-                        <button type="button" id="patientLogCalendarPrev" aria-label="Previous month">
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-                        </button>
-                        <button type="button" id="patientLogCalendarNext" aria-label="Next month">
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-                        </button>
-                      </div>
-                    </div>
-                    <div class="ticket-mini-calendar-weekdays"><span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span></div>
-                    <div class="ticket-mini-calendar-days" id="patientLogCalendarDays"></div>
-                    <div class="ticket-mini-calendar-footer">
-                      <button type="button" id="patientLogCalendarClear">Clear</button>
-                      <button type="button" id="patientLogCalendarToday">Today</button>
-                    </div>
-                  </div>
-                  <p class="patient-log-download-popover-hint" id="patientLogDownloadHint"></p>
-                  <div class="patient-log-download-popover-actions">
-                    <button type="button" class="btn-secondary" id="patientLogDownloadCancel">Cancel</button>
-                    <button type="button" class="btn-save enabled" id="patientLogDownloadConfirm">Download</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="patient-log-console" id="patientLogHistory"></div>
-        </div>
-      </div>`;
-  }
 
   function renderPatientLogSection(elId, rows) {
     document.getElementById(elId).innerHTML = rows
-      .map((r) => `<div class="patient-log-chip"><span class="label">${r.label}</span><span class="value">${r.value}</span></div>`)
+      .map((r) => `<div class="patient-log-chip"><span class="label">${r.label}</span><span class="value${r.value === "Disabled" ? " is-disabled" : ""}">${r.value}</span></div>`)
       .join("");
   }
 
@@ -457,11 +176,44 @@ if (!ticket) {
       .join("");
   }
 
+  /* ---------------- Log History: date-range filter ----------------
+     From/To dates (a small self-contained calendar rather than native
+     <input type="date">) pick which sessions the log shows. Defaults to the
+     latest session's day. Download Log saves exactly what the filter shows. */
   function formatDisplayDate(d) {
     return d ? `${String(d.getDate()).padStart(2, "0")}-${String(d.getMonth() + 1).padStart(2, "0")}-${d.getFullYear()}` : "—";
   }
   function sameDay(a, b) {
     return !!a && !!b && a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+  }
+
+  let patientLogFromDate = null;
+  let patientLogToDate = null;
+  let patientLogCalendarField = null;
+  let patientLogCalendarViewDate = new Date();
+
+  /* Sessions whose day falls inside From..To (either end may be empty = open). */
+  function patientLogSessionsInRange() {
+    if (!currentPatientLog) return [];
+    const from = patientLogFromDate;
+    const to = patientLogToDate ? new Date(patientLogToDate.getFullYear(), patientLogToDate.getMonth(), patientLogToDate.getDate(), 23, 59, 59) : null;
+    return currentPatientLog.sessions
+      .filter((s) => (!from || s.dateObj >= from) && (!to || s.dateObj <= to))
+      .sort((a, b) => a.dateObj - b.dateObj);
+  }
+
+  function renderPatientLogRange() {
+    const el = document.getElementById("patientLogHistory");
+    if (patientLogFromDate && patientLogToDate && patientLogFromDate > patientLogToDate) {
+      el.innerHTML = `<div class="patient-log-empty">From date must be on or before the To date.</div>`;
+      return;
+    }
+    const sessions = patientLogSessionsInRange();
+    if (!sessions.length) {
+      el.innerHTML = `<div class="patient-log-empty">No logs found for this date range.</div>`;
+      return;
+    }
+    renderPatientLogHistory("patientLogHistory", sessions.flatMap((s) => s.lines));
   }
 
   function updatePatientLogDateFieldDisplay(field) {
@@ -470,9 +222,31 @@ if (!ticket) {
     document.getElementById(field === "from" ? "patientLogDownloadFromField" : "patientLogDownloadToField").classList.toggle("placeholder", !date);
   }
 
+  function renderPatientLog() {
+    const section = document.getElementById("patientLog");
+    if (ticket.type !== "Patient") {
+      section.hidden = true;
+      currentPatientLog = null;
+      return;
+    }
+    section.hidden = false;
+    currentPatientLog = buildPatientLog(ticket);
+    renderPatientLogSection("patientLogAppVersion", currentPatientLog.appVersion);
+    renderPatientLogSection("patientLogDeviceInfo", currentPatientLog.deviceInfo);
+    renderPatientLogSection("patientLogPermissions", currentPatientLog.permissions);
+
+    const latest = currentPatientLog.sessions.map((s) => s.dateObj).sort((a, b) => b - a)[0];
+    const latestDay = new Date(latest.getFullYear(), latest.getMonth(), latest.getDate());
+    patientLogFromDate = latestDay;
+    patientLogToDate = latestDay;
+    updatePatientLogDateFieldDisplay("from");
+    updatePatientLogDateFieldDisplay("to");
+    renderPatientLogRange();
+  }
+
+  const patientLogCalendarEl = document.getElementById("patientLogDownloadCalendar");
+
   function renderPatientLogCalendar() {
-    const calendarEl = document.getElementById("patientLogDownloadCalendar");
-    if (!calendarEl) return;
     const viewYear = patientLogCalendarViewDate.getFullYear();
     const viewMonth = patientLogCalendarViewDate.getMonth();
     document.getElementById("patientLogCalendarMonthLabel").textContent = patientLogCalendarViewDate.toLocaleDateString("en-US", { month: "long", year: "numeric" });
@@ -508,271 +282,111 @@ if (!ticket) {
     patientLogCalendarViewDate = date ? new Date(date.getFullYear(), date.getMonth(), 1) : new Date();
     document.getElementById("patientLogDownloadFromField").classList.toggle("active", field === "from");
     document.getElementById("patientLogDownloadToField").classList.toggle("active", field === "to");
-    document.getElementById("patientLogDownloadCalendar").hidden = false;
+    patientLogCalendarEl.hidden = false;
     renderPatientLogCalendar();
   }
   function closePatientLogCalendar() {
     patientLogCalendarField = null;
-    const fromField = document.getElementById("patientLogDownloadFromField");
-    const toField = document.getElementById("patientLogDownloadToField");
-    if (fromField) fromField.classList.remove("active");
-    if (toField) toField.classList.remove("active");
-    const cal = document.getElementById("patientLogDownloadCalendar");
-    if (cal) cal.hidden = true;
+    document.getElementById("patientLogDownloadFromField").classList.remove("active");
+    document.getElementById("patientLogDownloadToField").classList.remove("active");
+    patientLogCalendarEl.hidden = true;
   }
 
-  function openPatientLogDownloadPopover() {
-    document.getElementById("patientLogDownloadHint").textContent = "";
-    document.getElementById("patientLogDownloadPopover").hidden = false;
+  /* Every date change re-filters the log right away. */
+  function setPatientLogDate(field, date) {
+    if (field === "from") patientLogFromDate = date;
+    else if (field === "to") patientLogToDate = date;
+    updatePatientLogDateFieldDisplay(field);
+    renderPatientLogRange();
   }
-  function closePatientLogDownloadPopover() {
-    const pop = document.getElementById("patientLogDownloadPopover");
-    if (pop) pop.hidden = true;
+
+  document.getElementById("patientLogDownloadFromField").addEventListener("click", (e) => { e.stopPropagation(); openPatientLogCalendar("from"); });
+  document.getElementById("patientLogDownloadToField").addEventListener("click", (e) => { e.stopPropagation(); openPatientLogCalendar("to"); });
+  document.getElementById("patientLogCalendarPrev").addEventListener("click", (e) => {
+    e.stopPropagation();
+    patientLogCalendarViewDate = new Date(patientLogCalendarViewDate.getFullYear(), patientLogCalendarViewDate.getMonth() - 1, 1);
+    renderPatientLogCalendar();
+  });
+  document.getElementById("patientLogCalendarNext").addEventListener("click", (e) => {
+    e.stopPropagation();
+    patientLogCalendarViewDate = new Date(patientLogCalendarViewDate.getFullYear(), patientLogCalendarViewDate.getMonth() + 1, 1);
+    renderPatientLogCalendar();
+  });
+  document.getElementById("patientLogCalendarDays").addEventListener("click", (e) => {
+    e.stopPropagation();
+    const btn = e.target.closest(".ticket-mini-calendar-day");
+    if (!btn || !patientLogCalendarField) return;
+    setPatientLogDate(patientLogCalendarField, new Date(Number(btn.dataset.time)));
     closePatientLogCalendar();
+  });
+  document.getElementById("patientLogCalendarClear").addEventListener("click", (e) => {
+    e.stopPropagation();
+    if (!patientLogCalendarField) return;
+    setPatientLogDate(patientLogCalendarField, null);
+    renderPatientLogCalendar();
+  });
+  document.getElementById("patientLogCalendarToday").addEventListener("click", (e) => {
+    e.stopPropagation();
+    if (!patientLogCalendarField) return;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    setPatientLogDate(patientLogCalendarField, today);
+    closePatientLogCalendar();
+  });
+  document.addEventListener("click", (e) => {
+    if (!patientLogCalendarEl.hidden && !e.target.closest(".ticket-mini-calendar") && !e.target.closest(".ticket-date-field")) closePatientLogCalendar();
+  });
+
+  /* Download Log saves the sessions the date-range filter currently shows. */
+  document.getElementById("downloadPatientLogBtn").addEventListener("click", () => {
+    const sessionsInRange = patientLogSessionsInRange();
+    if (!currentPatientLog || !sessionsInRange.length) return;
+
+    const section = (title, rows) => `${title}\n${rows.map((r) => `  ${r.label}: ${r.value}`).join("\n")}\n`;
+    const historySection = sessionsInRange
+      .map((s) => `Session ${s.date}\n${s.lines.map((l) => `  ${l.ts}: ${l.msg}`).join("\n")}\n`)
+      .join("\n");
+    const text = [
+      `Patient Log - ${ticket.ticketId} (${ticket.who})`,
+      `Date range: ${sessionsInRange[0].date} - ${sessionsInRange[sessionsInRange.length - 1].date}`,
+      "",
+      section("App Version", currentPatientLog.appVersion),
+      section("Device Info", currentPatientLog.deviceInfo),
+      section("Permissions Info", currentPatientLog.permissions),
+      historySection,
+    ].join("\n");
+
+    const blob = new Blob([text], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `${ticket.ticketId}-patient-log.txt`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+  });
+
+  /* ---------------- History / Patient Log tabs ----------------
+     Patient Log only exists for patient-sourced tickets, so its tab follows
+     its panel's visibility. (No Recording tab in this copy.) */
+  function selectDetailTab(name) {
+    document.querySelectorAll(".ticket-detail-tab").forEach((t) => t.classList.toggle("active", t.dataset.tdTab === name));
+    document.querySelectorAll(".ticket-detail-tab-panel").forEach((p) => p.classList.toggle("active", p.dataset.tdPanel === name));
   }
+  document.querySelectorAll(".ticket-detail-tab").forEach((tab) => tab.addEventListener("click", () => selectDetailTab(tab.dataset.tdTab)));
 
-  function wirePatientLog() {
-    if (ticket.type !== "Patient") return;
-
-    currentPatientLog = buildPatientLog(ticket);
-    renderPatientLogSection("patientLogAppVersion", currentPatientLog.appVersion);
-    renderPatientLogSection("patientLogDeviceInfo", currentPatientLog.deviceInfo);
-    renderPatientLogSection("patientLogPermissions", currentPatientLog.permissions);
-
-    const sessionSelect = document.getElementById("patientLogSessionSelect");
-    sessionSelect.querySelector(".custom-select-menu").innerHTML = currentPatientLog.sessions
-      .map(
-        (s, i) => `
-        <div class="custom-select-option" data-value="${s.id}">${s.date}${i === 0 ? " (latest)" : ""}
-          <svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </div>`
-      )
-      .join("");
-
-    initCustomSelects();
-
-    currentPatientLogSessionId = currentPatientLog.sessions[0].id;
-    setCustomSelectValue(sessionSelect, currentPatientLogSessionId, { silent: true });
-    renderPatientLogHistory("patientLogHistory", currentPatientLogSession().lines);
-
-    sessionSelect.querySelector('input[type=hidden]').addEventListener("change", (e) => {
-      currentPatientLogSessionId = e.target.value;
-      const session = currentPatientLogSession();
-      if (session) renderPatientLogHistory("patientLogHistory", session.lines);
-    });
-
-    const sessionDates = currentPatientLog.sessions.map((s) => s.dateObj).sort((a, b) => a - b);
-    patientLogFromDate = sessionDates[0];
-    patientLogToDate = sessionDates[sessionDates.length - 1];
-    updatePatientLogDateFieldDisplay("from");
-    updatePatientLogDateFieldDisplay("to");
-
-    document.getElementById("patientLogDownloadFromField").addEventListener("click", (e) => { e.stopPropagation(); openPatientLogCalendar("from"); });
-    document.getElementById("patientLogDownloadToField").addEventListener("click", (e) => { e.stopPropagation(); openPatientLogCalendar("to"); });
-    document.getElementById("patientLogCalendarPrev").addEventListener("click", (e) => {
-      e.stopPropagation();
-      patientLogCalendarViewDate = new Date(patientLogCalendarViewDate.getFullYear(), patientLogCalendarViewDate.getMonth() - 1, 1);
-      renderPatientLogCalendar();
-    });
-    document.getElementById("patientLogCalendarNext").addEventListener("click", (e) => {
-      e.stopPropagation();
-      patientLogCalendarViewDate = new Date(patientLogCalendarViewDate.getFullYear(), patientLogCalendarViewDate.getMonth() + 1, 1);
-      renderPatientLogCalendar();
-    });
-    document.getElementById("patientLogCalendarDays").addEventListener("click", (e) => {
-      e.stopPropagation();
-      const btn = e.target.closest(".ticket-mini-calendar-day");
-      if (!btn || !patientLogCalendarField) return;
-      const picked = new Date(Number(btn.dataset.time));
-      if (patientLogCalendarField === "from") patientLogFromDate = picked;
-      else patientLogToDate = picked;
-      updatePatientLogDateFieldDisplay(patientLogCalendarField);
-      closePatientLogCalendar();
-    });
-    document.getElementById("patientLogCalendarClear").addEventListener("click", (e) => {
-      e.stopPropagation();
-      if (patientLogCalendarField === "from") patientLogFromDate = null;
-      else if (patientLogCalendarField === "to") patientLogToDate = null;
-      updatePatientLogDateFieldDisplay(patientLogCalendarField);
-      renderPatientLogCalendar();
-    });
-    document.getElementById("patientLogCalendarToday").addEventListener("click", (e) => {
-      e.stopPropagation();
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      if (patientLogCalendarField === "from") patientLogFromDate = today;
-      else if (patientLogCalendarField === "to") patientLogToDate = today;
-      updatePatientLogDateFieldDisplay(patientLogCalendarField);
-      closePatientLogCalendar();
-    });
-
-    document.getElementById("downloadPatientLogBtn").addEventListener("click", (e) => {
-      e.stopPropagation();
-      if (!currentPatientLog) return;
-      const pop = document.getElementById("patientLogDownloadPopover");
-      if (pop.hidden) openPatientLogDownloadPopover();
-      else closePatientLogDownloadPopover();
-    });
-    document.getElementById("patientLogDownloadCancel").addEventListener("click", closePatientLogDownloadPopover);
-
-    document.getElementById("patientLogDownloadConfirm").addEventListener("click", () => {
-      if (!currentPatientLog) return;
-      const hint = document.getElementById("patientLogDownloadHint");
-      if (!patientLogFromDate || !patientLogToDate) {
-        hint.textContent = "Pick both a from and to date.";
-        return;
-      }
-      const from = patientLogFromDate;
-      const to = patientLogToDate;
-      if (from > to) {
-        hint.textContent = "From date must be before the to date.";
-        return;
-      }
-
-      const sessionsInRange = currentPatientLog.sessions
-        .filter((s) => s.dateObj >= from && s.dateObj <= to)
-        .sort((a, b) => a.dateObj - b.dateObj);
-      if (!sessionsInRange.length) {
-        hint.textContent = "No sessions found in that date range.";
-        return;
-      }
-
-      const section = (title, rows) => `${title}\n${rows.map((r) => `  ${r.label}: ${r.value}`).join("\n")}\n`;
-      const historySection = sessionsInRange
-        .map((s) => `Session ${s.date}\n${s.lines.map((l) => `  ${l.ts}: ${l.msg}`).join("\n")}\n`)
-        .join("\n");
-      const text = [
-        `Patient Log - ${ticket.ticketId} (${ticket.who})`,
-        `Date range: ${sessionsInRange[0].date} - ${sessionsInRange[sessionsInRange.length - 1].date}`,
-        "",
-        section("App Version", currentPatientLog.appVersion),
-        section("Device Info", currentPatientLog.deviceInfo),
-        section("Permissions Info", currentPatientLog.permissions),
-        historySection,
-      ].join("\n");
-
-      const blob = new Blob([text], { type: "text/plain" });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = `${ticket.ticketId}-patient-log.txt`;
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      URL.revokeObjectURL(url);
-      closePatientLogDownloadPopover();
-    });
-
-    document.addEventListener("click", (e) => {
-      const pop = document.getElementById("patientLogDownloadPopover");
-      const cal = document.getElementById("patientLogDownloadCalendar");
-      if (pop && !pop.hidden && !e.target.closest(".patient-log-download-wrap")) closePatientLogDownloadPopover();
-      else if (cal && !cal.hidden && !e.target.closest(".ticket-mini-calendar") && !e.target.closest(".ticket-date-field")) closePatientLogCalendar();
-    });
-  }
-
-  /* ---------------- Full body render ---------------- */
-  function renderBody() {
-    const alreadyResolved = ticket.state === "Resolved";
-
-    const summaryCard = `
-      <div class="ticket-detail-card">
-        <h2>Ticket Info</h2>
-        <div class="ticket-detail-grid">
-          <div class="ticket-detail-field"><label>Source</label><span>${ticket.type}</span></div>
-          <div class="ticket-detail-field"><label>Status</label><span class="ticket-pill ${stateCellClass(ticket.state)}">${ticket.state}</span></div>
-          <div class="ticket-detail-field"><label>${ticket.type === "Patient" ? "Created For" : "Raised By"}</label><span>${
-            ticket.type === "Patient"
-              ? `<a class="ticket-view-link" href="patient-data.html">${ticket.who}</a>`
-              : ticket.who
-          }</span></div>
-          <div class="ticket-detail-field"><label>Origin</label><span>${ticket.origin}</span></div>
-          <div class="ticket-detail-field"><label>Assigned To</label><span>${ticket.assignedTo || "—"}</span></div>
-          <div class="ticket-detail-field"><label>Created</label><span>${ticket.created}</span></div>
-        </div>
-      </div>
-
-      <div class="ticket-detail-card">
-        <h2>Issue</h2>
-        <div class="ticket-detail-grid" style="grid-template-columns: 1fr 1fr;">
-          <div class="ticket-detail-field"><label>Category</label><span>${ticket.category}</span></div>
-          <div class="ticket-detail-field"><label>Issue Type</label><span>${ticket.issueType}</span></div>
-        </div>
-        <div class="ticket-detail-description">${ticket.description}</div>
-      </div>
-
-      ${handlingMarkup()}
-
-      ${patientLogMarkup()}
-
-      <div class="ticket-detail-card">
-        <h2>History</h2>
-        <div class="ticket-history" style="margin-top:14px;">
-          ${ticket.history
-            .slice()
-            .reverse()
-            .map(
-              (h) => `
-              <div class="ticket-history-item">
-                <div class="ticket-history-title">${h.title}</div>
-                ${h.detail ? `<div class="ticket-history-detail">${h.detail}</div>` : ""}
-                <div class="ticket-history-date">${h.date}</div>
-              </div>`
-            )
-            .join("")}
-        </div>
-      </div>`;
-
-    ticketDetailBody.innerHTML = `
-      ${summaryCard}
-
-      <div class="ticket-detail-card">
-        <h2>Resolution</h2>
-        <div class="form-field" style="margin-top:14px;">
-          <label>Resolution note${alreadyResolved ? "" : '<span class="required-star">*</span>'}</label>
-          <textarea id="ticketResolutionNote" ${alreadyResolved ? "disabled" : ""} placeholder="${alreadyResolved ? "This ticket is already resolved." : "Describe how this ticket was resolved"}"></textarea>
-        </div>
-        <div class="modal-actions" style="padding-top:0; border-top:none;">
-          <button type="button" class="btn-save" id="resolveTicketBtn" disabled>${alreadyResolved ? "Already resolved" : "Resolve ticket"}</button>
-        </div>
-      </div>
-    `;
-
-    wireHandling();
-    wirePatientLog();
-
-    if (!alreadyResolved) {
-      const note = document.getElementById("ticketResolutionNote");
-      const resolveBtn = document.getElementById("resolveTicketBtn");
-
-      note.addEventListener("input", () => {
-        const canResolve = note.value.trim().length > 0;
-        resolveBtn.disabled = !canResolve;
-        resolveBtn.classList.toggle("enabled", canResolve);
-      });
-
-      resolveBtn.addEventListener("click", () => {
-        const text = note.value.trim();
-        if (!text || resolveBtn.disabled) return;
-        ticket.state = "Resolved";
-        ticket.history.push({ date: "Today", title: "Ticket Resolved", detail: text });
-        renderAll();
-      });
-    }
+  function syncDetailTabs() {
+    document.querySelector('.ticket-detail-tab[data-td-tab="patientLog"]').hidden = document.getElementById("patientLog").hidden;
   }
 
   function renderAll() {
     renderHeader();
-    renderBody();
+    renderClinicInfo();
+    renderIssue();
+    renderPatientLog();
+    renderHistory();
+    syncDetailTabs();
   }
   renderAll();
-
-  document.addEventListener("keydown", (e) => {
-    const overlay = document.getElementById("ticketHandlingOverlay");
-    if (e.key === "Escape" && overlay && overlay.classList.contains("open")) renderAll();
-  });
-
-  /* Chat-with-Patient panel removed entirely -- see file header comment.
-     Its markup is already gone from ticket-detail.html, so there is nothing
-     left here to wire up. */
 }

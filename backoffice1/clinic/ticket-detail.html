@@ -10,15 +10,13 @@
 <link rel="stylesheet" href="../../css/style.css" />
 </head>
 <body>
-<!-- Backoffice-safe fork of ../../ticket-detail.html. Forked to
-     js/ticket-detail.js: the Recording player (Voice Engine tickets -- an
-     actual patient voice recording) and the Chat-with-Patient panel are
-     dropped entirely; the Patient field shows the ticket's existing `who`
-     identifier instead of a name. js/support-tickets-common.js (the seeded
-     Patient Log generator + Handling defaults) and js/custom-select.js are
-     reused unmodified via relative links -- neither embeds a patient name,
-     the Patient Log's device/permissions/app-log data is operational, not
-     clinical. -->
+<!-- Backoffice-safe fork of ../../ticket-detail.html (re-synced with the root page).
+     Redactions vs. root: the Recording tab + panel (a patient voice recording,
+     with the device microphone alert) is removed; js/ticket-detail.js shows the
+     patient's user number (ticket.who) in "Created For" with no name, e-mail or
+     mobile. ../../js/support-tickets-common.js (seeded Patient Log generator,
+     history defaults) is shared unmodified -- it embeds no patient names. -->
+
   <div class="app">
 
     <!-- SIDEBAR -->
@@ -67,11 +65,23 @@
           </span>
           <span class="nav-label">Manage Users</span>
         </a>
+        <a href="ctm.html" class="nav-item">
+          <span class="nav-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-2"/><path d="M9 12h6"/><path d="M9 16h6"/></svg>
+          </span>
+          <span class="nav-label">HCP</span>
+        </a>
         <a href="support.html" class="nav-item active">
           <span class="nav-icon">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H3v-7a9 9 0 0 1 18 0v7h-3a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"/><path d="M21 16v2a4 4 0 0 1-4 4h-5"/></svg>
           </span>
           <span class="nav-label">Support</span>
+        </a>
+        <a href="ehr.html" class="nav-item">
+          <span class="nav-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2v6"/><path d="M15 2v6"/><path d="M6 8h12v4a6 6 0 0 1-12 0V8z"/><path d="M12 18v4"/></svg>
+          </span>
+          <span class="nav-label">EHR</span>
         </a>
       </nav>
     </aside>
@@ -81,7 +91,6 @@
 
       <!-- TOPBAR -->
       <header class="topbar">
-        <a href="../overview-dashboard.html" class="ticket-detail-back" aria-label="Back to Backoffice" title="Back to Backoffice"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></a>
         <h1 class="page-title">Support</h1>
         <div class="topbar-actions">
           <div class="topbar-item">
@@ -147,10 +156,19 @@
               <a href="#" class="notif-view-more">View more</a>
             </div>
           </div>
-          <button class="icon-btn badge" aria-label="Messages" data-count="1">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 5.5C4 4.4 4.9 3.5 6 3.5H18C19.1 3.5 20 4.4 20 5.5V14.5C20 15.6 19.1 16.5 18 16.5H9L5 20V16.5H6C4.9 16.5 4 15.6 4 14.5V5.5Z" stroke="#6B7684" stroke-width="1.6" stroke-linejoin="round"/></svg>
-          </button>
-          <div class="avatar">EC</div>
+          <div class="topbar-item">
+            <button class="icon-btn badge" aria-label="Messages" data-count="1" id="messagesBtn">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 5.5C4 4.4 4.9 3.5 6 3.5H18C19.1 3.5 20 4.4 20 5.5V14.5C20 15.6 19.1 16.5 18 16.5H9L5 20V16.5H6C4.9 16.5 4 15.6 4 14.5V5.5Z" stroke="#6B7684" stroke-width="1.6" stroke-linejoin="round"/></svg>
+            </button>
+            <div class="topbar-popover notif-popover" id="messagesPopover">
+              <h3 class="notif-title">Messages</h3>
+              <div class="notif-list" id="messagesList"></div>
+              <a href="#" class="notif-view-more">View more</a>
+            </div>
+          </div>
+          <div class="topbar-item">
+            <button class="avatar avatar-btn" aria-label="Profile" id="profileBtn">EC</button>
+          </div>
           <div class="topbar-item">
             <button class="icon-btn" aria-label="More" id="moreBtn">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="1.6" fill="#6B7684"/><circle cx="12" cy="12" r="1.6" fill="#6B7684"/><circle cx="12" cy="19" r="1.6" fill="#6B7684"/></svg>
@@ -172,43 +190,131 @@
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="12" height="17" rx="1.5"/><path d="M9 3.5h6a1 1 0 0 1 1 1V6H8V4.5a1 1 0 0 1 1-1z"/><line x1="9" y1="11" x2="15" y2="11"/><line x1="9" y1="14.5" x2="15" y2="14.5"/><line x1="9" y1="18" x2="13" y2="18"/></svg>
                 Instructions for Use
               </a>
-              <a href="../index.html" class="more-menu-item">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="7" rx="1.5" stroke="#6B7684" stroke-width="1.6"/><rect x="14" y="3" width="7" height="7" rx="1.5" stroke="#6B7684" stroke-width="1.6"/><rect x="3" y="14" width="7" height="7" rx="1.5" stroke="#6B7684" stroke-width="1.6"/><rect x="14" y="14" width="7" height="7" rx="1.5" stroke="#6B7684" stroke-width="1.6"/></svg>
-                Back to Backoffice
-              </a>
             </div>
           </div>
         </div>
       </header>
 
       <!-- CONTENT -->
-      <div class="list-content">
+      <div class="list-content ticket-detail-page">
 
-        <div class="ticket-detail-topbar-row">
-          <div class="ticket-detail-title-group">
+        <!-- Header: ticket ID, Status / Level / Type, meta line -->
+        <section class="ticket-detail-card ticket-detail-header">
+          <div class="ticket-detail-header-top">
             <a href="support.html" class="ticket-detail-back" id="ticketDetailBack" aria-label="Back to Support">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6L9 12L15 18"/></svg>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
             </a>
-            <h1 class="ticket-detail-title" id="ticketDetailTitle"></h1>
-            <div id="ticketDetailPills" style="display:flex; gap:8px;"></div>
+            <h1 class="ticket-detail-title" id="ticketDetailTitle">&nbsp;</h1>
+            <div class="ticket-detail-badges" id="ticketDetailBadges"></div>
+          </div>
+          <p class="ticket-detail-meta" id="ticketDetailMeta"></p>
+        </section>
+
+        <div id="ticketDetailLayout">
+          <div class="ticket-detail-main">
+
+            <!-- Clinic Info: the clinic/organization this ticket belongs to (read-only) -->
+            <section class="ticket-detail-card" id="clinicInfo">
+              <h3 class="ticket-detail-card-title">Clinic Info</h3>
+              <div class="ticket-detail-grid" style="margin-bottom:0;">
+                <div class="ticket-detail-field"><label>Organization</label><span id="ticketClinicOrg">&mdash;</span></div>
+                <div class="ticket-detail-field"><label>Study</label><span id="ticketClinicStudy">&mdash;</span></div>
+                <div class="ticket-detail-field"><label>HMO</label><span id="ticketClinicHmo">&mdash;</span></div>
+                <div class="ticket-detail-field"><label>Phone</label><span id="ticketClinicPhone">&mdash;</span></div>
+                <div class="ticket-detail-field"><label>Language</label><span id="ticketClinicLanguage">&mdash;</span></div>
+                <div class="ticket-detail-field"><label>Date Created</label><span id="ticketClinicSince">&mdash;</span></div>
+                <div class="ticket-detail-field" id="ticketClinicCordioField" hidden><label>Cordio System Software Version</label><span id="ticketClinicCordioVersion">&mdash;</span></div>
+                <div class="ticket-detail-field" id="ticketClinicPortalField" hidden><label>Portal Software Version</label><span id="ticketClinicPortalVersion">&mdash;</span></div>
+              </div>
+            </section>
+
+            <!-- Issue -->
+            <section class="ticket-detail-card" id="issue">
+              <h3 class="ticket-detail-card-title">Issue</h3>
+              <div class="ticket-detail-grid">
+                <div class="ticket-detail-field"><label>Category</label><span id="ticketDetailCategory">&mdash;</span></div>
+                <div class="ticket-detail-field"><label>Issue Type</label><span id="ticketDetailIssueType">&mdash;</span></div>
+              </div>
+              <p class="ticket-detail-description" id="ticketDetailDescription"></p>
+            </section>
+
+            <!-- History / Patient Log tabs (Recording removed) -->
+            <section class="ticket-detail-card ticket-detail-tabs-card">
+              <div class="ticket-detail-tabs" role="tablist">
+                <button type="button" class="ticket-detail-tab active" data-td-tab="history" role="tab">History</button>
+                <button type="button" class="ticket-detail-tab" data-td-tab="patientLog" role="tab" hidden>Patient Log</button>
+              </div>
+
+              <div class="ticket-detail-tab-panel active" data-td-panel="history">
+                <div class="ticket-history" id="ticketDetailHistory"></div>
+              </div>
+
+
+              <!-- Patient Log (patient-sourced tickets only) -->
+              <div class="ticket-detail-tab-panel" id="patientLog" data-td-panel="patientLog" hidden>
+                <div class="patient-log-snapshot">
+                  <div class="ticket-detail-section-title">App &amp; Device Info</div>
+                  <div class="patient-log-snapshot-fields">
+                    <div class="patient-log-chip-row" id="patientLogAppVersion"></div>
+                    <span class="patient-log-snapshot-divider" aria-hidden="true"></span>
+                    <div class="patient-log-chip-row" id="patientLogDeviceInfo"></div>
+                    <span class="patient-log-snapshot-divider" aria-hidden="true"></span>
+                    <div class="patient-log-chip-row" id="patientLogPermissions"></div>
+                  </div>
+                </div>
+                <div class="patient-log-history">
+                  <div class="ticket-detail-section-title patient-log-history-title">
+                    Log History
+                    <div class="patient-log-history-actions">
+                      <div class="patient-log-range">
+                        <span class="patient-log-range-label">From</span>
+                        <button type="button" class="ticket-date-field" id="patientLogDownloadFromField" data-field="from" aria-label="From date">
+                          <span id="patientLogDownloadFromValue" class="ticket-date-field-value">&mdash;</span>
+                          <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="17" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3 9H21" stroke="currentColor" stroke-width="1.8"/></svg>
+                        </button>
+                        <span class="patient-log-range-label">To</span>
+                        <button type="button" class="ticket-date-field" id="patientLogDownloadToField" data-field="to" aria-label="To date">
+                          <span id="patientLogDownloadToValue" class="ticket-date-field-value">&mdash;</span>
+                          <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="17" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3 9H21" stroke="currentColor" stroke-width="1.8"/></svg>
+                        </button>
+                        <div class="ticket-mini-calendar" id="patientLogDownloadCalendar" hidden>
+                          <div class="ticket-mini-calendar-head">
+                            <span class="ticket-mini-calendar-month" id="patientLogCalendarMonthLabel">&mdash;</span>
+                            <div class="ticket-mini-calendar-nav">
+                              <button type="button" id="patientLogCalendarPrev" aria-label="Previous month">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                              </button>
+                              <button type="button" id="patientLogCalendarNext" aria-label="Next month">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                              </button>
+                            </div>
+                          </div>
+                          <div class="ticket-mini-calendar-weekdays"><span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span></div>
+                          <div class="ticket-mini-calendar-days" id="patientLogCalendarDays"></div>
+                          <div class="ticket-mini-calendar-footer">
+                            <button type="button" id="patientLogCalendarClear">Clear</button>
+                            <button type="button" id="patientLogCalendarToday">Today</button>
+                          </div>
+                        </div>
+                      </div>
+                      <button type="button" class="btn-secondary" id="downloadPatientLogBtn">Download Log</button>
+                    </div>
+                  </div>
+                  <div class="patient-log-console" id="patientLogHistory"></div>
+                </div>
+              </div>
+            </section>
+
           </div>
         </div>
-
-        <div id="ticketDetailBody"></div>
 
       </div>
     </div>
   </div>
 
-  <!-- Chat with Patient panel removed entirely -- patient-clinician
-       conversation content is core PHI, same policy as patient-data.html's
-       Chat tab in phase 1. See js/ticket-detail.js for the corresponding JS
-       removal. -->
-
 <script src="js/topbar.js"></script>
 <script src="js/support-data.js"></script>
 <script src="../../js/support-tickets-common.js"></script>
-<script src="../../js/custom-select.js"></script>
 <script src="js/ticket-detail.js"></script>
 </body>
 </html>

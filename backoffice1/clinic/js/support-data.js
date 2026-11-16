@@ -1,13 +1,16 @@
-/* Backoffice-safe fork of ../../js/support-data.js. Why forked instead of
-   shared: ticketList embeds a real patient name (patientName) on every
-   Patient-type ticket. That field is dropped entirely below -- `who` is
-   already an anonymous per-org patient identifier (e.g. "121-2010") for
-   Patient-type tickets, so it alone is enough to identify "which patient"
-   without naming them; ticket descriptions are technical/operational
-   (voice engine, scheduling, compliance-score, sensor-sync issues) and name
-   no clinical specifics, so they're unchanged. Everything else (categories,
-   severities, states, support-team roster) is staff/config data, not patient
-   PHI, and is unchanged from the root file. */
+/* Backoffice-safe fork of ../../js/support-data.js (re-synced with the root
+   file). Why forked instead of shared: ticketList embeds a real patient name
+   (patientName) on every Patient-type ticket. That field is dropped entirely
+   below -- `who` is the patient's user number (e.g. "121-2010"), enough to
+   identify "which patient" without naming them. Ticket descriptions are
+   operational (voice engine, scheduling, compliance-score, sensor-sync issues)
+   and name no clinical specifics, so they're unchanged. Everything else
+   (categories, issue types, severities, states, support-team roster) is
+   staff/config data and identical to the root file. */
+
+/* Current logged-in clinician (matches the "EC" topbar avatar) -- tickets
+   assigned to this person are what "Support" shows by default. Shared by
+   support.html (list) and ticket-detail.html (single ticket). */
 const CURRENT_ASSIGNEE = "Emily Carter";
 
 const ticketCategories = [
@@ -60,14 +63,23 @@ const ticketLevels = [
   { key: "Level 3", label: "Level 3" },
 ];
 
+/* Support team members a new ticket can be assigned to -- matches the
+   assignedTo values already used across ticketList below. */
 const SUPPORT_TEAM_MEMBERS = ["Emily Carter", "Daniel Roy", "Maya Cohen", "Tomer Levi", "Sarah Cline"];
 
+/* Who a ticket can be transferred to, grouped by the Level it's being routed
+   to -- mirrors backoffice's TIER_AGENTS (backoffice1/js/support-data.js), so
+   picking a Level on the Ticket Detail Handling form narrows Assigned To to
+   that Level's people, same as backoffice does. */
 const TIER_AGENTS = {
   "Level 1": ["Emily Carter", "Daniel Roy"],
   "Level 2": ["Maya Cohen", "Tomer Levi"],
   "Level 3": ["Sarah Cline"],
 };
 
+/* Reverse lookup so any support team member's name can carry their level
+   wherever it's displayed (Ticket Detail's Assigned To select), matching
+   backoffice's AGENT_LEVEL/agentLabel. */
 const AGENT_LEVEL = {};
 Object.entries(TIER_AGENTS).forEach(([level, names]) => names.forEach((name) => { AGENT_LEVEL[name] = level; }));
 
@@ -80,13 +92,20 @@ function issueType(category, index) {
   return issueTypesByCategory[category][index % issueTypesByCategory[category].length];
 }
 
+/* `scope` mirrors the backoffice ticket-detail Ticket Info field of the same
+   name (see backoffice1/js/support-data.js's SCOPES: "Global" / "Organization"
+   / "Patient") -- it says how broadly the underlying issue applies: one
+   patient, one clinic/organization, or the whole system. Every hand-authored
+   ticket below is scoped per its own description rather than a blanket
+   per-category default, since a couple of Clinic-raised tickets are really
+   about one specific patient despite being raised by clinic staff. */
 const ticketList = [
   { ticketId: "TCK-1050", organization: "121", type: "Patient", who: "121-2010", category: "Voice Engine", issueType: issueType("Voice Engine", 0), origin: "Back Office", severity: "Critical", state: "Open", scope: "Patient", assignedTo: "Emily Carter", created: "18.08.2028", description: "The voice engine failed to return ASR results for the patient's daily recording. No transcript was generated for the last 3 sessions." },
   { ticketId: "TCK-1207", organization: "B03", type: "Patient", who: "B03-5107", category: "System Schedule Engine", issueType: issueType("System Schedule Engine", 0), origin: "Back Office", severity: "Critical", state: "In Progress", scope: "Patient", assignedTo: "Emily Carter", created: "17.08.2028", description: "Scheduled recording run did not trigger for the patient's start date. Baseline window is at risk of expiring." },
   { ticketId: "TCK-1315", organization: "ATP", type: "Patient", who: "ATP-5215", category: "Patient", issueType: issueType("Patient", 0), origin: "Back Office", severity: "Critical", state: "Resolved", scope: "Patient", assignedTo: "Emily Carter", created: "12.08.2028", description: "Patient app remained paused beyond the expected threshold, blocking new recordings." },
   { ticketId: "TCK-1339", organization: "ATP", type: "Patient", who: "ATP-5239", category: "Patient", issueType: issueType("Patient", 1), origin: "Back Office", severity: "Critical", state: "Open", scope: "Patient", assignedTo: "Emily Carter", created: "20.08.2028", description: "Patient onboarding is stuck in baseline collection with no valid recordings for 6 days." },
   { ticketId: "TCK-1401", organization: "B01", type: "Patient", who: "B01-3312", category: "Compliance", issueType: issueType("Compliance", 0), origin: "Back Office", severity: "Medium", state: "In Progress", scope: "Patient", assignedTo: "Emily Carter", created: "19.08.2028", description: "Patient compliance score dropped below the configured threshold for two consecutive weeks." },
-  { ticketId: "TCK-1422", organization: "B01", type: "Clinic", who: "Ariel Fox", category: "Clinic Users", issueType: issueType("Clinic Users", 0), origin: "Back Office", severity: "High", state: "Open", scope: "Organization", assignedTo: "Emily Carter", created: "21.08.2028", description: "Multiple failed login attempts detected for a clinic user account outside of normal usage hours." },
+  { ticketId: "TCK-1422", organization: "B01", type: "Clinic", who: "Dr. James Carter", category: "Clinic Users", issueType: issueType("Clinic Users", 0), origin: "Back Office", severity: "High", state: "Open", scope: "Organization", assignedTo: "Emily Carter", created: "21.08.2028", description: "Multiple failed login attempts detected for a clinic user account outside of normal usage hours." },
   { ticketId: "TCK-1478", organization: "105", type: "Patient", who: "105-4471", category: "Sensors", issueType: issueType("Sensors", 0), origin: "Back Office", severity: "Low", state: "In Progress", scope: "Patient", assignedTo: "Emily Carter", created: "16.08.2028", description: "No sensor readings received from the patient's connected device for the past 24 hours." },
   { ticketId: "TCK-1502", organization: "B01", type: "Clinic", who: "Dr. Sarah Mitchell", category: "Clinic Users", issueType: issueType("Clinic Users", 1), origin: "Clinic", severity: "Medium", state: "Resolved", scope: "Organization", assignedTo: "Emily Carter", created: "10.08.2028", description: "Clinic user requested an MFA reset after losing access to their authenticator app." },
   { ticketId: "TCK-1231", organization: "B03", type: "Patient", who: "B03-5131", category: "Patient", issueType: issueType("Patient", 0), origin: "Back Office", severity: "Critical", state: "In Progress", scope: "Patient", assignedTo: "Daniel Roy", created: "18.08.2028", description: "Patient app remained paused beyond the expected threshold, blocking new recordings." },
@@ -122,7 +141,7 @@ ticketList.forEach((t, i) => {
 });
 
 function stateCellClass(state) {
-  return { Open: "ticket-pill-state-open", "In Progress": "ticket-pill-state-inprogress", Escalated: "ticket-pill-state-escalated", Resolved: "ticket-pill-state-resolved" }[state];
+  return { Open: "ticket-pill-state-open", "In Progress": "ticket-pill-state-inprogress", Resolved: "ticket-pill-state-resolved" }[state];
 }
 function severityCellClass(severity) {
   return { Critical: "ticket-pill-severity-critical", High: "ticket-pill-severity-high", Medium: "ticket-pill-severity-medium", Low: "ticket-pill-severity-low" }[severity];

@@ -1,17 +1,28 @@
-/* Backoffice-safe fork of ../../js/audit-trail-data.js. Why forked instead of
-   shared: the root file's auditPatientPool embeds real patient names
-   directly into the seeded `related to` data. Only that pool is changed here
-   (real names -> placeholder Patient IDs, same ABC-13xx format used
-   elsewhere in this backoffice copy); the action-type templates, user pool
-   (staff names, not patient PHI), and the generation loop are unchanged from
-   the root file. "Patient Weight/Blood Pressure Manually Entered" action
-   types are kept -- they only ever show the event *type*, never the actual
-   vitals value, so there's no clinical content to redact. */
+/* Backoffice-safe fork of ../../js/audit-trail-data.js (re-synced with the
+   root file). Why forked instead of shared: the root file's auditPatientPool
+   embeds real patient names, which also end up in the generated description
+   text ("... for <patient name>"). Changes from the root file:
+   - auditPatientPool uses patient user numbers (ABC-14xx) instead of names.
+   - The "Patient Weight / Blood Pressure Manually Entered" descriptions keep
+     the root wording but drop the actual measurement value (weight in lbs,
+     BP in mmHg) -- that's clinical content.
+   The action-type list, user pool (staff names) and generation loop are
+   otherwise identical to the root file. */
+
+/* ---------------- Data ---------------- */
 const auditActionTemplates = [
-  { type: "User Login", description: "User logged into the system", relatedPrefix: "User" },
-  { type: "User Logout", description: "User logged out of the system", relatedPrefix: "User" },
-  { type: "Patient Weight Manually Entered", description: "", relatedPrefix: "Patient" },
-  { type: "Patient Blood Pressure Manually Entered", description: "", relatedPrefix: "Patient" },
+  { type: "User Login", relatedPrefix: "User", describe: (madeBy) => `${madeBy} logged into the system` },
+  { type: "User Logout", relatedPrefix: "User", describe: (madeBy) => `${madeBy} logged out of the system` },
+  {
+    type: "Patient Weight Manually Entered",
+    relatedPrefix: "Patient",
+    describe: (madeBy, relatedName) => `${madeBy} manually entered a weight for ${relatedName}`,
+  },
+  {
+    type: "Patient Blood Pressure Manually Entered",
+    relatedPrefix: "Patient",
+    describe: (madeBy, relatedName) => `${madeBy} manually entered a blood pressure reading for ${relatedName}`,
+  },
 ];
 
 const auditUserPool = ["Shekhar Manwar", "pranali tanpure", "Pranali Tanpure", "Igor Minyaylo", "Yoni Bloch", "Ayelet Er"];
@@ -33,7 +44,7 @@ const auditTrail = Array.from({ length: 1629 }, (_, i) => {
   return {
     id: i,
     actionType: template.type,
-    description: template.description,
+    description: template.describe(madeBy, relatedName, i),
     relatedTo: related,
     relatedType: template.relatedPrefix,
     relatedName,

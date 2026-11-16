@@ -36,7 +36,6 @@
           </span>
           <span class="nav-label">Patient List</span>
         </a>
-        <!-- Reports / Billing / Audit Trail / Manage Users / Support: now built as their own backoffice-safe pages in this folder (phase 2). -->
         <a href="reports.html" class="nav-item" style="display:none">
           <span class="nav-icon">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>
@@ -61,11 +60,23 @@
           </span>
           <span class="nav-label">Manage Users</span>
         </a>
+        <a href="ctm.html" class="nav-item">
+          <span class="nav-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-2"/><path d="M9 12h6"/><path d="M9 16h6"/></svg>
+          </span>
+          <span class="nav-label">HCP</span>
+        </a>
         <a href="support.html" class="nav-item">
           <span class="nav-icon">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H3v-7a9 9 0 0 1 18 0v7h-3a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"/><path d="M21 16v2a4 4 0 0 1-4 4h-5"/></svg>
           </span>
           <span class="nav-label">Support</span>
+        </a>
+        <a href="ehr.html" class="nav-item">
+          <span class="nav-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2v6"/><path d="M15 2v6"/><path d="M6 8h12v4a6 6 0 0 1-12 0V8z"/><path d="M12 18v4"/></svg>
+          </span>
+          <span class="nav-label">EHR</span>
         </a>
       </nav>
     </aside>
@@ -75,7 +86,6 @@
 
       <!-- TOPBAR -->
       <header class="topbar">
-        <a href="../overview-dashboard.html" class="ticket-detail-back" aria-label="Back to Backoffice" title="Back to Backoffice"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></a>
         <h1 class="page-title">Patient List</h1>
         <div class="topbar-actions">
           <div class="topbar-item">
@@ -92,6 +102,21 @@
                 <input type="radio" name="org" value="101" />
                 <span class="radio-dot"></span>
                 101
+              </label>
+              <label class="org-radio-item">
+                <input type="radio" name="org" value="104" />
+                <span class="radio-dot"></span>
+                104
+              </label>
+              <label class="org-radio-item">
+                <input type="radio" name="org" value="b03" />
+                <span class="radio-dot"></span>
+                B03
+              </label>
+              <label class="org-radio-item">
+                <input type="radio" name="org" value="105" />
+                <span class="radio-dot"></span>
+                105
               </label>
             </div>
           </div>
@@ -123,9 +148,47 @@
                 <button class="notif-tab active" data-tab="foryou">For you</button>
               </div>
               <div class="notif-list" id="notifList"></div>
+              <a href="#" class="notif-view-more">View more</a>
             </div>
           </div>
-          <div class="avatar">BO</div>
+          <div class="topbar-item">
+            <button class="icon-btn badge" aria-label="Messages" data-count="1" id="messagesBtn">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 5.5C4 4.4 4.9 3.5 6 3.5H18C19.1 3.5 20 4.4 20 5.5V14.5C20 15.6 19.1 16.5 18 16.5H9L5 20V16.5H6C4.9 16.5 4 15.6 4 14.5V5.5Z" stroke="#6B7684" stroke-width="1.6" stroke-linejoin="round"/></svg>
+            </button>
+            <div class="topbar-popover notif-popover" id="messagesPopover">
+              <h3 class="notif-title">Messages</h3>
+              <div class="notif-list" id="messagesList"></div>
+              <a href="#" class="notif-view-more">View more</a>
+            </div>
+          </div>
+          <div class="topbar-item">
+            <button class="avatar avatar-btn" aria-label="Profile" id="profileBtn">EC</button>
+          </div>
+          <div class="topbar-item">
+            <button class="icon-btn" aria-label="More" id="moreBtn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="1.6" fill="#6B7684"/><circle cx="12" cy="12" r="1.6" fill="#6B7684"/><circle cx="12" cy="19" r="1.6" fill="#6B7684"/></svg>
+            </button>
+            <div class="topbar-popover more-popover" id="morePopover">
+              <!-- "Patient Onboarding Guide" (root study-material.html), "Backoffice Designs" and
+                   "Mobile Designs" dropped: no in-clinic equivalent / not part of the clinic portal. -->
+              <a href="#" class="more-menu-item" id="viewVersionBtn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16"/><circle cx="12" cy="7.5" r="1" fill="currentColor" stroke="none"/></svg>
+                View Version
+              </a>
+              <a href="#" class="more-menu-item" id="termsOfServiceBtn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3.5h9l5 5v12a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-16a1 1 0 0 1 1-1z"/><path d="M15 3.5v5h5"/><line x1="8.5" y1="13" x2="15.5" y2="13"/><line x1="8.5" y1="17" x2="15.5" y2="17"/></svg>
+                Terms of Service
+              </a>
+              <a href="#" class="more-menu-item" id="privacyNoticeBtn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3.2v5.3c0 4.6-3 8.6-7 9.8-4-1.2-7-5.2-7-9.8V6.2L12 3z"/><path d="M9 12l2 2 4-4"/></svg>
+                Privacy Notice
+              </a>
+              <a href="#" class="more-menu-item" id="instructionsForUseBtn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="12" height="17" rx="1.5"/><path d="M9 3.5h6a1 1 0 0 1 1 1V6H8V4.5a1 1 0 0 1 1-1z"/><line x1="9" y1="11" x2="15" y2="11"/><line x1="9" y1="14.5" x2="15" y2="14.5"/><line x1="9" y1="18" x2="13" y2="18"/></svg>
+                Instructions for Use
+              </a>
+            </div>
+          </div>
         </div>
       </header>
 
@@ -137,20 +200,22 @@
             <button type="button" class="filter-tab active" data-scope="all">All Patients</button>
             <button type="button" class="filter-tab" data-scope="mine">My Patients</button>
           </div>
-          <!-- Register Manually / Import from EHR: both collect or display real
-               patient identity (DOB, email, EHR search-by-name results) --
-               out of scope for a redacted backoffice view. Hidden pending a
-               phase-2 decision on whether backoffice should register patients
-               at all, rather than exposing a PHI-entry/PHI-display workflow. -->
-          <div class="topbar-item" style="display:none">
-            <button class="btn-add-user" id="openAddPatientBtn">Add Patient</button>
+          <!-- Add Patient (Register Manually / Import from EHR) removed: both collect or
+               display real patient identity (name, DOB, email, EHR search-by-name
+               results) -- a PHI-entry workflow that is out of scope for this
+               redacted backoffice view. Export Report stays (user-number only). -->
+          <div class="topbar-item" style="display:flex; gap:10px;">
+            <button class="btn-outline-gray" id="exportPatientListBtn">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 3V15M12 15L8 11M12 15L16 11" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 16V19C4 20.1 4.9 21 6 21H18C19.1 21 20 20.1 20 19V16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Export Report
+            </button>
           </div>
         </div>
 
         <div class="filters-bar">
           <div class="search-pill">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#9AA5B1" stroke-width="1.8"/><path d="M21 21L16.5 16.5" stroke="#9AA5B1" stroke-width="1.8" stroke-linecap="round"/></svg>
-            <input type="text" id="searchInput" placeholder="Search Patient ID" />
+            <input type="text" id="searchInput" placeholder="Search by user no." />
           </div>
 
           <div class="checkbox-filter" data-name="account">
@@ -198,8 +263,16 @@
             <div class="checkbox-filter-menu" id="careTeamFilterMenu"></div>
           </div>
 
-          <button type="button" class="bo-btn-primary" id="patientListApplyBtn">Apply</button>
-          <button class="bo-btn-secondary" id="clearFilters">Clear all filters</button>
+          <button class="clear-filters" id="clearFilters">Clear all filters</button>
+
+          <div class="checkbox-filter" data-name="columns" style="margin-left:auto;">
+            <button type="button" class="filter-btn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="16" rx="2" stroke="#6B7684" stroke-width="1.5"/><line x1="9" y1="4" x2="9" y2="20" stroke="#6B7684" stroke-width="1.5"/><line x1="15" y1="4" x2="15" y2="20" stroke="#6B7684" stroke-width="1.5"/></svg>
+              <span class="checkbox-filter-label">Columns</span>
+              <svg class="caret" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#6B7684" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="checkbox-filter-menu" id="columnsMenu"></div>
+          </div>
         </div>
 
         <div class="table-card">
@@ -207,16 +280,16 @@
             <table class="list-table list-table-compact">
               <thead>
                 <tr>
-                  <th><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9AA5B1" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9H21"/></svg>PATIENT ID</th>
-                  <th><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9AA5B1" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 9H21"/></svg>ACCOUNT</th>
-                  <th><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9AA5B1" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9H21"/><path d="M8 2V6"/><path d="M16 2V6"/></svg>ENROLLED DATE</th>
-                  <th><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9AA5B1" stroke-width="1.8"><path d="M10 3H14C14.55 3 15 3.45 15 4V9H20C20.55 9 21 9.45 21 10V14C21 14.55 20.55 15 20 15H15V20C15 20.55 14.55 21 14 21H10C9.45 21 9 20.55 9 20V15H4C3.45 15 3 14.55 3 14V10C3 9.45 3.45 9 4 9H9V4C9 3.45 9.45 3 10 3Z"/></svg>CONNECTED EHR</th>
-                  <th><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9AA5B1" stroke-width="1.8"><path d="M12 5V19M5 12H19"/></svg>SOURCE</th>
-                  <th><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9AA5B1" stroke-width="1.8"><path d="M12 21C12 21 4 15.5 4 9.8C4 6.6 6.5 4.5 9.2 4.5C10.6 4.5 11.6 5.1 12 5.7C12.4 5.1 13.4 4.5 14.8 4.5C17.5 4.5 20 6.6 20 9.8C20 15.5 12 21 12 21Z"/></svg>STATUS</th>
-                  <th><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9AA5B1" stroke-width="1.8"><path d="M4 19V13M10 19V9M16 19V5M20 19V11"/></svg>MONITORING</th>
-                  <th><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9AA5B1" stroke-width="1.8"><path d="M4 19V13M10 19V9M16 19V5M20 19V11"/></svg>COMPLIANCE</th>
-                  <th><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9AA5B1" stroke-width="1.8"><circle cx="9" cy="8" r="3.2"/><path d="M2.5 20C2.5 16.5 5.5 14 9 14C12.5 14 15.5 16.5 15.5 20"/><circle cx="17" cy="8.5" r="2.6"/><path d="M15.5 20C15.5 17 17.8 15 20.5 15"/></svg>CARE TEAM</th>
-                  <th class="th-action"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9AA5B1" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/></svg>ACTION</th>
+                  <!-- NAME + USERNAME collapsed into one USER NO. column; MRN/ID and PHONE NO. removed (direct identifiers). -->
+                  <th data-col="userNo"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9AA5B1" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 20C4 15.6 7.6 12 12 12C16.4 12 20 15.6 20 20"/></svg>USER NO.</th>
+                  <th data-col="account"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9AA5B1" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 9H21"/></svg>ACCOUNT</th>
+                  <th data-col="enrolledDate"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9AA5B1" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9H21"/><path d="M8 2V6"/><path d="M16 2V6"/></svg>ENROLLED DATE</th>
+                  <th data-col="connectedEhr"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9AA5B1" stroke-width="1.8"><path d="M10 3H14C14.55 3 15 3.45 15 4V9H20C20.55 9 21 9.45 21 10V14C21 14.55 20.55 15 20 15H15V20C15 20.55 14.55 21 14 21H10C9.45 21 9 20.55 9 20V15H4C3.45 15 3 14.55 3 14V10C3 9.45 3.45 9 4 9H9V4C9 3.45 9.45 3 10 3Z"/></svg>CONNECTED EHR</th>
+                  <th data-col="source"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9AA5B1" stroke-width="1.8"><path d="M12 5V19M5 12H19"/></svg>SOURCE</th>
+                  <th data-col="status"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9AA5B1" stroke-width="1.8"><path d="M12 21C12 21 4 15.5 4 9.8C4 6.6 6.5 4.5 9.2 4.5C10.6 4.5 11.6 5.1 12 5.7C12.4 5.1 13.4 4.5 14.8 4.5C17.5 4.5 20 6.6 20 9.8C20 15.5 12 21 12 21Z"/></svg>STATUS</th>
+                  <th data-col="monitoring"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9AA5B1" stroke-width="1.8"><path d="M4 19V13M10 19V9M16 19V5M20 19V11"/></svg>MONITORING</th>
+                  <th data-col="careTeam"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9AA5B1" stroke-width="1.8"><circle cx="9" cy="8" r="3.2"/><path d="M2.5 20C2.5 16.5 5.5 14 9 14C12.5 14 15.5 16.5 15.5 20"/><circle cx="17" cy="8.5" r="2.6"/><path d="M15.5 20C15.5 17 17.8 15 20.5 15"/></svg>CARE TEAM</th>
+                  <th class="th-action" data-col="action"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9AA5B1" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/></svg>ACTION</th>
                 </tr>
               </thead>
               <tbody id="patientListRows"></tbody>
@@ -240,13 +313,17 @@
     </div>
   </div>
 
-  <!-- Row action dropdown (Edit patient removed: it collects/edits real name, mobile, gender -- out of scope) -->
+
+  <!-- Row action dropdown. "Edit patient" removed: it pre-fills/edits real name, MRN,
+       email and mobile -- out of scope for this redacted view. -->
   <div class="row-menu" id="patientRowMenu">
+    <button class="row-menu-item" data-action="acknowledge" hidden>Acknowledge</button>
     <button class="row-menu-item" data-action="account">Update account</button>
     <button class="row-menu-item" data-action="reset">Send reset link</button>
   </div>
 
-  <!-- Care Team list popover -->
+  <!-- Care Team list popover (care-team members are staff, so named).
+       The root page's Care Recommendation indicator popover is not carried over. -->
   <div class="care-indicator-popover" id="careTeamListPopover"></div>
 
   <!-- Update Account modal -->
@@ -299,7 +376,7 @@
     </div>
   </div>
 
-  <!-- Send Reset Link modal -->
+  <!-- Send Reset Link modal (subject shown by user number) -->
   <div class="modal-overlay" id="resetPasswordOverlay">
     <div class="modal">
       <h2>Send Reset Link</h2>
@@ -351,9 +428,41 @@
     </div>
   </div>
 
+  <!-- Export Report modal -->
+  <div class="modal-overlay" id="exportReportOverlay">
+    <div class="modal">
+      <h2>Export Report</h2>
+
+      <div class="export-format-list">
+        <label class="export-format-option">
+          <input type="radio" name="exportFormat" value="CSV" checked />
+          <span class="radio-dot"></span>
+          <span class="export-format-option-label">CSV</span>
+        </label>
+        <label class="export-format-option">
+          <input type="radio" name="exportFormat" value="Excel" />
+          <span class="radio-dot"></span>
+          <span class="export-format-option-label">Excel</span>
+        </label>
+        <label class="export-format-option">
+          <input type="radio" name="exportFormat" value="PDF" />
+          <span class="radio-dot"></span>
+          <span class="export-format-option-label">PDF</span>
+        </label>
+      </div>
+
+      <div class="export-summary-box" id="exportSummaryBox"></div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn-text" id="cancelExportReport">Cancel</button>
+        <button type="button" class="btn-save enabled" id="confirmExportReport">Export</button>
+      </div>
+    </div>
+  </div>
+
 <!-- Reused unmodified from the root clinic portal: pure layout/table-fit helper, no patient data or PHI. -->
 <script src="../../js/table-scroll.js"></script>
-<!-- Forked: redacted notifications feed. -->
+<!-- Forked: redacted notifications/messages feed + Back to Backoffice. -->
 <script src="js/topbar.js"></script>
 <!-- Forked: redacted patient list data + rendering (root js/patient-list.js mixes patient names/PHI into render logic). -->
 <script src="js/patient-list.js"></script>

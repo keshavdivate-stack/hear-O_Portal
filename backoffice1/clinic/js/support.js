@@ -1,21 +1,22 @@
-const eyeIcon = `<svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M1.5 12C1.5 12 5.5 5 12 5C18.5 5 22.5 12 22.5 12C22.5 12 18.5 19 12 19C5.5 19 1.5 12 1.5 12Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/></svg>`;
-/* Backoffice-safe fork of ../../js/support.js. Why forked instead of shared:
-   the root file's ticket list render shows a real patient name
-   (t.patientName) for Patient-type tickets. That field no longer exists on
-   ticketList (see the forked js/support-data.js this file also depends on),
-   so the Patient column now shows just `t.who` -- already an anonymous
-   per-org patient identifier (e.g. "121-2010") -- with no separate name to
-   fall back to. Filtering, tabs, and the Create Ticket modal are otherwise
-   unchanged from the root file. */
+/* Backoffice-safe fork of ../../js/support.js (re-synced with the root file).
+   Why forked instead of shared: the root file shows / searches the patient's
+   name (t.patientName) on Patient tickets and lists patients by name in the
+   New Ticket modal's "Create For" dropdown. That field doesn't exist on this
+   copy's ticketList (see js/support-data.js), so patients appear only by
+   their user number (t.who). Stats, filters, pagination, row click-through
+   and the New Ticket modal are otherwise identical to the root file. */
 const selectedTypes = new Set();
 const selectedCategories = new Set();
 const selectedIssueTypes = new Set();
 const selectedOrigins = new Set();
 const selectedStates = new Set();
-/* This list is always scoped to the current agent's own tickets -- there's
-   no Assigned To filter to widen it to a teammate's queue. */
-const selectedAssignees = new Set([CURRENT_ASSIGNEE]);
 let ticketSearchTerm = "";
+const TICKET_PAGE_SIZE = 25;
+let ticketCurrentPage = 1;
+
+/* Open and In Progress tickets come first, Resolved last -- regardless of
+   Created date. Within a status group the original order is kept. */
+const stateRank = (state) => (state === "Resolved" ? 1 : 0);
 
 function filteredTicketList() {
   const term = ticketSearchTerm.trim().toLowerCase();
@@ -25,44 +26,92 @@ function filteredTicketList() {
     if (selectedIssueTypes.size && !selectedIssueTypes.has(t.issueType)) return false;
     if (selectedOrigins.size && !selectedOrigins.has(t.origin)) return false;
     if (selectedStates.size && !selectedStates.has(t.state)) return false;
-    if (selectedAssignees.size && !selectedAssignees.has(t.assignedTo)) return false;
     if (term && !`${t.ticketId} ${t.who} ${t.organization}`.toLowerCase().includes(term)) return false;
     return true;
-  });
+  }).sort((a, b) => stateRank(a.state) - stateRank(b.state));
 }
 
 const ticketRows = document.getElementById("ticketListRows");
 const ticketRangeLabel = document.getElementById("ticketRangeLabel");
 
+/* Stat cards count every ticket in the clinic's queue, not just the rows the
+   current filters leave visible. */
+function renderTicketStats() {
+  const count = (state) => ticketList.filter((t) => t.state === state).length;
+  document.getElementById("ticketStatTotal").textContent = ticketList.length;
+  document.getElementById("ticketStatOpen").textContent = count("Open");
+  document.getElementById("ticketStatInProgress").textContent = count("In Progress");
+  document.getElementById("ticketStatResolved").textContent = count("Resolved");
+}
+
 function renderTicketList() {
+  renderTicketStats();
   const list = filteredTicketList();
+  const total = list.length;
+  const totalPages = Math.max(1, Math.ceil(total / TICKET_PAGE_SIZE));
+  ticketCurrentPage = Math.min(Math.max(ticketCurrentPage, 1), totalPages);
+  const start = (ticketCurrentPage - 1) * TICKET_PAGE_SIZE;
   ticketRows.innerHTML = list
+    .slice(start, start + TICKET_PAGE_SIZE)
     .map(
       (t) => `
-      <tr>
+      <tr class="ticket-row-link" data-id="${t.id}">
         <td><b>${t.ticketId}</b></td>
         <td><span class="ticket-pill ${typeCellClass(t.type)}">${t.type}</span></td>
         <td>${
           t.type === "Patient"
-            ? `<a class="ticket-view-link" href="patient-data.html">${t.who}</a>`
-            : t.who
+            ? t.who
+              ? `<a class="ticket-view-link" href="patient-data.html">${t.who}</a>`
+              : "&mdash;"
+            : t.organization || "&mdash;"
         }</td>
         <td>${t.category}</td>
         <td>${t.issueType}</td>
+        <td>${t.origin}</td>
         <td><span class="ticket-pill ${stateCellClass(t.state)}">${t.state}</span></td>
+        <td>${t.assignedTo || "&mdash;"}</td>
         <td>${t.created}</td>
-        <td>${t.assignedTo || "—"}</td>
-        <td><a class="ticket-view-icon" href="ticket-detail.html?id=${t.id}" aria-label="View">${eyeIcon}</a></td>
       </tr>`
     )
     .join("");
-  ticketRangeLabel.textContent = list.length ? `1-${list.length} of ${list.length}` : "";
-  if (!list.length) {
+  ticketRangeLabel.textContent = total ? `${start + 1} – ${Math.min(start + TICKET_PAGE_SIZE, total)} of ${total}` : "0 of 0";
+  document.getElementById("ticketFirstPage").disabled = ticketCurrentPage === 1;
+  document.getElementById("ticketPrevPage").disabled = ticketCurrentPage === 1;
+  document.getElementById("ticketNextPage").disabled = ticketCurrentPage === totalPages;
+  document.getElementById("ticketLastPage").disabled = ticketCurrentPage === totalPages;
+  if (!total) {
     ticketRows.innerHTML = `<tr><td colspan="9" style="text-align:center; color:var(--gray-text); padding:24px;">No tickets match the current filters.</td></tr>`;
   }
 }
 
+/* Any filter/search change starts back on page 1. */
+function applyTicketFilters() {
+  ticketCurrentPage = 1;
+  renderTicketList();
+}
+
+[
+  ["ticketFirstPage", () => 1],
+  ["ticketPrevPage", () => ticketCurrentPage - 1],
+  ["ticketNextPage", () => ticketCurrentPage + 1],
+  ["ticketLastPage", () => Infinity],
+].forEach(([id, nextPage]) => {
+  document.getElementById(id).addEventListener("click", () => {
+    ticketCurrentPage = nextPage();
+    renderTicketList();
+  });
+});
+
 renderTicketList();
+
+/* Clicking anywhere on a ticket row opens that ticket (the row replaces the
+   old Action/eye column). The patient user-number link inside the row still goes to
+   the patient's page instead. */
+ticketRows.addEventListener("click", (e) => {
+  if (e.target.closest("a")) return;
+  const row = e.target.closest("tr[data-id]");
+  if (row) location.href = `ticket-detail.html?id=${row.dataset.id}`;
+});
 
 /* ---------------- Filter menu portaling (matches patient-list.js) ---------------- */
 const portaledFilterMenus = new Map();
@@ -128,8 +177,7 @@ function wireCheckboxFilter(wrapEl, menuEl, selectedSet, onChange) {
     else selectedSet.delete(checkbox.value);
 
     label.textContent = selectedSet.size ? `${baseLabel} (${selectedSet.size})` : baseLabel;
-    /* Apply-gated: checkbox filters just update state + label here. The
-       actual re-render only happens when the Apply button is clicked. */
+    onChange();
   });
 }
 
@@ -147,34 +195,29 @@ function buildOptionsHtml(options) {
 
 const ticketTypeMenu = document.getElementById("ticketTypeMenu");
 ticketTypeMenu.innerHTML = buildOptionsHtml(ticketTypes);
-wireCheckboxFilter(document.querySelector('.checkbox-filter[data-name="type"]'), ticketTypeMenu, selectedTypes, renderTicketList);
+wireCheckboxFilter(document.querySelector('.checkbox-filter[data-name="type"]'), ticketTypeMenu, selectedTypes, applyTicketFilters);
 
 const ticketCategoryMenu = document.getElementById("ticketCategoryMenu");
 ticketCategoryMenu.innerHTML = buildOptionsHtml(ticketCategories);
-wireCheckboxFilter(document.querySelector('.checkbox-filter[data-name="category"]'), ticketCategoryMenu, selectedCategories, renderTicketList);
+wireCheckboxFilter(document.querySelector('.checkbox-filter[data-name="category"]'), ticketCategoryMenu, selectedCategories, applyTicketFilters);
 
 const allIssueTypes = [...new Set(ticketList.map((t) => t.issueType))].map((v) => ({ key: v, label: v }));
 const ticketIssueMenu = document.getElementById("ticketIssueMenu");
 ticketIssueMenu.innerHTML = buildOptionsHtml(allIssueTypes);
-wireCheckboxFilter(document.querySelector('.checkbox-filter[data-name="issueType"]'), ticketIssueMenu, selectedIssueTypes, renderTicketList);
+wireCheckboxFilter(document.querySelector('.checkbox-filter[data-name="issueType"]'), ticketIssueMenu, selectedIssueTypes, applyTicketFilters);
 
 const ticketOriginMenu = document.getElementById("ticketOriginMenu");
 ticketOriginMenu.innerHTML = buildOptionsHtml(ticketOrigins);
-wireCheckboxFilter(document.querySelector('.checkbox-filter[data-name="origin"]'), ticketOriginMenu, selectedOrigins, renderTicketList);
+wireCheckboxFilter(document.querySelector('.checkbox-filter[data-name="origin"]'), ticketOriginMenu, selectedOrigins, applyTicketFilters);
 
 const ticketStateMenu = document.getElementById("ticketStateMenu");
 ticketStateMenu.innerHTML = buildOptionsHtml(ticketStates);
-wireCheckboxFilter(document.querySelector('.checkbox-filter[data-name="state"]'), ticketStateMenu, selectedStates, renderTicketList);
-
+wireCheckboxFilter(document.querySelector('.checkbox-filter[data-name="state"]'), ticketStateMenu, selectedStates, applyTicketFilters);
 
 /* ---------------- Search ---------------- */
 document.getElementById("ticketSearchInput").addEventListener("input", (e) => {
   ticketSearchTerm = e.target.value;
-});
-
-/* ---------------- Apply ---------------- */
-document.getElementById("ticketApplyBtn").addEventListener("click", () => {
-  renderTicketList();
+  applyTicketFilters();
 });
 
 /* ---------------- Clear all filters ---------------- */
@@ -194,161 +237,104 @@ document.getElementById("clearTicketFilters").addEventListener("click", () => {
     menu.querySelectorAll('input[type="checkbox"]').forEach((cb) => (cb.checked = false));
     document.querySelector(`.checkbox-filter[data-name="${name}"] .checkbox-filter-label`).textContent = label;
   });
-  renderTicketList();
+  applyTicketFilters();
 });
 
-/* ---------------- Tabs: Raised by Clinic / Assigned to Clinic ---------------- */
-document.querySelectorAll("#supportTicketTabs .page-tab").forEach((tab) => {
-  tab.addEventListener("click", () => {
-    document.querySelectorAll("#supportTicketTabs .page-tab").forEach((t) => t.classList.remove("active"));
-    document.querySelectorAll(".tab-panel").forEach((p) => p.classList.remove("active"));
-    tab.classList.add("active");
-    document.querySelector(`.tab-panel[data-tab-panel="${tab.dataset.tab}"]`).classList.add("active");
-  });
-});
-
-/* ---------------- Raised by Clinic ----------------
-   Mirrors the "Support Ticket" floating button's own definition of "this
-   clinic's tickets" (js/topbar.js) -- Clinic-type tickets scoped to the
-   org currently selected in the topbar switcher. */
+/* Mirrors the "Support Ticket" floating button's own definition of "this
+   clinic's tickets" (js/topbar.js) -- used to stamp a newly-raised ticket
+   with the org currently selected in the topbar switcher. */
 function currentOrg() {
   const checked = document.querySelector('input[name="org"]:checked');
   return (checked ? checked.value : "b01").toUpperCase();
 }
 
-let raisedTicketSearchTerm = "";
-const selectedRaisedCategories = new Set();
-const selectedRaisedIssueTypes = new Set();
-const selectedRaisedStates = new Set();
-
-function raisedTicketList() {
-  const term = raisedTicketSearchTerm.trim().toLowerCase();
-  const org = currentOrg();
-  return ticketList.filter((t) => {
-    if (t.type !== "Clinic" || t.organization.toUpperCase() !== org) return false;
-    if (selectedRaisedCategories.size && !selectedRaisedCategories.has(t.category)) return false;
-    if (selectedRaisedIssueTypes.size && !selectedRaisedIssueTypes.has(t.issueType)) return false;
-    if (selectedRaisedStates.size && !selectedRaisedStates.has(t.state)) return false;
-    if (term && !`${t.ticketId} ${t.who} ${t.issueType}`.toLowerCase().includes(term)) return false;
-    return true;
-  });
-}
-
-const raisedTicketRows = document.getElementById("raisedTicketRows");
-const raisedTicketRangeLabel = document.getElementById("raisedTicketRangeLabel");
-
-function renderRaisedTicketList() {
-  const list = raisedTicketList();
-  raisedTicketRows.innerHTML = list
-    .map(
-      (t) => `
-      <tr>
-        <td><b>${t.ticketId}</b></td>
-        <td>${t.who}</td>
-        <td>${t.category}</td>
-        <td>${t.issueType}</td>
-        <td><span class="ticket-pill ${stateCellClass(t.state)}">${t.state}</span></td>
-        <td>${t.created}</td>
-        <td><a class="ticket-view-icon" href="ticket-detail.html?id=${t.id}" aria-label="View">${eyeIcon}</a></td>
-      </tr>`
-    )
-    .join("");
-  raisedTicketRangeLabel.textContent = list.length ? `1-${list.length} of ${list.length}` : "";
-  if (!list.length) {
-    raisedTicketRows.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--gray-text); padding:24px;">No tickets raised by this clinic yet.</td></tr>`;
-  }
-}
-renderRaisedTicketList();
-
-document.getElementById("raisedTicketSearchInput").addEventListener("input", (e) => {
-  raisedTicketSearchTerm = e.target.value;
-});
-document.querySelectorAll('input[name="org"]').forEach((radio) => radio.addEventListener("change", renderRaisedTicketList));
-
-/* ---------------- Raised by Clinic: Apply ---------------- */
-document.getElementById("raisedTicketApplyBtn").addEventListener("click", () => {
-  renderRaisedTicketList();
-});
-
-/* ---------------- Raised by Clinic: filters ---------------- */
-const raisedCategoryMenu = document.getElementById("raisedCategoryMenu");
-raisedCategoryMenu.innerHTML = buildOptionsHtml(ticketCategories);
-wireCheckboxFilter(document.querySelector('.checkbox-filter[data-name="raisedCategory"]'), raisedCategoryMenu, selectedRaisedCategories, renderRaisedTicketList);
-
-const raisedIssueTypeMenu = document.getElementById("raisedIssueTypeMenu");
-raisedIssueTypeMenu.innerHTML = buildOptionsHtml(allIssueTypes);
-wireCheckboxFilter(document.querySelector('.checkbox-filter[data-name="raisedIssueType"]'), raisedIssueTypeMenu, selectedRaisedIssueTypes, renderRaisedTicketList);
-
-const raisedStateMenu = document.getElementById("raisedStateMenu");
-raisedStateMenu.innerHTML = buildOptionsHtml(ticketStates);
-wireCheckboxFilter(document.querySelector('.checkbox-filter[data-name="raisedState"]'), raisedStateMenu, selectedRaisedStates, renderRaisedTicketList);
-
-const clearableRaisedTicketFilters = [
-  { name: "raisedCategory", menu: raisedCategoryMenu, set: selectedRaisedCategories, label: "Category" },
-  { name: "raisedIssueType", menu: raisedIssueTypeMenu, set: selectedRaisedIssueTypes, label: "Issue Type" },
-  { name: "raisedState", menu: raisedStateMenu, set: selectedRaisedStates, label: "Status" },
-];
-
-document.getElementById("clearRaisedTicketFilters").addEventListener("click", () => {
-  document.getElementById("raisedTicketSearchInput").value = "";
-  raisedTicketSearchTerm = "";
-  clearableRaisedTicketFilters.forEach(({ name, menu, set, label }) => {
-    set.clear();
-    menu.querySelectorAll('input[type="checkbox"]').forEach((cb) => (cb.checked = false));
-    document.querySelector(`.checkbox-filter[data-name="${name}"] .checkbox-filter-label`).textContent = label;
-  });
-  renderRaisedTicketList();
-});
-
-/* ---------------- Custom dropdowns (Create Ticket modal) ----------------
+/* ---------------- New Ticket modal ----------------
    The .custom-select engine itself (setCustomSelectValue, initCustomSelects,
-   etc.) now lives in js/custom-select.js, shared with ticket-detail.html. */
-
-/* ---------------- Create Ticket modal ---------------- */
+   etc.) lives in js/custom-select.js, shared with ticket-detail.html. */
 const createTicketOverlay = document.getElementById("createTicketOverlay");
 const createTicketForm = document.getElementById("createTicketForm");
 const saveCreateTicketBtn = document.getElementById("saveCreateTicket");
-const createTicketCategorySelect = document.querySelector('#createTicketOverlay .custom-select[data-name="category"]');
-const createTicketIssueSelect = document.querySelector('#createTicketOverlay .custom-select[data-name="issueType"]');
+const modalSelect = (name) => document.querySelector(`#createTicketOverlay .custom-select[data-name="${name}"]`);
+const selectValue = (select) => select.querySelector("input[type=hidden]").value;
+const createTicketTypeSelect = modalSelect("type");
+const createTicketForSelect = document.getElementById("createForSearch");
+const createTicketCategorySelect = modalSelect("category");
+const createTicketIssueSelect = modalSelect("issueType");
 
-/* The logged-in clinic user (avatar "EC" in the topbar) raises the ticket --
-   no need to ask them to pick their own name from a list. Level and
-   Assigned To aren't collected at creation time (matching the developed
-   New Ticket modal) -- they're set later from the ticket detail page's
-   Handling form, same as any other ticket. */
-const CURRENT_USER = "Emily Carter";
-
+createTicketTypeSelect.querySelector(".custom-select-menu").innerHTML = buildCustomSelectOptions(ticketTypes.map((t) => t.label));
 createTicketCategorySelect.querySelector(".custom-select-menu").innerHTML = buildCustomSelectOptions(ticketCategories.map((c) => c.label));
 
-function resetCreateTicketIssueSelect() {
-  const trigger = createTicketIssueSelect.querySelector(".custom-select-trigger");
-  const valueEl = createTicketIssueSelect.querySelector(".custom-select-value");
-  createTicketIssueSelect.querySelector(".custom-select-menu").innerHTML = "";
-  resetCustomSelect(createTicketIssueSelect);
-  trigger.disabled = true;
-  valueEl.dataset.placeholder = "Choose category first";
-  valueEl.textContent = "Choose category first";
+/* "Create For" lists the clinic's patients by user number when Type is
+   Patient, or the clinic's users when Type is Clinic. Optional either way. */
+const TICKET_PATIENTS = [...new Set(
+  ticketList.filter((t) => t.type === "Patient" && t.who).map((t) => t.who)
+)].sort().map((id) => ({ id }));
+const patientOptionLabel = (p) => p.id;
+const CLINIC_USERS = [...new Set(ticketList.filter((t) => t.type === "Clinic").map((t) => t.who))].sort();
+
+/* Point a dependent select at a new option list, clearing its value. */
+function refillSelect(select, options, placeholder, emptyPlaceholder) {
+  const trigger = select.querySelector(".custom-select-trigger");
+  const valueEl = select.querySelector(".custom-select-value");
+  select.querySelector(".custom-select-menu").innerHTML = buildCustomSelectOptions(options);
+  resetCustomSelect(select);
+  trigger.disabled = !options.length;
+  valueEl.dataset.placeholder = options.length ? placeholder : emptyPlaceholder;
+  valueEl.textContent = valueEl.dataset.placeholder;
   valueEl.classList.add("placeholder");
 }
 
+/* "Create For" is a searchable dropdown (same .custom-select plumbing as
+   Type/Category/etc., plus a search box pinned to the top of its menu):
+   the trigger opens a patient/user list that narrows as you type. Patient
+   rows show only the user number (no name in this copy). */
+const createForOptionsEl = createTicketForSelect.querySelector(".custom-select-options");
+const createForSearchInput = createTicketForSelect.querySelector(".custom-select-search");
+
+function refillCreateFor() {
+  const isPatient = selectValue(createTicketTypeSelect) !== "Clinic";
+  createForOptionsEl.innerHTML = isPatient
+    ? TICKET_PATIENTS.map((p) => `<div class="custom-select-option" data-value="${patientOptionLabel(p)}">${p.id}</div>`).join("")
+    : CLINIC_USERS.map((name) => `<div class="custom-select-option" data-value="${name}">${name}</div>`).join("");
+  resetCustomSelect(createTicketForSelect);
+  createForSearchInput.value = "";
+  createForSearchInput.placeholder = isPatient ? "Search patients" : "Search users";
+}
+
+/* Clicking inside the menu's search box must not bubble to the
+   document-level listener that closes every open .custom-select. */
+createForSearchInput.addEventListener("click", (e) => e.stopPropagation());
+createForSearchInput.addEventListener("input", () => {
+  const q = createForSearchInput.value.trim().toLowerCase();
+  createForOptionsEl.querySelectorAll(".custom-select-option").forEach((opt) => {
+    opt.hidden = q ? !opt.textContent.toLowerCase().includes(q) : false;
+  });
+});
+
+/* Reopening the dropdown always starts from a clear search and the full
+   list, and hands focus straight to the search box. */
+createTicketForSelect.querySelector(".custom-select-trigger").addEventListener("click", () => {
+  if (!createTicketForSelect.classList.contains("open")) return;
+  createForSearchInput.value = "";
+  createForOptionsEl.querySelectorAll(".custom-select-option").forEach((opt) => (opt.hidden = false));
+  createForSearchInput.focus();
+});
+
+createTicketTypeSelect.querySelector("input[type=hidden]").addEventListener("change", () => {
+  refillCreateFor();
+  validateCreateTicketForm();
+});
+
 createTicketCategorySelect.querySelector("input[type=hidden]").addEventListener("change", (e) => {
-  const category = e.target.value;
-  const issues = issueTypesByCategory[category] || [];
-  const trigger = createTicketIssueSelect.querySelector(".custom-select-trigger");
-  const valueEl = createTicketIssueSelect.querySelector(".custom-select-value");
-  createTicketIssueSelect.querySelector(".custom-select-menu").innerHTML = buildCustomSelectOptions(issues);
-  resetCustomSelect(createTicketIssueSelect);
-  trigger.disabled = !issues.length;
-  valueEl.dataset.placeholder = issues.length ? "Choose issue type" : "Choose category first";
-  valueEl.textContent = valueEl.dataset.placeholder;
-  valueEl.classList.add("placeholder");
+  refillSelect(createTicketIssueSelect, issueTypesByCategory[e.target.value] || [], "Select issue type", "Select a category first");
   validateCreateTicketForm();
 });
 
 function openCreateTicketModal() {
   createTicketForm.reset();
   createTicketForm.querySelectorAll(".custom-select").forEach(resetCustomSelect);
-  resetCreateTicketIssueSelect();
+  refillCreateFor();
+  refillSelect(createTicketIssueSelect, [], "", "Select a category first");
   validateCreateTicketForm();
   createTicketOverlay.classList.add("open");
 }
@@ -358,39 +344,39 @@ function closeCreateTicketModal() {
 
 document.getElementById("openCreateTicketBtn").addEventListener("click", openCreateTicketModal);
 document.getElementById("cancelCreateTicket").addEventListener("click", closeCreateTicketModal);
+document.getElementById("closeCreateTicketX").addEventListener("click", closeCreateTicketModal);
 createTicketOverlay.addEventListener("click", (e) => { if (e.target === createTicketOverlay) closeCreateTicketModal(); });
 
+/* Required: Type, Category, Issue Type. Create For and Description are optional. */
 function validateCreateTicketForm() {
-  const categoryValue = createTicketCategorySelect.querySelector("input[type=hidden]").value;
-  const issueValue = createTicketIssueSelect.querySelector("input[type=hidden]").value;
-  const valid =
-    categoryValue !== "" &&
-    issueValue !== "" &&
-    createTicketForm.description.value.trim() !== "";
+  const valid = [createTicketTypeSelect, createTicketCategorySelect, createTicketIssueSelect].every((s) => selectValue(s) !== "");
   saveCreateTicketBtn.disabled = !valid;
+  saveCreateTicketBtn.classList.toggle("enabled", valid);
 }
 createTicketForm.addEventListener("input", validateCreateTicketForm);
 createTicketForm.addEventListener("change", validateCreateTicketForm);
 
 createTicketForm.addEventListener("submit", (e) => {
   e.preventDefault();
-  const categoryValue = createTicketCategorySelect.querySelector("input[type=hidden]").value;
-  const issueValue = createTicketIssueSelect.querySelector("input[type=hidden]").value;
+  const type = selectValue(createTicketTypeSelect);
+  const createFor = selectValue(createTicketForSelect);
+  const patient = type === "Patient" ? TICKET_PATIENTS.find((p) => patientOptionLabel(p) === createFor) : null;
   const today = new Date();
   const created = `${String(today.getDate()).padStart(2, "0")}.${String(today.getMonth() + 1).padStart(2, "0")}.${today.getFullYear()}`;
 
   const newTicket = {
     ticketId: `TCK-${1000 + ticketList.length + 1}`,
     organization: currentOrg(),
-    type: "Clinic",
-    who: CURRENT_USER,
-    category: categoryValue,
-    issueType: issueValue,
+    type,
+    who: patient ? patient.id : createFor,
+    scope: type === "Patient" ? "Patient" : "Organization",
+    category: selectValue(createTicketCategorySelect),
+    issueType: selectValue(createTicketIssueSelect),
     origin: "Clinic",
     severity: "Medium",
-    tier: "Level 1",
+    level: "Level 1",
     state: "Open",
-    assignedTo: "",
+    assignedTo: undefined,
     created,
     description: createTicketForm.description.value.trim(),
   };
@@ -398,7 +384,6 @@ createTicketForm.addEventListener("submit", (e) => {
   newTicket.history = [{ date: created, title: "Ticket Created" }];
   ticketList.push(newTicket);
 
-  renderRaisedTicketList();
-  renderTicketList();
+  applyTicketFilters();
   closeCreateTicketModal();
 });
