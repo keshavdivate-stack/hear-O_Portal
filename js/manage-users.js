@@ -271,6 +271,7 @@ function openAddUserModal(user) {
     addUserForm.username.value = user.username;
     addUserForm.mobile.value = user.phone.replace(/^\+\d+-?/, "");
     addUserForm.email.value = user.email;
+    addUserForm.connectEhr.checked = user.ehrInvite === "Connected";
   } else {
     addUserModalTitle.textContent = "Add User";
   }
