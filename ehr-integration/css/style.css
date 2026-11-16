@@ -6082,3 +6082,17 @@ label.checkbox-field {
 
 /* author display rules (e.g. .med-legend { display:flex }) would override [hidden] */
 #medList[hidden], #medManualLegend[hidden], #ehrMedWrap[hidden], .cp-detail-row[hidden] { display: none; }
+
+
+/* Clinical: one divider line under the sub-tabs; the active tab underline sits on it
+   and every tab label shares the same baseline (count pills make some taller). */
+.data-tab-panel[data-panel="clinical"] > .subtab-row {
+  border-bottom: 1px solid var(--gray-border);
+  padding-bottom: 8px;
+}
+.data-tab-panel[data-panel="clinical"] > .subtab-row > .subtabs {
+  align-self: stretch;
+  align-items: flex-end;
+  margin-bottom: -9px;
+}
+
