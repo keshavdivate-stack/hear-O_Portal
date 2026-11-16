@@ -1860,12 +1860,45 @@ measurementWeightUnitToggle.querySelectorAll("span").forEach((btn) => {
   btn.addEventListener("click", () => setMeasurementWeightUnit(btn.dataset.unit));
 });
 
+/* Blood pressure is one "systolic/diastolic" field (e.g. 120/80). Save stays
+   disabled until at least one measurement is entered and the BP, if given,
+   is in that format. */
+const addMeasurementForm = document.getElementById("addMeasurementForm");
+const saveAddMeasurementBtn = document.getElementById("saveAddMeasurement");
+const measurementBpInput = document.getElementById("measurementBp");
+const measurementBpError = document.getElementById("measurementBpError");
+
+function parseBloodPressure(value) {
+  const m = String(value || "").trim().match(/^(\d{2,3})\s*\/\s*(\d{2,3})$/);
+  return m ? { systolic: Number(m[1]), diastolic: Number(m[2]) } : null;
+}
+
+function updateMeasurementSave() {
+  const bp = measurementBpInput.value.trim();
+  const bpValid = !bp || !!parseBloodPressure(bp);
+  const hasValue = ["weightValue", "bloodPressure", "heartRateValue", "bloodOxygenValue"]
+    .some((name) => String(addMeasurementForm.elements[name].value).trim() !== "");
+  const canSave = hasValue && bpValid;
+  saveAddMeasurementBtn.disabled = !canSave;
+  saveAddMeasurementBtn.classList.toggle("enabled", canSave);
+  measurementBpError.hidden = bpValid;
+  measurementBpInput.setAttribute("aria-invalid", String(!bpValid));
+}
+
+addMeasurementForm.addEventListener("input", updateMeasurementSave);
+/* form.reset() runs on open; re-check once the fields are cleared */
+addMeasurementForm.addEventListener("reset", () => setTimeout(updateMeasurementSave, 0));
+document.getElementById("closeAddMeasurementX").addEventListener("click", () => {
+  document.getElementById("addMeasurementOverlay").classList.remove("open");
+});
+
 wireAddModal("addMeasurementOverlay", "addMeasurementForm", "cancelAddMeasurement", "openAddMeasurementBtn", (fd) => {
   const parts = [];
-  if (fd.get("systolic") && fd.get("diastolic")) parts.push(`BP ${fd.get("systolic")}/${fd.get("diastolic")} mmHG`);
+  const bp = parseBloodPressure(fd.get("bloodPressure"));
+  if (fd.get("weightValue")) parts.push(`Weight ${fd.get("weightValue")} ${fd.get("weightUnit")}`);
+  if (bp) parts.push(`BP ${bp.systolic}/${bp.diastolic} mmHg`);
   if (fd.get("heartRateValue")) parts.push(`Heart Rate ${fd.get("heartRateValue")} bpm`);
   if (fd.get("bloodOxygenValue")) parts.push(`Blood Oxygen ${fd.get("bloodOxygenValue")}%`);
-  if (fd.get("weightValue")) parts.push(`Weight ${fd.get("weightValue")} ${fd.get("weightUnit")}`);
   alert(parts.length ? `Measurement added: ${parts.join(", ")}` : "No measurement values entered");
 });
 
