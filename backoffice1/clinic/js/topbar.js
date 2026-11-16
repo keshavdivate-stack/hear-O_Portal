@@ -21,15 +21,18 @@
   function safeGet(key) { try { return sessionStorage.getItem(key); } catch (e) { return null; } }
   function safeSet(key, val) { try { sessionStorage.setItem(key, val); } catch (e) {} }
 
-  /* Remember the Backoffice page the user came from (any backoffice1 page
-     outside this clinic folder), so "Back" returns there instead of always
-     landing on the overview dashboard. */
+  /* "Back" returns to the Backoffice screen the clinic portal was opened from.
+     That screen is recorded by Backoffice's CLINIC dropdown
+     (backoffice1/js/dashboard-nav.js) at click time. Fallback for any other
+     way in (e.g. a pasted link): use the referrer, as long as it is a
+     same-origin page outside this clinic folder -- Backoffice pages may be
+     served at rewritten URLs like /overview-dashboard, and the clinic
+     dashboard itself at /backoffice1/clinic (no trailing slash). */
   try {
-    if (document.referrer) {
+    if (document.referrer && !safeGet(RETURN_KEY)) {
       const ref = new URL(document.referrer);
-      if (ref.origin === location.origin && /\/backoffice1\//.test(ref.pathname) && !/\/backoffice1\/clinic\//.test(ref.pathname)) {
-        safeSet(RETURN_KEY, ref.href);
-      }
+      const inClinic = /\/backoffice1\/clinic(\/|$)/.test(ref.pathname);
+      if (ref.origin === location.origin && !inClinic) safeSet(RETURN_KEY, ref.href);
     }
   } catch (e) {}
 

@@ -22,6 +22,26 @@ document.addEventListener("click", () => {
   document.querySelectorAll(".bo-popover.open").forEach((p) => p.classList.remove("open"));
 });
 
+/* CLINIC dropdown: remember the Backoffice screen the clinic portal was opened
+   from, so the clinic portal's "Back" button (backoffice1/clinic/js/topbar.js)
+   returns to exactly this screen. Recorded here rather than read from
+   document.referrer because Vercel serves most Backoffice pages at rewritten
+   root URLs (e.g. /overview-dashboard), which carry no /backoffice1/ marker.
+   Navigates to an absolute URL for the same reason: a relative
+   "clinic/index.html" resolves to /clinic/... on a rewritten URL. */
+(function wireClinicPortalLinks() {
+  const pop = document.getElementById("clinicPillPopover");
+  if (!pop) return;
+  pop.addEventListener("click", (e) => {
+    const link = e.target.closest("a[href]");
+    if (!link) return;
+    const org = new URL(link.href).searchParams.get("org");
+    try { sessionStorage.setItem("boClinicReturnUrl", location.href); } catch (err) {}
+    e.preventDefault();
+    location.href = "/backoffice1/clinic/index.html" + (org ? "?org=" + encodeURIComponent(org) : "");
+  });
+})();
+
 /* Nested flyout (e.g. Settings > Config > Allocation/Components/Session Data) — toggles
    independently of the parent popover instead of closing it. */
 function wireSubmenu(btnId, subId) {
