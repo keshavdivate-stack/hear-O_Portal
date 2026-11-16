@@ -5971,3 +5971,114 @@ label.checkbox-field {
 }
 
 
+
+/* ============================================================
+   Patient chart: Health Data range filter + drag/arrow panning
+   (Recordings, Health Data, Questionnaire) -- see js/chart-pan.js
+   ============================================================ */
+.hd-subtab-actions { display: flex; align-items: center; gap: 28px; margin-left: auto; }
+.hd-range-filter { display: flex; align-items: center; gap: 22px; }
+.hd-range-filter button {
+  background: none; border: 0; border-bottom: 2px solid transparent;
+  padding: 4px 0; font: inherit; font-size: 14px; font-weight: 600;
+  color: var(--gray-text); cursor: pointer;
+}
+.hd-range-filter button:hover { color: #23272E; }
+.hd-range-filter button.active { color: var(--blue-text, #1A7FB0); border-bottom-color: var(--blue-text, #1A7FB0); }
+.hd-range-filter button:focus-visible { outline: 2px solid var(--blue, #2AA9E0); outline-offset: 3px; border-radius: 2px; }
+
+.pan-region { position: relative; padding: 0 36px; }
+.pan-draggable { cursor: grab; touch-action: pan-y; user-select: none; -webkit-user-select: none; }
+.pan-draggable.is-dragging { cursor: grabbing; }
+.pan-draggable button { cursor: pointer; }
+
+.pan-arrow {
+  width: 28px; height: 28px; padding: 0;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 50%; border: 1px solid var(--gray-border); background: #fff;
+  color: #363B42; cursor: pointer; box-shadow: 0 1px 3px rgba(16, 24, 40, 0.08);
+}
+.pan-region > .pan-arrow { position: absolute; top: 0; z-index: 2; }
+.pan-region > .pan-prev { left: 0; }
+.pan-region > .pan-next { right: 0; }
+.pan-arrow:not(:disabled):hover { border-color: var(--blue, #2AA9E0); color: var(--blue-text, #1A7FB0); }
+.pan-arrow:disabled { opacity: 0.35; cursor: default; box-shadow: none; }
+.pan-arrow:focus-visible { outline: 2px solid var(--blue, #2AA9E0); outline-offset: 2px; }
+
+.pan-month { display: block; font-size: 11px; line-height: 1.3; color: var(--gray-text); }
+.pan-region .chart-day-scale span, .quest-list .chart-day-scale span { white-space: nowrap; }
+.pan-region .chart-day-scale > span, .quest-list .chart-day-scale > span { min-width: 0; overflow: visible; }
+
+/* Graph areas fit the window instead of forcing a 900px scroll strip */
+.pan-region .range-chart-wrap, .pan-region .sleep-chart-wrap, .pan-region .chart-wrap { overflow: visible; }
+.pan-region .range-axis-flex, .pan-region .sleep-axis-flex, .pan-region .sleep-chart, .pan-region .month-row { min-width: 0; }
+.pan-region .range-col, .pan-region .sleep-col { min-width: 0; }
+.pan-region .range-chart-wrap > .chart-day-scale { padding-left: 50px; }
+.pan-region .month-row { margin-top: 38px; }
+.pan-region .rec-day-label { text-align: center; min-height: 14px; }
+
+/* Questionnaire range bar */
+.quest-range-nav { display: flex; align-items: center; gap: 14px; margin-left: auto; }
+.quest-range-label { min-width: 120px; text-align: center; font-size: 13.5px; font-weight: 600; color: #23272E; }
+
+/* ============================================================
+   Clinical tab: EHR data layout (inline sync, Manual / EHR medication,
+   compact care plan, documents preview). Uses the existing tokens only.
+   ============================================================ */
+.ehr-sync-meta { gap: 12px; }
+.ehr-sync-meta-text { font-size: 12.5px; color: var(--gray-text); white-space: nowrap; }
+.ehr-sync-meta-text strong { color: #363B42; font-weight: 600; }
+
+/* Manual / EHR toggle shares the legend's row instead of taking its own */
+.med-source-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 20px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+.med-source-row .med-legend { margin-bottom: 0; }
+.med-source-row .unit-toggle span:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+
+.rec-muted { color: var(--gray-text); }
+.rec-table td.rec-cell-wide { min-width: 280px; max-width: 420px; line-height: 1.45; }
+
+/* Care plan: summary line + expandable multi-column detail */
+.cp-summary { display: block; margin-top: 3px; font-size: 12.5px; color: var(--gray-text); }
+.cp-toggle {
+  margin-top: 4px; padding: 0; border: 0; background: none;
+  color: var(--blue); font: inherit; font-size: 12.5px; font-weight: 700; cursor: pointer;
+}
+.cp-toggle:hover { text-decoration: underline; }
+.cp-toggle:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; border-radius: 2px; }
+.rec-table tbody tr.cp-detail-row td { padding-top: 0; background: transparent; }
+.cp-detail {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) minmax(0, 2fr);
+  gap: 16px 28px;
+  padding: 14px 16px;
+  border-radius: 10px;
+  background: var(--bg);
+}
+.cp-h { margin: 0 0 6px; font-size: 12px; font-weight: 700; letter-spacing: 0.3px; color: #23272E; }
+.cp-h:not(:first-child) { margin-top: 12px; }
+.cp-list { margin: 0; padding-left: 18px; font-size: 13px; color: #363B42; line-height: 1.6; }
+.cp-sub { font-size: 12px; font-weight: 400; color: var(--gray-text); }
+.cp-appts { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 6px 18px; }
+.cp-appt { font-size: 13px; color: #363B42; white-space: nowrap; }
+.cp-appt b { font-weight: 600; color: #23272E; }
+@media (max-width: 760px) { .cp-detail { grid-template-columns: 1fr; } }
+
+/* Documents: preview + "Show all" footer row */
+.rec-table tbody tr.rec-more-row td { text-align: center; padding: 10px; }
+.rec-table tbody tr.rec-more-row:hover td { background: transparent; }
+.rec-more-btn {
+  border: 0; background: none; padding: 4px 8px;
+  color: var(--blue); font: inherit; font-size: 13px; font-weight: 700; cursor: pointer;
+}
+.rec-more-btn:hover { text-decoration: underline; }
+.rec-more-btn:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; border-radius: 4px; }
+
+/* author display rules (e.g. .med-legend { display:flex }) would override [hidden] */
+#medList[hidden], #medManualLegend[hidden], #ehrMedWrap[hidden], .cp-detail-row[hidden] { display: none; }

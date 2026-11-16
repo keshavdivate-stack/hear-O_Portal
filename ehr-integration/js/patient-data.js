@@ -965,12 +965,111 @@ wireSyncButton("syncCardBtn", () => {
   }
 });
 
+/* ---------------- Clinical: EHR data (mirrors the dev3 Clinical tab, Epic sync) ----------------
+   Each EHR sub-tab shows "Last synced" + Sync inline in the subtab row
+   (#ehrSyncMeta) rather than a full-width row above every table. */
+const EHR_SUBTABS = ["conditions", "allergies", "care-plan", "goals", "documents"];
+const dash = `<span class="rec-muted">-</span>`;
+const orDash = (v) => (v == null || v === "" || v === "-" ? dash : v);
+const statusText = (s) => (s ? `<span class="rec-status-chip rec-status-${s.toLowerCase()}">${s[0].toUpperCase()}${s.slice(1)}</span>` : dash);
+
+/* -- EHR Medication (Medication > EHR Medication) -- */
+const ehrMedications = [
+  {
+    name: "drospirenone-ethinyl estradiol (YAZ) 3-0.02 MG per tablet",
+    dosage: "Take 1 tablet by mouth 1 (one) time each day., Starting Tue 5/28/2019, Until Wed 5/27/2020, Normal",
+    status: "active",
+    prescribed: "05/28/2019",
+    prescriber: "Physician Family Medicine, MD",
+    source: "Epic",
+  },
+];
+
+function renderEhrMeds() {
+  document.getElementById("ehrMedCount").textContent = ehrMedications.length || "";
+  document.getElementById("ehrMedTableBody").innerHTML = ehrMedications.length
+    ? ehrMedications
+        .map(
+          (m) => `
+      <tr>
+        <td><span class="rec-title-cell">${m.name}</span></td>
+        <td class="rec-cell-wide">${m.dosage}</td>
+        <td>${statusText(m.status)}</td>
+        <td>${m.prescribed}</td>
+        <td>${m.prescriber}</td>
+        <td>${ehrSourceCell(m.source)}</td>
+      </tr>`
+        )
+        .join("")
+    : `<tr><td colspan="6" class="rec-empty">No EHR medications on file.</td></tr>`;
+}
+renderEhrMeds();
+
+/* Manual vs EHR Medication: the adherence list, legend and the Add/filter
+   actions only apply to manually entered medication. */
+let medSource = "manual";
+function applyMedSource() {
+  const isEhr = medSource === "ehr";
+  document.querySelectorAll("[data-med-source]").forEach((b) => {
+    b.classList.toggle("active", b.dataset.medSource === medSource);
+    b.setAttribute("aria-pressed", String(b.dataset.medSource === medSource));
+  });
+  document.getElementById("medList").hidden = isEhr;
+  document.getElementById("medManualLegend").hidden = isEhr;
+  document.getElementById("ehrMedWrap").hidden = !isEhr;
+  syncEhrHeadActions();
+}
+document.querySelectorAll("[data-med-source]").forEach((b) => {
+  const pick = () => {
+    medSource = b.dataset.medSource;
+    applyMedSource();
+  };
+  b.addEventListener("click", pick);
+  b.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); pick(); }
+  });
+});
+
+/* Shows "Last synced + Sync" for EHR views and hides the manual-only
+   Add/filter actions while EHR Medication is selected. Called again after
+   the generic subtab handler runs (see the .subtab listener further down). */
+function syncEhrHeadActions() {
+  const active = document.querySelector('.data-tab-panel[data-panel="clinical"] .subtab.active')?.dataset.subtab;
+  const showSync = EHR_SUBTABS.includes(active) || (active === "medication" && medSource === "ehr");
+  document.getElementById("ehrSyncMeta").style.display = showSync ? "flex" : "none";
+  const medActions = document.getElementById("medSubtabActions");
+  if (active === "medication") medActions.style.display = medSource === "ehr" ? "none" : "flex";
+}
+
+/* The generic subtab handler is registered later in this file and resets the
+   head actions, so re-apply ours on the next tick. */
+document.querySelectorAll('.data-tab-panel[data-panel="clinical"] .subtab').forEach((t) => {
+  t.addEventListener("click", () => setTimeout(syncEhrHeadActions, 0));
+});
+
+const ehrSyncMetaBtn =document.getElementById("ehrSyncMetaBtn");
+ehrSyncMetaBtn.addEventListener("click", () => {
+  if (ehrSyncMetaBtn.classList.contains("is-syncing")) return;
+  ehrSyncMetaBtn.classList.add("is-syncing");
+  ehrSyncMetaBtn.querySelector(".btn-sync-label").textContent = "Syncing…";
+  setTimeout(() => {
+    ehrSyncMetaBtn.classList.remove("is-syncing");
+    ehrSyncMetaBtn.querySelector(".btn-sync-label").textContent = "Sync";
+    document.getElementById("ehrSyncMetaTime").textContent = "Just now";
+  }, 900);
+});
+
 /* ---------------- Clinical: Conditions ---------------- */
 const conditions = [
-  { name: "Heart Failure with reduced Ejection Fraction", code: "I50.22", status: "active", type: "Chronic", onset: "03/15/2024", source: "Epic", updated: "08/17/2026" },
-  { name: "Hypertension", code: "I10", status: "active", type: "Chronic", onset: "06/02/2020", source: "Epic", updated: "08/17/2026" },
-  { name: "Type 2 Diabetes Mellitus", code: "E11.9", status: "active", type: "Chronic", onset: "01/10/2022", source: "Epic", updated: "08/17/2026" },
-  { name: "Seasonal Allergic Rhinitis", code: "J30.2", status: "resolved", type: "Acute", onset: "04/12/2019", source: "Manual entry", updated: "06/03/2025" },
+  { name: "PCOS (polycystic ovarian syndrome)", code: "E28.2", status: "active", type: "Problem List Item", onset: "09/20/2005", source: "Epic", updated: "05/28/2019" },
+  { name: "Stomach pain", code: "R10.9", status: "", type: "Encounter Diagnosis", onset: "06/02/2023", source: "Epic", updated: "" },
+  { name: "Ischemic chest pain (CMS/HCC)", code: "I20.9", status: "", type: "Encounter Diagnosis", onset: "06/02/2023", source: "Epic", updated: "" },
+  { name: "Ischemic chest pain (CMS/HCC)", code: "I20.9", status: "", type: "Encounter Diagnosis", onset: "06/02/2023", source: "Epic", updated: "" },
+  { name: "Ischemic chest pain (CMS/HCC)", code: "I20.9", status: "", type: "Encounter Diagnosis", onset: "06/02/2023", source: "Epic", updated: "" },
+  { name: "Pain aggravated by activities of daily living", code: "R52", status: "", type: "Encounter Diagnosis", onset: "05/21/2023", source: "Epic", updated: "" },
+  { name: "PCOS (polycystic ovarian syndrome)", code: "E28.2", status: "active", type: "Encounter Diagnosis", onset: "09/20/2005", source: "Epic", updated: "" },
+  { name: "CYP2B6 Intermediate Metabolizer", code: "", status: "", type: "Genomic Indicators", onset: "03/22/2023", source: "Epic", updated: "" },
+  { name: "CYP2C9*6: AA (wildtype)", code: "", status: "", type: "Genomic Indicators", onset: "03/22/2023", source: "Epic", updated: "" },
 ];
 
 function renderConditions() {
@@ -980,12 +1079,12 @@ function renderConditions() {
           (c) => `
       <tr>
         <td><span class="rec-title-cell">${c.name}</span></td>
-        <td>${c.code}</td>
-        <td><span class="rec-status-chip rec-status-${c.status}">${c.status === "active" ? "Active" : "Resolved"}</span></td>
+        <td>${orDash(c.code)}</td>
+        <td>${statusText(c.status)}</td>
         <td>${c.type}</td>
         <td>${c.onset}</td>
         <td>${ehrSourceCell(c.source)}</td>
-        <td>${c.updated}</td>
+        <td>${orDash(c.updated)}</td>
       </tr>`
         )
         .join("")
@@ -994,11 +1093,7 @@ function renderConditions() {
 renderConditions();
 
 /* ---------------- Clinical: Allergies ---------------- */
-const allergies = [
-  { allergen: "Penicillin", reaction: "Hives", severity: "severe", onset: "â€”", source: "Epic", updated: "08/10/2026" },
-  { allergen: "Pollen", reaction: "Fever", severity: "moderate", onset: "08/04/2026", source: "Epic", updated: "08/17/2026" },
-  { allergen: "Shellfish", reaction: "Nausea", severity: "mild", onset: "â€”", source: "Manual entry", updated: "07/02/2025" },
-];
+const allergies = [];
 
 function renderAllergies() {
   document.getElementById("allergiesTableBody").innerHTML = allergies.length
@@ -1008,50 +1103,118 @@ function renderAllergies() {
       <tr>
         <td><span class="rec-title-cell">${a.allergen}</span></td>
         <td>${a.reaction}</td>
-        <td><span class="rec-status-chip rec-status-${a.severity}">${a.severity[0].toUpperCase()}${a.severity.slice(1)}</span></td>
-        <td>${a.onset}</td>
+        <td>${statusText(a.severity)}</td>
+        <td>${orDash(a.onset)}</td>
         <td>${ehrSourceCell(a.source)}</td>
-        <td>${a.updated}</td>
+        <td>${orDash(a.updated)}</td>
       </tr>`
         )
         .join("")
-    : `<tr><td colspan="6" class="rec-empty">No known allergies on file.</td></tr>`;
+    : `<tr><td colspan="6" class="rec-empty">No records found.</td></tr>`;
 }
 renderAllergies();
 
-/* ---------------- Clinical: Care Plan ---------------- */
+/* ---------------- Clinical: Care Plan ----------------
+   The EHR sends the plan as one long text block. Instead of a tall scrolling
+   cell, the row shows a one-line summary and expands into a compact
+   multi-column detail row (problems / goals / orders / appointments). */
+const carePlanAppointments = [
+  ["Nov 05, 2026", "08:00 PM", "08:30 PM"], ["Nov 09, 2026", "09:30 PM", "10:00 PM"],
+  ["Nov 10, 2026", "02:00 PM", "02:30 PM"], ["Nov 11, 2026", "02:00 PM", "02:30 PM"],
+  ["Nov 11, 2026", "02:30 PM", "03:00 PM"], ["Nov 11, 2026", "05:00 PM", "05:30 PM"],
+  ["Nov 11, 2026", "05:30 PM", "06:00 PM"], ["Nov 11, 2026", "09:00 PM", "09:30 PM"],
+  ["Nov 11, 2026", "09:30 PM", "10:00 PM"], ["Nov 12, 2026", "02:30 PM", "03:00 PM"],
+  ["Nov 12, 2026", "05:15 PM", "05:45 PM"], ["Nov 12, 2026", "08:00 PM", "08:30 PM"],
+  ["Nov 12, 2026", "08:30 PM", "09:00 PM"], ["Nov 12, 2026", "09:00 PM", "09:30 PM"],
+  ["Nov 12, 2026", "09:30 PM", "10:00 PM"],
+].map(([date, start, end]) => ({ date, start, end, status: "Scheduled" }));
+
 const carePlans = [
-  { name: "Heart Failure Management Plan", status: "active", start: "01/15/2026", review: "09/15/2026", owner: "Dr. Sarah Mitchell", source: "Epic" },
-  { name: "Diabetes Self-Management Plan", status: "active", start: "03/01/2026", review: "09/01/2026", owner: "Amanda Lee, RN", source: "Epic" },
+  {
+    name: "Plan for Patient Care",
+    status: "active",
+    start: "",
+    review: "",
+    owner: "Physician Family Medicine, MD",
+    source: "Epic",
+    problems: ["PCOS (polycystic ovarian syndrome)"],
+    goals: ["Eat 3 meals every day", "Increase physical activity"],
+    orders: [{ name: "TISSUE EXAM", start: "N/A", end: "N/A", status: "Unknown" }],
+    appointments: carePlanAppointments,
+  },
 ];
+
+function carePlanDetail(p, i) {
+  const list = (items) => `<ul class="cp-list">${items.map((t) => `<li>${t}</li>`).join("")}</ul>`;
+  return `
+    <tr class="cp-detail-row" id="cpDetail${i}" hidden>
+      <td colspan="6">
+        <div class="cp-detail">
+          <div class="cp-col">
+            <h4 class="cp-h">Active Problems</h4>${list(p.problems)}
+            <h4 class="cp-h">Goals</h4>${list(p.goals)}
+            <h4 class="cp-h">Upcoming Procedure Orders</h4>
+            ${list(p.orders.map((o) => `${o.name} <span class="cp-sub">Start ${o.start} · End ${o.end} · ${o.status}</span>`))}
+          </div>
+          <div class="cp-col cp-col-wide">
+            <h4 class="cp-h">Upcoming Appointments <span class="cp-sub">(${p.appointments.length}, UTC)</span></h4>
+            <div class="cp-appts">
+              ${p.appointments.map((a) => `<span class="cp-appt"><b>${a.date}</b> ${a.start} – ${a.end} <span class="cp-sub">${a.status}</span></span>`).join("")}
+            </div>
+          </div>
+        </div>
+      </td>
+    </tr>`;
+}
 
 function renderCarePlans() {
   document.getElementById("carePlanTableBody").innerHTML = carePlans.length
     ? carePlans
         .map(
-          (p) => `
+          (p, i) => `
       <tr>
-        <td><span class="rec-title-cell">${p.name}</span></td>
-        <td><span class="rec-status-chip rec-status-${p.status}">${p.status === "active" ? "Active" : "Completed"}</span></td>
-        <td>${p.start}</td>
-        <td>${p.review}</td>
+        <td>
+          <span class="rec-title-cell">${p.name}</span>
+          <span class="cp-summary">${p.problems.length} active problem · ${p.goals.length} goals · ${p.orders.length} procedure order · ${p.appointments.length} upcoming appointments</span>
+          <button type="button" class="cp-toggle" aria-expanded="false" aria-controls="cpDetail${i}" data-cp="${i}">Show details</button>
+        </td>
+        <td>${statusText(p.status)}</td>
+        <td>${orDash(p.start)}</td>
+        <td>${orDash(p.review)}</td>
         <td>${p.owner}</td>
         <td>${ehrSourceCell(p.source)}</td>
-      </tr>`
+      </tr>
+      ${carePlanDetail(p, i)}`
         )
         .join("")
     : `<tr><td colspan="6" class="rec-empty">No care plans on file.</td></tr>`;
+
+  document.querySelectorAll(".cp-toggle").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const open = btn.getAttribute("aria-expanded") === "true";
+      btn.setAttribute("aria-expanded", String(!open));
+      btn.textContent = open ? "Show details" : "Hide details";
+      document.getElementById(`cpDetail${btn.dataset.cp}`).hidden = open;
+    });
+  });
 }
 renderCarePlans();
 
 /* ---------------- Clinical: Goals ---------------- */
 const goals = [
-  { goal: "Maintain daily weight within 2 lbs of baseline", target: "â‰¤ 2 lbs variance", progress: "on-track", due: "09/30/2026", owner: "Patient", source: "HearO" },
-  { goal: "Reduce sodium intake to under 2g/day", target: "< 2 g/day", progress: "at-risk", due: "09/30/2026", owner: "Dietitian", source: "Epic" },
-  { goal: "Complete cardiac rehabilitation program", target: "12 sessions", progress: "on-track", due: "10/31/2026", owner: "Care Team", source: "Epic" },
-];
-
-const GOAL_PROGRESS_LABEL = { "on-track": "On Track", "at-risk": "At Risk", achieved: "Achieved", "not-met": "Not Met" };
+  { goal: "Food and/or Nutrient Delivery (ND)", owner: "NUTRITION" },
+  { goal: "Nutrition Education (E)", owner: "NUTRITION" },
+  { goal: "Nutrition Counseling (C)", owner: "NUTRITION" },
+  { goal: "Coordination of Nutrition Care by a Nutrition Professional (RC)", owner: "NUTRITION" },
+  { goal: "Verbalizes/displays adequate comfort level or baseline comfort level", owner: "" },
+  { goal: "Absence of infection during hospitalization", owner: "" },
+  { goal: "Absence of fever/infection during anticipated neutropenic period", owner: "" },
+  { goal: "Free from fall injury", owner: "" },
+  { goal: "Discharge to home or other facility with appropriate resources", owner: "" },
+  { goal: "Patient's chronic conditions and co-morbidity symptoms are monitored and maintained or improved", owner: "INTERDISCIPLINARY" },
+  { goal: "Eat 3 meals every day", owner: "Mustafa Zaidi" },
+  { goal: "Increase physical activity", owner: "Mustafa Zaidi" },
+].map((g) => ({ target: "", progress: "active", due: "", source: "Epic", ...g }));
 
 function renderGoals() {
   document.getElementById("goalsTableBody").innerHTML = goals.length
@@ -1060,10 +1223,10 @@ function renderGoals() {
           (g) => `
       <tr>
         <td><span class="rec-title-cell">${g.goal}</span></td>
-        <td>${g.target}</td>
-        <td><span class="rec-status-chip rec-status-${g.progress}">${GOAL_PROGRESS_LABEL[g.progress]}</span></td>
-        <td>${g.due}</td>
-        <td>${g.owner}</td>
+        <td>${orDash(g.target)}</td>
+        <td>${statusText(g.progress)}</td>
+        <td>${orDash(g.due)}</td>
+        <td>${orDash(g.owner)}</td>
         <td>${ehrSourceCell(g.source)}</td>
       </tr>`
         )
@@ -1072,16 +1235,29 @@ function renderGoals() {
 }
 renderGoals();
 
-/* ---------------- Clinical: Documents ---------------- */
-const clinicalDocuments = [
-  { name: "Discharge Summary", type: "Discharge Summary", date: "08/12/2026", source: "Epic", added: "08/17/2026" },
-  { name: "Cardiology Consult Note", type: "Consult Note", date: "07/28/2026", source: "Epic", added: "08/17/2026" },
-  { name: "Echocardiogram Report", type: "Diagnostic Report", date: "06/15/2026", source: "Epic", added: "08/17/2026" },
+/* ---------------- Clinical: Documents ----------------
+   71 documents from Epic. The table shows the latest 10 and a
+   "Show all" footer instead of one very long page. */
+const DOC_GROUPS = [
+  ["Progress Notes", "11/05/2026", 2], ["ED Notes", "11/05/2026", 1],
+  ["Progress Notes", "11/04/2026", 21], ["Consults", "11/04/2026", 2],
+  ["Progress Notes", "11/03/2026", 9], ["Consults", "11/03/2026", 4], ["Nursing Note", "11/03/2026", 2],
+  ["Progress Notes", "11/02/2026", 19], ["ED Notes", "11/02/2026", 3], ["Consults", "11/02/2026", 1],
+  ["Progress Notes", "05/21/2023", 1], ["Patient Instructions", "01/06/2023", 1],
+  ["Progress Notes", "11/09/2020", 1], ["Nursing Note", "11/06/2020", 1],
+  ["Nursing Note", "11/03/2020", 1], ["Consults", "11/02/2020", 2],
 ];
+const clinicalDocuments = DOC_GROUPS.flatMap(([type, date, n]) =>
+  Array.from({ length: n }, () => ({ name: type, type, date, source: "Epic", added: "" })));
+
+const DOCS_PREVIEW = 10;
+let docsExpanded = false;
 
 function renderDocuments() {
+  const rows = docsExpanded ? clinicalDocuments : clinicalDocuments.slice(0, DOCS_PREVIEW);
+  const more = clinicalDocuments.length - DOCS_PREVIEW;
   document.getElementById("documentsTableBody").innerHTML = clinicalDocuments.length
-    ? clinicalDocuments
+    ? rows
         .map(
           (d) => `
       <tr>
@@ -1089,12 +1265,20 @@ function renderDocuments() {
         <td>${d.type}</td>
         <td>${d.date}</td>
         <td>${ehrSourceCell(d.source)}</td>
-        <td>${d.added}</td>
+        <td>${orDash(d.added)}</td>
         <td><button type="button" class="btn-open">View</button></td>
       </tr>`
         )
-        .join("")
+        .join("") +
+      (more > 0
+        ? `<tr class="rec-more-row"><td colspan="6"><button type="button" class="rec-more-btn" id="docsMoreBtn">${docsExpanded ? "Show fewer" : `Show all ${clinicalDocuments.length} documents`}</button></td></tr>`
+        : "")
     : `<tr><td colspan="6" class="rec-empty">No documents on file.</td></tr>`;
+
+  document.getElementById("docsMoreBtn")?.addEventListener("click", () => {
+    docsExpanded = !docsExpanded;
+    renderDocuments();
+  });
 }
 renderDocuments();
 
