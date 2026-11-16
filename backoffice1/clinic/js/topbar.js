@@ -16,25 +16,38 @@
 (function initBackofficeReturn() {
   const RETURN_KEY = "boClinicReturnUrl";
   const ORG_KEY = "boClinicOrg";
-  const FALLBACK = "../overview-dashboard.html";
+  /* Absolute, so it resolves the same whether this page is served as
+     /backoffice1/clinic/x.html or at the clean URL /backoffice1/clinic. */
+  const FALLBACK = "/backoffice1/overview-dashboard.html";
+  /* Backoffice screens Vercel serves at root-level rewritten URLs (vercel.json). */
+  const BO_REWRITES = ["allocation", "components", "dashboard-management", "language-resources", "mkt-study", "mkt-summary", "org-health-dashboard", "org-profile", "patient-health-dashboard", "session-data", "support-dashboard", "patient-events", "patient-management", "status-change", "support", "report-management", "overview-dashboard", "audit-log"];
 
   function safeGet(key) { try { return sessionStorage.getItem(key); } catch (e) { return null; } }
   function safeSet(key, val) { try { sessionStorage.setItem(key, val); } catch (e) {} }
 
+  /* A Backoffice screen = same origin, and either under /backoffice1/ but
+     outside this clinic folder, or one of the rewritten root URLs. Anything
+     else (a clinic page, the main clinic portal, another site) is rejected,
+     so a stale or wrong value can never make "Back" stay inside the clinic. */
+  function isBackofficeUrl(href) {
+    try {
+      const u = new URL(href, location.href);
+      if (u.origin !== location.origin) return false;
+      const p = u.pathname.replace(/\/+$/, "");
+      if (/^\/backoffice1\/clinic(\/|$)/.test(p)) return false;
+      if (/^\/backoffice1\/.+/.test(p)) return true;
+      return BO_REWRITES.includes(p.replace(/^\//, "").replace(/\.html$/, ""));
+    } catch (e) { return false; }
+  }
+
   /* "Back" returns to the Backoffice screen the clinic portal was opened from.
      That screen is recorded by Backoffice's CLINIC dropdown
      (backoffice1/js/dashboard-nav.js) at click time. Fallback for any other
-     way in (e.g. a pasted link): use the referrer, as long as it is a
-     same-origin page outside this clinic folder -- Backoffice pages may be
-     served at rewritten URLs like /overview-dashboard, and the clinic
-     dashboard itself at /backoffice1/clinic (no trailing slash). */
-  try {
-    if (document.referrer && !safeGet(RETURN_KEY)) {
-      const ref = new URL(document.referrer);
-      const inClinic = /\/backoffice1\/clinic(\/|$)/.test(ref.pathname);
-      if (ref.origin === location.origin && !inClinic) safeSet(RETURN_KEY, ref.href);
-    }
-  } catch (e) {}
+     way in (e.g. a pasted link): the referrer, if it is a Backoffice screen. */
+  if (!isBackofficeUrl(safeGet(RETURN_KEY) || "")) {
+    try { sessionStorage.removeItem(RETURN_KEY); } catch (e) {}
+    if (document.referrer && isBackofficeUrl(document.referrer)) safeSet(RETURN_KEY, document.referrer);
+  }
 
   const params = new URLSearchParams(location.search);
   const orgParam = params.get("org");
@@ -70,6 +83,14 @@
     back.className = "bo-back-btn";
     back.href = safeGet(RETURN_KEY) || FALLBACK;
     back.title = "Back to Backoffice";
+    /* Navigate explicitly so no other click handler on the topbar can swallow it. */
+    back.addEventListener("click", (e) => {
+      if (e.ctrlKey || e.metaKey || e.shiftKey || e.button !== 0) return;
+      e.preventDefault();
+      e.stopPropagation();
+      const target = safeGet(RETURN_KEY);
+      window.location.assign(isBackofficeUrl(target || "") ? target : FALLBACK);
+    });
     back.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><polyline points="12 19 5 12 12 5"/></svg>Back<span class="bo-back-org">${org}</span>`;
     /* Right side of the navbar: first item of the actions group (before the
        org/language/notification icons); falls back to the end of the topbar. */
