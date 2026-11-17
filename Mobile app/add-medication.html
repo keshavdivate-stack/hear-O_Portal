@@ -350,7 +350,8 @@
     const pct = Math.round(((idx + 1) / list.length) * 100);
     document.getElementById("stepFill").style.width = `${pct}%`;
     document.getElementById("stepTrack").setAttribute("aria-valuenow", pct);
-    document.getElementById("stepCount").textContent = k === "review" ? "Review" : `Step ${idx + 1} of ${list.length}`;
+    // No "of N": the total changes as answers add or remove questions.
+    document.getElementById("stepCount").textContent = k === "review" ? "Review" : `Step ${idx + 1}`;
     document.getElementById("prevBtn").hidden = idx === 0;
     const next = document.getElementById("nextBtn");
     next.textContent = k === "review" ? (w.edit ? "Save changes" : "Add Medication") : reviewReturn ? "Back to review" : "Next";
