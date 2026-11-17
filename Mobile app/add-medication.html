@@ -273,7 +273,7 @@
         <p class="am-date-label" style="margin-top:22px;">End date</p>
         <div class="am-chips am-end-choice" role="radiogroup" aria-label="End date">
           <button type="button" class="am-chip" data-dur="none" role="radio" aria-pressed="${w.durMode === "none"}">Ongoing</button>
-          <button type="button" class="am-chip" data-dur="until" role="radio" aria-pressed="${w.durMode === "until"}">Set an end date</button>
+          <button type="button" class="am-chip" data-dur="until" role="radio" aria-pressed="${w.durMode === "until"}">Pick a date</button>
         </div>
         ${w.durMode === "until" ? `<input type="date" id="endInput" value="${w.end}" min="${w.start}" aria-label="End date" style="margin-top:14px;" />
           <p class="am-field-error" id="endError" ${w.end && w.end < w.start ? "" : "hidden"}>End date can't be before the start date.</p>` : ""}`;
