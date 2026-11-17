@@ -13,7 +13,7 @@
 <style>
   /* Add / Edit Medication -- one question per screen (client flow):
      name (typed) -> form -> strength (typed) -> amount -> how often [-> days | start date]
-     -> times a day [-> how many] -> a time for each dose -> how long
+     -> times a day [-> how many] -> all dose times on one screen -> how long
      -> food, then Save straight to a success pop-up on the Medications
      list. Steps that don't apply are skipped and single-choice answers
      move on by themselves. Styling uses the app's own fields, chips
@@ -57,16 +57,17 @@
   .am-preview { text-align: center; font-size: calc(18px * var(--font-scale, 1)); color: #6F6F6F; }
 
   /* Time picker: hour / minute with up/down, AM-PM toggle */
-  .am-time { display: flex; align-items: center; justify-content: center; gap: 12px; margin: 22px 0 10px; }
-  .am-time-col { display: flex; flex-direction: column; align-items: center; gap: 8px; }
-  .am-time-step { width: 76px; height: 44px; border: 1.5px solid #c9cdd3; border-radius: 12px; background: #fff; color: #434141; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-  .am-time-num { width: 88px; padding: 6px 0; border-radius: 14px; background: #F0F7FF; text-align: center; font-size: calc(44px * var(--font-scale, 1)); font-weight: 700; color: #186DCE; }
-  .am-time-colon { font-size: 40px; font-weight: 700; color: #434141; }
-  .am-ampm { display: flex; flex-direction: column; gap: 8px; margin-left: 6px; }
-  .am-ampm .am-chip { min-width: 70px; }
-  .am-dose-tag { display: inline-flex; align-items: center; gap: 8px; margin: -6px 0 6px; padding: 6px 12px; border-radius: 999px; font-size: calc(16px * var(--font-scale, 1)); font-weight: 600; }
-  .am-dose-tag--day { background: #FEFCE8; color: #B45309; }
-  .am-dose-tag--night { background: #F2EDFD; color: #6438C2; }
+  /* Dose times: every dose on one screen, a row each with its own time. */
+  .am-dose-list { display: flex; flex-direction: column; gap: 12px; }
+  .am-dose-row { display: flex; align-items: center; gap: 12px; padding: 12px 12px 12px 14px; border: 1px solid #D5D8DE; border-radius: 16px; background: #fff; }
+  .am-dose-icon { flex-shrink: 0; width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; }
+  .am-dose-icon--day { background: #FEFCE8; color: #D99400; }
+  .am-dose-icon--night { background: #F2EDFD; color: #8857FF; }
+  .am-dose-text { flex: 1; min-width: 0; }
+  .am-dose-label { display: block; font-size: calc(19px * var(--font-scale, 1)); font-weight: 600; color: #434141; }
+  .am-dose-part { display: block; margin-top: 2px; font-size: calc(15px * var(--font-scale, 1)); color: #6F6F6F; }
+  .am-dose-row input[type="time"] { flex-shrink: 0; width: 148px; height: 52px; padding: 0 10px; border: 1px solid #818080; border-radius: 14px; background: #fff; font-family: inherit; font-size: calc(20px * var(--font-scale, 1)); color: #252424; outline: none; }
+  .am-dose-row input[type="time"]:focus { border-color: #4a9fd8; }
 
   .am-body input[type="date"] { border: 1px solid #818080; font-size: calc(21px * var(--font-scale, 1)); }
   .am-body input[type="text"] { border: 1px solid #818080; }
@@ -155,6 +156,7 @@
   const fmtTime = (hhmm) => { const [h, m] = hhmm.split(":").map(Number); return `${h % 12 || 12}:${pad(m)} ${h < 12 ? "AM" : "PM"}`; };
   const fmtDate = (iso) => new Date(`${iso}T00:00`).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", year: "numeric" });
   const isNight = (hhmm) => { const h = Number(hhmm.split(":")[0]); return h < 6 || h >= 18; };
+  const partOfDay = (hhmm) => { const h = Number(hhmm.split(":")[0]); return h < 5 ? "Night" : h < 12 ? "Morning" : h < 17 ? "Afternoon" : h < 21 ? "Evening" : "Bedtime"; };
   const ordinal = (i) => ["1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th"][i];
   const unitWord = (w) => { const u = UNITS[w.form || "pill"] || UNITS.other; return w.amt === 1 ? u[0] : u[1]; };
   function defaultTimes(n) {
@@ -181,7 +183,7 @@
     if (w.freq === "other") a.push("start");
     a.push("count");
     if (w.more) a.push("many");
-    for (let i = 0; i < w.count; i++) a.push("time" + i);
+    a.push("times");
     a.push("dur", "food");
     return a;
   }
@@ -250,30 +252,21 @@
           <div class="am-counter-value" aria-live="polite">${w.count}<small>times a day</small></div>
           <button type="button" class="am-counter-btn" data-many="1" aria-label="More" ${w.count >= 8 ? "disabled" : ""}>+</button>
         </div>`;
-    } else if (k.startsWith("time")) {
-      const i = Number(k.slice(4));
-      const [hh, mm] = w.times[i].split(":").map(Number);
-      const night = isNight(w.times[i]);
-      h = `<h2 class="am-q">${w.count > 1 ? `What time is the ${ordinal(i)} dose?` : "What time do you take it?"}</h2>
-        ${w.count > 1 ? `<span class="am-dose-tag ${night ? "am-dose-tag--night" : "am-dose-tag--day"}">${night ? ICONS.moon : ICONS.sun} Dose ${i + 1} of ${w.count}</span>` : ""}
-        <div class="am-time">
-          <div class="am-time-col">
-            <button type="button" class="am-time-step" data-th="1" aria-label="Hour up">${ICONS.up}</button>
-            <div class="am-time-num">${pad(hh % 12 || 12)}</div>
-            <button type="button" class="am-time-step" data-th="-1" aria-label="Hour down">${ICONS.down}</button>
-          </div>
-          <div class="am-time-colon">:</div>
-          <div class="am-time-col">
-            <button type="button" class="am-time-step" data-tm="5" aria-label="Minutes up">${ICONS.up}</button>
-            <div class="am-time-num">${pad(mm)}</div>
-            <button type="button" class="am-time-step" data-tm="-5" aria-label="Minutes down">${ICONS.down}</button>
-          </div>
-          <div class="am-ampm" role="radiogroup" aria-label="AM or PM">
-            <button type="button" class="am-chip" data-ampm="AM" role="radio" aria-pressed="${hh < 12}">AM</button>
-            <button type="button" class="am-chip" data-ampm="PM" role="radio" aria-pressed="${hh >= 12}">PM</button>
-          </div>
-        </div>
-        <p class="am-preview">You'll get a reminder at ${fmtTime(w.times[i])}</p>`;
+    } else if (k === "times") {
+      h = `<h2 class="am-q">${w.count > 1 ? "What time do you take each dose?" : "What time do you take it?"}</h2>
+        <p class="am-hint">You'll get a reminder at ${w.count > 1 ? "each of these times" : "this time"}. Tap a time to change it.</p>
+        <div class="am-dose-list">${w.times.map((t, i) => {
+          const night = isNight(t);
+          return `
+          <label class="am-dose-row">
+            <span class="am-dose-icon ${night ? "am-dose-icon--night" : "am-dose-icon--day"}">${night ? ICONS.moon : ICONS.sun}</span>
+            <span class="am-dose-text">
+              <span class="am-dose-label">${w.count > 1 ? `${ordinal(i)} dose` : "Dose"}</span>
+              <span class="am-dose-part" data-part-for="${i}">${partOfDay(t)}</span>
+            </span>
+            <input type="time" data-time-index="${i}" value="${t}" step="300" aria-label="${w.count > 1 ? `${ordinal(i)} dose` : "Dose"} time" />
+          </label>`;
+        }).join("")}</div>`;
     } else if (k === "dur") {
       h = `<h2 class="am-q">How long will you take it?</h2>` + opt("data-dur", "none", "No end date", w.durMode === "none") + opt("data-dur", "until", "Until a specific date", w.durMode === "until");
       if (w.durMode === "until") {
@@ -341,6 +334,16 @@
       document.getElementById("nextBtn").disabled = !stepDone("strength");
     }
     if (e.target.id === "startInput" && e.target.value) { w.start = e.target.value; render(); }
+    if (e.target.dataset.timeIndex !== undefined && e.target.value) {
+      const i = Number(e.target.dataset.timeIndex);
+      w.times[i] = e.target.value;
+      const row = e.target.closest(".am-dose-row");
+      const night = isNight(e.target.value);
+      const icon = row.querySelector(".am-dose-icon");
+      icon.className = `am-dose-icon ${night ? "am-dose-icon--night" : "am-dose-icon--day"}`;
+      icon.innerHTML = night ? ICONS.moon : ICONS.sun;
+      row.querySelector(".am-dose-part").textContent = partOfDay(e.target.value);
+    }
     if (e.target.id === "endInput") { w.end = e.target.value; document.getElementById("nextBtn").disabled = !stepDone("dur"); }
   });
 
@@ -370,16 +373,6 @@
       return autoAdvance();
     }
     if (d.many) { w.count = Math.max(4, Math.min(8, w.count + Number(d.many))); w.times = defaultTimes(w.count); return render(); }
-    if (d.th || d.tm || d.ampm) {
-      const i = Number(stepKey.slice(4));
-      let [hh, mm] = w.times[i].split(":").map(Number);
-      if (d.th) hh = (hh + Number(d.th) + 24) % 24;
-      if (d.tm) mm = (mm + Number(d.tm) + 60) % 60;
-      if (d.ampm === "AM" && hh >= 12) hh -= 12;
-      if (d.ampm === "PM" && hh < 12) hh += 12;
-      w.times[i] = `${pad(hh)}:${pad(mm)}`;
-      return render();
-    }
     if (d.dur) {
       w.durMode = d.dur;
       if (d.dur === "none") { w.end = ""; return autoAdvance(); }
