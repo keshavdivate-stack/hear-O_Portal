@@ -78,6 +78,8 @@
   .am-footer .login-btn { margin-top: 0; flex: 1 1 0; min-width: 0; height: 56px; font-size: calc(22px * var(--font-scale, 1)); }
   .st-back-btn { flex: 1 1 0; min-width: 0; height: 56px; border: 1.5px solid #186DCE; border-radius: 28px; background: #fff; color: #186DCE; font-family: inherit; font-size: calc(22px * var(--font-scale, 1)); font-weight: 500; cursor: pointer; }
   .st-back-btn[hidden] { display: none; }
+  /* Back and Next share the row equally (same padding so widths match). */
+  .am-footer > button { flex: 1 1 0; box-sizing: border-box; padding: 0 12px; }
 </style>
 </head>
 <body>
