@@ -10,20 +10,30 @@
 <link rel="stylesheet" href="/Mobile%20app/style.css?v=36">
 <script src="/Mobile%20app/font-scale.js?v=29"></script>
 <style>
-  /* Add Medication -- matches the client-approved My Medication screens:
-     plain labeled fields that scroll, with the Add Medication button fixed
-     at the bottom of the screen. */
+  /* Add / Edit Medication -- a 3-step stepper (client requirement):
+     1 Medication, 2 Schedule (when + the exact dose time), 3 Duration & review.
+     Same field styling as before; Back / Next fixed at the bottom. */
   .mx-header { padding: 19px 20px; }
   .mx-header h1 { font-size: calc(28px * var(--font-scale, 1)); color: #434141; }
+
+  .st-progress { flex-shrink: 0; padding: 4px 28px 0; }
+  .st-progress-text { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; font-size: calc(16px * var(--font-scale, 1)); color: #6F6F6F; }
+  .st-progress-text strong { font-size: calc(20px * var(--font-scale, 1)); font-weight: 600; color: #434141; }
+  .st-bars { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .st-bar { height: 6px; border-radius: 3px; background: #E3E6EA; transition: background 0.2s ease; }
+  .st-bar.done { background: #186DCE; }
+
   .am-body { flex: 1; overflow-y: auto; padding: 23px 28px 8px; }
+  .st-step[hidden] { display: none; }
   .am-section { margin-bottom: 17px; }
   .am-label { display: block; margin: 0 0 11px; font-size: calc(20px * var(--font-scale, 1)); line-height: 1.2; font-weight: 500; color: #434141; }
+  .am-hint { margin: -4px 0 12px; font-size: calc(15px * var(--font-scale, 1)); color: #6F6F6F; }
   .am-sublabel { display: block; margin: 0 0 6px; font-size: calc(14px * var(--font-scale, 1)); color: #434141; }
-  .am-select { width: 100%; height: 64px; padding: 0 48px 0 16px; border: 1.5px solid #c9cdd3; border-radius: 16px; background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='12' viewBox='0 0 20 12' fill='none'%3E%3Cpath d='M2 2l8 8 8-8' stroke='%233D3B3B' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 22px center; color: #434141; font-family: inherit; font-size: calc(25px * var(--font-scale, 1)); -webkit-appearance: none; appearance: none; outline: none; cursor: pointer; }
+  .am-select { width: 100%; height: 64px; padding: 0 48px 0 16px; border: 1px solid #818080; border-radius: 16px; background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='12' viewBox='0 0 20 12' fill='none'%3E%3Cpath d='M2 2l8 8 8-8' stroke='%233D3B3B' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 22px center; color: #434141; font-family: inherit; font-size: calc(25px * var(--font-scale, 1)); -webkit-appearance: none; appearance: none; outline: none; cursor: pointer; }
   .am-select.is-empty { color: #A9A8A8; }
   .am-select:focus { border-color: #4a9fd8; }
   .am-units-row { display: flex; align-items: center; gap: 13px; }
-  .am-units-row input { width: 80px; height: 64px; flex-shrink: 0; padding: 0; border: 1.5px solid #c9cdd3; border-radius: 16px; text-align: center; font-family: inherit; font-size: calc(20px * var(--font-scale, 1)); font-weight: 600; color: #434141; outline: none; -moz-appearance: textfield; }
+  .am-units-row input { width: 80px; height: 64px; flex-shrink: 0; padding: 0; border: 1px solid #818080; border-radius: 16px; text-align: center; font-family: inherit; font-size: calc(20px * var(--font-scale, 1)); font-weight: 600; color: #434141; outline: none; -moz-appearance: textfield; }
   .am-units-row input::placeholder { color: #A9A8A8; font-weight: 600; }
   .am-units-row input::-webkit-outer-spin-button,
   .am-units-row input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
@@ -36,9 +46,29 @@
   .am-chips { display: flex; flex-wrap: wrap; gap: 12px 13px; }
   .am-chip { height: 45px; padding: 0 22px; border-radius: 23px; border: 1.5px solid #c9cdd3; background: #fff; color: #3D3B3B; font-family: inherit; font-size: calc(19px * var(--font-scale, 1)); font-weight: 400; cursor: pointer; }
   .am-chip[aria-pressed="true"] { border-color: #1A6FD4; background: #F0F7FF; color: #1A6FD4; }
-  .am-body input[type="text"], .am-body input[type="date"], .am-select, .am-units-row input { border: 1px solid #818080; } { border-color: #9F1C3B !important; }
-  .am-footer { flex-shrink: 0; padding: 14px 28px 32px; background: #fff; }
-  .am-footer .login-btn { margin-top: 0; }
+  .am-body input[type="text"], .am-body input[type="date"] { border: 1px solid #818080; }
+  .am-invalid, .am-chips.am-invalid .am-chip { border-color: #9F1C3B !important; }
+  .am-error { display: none; margin: 8px 0 0; font-size: calc(15px * var(--font-scale, 1)); color: #9F1C3B; }
+  .am-error.show { display: block; }
+
+  /* Dose times: one row per selected time of day, each with its exact time. */
+  .am-times { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
+  .am-time-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 12px 10px 16px; border-radius: 16px; background: #F0F7FF; }
+  .am-time-row span { font-size: calc(19px * var(--font-scale, 1)); font-weight: 500; color: #434141; }
+  .am-time-row input[type="time"] { width: 150px; height: 52px; padding: 0 12px; border: 1px solid #818080; border-radius: 14px; background: #fff; font-family: inherit; font-size: calc(19px * var(--font-scale, 1)); color: #434141; outline: none; }
+  .am-time-row input[type="time"]:focus { border-color: #4a9fd8; }
+
+  /* Review card on the last step */
+  .am-review { margin-top: 8px; padding: 6px 18px; border-radius: 16px; background: #F7F8FA; }
+  .am-review-row { display: flex; justify-content: space-between; gap: 16px; padding: 12px 0; border-bottom: 1px solid #E7EAEE; font-size: calc(17px * var(--font-scale, 1)); }
+  .am-review-row:last-child { border-bottom: none; }
+  .am-review-row dt { color: #6F6F6F; }
+  .am-review-row dd { margin: 0; text-align: right; font-weight: 500; color: #434141; }
+
+  .am-footer { flex-shrink: 0; display: flex; gap: 12px; padding: 14px 28px 32px; background: #fff; }
+  .am-footer .login-btn { margin-top: 0; flex: 1; font-size: calc(22px * var(--font-scale, 1)); }
+  .st-back-btn { flex: 0 0 38%; height: 56px; border: 1.5px solid #186DCE; border-radius: 28px; background: #fff; color: #186DCE; font-family: inherit; font-size: calc(22px * var(--font-scale, 1)); font-weight: 500; cursor: pointer; }
+  .st-back-btn[hidden] { display: none; }
 </style>
 </head>
 <body>
@@ -54,139 +84,265 @@
     </div>
 
     <div class="mx-header">
-      <button type="button" class="back-btn" aria-label="Back" onclick="window.location.href='/Mobile%20app/medications.html?tab=mine'">
+      <button type="button" class="back-btn" aria-label="Back" id="exitBtn">
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M12.5 4L6.5 10L12.5 16" stroke="#252424" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
-      <h1>Add Medication</h1>
+      <h1 id="pageTitle">Add Medication</h1>
+    </div>
+
+    <div class="st-progress">
+      <div class="st-progress-text"><strong id="stepName">Medication</strong><span id="stepCount">Step 1 of 3</span></div>
+      <div class="st-bars" aria-hidden="true"><span class="st-bar"></span><span class="st-bar"></span><span class="st-bar"></span></div>
     </div>
 
     <div class="am-body">
 
-      <div class="am-section">
-        <label class="am-label" for="medName">Medication name</label>
-        <input type="text" id="medName" value="Metoprolol" placeholder="Medication name" autocomplete="off" />
-      </div>
-
-      <div class="am-section">
-        <label class="am-label" for="medReason">Reason</label>
-        <input type="text" id="medReason" placeholder="e.g. Blood pressure" autocomplete="off" />
-      </div>
-
-      <div class="am-section">
-        <label class="am-label" for="formSelect">Medication form</label>
-        <select class="am-select is-empty" id="formSelect">
-          <option value="">Select</option>
-          <option>Tablet</option>
-          <option>Capsule</option>
-          <option>Drops</option>
-          <option>Cream</option>
-          <option>Liquid</option>
-          <option>Inhaler</option>
-          <option>Injection</option>
-          <option>Patch</option>
-        </select>
-      </div>
-
-      <div class="am-section">
-        <label class="am-label" for="medUnits">Number of units</label>
-        <div class="am-units-row">
-          <input type="number" id="medUnits" min="1" placeholder="1" inputmode="numeric" />
-          <span class="am-units-unit" id="unitsLabel">tablet(s) per dose</span>
+      <!-- Step 1: Medication -->
+      <div class="st-step" data-step="1">
+        <div class="am-section">
+          <label class="am-label" for="medName">Medication name</label>
+          <input type="text" id="medName" placeholder="Medication name" autocomplete="off" />
         </div>
-      </div>
 
-      <div class="am-section">
-        <label class="am-label" for="whenSelect">When to take it</label>
-        <select class="am-select is-empty" id="whenSelect">
-          <option value="">Select</option>
-          <option>Morning</option>
-          <option>Afternoon</option>
-          <option>Evening</option>
-          <option>Bedtime</option>
-        </select>
-      </div>
+        <div class="am-section">
+          <label class="am-label" for="formSelect">Medication form</label>
+          <select class="am-select is-empty" id="formSelect">
+            <option value="">Select</option>
+            <option>Tablet</option>
+            <option>Capsule</option>
+            <option>Drops</option>
+            <option>Cream</option>
+            <option>Liquid</option>
+            <option>Inhaler</option>
+            <option>Injection</option>
+            <option>Patch</option>
+          </select>
+        </div>
 
-      <div class="am-section">
-        <p class="am-label">Duration</p>
-        <div class="am-date-row">
-          <div class="am-date-field">
-            <label class="am-sublabel" for="startDate">Start date</label>
-            <input type="text" id="startDate" placeholder="Select" onfocus="this.type='date'" onblur="if(!this.value)this.type='text'" />
-          </div>
-          <div class="am-date-field">
-            <label class="am-sublabel" for="endDate">End date</label>
-            <input type="text" id="endDate" placeholder="Select" onfocus="this.type='date'" onblur="if(!this.value)this.type='text'" />
+        <div class="am-section">
+          <label class="am-label" for="medUnits">Number of units</label>
+          <div class="am-units-row">
+            <input type="number" id="medUnits" min="1" placeholder="1" inputmode="numeric" />
+            <span class="am-units-unit" id="unitsLabel">tablet(s) per dose</span>
           </div>
         </div>
       </div>
 
-      <div class="am-section">
-        <p class="am-label">Additional instructions</p>
-        <div class="am-chips" id="foodChips">
-          <button type="button" class="am-chip" data-food="with" aria-pressed="false">With food</button>
-          <button type="button" class="am-chip" data-food="before" aria-pressed="false">Before food</button>
-          <button type="button" class="am-chip" data-food="after" aria-pressed="false">After food</button>
-          <button type="button" class="am-chip" data-food="" aria-pressed="true">No restriction</button>
+      <!-- Step 2: Schedule -->
+      <div class="st-step" data-step="2" hidden>
+        <div class="am-section">
+          <p class="am-label">When do you take it?</p>
+          <p class="am-hint">Choose all that apply, then set the time for each dose.</p>
+          <div class="am-chips" id="slotChips">
+            <button type="button" class="am-chip" data-slot="Morning" aria-pressed="false">Morning</button>
+            <button type="button" class="am-chip" data-slot="Afternoon" aria-pressed="false">Afternoon</button>
+            <button type="button" class="am-chip" data-slot="Evening" aria-pressed="false">Evening</button>
+            <button type="button" class="am-chip" data-slot="Bedtime" aria-pressed="false">Bedtime</button>
+          </div>
+          <p class="am-error" id="slotError">Choose at least one time of day.</p>
+          <div class="am-times" id="slotTimes"></div>
+        </div>
+
+        <div class="am-section">
+          <p class="am-label">Additional instructions</p>
+          <div class="am-chips" id="foodChips">
+            <button type="button" class="am-chip" data-food="with" aria-pressed="false">With food</button>
+            <button type="button" class="am-chip" data-food="before" aria-pressed="false">Before food</button>
+            <button type="button" class="am-chip" data-food="after" aria-pressed="false">After food</button>
+            <button type="button" class="am-chip" data-food="" aria-pressed="true">No restriction</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3: Duration & review -->
+      <div class="st-step" data-step="3" hidden>
+        <div class="am-section">
+          <p class="am-label">Duration</p>
+          <div class="am-date-row">
+            <div class="am-date-field">
+              <label class="am-sublabel" for="startDate">Start date</label>
+              <input type="date" id="startDate" />
+            </div>
+            <div class="am-date-field">
+              <label class="am-sublabel" for="endDate">End date (optional)</label>
+              <input type="text" id="endDate" placeholder="Ongoing" onfocus="this.type='date'" onblur="if(!this.value)this.type='text'" />
+            </div>
+          </div>
+        </div>
+
+        <div class="am-section">
+          <p class="am-label">Review</p>
+          <dl class="am-review" id="reviewList"></dl>
         </div>
       </div>
 
     </div>
 
     <div class="am-footer">
-      <button type="button" class="login-btn" id="addBtn">Add Medication</button>
+      <button type="button" class="st-back-btn" id="prevBtn" hidden>Back</button>
+      <button type="button" class="login-btn" id="nextBtn">Next</button>
     </div>
   </div>
 
 <script>
-  // The unit label next to "Number of units" follows the chosen medication
-  // form, so a cream reads "application(s)" rather than "tablet(s)".
   const UNIT_LABELS = {
-    Tablet: "tablet(s) per dose",
-    Capsule: "capsule(s) per dose",
-    Drops: "drop(s) per dose",
-    Cream: "application(s) per dose",
-    Liquid: "mL per dose",
-    Inhaler: "puff(s) per dose",
-    Injection: "dose(s)",
-    Patch: "patch(es)",
+    Tablet: "tablet(s) per dose", Capsule: "capsule(s) per dose", Drops: "drop(s) per dose",
+    Cream: "application(s) per dose", Liquid: "mL per dose", Inhaler: "puff(s) per dose",
+    Injection: "dose(s)", Patch: "patch(es)",
   };
+  const SLOTS = ["Morning", "Afternoon", "Evening", "Bedtime"];
+  const DEFAULT_TIME = { Morning: "08:00", Afternoon: "13:00", Evening: "18:00", Bedtime: "21:00" };
+  const FOOD_LABEL = { with: "With food", before: "Before food", after: "After food", "": "No restriction" };
+  const STEP_NAMES = ["Medication", "Schedule", "Duration & review"];
+
+  // Patient-added medications that can be edited (?edit=<slug>), keyed by the
+  // same slug as medications.html / medication-details.html.
+  const MY_MEDS = {
+    "vitamin-d3": { name: "Vitamin D3", form: "Tablet", units: 1, times: { Morning: "08:00" }, food: "after", start: "2026-07-01", end: "" },
+    calcium: { name: "Calcium", form: "Tablet", units: 1, times: { Evening: "21:00" }, food: "after", start: "2026-07-01", end: "" },
+    vitamin: { name: "Vitamin", form: "Tablet", units: 1, times: { Evening: "21:00" }, food: "after", start: "2026-07-01", end: "" },
+  };
+
+  const params = new URLSearchParams(window.location.search);
+  const editKey = MY_MEDS[params.get("edit")] ? params.get("edit") : null;
 
   const nameInput = document.getElementById("medName");
   const formSelect = document.getElementById("formSelect");
-  const whenSelect = document.getElementById("whenSelect");
+  const unitsInput = document.getElementById("medUnits");
   const unitsLabel = document.getElementById("unitsLabel");
+  const startInput = document.getElementById("startDate");
+  const endInput = document.getElementById("endDate");
+  const slotTimesEl = document.getElementById("slotTimes");
+  const slotChips = document.getElementById("slotChips");
 
-  // The "Select" placeholder stays gray until a real option is picked.
-  [formSelect, whenSelect].forEach((sel) => sel.addEventListener("change", () => {
-    sel.classList.toggle("is-empty", !sel.value);
-    sel.classList.remove("am-invalid");
-  }));
-  nameInput.addEventListener("input", () => nameInput.classList.remove("am-invalid"));
+  // Chosen times of day -> exact time ("HH:MM"), kept in SLOTS order.
+  let times = {};
+  let food = "";
+  let step = 1;
 
-  formSelect.addEventListener("change", () => {
+  const fmtTime = (hhmm) => {
+    const [h, m] = hhmm.split(":").map(Number);
+    return `${((h + 11) % 12) + 1}:${String(m).padStart(2, "0")} ${h < 12 ? "AM" : "PM"}`;
+  };
+  const fmtDate = (v) => v ? new Date(`${v}T00:00`).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "";
+
+  function renderSlots() {
+    slotChips.querySelectorAll(".am-chip").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.slot in times)));
+    slotTimesEl.innerHTML = SLOTS.filter((s) => s in times).map((s) => `
+      <label class="am-time-row">
+        <span>${s}</span>
+        <input type="time" data-time-for="${s}" value="${times[s]}" aria-label="${s} dose time" />
+      </label>`).join("");
+  }
+
+  function setFood(value) {
+    food = value;
+    document.querySelectorAll("#foodChips .am-chip").forEach((x) => x.setAttribute("aria-pressed", String(x.dataset.food === value)));
+  }
+
+  function syncFormDependent() {
+    formSelect.classList.toggle("is-empty", !formSelect.value);
     unitsLabel.textContent = UNIT_LABELS[formSelect.value] || "tablet(s) per dose";
+  }
+
+  slotChips.addEventListener("click", (e) => {
+    const b = e.target.closest("[data-slot]");
+    if (!b) return;
+    if (b.dataset.slot in times) delete times[b.dataset.slot];
+    else times[b.dataset.slot] = DEFAULT_TIME[b.dataset.slot];
+    slotChips.classList.remove("am-invalid");
+    document.getElementById("slotError").classList.remove("show");
+    renderSlots();
   });
+  slotTimesEl.addEventListener("input", (e) => {
+    const s = e.target.dataset.timeFor;
+    if (s && e.target.value) times[s] = e.target.value;
+  });
+  document.querySelectorAll("#foodChips .am-chip").forEach((b) => b.addEventListener("click", () => setFood(b.dataset.food)));
+  formSelect.addEventListener("change", () => { syncFormDependent(); formSelect.classList.remove("am-invalid"); });
+  nameInput.addEventListener("input", () => nameInput.classList.remove("am-invalid"));
+  startInput.addEventListener("input", () => startInput.classList.remove("am-invalid"));
 
-  // Additional instructions are mutually exclusive, "No restriction" by default.
-  document.querySelectorAll("#foodChips .am-chip").forEach((b) => b.addEventListener("click", () => {
-    document.querySelectorAll("#foodChips .am-chip").forEach((x) => x.setAttribute("aria-pressed", "false"));
-    b.setAttribute("aria-pressed", "true");
-  }));
+  function renderReview() {
+    const units = unitsInput.value || "1";
+    const rows = [
+      ["Medication", nameInput.value.trim()],
+      ["Form", formSelect.value],
+      ["Dose", `${units} ${(UNIT_LABELS[formSelect.value] || "unit(s) per dose")}`],
+      ["Dose times", SLOTS.filter((s) => s in times).map((s) => `${s} · ${fmtTime(times[s])}`).join("<br>")],
+      ["Instructions", FOOD_LABEL[food]],
+      ["Duration", `${fmtDate(startInput.value) || "Today"} – ${fmtDate(endInput.value) || "Ongoing"}`],
+    ];
+    document.getElementById("reviewList").innerHTML = rows
+      .map(([k, v]) => `<div class="am-review-row"><dt>${k}</dt><dd>${v}</dd></div>`).join("");
+  }
 
-  // Name, form and when-to-take are required: missing ones are outlined
-  // instead of the medication being added.
-  document.getElementById("addBtn").addEventListener("click", () => {
+  function showStep(n) {
+    step = n;
+    document.querySelectorAll(".st-step").forEach((el) => { el.hidden = Number(el.dataset.step) !== n; });
+    document.querySelectorAll(".st-bar").forEach((el, i) => el.classList.toggle("done", i < n));
+    document.getElementById("stepName").textContent = STEP_NAMES[n - 1];
+    document.getElementById("stepCount").textContent = `Step ${n} of 3`;
+    document.getElementById("prevBtn").hidden = n === 1;
+    document.getElementById("nextBtn").textContent = n < 3 ? "Next" : editKey ? "Save changes" : "Add Medication";
+    if (n === 3) renderReview();
+    document.querySelector(".am-body").scrollTop = 0;
+  }
+
+  // Each step checks its own required fields before moving on.
+  function validStep(n) {
     const missing = [];
-    if (!nameInput.value.trim()) missing.push(nameInput);
-    if (!formSelect.value) missing.push(formSelect);
-    if (!whenSelect.value) missing.push(whenSelect);
+    if (n === 1) {
+      if (!nameInput.value.trim()) missing.push(nameInput);
+      if (!formSelect.value) missing.push(formSelect);
+    }
+    if (n === 2 && !Object.keys(times).length) {
+      slotChips.classList.add("am-invalid");
+      document.getElementById("slotError").classList.add("show");
+      return false;
+    }
+    if (n === 3 && !startInput.value) missing.push(startInput);
     missing.forEach((el) => el.classList.add("am-invalid"));
-    if (missing.length) { missing[0].focus(); return; }
-    const outcome = new URLSearchParams(window.location.search).get("outcome");
-    window.location.href = outcome === "fail"
+    if (missing.length) { missing[0].focus(); return false; }
+    return true;
+  }
+
+  document.getElementById("nextBtn").addEventListener("click", () => {
+    if (!validStep(step)) return;
+    if (step < 3) { showStep(step + 1); return; }
+    if (editKey) {
+      window.location.href = `/Mobile%20app/medication-details.html?med=${editKey}&saved=1`;
+      return;
+    }
+    window.location.href = params.get("outcome") === "fail"
       ? "/Mobile%20app/medication-add-failed.html"
       : "/Mobile%20app/medication-add-success.html";
   });
+  document.getElementById("prevBtn").addEventListener("click", () => showStep(step - 1));
+  document.getElementById("exitBtn").addEventListener("click", () => {
+    window.location.href = editKey
+      ? `/Mobile%20app/medication-details.html?med=${editKey}`
+      : "/Mobile%20app/medications.html?tab=mine";
+  });
+
+  // Start: prefill when editing, otherwise a blank form starting today.
+  if (editKey) {
+    const m = MY_MEDS[editKey];
+    document.title = "HearO - Edit Medication";
+    document.getElementById("pageTitle").textContent = "Edit Medication";
+    nameInput.value = m.name;
+    formSelect.value = m.form;
+    unitsInput.value = m.units;
+    times = { ...m.times };
+    setFood(m.food);
+    startInput.value = m.start;
+    if (m.end) { endInput.type = "date"; endInput.value = m.end; }
+  } else {
+    startInput.value = "2026-08-18";
+  }
+  syncFormDependent();
+  renderSlots();
+  showStep(1);
 </script>
 </body>
 </html>

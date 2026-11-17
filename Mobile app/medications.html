@@ -44,6 +44,8 @@
   .mx-btn--skip { border: 2px solid #F59E0B; background: #FFF5F2; color: #F5880B; }
   .mx-btn--take { border: 2px solid #186DCE; background: #F6F9FD; color: #186DCE; }
   .fab-add-btn { width: 60px; height: 60px; right: 28px; bottom: 25px; background: #186DCE; font-size: calc(34px * var(--font-scale, 1)); font-weight: 300; }
+  .mx-toast { position: absolute; left: 24px; right: 24px; bottom: 100px; z-index: 50; padding: 14px 18px; border-radius: 14px; background: #252424; color: #fff; text-align: center; font-size: calc(17px * var(--font-scale, 1)); }
+  #medTabs[hidden] { display: none; }
 </style>
 </head>
 <body>
@@ -163,7 +165,29 @@
     },
   };
 
-  let activeTab = new URLSearchParams(window.location.search).get("tab") === "mine" ? "mine" : "clinic";
+  // The app ships as two versions, Demo and Commercial (switch: Menu >
+  // Prototype). Both only show medications the patient added, so the
+  // Prescribed tab goes away. Kept as a flag in case a version differs later.
+  const APP_VERSION = localStorage.getItem("hearo_app_version") === "commercial" ? "commercial" : "demo";
+  const PATIENT_MEDS_ONLY = ["demo", "commercial"].includes(APP_VERSION);
+  const pageParams = new URLSearchParams(window.location.search);
+  let activeTab = PATIENT_MEDS_ONLY || pageParams.get("tab") === "mine" ? "mine" : "clinic";
+  if (PATIENT_MEDS_ONLY) document.getElementById("medTabs").hidden = true;
+
+  // A medication removed on its details screen comes back as ?removed=<slug>.
+  const removedKey = pageParams.get("removed");
+  if (removedKey) {
+    const gone = TABS.mine.doses.find((d) => d.med === removedKey);
+    TABS.mine.doses = TABS.mine.doses.filter((d) => d.med !== removedKey);
+    if (gone) {
+      const toast = document.createElement("div");
+      toast.className = "mx-toast";
+      toast.setAttribute("role", "status");
+      toast.textContent = `${gone.name} removed`;
+      document.querySelector(".phone-frame").appendChild(toast);
+      setTimeout(() => toast.remove(), 2500);
+    }
+  }
 
   const statusFor = (tab, id) => (tab.dayStatus[dateKey(tab.selectedDate)] || {})[id];
   function setStatus(tab, id, status) {

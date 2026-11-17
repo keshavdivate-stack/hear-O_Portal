@@ -55,6 +55,21 @@
   .md-upd-change { margin-top: 9px; font-size: calc(18px * var(--font-scale, 1)); line-height: 1.2; color: #565454; }
   .md-upd-note { margin-top: 12px; padding: 7px 12px 9px; border-radius: 12px; background: #F0F1F1; font-size: calc(20px * var(--font-scale, 1)); line-height: 1.45; color: #3D3B3B; }
 
+  /* Patient-added medications: edit / remove (with an in-app confirm). */
+  .md-actions { display: flex; flex-direction: column; gap: 10px; margin-top: 18px; }
+  .md-actions .login-btn { margin-top: 0; font-size: calc(22px * var(--font-scale, 1)); }
+  .md-remove-btn { height: 56px; border: 1.5px solid #9F1C3B; border-radius: 28px; background: #fff; color: #9F1C3B; font-family: inherit; font-size: calc(22px * var(--font-scale, 1)); font-weight: 500; cursor: pointer; }
+  .md-overlay { position: absolute; inset: 0; z-index: 60; display: flex; align-items: center; justify-content: center; padding: 24px; background: rgba(20, 24, 30, 0.5); }
+  .md-overlay[hidden] { display: none; }
+  .md-dialog { width: 100%; padding: 26px 22px 22px; border-radius: 20px; background: #fff; text-align: center; box-shadow: 0 16px 40px rgba(0, 0, 0, 0.25); }
+  .md-dialog h2 { margin: 0; font-size: calc(24px * var(--font-scale, 1)); font-weight: 700; color: #252424; }
+  .md-dialog p { margin: 10px 0 22px; font-size: calc(18px * var(--font-scale, 1)); line-height: 1.45; color: #4A4A4A; }
+  .md-dialog-actions { display: flex; gap: 12px; }
+  .md-dialog-actions button { flex: 1; height: 52px; border-radius: 26px; font-family: inherit; font-size: calc(19px * var(--font-scale, 1)); font-weight: 500; cursor: pointer; }
+  .md-dialog-cancel { border: 1.5px solid #186DCE; background: #fff; color: #186DCE; }
+  .md-dialog-remove { border: none; background: #9F1C3B; color: #fff; }
+  .md-toast { position: absolute; left: 24px; right: 24px; bottom: 28px; z-index: 50; padding: 14px 18px; border-radius: 14px; background: #252424; color: #fff; text-align: center; font-size: calc(17px * var(--font-scale, 1)); }
+
   .md-empty { text-align: center; color: #8A8F97; font-size: calc(17px * var(--font-scale, 1)); padding: 20px 0; }
 </style>
 </head>
@@ -87,6 +102,22 @@
       <p class="md-section-label" id="historyOnlyLabel" hidden>History</p>
 
       <div class="md-card" id="listCard"></div>
+
+      <div class="md-actions" id="mineActions" hidden>
+        <button type="button" class="login-btn" id="editMedBtn">Edit medication</button>
+        <button type="button" class="md-remove-btn" id="removeMedBtn">Remove medication</button>
+      </div>
+    </div>
+
+    <div class="md-overlay" id="removeDialog" role="alertdialog" aria-modal="true" aria-labelledby="removeTitle" aria-describedby="removeText" hidden>
+      <div class="md-dialog">
+        <h2 id="removeTitle">Remove medication?</h2>
+        <p id="removeText"></p>
+        <div class="md-dialog-actions">
+          <button type="button" class="md-dialog-cancel" id="removeCancel">Cancel</button>
+          <button type="button" class="md-dialog-remove" id="removeConfirm">Remove</button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -218,6 +249,7 @@
   // Medication collects: medication form, strength (dose), number of units,
   // when to take it, additional (food) instructions, reason and duration.
   // Clinic Prescribed keeps the full provider-order summary instead.
+  // (Reason was removed from Add Medication, so it is not shown here either.)
   const doseRow = `
     <div class="md-info-row">
       <span class="md-info-icon md-info-icon--violet">${doseIcon}</span>
@@ -238,17 +270,13 @@
     </div>
     <div class="md-info-row">
       <span class="md-info-icon md-info-icon--amber">${freqIcon}</span>
-      <span class="md-info-text"><span class="md-info-label">When to take it</span><span class="md-info-value">${med.whenToTake}</span></span>
+      <span class="md-info-text"><span class="md-info-label">Dose times</span><span class="md-info-value">${med.schedule.map((d) => `${med.whenToTake} &middot; ${d.time}`).join("<br>")}</span></span>
     </div>
     ${med.food ? `
     <div class="md-info-row">
       <span class="md-info-icon md-info-icon--gray">${foodIcon}</span>
       <span class="md-info-text"><span class="md-info-label">Additional instructions</span><span class="md-info-value">${FOOD_LABEL[med.food]}</span></span>
     </div>` : ""}
-    <div class="md-info-row">
-      <span class="md-info-icon md-info-icon--gray">${descIcon}</span>
-      <span class="md-info-text"><span class="md-info-label">Reason</span><span class="md-info-value">${med.description}</span></span>
-    </div>
     ${durationRow}`
     : `
     ${doseRow}
@@ -297,6 +325,29 @@
           )
           .join("")
       : `<p class="md-empty">No updates yet.</p>`;
+  }
+
+  // Patient-added medications can be edited (same stepper as Add) or removed.
+  if (med.source === "mine") {
+    document.getElementById("mineActions").hidden = false;
+    const dialog = document.getElementById("removeDialog");
+    document.getElementById("removeText").textContent = `${med.name} will be removed from My Meds and you won't get reminders for it.`;
+    document.getElementById("editMedBtn").addEventListener("click", () => {
+      window.location.href = `/Mobile%20app/add-medication.html?edit=${resolvedKey}`;
+    });
+    document.getElementById("removeMedBtn").addEventListener("click", () => { dialog.hidden = false; });
+    document.getElementById("removeCancel").addEventListener("click", () => { dialog.hidden = true; });
+    document.getElementById("removeConfirm").addEventListener("click", () => {
+      window.location.href = `/Mobile%20app/medications.html?tab=mine&removed=${resolvedKey}`;
+    });
+    if (params.get("saved")) {
+      const toast = document.createElement("div");
+      toast.className = "md-toast";
+      toast.setAttribute("role", "status");
+      toast.textContent = "Changes saved";
+      document.querySelector(".phone-frame").appendChild(toast);
+      setTimeout(() => toast.remove(), 2500);
+    }
   }
 
   if (med.source === "mine") {
