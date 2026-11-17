@@ -167,10 +167,10 @@
   };
 
   // The app ships as two versions, Demo and Commercial (switch: the
-  // Prototype controls box, top-right of the screen). Both only show medications the patient added, so the
-  // Prescribed tab goes away. Kept as a flag in case a version differs later.
-  const APP_VERSION = localStorage.getItem("hearo_app_version") === "commercial" ? "commercial" : "demo";
-  const PATIENT_MEDS_ONLY = ["demo", "commercial"].includes(APP_VERSION);
+  // Prototype controls box, top-right of the screen). Demo keeps the
+  // Prescribed / My Meds tabs; Commercial only shows medications the patient
+  // added, so there are no tabs.
+  const PATIENT_MEDS_ONLY = localStorage.getItem("hearo_app_version") === "commercial";
   const pageParams = new URLSearchParams(window.location.search);
   let activeTab = PATIENT_MEDS_ONLY || pageParams.get("tab") === "mine" ? "mine" : "clinic";
   if (PATIENT_MEDS_ONLY) document.getElementById("medTabs").hidden = true;

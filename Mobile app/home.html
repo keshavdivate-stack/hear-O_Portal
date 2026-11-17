@@ -249,9 +249,9 @@
   // patient opens the update and taps Okay there; after that it never returns.
   window.maybeShowMedUpdate = function () {
     if (!localStorage.getItem("hearo_home_tutorial_done") || localStorage.getItem("hearo_med_update_ack")) return;
-    // Demo and Commercial show patient-added medications only, so there is
-    // no doctor dosage update to review.
-    return;
+    // Commercial shows patient-added medications only, so there is no
+    // doctor dosage update to review there.
+    if (localStorage.getItem("hearo_app_version") === "commercial") return;
     if (document.getElementById("medUpdateNotice")) return;
     document.querySelector(".phone-frame").insertAdjacentHTML("beforeend", `
       <div class="mu-overlay" id="medUpdateNotice" role="alertdialog" aria-modal="true" aria-labelledby="muTitle" aria-describedby="muText">
