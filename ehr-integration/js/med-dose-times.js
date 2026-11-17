@@ -17,7 +17,9 @@
   function timesFor(freq, keep) {
     const base = DEFAULT_TIMES[freq];
     if (!base) return [];
-    return base.map((t, i) => (keep && keep[i]) || t);
+    // Keep typed times only while the dose count stays the same; a new frequency gets its own defaults.
+    if (keep && keep.length === base.length && keep.every(Boolean)) return keep;
+    return base.map((t, i) => (keep && keep.length === 1 && i === 0 && keep[0]) || t);
   }
 
   function render(form, times) {
