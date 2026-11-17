@@ -1183,8 +1183,15 @@ const adhDashIcon = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none"
 
 let medStatusFilter = "all";
 
+/* Commercial organisations only see medications the patient added in the
+   app, view only (see the prototype control in js/topbar.js). */
+function orgMeds() {
+  const commercial = typeof isCommercialOrg === "function" && isCommercialOrg();
+  return commercial ? medications.filter((m) => m.source === "Patient") : medications;
+}
+
 function filteredMeds() {
-  return medications.filter((m) => {
+  return orgMeds().filter((m) => {
     if (medStatusFilter !== "all" && m.status !== medStatusFilter) return false;
     return true;
   });
@@ -1254,7 +1261,7 @@ function medInfoPopover(m, mi) {
 
 function renderMeds() {
   const list = filteredMeds();
-  document.getElementById("medCount").textContent = medications.length;
+  document.getElementById("medCount").textContent = orgMeds().length;
   document.getElementById("medList").innerHTML = list
     .map((m, mi) => {
       const days = visibleDays();
@@ -2209,3 +2216,5 @@ if (patientHeaderKebab && patientHeaderMenu) {
     }
   });
 }
+
+document.addEventListener("orgtypechange", () => renderMeds());

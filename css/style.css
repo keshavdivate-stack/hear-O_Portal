@@ -8414,3 +8414,15 @@ body.patient-discontinued #chatOpenBtn {
 .switch input:checked + .switch-track { background: var(--blue); }
 .switch input:checked + .switch-track::after { transform: translateX(16px); }
 .switch input:focus-visible + .switch-track { outline: 2px solid var(--blue-text); outline-offset: 2px; }
+
+/* Prototype control: organisation type (profile avatar menu) */
+.proto-popover { min-width: 200px; }
+.proto-popover-title { margin: 2px 8px 2px; font-size: 13px; font-weight: 700; color: #1F2933; }
+.proto-popover-sub { margin: 0 8px 6px; font-size: 12px; color: var(--gray-text); }
+
+/* Commercial organisation: medications are patient-added and view only */
+.med-commercial-note { display: none; font-size: 13px; color: var(--gray-text); }
+html[data-org-type="Commercial"] .med-commercial-note { display: inline; }
+html[data-org-type="Commercial"] .med-source-row .unit-toggle,
+html[data-org-type="Commercial"] #openAddMedBtn,
+html[data-org-type="Commercial"] .med-block .btn-edit { display: none; }

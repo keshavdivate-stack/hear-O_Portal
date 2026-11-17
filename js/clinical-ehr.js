@@ -318,6 +318,17 @@
     ehrMedWrap.hidden = !isEhr;
     syncHead();
   }
+  const commercialNote = document.createElement("span");
+  commercialNote.className = "med-commercial-note";
+  commercialNote.textContent = "Medications added by the patient in the app. View only.";
+  sourceRow.prepend(commercialNote);
+  document.addEventListener("orgtypechange", () => {
+    if (window.isCommercialOrg && isCommercialOrg() && medSource !== "manual") {
+      medSource = "manual";
+      applyMedSource();
+    }
+  });
+
   sourceRow.querySelectorAll("[data-med-source]").forEach((b) => {
     const pick = () => { medSource = b.dataset.medSource; applyMedSource(); };
     b.addEventListener("click", pick);

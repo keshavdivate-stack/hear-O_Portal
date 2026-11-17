@@ -21,6 +21,47 @@ function wireTopbarToggle(btnId, popoverId) {
 
 document.addEventListener("click", () => closeAllTopbarPopovers());
 
+/* ---------------- Prototype control: organisation type ----------------
+   Prototype only. The profile avatar opens a small menu to switch the
+   organisation type the clinic portal is viewed as. Saved in localStorage
+   and exposed as <html data-org-type="..."> plus window.isCommercialOrg().
+   Pages react to the "orgtypechange" event. */
+const ORG_TYPES = ["Commercial", "R&D", "Study"];
+const ORG_TYPE_KEY = "protoOrgType";
+function getOrgType() {
+  let v = null;
+  try { v = localStorage.getItem(ORG_TYPE_KEY); } catch (e) {}
+  return ORG_TYPES.includes(v) ? v : "Study";
+}
+window.getOrgType = getOrgType;
+window.isCommercialOrg = () => getOrgType() === "Commercial";
+document.documentElement.dataset.orgType = getOrgType();
+
+(function initOrgTypeControl() {
+  const btn = document.getElementById("profileBtn");
+  if (!btn || document.getElementById("profilePopover")) return;
+  const pop = document.createElement("div");
+  pop.className = "topbar-popover org-popover proto-popover";
+  pop.id = "profilePopover";
+  pop.innerHTML = `
+    <p class="proto-popover-title">Prototype controls</p>
+    <p class="proto-popover-sub">Organisation type</p>
+    ${ORG_TYPES.map((t) => `
+      <label class="org-radio-item">
+        <input type="radio" name="protoOrgType" value="${t}" ${t === getOrgType() ? "checked" : ""} />
+        <span class="radio-dot"></span>
+        ${t}
+      </label>`).join("")}`;
+  btn.after(pop);
+  pop.addEventListener("change", (e) => {
+    if (e.target.name !== "protoOrgType") return;
+    try { localStorage.setItem(ORG_TYPE_KEY, e.target.value); } catch (err) {}
+    document.documentElement.dataset.orgType = e.target.value;
+    document.dispatchEvent(new CustomEvent("orgtypechange", { detail: { type: e.target.value } }));
+    closeAllTopbarPopovers();
+  });
+})();
+
 wireTopbarToggle("orgSwitchBtn", "orgPopover");
 wireTopbarToggle("notifBtn", "notifPopover");
 wireTopbarToggle("messagesBtn", "messagesPopover");
