@@ -47,14 +47,6 @@
   .fab-add-btn { width: 60px; height: 60px; right: 28px; bottom: 25px; background: #186DCE; font-size: calc(34px * var(--font-scale, 1)); font-weight: 300; }
   .mx-toast { position: absolute; left: 24px; right: 24px; bottom: 100px; z-index: 50; padding: 14px 18px; border-radius: 14px; background: #252424; color: #fff; text-align: center; font-size: calc(17px * var(--font-scale, 1)); }
   #medTabs[hidden] { display: none; }
-  /* Success pop-up after adding a medication: a bottom sheet over the list. */
-  .mx-sheet-overlay { position: absolute; inset: 0; z-index: 60; display: flex; align-items: flex-end; background: rgba(20, 24, 30, 0.5); }
-  .mx-sheet { width: 100%; padding: 28px 24px 30px; border-radius: 26px 26px 0 0; background: #fff; text-align: center; }
-  .mx-sheet-icon { width: 64px; height: 64px; margin: 0 auto 14px; border-radius: 50%; background: #E7FCF1; color: #1F9D7A; display: flex; align-items: center; justify-content: center; }
-  .mx-sheet h2 { margin: 0; font-size: calc(23px * var(--font-scale, 1)); font-weight: 700; line-height: 1.3; color: #252424; }
-  .mx-sheet p { margin: 8px 0 20px; font-size: calc(18px * var(--font-scale, 1)); color: #565454; }
-  .mx-sheet .login-btn { margin-top: 0; font-size: calc(22px * var(--font-scale, 1)); }
-  .mx-sheet-secondary { width: 100%; height: 56px; margin-top: 12px; border: 1.5px solid #186DCE; border-radius: 28px; background: #fff; color: #186DCE; font-family: inherit; font-size: calc(22px * var(--font-scale, 1)); font-weight: 500; cursor: pointer; }
 </style>
 </head>
 <body>
@@ -184,7 +176,7 @@
   if (PATIENT_MEDS_ONLY) document.getElementById("medTabs").hidden = true;
 
   // A medication saved in Add Medication comes back as ?added=<name>&times=...:
-  // it joins My Meds for today and a success pop-up confirms it.
+  // it joins My Meds for today (the success screen, medication-add-success.html, comes first).
   const addedName = pageParams.get("added");
   if (addedName) {
     const FORM_LABEL = { pill: "Tablet", liquid: "Liquid", drops: "Drops", inhaler: "Inhaler", injection: "Injection", cream: "Cream", patch: "Patch" };
@@ -295,24 +287,6 @@
       .join("");
   }
   renderAll();
-
-  if (addedName) {
-    const sheet = document.createElement("div");
-    sheet.className = "mx-sheet-overlay";
-    sheet.innerHTML = `
-      <div class="mx-sheet" role="dialog" aria-modal="true" aria-labelledby="addedTitle">
-        <span class="mx-sheet-icon"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5L9.5 18L20 6"/></svg></span>
-        <h2 id="addedTitle"></h2>
-        <p>You'll get a reminder at each dose time.</p>
-        <button type="button" class="login-btn" id="sheetDone">Done</button>
-        <button type="button" class="mx-sheet-secondary" id="sheetAddAnother">+ Add another medication</button>
-      </div>`;
-    sheet.querySelector("#addedTitle").textContent = `${addedName} was added to your medications`;
-    document.querySelector(".phone-frame").appendChild(sheet);
-    sheet.querySelector("#sheetDone").addEventListener("click", () => sheet.remove());
-    sheet.querySelector("#sheetAddAnother").addEventListener("click", () => { window.location.href = "/Mobile%20app/add-medication.html"; });
-    sheet.querySelector("#sheetDone").focus();
-  }
 
   document.getElementById("medTabs").addEventListener("click", (e) => {
     const btn = e.target.closest("[data-tab]");

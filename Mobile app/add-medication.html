@@ -14,8 +14,8 @@
   /* Add / Edit Medication -- one question per screen (client flow):
      name (typed) -> form -> strength (typed) -> amount -> how often [-> days | start date]
      -> times a day [-> how many] -> all dose times on one screen -> how long
-     -> food, then Save straight to a success pop-up on the Medications
-     list. Steps that don't apply are skipped and single-choice answers
+     -> food, then Save to the separate success screen
+     (medication-add-success.html), whose Done returns to My Meds. Steps that don't apply are skipped and single-choice answers
      move on by themselves. Styling uses the app's own fields, chips
      and buttons. */
   .mx-header { padding: 19px 20px; }
@@ -322,7 +322,7 @@
     if (w.edit) { window.location.href = `/Mobile%20app/medication-details.html?med=${editKey}&saved=1`; return; }
     window.location.href = params.get("outcome") === "fail"
       ? "/Mobile%20app/medication-add-failed.html"
-      : `/Mobile%20app/medications.html?${new URLSearchParams({ tab: "mine", added: w.name, times: w.times.join(","), food: w.food || "", form: w.form, amt: w.amt })}`;
+      : `/Mobile%20app/medication-add-success.html?${new URLSearchParams({ name: w.name, times: w.times.join(","), food: w.food || "", form: w.form, amt: w.amt })}`;
   }
 
   /* ---------- events ---------- */
