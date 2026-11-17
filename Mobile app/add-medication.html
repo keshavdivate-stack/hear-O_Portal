@@ -11,59 +11,79 @@
 <script src="/Mobile%20app/font-scale.js?v=29"></script>
 <script src="/Mobile%20app/proto-controls.js?v=1" defer></script>
 <style>
-  /* Add / Edit Medication -- a 4-step stepper (client requirement):
-     1 Medication, 2 Schedule (when + the exact dose time), 3 Duration, 4 Review.
-     Same field styling as before; Back / Next fixed at the bottom. */
+  /* Add / Edit Medication -- one question per screen (client flow):
+     name -> form -> strength -> amount -> how often [-> days | start date]
+     -> times a day [-> how many] -> a time for each dose -> how long
+     -> food -> review. Steps that don't apply are skipped, single-choice
+     answers move on by themselves, and Review lets the patient jump back
+     to any answer before saving. Styling uses the app's own fields, chips
+     and buttons. */
   .mx-header { padding: 19px 20px; }
   .mx-header h1 { font-size: calc(28px * var(--font-scale, 1)); color: #434141; }
 
   .st-progress { flex-shrink: 0; padding: 4px 28px 0; }
-  .st-progress-text { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; font-size: calc(16px * var(--font-scale, 1)); color: #6F6F6F; }
-  .st-progress-text strong { font-size: calc(20px * var(--font-scale, 1)); font-weight: 600; color: #434141; }
-  .st-bars { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
-  .st-bar { height: 6px; border-radius: 3px; background: #E3E6EA; transition: background 0.2s ease; }
-  .st-bar.done { background: #186DCE; }
+  .st-progress-text { display: flex; justify-content: flex-end; margin-bottom: 8px; font-size: calc(16px * var(--font-scale, 1)); color: #6F6F6F; }
+  .st-track { height: 6px; border-radius: 3px; background: #E3E6EA; overflow: hidden; }
+  .st-fill { display: block; height: 100%; border-radius: 3px; background: #186DCE; transition: width 0.25s ease; }
 
-  .am-body { flex: 1; overflow-y: auto; padding: 23px 28px 8px; }
-  .st-step[hidden] { display: none; }
-  .am-section { margin-bottom: 17px; }
-  .am-label { display: block; margin: 0 0 11px; font-size: calc(20px * var(--font-scale, 1)); line-height: 1.2; font-weight: 500; color: #434141; }
-  .am-hint { margin: -4px 0 12px; font-size: calc(15px * var(--font-scale, 1)); color: #6F6F6F; }
-  .am-sublabel { display: block; margin: 0 0 6px; font-size: calc(14px * var(--font-scale, 1)); color: #434141; }
-  .am-select { width: 100%; height: 64px; padding: 0 48px 0 16px; border: 1px solid #818080; border-radius: 16px; background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='12' viewBox='0 0 20 12' fill='none'%3E%3Cpath d='M2 2l8 8 8-8' stroke='%233D3B3B' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 22px center; color: #434141; font-family: inherit; font-size: calc(25px * var(--font-scale, 1)); -webkit-appearance: none; appearance: none; outline: none; cursor: pointer; }
-  .am-select.is-empty { color: #A9A8A8; }
-  .am-select:focus { border-color: #4a9fd8; }
-  .am-units-row { display: flex; align-items: center; gap: 13px; }
-  .am-units-row input { width: 80px; height: 64px; flex-shrink: 0; padding: 0; border: 1px solid #818080; border-radius: 16px; text-align: center; font-family: inherit; font-size: calc(20px * var(--font-scale, 1)); font-weight: 600; color: #434141; outline: none; -moz-appearance: textfield; }
-  .am-units-row input::placeholder { color: #A9A8A8; font-weight: 600; }
-  .am-units-row input::-webkit-outer-spin-button,
-  .am-units-row input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-  .am-units-row input:focus { border-color: #4a9fd8; }
-  .am-units-unit { font-size: calc(20px * var(--font-scale, 1)); color: #6F6F6F; }
-  .am-date-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  .am-date-field { min-width: 0; }
-  .am-date-field input { width: 100%; min-width: 0; }
-  .am-date-field input[type="date"] { font-size: calc(18px * var(--font-scale, 1)); padding: 0 10px; }
-  .am-chips { display: flex; flex-wrap: wrap; gap: 12px 13px; }
-  .am-chip { height: 45px; padding: 0 22px; border-radius: 23px; border: 1.5px solid #c9cdd3; background: #fff; color: #3D3B3B; font-family: inherit; font-size: calc(19px * var(--font-scale, 1)); font-weight: 400; cursor: pointer; }
-  .am-chip[aria-pressed="true"] { border-color: #1A6FD4; background: #F0F7FF; color: #1A6FD4; }
-  .am-body input[type="text"], .am-body input[type="date"] { border: 1px solid #818080; }
-  .am-invalid, .am-chips.am-invalid .am-chip { border-color: #9F1C3B !important; }
-  .am-error { display: none; margin: 8px 0 0; font-size: calc(15px * var(--font-scale, 1)); color: #9F1C3B; }
-  .am-error.show { display: block; }
+  .am-body { flex: 1; overflow-y: auto; padding: 22px 28px 8px; }
+  .am-q { margin: 0 0 18px; font-size: calc(26px * var(--font-scale, 1)); line-height: 1.25; font-weight: 600; color: #252424; }
+  .am-hint { margin: -8px 0 16px; font-size: calc(17px * var(--font-scale, 1)); line-height: 1.4; color: #6F6F6F; }
 
-  /* Dose times: one row per selected time of day, each with its exact time. */
-  .am-times { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
-  .am-time-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 12px 10px 16px; border-radius: 16px; background: #F0F7FF; }
-  .am-time-row span { font-size: calc(19px * var(--font-scale, 1)); font-weight: 500; color: #434141; }
-  .am-time-row input[type="time"] { width: 150px; height: 52px; padding: 0 12px; border: 1px solid #818080; border-radius: 14px; background: #fff; font-family: inherit; font-size: calc(19px * var(--font-scale, 1)); color: #434141; outline: none; }
-  .am-time-row input[type="time"]:focus { border-color: #4a9fd8; }
+  /* Single-choice answers: big tappable cards with a check when chosen. */
+  .am-opt { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; min-height: 64px; margin-bottom: 12px; padding: 12px 18px; border: 1px solid #818080; border-radius: 16px; background: #fff; color: #434141; font-family: inherit; font-size: calc(21px * var(--font-scale, 1)); text-align: left; cursor: pointer; }
+  .am-opt-main { display: inline-flex; align-items: center; gap: 12px; }
+  .am-opt-check { flex-shrink: 0; width: 26px; height: 26px; border-radius: 50%; border: 1.5px solid #c9cdd3; display: flex; align-items: center; justify-content: center; color: transparent; }
+  .am-opt[aria-pressed="true"] { border-color: #186DCE; background: #F0F7FF; color: #186DCE; }
+  .am-opt[aria-pressed="true"] .am-opt-check { border-color: #186DCE; background: #186DCE; color: #fff; }
 
-  /* Step 4 Review: a medication hero card, then one card per part of the
-     form, each with its icon and an Edit link back to that step. */
+  /* Name search */
+  .am-sugg { margin-top: 12px; border: 1px solid #D5D8DE; border-radius: 16px; overflow: hidden; }
+  .am-sugg-row { display: flex; align-items: center; justify-content: space-between; width: 100%; min-height: 58px; padding: 0 18px; border: none; border-bottom: 1px solid #ECEDEE; background: #fff; color: #434141; font-family: inherit; font-size: calc(21px * var(--font-scale, 1)); text-align: left; cursor: pointer; }
+  .am-sugg-row:last-child { border-bottom: none; }
+  .am-sugg-row b { font-weight: 700; color: #252424; }
+  .am-sugg-row--custom { color: #186DCE; }
+  .am-sugg-empty { margin-top: 12px; padding: 14px 16px; border-radius: 14px; background: #F0F7FF; color: #0E5C99; font-size: calc(17px * var(--font-scale, 1)); line-height: 1.4; }
+
+  /* Chips (days of the week, strength units) */
+  .am-chips { display: flex; flex-wrap: wrap; gap: 12px; }
+  .am-chip { min-width: 64px; height: 48px; padding: 0 18px; border-radius: 24px; border: 1.5px solid #c9cdd3; background: #fff; color: #3D3B3B; font-family: inherit; font-size: calc(19px * var(--font-scale, 1)); cursor: pointer; }
+  .am-chip[aria-pressed="true"] { border-color: #1A6FD4; background: #F0F7FF; color: #1A6FD4; font-weight: 600; }
+
+  /* Numeric entry */
+  .am-num-row { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+  .am-num-row input { flex: 1; min-width: 0; height: 64px; padding: 0 16px; border: 1px solid #818080; border-radius: 16px; font-family: inherit; font-size: calc(25px * var(--font-scale, 1)); color: #434141; outline: none; -moz-appearance: textfield; }
+  .am-num-row input::-webkit-outer-spin-button, .am-num-row input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+  .am-num-row input:focus { border-color: #4a9fd8; }
+
+  /* +/- counter for amount and number of doses */
+  .am-counter { display: flex; align-items: center; justify-content: center; gap: 22px; margin: 26px 0 12px; }
+  .am-counter-btn { width: 64px; height: 64px; border-radius: 50%; border: 1.5px solid #186DCE; background: #fff; color: #186DCE; font-family: inherit; font-size: 32px; line-height: 1; cursor: pointer; }
+  .am-counter-btn:disabled { border-color: #c9cdd3; color: #A9A8A8; cursor: not-allowed; }
+  .am-counter-value { min-width: 130px; text-align: center; font-size: calc(46px * var(--font-scale, 1)); font-weight: 700; color: #252424; line-height: 1.1; }
+  .am-counter-value small { display: block; margin-top: 4px; font-size: calc(18px * var(--font-scale, 1)); font-weight: 500; color: #6F6F6F; }
+  .am-preview { text-align: center; font-size: calc(18px * var(--font-scale, 1)); color: #6F6F6F; }
+
+  /* Time picker: hour / minute with up/down, AM-PM toggle */
+  .am-time { display: flex; align-items: center; justify-content: center; gap: 12px; margin: 22px 0 10px; }
+  .am-time-col { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .am-time-step { width: 76px; height: 44px; border: 1.5px solid #c9cdd3; border-radius: 12px; background: #fff; color: #434141; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .am-time-num { width: 88px; padding: 6px 0; border-radius: 14px; background: #F0F7FF; text-align: center; font-size: calc(44px * var(--font-scale, 1)); font-weight: 700; color: #186DCE; }
+  .am-time-colon { font-size: 40px; font-weight: 700; color: #434141; }
+  .am-ampm { display: flex; flex-direction: column; gap: 8px; margin-left: 6px; }
+  .am-ampm .am-chip { min-width: 70px; }
+  .am-dose-tag { display: inline-flex; align-items: center; gap: 8px; margin: -6px 0 6px; padding: 6px 12px; border-radius: 999px; font-size: calc(16px * var(--font-scale, 1)); font-weight: 600; }
+  .am-dose-tag--day { background: #FEFCE8; color: #B45309; }
+  .am-dose-tag--night { background: #F2EDFD; color: #6438C2; }
+
+  .am-body input[type="date"] { border: 1px solid #818080; font-size: calc(21px * var(--font-scale, 1)); }
+  .am-body input[type="text"] { border: 1px solid #818080; }
+  .am-date-label { display: block; margin: 6px 0 8px; font-size: calc(17px * var(--font-scale, 1)); color: #6F6F6F; }
+
+  /* Review */
   .rv-hero { display: flex; align-items: center; gap: 16px; padding: 20px 18px; border-radius: 20px; background: linear-gradient(135deg, #EAF3FD 0%, #F4EFFE 100%); margin-bottom: 18px; }
   .rv-hero-art { position: relative; flex-shrink: 0; width: 72px; height: 72px; border-radius: 50%; background: #fff; color: #186DCE; display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 16px rgba(24, 109, 206, 0.18); }
-  .rv-hero-art svg { width: 34px; height: 34px; }
+  .rv-hero-art > svg { width: 34px; height: 34px; }
   .rv-hero-check { position: absolute; right: -2px; bottom: -2px; width: 26px; height: 26px; border-radius: 50%; border: 3px solid #fff; background: #1F9D7A; color: #fff; display: flex; align-items: center; justify-content: center; }
   .rv-hero-check svg { width: 12px; height: 12px; }
   .rv-hero-text { min-width: 0; flex: 1; }
@@ -78,7 +98,7 @@
   .rv-icon { flex-shrink: 0; width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; }
   .rv-icon--day { background: #FEFCE8; color: #D99400; }
   .rv-icon--night { background: #F2EDFD; color: #8857FF; }
-  .rv-icon--food { background: #F0F7FF; color: #186DCE; }
+  .rv-icon--blue { background: #F0F7FF; color: #186DCE; }
   .rv-icon--date { background: #E6F8EE; color: #1F9D7A; }
   .rv-row-label { flex: 1; font-size: calc(19px * var(--font-scale, 1)); color: #434141; }
   .rv-row-value { font-size: calc(19px * var(--font-scale, 1)); font-weight: 600; color: #252424; text-align: right; }
@@ -102,306 +122,407 @@
     </div>
 
     <div class="mx-header">
-      <button type="button" class="back-btn" aria-label="Back" id="exitBtn">
+      <button type="button" class="back-btn" aria-label="Back" id="headerBack">
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M12.5 4L6.5 10L12.5 16" stroke="#252424" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
       <h1 id="pageTitle">Add Medication</h1>
     </div>
 
     <div class="st-progress">
-      <div class="st-progress-text"><strong id="stepName">Medication</strong><span id="stepCount">Step 1 of 4</span></div>
-      <div class="st-bars" aria-hidden="true"><span class="st-bar"></span><span class="st-bar"></span><span class="st-bar"></span><span class="st-bar"></span></div>
+      <div class="st-progress-text"><span id="stepCount">Step 1</span></div>
+      <div class="st-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" id="stepTrack"><span class="st-fill" id="stepFill"></span></div>
     </div>
 
-    <div class="am-body">
-
-      <!-- Step 1: Medication -->
-      <div class="st-step" data-step="1">
-        <div class="am-section">
-          <label class="am-label" for="medName">Medication name</label>
-          <input type="text" id="medName" placeholder="Medication name" autocomplete="off" />
-        </div>
-
-        <div class="am-section">
-          <label class="am-label" for="formSelect">Medication form</label>
-          <select class="am-select is-empty" id="formSelect">
-            <option value="">Select</option>
-            <option>Tablet</option>
-            <option>Capsule</option>
-            <option>Drops</option>
-            <option>Cream</option>
-            <option>Liquid</option>
-            <option>Inhaler</option>
-            <option>Injection</option>
-            <option>Patch</option>
-          </select>
-        </div>
-
-        <div class="am-section">
-          <label class="am-label" for="medUnits">Number of units</label>
-          <div class="am-units-row">
-            <input type="number" id="medUnits" min="1" placeholder="1" inputmode="numeric" />
-            <span class="am-units-unit" id="unitsLabel">tablet(s) per dose</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Step 2: Schedule -->
-      <div class="st-step" data-step="2" hidden>
-        <div class="am-section">
-          <p class="am-label">When do you take it?</p>
-          <p class="am-hint">Choose all that apply, then set the time for each dose.</p>
-          <div class="am-chips" id="slotChips">
-            <button type="button" class="am-chip" data-slot="Morning" aria-pressed="false">Morning</button>
-            <button type="button" class="am-chip" data-slot="Afternoon" aria-pressed="false">Afternoon</button>
-            <button type="button" class="am-chip" data-slot="Evening" aria-pressed="false">Evening</button>
-            <button type="button" class="am-chip" data-slot="Bedtime" aria-pressed="false">Bedtime</button>
-          </div>
-          <p class="am-error" id="slotError">Choose at least one time of day.</p>
-          <div class="am-times" id="slotTimes"></div>
-        </div>
-
-        <div class="am-section">
-          <p class="am-label">Additional instructions</p>
-          <div class="am-chips" id="foodChips">
-            <button type="button" class="am-chip" data-food="with" aria-pressed="false">With food</button>
-            <button type="button" class="am-chip" data-food="before" aria-pressed="false">Before food</button>
-            <button type="button" class="am-chip" data-food="after" aria-pressed="false">After food</button>
-            <button type="button" class="am-chip" data-food="" aria-pressed="true">No restriction</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Step 3: Duration -->
-      <div class="st-step" data-step="3" hidden>
-        <div class="am-section">
-          <p class="am-label">Duration</p>
-          <div class="am-date-row">
-            <div class="am-date-field">
-              <label class="am-sublabel" for="startDate">Start date</label>
-              <input type="date" id="startDate" />
-            </div>
-            <div class="am-date-field">
-              <label class="am-sublabel" for="endDate">End date (optional)</label>
-              <input type="text" id="endDate" placeholder="Ongoing" onfocus="this.type='date'" onblur="if(!this.value)this.type='text'" />
-            </div>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- Step 4: Review -->
-      <div class="st-step" data-step="4" hidden>
-        <div id="reviewList"></div>
-      </div>
-
-    </div>
+    <div class="am-body" id="stepBody"></div>
 
     <div class="am-footer">
-      <button type="button" class="st-back-btn" id="prevBtn" hidden>Back</button>
+      <button type="button" class="st-back-btn" id="prevBtn">Back</button>
       <button type="button" class="login-btn" id="nextBtn">Next</button>
     </div>
   </div>
 
 <script>
-  const UNIT_LABELS = {
-    Tablet: "tablet(s) per dose", Capsule: "capsule(s) per dose", Drops: "drop(s) per dose",
-    Cream: "application(s) per dose", Liquid: "mL per dose", Inhaler: "puff(s) per dose",
-    Injection: "dose(s)", Patch: "patch(es)",
+  /* ---------- reference data (sample, not a real drug database) ---------- */
+  const CATALOG = {
+    Acamol: { forms: ["pill"], str: ["500 mg"] },
+    Aspirin: { forms: ["pill"], str: ["75 mg", "100 mg", "325 mg"] },
+    Atorvastatin: { forms: ["pill"], str: ["10 mg", "20 mg", "40 mg", "80 mg"] },
+    Bisoprolol: { forms: ["pill"], str: ["1.25 mg", "2.5 mg", "5 mg", "10 mg"] },
+    Calcium: { forms: ["pill"], str: ["500 mg", "600 mg"] },
+    Carvedilol: { forms: ["pill"], str: ["3.125 mg", "6.25 mg", "12.5 mg", "25 mg"] },
+    Enalapril: { forms: ["pill"], str: ["5 mg", "10 mg", "20 mg"] },
+    Furosemide: { forms: ["pill", "injection"], str: ["20 mg", "40 mg", "80 mg"] },
+    Metoprolol: { forms: ["pill"], str: ["25 mg", "50 mg", "100 mg"] },
+    Spironolactone: { forms: ["pill"], str: ["25 mg", "50 mg", "100 mg"] },
+    "Vitamin D3": { forms: ["pill", "drops"], str: ["1000 IU", "2000 IU"] },
   };
-  const SLOTS = ["Morning", "Afternoon", "Evening", "Bedtime"];
-  const DEFAULT_TIME = { Morning: "08:00", Afternoon: "13:00", Evening: "18:00", Bedtime: "21:00" };
-  const FOOD_LABEL = { with: "With food", before: "Before food", after: "After food", "": "No restriction" };
-  const STEP_NAMES = ["Medication", "Schedule", "Duration", "Review"];
-  const TOTAL_STEPS = STEP_NAMES.length;
+  const NAMES = Object.keys(CATALOG);
+  const FORMS = [["pill", "Tablet / Capsule"], ["liquid", "Liquid"], ["drops", "Drops"], ["inhaler", "Inhaler"], ["injection", "Injection"], ["cream", "Cream"], ["patch", "Patch"], ["other", "Other"]];
+  const UNITS = { pill: ["tablet", "tablets"], liquid: ["mL", "mL"], drops: ["drop", "drops"], inhaler: ["puff", "puffs"], injection: ["injection", "injections"], cream: ["application", "applications"], patch: ["patch", "patches"], other: ["unit", "units"] };
+  const STRENGTH_UNITS = ["mg", "mcg", "IU", "mL", "%"];
+  const FREQ = [["daily", "Every day"], ["other", "Every other day"], ["days", "On specific days of the week"]];
+  const COUNTS = [[1, "Once a day"], [2, "Twice a day"], [3, "Three times a day"], ["more", "More than 3 times a day"]];
+  const DEFAULT_TIMES = { 1: ["08:00"], 2: ["08:00", "20:00"], 3: ["08:00", "14:00", "20:00"], 4: ["08:00", "12:00", "16:00", "20:00"] };
+  const FOODS = [["before", "Before food"], ["with", "With food"], ["after", "After food"], ["", "Doesn't matter"]];
+  const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+  const TODAY_ISO = "2026-08-18"; // the prototype's fixed "today"
 
   const ICONS = {
     pill: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.5 3.5 3.5 10.5a4.95 4.95 0 0 0 7 7l7-7a4.95 4.95 0 0 0-7-7z"/><path d="M7 7l7 7"/></svg>`,
-    check: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>`,
+    check: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>`,
     sun: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>`,
     moon: `<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg>`,
     food: `<svg width="22" height="19" viewBox="0 0 24 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4.5h11.5"/><ellipse cx="18.6" cy="4.5" rx="2.6" ry="1.7"/><path d="M2.5 9.5h19"/><path d="M3.4 9.5c.5 4.4 3.1 7.6 6.6 8h4c3.5-.4 6.1-3.6 6.6-8"/><path d="M9.5 17.9h5"/></svg>`,
     calendar: `<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="16" rx="2"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/></svg>`,
+    repeat: `<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 2l4 4-4 4"/><path d="M3 11V9a3 3 0 0 1 3-3h15"/><path d="M7 22l-4-4 4-4"/><path d="M21 13v2a3 3 0 0 1-3 3H3"/></svg>`,
+    up: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 15l6-6 6 6"/></svg>`,
+    down: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>`,
+    chevron: `<svg width="11" height="19" viewBox="0 0 11 19" fill="none"><path d="M1.5 1.5L9 9.5L1.5 17.5" stroke="#A9A8A8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
   };
-  const NIGHT_SLOTS = ["Evening", "Bedtime"];
 
-  // Patient-added medications that can be edited (?edit=<slug>), keyed by the
-  // same slug as medications.html / medication-details.html.
+  /* Patient-added medications that can be edited (?edit=<slug>), keyed by the
+     same slug as medications.html / medication-details.html. */
   const MY_MEDS = {
-    "vitamin-d3": { name: "Vitamin D3", form: "Tablet", units: 1, times: { Morning: "08:00" }, food: "after", start: "2026-07-01", end: "" },
-    calcium: { name: "Calcium", form: "Tablet", units: 1, times: { Evening: "21:00" }, food: "after", start: "2026-07-01", end: "" },
-    vitamin: { name: "Vitamin", form: "Tablet", units: 1, times: { Evening: "21:00" }, food: "after", start: "2026-07-01", end: "" },
+    "vitamin-d3": { name: "Vitamin D3", form: "pill", strength: "1000 IU", amt: 1, freq: "daily", days: [], start: "2026-07-01", count: 1, more: false, times: ["08:00"], end: "", food: "after" },
+    calcium: { name: "Calcium", form: "pill", strength: "500 mg", amt: 1, freq: "daily", days: [], start: "2026-07-01", count: 1, more: false, times: ["21:00"], end: "", food: "after" },
+    vitamin: { name: "Vitamin", form: "pill", strength: "", amt: 1, freq: "daily", days: [], start: "2026-07-01", count: 1, more: false, times: ["21:00"], end: "", food: "after" },
   };
 
+  /* ---------- helpers ---------- */
   const params = new URLSearchParams(window.location.search);
   const editKey = MY_MEDS[params.get("edit")] ? params.get("edit") : null;
-
-  const nameInput = document.getElementById("medName");
-  const formSelect = document.getElementById("formSelect");
-  const unitsInput = document.getElementById("medUnits");
-  const unitsLabel = document.getElementById("unitsLabel");
-  const startInput = document.getElementById("startDate");
-  const endInput = document.getElementById("endDate");
-  const slotTimesEl = document.getElementById("slotTimes");
-  const slotChips = document.getElementById("slotChips");
-
-  // Chosen times of day -> exact time ("HH:MM"), kept in SLOTS order.
-  let times = {};
-  let food = "";
-  let step = 1;
-
-  const fmtTime = (hhmm) => {
-    const [h, m] = hhmm.split(":").map(Number);
-    return `${((h + 11) % 12) + 1}:${String(m).padStart(2, "0")} ${h < 12 ? "AM" : "PM"}`;
-  };
-  const fmtDate = (v) => v ? new Date(`${v}T00:00`).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "";
-
-  function renderSlots() {
-    slotChips.querySelectorAll(".am-chip").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.slot in times)));
-    slotTimesEl.innerHTML = SLOTS.filter((s) => s in times).map((s) => `
-      <label class="am-time-row">
-        <span>${s}</span>
-        <input type="time" data-time-for="${s}" value="${times[s]}" aria-label="${s} dose time" />
-      </label>`).join("");
-  }
-
-  function setFood(value) {
-    food = value;
-    document.querySelectorAll("#foodChips .am-chip").forEach((x) => x.setAttribute("aria-pressed", String(x.dataset.food === value)));
-  }
-
-  function syncFormDependent() {
-    formSelect.classList.toggle("is-empty", !formSelect.value);
-    unitsLabel.textContent = UNIT_LABELS[formSelect.value] || "tablet(s) per dose";
-  }
-
-  slotChips.addEventListener("click", (e) => {
-    const b = e.target.closest("[data-slot]");
-    if (!b) return;
-    if (b.dataset.slot in times) delete times[b.dataset.slot];
-    else times[b.dataset.slot] = DEFAULT_TIME[b.dataset.slot];
-    slotChips.classList.remove("am-invalid");
-    document.getElementById("slotError").classList.remove("show");
-    renderSlots();
-  });
-  slotTimesEl.addEventListener("input", (e) => {
-    const s = e.target.dataset.timeFor;
-    if (s && e.target.value) times[s] = e.target.value;
-  });
-  document.querySelectorAll("#foodChips .am-chip").forEach((b) => b.addEventListener("click", () => setFood(b.dataset.food)));
-  formSelect.addEventListener("change", () => { syncFormDependent(); formSelect.classList.remove("am-invalid"); });
-  nameInput.addEventListener("input", () => nameInput.classList.remove("am-invalid"));
-  startInput.addEventListener("input", () => startInput.classList.remove("am-invalid"));
-
   const esc = (v) => String(v).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
-
-  function reviewCard(title, editStep, rowsHtml) {
-    return `
-      <div class="rv-card">
-        <div class="rv-card-head">
-          <span class="rv-card-title">${title}</span>
-          <button type="button" class="rv-edit" data-goto="${editStep}" aria-label="Edit ${title}">Edit</button>
-        </div>
-        ${rowsHtml}
-      </div>`;
+  const pad = (n) => String(n).padStart(2, "0");
+  const fmtTime = (hhmm) => { const [h, m] = hhmm.split(":").map(Number); return `${h % 12 || 12}:${pad(m)} ${h < 12 ? "AM" : "PM"}`; };
+  const fmtDate = (iso) => new Date(`${iso}T00:00`).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", year: "numeric" });
+  const isNight = (hhmm) => { const h = Number(hhmm.split(":")[0]); return h < 6 || h >= 18; };
+  const ordinal = (i) => ["1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th"][i];
+  const unitWord = (w) => { const u = UNITS[w.form || "pill"] || UNITS.other; return w.amt === 1 ? u[0] : u[1]; };
+  function defaultTimes(n) {
+    if (DEFAULT_TIMES[n]) return DEFAULT_TIMES[n].slice();
+    const step = Math.round(720 / (n - 1) / 5) * 5; // spread 8 AM - 8 PM
+    return Array.from({ length: n }, (_, i) => { const t = 480 + i * step; return `${pad(Math.floor(t / 60))}:${pad(t % 60)}`; });
   }
-  const reviewRow = (iconCls, icon, label, value) => `
-    <div class="rv-row">
-      <span class="rv-icon ${iconCls}">${icon}</span>
-      <span class="rv-row-label">${label}</span>
-      ${value ? `<span class="rv-row-value">${value}</span>` : ""}
-    </div>`;
-
-  function renderReview() {
-    const units = unitsInput.value || "1";
-    const doseRows = SLOTS.filter((s) => s in times).map((s) => {
-      const night = NIGHT_SLOTS.includes(s);
-      return reviewRow(night ? "rv-icon--night" : "rv-icon--day", night ? ICONS.moon : ICONS.sun, s, fmtTime(times[s]));
-    }).join("");
-    document.getElementById("reviewList").innerHTML = `
-      <div class="rv-hero">
-        <span class="rv-hero-art">${ICONS.pill}<span class="rv-hero-check">${ICONS.check}</span></span>
-        <div class="rv-hero-text">
-          <p class="rv-hero-name">${esc(nameInput.value.trim())}</p>
-          <p class="rv-hero-sub">${esc(formSelect.value)} &middot; ${esc(units)} ${UNIT_LABELS[formSelect.value] || "unit(s) per dose"}</p>
-        </div>
-        <button type="button" class="rv-edit" data-goto="1" aria-label="Edit medication">Edit</button>
-      </div>
-      ${reviewCard("Dose times", 2, doseRows)}
-      ${reviewCard("Instructions", 2, reviewRow("rv-icon--food", ICONS.food, FOOD_LABEL[food]))}
-      ${reviewCard("Duration", 3, reviewRow("rv-icon--date", ICONS.calendar, `${fmtDate(startInput.value) || "Today"} &rarr; ${fmtDate(endInput.value) || "Ongoing"}`))}`;
-  }
-  document.getElementById("reviewList").addEventListener("click", (e) => {
-    const b = e.target.closest("[data-goto]");
-    if (b) showStep(Number(b.dataset.goto));
-  });
-
-  function showStep(n) {
-    step = n;
-    document.querySelectorAll(".st-step").forEach((el) => { el.hidden = Number(el.dataset.step) !== n; });
-    document.querySelectorAll(".st-bar").forEach((el, i) => el.classList.toggle("done", i < n));
-    document.getElementById("stepName").textContent = STEP_NAMES[n - 1];
-    document.getElementById("stepCount").textContent = `Step ${n} of ${TOTAL_STEPS}`;
-    document.getElementById("prevBtn").hidden = n === 1;
-    document.getElementById("nextBtn").textContent = n < TOTAL_STEPS ? "Next" : editKey ? "Save changes" : "Add Medication";
-    if (n === TOTAL_STEPS) renderReview();
-    document.querySelector(".am-body").scrollTop = 0;
+  function formOptions(w) {
+    const c = CATALOG[w.name];
+    return w.custom || !c ? FORMS : FORMS.filter((f) => c.forms.includes(f[0]));
   }
 
-  // Each step checks its own required fields before moving on.
-  function validStep(n) {
-    const missing = [];
-    if (n === 1) {
-      if (!nameInput.value.trim()) missing.push(nameInput);
-      if (!formSelect.value) missing.push(formSelect);
-    }
-    if (n === 2 && !Object.keys(times).length) {
-      slotChips.classList.add("am-invalid");
-      document.getElementById("slotError").classList.add("show");
-      return false;
-    }
-    if (n === 3 && !startInput.value) missing.push(startInput);
-    missing.forEach((el) => el.classList.add("am-invalid"));
-    if (missing.length) { missing[0].focus(); return false; }
+  /* ---------- wizard state ---------- */
+  const w = editKey
+    ? Object.assign({ q: "", custom: !CATALOG[MY_MEDS[editKey].name], strOther: false, durMode: MY_MEDS[editKey].end ? "until" : "none", edit: true }, JSON.parse(JSON.stringify(MY_MEDS[editKey])))
+    : { name: "", q: "", custom: false, form: "", strength: "", strOther: false, amt: 1, freq: "", days: [], start: TODAY_ISO, count: 0, more: false, times: [], durMode: "", end: "", food: null, edit: false };
+  if (w.edit) {
+    const cat = CATALOG[w.name];
+    w.strOther = !!w.strength && !(cat && cat.str.includes(w.strength));
+    [w.strNum, w.strUnit] = w.strOther ? w.strength.split(" ") : ["", "mg"];
+  }
+  let stepKey = w.edit ? "form" : "name";
+  let reviewReturn = false; // editing one answer from Review goes straight back to Review
+
+  /* The steps that apply right now, in order. */
+  function steps() {
+    const a = w.edit ? [] : ["name"];
+    if (formOptions(w).length > 1) a.push("form");
+    a.push("strength", "dose", "freq");
+    if (w.freq === "days") a.push("days");
+    if (w.freq === "other") a.push("start");
+    a.push("count");
+    if (w.more) a.push("many");
+    for (let i = 0; i < w.count; i++) a.push("time" + i);
+    a.push("dur", "food", "review");
+    return a;
+  }
+
+  /* Whether the current step has an answer (enables Next). */
+  function stepDone(k) {
+    if (k === "name") return !!w.name;
+    if (k === "form") return !!w.form;
+    if (k === "strength") return w.strOther ? parseFloat(w.strength) > 0 : !!w.strength;
+    if (k === "freq") return !!w.freq;
+    if (k === "days") return w.days.length > 0;
+    if (k === "count") return w.count > 0;
+    if (k === "dur") return w.durMode === "none" || (w.durMode === "until" && !!w.end && w.end >= w.start);
+    if (k === "food") return w.food !== null;
     return true;
   }
 
-  document.getElementById("nextBtn").addEventListener("click", () => {
-    if (!validStep(step)) return;
-    if (step < TOTAL_STEPS) { showStep(step + 1); return; }
-    if (editKey) {
-      window.location.href = `/Mobile%20app/medication-details.html?med=${editKey}&saved=1`;
-      return;
+  const opt = (attr, value, label, on, icon = "") => `
+    <button type="button" class="am-opt" ${attr}="${esc(value)}" aria-pressed="${on}">
+      <span class="am-opt-main">${icon}<span>${label}</span></span>
+      <span class="am-opt-check">${ICONS.check}</span>
+    </button>`;
+
+  /* ---------- render one step ---------- */
+  function render() {
+    const list = steps();
+    if (!list.includes(stepKey)) stepKey = list[Math.min(list.length - 1, 0)];
+    const idx = list.indexOf(stepKey);
+    const k = stepKey;
+    let h = "";
+
+    if (k === "name") {
+      h = `<h2 class="am-q">Which medication do you want to add?</h2>
+        <input type="text" id="nameInput" placeholder="Search medication name" autocomplete="off" value="${esc(w.q || w.name)}" aria-label="Medication name" />
+        <div id="suggestions"></div>`;
+    } else if (k === "form") {
+      h = `<h2 class="am-q">What form is ${esc(w.name)}?</h2>` + formOptions(w).map(([v, l]) => opt("data-form", v, l, w.form === v)).join("");
+    } else if (k === "strength") {
+      const cat = CATALOG[w.name];
+      h = `<h2 class="am-q">What is the strength?</h2>`;
+      if (cat && !w.custom && !w.strOther) {
+        h += cat.str.map((s) => opt("data-str", s, s, w.strength === s)).join("") + opt("data-strother", "1", "Other strength", false);
+      } else {
+        const [num] = (w.strength || "").split(" ");
+        const unit = w.strUnit || "mg";
+        h += `<p class="am-hint">It's written on the box or label, for example 40 mg.</p>
+          <div class="am-num-row"><input type="number" id="strengthInput" min="0" step="any" inputmode="decimal" placeholder="e.g. 40" value="${esc(num || "")}" aria-label="Strength" /></div>
+          <div class="am-chips" role="radiogroup" aria-label="Unit">${STRENGTH_UNITS.map((u) => `<button type="button" class="am-chip" data-sunit="${u}" role="radio" aria-pressed="${unit === u}">${u}</button>`).join("")}</div>`;
+      }
+    } else if (k === "dose") {
+      const minAmt = w.form === "pill" ? 0.5 : 1;
+      h = `<h2 class="am-q">How much do you take each time?</h2>
+        <div class="am-counter">
+          <button type="button" class="am-counter-btn" data-amt="-1" aria-label="Less" ${w.amt <= minAmt ? "disabled" : ""}>&minus;</button>
+          <div class="am-counter-value" aria-live="polite">${w.amt}<small>${unitWord(w)}</small></div>
+          <button type="button" class="am-counter-btn" data-amt="1" aria-label="More" ${w.amt >= 20 ? "disabled" : ""}>+</button>
+        </div>
+        ${w.strength ? `<p class="am-preview">${esc(w.strength)} each</p>` : ""}`;
+    } else if (k === "freq") {
+      h = `<h2 class="am-q">How often do you take it?</h2>` + FREQ.map(([v, l]) => opt("data-freq", v, l, w.freq === v)).join("");
+    } else if (k === "days") {
+      h = `<h2 class="am-q">On which days?</h2><p class="am-hint">Choose all that apply.</p>
+        <div class="am-chips">${DAYS.map((d) => `<button type="button" class="am-chip" data-day="${d}" aria-pressed="${w.days.includes(d)}">${d}</button>`).join("")}</div>`;
+    } else if (k === "start") {
+      h = `<h2 class="am-q">Starting from which date?</h2><p class="am-hint">You'll take it on this day, then every other day.</p>
+        <input type="date" id="startInput" value="${w.start}" min="${TODAY_ISO}" aria-label="Start date" />
+        <p class="am-preview" style="margin-top:12px;">${fmtDate(w.start)}</p>`;
+    } else if (k === "count") {
+      h = `<h2 class="am-q">How many times a day?</h2>` + COUNTS.map(([v, l]) => opt("data-count", v, l, v === "more" ? w.more : !w.more && w.count === v)).join("");
+    } else if (k === "many") {
+      h = `<h2 class="am-q">How many times a day?</h2>
+        <div class="am-counter">
+          <button type="button" class="am-counter-btn" data-many="-1" aria-label="Fewer" ${w.count <= 4 ? "disabled" : ""}>&minus;</button>
+          <div class="am-counter-value" aria-live="polite">${w.count}<small>times a day</small></div>
+          <button type="button" class="am-counter-btn" data-many="1" aria-label="More" ${w.count >= 8 ? "disabled" : ""}>+</button>
+        </div>`;
+    } else if (k.startsWith("time")) {
+      const i = Number(k.slice(4));
+      const [hh, mm] = w.times[i].split(":").map(Number);
+      const night = isNight(w.times[i]);
+      h = `<h2 class="am-q">${w.count > 1 ? `What time is the ${ordinal(i)} dose?` : "What time do you take it?"}</h2>
+        ${w.count > 1 ? `<span class="am-dose-tag ${night ? "am-dose-tag--night" : "am-dose-tag--day"}">${night ? ICONS.moon : ICONS.sun} Dose ${i + 1} of ${w.count}</span>` : ""}
+        <div class="am-time">
+          <div class="am-time-col">
+            <button type="button" class="am-time-step" data-th="1" aria-label="Hour up">${ICONS.up}</button>
+            <div class="am-time-num">${pad(hh % 12 || 12)}</div>
+            <button type="button" class="am-time-step" data-th="-1" aria-label="Hour down">${ICONS.down}</button>
+          </div>
+          <div class="am-time-colon">:</div>
+          <div class="am-time-col">
+            <button type="button" class="am-time-step" data-tm="5" aria-label="Minutes up">${ICONS.up}</button>
+            <div class="am-time-num">${pad(mm)}</div>
+            <button type="button" class="am-time-step" data-tm="-5" aria-label="Minutes down">${ICONS.down}</button>
+          </div>
+          <div class="am-ampm" role="radiogroup" aria-label="AM or PM">
+            <button type="button" class="am-chip" data-ampm="AM" role="radio" aria-pressed="${hh < 12}">AM</button>
+            <button type="button" class="am-chip" data-ampm="PM" role="radio" aria-pressed="${hh >= 12}">PM</button>
+          </div>
+        </div>
+        <p class="am-preview">You'll get a reminder at ${fmtTime(w.times[i])}</p>`;
+    } else if (k === "dur") {
+      h = `<h2 class="am-q">How long will you take it?</h2>` + opt("data-dur", "none", "No end date", w.durMode === "none") + opt("data-dur", "until", "Until a specific date", w.durMode === "until");
+      if (w.durMode === "until") {
+        h += `<label class="am-date-label" for="endInput">Last day of taking it</label>
+          <input type="date" id="endInput" value="${w.end}" min="${w.start}" />`;
+      }
+    } else if (k === "food") {
+      h = `<h2 class="am-q">Should it be taken with food?</h2><p class="am-hint">Optional, follow what's on the label.</p>` +
+        FOODS.map(([v, l]) => opt("data-food", v, l, w.food === v, v ? `<span class="rv-icon rv-icon--blue" style="width:32px;height:32px;">${ICONS.food}</span>` : "")).join("");
+    } else if (k === "review") {
+      h = renderReview();
     }
+
+    document.getElementById("stepBody").innerHTML = h;
+    document.getElementById("stepBody").scrollTop = 0;
+
+    // progress + footer
+    const pct = Math.round(((idx + 1) / list.length) * 100);
+    document.getElementById("stepFill").style.width = `${pct}%`;
+    document.getElementById("stepTrack").setAttribute("aria-valuenow", pct);
+    document.getElementById("stepCount").textContent = k === "review" ? "Review" : `Step ${idx + 1} of ${list.length}`;
+    document.getElementById("prevBtn").hidden = idx === 0;
+    const next = document.getElementById("nextBtn");
+    next.textContent = k === "review" ? (w.edit ? "Save changes" : "Add Medication") : reviewReturn ? "Back to review" : "Next";
+    next.disabled = !stepDone(k);
+
+    if (k === "name") { fillSuggestions(); document.getElementById("nameInput").focus(); }
+  }
+
+  function fillSuggestions() {
+    const el = document.getElementById("suggestions");
+    const raw = (w.q || "").trim();
+    const q = raw.toLowerCase();
+    if (!q) { el.innerHTML = `<p class="am-sugg-empty">Start typing to search, or type the name exactly as it's on the box.</p>`; return; }
+    const matches = NAMES.filter((n) => n.toLowerCase().includes(q));
+    const exact = NAMES.some((n) => n.toLowerCase() === q);
+    const hl = (n) => { const i = n.toLowerCase().indexOf(q); return `${esc(n.slice(0, i))}<b>${esc(n.slice(i, i + q.length))}</b>${esc(n.slice(i + q.length))}`; };
+    el.innerHTML = `<div class="am-sugg">${matches.map((n) => `<button type="button" class="am-sugg-row" data-pick="${esc(n)}"><span>${hl(n)}</span>${ICONS.chevron}</button>`).join("")}${exact ? "" : `<button type="button" class="am-sugg-row am-sugg-row--custom" data-custom="${esc(raw)}"><span>Add “${esc(raw)}”</span>${ICONS.chevron}</button>`}</div>`;
+  }
+
+  function renderReview() {
+    const card = (title, goto, rows) => `
+      <div class="rv-card">
+        <div class="rv-card-head"><span class="rv-card-title">${title}</span><button type="button" class="rv-edit" data-goto="${goto}" aria-label="Edit ${title}">Edit</button></div>
+        ${rows}
+      </div>`;
+    const row = (cls, icon, label, value = "") => `
+      <div class="rv-row"><span class="rv-icon ${cls}">${icon}</span><span class="rv-row-label">${label}</span>${value ? `<span class="rv-row-value">${value}</span>` : ""}</div>`;
+    const form = (FORMS.find((f) => f[0] === w.form) || [0, ""])[1];
+    const freqText = w.freq === "daily" ? "Every day" : w.freq === "other" ? `Every other day from ${fmtDate(w.start)}` : `On ${w.days.join(", ")}`;
+    const doseRows = w.times.map((t, i) => row(isNight(t) ? "rv-icon--night" : "rv-icon--day", isNight(t) ? ICONS.moon : ICONS.sun, w.count > 1 ? `${ordinal(i)} dose` : "Dose", fmtTime(t))).join("");
+    const food = (FOODS.find((f) => f[0] === w.food) || [0, "Doesn't matter"])[1];
+    return `
+      <div class="rv-hero">
+        <span class="rv-hero-art">${ICONS.pill}<span class="rv-hero-check">${ICONS.check}</span></span>
+        <div class="rv-hero-text">
+          <p class="rv-hero-name">${esc(w.name)}</p>
+          <p class="rv-hero-sub">${form}${w.strength ? ` &middot; ${esc(w.strength)}` : ""}<br>Take ${w.amt} ${unitWord(w)} each time</p>
+        </div>
+        <button type="button" class="rv-edit" data-goto="${steps()[0]}" aria-label="Edit medication">Edit</button>
+      </div>
+      ${card("How often", "freq", row("rv-icon--blue", ICONS.repeat, freqText))}
+      ${card("Dose times", "count", doseRows)}
+      ${card("Duration", "dur", row("rv-icon--date", ICONS.calendar, w.durMode === "until" ? `Until ${fmtDate(w.end)}` : "No end date"))}
+      ${card("Food", "food", row("rv-icon--blue", ICONS.food, food))}`;
+  }
+
+  /* ---------- navigation ---------- */
+  function go(delta) {
+    const list = steps();
+    const i = list.indexOf(stepKey);
+    stepKey = list[Math.max(0, Math.min(list.length - 1, i + delta))];
+    render();
+  }
+  function advance() {
+    if (reviewReturn && !stepNeedsFollowUp()) { reviewReturn = false; stepKey = "review"; render(); return; }
+    go(1);
+  }
+  // When editing from Review, changing "how often" or "times a day" can open
+  // follow-up questions (days, start date, dose times) that must be answered first.
+  function stepNeedsFollowUp() {
+    const list = steps();
+    const i = list.indexOf(stepKey);
+    const nextKey = list[i + 1] || "";
+    if (["form", "strength", "dose", "days", "start", "many"].includes(nextKey)) return true;
+    return ["count", "many"].includes(stepKey) || stepKey.startsWith("time") ? nextKey.startsWith("time") : false;
+  }
+  let advancing = false;
+  const autoAdvance = () => {
+    if (advancing) return;
+    advancing = true;
+    render();
+    setTimeout(() => { advancing = false; advance(); }, 220);
+  };
+
+  function exit() {
+    window.location.href = w.edit ? `/Mobile%20app/medication-details.html?med=${editKey}` : "/Mobile%20app/medications.html?tab=mine";
+  }
+
+  function save() {
+    if (w.edit) { window.location.href = `/Mobile%20app/medication-details.html?med=${editKey}&saved=1`; return; }
     window.location.href = params.get("outcome") === "fail"
       ? "/Mobile%20app/medication-add-failed.html"
-      : "/Mobile%20app/medication-add-success.html";
-  });
-  document.getElementById("prevBtn").addEventListener("click", () => showStep(step - 1));
-  document.getElementById("exitBtn").addEventListener("click", () => {
-    window.location.href = editKey
-      ? `/Mobile%20app/medication-details.html?med=${editKey}`
-      : "/Mobile%20app/medications.html?tab=mine";
+      : `/Mobile%20app/medication-add-success.html?name=${encodeURIComponent(w.name)}`;
+  }
+
+  function chooseName(name, custom) {
+    w.name = name; w.q = name; w.custom = custom; w.amt = 1; w.strength = ""; w.strOther = false;
+    const fo = formOptions(w);
+    w.form = fo.length === 1 ? fo[0][0] : "";
+    go(1);
+  }
+
+  /* ---------- events ---------- */
+  document.getElementById("stepBody").addEventListener("input", (e) => {
+    if (e.target.id === "nameInput") { w.q = e.target.value; w.name = ""; fillSuggestions(); document.getElementById("nextBtn").disabled = true; }
+    if (e.target.id === "strengthInput") {
+      w.strNum = e.target.value;
+      w.strength = parseFloat(w.strNum) > 0 ? `${w.strNum} ${w.strUnit || "mg"}` : "";
+      document.getElementById("nextBtn").disabled = !stepDone("strength");
+    }
+    if (e.target.id === "startInput" && e.target.value) { w.start = e.target.value; render(); }
+    if (e.target.id === "endInput") { w.end = e.target.value; document.getElementById("nextBtn").disabled = !stepDone("dur"); }
   });
 
-  // Start: prefill when editing, otherwise a blank form starting today.
-  if (editKey) {
-    const m = MY_MEDS[editKey];
+  document.getElementById("stepBody").addEventListener("click", (e) => {
+    const t = e.target.closest("button");
+    if (!t) return;
+    const d = t.dataset;
+    if (d.pick) return chooseName(d.pick, false);
+    if (d.custom !== undefined) return chooseName(d.custom, true);
+    if (d.form) { w.form = d.form; w.amt = 1; return autoAdvance(); }
+    if (d.str) { w.strength = d.str; return autoAdvance(); }
+    if (d.strother) { w.strOther = true; w.strength = ""; w.strNum = ""; w.strUnit = "mg"; return render(); }
+    if (d.sunit) {
+      w.strUnit = d.sunit;
+      w.strength = parseFloat(w.strNum) > 0 ? `${w.strNum} ${w.strUnit}` : "";
+      document.querySelectorAll("[data-sunit]").forEach((b) => b.setAttribute("aria-pressed", String(b === t)));
+      return;
+    }
+    if (d.amt) {
+      const step = w.form === "pill" ? 0.5 : 1;
+      w.amt = Math.max(step, Math.min(20, +(w.amt + Number(d.amt) * step).toFixed(1)));
+      return render();
+    }
+    if (d.freq) { w.freq = d.freq; return autoAdvance(); }
+    if (d.day) { const i = w.days.indexOf(d.day); i >= 0 ? w.days.splice(i, 1) : w.days.push(d.day); w.days.sort((a, b) => DAYS.indexOf(a) - DAYS.indexOf(b)); return render(); }
+    if (d.count) {
+      const prev = w.count;
+      w.more = d.count === "more";
+      w.count = w.more ? Math.max(4, w.count) : Number(d.count);
+      if (w.count !== prev || w.times.length !== w.count) w.times = defaultTimes(w.count);
+      return autoAdvance();
+    }
+    if (d.many) { w.count = Math.max(4, Math.min(8, w.count + Number(d.many))); w.times = defaultTimes(w.count); return render(); }
+    if (d.th || d.tm || d.ampm) {
+      const i = Number(stepKey.slice(4));
+      let [hh, mm] = w.times[i].split(":").map(Number);
+      if (d.th) hh = (hh + Number(d.th) + 24) % 24;
+      if (d.tm) mm = (mm + Number(d.tm) + 60) % 60;
+      if (d.ampm === "AM" && hh >= 12) hh -= 12;
+      if (d.ampm === "PM" && hh < 12) hh += 12;
+      w.times[i] = `${pad(hh)}:${pad(mm)}`;
+      return render();
+    }
+    if (d.dur) {
+      w.durMode = d.dur;
+      if (d.dur === "none") { w.end = ""; return autoAdvance(); }
+      if (!w.end) { const e2 = new Date(`${w.start < TODAY_ISO ? TODAY_ISO : w.start}T00:00`); e2.setDate(e2.getDate() + 30); w.end = `${e2.getFullYear()}-${pad(e2.getMonth() + 1)}-${pad(e2.getDate())}`; }
+      return render();
+    }
+    if (d.food !== undefined) { w.food = d.food; return autoAdvance(); }
+    if (d.goto) { reviewReturn = true; stepKey = d.goto; return render(); }
+  });
+
+  document.getElementById("nextBtn").addEventListener("click", () => {
+    if (!stepDone(stepKey)) return;
+    if (stepKey === "review") return save();
+    advance();
+  });
+  document.getElementById("prevBtn").addEventListener("click", () => { reviewReturn = false; go(-1); });
+  document.getElementById("headerBack").addEventListener("click", () => {
+    if (steps().indexOf(stepKey) === 0) return exit();
+    reviewReturn = false;
+    go(-1);
+  });
+
+  if (w.edit) {
     document.title = "HearO - Edit Medication";
-    document.getElementById("pageTitle").textContent = "Edit Medication";
-    nameInput.value = m.name;
-    formSelect.value = m.form;
-    unitsInput.value = m.units;
-    times = { ...m.times };
-    setFood(m.food);
-    startInput.value = m.start;
-    if (m.end) { endInput.type = "date"; endInput.value = m.end; }
-  } else {
-    startInput.value = "2026-08-18";
+    document.getElementById("pageTitle").textContent = `Edit ${w.name}`;
   }
-  syncFormDependent();
-  renderSlots();
-  showStep(1);
+  if (!steps().includes(stepKey)) stepKey = steps()[0];
+  render();
 </script>
 </body>
 </html>

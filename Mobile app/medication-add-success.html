@@ -30,14 +30,23 @@
         </svg>
       </div>
 
-      <h1 class="locked-title">Medication added successfully</h1>
-      <p class="locked-desc">Your new medication has been added to your list.</p>
+      <h1 class="locked-title" id="successTitle">Medication added successfully</h1>
+      <p class="locked-desc">You'll get a reminder at each dose time.</p>
 
       <div class="locked-footer" style="width:100%;">
-        <button type="button" class="login-btn" style="margin-top:0;" onclick="window.location.href='/Mobile%20app/medications.html?tab=mine'">Continue</button>
+        <button type="button" class="login-btn" style="margin-top:0;" onclick="window.location.href='/Mobile%20app/medications.html?tab=mine'">Done</button>
+        <button type="button" class="add-another-btn" onclick="window.location.href='/Mobile%20app/add-medication.html'">+ Add another medication</button>
       </div>
     </div>
   </div>
 
+<style>
+  .add-another-btn { width: 100%; height: 56px; margin-top: 12px; border: 1.5px solid #186DCE; border-radius: 28px; background: #fff; color: #186DCE; font-family: inherit; font-size: calc(22px * var(--font-scale, 1)); font-weight: 500; cursor: pointer; }
+</style>
+<script>
+  // The Add Medication form passes the name (?name=) so the message names it.
+  const addedName = new URLSearchParams(window.location.search).get("name");
+  if (addedName) document.getElementById("successTitle").textContent = `${addedName} was added to your medications`;
+</script>
 </body>
 </html>
