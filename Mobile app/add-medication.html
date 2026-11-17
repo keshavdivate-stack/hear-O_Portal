@@ -12,8 +12,8 @@
 <script src="/Mobile%20app/proto-controls.js?v=1" defer></script>
 <style>
   /* Add / Edit Medication -- one question per screen (client flow):
-     name (typed) -> form -> strength (typed) -> amount -> how often [-> days | start date]
-     -> times a day [-> how many] -> all dose times on one screen -> how long
+     name (typed) -> form -> strength (typed) -> amount -> how often [-> days]
+     -> times a day [-> how many] -> all dose times on one screen -> start & end date (one screen)
      -> food, then Save to the separate success screen
      (medication-add-success.html), whose Done returns to My Meds. Steps that don't apply are skipped and single-choice answers
      move on by themselves. Styling uses the app's own fields, chips
@@ -71,6 +71,9 @@
 
   .am-body input[type="date"] { border: 1px solid #818080; font-size: calc(21px * var(--font-scale, 1)); }
   .am-body input[type="text"] { border: 1px solid #818080; }
+  .am-end-choice .am-chip { flex: 1 1 0; }
+  .am-field-error { margin: 8px 0 0; font-size: calc(16px * var(--font-scale, 1)); color: #9F1C3B; }
+  .am-field-error[hidden] { display: none; }
   .am-date-label { display: block; margin: 6px 0 8px; font-size: calc(17px * var(--font-scale, 1)); color: #6F6F6F; }
 
   .am-food-icon { flex-shrink: 0; width: 32px; height: 32px; border-radius: 10px; background: #F0F7FF; color: #186DCE; display: flex; align-items: center; justify-content: center; }
@@ -169,7 +172,7 @@
   /* ---------- wizard state ---------- */
   const w = editKey
     ? Object.assign({ durMode: MY_MEDS[editKey].end ? "until" : "none", edit: true }, JSON.parse(JSON.stringify(MY_MEDS[editKey])))
-    : { name: "", form: "", strength: "", amt: 1, freq: "", days: [], start: TODAY_ISO, count: 0, more: false, times: [], durMode: "", end: "", food: null, edit: false };
+    : { name: "", form: "", strength: "", amt: 1, freq: "", days: [], start: TODAY_ISO, count: 0, more: false, times: [], durMode: "none", end: "", food: null, edit: false };
   // Strength is kept as a number + unit ("1000 IU").
   [w.strNum, w.strUnit] = w.strength ? w.strength.split(" ") : ["", "mg"];
   let stepKey = w.edit ? "form" : "name";
@@ -180,7 +183,6 @@
     if (formOptions(w).length > 1) a.push("form");
     a.push("strength", "dose", "freq");
     if (w.freq === "days") a.push("days");
-    if (w.freq === "other") a.push("start");
     a.push("count");
     if (w.more) a.push("many");
     a.push("times");
@@ -196,7 +198,7 @@
     if (k === "freq") return !!w.freq;
     if (k === "days") return w.days.length > 0;
     if (k === "count") return w.count > 0;
-    if (k === "dur") return w.durMode === "none" || (w.durMode === "until" && !!w.end && w.end >= w.start);
+    if (k === "dur") return !!w.start && (w.durMode === "none" || (w.durMode === "until" && !!w.end && w.end >= w.start));
     return true;
   }
 
@@ -239,10 +241,6 @@
     } else if (k === "days") {
       h = `<h2 class="am-q">On which days?</h2><p class="am-hint">Choose all that apply.</p>
         <div class="am-chips">${DAYS.map((d) => `<button type="button" class="am-chip" data-day="${d}" aria-pressed="${w.days.includes(d)}">${d}</button>`).join("")}</div>`;
-    } else if (k === "start") {
-      h = `<h2 class="am-q">Starting from which date?</h2><p class="am-hint">You'll take it on this day, then every other day.</p>
-        <input type="date" id="startInput" value="${w.start}" min="${TODAY_ISO}" aria-label="Start date" />
-        <p class="am-preview" style="margin-top:12px;">${fmtDate(w.start)}</p>`;
     } else if (k === "count") {
       h = `<h2 class="am-q">How many times a day?</h2>` + COUNTS.map(([v, l]) => opt("data-count", v, l, v === "more" ? w.more : !w.more && w.count === v)).join("");
     } else if (k === "many") {
@@ -268,11 +266,17 @@
           </label>`;
         }).join("")}</div>`;
     } else if (k === "dur") {
-      h = `<h2 class="am-q">How long will you take it?</h2>` + opt("data-dur", "none", "No end date", w.durMode === "none") + opt("data-dur", "until", "Until a specific date", w.durMode === "until");
-      if (w.durMode === "until") {
-        h += `<label class="am-date-label" for="endInput">Last day of taking it</label>
-          <input type="date" id="endInput" value="${w.end}" min="${w.start}" />`;
-      }
+      h = `<h2 class="am-q">When will you take it?</h2>
+        ${w.freq === "other" ? `<p class="am-hint">You'll take it on the start date, then every other day.</p>` : ""}
+        <label class="am-date-label" for="startInput">Start date</label>
+        <input type="date" id="startInput" value="${w.start}" aria-label="Start date" />
+        <p class="am-date-label" style="margin-top:22px;">End date</p>
+        <div class="am-chips am-end-choice" role="radiogroup" aria-label="End date">
+          <button type="button" class="am-chip" data-dur="none" role="radio" aria-pressed="${w.durMode === "none"}">Ongoing</button>
+          <button type="button" class="am-chip" data-dur="until" role="radio" aria-pressed="${w.durMode === "until"}">Set an end date</button>
+        </div>
+        ${w.durMode === "until" ? `<input type="date" id="endInput" value="${w.end}" min="${w.start}" aria-label="End date" style="margin-top:14px;" />
+          <p class="am-field-error" id="endError" ${w.end && w.end < w.start ? "" : "hidden"}>End date can't be before the start date.</p>` : ""}`;
     } else if (k === "food") {
       h = `<h2 class="am-q">Should it be taken with food?</h2><p class="am-hint">Optional, follow what's on the label.</p>` +
         FOODS.map(([v, l]) => opt("data-food", v, l, w.food === v, v ? `<span class="am-food-icon">${ICONS.food}</span>` : "")).join("");
@@ -325,6 +329,14 @@
       : `/Mobile%20app/medication-add-success.html?${new URLSearchParams({ name: w.name, times: w.times.join(","), food: w.food || "", form: w.form, amt: w.amt })}`;
   }
 
+  // Start / end date edits update Next and the end-date check without re-rendering
+  // (so the date picker keeps focus).
+  function syncDates() {
+    const err = document.getElementById("endError");
+    if (err) err.hidden = !(w.durMode === "until" && w.end && w.end < w.start);
+    document.getElementById("nextBtn").disabled = !stepDone("dur");
+  }
+
   /* ---------- events ---------- */
   document.getElementById("stepBody").addEventListener("input", (e) => {
     if (e.target.id === "nameInput") { w.name = e.target.value; document.getElementById("nextBtn").disabled = !stepDone("name"); }
@@ -333,7 +345,12 @@
       w.strength = parseFloat(w.strNum) > 0 ? `${w.strNum} ${w.strUnit || "mg"}` : "";
       document.getElementById("nextBtn").disabled = !stepDone("strength");
     }
-    if (e.target.id === "startInput" && e.target.value) { w.start = e.target.value; render(); }
+    if (e.target.id === "startInput") {
+      w.start = e.target.value;
+      const end = document.getElementById("endInput");
+      if (end) end.min = w.start;
+      syncDates();
+    }
     if (e.target.dataset.timeIndex !== undefined && e.target.value) {
       const i = Number(e.target.dataset.timeIndex);
       w.times[i] = e.target.value;
@@ -344,7 +361,7 @@
       icon.innerHTML = night ? ICONS.moon : ICONS.sun;
       row.querySelector(".am-dose-part").textContent = partOfDay(e.target.value);
     }
-    if (e.target.id === "endInput") { w.end = e.target.value; document.getElementById("nextBtn").disabled = !stepDone("dur"); }
+    if (e.target.id === "endInput") { w.end = e.target.value; syncDates(); }
   });
 
   document.getElementById("stepBody").addEventListener("click", (e) => {
@@ -375,7 +392,7 @@
     if (d.many) { w.count = Math.max(4, Math.min(8, w.count + Number(d.many))); w.times = defaultTimes(w.count); return render(); }
     if (d.dur) {
       w.durMode = d.dur;
-      if (d.dur === "none") { w.end = ""; return autoAdvance(); }
+      if (d.dur === "none") { w.end = ""; return render(); }
       if (!w.end) { const e2 = new Date(`${w.start < TODAY_ISO ? TODAY_ISO : w.start}T00:00`); e2.setDate(e2.getDate() + 30); w.end = `${e2.getFullYear()}-${pad(e2.getMonth() + 1)}-${pad(e2.getDate())}`; }
       return render();
     }
