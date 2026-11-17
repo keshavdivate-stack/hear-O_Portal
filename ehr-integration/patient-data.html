@@ -1263,10 +1263,6 @@
             <input type="text" name="amount" placeholder="e.g. 40 mg" />
           </div>
           <div class="form-field">
-            <label>Effective Date &amp; Time</label>
-            <input type="datetime-local" name="effectiveDateTime" />
-          </div>
-          <div class="form-field">
             <label>Dose</label>
             <input type="text" name="dose" placeholder="e.g. 1 tablet" />
           </div>
@@ -1290,6 +1286,10 @@
             </div>
           </div>
           <div class="form-field">
+            <label>Effective Date</label>
+            <input type="date" name="effectiveDateTime" />
+          </div>
+          <div class="form-field">
             <label>Route</label>
             <div class="custom-select" data-name="route">
               <button type="button" class="custom-select-trigger">
@@ -1310,6 +1310,10 @@
               </div>
               <input type="hidden" name="route" />
             </div>
+          </div>
+          <div class="form-field full dose-times-field" hidden>
+            <label class="dose-times-label">Dose Times</label>
+            <div class="dose-times-list"></div>
           </div>
           <div class="form-field">
             <label>Directions</label>
@@ -1391,10 +1395,6 @@
             <input type="text" name="amount" placeholder="e.g. 40 mg" />
           </div>
           <div class="form-field">
-            <label>Effective Date &amp; Time</label>
-            <input type="datetime-local" name="effectiveDateTime" />
-          </div>
-          <div class="form-field">
             <label>Dose</label>
             <input type="text" name="dose" placeholder="e.g. 1 tablet" />
           </div>
@@ -1418,6 +1418,10 @@
             </div>
           </div>
           <div class="form-field">
+            <label>Effective Date</label>
+            <input type="date" name="effectiveDateTime" />
+          </div>
+          <div class="form-field">
             <label>Route</label>
             <div class="custom-select" data-name="route">
               <button type="button" class="custom-select-trigger">
@@ -1438,6 +1442,10 @@
               </div>
               <input type="hidden" name="route" />
             </div>
+          </div>
+          <div class="form-field full dose-times-field" hidden>
+            <label class="dose-times-label">Dose Times</label>
+            <div class="dose-times-list"></div>
           </div>
           <div class="form-field">
             <label>Directions</label>
@@ -1729,6 +1737,7 @@
 <script src="js/topbar.js"></script>
 <script src="js/table-scroll.js"></script>
 <script src="js/patient-data.js"></script>
+<script src="js/med-dose-times.js"></script>
 <script src="js/chart-pan.js"></script>
 <script src="js/modal-close.js"></script>
 </body>

@@ -1697,6 +1697,7 @@ function medInfoPopover(m, mi) {
       ${medInfoRow("Amount", m.amount)}
       ${medInfoRow("Effective Date &amp; Time", medInfoDateTime(m.effectiveDateTime))}
       ${medInfoRow("Dose", m.dose)}
+      ${medInfoRow("Dose Times", fmtDoseTimes(m))}
       ${medInfoRow("Route", m.route)}
       ${medInfoRow("Sig / Directions", m.sig)}
       ${medInfoRow("Status Reason", m.statusReason)}
@@ -2480,7 +2481,8 @@ wireAddModal("addMedOverlay", "addMedForm", "cancelAddMed", "openAddMedBtn", (fd
     ehrStatus,
     doseForm: fd.get("doseForm"),
     amount: fd.get("amount"),
-    effectiveDateTime: fd.get("effectiveDateTime"),
+    effectiveDateTime: medEffective(fd),
+    doseTimes: fd.getAll("doseTime"),
     route: fd.get("route"),
     sig: fd.get("sig"),
     drugCodeType: fd.get("drugCodeType"),
@@ -2514,7 +2516,7 @@ function openEditMedModal(id) {
 
   editMedForm.name.value = m.name || "";
   editMedForm.amount.value = m.amount || "";
-  editMedForm.effectiveDateTime.value = m.effectiveDateTime || "";
+  editMedForm.effectiveDateTime.value = (m.effectiveDateTime || "").slice(0, 10);
   editMedForm.dose.value = m.dose || "";
   editMedForm.sig.value = m.sig || "";
 
@@ -2527,6 +2529,7 @@ function openEditMedModal(id) {
 
   const normalizedFreq = FREQ_NORMALIZE[(m.freq || "").trim().toLowerCase()] || "";
   setCustomSelectValue(editMedForm.querySelector('.custom-select[data-name="frequency"]'), normalizedFreq, { silent: true });
+  setDoseTimes(editMedForm, normalizedFreq, m.doseTimes || [(m.effectiveDateTime || "").slice(11, 16)]);
 
   editMedOverlay.classList.add("open");
 }
@@ -2557,7 +2560,8 @@ editMedForm.addEventListener("submit", (e) => {
   m.doseForm = fd.get("doseForm");
   m.cls = fd.get("doseForm") || m.cls;
   m.amount = fd.get("amount");
-  m.effectiveDateTime = fd.get("effectiveDateTime");
+  m.effectiveDateTime = medEffective(fd);
+  m.doseTimes = fd.getAll("doseTime");
   m.dose = fd.get("dose");
   m.freq = fd.get("frequency") || m.freq;
   m.route = fd.get("route");

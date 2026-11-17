@@ -4999,6 +4999,11 @@ label.checkbox-field {
 .required-star { color: var(--maroon); margin-left: 2px; }
 
 .form-field.full { grid-column: 1 / -1; }
+/* Add / Edit Medication: one time input per dose, count follows Frequency */
+.dose-times-field[hidden] { display: none; }
+.dose-times-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; }
+.form-field .dose-time-item { display: flex; flex-direction: column; gap: 6px; margin: 0; }
+.dose-time-name { font-size: 13px; font-weight: 500; color: var(--text-secondary, #565454); }
 
 .time-pair { display: flex; align-items: center; gap: 6px; }
 
