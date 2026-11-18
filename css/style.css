@@ -8431,8 +8431,23 @@ body.patient-discontinued #chatOpenBtn {
 .proto-popover-sub { margin: 0 8px 6px; font-size: 12px; color: var(--gray-text); }
 
 /* Commercial organisation: medications are patient-added and view only */
-.med-commercial-note { display: none; font-size: 13px; color: var(--gray-text); }
-html[data-org-type="Commercial"] .med-commercial-note { display: inline; }
+.med-commercial-note { display: none; flex: 1 0 100%; align-items: center; gap: 8px; margin: 0; padding: 10px 14px; border-radius: 8px; background: var(--blue-light); font-size: 13px; color: #23272E; }
+.med-commercial-note svg { flex-shrink: 0; color: var(--blue-text); }
+html[data-org-type="Commercial"] .med-commercial-note { display: flex; }
+
+/* Commercial: one filter, by medication (js/med-commercial.js); no Active/Past filter */
+.med-name-filter { display: none; }
+html[data-org-type="Commercial"] .med-name-filter { display: block; }
+html[data-org-type="Commercial"] #medStatusFilter { display: none; }
+.med-name-filter-trigger { display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border: 1px solid var(--gray-border); border-radius: 10px; background: #fff; font-family: inherit; font-size: 14px; color: #55504D; cursor: pointer; white-space: nowrap; }
+.med-name-filter-trigger:hover { border-color: #C9CFD6; }
+.med-name-filter.open .med-name-filter-trigger { border-color: var(--blue); }
+.med-name-filter .med-name-filter-menu { left: auto; right: 0; width: 240px; max-height: 320px; }
+.med-name-filter-head { display: flex; align-items: center; justify-content: space-between; padding: 6px 11px 8px; font-size: 11.5px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--gray-text); }
+.med-name-filter-clear { padding: 0; border: none; background: none; font-family: inherit; font-size: 12.5px; font-weight: 700; text-transform: none; letter-spacing: 0; color: var(--blue-text); cursor: pointer; }
+.med-name-filter-clear:disabled { color: #AEB4BC; cursor: default; }
+.med-name-filter .ehr-multiselect-option:focus-visible { outline: 2px solid var(--blue); outline-offset: -2px; }
+.med-removed-badge { display: inline-flex; padding: 5px 10px; border-radius: 6px; background: #F0F1F3; font-size: 12px; font-weight: 600; color: #4B5563; white-space: nowrap; }
 html[data-org-type="Commercial"] .med-source-row .unit-toggle,
 html[data-org-type="Commercial"] #openAddMedBtn,
 html[data-org-type="Commercial"] .med-block .btn-edit { display: none; }

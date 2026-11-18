@@ -930,11 +930,16 @@ let medStatusFilter = "all";
    app, view only (see the prototype control in js/topbar.js). */
 function orgMeds() {
   const commercial = typeof isCommercialOrg === "function" && isCommercialOrg();
-  return commercial ? medications.filter((m) => m.source === "Patient") : medications;
+  // js/med-commercial.js supplies the patient-added list (and loads after this script).
+  return commercial ? window.COMMERCIAL_MEDS || [] : medications;
 }
 
 function filteredMeds() {
+  const commercial = typeof isCommercialOrg === "function" && isCommercialOrg();
+  const byName = window.medNameFilter;
   return orgMeds().filter((m) => {
+    // Commercial has a single filter, by medication; the others filter by status.
+    if (commercial) return !byName || !byName.size || byName.has(m.name);
     if (medStatusFilter !== "all" && m.status !== medStatusFilter) return false;
     return true;
   });
@@ -1051,6 +1056,7 @@ function renderMeds() {
             </div>
           </div>
           <div class="med-block-side">
+            ${m.removedByPatient ? `<span class="med-removed-badge" title="Removed in the app on ${m.removedByPatient}">Removed by patient</span>` : ""}
             <span class="source-badge ${m.srcClass}">${m.source}</span>
             <button class="btn-edit" data-med-id="${m.id}">Edit</button>
           </div>

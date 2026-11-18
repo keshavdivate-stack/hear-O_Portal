@@ -318,9 +318,10 @@
     ehrMedWrap.hidden = !isEhr;
     syncHead();
   }
-  const commercialNote = document.createElement("span");
+  const commercialNote = document.createElement("p");
   commercialNote.className = "med-commercial-note";
-  commercialNote.textContent = "Medications added by the patient in the app. View only.";
+  commercialNote.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><path d="M12 11v5.5M12 7.6v.2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    The medication information in this area was entered by the patient. The clinic has not verified it.`;
   sourceRow.prepend(commercialNote);
   document.addEventListener("orgtypechange", () => {
     if (window.isCommercialOrg && isCommercialOrg() && medSource !== "manual") {
