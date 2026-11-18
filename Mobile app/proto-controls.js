@@ -20,6 +20,7 @@
     ".proto-ctl-seg button{flex:1;min-width:92px;height:34px;padding:0 12px;border:none;border-radius:8px;background:transparent;" +
     "font-family:inherit;font-size:14px;font-weight:600;color:#3D3B3B;cursor:pointer;}" +
     ".proto-ctl-seg button[aria-checked=true]{background:#186DCE;color:#fff;}" +
+    ".proto-ctl-reset{display:block;width:100%;margin-top:10px;padding:0;border:none;background:none;font-family:inherit;font-size:12px;font-weight:600;color:#186DCE;text-align:left;cursor:pointer;}" +
     "@media (max-width:600px){.proto-ctl{display:none;}}";
 
   function mount() {
@@ -36,8 +37,14 @@
       VERSIONS.map(function (v) {
         return '<button type="button" role="radio" data-version="' + v[0] + '" aria-checked="' + (v[0] === current()) + '">' + v[1] + "</button>";
       }).join("") +
-      "</div>";
+      "</div>" +
+      "<button type=\"button\" class=\"proto-ctl-reset\" data-reset-meds>Reset My Meds to sample data</button>";
     box.addEventListener("click", function (e) {
+      if (e.target.closest("[data-reset-meds]")) {
+        try { localStorage.removeItem("hearo_my_meds_v1"); } catch (err) {}
+        location.reload();
+        return;
+      }
       var b = e.target.closest("[data-version]");
       if (!b || b.dataset.version === current()) return;
       try { localStorage.setItem(KEY, b.dataset.version); } catch (err) {}

@@ -9,7 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/Mobile%20app/style.css?v=31">
 <script src="/Mobile%20app/font-scale.js?v=29"></script>
-<script src="/Mobile%20app/proto-controls.js?v=1" defer></script>
+<script src="/Mobile%20app/proto-controls.js?v=2" defer></script>
 </head>
 <body>
 
@@ -40,18 +40,13 @@
   </div>
 
 <script>
-  // Add Medication passes what was saved (?name=&times=&food=&form=&amt=). The title names the medication,
-  // and Done hands the same details to My Meds so it shows up in today's list.
+  // Add Medication has already saved the medication to My Meds (my-meds-store.js);
+  // the title names it and Done goes back to the list, where it now shows.
   const q = new URLSearchParams(window.location.search);
   const addedName = q.get("name");
   if (addedName) document.getElementById("successTitle").textContent = `${addedName} was added to your medications`;
   document.getElementById("doneBtn").addEventListener("click", () => {
-    const next = new URLSearchParams({ tab: "mine" });
-    if (addedName) {
-      next.set("added", addedName);
-      ["times", "food", "form", "amt"].forEach((k) => q.get(k) && next.set(k, q.get(k)));
-    }
-    window.location.href = `/Mobile%20app/medications.html?${next}`;
+    window.location.href = "/Mobile%20app/medications.html?tab=mine";
   });
 </script>
 </body>

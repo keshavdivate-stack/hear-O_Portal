@@ -9,7 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/Mobile%20app/style.css?v=36">
 <script src="/Mobile%20app/font-scale.js?v=29"></script>
-<script src="/Mobile%20app/proto-controls.js?v=1" defer></script>
+<script src="/Mobile%20app/proto-controls.js?v=2" defer></script>
 <style>
   /* Add / Edit Medication -- one question per screen (client flow):
      name (typed) -> form -> strength (typed) -> amount -> how often [-> days]
@@ -143,13 +143,9 @@
     chevron: `<svg width="11" height="19" viewBox="0 0 11 19" fill="none"><path d="M1.5 1.5L9 9.5L1.5 17.5" stroke="#A9A8A8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
   };
 
-  /* Patient-added medications that can be edited (?edit=<slug>), keyed by the
-     same slug as medications.html / medication-details.html. */
-  const MY_MEDS = {
-    "vitamin-d3": { name: "Vitamin D3", form: "pill", strength: "1000 IU", amt: 1, freq: "daily", days: [], start: "2026-07-01", count: 1, more: false, times: ["08:00"], end: "", food: "after" },
-    calcium: { name: "Calcium", form: "pill", strength: "500 mg", amt: 1, freq: "daily", days: [], start: "2026-07-01", count: 1, more: false, times: ["21:00"], end: "", food: "after" },
-    vitamin: { name: "Vitamin", form: "pill", strength: "", amt: 1, freq: "daily", days: [], start: "2026-07-01", count: 1, more: false, times: ["21:00"], end: "", food: "after" },
-  };
+  /* Patient-added medications that can be edited (?edit=<slug>): the shared
+     My Meds store (my-meds-store.js), keyed by the same slug as the list and details. */
+  const MY_MEDS = MyMeds.all();
 
   /* ---------- helpers ---------- */
   const params = new URLSearchParams(window.location.search);
@@ -323,10 +319,18 @@
 
   function save() {
     w.name = w.name.trim();
-    if (w.edit) { window.location.href = `/Mobile%20app/medication-details.html?med=${editKey}&saved=1`; return; }
-    window.location.href = params.get("outcome") === "fail"
-      ? "/Mobile%20app/medication-add-failed.html"
-      : `/Mobile%20app/medication-add-success.html?${new URLSearchParams({ name: w.name, times: w.times.join(","), food: w.food || "", form: w.form, amt: w.amt })}`;
+    if (params.get("outcome") === "fail") { window.location.href = "/Mobile%20app/medication-add-failed.html"; return; }
+    const rec = {
+      name: w.name, form: w.form, strength: w.strength, amt: w.amt, freq: w.freq, days: w.freq === "days" ? w.days.slice() : [],
+      start: w.start, count: w.count, more: w.more, times: w.times.slice(), end: w.durMode === "until" ? w.end : "", food: w.food,
+    };
+    if (w.edit) {
+      MyMeds.update(editKey, rec);
+      window.location.href = `/Mobile%20app/medication-details.html?med=${editKey}&saved=1`;
+      return;
+    }
+    const slug = MyMeds.add(rec);
+    window.location.href = `/Mobile%20app/medication-add-success.html?${new URLSearchParams({ name: w.name, med: slug })}`;
   }
 
   // Start / end date edits update Next and the end-date check without re-rendering

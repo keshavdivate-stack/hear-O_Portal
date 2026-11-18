@@ -9,7 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/Mobile%20app/style.css?v=36">
 <script src="/Mobile%20app/font-scale.js?v=29"></script>
-<script src="/Mobile%20app/proto-controls.js?v=1" defer></script>
+<script src="/Mobile%20app/proto-controls.js?v=2" defer></script>
 <style>
   /* Medications list -- matches the client-approved My Medication screens. */
   .phone-frame { background: #F0F1F1; }
@@ -111,6 +111,7 @@
   // list never show the food tag even if `food` is set.
   const FOOD_APPLICABLE_FORMS = ["Tablet", "Capsule", "Liquid", "Drops"];
   const UNIT_LABEL = { Tablet: "pill", Capsule: "capsule", Drops: "drop", Cream: "application", Liquid: "mL", Inhaler: "puff", Injection: "dose", Patch: "patch" };
+  const UNIT_PLURAL = { pill: "pills", capsule: "capsules", drop: "drops", application: "applications", puff: "puffs", dose: "doses", patch: "patches", unit: "units" };
   const ACTION_VERB = { Cream: "Apply", Patch: "Apply", Injection: "Administer" };
 
   // Fixed "today" anchor, matching the mock date the medication-details
@@ -152,16 +153,13 @@
       showAddFab: true,
       showMarkAll: false,
       emptyMessage: `No medications yet. Tap + to track one you take on your own.`,
-      doses: [
-        { id: 1, med: "vitamin-d3", name: "Vitamin D3", form: "Tablet", time: "8:00 AM", sortKey: 480, food: "after" },
-        { id: 2, med: "calcium", name: "Calcium", form: "Tablet", time: "9:00 PM", sortKey: 1260, food: "after" },
-        { id: 3, med: "vitamin", name: "Vitamin", form: "Tablet", time: "9:00 PM", sortKey: 1260, food: "after" },
-      ],
+      // Added, edited and removed in the app -- the shared My Meds store (my-meds-store.js).
+      doses: MyMeds.doses(),
       selectedDate: startOfDay(TODAY),
       dayStatus: {
         [dateKey(TODAY)]: {},
-        [dateKey(addDays(TODAY, -1))]: { 1: "taken", 2: "taken", 3: "taken" },
-        [dateKey(addDays(TODAY, -2))]: { 1: "skipped", 2: "taken", 3: "taken" },
+        [dateKey(addDays(TODAY, -1))]: { 10: "taken", 20: "taken", 30: "taken" },
+        [dateKey(addDays(TODAY, -2))]: { 10: "skipped", 20: "taken", 30: "taken" },
       },
     },
   };
@@ -175,36 +173,16 @@
   let activeTab = PATIENT_MEDS_ONLY || pageParams.get("tab") === "mine" ? "mine" : "clinic";
   if (PATIENT_MEDS_ONLY) document.getElementById("medTabs").hidden = true;
 
-  // A medication saved in Add Medication comes back as ?added=<name>&times=...:
-  // it joins My Meds for today (the success screen, medication-add-success.html, comes first).
-  const addedName = pageParams.get("added");
-  if (addedName) {
-    const FORM_LABEL = { pill: "Tablet", liquid: "Liquid", drops: "Drops", inhaler: "Inhaler", injection: "Injection", cream: "Cream", patch: "Patch" };
-    const times = (pageParams.get("times") || "08:00").split(",").filter(Boolean);
-    times.forEach((t, i) => {
-      const [h, mi] = t.split(":").map(Number);
-      TABS.mine.doses.push({
-        id: 100 + i, med: "new", name: addedName, form: FORM_LABEL[pageParams.get("form")] || "Tablet",
-        time: `${h % 12 || 12}:${String(mi).padStart(2, "0")} ${h < 12 ? "AM" : "PM"}`, sortKey: h * 60 + mi,
-        food: pageParams.get("food") || undefined,
-      });
-    });
-    TABS.mine.doses.sort((a, b) => a.sortKey - b.sortKey);
-  }
-
-  // A medication removed on its details screen comes back as ?removed=<slug>.
-  const removedKey = pageParams.get("removed");
-  if (removedKey) {
-    const gone = TABS.mine.doses.find((d) => d.med === removedKey);
-    TABS.mine.doses = TABS.mine.doses.filter((d) => d.med !== removedKey);
-    if (gone) {
-      const toast = document.createElement("div");
-      toast.className = "mx-toast";
-      toast.setAttribute("role", "status");
-      toast.textContent = `${gone.name} removed`;
-      document.querySelector(".phone-frame").appendChild(toast);
-      setTimeout(() => toast.remove(), 2500);
-    }
+  // Removing a medication on its details screen comes back as ?removed=<name> for a confirmation toast.
+  const removedName = pageParams.get("removed");
+  if (removedName) {
+    const toast = document.createElement("div");
+    toast.className = "mx-toast";
+    toast.setAttribute("role", "status");
+    toast.textContent = `${removedName} removed`;
+    document.querySelector(".phone-frame").appendChild(toast);
+    setTimeout(() => toast.remove(), 2500);
+    history.replaceState(null, "", `${location.pathname}?tab=mine`);
   }
 
   const statusFor = (tab, id) => (tab.dayStatus[dateKey(tab.selectedDate)] || {})[id];
@@ -266,7 +244,7 @@
               ${chevron}
             </div>
             <div class="mx-dose-sub">
-              <span>${verb} 1 ${unit}</span>
+              <span>${verb} ${dose.amt || 1} ${(dose.amt || 1) === 1 ? unit : UNIT_PLURAL[unit] || unit}</span>
               ${showFood ? `<span class="mx-food-tag">${foodIcon} ${FOOD_LABEL[dose.food]}</span>` : ""}
             </div>
             ${!showFood && dose.instruction ? `<div class="mx-food-tag mx-instruction-tag">${instructionIcon} ${dose.instruction}</div>` : ""}

@@ -9,7 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/Mobile%20app/style.css?v=36">
 <script src="/Mobile%20app/font-scale.js?v=29"></script>
-<script src="/Mobile%20app/proto-controls.js?v=1" defer></script>
+<script src="/Mobile%20app/proto-controls.js?v=2" defer></script>
 <style>
   /* Medication details -- matches the client-approved My Medication screens:
      a white page, a bordered summary card of icon + label/value rows, a
@@ -163,21 +163,6 @@
       description: "A mild steroid cream used to reduce skin inflammation and itching.",
       source: "clinic", schedule: [{ time: "8:00 PM" }],
     },
-    "vitamin-d3": {
-      name: "Vitamin D3", form: "Tablet", whenToTake: "Morning", food: "after", startDate: "Jul 1, 2026", endDate: null,
-      description: "Supplement to support bone health.",
-      source: "mine", schedule: [{ time: "8:00 AM", food: "after" }],
-    },
-    calcium: {
-      name: "Calcium", form: "Tablet", whenToTake: "Evening", food: "after", startDate: "Jul 1, 2026", endDate: null,
-      description: "Supplement to support bone health.",
-      source: "mine", schedule: [{ time: "9:00 PM", food: "after" }],
-    },
-    vitamin: {
-      name: "Vitamin", form: "Tablet", whenToTake: "Evening", food: "after", startDate: "Jul 1, 2026", endDate: null,
-      description: "Daily multivitamin.",
-      source: "mine", schedule: [{ time: "9:00 PM", food: "after" }],
-    },
   };
 
   // History = patient activity: Taken / Skipped / Not Taken, with date & time.
@@ -236,6 +221,25 @@
 
   const params = new URLSearchParams(window.location.search);
   const medKey = params.get("med");
+
+  // Patient-added medications come from the shared My Meds store (my-meds-store.js),
+  // so what was entered (or edited) in Add Medication is what shows here.
+  const UNITS = { pill: ["tablet", "tablets"], liquid: ["mL", "mL"], drops: ["drop", "drops"], inhaler: ["puff", "puffs"], injection: ["injection", "injections"], cream: ["application", "applications"], patch: ["patch", "patches"], other: ["unit", "units"] };
+  const partOfDay = (hhmm) => { const h = Number(hhmm.split(":")[0]); return h < 5 ? "Night" : h < 12 ? "Morning" : h < 17 ? "Afternoon" : h < 21 ? "Evening" : "Bedtime"; };
+  const fmtDay = (iso) => new Date(`${iso}T00:00`).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+  const mine = MyMeds.get(medKey);
+  if (mine) {
+    const u = UNITS[mine.form] || UNITS.other;
+    MED_INFO[medKey] = {
+      name: mine.name, form: MyMeds.FORM_LABEL[mine.form] || "Tablet", dosage: mine.strength,
+      take: `Take ${mine.amt} ${mine.amt === 1 ? u[0] : u[1]}`, howOften: MyMeds.howOften(mine), food: mine.food,
+      startDate: fmtDay(mine.start), endDate: mine.end ? fmtDay(mine.end) : null, source: "mine",
+      schedule: mine.times.map((t) => ({ time: MyMeds.fmtTime(t), part: partOfDay(t) })),
+    };
+  } else if (medKey && !MED_INFO[medKey]) {
+    // A removed medication (e.g. reached with Back after removing it) has nothing to show.
+    window.location.replace("/Mobile%20app/medications.html?tab=mine");
+  }
   const med = MED_INFO[medKey] || MED_INFO.spironolactone;
   const resolvedKey = MED_INFO[medKey] ? medKey : "spironolactone";
 
@@ -254,7 +258,7 @@
   const doseRow = `
     <div class="md-info-row">
       <span class="md-info-icon md-info-icon--violet">${doseIcon}</span>
-      <span class="md-info-text"><span class="md-info-label">Dose</span><span class="md-info-value">${med.dosage ? `${med.dosage} &middot; ` : ""}Take 1 pill</span></span>
+      <span class="md-info-text"><span class="md-info-label">Dose</span><span class="md-info-value">${med.dosage ? `${med.dosage} &middot; ` : ""}${med.take || "Take 1 pill"}</span></span>
     </div>`;
   const durationRow = `
     <div class="md-info-row">
@@ -271,7 +275,7 @@
     </div>
     <div class="md-info-row">
       <span class="md-info-icon md-info-icon--amber">${freqIcon}</span>
-      <span class="md-info-text"><span class="md-info-label">Dose times</span><span class="md-info-value">${med.schedule.map((d) => `${med.whenToTake} &middot; ${d.time}`).join("<br>")}</span></span>
+      <span class="md-info-text"><span class="md-info-label">Dose times</span><span class="md-info-value">${med.howOften}<br>${med.schedule.map((d) => `${d.part} &middot; ${d.time}`).join("<br>")}</span></span>
     </div>
     ${med.food ? `
     <div class="md-info-row">
@@ -332,14 +336,15 @@
   if (med.source === "mine") {
     document.getElementById("mineActions").hidden = false;
     const dialog = document.getElementById("removeDialog");
-    document.getElementById("removeText").textContent = `${med.name} will be removed from My Meds and you won't get reminders for it.`;
+    document.getElementById("removeText").textContent = `${med.name} will be removed from your medications and you won't get reminders for it.`;
     document.getElementById("editMedBtn").addEventListener("click", () => {
       window.location.href = `/Mobile%20app/add-medication.html?edit=${resolvedKey}`;
     });
     document.getElementById("removeMedBtn").addEventListener("click", () => { dialog.hidden = false; });
     document.getElementById("removeCancel").addEventListener("click", () => { dialog.hidden = true; });
     document.getElementById("removeConfirm").addEventListener("click", () => {
-      window.location.href = `/Mobile%20app/medications.html?tab=mine&removed=${resolvedKey}`;
+      MyMeds.remove(resolvedKey);
+      window.location.replace(`/Mobile%20app/medications.html?${new URLSearchParams({ tab: "mine", removed: med.name })}`);
     });
     if (params.get("saved")) {
       const toast = document.createElement("div");
