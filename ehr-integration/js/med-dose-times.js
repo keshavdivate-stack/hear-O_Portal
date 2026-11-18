@@ -81,8 +81,12 @@
     const daysField = form.querySelector(".med-days-field");
     daysField.hidden = howOften !== SPECIFIC;
     const days = form.querySelector('input[name="days"]').value.split(",").filter(Boolean);
-    daysField.querySelectorAll("[data-day]").forEach((b) => b.setAttribute("aria-pressed", String(days.includes(b.dataset.day))));
+    daysField.querySelectorAll('.med-days-option input').forEach((c) => { c.checked = days.includes(c.value); });
+    const value = daysField.querySelector(".med-days-trigger .custom-select-value");
+    value.textContent = days.length === 7 ? "Every day of the week" : days.length ? days.join(", ") : "Select days";
+    value.classList.toggle("placeholder", !days.length);
     if (days.length) daysField.querySelector('[data-error="days"]').hidden = true;
+    if (daysField.hidden) setDaysOpen(form, false);
 
     const mode = form.querySelector('input[name="endMode"]').value;
     form.querySelectorAll("[data-end]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.end === mode)));
@@ -90,6 +94,12 @@
     endInput.hidden = mode !== "date";
     endInput.required = mode === "date";
     checkEnd(form, false);
+  }
+
+  function setDaysOpen(form, open) {
+    const wrap = form.querySelector(".med-days-select");
+    wrap.classList.toggle("open", open);
+    wrap.querySelector(".med-days-trigger").setAttribute("aria-expanded", String(open));
   }
 
   // End date must not be before the effective date. Returns true when valid.
@@ -139,14 +149,17 @@
     if (!form || !form.querySelector(".med-days-field")) return;
     form.querySelector('input[name="howOften"]').addEventListener("change", () => syncSchedule(form));
 
-    form.querySelector(".med-days-field").addEventListener("click", (e) => {
-      const b = e.target.closest("[data-day]");
-      if (!b) return;
-      const input = form.querySelector('input[name="days"]');
-      const days = new Set(input.value.split(",").filter(Boolean));
-      days.has(b.dataset.day) ? days.delete(b.dataset.day) : days.add(b.dataset.day);
-      input.value = DAY_ORDER.filter((d) => days.has(d)).join(",");
+    // Days: a dropdown of checkboxes; the trigger shows the picked days ("Mon, Wed, Fri").
+    const daysWrap = form.querySelector(".med-days-select");
+    daysWrap.querySelector(".med-days-trigger").addEventListener("click", () => setDaysOpen(form, !daysWrap.classList.contains("open")));
+    daysWrap.querySelector(".med-days-menu").addEventListener("change", () => {
+      const picked = [...daysWrap.querySelectorAll(".med-days-option input:checked")].map((c) => c.value);
+      form.querySelector('input[name="days"]').value = DAY_ORDER.filter((d) => picked.includes(d)).join(",");
       syncSchedule(form);
+    });
+    document.addEventListener("click", (e) => { if (!daysWrap.contains(e.target)) setDaysOpen(form, false); });
+    daysWrap.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && daysWrap.classList.contains("open")) { e.stopPropagation(); setDaysOpen(form, false); daysWrap.querySelector(".med-days-trigger").focus(); }
     });
 
     form.querySelector(".med-end-field").addEventListener("click", (e) => {
