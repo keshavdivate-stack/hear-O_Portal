@@ -199,3 +199,8 @@ document.querySelectorAll(".bo-popover-item[data-val]").forEach((item) => {
     });
   }
 })();
+
+/* ---------------- Today's date next to the dashboard title (Summary, Screening, System Health) ---------------- */
+document.querySelectorAll("[data-today]").forEach((el) => {
+  el.textContent = new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+});
