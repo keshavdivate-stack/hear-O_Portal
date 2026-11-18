@@ -5016,7 +5016,10 @@ label.checkbox-field {
 .med-chip:hover { border-color: #C9CFD6; }
 .med-chip[aria-pressed="true"] { border-color: var(--blue); background: var(--blue-light); color: var(--blue-text, #0E5C99); font-weight: 600; }
 .med-chip:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
-.med-end-field .med-end-date { margin-top: 10px; }
+/* End Date: the chips and the picked date sit on one line */
+.form-field.med-end-field { grid-column: span 2; display: grid; grid-template-columns: auto minmax(0, 220px); column-gap: 12px; align-items: center; justify-content: start; }
+.med-end-field > label, .med-end-field > .med-field-error { grid-column: 1 / -1; }
+.med-end-field .med-end-date { margin-top: 0; }
 .med-field-error { margin: 6px 0 0; font-size: 12.5px; color: var(--maroon, #9F1C3B); }
 
 .time-pair { display: flex; align-items: center; gap: 6px; }
