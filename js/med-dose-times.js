@@ -89,10 +89,11 @@
     if (daysField.hidden) setDaysOpen(form, false);
 
     const mode = form.querySelector('input[name="endMode"]').value;
-    form.querySelectorAll("[data-end]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.end === mode)));
+    form.querySelector(".med-ongoing-check").checked = mode !== "date";
     const endInput = form.querySelector('input[name="endDate"]');
-    endInput.hidden = mode !== "date";
+    endInput.disabled = mode !== "date";
     endInput.required = mode === "date";
+    if (mode !== "date") endInput.value = "";
     checkEnd(form, false);
   }
 
@@ -162,14 +163,16 @@
       if (e.key === "Escape" && daysWrap.classList.contains("open")) { e.stopPropagation(); setDaysOpen(form, false); daysWrap.querySelector(".med-days-trigger").focus(); }
     });
 
-    form.querySelector(".med-end-field").addEventListener("click", (e) => {
-      const b = e.target.closest("[data-end]");
-      if (!b) return;
-      form.querySelector('input[name="endMode"]').value = b.dataset.end;
-      const endInput = form.querySelector('input[name="endDate"]');
-      if (b.dataset.end === "date" && !endInput.value) endInput.value = plus30(form.querySelector('input[name="effectiveDateTime"]').value);
+    // End date: "Ongoing" (default) disables the date; unticking it opens the date, pre-filled 30 days on.
+    form.querySelector(".med-ongoing-check").addEventListener("change", (e) => {
+      const ongoing = e.target.checked;
+      form.querySelector('input[name="endMode"]').value = ongoing ? "ongoing" : "date";
       syncSchedule(form);
-      if (b.dataset.end === "date") endInput.focus();
+      const endInput = form.querySelector('input[name="endDate"]');
+      if (!ongoing) {
+        if (!endInput.value) endInput.value = plus30(form.querySelector('input[name="effectiveDateTime"]').value);
+        endInput.focus();
+      }
     });
     form.querySelector('input[name="endDate"]').addEventListener("input", () => checkEnd(form, true));
     form.querySelector('input[name="effectiveDateTime"]').addEventListener("input", () => checkEnd(form, true));

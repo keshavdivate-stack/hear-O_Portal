@@ -5019,10 +5019,11 @@ label.checkbox-field {
 /* Schedule groups always start a new row (Effective Date + End Date; Frequency + its dose times),
    so the layout does not shift when the Days field shows or hides. */
 .form-grid > .form-field.med-row-start { grid-column-start: 1; }
-/* End Date: the chips and the picked date sit on one line */
-.form-field.med-end-field { grid-column: span 2; display: grid; grid-template-columns: auto minmax(0, 220px); column-gap: 12px; align-items: center; justify-content: start; }
-.med-end-field > label, .med-end-field > .med-field-error { grid-column: 1 / -1; }
-.med-end-field .med-end-date { margin-top: 0; }
+/* End Date: one date field with an "Ongoing" checkbox in its label row */
+.med-end-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.form-field .med-ongoing { display: inline-flex; align-items: center; gap: 6px; margin-bottom: 7px; font-size: 13px; font-weight: 500; color: #363B42; cursor: pointer; }
+.form-field .med-ongoing input { -webkit-appearance: checkbox; appearance: auto; flex-shrink: 0; width: 15px; height: 15px; margin: 0; padding: 0; border: none; background: none; box-shadow: none; accent-color: var(--blue); cursor: pointer; }
+.form-field .med-end-date:disabled { background: #F3F6F9; color: #8A939D; cursor: not-allowed; }
 /* How Often > specific days: Days dropdown with checkboxes */
 .med-days-select { position: relative; }
 .med-days-trigger .custom-select-value { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

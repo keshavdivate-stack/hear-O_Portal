@@ -1088,13 +1088,12 @@
             <input type="date" name="effectiveDateTime" />
           </div>
           <div class="form-field med-end-field">
-            <label>End Date</label>
-            <div class="med-chips" role="radiogroup" aria-label="End date">
-              <button type="button" class="med-chip" data-end="ongoing" role="radio" aria-pressed="true">Ongoing</button>
-              <button type="button" class="med-chip" data-end="date" role="radio" aria-pressed="false">Pick a date</button>
+            <div class="med-end-head">
+              <label>End Date</label>
+              <label class="med-ongoing"><input type="checkbox" class="med-ongoing-check" checked /> Ongoing</label>
             </div>
             <input type="hidden" name="endMode" value="ongoing" />
-            <input type="date" name="endDate" class="med-end-date" aria-label="End date" hidden />
+            <input type="date" name="endDate" class="med-end-date" aria-label="End date" disabled />
             <p class="med-field-error" data-error="end" hidden>End date can't be before the effective date.</p>
           </div>
           <div class="form-field med-row-start">
@@ -1265,13 +1264,12 @@
             <input type="date" name="effectiveDateTime" />
           </div>
           <div class="form-field med-end-field">
-            <label>End Date</label>
-            <div class="med-chips" role="radiogroup" aria-label="End date">
-              <button type="button" class="med-chip" data-end="ongoing" role="radio" aria-pressed="true">Ongoing</button>
-              <button type="button" class="med-chip" data-end="date" role="radio" aria-pressed="false">Pick a date</button>
+            <div class="med-end-head">
+              <label>End Date</label>
+              <label class="med-ongoing"><input type="checkbox" class="med-ongoing-check" checked /> Ongoing</label>
             </div>
             <input type="hidden" name="endMode" value="ongoing" />
-            <input type="date" name="endDate" class="med-end-date" aria-label="End date" hidden />
+            <input type="date" name="endDate" class="med-end-date" aria-label="End date" disabled />
             <p class="med-field-error" data-error="end" hidden>End date can't be before the effective date.</p>
           </div>
           <div class="form-field med-row-start">
@@ -1480,7 +1478,7 @@
             <label>New Dose<span class="required-star">*</span></label>
             <div class="unit-input"><input type="number" name="newDose" min="0" step="0.5" placeholder="e.g. 80" required /><span>mg</span></div>
           </div>
-          <div class="form-field med-row-start">
+          <div class="form-field">
             <label>Frequency<span class="required-star">*</span></label>
             <div class="custom-select" data-name="frequency">
               <button type="button" class="custom-select-trigger">
@@ -1547,7 +1545,7 @@
 <script src="js/support-data.js"></script>
 <script src="js/topbar.js"></script>
 <script src="js/table-scroll.js"></script>
-<script src="js/med-dose-times.js?v=5"></script>
+<script src="js/med-dose-times.js?v=6"></script>
 <script src="js/patient-data.js"></script>
 <script src="js/med-commercial.js"></script>
 <script src="js/chart-pan.js"></script>
