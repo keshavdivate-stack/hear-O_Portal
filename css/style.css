@@ -5029,7 +5029,7 @@ label.checkbox-field {
 .med-days-select.open .med-days-menu { display: block; }
 .form-field .med-days-option { display: flex; align-items: center; gap: 10px; margin: 0; padding: 8px 10px; border-radius: 7px; font-size: 14px; font-weight: 500; color: #23272E; cursor: pointer; }
 .form-field .med-days-option:hover { background: var(--bg, #F4F6F8); }
-.med-days-option input { width: 16px; height: 16px; margin: 0; padding: 0; accent-color: var(--blue); cursor: pointer; }
+.form-field .med-days-option input { -webkit-appearance: checkbox; appearance: auto; flex-shrink: 0; width: 16px; height: 16px; margin: 0; padding: 0; border: none; border-radius: 3px; background: none; box-shadow: none; accent-color: var(--blue); cursor: pointer; }
 .med-field-error { margin: 6px 0 0; font-size: 12.5px; color: var(--maroon, #9F1C3B); }
 
 .time-pair { display: flex; align-items: center; gap: 6px; }
