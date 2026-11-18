@@ -67,6 +67,7 @@
   .md-more-btn[hidden], .md-sheet-overlay[hidden] { display: none; }
   .md-more-btn:focus-visible, .md-sheet-item:focus-visible, .md-sheet-cancel:focus-visible { outline: 2px solid #186DCE; outline-offset: 2px; }
   .md-sheet-overlay { position: absolute; inset: 0; z-index: 55; display: flex; flex-direction: column; justify-content: flex-end; background: rgba(20, 24, 30, 0.5); }
+  .md-sheet:focus { outline: none; }
   .md-sheet { padding: 10px 16px 22px; border-radius: 24px 24px 0 0; background: #fff; }
   .md-sheet-grip { width: 40px; height: 4px; margin: 0 auto 10px; border-radius: 2px; background: #D5D5D5; }
   .md-sheet-title { margin: 0 4px 6px; font-size: calc(16px * var(--font-scale, 1)); font-weight: 500; color: #6B6969; }
@@ -126,7 +127,7 @@
     </div>
 
     <div class="md-sheet-overlay" id="actionSheet" hidden>
-      <div class="md-sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+      <div class="md-sheet" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
         <div class="md-sheet-grip" aria-hidden="true"></div>
         <p class="md-sheet-title" id="sheetTitle">Medication</p>
         <button type="button" class="md-sheet-item" id="editMedBtn">
@@ -373,7 +374,7 @@
     const setSheet = (open) => {
       sheet.hidden = !open;
       moreBtn.setAttribute("aria-expanded", String(open));
-      (open ? document.getElementById("editMedBtn") : moreBtn).focus();
+      (open ? sheet.querySelector(".md-sheet") : moreBtn).focus();
     };
     moreBtn.addEventListener("click", () => setSheet(true));
     document.getElementById("sheetCancel").addEventListener("click", () => setSheet(false));
