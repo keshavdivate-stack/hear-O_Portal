@@ -348,7 +348,7 @@ function countryForDial(dial) {
 
 function openUserDrawer(user = null) {
   editingUserId = user ? user.id : null;
-  userDrawerTitle.textContent = user ? "Edit User" : "Create User";
+  userDrawerTitle.textContent = user ? "Edit User" : "Add User";
 
   userForm.reset();
   userForm.querySelectorAll(".bo-field-error").forEach((el) => { el.hidden = true; });
