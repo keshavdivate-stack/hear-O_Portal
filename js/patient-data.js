@@ -1255,7 +1255,9 @@ function medInfoPopover(m, mi) {
       ${medInfoRow("Amount", m.amount)}
       ${medInfoRow("Effective Date &amp; Time", medInfoDateTime(m.effectiveDateTime))}
       ${medInfoRow("Dose", m.dose)}
+      ${medInfoRow("How Often", fmtHowOften(m))}
       ${medInfoRow("Dose Times", fmtDoseTimes(m))}
+      ${medInfoRow("End Date", fmtEndDate(m))}
       ${medInfoRow("Route", m.route)}
       ${medInfoRow("Sig / Directions", m.sig)}
       ${medInfoRow("Note", m.note)}
@@ -2044,6 +2046,7 @@ wireAddModal("addMedOverlay", "addMedForm", "cancelAddMed", "openAddMedBtn", (fd
     amount: fd.get("amount"),
     effectiveDateTime: medEffective(fd),
     doseTimes: fd.getAll("doseTime"),
+    ...medSchedule(fd),
     route: fd.get("route"),
     sig: fd.get("sig"),
     drugCodeType: fd.get("drugCodeType"),
@@ -2090,6 +2093,7 @@ function openEditMedModal(id) {
 
   const normalizedFreq = FREQ_NORMALIZE[(m.freq || "").trim().toLowerCase()] || "";
   setCustomSelectValue(editMedForm.querySelector('.custom-select[data-name="frequency"]'), normalizedFreq, { silent: true });
+  setMedSchedule(editMedForm, { howOften: m.howOften, days: m.days, endDate: m.endDate });
   setDoseTimes(editMedForm, normalizedFreq, m.doseTimes || [(m.effectiveDateTime || "").slice(11, 16)]);
 
   editMedOverlay.classList.add("open");
@@ -2123,6 +2127,7 @@ editMedForm.addEventListener("submit", (e) => {
   m.amount = fd.get("amount");
   m.effectiveDateTime = medEffective(fd);
   m.doseTimes = fd.getAll("doseTime");
+  Object.assign(m, medSchedule(fd));
   m.dose = fd.get("dose");
   m.freq = fd.get("frequency") || m.freq;
   m.route = fd.get("route");

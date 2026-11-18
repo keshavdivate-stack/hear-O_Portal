@@ -66,4 +66,111 @@
     form.addEventListener("reset", () => setTimeout(() => render(form, null), 0));
     render(form);
   });
+
+  /* ---------- How often (every day / every other day / specific days) and End date ---------- */
+  const SPECIFIC = "On specific days of the week";
+  const DAY_ORDER = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+  const plus30 = (iso) => {
+    const d = iso ? new Date(`${iso}T00:00`) : new Date();
+    d.setDate(d.getDate() + 30);
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  };
+
+  function syncSchedule(form) {
+    const howOften = form.querySelector('input[name="howOften"]').value;
+    const daysField = form.querySelector(".med-days-field");
+    daysField.hidden = howOften !== SPECIFIC;
+    const days = form.querySelector('input[name="days"]').value.split(",").filter(Boolean);
+    daysField.querySelectorAll("[data-day]").forEach((b) => b.setAttribute("aria-pressed", String(days.includes(b.dataset.day))));
+    if (days.length) daysField.querySelector('[data-error="days"]').hidden = true;
+
+    const mode = form.querySelector('input[name="endMode"]').value;
+    form.querySelectorAll("[data-end]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.end === mode)));
+    const endInput = form.querySelector('input[name="endDate"]');
+    endInput.hidden = mode !== "date";
+    endInput.required = mode === "date";
+    checkEnd(form, false);
+  }
+
+  // End date must not be before the effective date. Returns true when valid.
+  function checkEnd(form, show) {
+    const start = form.querySelector('input[name="effectiveDateTime"]').value;
+    const mode = form.querySelector('input[name="endMode"]').value;
+    const end = form.querySelector('input[name="endDate"]').value;
+    const bad = mode === "date" && !!end && !!start && end < start;
+    const err = form.querySelector('[data-error="end"]');
+    if (show || !bad) err.hidden = !bad;
+    return !bad;
+  }
+
+  window.setMedSchedule = function (form, s) {
+    if (typeof setCustomSelectValue === "function") {
+      setCustomSelectValue(form.querySelector('.custom-select[data-name="howOften"]'), s.howOften || "Every day", { silent: true });
+    }
+    form.querySelector('input[name="days"]').value = (s.days || []).join(",");
+    form.querySelector('input[name="endMode"]').value = s.endDate ? "date" : "ongoing";
+    form.querySelector('input[name="endDate"]').value = s.endDate || "";
+    syncSchedule(form);
+  };
+
+  // Values for the page scripts' save handlers.
+  window.medSchedule = function (fd) {
+    const howOften = fd.get("howOften") || "Every day";
+    return {
+      howOften,
+      days: howOften === SPECIFIC ? (fd.get("days") || "").split(",").filter(Boolean) : [],
+      endDate: fd.get("endMode") === "date" ? fd.get("endDate") || "" : "",
+    };
+  };
+
+  // Popover text: "Every day" / "Mon, Wed, Fri" and "Ongoing" / "Jan 30, 2027".
+  window.fmtHowOften = function (m) {
+    if (!m.howOften) return null;
+    return m.howOften === SPECIFIC && m.days && m.days.length ? m.days.join(", ") : m.howOften;
+  };
+  window.fmtEndDate = function (m) {
+    if (!m.howOften && !m.endDate) return null;
+    if (!m.endDate) return "Ongoing";
+    return new Date(`${m.endDate}T00:00`).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+  };
+
+  ["addMedForm", "editMedForm"].forEach((id) => {
+    const form = document.getElementById(id);
+    if (!form || !form.querySelector(".med-days-field")) return;
+    form.querySelector('input[name="howOften"]').addEventListener("change", () => syncSchedule(form));
+
+    form.querySelector(".med-days-field").addEventListener("click", (e) => {
+      const b = e.target.closest("[data-day]");
+      if (!b) return;
+      const input = form.querySelector('input[name="days"]');
+      const days = new Set(input.value.split(",").filter(Boolean));
+      days.has(b.dataset.day) ? days.delete(b.dataset.day) : days.add(b.dataset.day);
+      input.value = DAY_ORDER.filter((d) => days.has(d)).join(",");
+      syncSchedule(form);
+    });
+
+    form.querySelector(".med-end-field").addEventListener("click", (e) => {
+      const b = e.target.closest("[data-end]");
+      if (!b) return;
+      form.querySelector('input[name="endMode"]').value = b.dataset.end;
+      const endInput = form.querySelector('input[name="endDate"]');
+      if (b.dataset.end === "date" && !endInput.value) endInput.value = plus30(form.querySelector('input[name="effectiveDateTime"]').value);
+      syncSchedule(form);
+      if (b.dataset.end === "date") endInput.focus();
+    });
+    form.querySelector('input[name="endDate"]').addEventListener("input", () => checkEnd(form, true));
+    form.querySelector('input[name="effectiveDateTime"]').addEventListener("input", () => checkEnd(form, true));
+
+    // Runs before the page's own submit handler (capture), and stops it when the schedule is incomplete.
+    form.addEventListener("submit", (e) => {
+      const needDays = form.querySelector('input[name="howOften"]').value === SPECIFIC && !form.querySelector('input[name="days"]').value;
+      form.querySelector('[data-error="days"]').hidden = !needDays;
+      const endOk = checkEnd(form, true);
+      if (needDays || !endOk) { e.preventDefault(); e.stopImmediatePropagation(); }
+    }, true);
+
+    // A new Add form starts on "Every day" and "Ongoing" (Edit is filled by openEditMedModal).
+    if (id === "addMedForm") form.addEventListener("reset", () => setTimeout(() => window.setMedSchedule(form, {}), 0));
+    window.setMedSchedule(form, {});
+  });
 })();

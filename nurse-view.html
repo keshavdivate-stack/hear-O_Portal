@@ -952,6 +952,21 @@
             <input type="text" name="dose" placeholder="e.g. 1 tablet" />
           </div>
           <div class="form-field">
+            <label>How Often<span class="required-star">*</span></label>
+            <div class="custom-select" data-name="howOften">
+              <button type="button" class="custom-select-trigger">
+                <span class="custom-select-value placeholder">Select how often</span>
+                <svg class="custom-select-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="custom-select-menu">
+                <div class="custom-select-option" data-value="Every day">Every day<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Every other day">Every other day<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="On specific days of the week">On specific days of the week<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              </div>
+              <input type="hidden" name="howOften" required />
+            </div>
+          </div>
+          <div class="form-field">
             <label>Frequency<span class="required-star">*</span></label>
             <div class="custom-select" data-name="frequency">
               <button type="button" class="custom-select-trigger">
@@ -969,10 +984,6 @@
               </div>
               <input type="hidden" name="frequency" required />
             </div>
-          </div>
-          <div class="form-field">
-            <label>Effective Date</label>
-            <input type="date" name="effectiveDateTime" />
           </div>
           <div class="form-field">
             <label>Route</label>
@@ -996,9 +1007,31 @@
               <input type="hidden" name="route" />
             </div>
           </div>
+          <div class="form-field full med-days-field" hidden>
+            <label>Days of the Week<span class="required-star">*</span></label>
+            <div class="med-chips" role="group" aria-label="Days of the week">
+              <button type="button" class="med-chip" data-day="Mon" aria-pressed="false">Mon</button><button type="button" class="med-chip" data-day="Tue" aria-pressed="false">Tue</button><button type="button" class="med-chip" data-day="Wed" aria-pressed="false">Wed</button><button type="button" class="med-chip" data-day="Thu" aria-pressed="false">Thu</button><button type="button" class="med-chip" data-day="Fri" aria-pressed="false">Fri</button><button type="button" class="med-chip" data-day="Sat" aria-pressed="false">Sat</button><button type="button" class="med-chip" data-day="Sun" aria-pressed="false">Sun</button>
+            </div>
+            <input type="hidden" name="days" />
+            <p class="med-field-error" data-error="days" hidden>Choose at least one day.</p>
+          </div>
           <div class="form-field full dose-times-field" hidden>
             <label class="dose-times-label">Dose Times</label>
             <div class="dose-times-list"></div>
+          </div>
+          <div class="form-field">
+            <label>Effective Date</label>
+            <input type="date" name="effectiveDateTime" />
+          </div>
+          <div class="form-field med-end-field">
+            <label>End Date</label>
+            <div class="med-chips" role="radiogroup" aria-label="End date">
+              <button type="button" class="med-chip" data-end="ongoing" role="radio" aria-pressed="true">Ongoing</button>
+              <button type="button" class="med-chip" data-end="date" role="radio" aria-pressed="false">Pick a date</button>
+            </div>
+            <input type="hidden" name="endMode" value="ongoing" />
+            <input type="date" name="endDate" class="med-end-date" aria-label="End date" hidden />
+            <p class="med-field-error" data-error="end" hidden>End date can't be before the effective date.</p>
           </div>
           <div class="form-field">
             <label>Directions</label>
@@ -1084,6 +1117,21 @@
             <input type="text" name="dose" placeholder="e.g. 1 tablet" />
           </div>
           <div class="form-field">
+            <label>How Often<span class="required-star">*</span></label>
+            <div class="custom-select" data-name="howOften">
+              <button type="button" class="custom-select-trigger">
+                <span class="custom-select-value placeholder">Select how often</span>
+                <svg class="custom-select-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="custom-select-menu">
+                <div class="custom-select-option" data-value="Every day">Every day<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Every other day">Every other day<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="On specific days of the week">On specific days of the week<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              </div>
+              <input type="hidden" name="howOften" required />
+            </div>
+          </div>
+          <div class="form-field">
             <label>Frequency<span class="required-star">*</span></label>
             <div class="custom-select" data-name="frequency">
               <button type="button" class="custom-select-trigger">
@@ -1101,10 +1149,6 @@
               </div>
               <input type="hidden" name="frequency" required />
             </div>
-          </div>
-          <div class="form-field">
-            <label>Effective Date</label>
-            <input type="date" name="effectiveDateTime" />
           </div>
           <div class="form-field">
             <label>Route</label>
@@ -1128,9 +1172,31 @@
               <input type="hidden" name="route" />
             </div>
           </div>
+          <div class="form-field full med-days-field" hidden>
+            <label>Days of the Week<span class="required-star">*</span></label>
+            <div class="med-chips" role="group" aria-label="Days of the week">
+              <button type="button" class="med-chip" data-day="Mon" aria-pressed="false">Mon</button><button type="button" class="med-chip" data-day="Tue" aria-pressed="false">Tue</button><button type="button" class="med-chip" data-day="Wed" aria-pressed="false">Wed</button><button type="button" class="med-chip" data-day="Thu" aria-pressed="false">Thu</button><button type="button" class="med-chip" data-day="Fri" aria-pressed="false">Fri</button><button type="button" class="med-chip" data-day="Sat" aria-pressed="false">Sat</button><button type="button" class="med-chip" data-day="Sun" aria-pressed="false">Sun</button>
+            </div>
+            <input type="hidden" name="days" />
+            <p class="med-field-error" data-error="days" hidden>Choose at least one day.</p>
+          </div>
           <div class="form-field full dose-times-field" hidden>
             <label class="dose-times-label">Dose Times</label>
             <div class="dose-times-list"></div>
+          </div>
+          <div class="form-field">
+            <label>Effective Date</label>
+            <input type="date" name="effectiveDateTime" />
+          </div>
+          <div class="form-field med-end-field">
+            <label>End Date</label>
+            <div class="med-chips" role="radiogroup" aria-label="End date">
+              <button type="button" class="med-chip" data-end="ongoing" role="radio" aria-pressed="true">Ongoing</button>
+              <button type="button" class="med-chip" data-end="date" role="radio" aria-pressed="false">Pick a date</button>
+            </div>
+            <input type="hidden" name="endMode" value="ongoing" />
+            <input type="date" name="endDate" class="med-end-date" aria-label="End date" hidden />
+            <p class="med-field-error" data-error="end" hidden>End date can't be before the effective date.</p>
           </div>
           <div class="form-field">
             <label>Directions</label>
@@ -1270,7 +1336,7 @@
 <script src="js/support-data.js"></script>
 <script src="js/topbar.js"></script>
 <script src="js/table-scroll.js"></script>
-<script src="js/med-dose-times.js?v=3"></script>
+<script src="js/med-dose-times.js?v=4"></script>
 <script src="js/nurse-view.js"></script>
 <script src="js/med-commercial.js"></script>
 <script src="js/chart-pan.js"></script>
