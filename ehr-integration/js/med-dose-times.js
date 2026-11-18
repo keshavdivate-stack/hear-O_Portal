@@ -29,11 +29,15 @@
     const list = field.querySelector(".dose-times-list");
     if (!times) times = timesFor(freq, [...list.querySelectorAll("input")].map((i) => i.value));
     field.hidden = !times.length;
+    // One dose time sits in the same row as Frequency (one grid cell);
+    // two or more get their own full-width row right below it.
+    const many = times.length > 1;
+    field.classList.toggle("full", many);
     const label = field.querySelector(".dose-times-label");
-    label.textContent = freq === "Every X Hours" ? "First Dose Time" : times.length > 1 ? `Dose Times (${times.length} a day)` : "Dose Time";
+    label.textContent = freq === "Every X Hours" ? "First Dose Time" : many ? `Dose Times (${times.length} a day)` : "Dose Time";
     list.innerHTML = times.map((t, i) => `
       <label class="dose-time-item">
-        <span class="dose-time-name">${times.length > 1 ? `${ORDINAL[i]} dose` : "Time"}</span>
+        ${many ? `<span class="dose-time-name">${ORDINAL[i]} dose</span>` : ""}
         <input type="time" name="doseTime" value="${t}" required aria-label="${ORDINAL[i]} dose time" />
       </label>`).join("");
   }

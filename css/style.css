@@ -5016,9 +5016,6 @@ label.checkbox-field {
 .med-chip:hover { border-color: #C9CFD6; }
 .med-chip[aria-pressed="true"] { border-color: var(--blue); background: var(--blue-light); color: var(--blue-text, #0E5C99); font-weight: 600; }
 .med-chip:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
-/* Schedule groups always start a new row (Effective Date + End Date; Frequency + its dose times),
-   so the layout does not shift when the Days field shows or hides. */
-.form-grid > .form-field.med-row-start { grid-column-start: 1; }
 /* End Date: one date field with an "Ongoing" checkbox in its label row */
 .med-end-field { position: relative; }
 .form-field .med-ongoing { position: absolute; top: -2px; right: 0; display: inline-flex; align-items: center; gap: 6px; margin: 0; font-size: 13px; font-weight: 500; line-height: 1.4; color: #363B42; cursor: pointer; }
