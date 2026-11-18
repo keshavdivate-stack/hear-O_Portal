@@ -1034,14 +1034,14 @@ const medications = [
   },
   {
     hf: false, name: "Carvedilol", cls: "Beta blocker", freq: "Twice daily", dose: "6.25 mg", schedule: "Twice daily",
-    warning: null, adherence: dailyAdherence([5, 12], [19, 27]), source: "Clinic", srcClass: "src-clinic", status: "active",
+    warning: null, adherence: dailyAdherence([5, 12], [19, 27]), partialIdx: [9, 17, 23, 30], source: "Clinic", srcClass: "src-clinic", status: "active",
     ehrStatus: "Active", doseForm: "Tablet", manufacturer: "Teva Pharmaceuticals", ingredient: "Carvedilol", amount: "6.25 mg",
     effectiveDateTime: "2025-12-11T08:00", route: "Oral", sig: "Take one tablet by mouth twice daily with food",
     statusReason: "Not applicable", lotNumber: "C8821B", expiryDate: "2026-11-02",
   },
   {
     hf: false, name: "Sacubitril/Valsartan", cls: "ARNI", freq: "Twice daily", dose: "49/51 mg", schedule: "Twice daily",
-    warning: "Monitor renal function with diuretic", adherence: dailyAdherence([2, 3, 9, 15], [22, 23, 28, 29]), source: "Clinic", srcClass: "src-clinic", status: "active",
+    warning: "Monitor renal function with diuretic", adherence: dailyAdherence([2, 3, 9, 15], [22, 23, 28, 29]), partialIdx: [6, 13, 20, 26], source: "Clinic", srcClass: "src-clinic", status: "active",
     ehrStatus: "Active", doseForm: "Tablet", manufacturer: "Novartis", ingredient: "Sacubitril / Valsartan", amount: "49/51 mg",
     effectiveDateTime: "2025-12-11T08:00", route: "Oral", sig: "Take one tablet by mouth twice daily",
     statusReason: "Dose adjustment", lotNumber: "S5510C", expiryDate: "2027-01-20",
@@ -1273,9 +1273,8 @@ function renderMeds() {
   document.getElementById("medList").innerHTML = list
     .map((m, mi) => {
       const days = visibleDays();
-      // Commercial: patient-logged meds can be partly taken (some of the day's doses).
-      const commercial = typeof isCommercialOrg === "function" && isCommercialOrg();
-      const adh = sliceForRange(commercial && m.partialIdx
+      // Partly taken = only some of the day's doses were logged (all organisation types).
+      const adh = sliceForRange(m.partialIdx
         ? m.adherence.map((v, i) => (v === true && m.partialIdx.includes(i) ? "partial" : v))
         : m.adherence);
 

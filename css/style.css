@@ -3951,11 +3951,9 @@ a.bo-btn-secondary { text-decoration: none; }
 .med-legend-taken { background: var(--green); }
 .med-legend-missed { background: var(--maroon); }
 .med-legend-not-recorded { background: #E7EAEE; }
-/* Partly taken: half-filled green, shown only for Commercial organisations */
+/* Partly taken: half-filled green (some of the day's doses taken) */
 .med-legend-partial,
 .med-adh-partial { background: linear-gradient(90deg, var(--green) 50%, #CFEFDF 50%); box-shadow: inset 0 0 0 1.5px var(--green); }
-.med-legend-partial-item { display: none; }
-html[data-org-type="Commercial"] .med-legend-partial-item { display: inline; }
 
 /* Sits in the same unpadded position as .med-adh-scroll above it (both
    inside .med-block's 20px padding, nothing else in either row) so each
