@@ -193,4 +193,44 @@
     if (id === "addMedForm") form.addEventListener("reset", () => setTimeout(() => window.setMedSchedule(form, {}), 0));
     window.setMedSchedule(form, {});
   });
+
+  /* ---------- Medication card meta line ----------
+     "40 mg · Once daily, 9:00 PM · Since Sep 2, no end date" for every medication. */
+  const FREQ_LABEL = {
+    "daily": "Once daily", "once daily": "Once daily", "twice daily": "Twice daily", "three times daily": "Three times daily",
+    "four times daily": "Four times daily", "every morning": "Every morning", "every night": "Every night", "every x hours": "Every few hours",
+  };
+  const FREQ_KEY = { "daily": "Once Daily", "once daily": "Once Daily", "twice daily": "Twice Daily", "three times daily": "Three Times Daily", "four times daily": "Four Times Daily", "every morning": "Every Morning", "every night": "Every Night", "every x hours": "Every X Hours" };
+  const fmtClock = (t) => { const [h, mi] = t.split(":").map(Number); return `${h % 12 || 12}:${String(mi).padStart(2, "0")} ${h < 12 ? "AM" : "PM"}`; };
+  const fmtDay = (iso) => new Date(`${iso.slice(0, 10)}T00:00`).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+
+  window.medMetaText = function (m) {
+    // Patient-added (Commercial) records already carry the full line.
+    if (m.schedule && m.schedule.includes("·")) return `${m.dose} · ${m.schedule}`;
+    const parts = [];
+    const strength = m.amount || m.dose;
+    if (strength) parts.push(strength);
+    if (m.amount && m.dose && m.dose !== m.amount) parts.push(m.dose);
+
+    const freqRaw = (m.freq || "").trim();
+    const key = freqRaw.toLowerCase();
+    if (key === "as needed" || !freqRaw) {
+      parts.push(freqRaw || "As needed");
+    } else {
+      const startTime = (m.effectiveDateTime || "").slice(11, 16);
+      const times = m.doseTimes && m.doseTimes.length ? m.doseTimes : timesFor(FREQ_KEY[key], startTime ? [startTime] : []);
+      let freq = FREQ_LABEL[key] || freqRaw;
+      if (m.howOften === "Every other day") freq += ", every other day";
+      else if (m.howOften === SPECIFIC && m.days && m.days.length) freq += ` (${m.days.join(", ")})`;
+      parts.push(times.length ? `${freq}, ${times.map(fmtClock).join(", ")}` : freq);
+    }
+
+    if (m.effectiveDateTime) {
+      const start = fmtDay(m.effectiveDateTime);
+      if (m.endDate) parts.push(`${start} – ${fmtDay(m.endDate)}`);
+      else if (m.status === "past") parts.push(`Since ${start}, stopped`);
+      else parts.push(`Since ${start}, no end date`);
+    }
+    return parts.join(" · ");
+  };
 })();

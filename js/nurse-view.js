@@ -1052,7 +1052,7 @@ function renderMeds() {
             <div class="med-block-meta" style="margin-top:6px;">
               ${m.hf ? `<span class="med-hf-badge">Heart Failure medication</span>` : ""}
               <span class="med-class">${m.cls}</span>
-              <span>${m.dose} &middot; ${m.schedule}</span>
+              <span>${medMetaText(m)}</span>
               ${m.warning ? `<span class="med-warning"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 4L2 20H22L12 4Z" stroke="#C2410C" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 10V14M12 17V17.3" stroke="#C2410C" stroke-width="1.6" stroke-linecap="round"/></svg>${m.warning}</span>` : ""}
             </div>
           </div>
