@@ -6289,3 +6289,9 @@ label.checkbox-field {
 
 /* Prototype controls: second group (Care team) under Patient chart */
 .proto-popover-sub-group { margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--gray-border); }
+
+/* Care Recommendation form: allergies in one plain box (not a warning) */
+.rec-allergy-box { margin-bottom: 22px; background: #fff; }
+.rec-allergy-list { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.rec-allergy-list li { padding: 5px 12px; border: 1px solid var(--gray-border); border-radius: 999px; font-size: 13.5px; font-weight: 600; color: #23272E; background: #F5F8FB; }
+.rec-tab-panel[data-rec-panel="summary"] .rec-info-cards-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
