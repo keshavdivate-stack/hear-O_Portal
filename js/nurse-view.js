@@ -8,6 +8,7 @@
 
 /* ---------------- Care Team popover ---------------- */
 wireTopbarToggle("careTeamTrigger", "careTeamPopover");
+wireTopbarToggle("designatedContactTrigger", "designatedContactPopover");
 
 /* ---------------- Shared day axis (31 days, gap = 21-23 Dec) ---------------- */
 const chartDays = [

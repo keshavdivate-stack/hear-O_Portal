@@ -8,6 +8,10 @@
    btn-sync styles only.
    ============================================================ */
 (() => {
+  /* Non-EHR patient charts (patient-data, nurse-view) show medication only in
+     the Clinical tab: no EHR sub-tabs, no Manual / EHR Medication switch and no
+     Sync. Set to true to bring the EHR sections back. */
+  const SHOW_EHR_SECTIONS = false;
   const panel = document.querySelector('.data-tab-panel[data-panel="clinical"]');
   if (!panel || panel.querySelector('[data-subtab="conditions"]')) return;
 
@@ -173,30 +177,6 @@
   });
   const body = (key) => document.getElementById(`ehr-${key}-body`);
 
-  /* Designated Contact: the emergency contact captured when the patient was
-     registered (Relationship, name, email, phone). Not EHR-synced. */
-  const designatedContacts = [
-    { name: "Robert White", relationship: "Spouse", phone: "+972 52 555 0199", email: "robert.white@gmail.com" },
-  ];
-  const dcTab = document.createElement("span");
-  dcTab.className = "subtab";
-  dcTab.dataset.subtab = "designated-contact";
-  dcTab.textContent = "Designated Contact";
-  subtabsEl.appendChild(dcTab);
-  const dcPanel = document.createElement("div");
-  dcPanel.className = "subtab-panel";
-  dcPanel.dataset.subpanel = "designated-contact";
-  dcPanel.innerHTML = table("designatedContactBody", ["Name", "Relationship", "Phone", "Email"]);
-  panel.appendChild(dcPanel);
-  document.getElementById("designatedContactBody").innerHTML = designatedContacts.length
-    ? designatedContacts.map((c) => `
-      <tr>
-        <td><span class="rec-title-cell">${c.name}</span></td>
-        <td>${c.relationship}</td>
-        <td>${c.phone}</td>
-        <td>${c.email}</td>
-      </tr>`).join("")
-    : `<tr><td colspan="4" class="rec-empty">No designated contact on file.</td></tr>`;
 
   /* ---------- Renderers ---------- */
   document.getElementById("ehrMedTableBody").innerHTML = ehrMedications
@@ -366,7 +346,7 @@
   /* The page script wired its own handler onto the original subtabs before
      these were added, so the new ones get the same open/close behaviour here. */
   panel.querySelectorAll(".subtab").forEach((tab) => {
-    if (EHR_KEYS.includes(tab.dataset.subtab) || tab.dataset.subtab === "designated-contact") {
+    if (EHR_KEYS.includes(tab.dataset.subtab)) {
       tab.addEventListener("click", () => {
         panel.querySelectorAll(".subtab").forEach((t) => t.classList.remove("active"));
         panel.querySelectorAll(".subtab-panel").forEach((p) => p.classList.remove("open"));
@@ -391,4 +371,14 @@
       syncMeta.querySelector(".ehr-sync-time").textContent = "Just now";
     }, 900);
   });
+
+  if (!SHOW_EHR_SECTIONS) {
+    EHR_KEYS.forEach((k) => {
+      panel.querySelector(`.subtab[data-subtab="${k}"]`)?.remove();
+      panel.querySelector(`.subtab-panel[data-subpanel="${k}"]`)?.remove();
+    });
+    syncMeta.remove();
+    ehrMedWrap.remove();
+    sourceRow.querySelector(".unit-toggle")?.remove();
+  }
 })();

@@ -158,6 +158,7 @@ careTeamAddPanel.querySelector(".care-team-confirm-button").addEventListener("cl
 
 /* ---------------- App & Device Info popover ---------------- */
 wireTopbarToggle("appDeviceTrigger", "appDevicePopover");
+wireTopbarToggle("designatedContactTrigger", "designatedContactPopover");
 
 /* ---------------- Shared day axis (31 days, gap = 21-23 Dec) ---------------- */
 const chartDays = [
