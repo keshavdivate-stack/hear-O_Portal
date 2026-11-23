@@ -142,6 +142,8 @@ userRowMenu.addEventListener("click", (e) => {
     renderUsers();
   } else if (item.dataset.action === "edit") {
     openUserDrawer(user);
+  } else if (item.dataset.action === "ehr-invite") {
+    openEhrInvite(user);
   }
   // "reset" (Reset Password) has no wired behavior in this preview.
 });
@@ -430,3 +432,59 @@ document.getElementById("openAddUserBtn").addEventListener("click", () => openUs
 document.getElementById("cancelAddUser").addEventListener("click", closeUserDrawer);
 document.getElementById("closeAddUserX").addEventListener("click", closeUserDrawer);
 userOverlay.addEventListener("click", (e) => { if (e.target === userOverlay) closeUserDrawer(); });
+
+/* ---------------- Send EHR Invite ----------------
+   Pick one of the user's organizations and the EHR it runs; Send emails the
+   user an invite to connect their EHR account. */
+const EHR_SYSTEMS = ["Epic", "Cerner", "Athenahealth"];
+const ehrInviteOverlay = document.getElementById("ehrInviteOverlay");
+const ehrInviteForm = document.getElementById("ehrInviteForm");
+const ehrInviteSendBtn = document.getElementById("sendEhrInvite");
+const ehrInviteField = (name) => ehrInviteOverlay.querySelector(`.bo-select[data-name="${name}"]`);
+let ehrInviteUser = null;
+
+function ehrInviteOptions(values) {
+  return values.map((v) => `
+    <div class="bo-select-option" data-value="${v}">${v}
+      <svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>`).join("");
+}
+
+function syncEhrInviteSend() {
+  ehrInviteSendBtn.disabled = !(ehrInviteForm.ehrOrg.value && ehrInviteForm.ehrType.value);
+}
+
+function openEhrInvite(user) {
+  ehrInviteUser = user;
+  const userOrgs = user.allowedOrgs === ALL_ORGS ? orgNames : String(user.allowedOrgs || "").split(" ").filter(Boolean);
+  document.getElementById("ehrInviteOrgMenu").innerHTML = ehrInviteOptions(userOrgs.length ? userOrgs : orgNames);
+  document.getElementById("ehrInviteEhrMenu").innerHTML = ehrInviteOptions(EHR_SYSTEMS);
+  ["ehrOrg", "ehrType"].forEach((n) => setBoSelectValue(ehrInviteField(n), "", { silent: true }));
+  if (userOrgs.length === 1) setBoSelectValue(ehrInviteField("ehrOrg"), userOrgs[0], { silent: true });
+  document.getElementById("ehrInviteUserName").textContent = `${user.firstName || ""} ${user.lastName || ""}`.trim() || user.username;
+  document.getElementById("ehrInviteUserEmail").textContent = user.email || "their email";
+  syncEhrInviteSend();
+  ehrInviteOverlay.classList.add("open");
+}
+
+function closeEhrInvite() {
+  ehrInviteOverlay.classList.remove("open");
+  ehrInviteUser = null;
+}
+
+ehrInviteForm.ehrOrg.addEventListener("change", syncEhrInviteSend);
+ehrInviteForm.ehrType.addEventListener("change", syncEhrInviteSend);
+document.getElementById("closeEhrInviteX").addEventListener("click", closeEhrInvite);
+document.getElementById("cancelEhrInvite").addEventListener("click", closeEhrInvite);
+ehrInviteOverlay.addEventListener("click", (e) => { if (e.target === ehrInviteOverlay) closeEhrInvite(); });
+
+ehrInviteForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  if (ehrInviteSendBtn.disabled || !ehrInviteUser) return;
+  const toast = document.getElementById("ehrInviteToast");
+  toast.textContent = `EHR invite (${ehrInviteForm.ehrType.value}) sent to ${ehrInviteUser.email || ehrInviteUser.username}`;
+  toast.hidden = false;
+  clearTimeout(toast._t);
+  toast._t = setTimeout(() => { toast.hidden = true; }, 3200);
+  closeEhrInvite();
+});

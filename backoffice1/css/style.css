@@ -6134,3 +6134,8 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
 .bo-option-name { font-size: 13.5px; }
 .bo-option-role { font-size: 11.5px; font-weight: 400; color: var(--gray-text, #6B7684); }
 .bo-select-option.selected .bo-option-role { color: var(--gray-text, #6B7684); }
+
+/* Manage Users: Send EHR Invite */
+.ehr-invite-to { margin: 0 0 16px; font-size: 13.5px; color: var(--ink); line-height: 1.5; }
+.ehr-invite-toast { position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%); z-index: 2000; padding: 11px 18px; border-radius: 10px; background: #23272E; color: #fff; font-size: 13.5px; box-shadow: 0 10px 30px rgba(20, 30, 50, 0.25); }
+.ehr-invite-toast[hidden] { display: none; }
