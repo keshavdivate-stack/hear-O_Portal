@@ -6139,3 +6139,12 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
 .ehr-invite-to { margin: 0 0 16px; font-size: 13.5px; color: var(--ink); line-height: 1.5; }
 .ehr-invite-toast { position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%); z-index: 2000; padding: 11px 18px; border-radius: 10px; background: #23272E; color: #fff; font-size: 13.5px; box-shadow: 0 10px 30px rgba(20, 30, 50, 0.25); }
 .ehr-invite-toast[hidden] { display: none; }
+
+/* Organization EHR connection: Client Id / Client Secret with a show/hide eye */
+.bo-secret-field { position: relative; }
+.bo-secret-field input { width: 100%; padding-right: 42px; }
+.bo-secret-toggle { position: absolute; top: 50%; right: 8px; transform: translateY(-50%); width: 30px; height: 30px; border: none; border-radius: 6px; background: transparent; color: var(--gray-text, #6B7684); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+.bo-secret-toggle:hover { background: var(--bg); color: var(--ink); }
+.bo-secret-toggle .eye-closed { display: none; }
+.bo-secret-toggle.is-shown .eye-open { display: none; }
+.bo-secret-toggle.is-shown .eye-closed { display: block; }
