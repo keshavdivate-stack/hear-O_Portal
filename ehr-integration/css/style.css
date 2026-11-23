@@ -6210,7 +6210,7 @@ label.checkbox-field {
 .data-tab-panel[data-panel="clinical"] > .subtab-row .btn-sync { padding: 6px 12px; font-size: 12.5px; white-space: nowrap; }
 /* Room for the longer "Sync <tab> with EHR" label */
 .data-tab-panel[data-panel="clinical"] > .subtab-row { column-gap: 10px; }
-.data-tab-panel[data-panel="clinical"] > .subtab-row > .subtabs { gap: 10px; }
+.data-tab-panel[data-panel="clinical"] > .subtab-row > .subtabs { gap: 16px; }
 .data-tab-panel[data-panel="clinical"] > .subtab-row .subtab { font-size: 12px; }
 .data-tab-panel[data-panel="clinical"] > .subtab-row > .clinical-head-actions { gap: 8px; }
 .data-tab-panel[data-panel="clinical"] > .subtab-row .btn-sync { padding: 6px 10px; gap: 6px; }
@@ -6233,3 +6233,7 @@ label.checkbox-field {
 .rec-view-field.form-field { margin-bottom: 0; }
 .rec-view-field.full { grid-column: 1 / -1; }
 .rec-view-field input:disabled, .rec-view-field textarea:disabled { background: #fff; color: #23272E; -webkit-text-fill-color: #23272E; opacity: 1; cursor: default; resize: none; }
+/* Narrower screens: a little less space between sub-tabs so the row still fits on one line */
+@media (max-width: 1500px) {
+  .data-tab-panel[data-panel="clinical"] > .subtab-row > .subtabs { gap: 11px; }
+}
