@@ -1034,11 +1034,21 @@ document.querySelectorAll("[data-med-source]").forEach((b) => {
 /* Shows "Last synced + Sync" for EHR views and hides the manual-only
    Add/filter actions while EHR Medication is selected. Called again after
    the generic subtab handler runs (see the .subtab listener further down). */
+function ehrSyncLabel() {
+  const tab = document.querySelector('.data-tab-panel[data-panel="clinical"] .subtab.active');
+  const name = tab ? tab.childNodes[0].textContent.trim() : "";
+  return name ? `Sync ${name} with EHR` : "Sync with EHR";
+}
+
 function syncEhrHeadActions() {
   const active = document.querySelector('.data-tab-panel[data-panel="clinical"] .subtab.active')?.dataset.subtab;
   /* Sync with EHR lives in the Clinical tab row and shows on every Clinical subtab */
   const showSync = !!active && active !== "care-rec"; /* not on Care Recommendations */
   document.getElementById("ehrSyncMeta").style.display = showSync ? "flex" : "none";
+  /* The button names the sub-tab it syncs: "Sync Medication with EHR" */
+  const tab = document.querySelector('.data-tab-panel[data-panel="clinical"] .subtab.active');
+  const btn = document.getElementById("ehrSyncMetaBtn");
+  if (tab && btn && !btn.classList.contains("is-syncing")) btn.querySelector(".btn-sync-label").textContent = ehrSyncLabel();
   const medActions = document.getElementById("medSubtabActions");
   if (active === "medication") medActions.style.display = medSource === "ehr" ? "none" : "flex";
 }
@@ -1050,13 +1060,14 @@ document.querySelectorAll('.data-tab-panel[data-panel="clinical"] .subtab').forE
 });
 
 const ehrSyncMetaBtn =document.getElementById("ehrSyncMetaBtn");
+ehrSyncMetaBtn.querySelector(".btn-sync-label").textContent = ehrSyncLabel();
 ehrSyncMetaBtn.addEventListener("click", () => {
   if (ehrSyncMetaBtn.classList.contains("is-syncing")) return;
   ehrSyncMetaBtn.classList.add("is-syncing");
   ehrSyncMetaBtn.querySelector(".btn-sync-label").textContent = "Syncing…";
   setTimeout(() => {
     ehrSyncMetaBtn.classList.remove("is-syncing");
-    ehrSyncMetaBtn.querySelector(".btn-sync-label").textContent = "Sync with EHR";
+    ehrSyncMetaBtn.querySelector(".btn-sync-label").textContent = ehrSyncLabel();
     /* Last-synced info lives in the tooltip to save space. */
     ehrSyncMetaBtn.title = `Last synced with ${connectedEhrName} · Just now`;
     ehrSyncMetaBtn.setAttribute("aria-label", `Sync with EHR (last synced with ${connectedEhrName} · just now)`);

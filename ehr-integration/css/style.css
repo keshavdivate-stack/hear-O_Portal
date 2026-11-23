@@ -6208,3 +6208,11 @@ label.checkbox-field {
 .data-tab-panel[data-panel="clinical"] > .subtab-row .custom-select { min-width: 0; width: auto; }
 .data-tab-panel[data-panel="clinical"] > .subtab-row .clinical-add-link { font-size: 12.5px; white-space: nowrap; }
 .data-tab-panel[data-panel="clinical"] > .subtab-row .btn-sync { padding: 6px 12px; font-size: 12.5px; white-space: nowrap; }
+/* Room for the longer "Sync <tab> with EHR" label */
+.data-tab-panel[data-panel="clinical"] > .subtab-row { column-gap: 10px; }
+.data-tab-panel[data-panel="clinical"] > .subtab-row > .subtabs { gap: 10px; }
+.data-tab-panel[data-panel="clinical"] > .subtab-row .subtab { font-size: 12px; }
+.data-tab-panel[data-panel="clinical"] > .subtab-row > .clinical-head-actions { gap: 8px; }
+.data-tab-panel[data-panel="clinical"] > .subtab-row .btn-sync { padding: 6px 10px; gap: 6px; }
+/* Medication card: light tint instead of a shadow */
+.rec-med-row { background: #F5F8FB; box-shadow: none; border-color: #E3E9EF; }

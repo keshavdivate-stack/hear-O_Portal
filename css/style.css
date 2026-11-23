@@ -8533,3 +8533,5 @@ html[data-org-type="Commercial"] .med-block .btn-edit { display: none; }
 /* Non-EHR charts have only a couple of Clinical sub-tabs: keep them on the same
    line as the actions; the actions only move above when the row is too narrow. */
 .data-tab-panel[data-panel="clinical"] > .subtab-row > .subtabs { flex: 1 1 auto; }
+/* Medication card: light tint instead of a shadow */
+.rec-med-row { background: #F5F8FB; box-shadow: none; border-color: #E3E9EF; }
