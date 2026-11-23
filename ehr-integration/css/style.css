@@ -6156,3 +6156,22 @@ label.checkbox-field {
    above the sub-tabs, so they never split up and every tab stays visible. */
 .data-tab-panel[data-panel="clinical"] > .subtab-row { flex-wrap: wrap-reverse; justify-content: flex-end; row-gap: 12px; }
 .data-tab-panel[data-panel="clinical"] > .subtab-row > .subtabs { flex: 1 0 100%; max-width: 100%; }
+
+/* Care Recommendation: patient information cards are all the same and each opens its screen */
+.rec-info-card-link { display: block; color: inherit; text-decoration: none; transition: border-color .15s, background .15s; }
+.rec-info-card-link:hover { border-color: var(--blue); background: #F7FBFE; }
+.rec-info-card-link .rec-info-card-title { justify-content: space-between; }
+.rec-info-card-go { color: #A3ACB5; flex-shrink: 0; }
+.rec-info-card-link:hover .rec-info-card-go { color: var(--blue); }
+.rec-create-form > .rec-info-cards-grid { margin-bottom: 22px; }
+.rec-create-form > .rec-form-alert .rec-form-alert-header { margin-bottom: 0; }
+
+/* Care Recommendation: several medications in one recommendation */
+.rec-med-row + .rec-med-row { margin-top: 6px; padding-top: 18px; border-top: 1px dashed var(--gray-border); }
+.rec-med-row-head { display: none; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.rec-med-rows.is-multi .rec-med-row-head { display: flex; }
+.rec-med-row-title { font-size: 13px; font-weight: 700; color: #23272E; }
+.rec-med-remove { width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--gray-border); background: #fff; color: #7E8993; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; }
+.rec-med-remove:hover { color: #C0392B; border-color: #F1B5AE; background: #FDF1F0; }
+.rec-add-med-btn { display: inline-flex; align-items: center; gap: 6px; margin-top: 4px; padding: 0; border: none; background: none; color: var(--blue-text); font: inherit; font-size: 13.5px; font-weight: 700; cursor: pointer; }
+.rec-add-med-btn:hover { text-decoration: underline; }

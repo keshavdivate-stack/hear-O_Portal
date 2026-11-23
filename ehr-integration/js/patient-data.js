@@ -930,7 +930,7 @@ function wireSyncButton(btnId, onSynced) {
     if (label) label.textContent = "Syncing…";
     setTimeout(() => {
       btn.classList.remove("is-syncing");
-      if (label) label.textContent = "Sync";
+      if (label) label.textContent = "Sync with EHR";
       if (onSynced) onSynced();
     }, 900);
   });
@@ -1056,7 +1056,7 @@ ehrSyncMetaBtn.addEventListener("click", () => {
   ehrSyncMetaBtn.querySelector(".btn-sync-label").textContent = "Syncing…";
   setTimeout(() => {
     ehrSyncMetaBtn.classList.remove("is-syncing");
-    ehrSyncMetaBtn.querySelector(".btn-sync-label").textContent = "Sync";
+    ehrSyncMetaBtn.querySelector(".btn-sync-label").textContent = "Sync with EHR";
     /* Last-synced info lives in the tooltip to save space. */
     ehrSyncMetaBtn.title = `Last synced with ${connectedEhrName} · Just now`;
     ehrSyncMetaBtn.setAttribute("aria-label", `Sync with EHR (last synced with ${connectedEhrName} · just now)`);
@@ -1965,6 +1965,9 @@ document.querySelectorAll(".data-tab").forEach((tab) => {
   const openTab = new URLSearchParams(window.location.search).get("openTab");
   if (!openTab) return;
   document.querySelector(`.data-tab[data-tab="${openTab}"]`)?.click();
+  /* ...and a sub-tab inside it (e.g. Care Recommendations cards link to Conditions) */
+  const openSubtab = new URLSearchParams(window.location.search).get("openSubtab");
+  if (openSubtab) setTimeout(() => document.querySelector(`.data-tab-panel[data-panel="${openTab}"] .subtab[data-subtab="${openSubtab}"]`)?.click(), 0);
 })();
 
 /* ---------------- Sub-tabs (Measurement/Wellness, Medication/Care Recommendations) ----------------

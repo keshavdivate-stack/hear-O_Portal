@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="css/style.css" />
+<link rel="stylesheet" href="css/style.css?v=7" />
 </head>
 <body>
 
@@ -213,158 +213,131 @@
           <span class="rec-page-header-spacer"></span>
         </div>
 
-        <!-- Summary / Create New -->
         <div class="data-tabs-card">
-          <div class="rec-tabs-row">
-            <div class="rec-tabs" id="recTabs">
-              <button type="button" class="rec-tab active" data-rec-tab="summary">Summary</button>
-              <button type="button" class="rec-tab" data-rec-tab="create">Create New</button>
-            </div>
-          </div>
-
-          <!-- Summary: clinical decision summary before reviewing/creating a recommendation -->
-          <div class="rec-tab-panel open" data-rec-panel="summary">
-
-            <!-- Allergies / Critical Alerts -->
-            <div class="rec-alert-banner">
-              <div class="rec-alert-header">
-                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.6L2.6 17a1.8 1.8 0 0 0 1.55 2.7h15.7A1.8 1.8 0 0 0 21.4 17L13.7 3.6a1.8 1.8 0 0 0-3.4 0Z"/><path d="M12 9v4"/><path d="M12 16.5h.01"/></svg>
-                Allergies &amp; Critical Alerts
-              </div>
-              <ul class="rec-alert-list">
-                <li class="rec-alert-item"><span class="rec-alert-tag">Allergy</span>Penicillin</li>
-                <li class="rec-alert-item"><span class="rec-alert-tag">Allergy</span>Sulfa drugs</li>
-                <li class="rec-alert-item"><span class="rec-alert-tag rec-alert-tag-condition">High-risk</span>Heart failure</li>
-              </ul>
-            </div>
-
-            <!-- Relevant Patient Information -->
-            <div class="rec-info-cards-grid">
-              <div class="rec-info-card rec-info-card-highlight">
-                <div class="rec-info-card-title">
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>
-                  Current Medications
-                </div>
-                <ul class="rec-info-card-list">
-                  <li><span>Furosemide 40 mg</span><span class="rec-info-card-meta">Once Daily</span></li>
-                  <li><span>Carvedilol 6.25 mg</span><span class="rec-info-card-meta">Twice Daily</span></li>
-                  <li><span>Spironolactone 25 mg</span><span class="rec-info-card-meta">Once Daily</span></li>
-                </ul>
-              </div>
-              <div class="rec-info-card">
-                <div class="rec-info-card-title">Recent Vitals</div>
-                <ul class="rec-info-card-list">
-                  <li><span>BP 128/82 mmHg</span><span class="rec-info-card-meta">18 Aug</span></li>
-                  <li><span>Heart Rate 76 bpm</span><span class="rec-info-card-meta">18 Aug</span></li>
-                  <li><span>Weight 84.2 kg</span><span class="rec-info-card-meta">18 Aug</span></li>
-                </ul>
-              </div>
-              <div class="rec-info-card rec-info-card-highlight">
-                <div class="rec-info-card-title">
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6c-1.9-1.9-5-1.9-6.9 0L12 6.5l-1.9-1.9c-1.9-1.9-5-1.9-6.9 0-1.9 1.9-1.9 5 0 6.9L12 20l8.8-8.5c1.9-1.9 1.9-5 0-6.9Z"/></svg>
-                  Key Conditions
-                </div>
-                <ul class="rec-info-card-list">
-                  <li><span>Heart failure (reduced EF)</span></li>
-                  <li><span>Hypertension</span></li>
-                  <li><span>Type 2 diabetes</span></li>
-                </ul>
-              </div>
-              <div class="rec-info-card">
-                <div class="rec-info-card-title">Care Plan / Goals</div>
-                <ul class="rec-info-card-list">
-                  <li><span>Maintain dry weight under 85 kg</span></li>
-                  <li><span>Titrate Furosemide as tolerated</span></li>
-                </ul>
-              </div>
-            </div>
-
-            <!-- Recent Care Recommendations -->
-            <div class="rec-recent-card">
-              <div class="rec-recent-header">
-                <h3 class="rec-form-section-title rec-recent-title">Recent Care Recommendations</h3>
-                <div class="custom-select" id="careRecStatusFilter" data-name="careRecStatus">
-                  <button type="button" class="custom-select-trigger">
-                    <span class="custom-select-value">All</span>
-                    <svg class="custom-select-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-                  </button>
-                  <div class="custom-select-menu">
-                    <div class="custom-select-option selected" data-value="all">All<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                    <div class="custom-select-option" data-value="recommended">Recommended<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                    <div class="custom-select-option" data-value="in-progress">In Progress<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                    <div class="custom-select-option" data-value="completed">Completed<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                  </div>
-                  <input type="hidden" name="careRecStatus" value="all" />
-                </div>
-              </div>
-              <div class="rec-summary-list" id="recSummaryList"></div>
-            </div>
-          </div>
 
           <!-- Create New -->
-          <div class="rec-tab-panel" data-rec-panel="create">
+          <div class="rec-tab-panel open" data-rec-panel="create">
             <form id="careRecCreateForm" class="rec-create-form">
 
-              <!-- Persistent patient alert -->
+              <!-- Allergies -->
               <div class="rec-form-alert">
                 <div class="rec-form-alert-header">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.6L2.6 17a1.8 1.8 0 0 0 1.55 2.7h15.7A1.8 1.8 0 0 0 21.4 17L13.7 3.6a1.8 1.8 0 0 0-3.4 0Z"/><path d="M12 9v4"/><path d="M12 16.5h.01"/></svg>
-                  Patient Alerts
+                  Allergies: Penicillin, Sulfa drugs
                 </div>
-                <ul class="rec-alert-list">
-                  <li class="rec-alert-item"><span class="rec-alert-tag">Allergy</span>Penicillin</li>
-                  <li class="rec-alert-item"><span class="rec-alert-tag">Allergy</span>Sulfa drugs</li>
-                  <li class="rec-alert-item"><span class="rec-alert-tag rec-alert-tag-condition">High-risk</span>Heart failure</li>
-                </ul>
+              </div>
+
+              <!-- Relevant patient information: each card opens its screen in the patient chart -->
+              <div class="rec-info-cards-grid">
+                <a class="rec-info-card rec-info-card-link" href="patient-data.html?openTab=clinical&amp;openSubtab=medication">
+                  <div class="rec-info-card-title">Current Medications
+                    <svg class="rec-info-card-go" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg>
+                  </div>
+                  <ul class="rec-info-card-list">
+                    <li><span>Furosemide 40 mg</span><span class="rec-info-card-meta">Once Daily</span></li>
+                    <li><span>Carvedilol 6.25 mg</span><span class="rec-info-card-meta">Twice Daily</span></li>
+                    <li><span>Spironolactone 25 mg</span><span class="rec-info-card-meta">Once Daily</span></li>
+                  </ul>
+                </a>
+                <a class="rec-info-card rec-info-card-link" href="patient-data.html?openTab=health-data&amp;openSubtab=measurement">
+                  <div class="rec-info-card-title">Recent Vitals
+                    <svg class="rec-info-card-go" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg>
+                  </div>
+                  <ul class="rec-info-card-list">
+                    <li><span>BP 128/82 mmHg</span><span class="rec-info-card-meta">18 Aug</span></li>
+                    <li><span>Heart Rate 76 bpm</span><span class="rec-info-card-meta">18 Aug</span></li>
+                    <li><span>Weight 84.2 kg</span><span class="rec-info-card-meta">18 Aug</span></li>
+                    <li><span>SpO&#8322; 96%</span><span class="rec-info-card-meta">18 Aug</span></li>
+                    <li><span>Temperature 36.8 &deg;C</span><span class="rec-info-card-meta">18 Aug</span></li>
+                  </ul>
+                </a>
+                <a class="rec-info-card rec-info-card-link" href="patient-data.html?openTab=clinical&amp;openSubtab=conditions">
+                  <div class="rec-info-card-title">Key Conditions
+                    <svg class="rec-info-card-go" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg>
+                  </div>
+                  <ul class="rec-info-card-list">
+                    <li><span>Heart failure (reduced EF)</span></li>
+                    <li><span>Hypertension</span></li>
+                    <li><span>Type 2 diabetes</span></li>
+                  </ul>
+                </a>
+                <a class="rec-info-card rec-info-card-link" href="patient-data.html?openTab=clinical&amp;openSubtab=care-plan">
+                  <div class="rec-info-card-title">Care Plan
+                    <svg class="rec-info-card-go" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg>
+                  </div>
+                  <ul class="rec-info-card-list">
+                    <li><span>Titrate Furosemide as tolerated</span></li>
+                    <li><span>Weekly weight review with the care team</span></li>
+                  </ul>
+                </a>
+                <a class="rec-info-card rec-info-card-link" href="patient-data.html?openTab=clinical&amp;openSubtab=goals">
+                  <div class="rec-info-card-title">Goals
+                    <svg class="rec-info-card-go" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg>
+                  </div>
+                  <ul class="rec-info-card-list">
+                    <li><span>Maintain dry weight under 85 kg</span></li>
+                    <li><span>BP below 130/80 mmHg</span></li>
+                  </ul>
+                </a>
               </div>
 
               <div class="rec-form-section">
                 <h3 class="rec-form-section-title">Medication Details</h3>
-                <div class="form-grid">
-                  <div class="form-field">
-                    <label>Medication<span class="required-star">*</span></label>
-                    <div class="custom-select" data-name="medication" id="careRecMedicationSelect">
-                      <button type="button" class="custom-select-trigger">
-                        <span class="custom-select-value placeholder">Select medication</span>
-                        <svg class="custom-select-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-                      </button>
-                      <div class="custom-select-menu" id="careRecMedicationMenu"></div>
-                      <input type="hidden" name="medication" required />
+                <!-- One row per medication; "+ Add Medication" adds another, the bin removes one -->
+                <div class="rec-med-rows" id="careRecMedRows">
+                  <div class="rec-med-row">
+                    <div class="rec-med-row-head">
+                      <span class="rec-med-row-title">Medication 1</span>
+                      <button type="button" class="rec-med-remove" aria-label="Remove medication" title="Remove medication"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16"/><path d="M10 11v6M14 11v6"/><path d="M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12"/><path d="M9 7V4h6v3"/></svg></button>
                     </div>
-                  </div>
-                  <div class="form-field">
-                    <label>Current Dose</label>
-                    <div class="unit-input"><input type="text" id="careRecCurrentDose" value="—" disabled /></div>
-                  </div>
-                  <div class="form-field">
-                    <label>New Dose<span class="required-star">*</span></label>
-                    <div class="unit-input"><input type="number" name="newDose" min="0" step="0.5" placeholder="e.g. 80" required /><span>mg</span></div>
-                  </div>
-                  <div class="form-field">
-                    <label>Frequency<span class="required-star">*</span></label>
-                    <div class="custom-select" data-name="frequency">
-                      <button type="button" class="custom-select-trigger">
-                        <span class="custom-select-value placeholder">Select frequency</span>
-                        <svg class="custom-select-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-                      </button>
-                      <div class="custom-select-menu">
-                        <div class="custom-select-option" data-value="Once Daily">Once Daily<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                        <div class="custom-select-option" data-value="Twice Daily">Twice Daily<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                        <div class="custom-select-option" data-value="Three Times Daily">Three Times Daily<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                        <div class="custom-select-option" data-value="As Needed">As Needed<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    <div class="form-grid">
+                      <div class="form-field">
+                        <label>Medication<span class="required-star">*</span></label>
+                        <div class="custom-select" data-name="medication" id="careRecMedicationSelect">
+                          <button type="button" class="custom-select-trigger">
+                            <span class="custom-select-value placeholder">Select medication</span>
+                            <svg class="custom-select-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                          </button>
+                          <div class="custom-select-menu" id="careRecMedicationMenu"></div>
+                          <input type="hidden" name="medication" required />
+                        </div>
                       </div>
-                      <input type="hidden" name="frequency" required />
+                      <div class="form-field">
+                        <label>Current Dose</label>
+                        <div class="unit-input"><input type="text" class="rec-med-current-dose" value="—" disabled /></div>
+                      </div>
+                      <div class="form-field">
+                        <label>New Dose<span class="required-star">*</span></label>
+                        <div class="unit-input"><input type="number" name="newDose" min="0" step="0.5" placeholder="e.g. 80" required /><span>mg</span></div>
+                      </div>
+                      <div class="form-field">
+                        <label>Frequency<span class="required-star">*</span></label>
+                        <div class="custom-select" data-name="frequency">
+                          <button type="button" class="custom-select-trigger">
+                            <span class="custom-select-value placeholder">Select frequency</span>
+                            <svg class="custom-select-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                          </button>
+                          <div class="custom-select-menu">
+                            <div class="custom-select-option" data-value="Once Daily">Once Daily<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                            <div class="custom-select-option" data-value="Twice Daily">Twice Daily<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                            <div class="custom-select-option" data-value="Three Times Daily">Three Times Daily<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                            <div class="custom-select-option" data-value="As Needed">As Needed<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                          </div>
+                          <input type="hidden" name="frequency" required />
+                        </div>
+                      </div>
+                      <div class="form-field">
+                        <label>Duration<span class="required-star">*</span></label>
+                        <div class="unit-input"><input type="number" name="duration" min="1" step="1" placeholder="e.g. 14" required /><span>days</span></div>
+                      </div>
+                      <div class="form-field">
+                        <label>Start Date</label>
+                        <input type="date" name="startDate" />
+                      </div>
                     </div>
-                  </div>
-                  <div class="form-field">
-                    <label>Duration<span class="required-star">*</span></label>
-                    <div class="unit-input"><input type="number" name="duration" min="1" step="1" placeholder="e.g. 14" required /><span>days</span></div>
-                  </div>
-                  <div class="form-field">
-                    <label>Start Date</label>
-                    <input type="date" name="startDate" />
-                  </div>
+                      </div>
                 </div>
+                <button type="button" class="rec-add-med-btn" id="addCareRecMedRow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Add Medication</button>
               </div>
 
               <div class="rec-form-section">
@@ -497,6 +470,6 @@
 
 <script src="js/topbar.js"></script>
 <script src="../js/patient-identity.js"></script>
-<script src="js/care-recommendation.js"></script>
+<script src="js/care-recommendation.js?v=3"></script>
 </body>
 </html>

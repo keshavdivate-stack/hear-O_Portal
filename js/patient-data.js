@@ -1500,6 +1500,9 @@ document.querySelectorAll(".data-tab").forEach((tab) => {
   const openTab = new URLSearchParams(window.location.search).get("openTab");
   if (!openTab) return;
   document.querySelector(`.data-tab[data-tab="${openTab}"]`)?.click();
+  /* ...and a sub-tab inside it (e.g. Care Recommendations cards link to Conditions) */
+  const openSubtab = new URLSearchParams(window.location.search).get("openSubtab");
+  if (openSubtab) setTimeout(() => document.querySelector(`.data-tab-panel[data-panel="${openTab}"] .subtab[data-subtab="${openSubtab}"]`)?.click(), 0);
 })();
 
 /* ---------------- Sub-tabs (Measurement/Wellness, Medication/Care Recommendations) ----------------

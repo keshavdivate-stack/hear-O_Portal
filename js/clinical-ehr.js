@@ -135,7 +135,7 @@
     <span class="ehr-sync-meta-text">Last synced <strong class="ehr-sync-time">11/05/2026, 01:16 PM</strong></span>
     <button type="button" class="btn-secondary btn-sync">
       <svg class="sync-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 3v6h-6"/></svg>
-      <span class="btn-sync-label">Sync</span>
+      <span class="btn-sync-label">Sync with EHR</span>
     </button>`;
   subRow.appendChild(syncMeta);
 
@@ -367,7 +367,7 @@
     syncBtn.querySelector(".btn-sync-label").textContent = "Syncing…";
     setTimeout(() => {
       syncBtn.classList.remove("is-syncing");
-      syncBtn.querySelector(".btn-sync-label").textContent = "Sync";
+      syncBtn.querySelector(".btn-sync-label").textContent = "Sync with EHR";
       syncMeta.querySelector(".ehr-sync-time").textContent = "Just now";
     }, 900);
   });

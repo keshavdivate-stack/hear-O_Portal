@@ -213,7 +213,7 @@ function resetCustomSelectsIn(root) {
 }
 
 /* ---------------- Top-level tabs: Summary / Create New ---------------- */
-document.getElementById("recTabs").addEventListener("click", (e) => {
+document.getElementById("recTabs")?.addEventListener("click", (e) => {
   const btn = e.target.closest(".rec-tab");
   if (!btn) return;
   const target = btn.dataset.recTab;
@@ -235,7 +235,9 @@ function renderSummaryList() {
     .slice()
     .sort((a, b) => b.id - a.id);
 
-  document.getElementById("recSummaryList").innerHTML = list.length
+  const summaryEl = document.getElementById("recSummaryList");
+  if (!summaryEl) return;
+  summaryEl.innerHTML = list.length
     ? list
         .map((rec) => {
           const meta = CARE_REC_STATUS[rec.status];
@@ -302,13 +304,13 @@ function renderSummaryList() {
     : `<div class="rec-empty">No care recommendations in this view.</div>`;
 }
 
-document.getElementById("recSummaryList").addEventListener("click", (e) => {
+document.getElementById("recSummaryList")?.addEventListener("click", (e) => {
   const btn = e.target.closest(".rec-view-btn");
   if (!btn) return;
   openRecDrawer(Number(btn.dataset.recId));
 });
 
-document.getElementById("careRecStatusFilter").addEventListener("change", (e) => {
+document.getElementById("careRecStatusFilter")?.addEventListener("change", (e) => {
   careRecFilter = e.target.value;
   renderSummaryList();
 });
@@ -383,10 +385,41 @@ careRecMedicationMenu.innerHTML = medications
   )
   .join("");
 
-document.getElementById("careRecMedicationSelect").addEventListener("change", (e) => {
-  const med = medications.find((m) => m.name === e.target.value);
-  document.getElementById("careRecCurrentDose").value = med ? med.dose : "—";
+/* ---------------- Medication rows: add more, remove the ones not needed ---------------- */
+const careRecMedRows = document.getElementById("careRecMedRows");
+const careRecMedRowTemplate = careRecMedRows.querySelector(".rec-med-row").cloneNode(true);
+careRecMedRowTemplate.querySelectorAll("[id]").forEach((el) => el.removeAttribute("id"));
+
+function syncCareRecMedRows() {
+  const rows = careRecMedRows.querySelectorAll(".rec-med-row");
+  rows.forEach((row, i) => {
+    row.querySelector(".rec-med-row-title").textContent = `Medication ${i + 1}`;
+  });
+  careRecMedRows.classList.toggle("is-multi", rows.length > 1);
+}
+
+document.getElementById("addCareRecMedRow").addEventListener("click", () => {
+  const row = careRecMedRowTemplate.cloneNode(true);
+  careRecMedRows.appendChild(row);
+  row.querySelectorAll(".custom-select").forEach(wireCustomSelect);
+  syncCareRecMedRows();
+  row.querySelector(".custom-select-trigger")?.focus();
 });
+
+careRecMedRows.addEventListener("click", (e) => {
+  const btn = e.target.closest(".rec-med-remove");
+  if (!btn || careRecMedRows.children.length < 2) return;
+  btn.closest(".rec-med-row").remove();
+  syncCareRecMedRows();
+});
+
+/* Current Dose follows the medication picked in the same row */
+careRecMedRows.addEventListener("change", (e) => {
+  if (e.target.name !== "medication") return;
+  const med = medications.find((m) => m.name === e.target.value);
+  e.target.closest(".rec-med-row").querySelector(".rec-med-current-dose").value = med ? med.dose : "—";
+});
+syncCareRecMedRows();
 
 /* ---------------- Care Team multiselect ---------------- */
 const careRecCareTeamField = document.getElementById("careRecCareTeamField");
@@ -421,29 +454,36 @@ careRecCreateForm.addEventListener("submit", (e) => {
   e.preventDefault();
   const fd = new FormData(careRecCreateForm);
 
-  careRecs.unshift(
-    newCareRec({
-      medication: fd.get("medication"),
-      currentDose: document.getElementById("careRecCurrentDose").value,
-      newDose: fd.get("newDose"),
-      frequency: fd.get("frequency"),
-      duration: fd.get("duration"),
-      startDate: fd.get("startDate"),
-      instructionsPatient: fd.get("instructionsPatient"),
-      instructionsCareTeam: fd.get("instructionsCareTeam"),
-      invitePatient: fd.get("invitePatient") === "on",
-      assignedCareTeam: (fd.get("careTeam") || "").split(", ").filter(Boolean),
-    })
-  );
+  /* One recommendation per medication row */
+  const val = (row, name) => (row.querySelector(`[name="${name}"]`) || {}).value || "";
+  careRecMedRows.querySelectorAll(".rec-med-row").forEach((row) => {
+    careRecs.unshift(
+      newCareRec({
+        medication: val(row, "medication"),
+        currentDose: row.querySelector(".rec-med-current-dose").value,
+        newDose: val(row, "newDose"),
+        frequency: val(row, "frequency"),
+        duration: val(row, "duration"),
+        startDate: val(row, "startDate"),
+        instructionsPatient: fd.get("instructionsPatient"),
+        instructionsCareTeam: fd.get("instructionsCareTeam"),
+        invitePatient: fd.get("invitePatient") === "on",
+        assignedCareTeam: (fd.get("careTeam") || "").split(", ").filter(Boolean),
+      })
+    );
+  });
 
   careRecCreateForm.reset();
   resetCustomSelectsIn(careRecCreateForm);
-  document.getElementById("careRecCurrentDose").value = "—";
+  careRecMedRows.querySelectorAll(".rec-med-row:not(:first-child)").forEach((r) => r.remove());
+  careRecMedRows.querySelector(".rec-med-current-dose").value = "—";
+  syncCareRecMedRows();
   syncCareRecCareTeam();
 
   renderSummaryList();
 
-  document.querySelector('.rec-tab[data-rec-tab="summary"]').click();
+  /* No Summary tab: back to the chart's Care Recommendations list */
+  window.location.href = "patient-data.html?openTab=clinical&openSubtab=care-rec";
 });
 
 document.getElementById("cancelCareRecCreate").addEventListener("click", () => {
