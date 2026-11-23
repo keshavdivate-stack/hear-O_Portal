@@ -6250,7 +6250,12 @@ label.checkbox-field {
   .data-tab-panel[data-panel="clinical"] > .subtab-row { column-gap: 8px; }
   .data-tab-panel[data-panel="clinical"] > .subtab-row > .subtabs { gap: 8px; }
 }
-/* Care Recommendation: dose times are fixed by the frequency */
-.rec-med-row .dose-times-list { display: flex; flex-wrap: wrap; gap: 8px; }
-.dose-time-fixed { display: inline-flex; align-items: center; gap: 8px; padding: 9px 14px; border: 1px solid var(--gray-border); border-radius: 8px; background: #EEF2F6; font-size: 14px; color: #23272E; }
-.dose-time-fixed .dose-time-name { font-size: 12px; color: #6B7684; }
+/* Dose times sit in the cell right after Frequency (not a row of their own),
+   side by side; the order gives 1st / 2nd / 3rd dose (each input has an aria-label). */
+.form-grid .dose-times-field.full { grid-column: auto; }
+.dose-times-field .dose-times-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(96px, 1fr)); gap: 8px; }
+.dose-times-field .dose-time-name { display: none; }
+.dose-times-field .dose-time-item input[type="time"] { min-width: 0; padding-left: 10px; padding-right: 8px; }
+.dose-times-field .dose-times-list { grid-template-columns: repeat(auto-fit, minmax(66px, 1fr)); gap: 6px; }
+.dose-times-field .dose-time-item input[type="time"] { padding-left: 8px; padding-right: 4px; font-size: 13.5px; }
+.dose-times-field .dose-times-list { grid-template-columns: repeat(auto-fit, minmax(92px, 1fr)); gap: 6px; }
