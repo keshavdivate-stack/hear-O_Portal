@@ -63,13 +63,13 @@
     }).join(", ");
   };
 
-  ["addMedForm", "editMedForm"].forEach((id) => {
-    const form = document.getElementById(id);
+  function wireDoseTimes(form) {
     if (!form || !form.querySelector(".dose-times-field")) return;
     form.querySelector('input[name="frequency"]').addEventListener("change", () => render(form));
-    form.addEventListener("reset", () => setTimeout(() => render(form, null), 0));
+    if (form.tagName === "FORM") form.addEventListener("reset", () => setTimeout(() => render(form, null), 0));
     render(form);
-  });
+  }
+  ["addMedForm", "editMedForm"].forEach((id) => wireDoseTimes(document.getElementById(id)));
 
   /* ---------- How often (every day / every other day / specific days) and End date ---------- */
   const SPECIFIC = "On specific days of the week";
@@ -149,8 +149,16 @@
     return new Date(`${m.endDate}T00:00`).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
   };
 
-  ["addMedForm", "editMedForm"].forEach((id) => {
-    const form = document.getElementById(id);
+  /* Shows the Days / End date errors; true when the schedule is complete. */
+  function checkSchedule(form) {
+    const needDays = form.querySelector('input[name="howOften"]').value === SPECIFIC && !form.querySelector('input[name="days"]').value;
+    form.querySelector('[data-error="days"]').hidden = !needDays;
+    const endOk = checkEnd(form, true);
+    return !needDays && endOk;
+  }
+  window.medScheduleValid = checkSchedule;
+
+  function wireSchedule(form, id) {
     if (!form || !form.querySelector(".med-days-field")) return;
     form.querySelector('input[name="howOften"]').addEventListener("change", () => syncSchedule(form));
 
@@ -182,17 +190,21 @@
     form.querySelector('input[name="effectiveDateTime"]').addEventListener("input", () => checkEnd(form, true));
 
     // Runs before the page's own submit handler (capture), and stops it when the schedule is incomplete.
-    form.addEventListener("submit", (e) => {
-      const needDays = form.querySelector('input[name="howOften"]').value === SPECIFIC && !form.querySelector('input[name="days"]').value;
-      form.querySelector('[data-error="days"]').hidden = !needDays;
-      const endOk = checkEnd(form, true);
-      if (needDays || !endOk) { e.preventDefault(); e.stopImmediatePropagation(); }
+    if (form.tagName === "FORM") form.addEventListener("submit", (e) => {
+      if (!checkSchedule(form)) { e.preventDefault(); e.stopImmediatePropagation(); }
     }, true);
 
     // A new Add form starts on "Every day" and "Ongoing" (Edit is filled by openEditMedModal).
     if (id === "addMedForm") form.addEventListener("reset", () => setTimeout(() => window.setMedSchedule(form, {}), 0));
     window.setMedSchedule(form, {});
-  });
+  }
+  ["addMedForm", "editMedForm"].forEach((id) => wireSchedule(document.getElementById(id), id));
+
+  /* Any block holding the Add Medication fields (e.g. a Care Recommendation medication row). */
+  window.wireMedFields = function (root) {
+    wireDoseTimes(root);
+    wireSchedule(root, null);
+  };
 
   /* ---------- Medication card meta line ----------
      "40 mg · Once daily, 9:00 PM · Since Sep 2, no end date" for every medication. */

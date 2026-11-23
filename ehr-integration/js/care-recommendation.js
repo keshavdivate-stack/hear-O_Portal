@@ -378,7 +378,7 @@ document.addEventListener("keydown", (e) => {
 
 /* ---------------- Create New tab ---------------- */
 const careRecMedicationMenu = document.getElementById("careRecMedicationMenu");
-careRecMedicationMenu.innerHTML = medications
+if (careRecMedicationMenu) careRecMedicationMenu.innerHTML = medications
   .map(
     (m) => `
     <div class="custom-select-option" data-value="${m.name}">${m.name}<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>`
@@ -388,6 +388,8 @@ careRecMedicationMenu.innerHTML = medications
 /* ---------------- Medication rows: add more, remove the ones not needed ---------------- */
 const careRecMedRows = document.getElementById("careRecMedRows");
 const careRecMedRowTemplate = careRecMedRows.querySelector(".rec-med-row").cloneNode(true);
+/* Same fields as the Add Medication popup: dose times, how often / days, end date */
+if (window.wireMedFields) wireMedFields(careRecMedRows.querySelector(".rec-med-row"));
 careRecMedRowTemplate.querySelectorAll("[id]").forEach((el) => el.removeAttribute("id"));
 
 function syncCareRecMedRows() {
@@ -402,6 +404,7 @@ document.getElementById("addCareRecMedRow").addEventListener("click", () => {
   const row = careRecMedRowTemplate.cloneNode(true);
   careRecMedRows.appendChild(row);
   row.querySelectorAll(".custom-select").forEach(wireCustomSelect);
+  if (window.wireMedFields) wireMedFields(row);
   syncCareRecMedRows();
   row.querySelector(".custom-select-trigger")?.focus();
 });
@@ -413,12 +416,6 @@ careRecMedRows.addEventListener("click", (e) => {
   syncCareRecMedRows();
 });
 
-/* Current Dose follows the medication picked in the same row */
-careRecMedRows.addEventListener("change", (e) => {
-  if (e.target.name !== "medication") return;
-  const med = medications.find((m) => m.name === e.target.value);
-  e.target.closest(".rec-med-row").querySelector(".rec-med-current-dose").value = med ? med.dose : "—";
-});
 syncCareRecMedRows();
 
 /* ---------------- Care Team multiselect ---------------- */
@@ -454,17 +451,31 @@ careRecCreateForm.addEventListener("submit", (e) => {
   e.preventDefault();
   const fd = new FormData(careRecCreateForm);
 
+  /* Every row's schedule must be complete (Days / End date) */
+  const rowsOk = [...careRecMedRows.querySelectorAll(".rec-med-row")].map((row) => !window.medScheduleValid || window.medScheduleValid(row));
+  if (rowsOk.includes(false)) return;
+
   /* One recommendation per medication row */
   const val = (row, name) => (row.querySelector(`[name="${name}"]`) || {}).value || "";
   careRecMedRows.querySelectorAll(".rec-med-row").forEach((row) => {
     careRecs.unshift(
       newCareRec({
-        medication: val(row, "medication"),
-        currentDose: row.querySelector(".rec-med-current-dose").value,
-        newDose: val(row, "newDose"),
+        medication: val(row, "name"),
+        currentDose: "",
+        newDose: val(row, "amount").replace(/\s*mg$/i, ""),
         frequency: val(row, "frequency"),
-        duration: val(row, "duration"),
-        startDate: val(row, "startDate"),
+        duration: "",
+        startDate: val(row, "effectiveDateTime"),
+        drugCode: `${val(row, "drugCodeType")} ${val(row, "drugCodeValue")}`.trim(),
+        medStatus: val(row, "status"),
+        doseForm: val(row, "doseForm"),
+        dose: val(row, "dose"),
+        route: val(row, "route"),
+        howOften: val(row, "howOften"),
+        days: val(row, "days"),
+        endDate: val(row, "endMode") === "date" ? val(row, "endDate") : "",
+        doseTimes: [...row.querySelectorAll('input[name="doseTime"]')].map((i) => i.value),
+        directions: val(row, "sig"),
         instructionsPatient: fd.get("instructionsPatient"),
         instructionsCareTeam: fd.get("instructionsCareTeam"),
         invitePatient: fd.get("invitePatient") === "on",
@@ -476,7 +487,7 @@ careRecCreateForm.addEventListener("submit", (e) => {
   careRecCreateForm.reset();
   resetCustomSelectsIn(careRecCreateForm);
   careRecMedRows.querySelectorAll(".rec-med-row:not(:first-child)").forEach((r) => r.remove());
-  careRecMedRows.querySelector(".rec-med-current-dose").value = "—";
+  if (window.setMedSchedule) careRecMedRows.querySelectorAll(".rec-med-row").forEach((r) => setMedSchedule(r, {}));
   syncCareRecMedRows();
   syncCareRecCareTeam();
 
