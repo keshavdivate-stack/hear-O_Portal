@@ -51,16 +51,16 @@ wireTopbarToggle("careTeamTrigger", "careTeamPopover");
 
 /* Add care-team members from the Care Team popover. */
 const patientCareTeam = [
-  { name: "Dr. Sarah Mitchell", role: "Doctor Â· Provider" },
-  { name: "Amanda Lee", role: "Nurse Â· Care Team" },
-  { name: "Ayelet Er", role: "Nurse Â· Care Team" },
-  { name: "Sandy Kohl", role: "Nurse Â· Care Team" },
+  { name: "Dr. Sarah Mitchell", role: "Doctor · Provider" },
+  { name: "Amanda Lee", role: "Nurse · Care Team" },
+  { name: "Ayelet Er", role: "Nurse · Care Team" },
+  { name: "Sandy Kohl", role: "Nurse · Care Team" },
 ];
 const availableCareTeamMembers = [
-  { name: "Michael Chen", role: "Care Coordinator Â· Care Team" },
-  { name: "Priya Shah", role: "Pharmacist Â· Care Team" },
-  { name: "James Wilson", role: "Social Worker Â· Care Team" },
-  { name: "Elena Rodriguez", role: "Nurse Â· Care Team" },
+  { name: "Michael Chen", role: "Care Coordinator · Care Team" },
+  { name: "Priya Shah", role: "Pharmacist · Care Team" },
+  { name: "James Wilson", role: "Social Worker · Care Team" },
+  { name: "Elena Rodriguez", role: "Nurse · Care Team" },
 ];
 const careTeamPopover = document.getElementById("careTeamPopover");
 const careTeamTitle = careTeamPopover.querySelector(".care-team-popover-title");
@@ -664,7 +664,7 @@ function timeLabel(d) {
   const ampm = h >= 12 ? "PM" : "AM";
   h = h % 12 || 12;
   const m = String(d.getMinutes()).padStart(2, "0");
-  return { short: `${String(d.getDate()).padStart(2, "0")} ${months[d.getMonth()]} Â· ${h}:${m} ${ampm}`, full: `${String(d.getDate()).padStart(2, "0")} ${months[d.getMonth()]} ${d.getFullYear()}, ${h}:${m} ${ampm}` };
+  return { short: `${String(d.getDate()).padStart(2, "0")} ${months[d.getMonth()]} · ${h}:${m} ${ampm}`, full: `${String(d.getDate()).padStart(2, "0")} ${months[d.getMonth()]} ${d.getFullYear()}, ${h}:${m} ${ampm}` };
 }
 
 let careRecIdSeq = 4;
@@ -691,10 +691,10 @@ const careRecs = [
     completedOn: "06 Aug 2026, 10:05 AM",
     patientAcknowledgedAt: "06 Aug 2026, 09:20 AM",
     activity: [
-      { who: "Dr. Sarah Mitchell", when: "05 Aug Â· 09:10 AM", text: "Created care recommendation." },
-      { who: "Amanda Lee, RN", when: "05 Aug Â· 09:40 AM", text: "Picked up recommendation." },
-      { who: "Amanda Lee, RN", when: "06 Aug Â· 10:05 AM", label: "Action taken: Patient contacted", short: "Patient contacted", note: "Confirmed new dose is tolerated so far; monitoring for dizziness and weight changes over the next few days." },
-      { who: "Amanda Lee, RN", when: "06 Aug Â· 10:05 AM", label: "Marked recommendation as Completed.", short: "Completed" },
+      { who: "Dr. Sarah Mitchell", when: "05 Aug · 09:10 AM", text: "Created care recommendation." },
+      { who: "Amanda Lee, RN", when: "05 Aug · 09:40 AM", text: "Picked up recommendation." },
+      { who: "Amanda Lee, RN", when: "06 Aug · 10:05 AM", label: "Action taken: Patient contacted", short: "Patient contacted", note: "Confirmed new dose is tolerated so far; monitoring for dizziness and weight changes over the next few days." },
+      { who: "Amanda Lee, RN", when: "06 Aug · 10:05 AM", label: "Marked recommendation as Completed.", short: "Completed" },
     ],
   },
   {
@@ -714,15 +714,15 @@ const careRecs = [
     createdAt: "08 Aug 2026, 11:00 AM",
     updatedAt: "08 Aug 2026, 02:15 PM",
     pickedUpBy: "Amanda Lee, RN",
-    actionTaken: "Patient contacted â€” mild dizziness reported on standing, no other symptoms. Heart rate readings within range.",
+    actionTaken: "Patient contacted — mild dizziness reported on standing, no other symptoms. Heart rate readings within range.",
     completedBy: "Amanda Lee, RN",
     completedOn: "08 Aug 2026, 02:15 PM",
     patientAcknowledgedAt: "08 Aug 2026, 01:05 PM",
     activity: [
-      { who: "Dr. Sarah Mitchell", when: "08 Aug Â· 11:00 AM", text: "Created care recommendation." },
-      { who: "Amanda Lee, RN", when: "08 Aug Â· 11:20 AM", text: "Picked up recommendation." },
-      { who: "Amanda Lee, RN", when: "08 Aug Â· 02:15 PM", label: "Action taken: Patient contacted", short: "Patient contacted", note: "Patient reports mild dizziness on standing; no other symptoms. Heart rate readings within range." },
-      { who: "Amanda Lee, RN", when: "08 Aug Â· 02:15 PM", label: "Marked recommendation as Completed.", short: "Completed" },
+      { who: "Dr. Sarah Mitchell", when: "08 Aug · 11:00 AM", text: "Created care recommendation." },
+      { who: "Amanda Lee, RN", when: "08 Aug · 11:20 AM", text: "Picked up recommendation." },
+      { who: "Amanda Lee, RN", when: "08 Aug · 02:15 PM", label: "Action taken: Patient contacted", short: "Patient contacted", note: "Patient reports mild dizziness on standing; no other symptoms. Heart rate readings within range." },
+      { who: "Amanda Lee, RN", when: "08 Aug · 02:15 PM", label: "Marked recommendation as Completed.", short: "Completed" },
     ],
   },
   {
@@ -747,12 +747,12 @@ const careRecs = [
     completedOn: "07 Aug 2026, 04:10 PM",
     patientAcknowledgedAt: "07 Aug 2026, 10:30 AM",
     activity: [
-      { who: "Dr. Sarah Mitchell", when: "07 Aug Â· 09:00 AM", text: "Created care recommendation." },
-      { who: "Amanda Lee, RN", when: "07 Aug Â· 09:40 AM", text: "Picked up recommendation." },
-      { who: "Amanda Lee, RN", when: "07 Aug Â· 11:15 AM", label: "Action taken: Patient contacted", short: "Patient contacted", note: "Patient confirmed the missed doses; reported confusion about the evening dose schedule." },
-      { who: "Dr. Sarah Mitchell", when: "07 Aug Â· 01:00 PM", label: "Added a note", short: "Added a note", note: "Please clarify the evening dose timing with the patient." },
-      { who: "Amanda Lee, RN", when: "07 Aug Â· 03:00 PM", label: "Action taken", short: "Reviewed dose timing", note: "Clarified evening dose timing with the patient; adherence confirmed going forward." },
-      { who: "Amanda Lee, RN", when: "07 Aug Â· 04:10 PM", label: "Marked recommendation as Completed.", short: "Completed" },
+      { who: "Dr. Sarah Mitchell", when: "07 Aug · 09:00 AM", text: "Created care recommendation." },
+      { who: "Amanda Lee, RN", when: "07 Aug · 09:40 AM", text: "Picked up recommendation." },
+      { who: "Amanda Lee, RN", when: "07 Aug · 11:15 AM", label: "Action taken: Patient contacted", short: "Patient contacted", note: "Patient confirmed the missed doses; reported confusion about the evening dose schedule." },
+      { who: "Dr. Sarah Mitchell", when: "07 Aug · 01:00 PM", label: "Added a note", short: "Added a note", note: "Please clarify the evening dose timing with the patient." },
+      { who: "Amanda Lee, RN", when: "07 Aug · 03:00 PM", label: "Action taken", short: "Reviewed dose timing", note: "Clarified evening dose timing with the patient; adherence confirmed going forward." },
+      { who: "Amanda Lee, RN", when: "07 Aug · 04:10 PM", label: "Marked recommendation as Completed.", short: "Completed" },
     ],
   },
 ];
@@ -904,16 +904,14 @@ function openRecDrawer(id) {
   statusEl.textContent = meta.label;
   statusEl.className = `rec-status-chip ${meta.cls}`;
 
-  document.getElementById("recDrawerMedication").textContent = rec.medication || "â€”";
-  document.getElementById("recDrawerDoseChange").textContent = rec.currentDose ? `${rec.currentDose} â†’ ${rec.newDose} mg` : `${rec.newDose} mg`;
-  document.getElementById("recDrawerFrequency").textContent = rec.frequency || "â€”";
-  document.getElementById("recDrawerDuration").textContent = rec.duration ? `${rec.duration} days` : "â€”";
-  document.getElementById("recDrawerStartDate").textContent = rec.startDate || "â€”";
   document.getElementById("recDrawerInvite").textContent = rec.invitePatient ? "Yes" : "No";
-  document.getElementById("recDrawerCareTeam").textContent = rec.assignedCareTeam && rec.assignedCareTeam.length ? rec.assignedCareTeam.join(", ") : "â€”";
+  document.getElementById("recDrawerCareTeam").textContent = rec.assignedCareTeam && rec.assignedCareTeam.length ? rec.assignedCareTeam.join(", ") : "—";
 
-  document.getElementById("recDrawerInstructionPatient").textContent = rec.instructionsPatient || "â€”";
-  document.getElementById("recDrawerInstructionCareTeam").textContent = rec.instructionsCareTeam || "â€”";
+  /* Medications: same fields as Create */
+  document.getElementById("recDrawerMeds").innerHTML = renderCareRecMedsView(rec);
+
+  document.getElementById("recDrawerInstructionPatient").textContent = rec.instructionsPatient || "—";
+  document.getElementById("recDrawerInstructionCareTeam").textContent = rec.instructionsCareTeam || "—";
 
   const actionTakenSection = document.getElementById("recDrawerActionTakenSection");
   if (rec.actionTaken) {
@@ -927,15 +925,15 @@ function openRecDrawer(id) {
   document.getElementById("recDrawerCreatedAt").textContent = rec.createdAt;
   document.getElementById("recDrawerUpdatedAt").textContent = rec.updatedAt;
   document.getElementById("recDrawerPickedUp").textContent = rec.pickedUpBy || "Not yet assigned";
-  document.getElementById("recDrawerAck").textContent = rec.patientAcknowledgedAt ? `Yes Â· ${rec.patientAcknowledgedAt}` : "Not yet acknowledged";
+  document.getElementById("recDrawerAck").textContent = rec.patientAcknowledgedAt ? `Yes · ${rec.patientAcknowledgedAt}` : "Not yet acknowledged";
 
   const completedByWrap = document.getElementById("recDrawerCompletedByWrap");
   const completedOnWrap = document.getElementById("recDrawerCompletedOnWrap");
   if (rec.status === "completed") {
     completedByWrap.style.display = "";
     completedOnWrap.style.display = "";
-    document.getElementById("recDrawerCompletedBy").textContent = rec.completedBy || "â€”";
-    document.getElementById("recDrawerCompletedOn").textContent = rec.completedOn || "â€”";
+    document.getElementById("recDrawerCompletedBy").textContent = rec.completedBy || "—";
+    document.getElementById("recDrawerCompletedOn").textContent = rec.completedOn || "—";
   } else {
     completedByWrap.style.display = "none";
     completedOnWrap.style.display = "none";
@@ -1059,7 +1057,7 @@ const medications = [
     warning: "NSAIDs may worsen fluid retention in HF", adherence: dailyAdherence([1, 3, 5, 7, 9, 11, 13], [15, 17, 19, 21, 23, 25, 27, 29]), partialIdx: [2, 6, 10, 16, 22, 26], source: "Patient", srcClass: "src-patient", patientReason: "I took this medication because I had a headache and joint pain. It helped with the pain and I felt better after taking it.", patientReasonDate: "2026-12-12", status: "past",
     ehrStatus: "Inactive", doseForm: "Tablet", manufacturer: "Other", ingredient: "Ibuprofen", amount: "200 mg",
     effectiveDateTime: "2025-11-02T09:00", route: "Oral", sig: "Take as needed for pain, not to exceed 3 tablets per day",
-    statusReason: "Adverse reaction", lotNumber: "â€”", expiryDate: "2025-12-01",
+    statusReason: "Adverse reaction", lotNumber: "—", expiryDate: "2025-12-01",
   },
   {
     hf: false, name: "Atorvastatin", cls: "Statin", freq: "Daily", dose: "20 mg", schedule: "Once daily, evening",
@@ -1074,18 +1072,12 @@ medications.forEach((m, i) => (m.id = i));
 let nextMedId = medications.length;
 
 /* ---------------- Care Recommendation: Edit ---------------- */
-const editRecMedicationMenu = document.getElementById("editRecMedicationMenu");
-editRecMedicationMenu.innerHTML = medications
-  .map(
-    (m) => `
-    <div class="custom-select-option" data-value="${m.name}">${m.name}<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>`
-  )
-  .join("");
-
-document.getElementById("editRecMedicationSelect").addEventListener("change", (e) => {
-  const med = medications.find((m) => m.name === e.target.value);
-  document.getElementById("editRecCurrentDose").value = med ? med.dose : "â€”";
-});
+/* Medication cards, same as Create (wired on first open, after the page's custom selects) */
+let editRecMedsCtl = null;
+function editRecMeds() {
+  if (!editRecMedsCtl) editRecMedsCtl = wireCareRecMedRows(document.getElementById("editRecMedRows"), document.getElementById("addEditRecMedRow"));
+  return editRecMedsCtl;
+}
 
 const editRecCareTeamField = document.getElementById("editRecCareTeamField");
 const editRecCareTeamTrigger = editRecCareTeamField.querySelector(".care-team-trigger");
@@ -1123,12 +1115,7 @@ function openEditRecModal(id) {
   editRecForm.reset();
   resetCustomSelectsIn(editRecForm);
 
-  setCustomSelectValue(editRecForm.querySelector('.custom-select[data-name="medication"]'), rec.medication || "", { silent: true });
-  document.getElementById("editRecCurrentDose").value = rec.currentDose || "â€”";
-  editRecForm.newDose.value = rec.newDose || "";
-  setCustomSelectValue(editRecForm.querySelector('.custom-select[data-name="frequency"]'), rec.frequency || "", { silent: true });
-  editRecForm.duration.value = rec.duration || "";
-  editRecForm.startDate.value = rec.startDate || "";
+  editRecMeds().set(careRecMeds(rec));
   editRecForm.instructionsPatient.value = rec.instructionsPatient || "";
   editRecForm.instructionsCareTeam.value = rec.instructionsCareTeam || "";
   editRecForm.invitePatient.checked = !!rec.invitePatient;
@@ -1157,13 +1144,8 @@ editRecForm.addEventListener("submit", (e) => {
   const fd = new FormData(editRecForm);
   const t = timeLabel(new Date());
 
-  rec.medication = fd.get("medication");
-  rec.title = `${rec.medication} dose change`;
-  rec.currentDose = document.getElementById("editRecCurrentDose").value;
-  rec.newDose = fd.get("newDose");
-  rec.frequency = fd.get("frequency");
-  rec.duration = fd.get("duration");
-  rec.startDate = fd.get("startDate");
+  if (!editRecMeds().valid()) return;
+  applyCareRecMeds(rec, editRecMeds().read());
   rec.instructionsPatient = fd.get("instructionsPatient");
   rec.instructionsCareTeam = fd.get("instructionsCareTeam");
   rec.invitePatient = fd.get("invitePatient") === "on";
@@ -1206,7 +1188,7 @@ function filteredMeds() {
 const medInfoIcon = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.7"/><rect x="11.2" y="10.3" width="1.6" height="6" rx="0.8" fill="currentColor"/><rect x="11.2" y="7" width="1.6" height="1.7" rx="0.8" fill="currentColor"/></svg>`;
 
 function medInfoRow(label, value) {
-  return `<div class="med-info-row"><span class="med-info-label">${label}</span><span class="med-info-value">${value || "â€”"}</span></div>`;
+  return `<div class="med-info-row"><span class="med-info-label">${label}</span><span class="med-info-value">${value || "—"}</span></div>`;
 }
 
 function medInfoDateTime(v) {
@@ -1445,7 +1427,7 @@ function renderQuestionnaire() {
       const tags = [];
       if (q.answerType === "value") {
         const unitsNote = q.units?.length ? ` (${q.units.join(" / ")})` : "";
-        tags.push(`Value entry${q.valueLabel ? ` â€” ${q.valueLabel}` : ""}${unitsNote}`);
+        tags.push(`Value entry${q.valueLabel ? ` — ${q.valueLabel}` : ""}${unitsNote}`);
       }
       const tagsHtml = tags.length
         ? `<div class="quest-config-tags">${tags.map((t) => `<span class="quest-config-tag">${t}</span>`).join("")}</div>`

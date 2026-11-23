@@ -6216,3 +6216,20 @@ label.checkbox-field {
 .data-tab-panel[data-panel="clinical"] > .subtab-row .btn-sync { padding: 6px 10px; gap: 6px; }
 /* Medication card: light tint instead of a shadow */
 .rec-med-row { background: #F5F8FB; box-shadow: none; border-color: #E3E9EF; }
+
+/* Care Recommendation View: the medications, read-only, laid out like the Create form */
+.rec-drawer-meds:empty { display: none; }
+.rec-view-meds-title { margin-bottom: 10px; }
+.rec-med-view + .rec-med-view { margin-top: 10px; }
+.rec-med-view .rec-med-row-title { display: block; margin-bottom: 10px; }
+.rec-view-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px 16px; }
+.rec-view-field.full { grid-column: 1 / -1; }
+.rec-view-field .drawer-label { margin-bottom: 3px; }
+.rec-view-field .rec-info-value { overflow-wrap: anywhere; }
+/* Care Recommendation Edit: same medication cards as Create */
+.rec-edit-meds { margin-bottom: 18px; }
+/* View: disabled form fields */
+.rec-view-grid.form-grid { gap: 14px 16px; }
+.rec-view-field.form-field { margin-bottom: 0; }
+.rec-view-field.full { grid-column: 1 / -1; }
+.rec-view-field input:disabled, .rec-view-field textarea:disabled { background: #fff; color: #23272E; -webkit-text-fill-color: #23272E; opacity: 1; cursor: default; resize: none; }

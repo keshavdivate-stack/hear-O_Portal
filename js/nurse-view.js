@@ -754,12 +754,10 @@ function openRecDrawer(id) {
   statusEl.textContent = meta.label;
   statusEl.className = `rec-status-chip ${meta.cls}`;
 
-  document.getElementById("recDrawerMedication").textContent = rec.medication || "—";
-  document.getElementById("recDrawerDoseChange").textContent = rec.currentDose ? `${rec.currentDose} → ${rec.newDose} mg` : `${rec.newDose} mg`;
-  document.getElementById("recDrawerFrequency").textContent = rec.frequency || "—";
-  document.getElementById("recDrawerDuration").textContent = rec.duration ? `${rec.duration} days` : "—";
-  document.getElementById("recDrawerStartDate").textContent = rec.startDate || "—";
   document.getElementById("recDrawerInvite").textContent = rec.invitePatient ? "Yes" : "No";
+
+  /* Medications: same fields as Create */
+  document.getElementById("recDrawerMeds").innerHTML = renderCareRecMedsView(rec);
 
   document.getElementById("recDrawerInstructionPatient").textContent = rec.instructionsPatient || "—";
   document.getElementById("recDrawerInstructionCareTeam").textContent = rec.instructionsCareTeam || "—";

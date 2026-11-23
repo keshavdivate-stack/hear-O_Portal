@@ -355,13 +355,11 @@ function openRecDrawer(id) {
   statusEl.textContent = meta.label;
   statusEl.className = `rec-status-chip ${meta.cls}`;
 
-  document.getElementById("recDrawerMedication").textContent = rec.medication || "—";
-  document.getElementById("recDrawerDoseChange").textContent = rec.currentDose ? `${rec.currentDose} → ${rec.newDose} mg` : `${rec.newDose} mg`;
-  document.getElementById("recDrawerFrequency").textContent = rec.frequency || "—";
-  document.getElementById("recDrawerDuration").textContent = rec.duration ? `${rec.duration} days` : "—";
-  document.getElementById("recDrawerStartDate").textContent = rec.startDate || "—";
   document.getElementById("recDrawerInvite").textContent = rec.invitePatient ? "Yes" : "No";
   document.getElementById("recDrawerCareTeam").textContent = rec.assignedCareTeam && rec.assignedCareTeam.length ? rec.assignedCareTeam.join(", ") : "—";
+
+  /* Medications: same fields as Create */
+  document.getElementById("recDrawerMeds").innerHTML = renderCareRecMedsView(rec);
 
   document.getElementById("recDrawerInstructionPatient").textContent = rec.instructionsPatient || "—";
   document.getElementById("recDrawerInstructionCareTeam").textContent = rec.instructionsCareTeam || "—";
@@ -482,34 +480,19 @@ careRecCreateForm.addEventListener("submit", (e) => {
   const rowsOk = [...careRecMedRows.querySelectorAll(".rec-med-row")].map((row) => !window.medScheduleValid || window.medScheduleValid(row));
   if (rowsOk.includes(false)) return;
 
-  /* One recommendation per medication row */
-  const val = (row, name) => (row.querySelector(`[name="${name}"]`) || {}).value || "";
-  careRecMedRows.querySelectorAll(".rec-med-row").forEach((row) => {
-    careRecs.unshift(
+  /* One recommendation with every medication (same fields as Add Medication) */
+  const meds = [...careRecMedRows.querySelectorAll(".rec-med-row")].map(readCareRecMedRow);
+  careRecs.unshift(
+    applyCareRecMeds(
       newCareRec({
-        medication: val(row, "name"),
-        currentDose: "",
-        newDose: val(row, "amount").replace(/\s*mg$/i, ""),
-        frequency: val(row, "frequency"),
-        duration: "",
-        startDate: val(row, "effectiveDateTime"),
-        drugCode: `${val(row, "drugCodeType")} ${val(row, "drugCodeValue")}`.trim(),
-        medStatus: val(row, "status"),
-        doseForm: val(row, "doseForm"),
-        dose: val(row, "dose"),
-        route: val(row, "route"),
-        howOften: val(row, "howOften"),
-        days: val(row, "days"),
-        endDate: val(row, "endMode") === "date" ? val(row, "endDate") : "",
-        doseTimes: [...row.querySelectorAll('input[name="doseTime"]')].map((i) => i.value),
-        directions: val(row, "sig"),
         instructionsPatient: fd.get("instructionsPatient"),
         instructionsCareTeam: fd.get("instructionsCareTeam"),
         invitePatient: fd.get("invitePatient") === "on",
         assignedCareTeam: (fd.get("careTeam") || "").split(", ").filter(Boolean),
-      })
-    );
-  });
+      }),
+      meds
+    )
+  );
 
   careRecCreateForm.reset();
   resetCustomSelectsIn(careRecCreateForm);

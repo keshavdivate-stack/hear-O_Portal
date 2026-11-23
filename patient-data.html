@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="css/style.css?v=5" />
+<link rel="stylesheet" href="css/style.css?v=6" />
 </head>
 <body>
 
@@ -285,19 +285,19 @@
                   <div class="care-team-popover-title">Care Team</div>
                   <div class="care-team-popover-item">
                     <span class="care-team-popover-name">Dr. Sarah Mitchell</span>
-                    <span class="care-team-popover-role">Doctor Â· Provider</span>
+                    <span class="care-team-popover-role">Doctor · Provider</span>
                   </div>
                   <div class="care-team-popover-item">
                     <span class="care-team-popover-name">Amanda Lee</span>
-                    <span class="care-team-popover-role">Nurse Â· Care Team</span>
+                    <span class="care-team-popover-role">Nurse · Care Team</span>
                   </div>
                   <div class="care-team-popover-item">
                     <span class="care-team-popover-name">Ayelet Er</span>
-                    <span class="care-team-popover-role">Nurse Â· Care Team</span>
+                    <span class="care-team-popover-role">Nurse · Care Team</span>
                   </div>
                   <div class="care-team-popover-item">
                     <span class="care-team-popover-name">Sandy Kohl</span>
-                    <span class="care-team-popover-role">Nurse Â· Care Team</span>
+                    <span class="care-team-popover-role">Nurse · Care Team</span>
                   </div>
                 </div>
               </div>
@@ -1385,27 +1385,9 @@
         <span class="rec-status-chip" id="recDrawerStatus"></span>
       </div>
 
+      <div class="drawer-section rec-drawer-meds" id="recDrawerMeds"></div>
+
       <div class="drawer-section rec-info-grid">
-        <div>
-          <div class="drawer-label">Medication</div>
-          <div class="rec-info-value" id="recDrawerMedication"></div>
-        </div>
-        <div>
-          <div class="drawer-label">Dose Change</div>
-          <div class="rec-info-value" id="recDrawerDoseChange"></div>
-        </div>
-        <div>
-          <div class="drawer-label">Frequency</div>
-          <div class="rec-info-value" id="recDrawerFrequency"></div>
-        </div>
-        <div>
-          <div class="drawer-label">Duration</div>
-          <div class="rec-info-value" id="recDrawerDuration"></div>
-        </div>
-        <div>
-          <div class="drawer-label">Start Date</div>
-          <div class="rec-info-value" id="recDrawerStartDate"></div>
-        </div>
         <div>
           <div class="drawer-label">Invite Patient</div>
           <div class="rec-info-value" id="recDrawerInvite"></div>
@@ -1474,50 +1456,176 @@
     <div class="modal modal-wide">
       <h2>Edit Care Recommendation</h2>
       <form id="editRecForm">
-        <div class="form-grid">
-          <div class="form-field">
-            <label>Medication<span class="required-star">*</span></label>
-            <div class="custom-select" data-name="medication" id="editRecMedicationSelect">
-              <button type="button" class="custom-select-trigger">
-                <span class="custom-select-value placeholder">Select medication</span>
-                <svg class="custom-select-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </button>
-              <div class="custom-select-menu" id="editRecMedicationMenu"></div>
-              <input type="hidden" name="medication" required />
+        <div class="rec-form-section rec-edit-meds">
+          <h3 class="rec-form-section-title">Medication Details</h3>
+        <div class="rec-med-rows" id="editRecMedRows">
+          <div class="rec-med-row">
+            <div class="rec-med-row-head">
+              <span class="rec-med-row-title">Medication 1</span>
+              <button type="button" class="rec-med-remove" aria-label="Remove medication" title="Remove medication"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16"/><path d="M10 11v6M14 11v6"/><path d="M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12"/><path d="M9 7V4h6v3"/></svg></button>
             </div>
-          </div>
-          <div class="form-field">
-            <label>Current Dose</label>
-            <div class="unit-input"><input type="text" id="editRecCurrentDose" value="â€”" disabled /></div>
-          </div>
-          <div class="form-field">
-            <label>New Dose<span class="required-star">*</span></label>
-            <div class="unit-input"><input type="number" name="newDose" min="0" step="0.5" placeholder="e.g. 80" required /><span>mg</span></div>
-          </div>
-          <div class="form-field">
-            <label>Frequency<span class="required-star">*</span></label>
-            <div class="custom-select" data-name="frequency">
-              <button type="button" class="custom-select-trigger">
-                <span class="custom-select-value placeholder">Select frequency</span>
-                <svg class="custom-select-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </button>
-              <div class="custom-select-menu">
-                <div class="custom-select-option" data-value="Once Daily">Once Daily<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                <div class="custom-select-option" data-value="Twice Daily">Twice Daily<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                <div class="custom-select-option" data-value="Three Times Daily">Three Times Daily<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                <div class="custom-select-option" data-value="As Needed">As Needed<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="form-grid">
+              <div class="form-field">
+                <label>Medication<span class="required-star">*</span></label>
+                <input type="text" name="name" placeholder="Search medication..." required />
               </div>
-              <input type="hidden" name="frequency" required />
+              <div class="form-field">
+                <label>Drug Code<span class="required-star">*</span></label>
+                <div class="med-code-field">
+                  <div class="custom-select med-code-system" data-name="drugCodeType">
+                    <button type="button" class="custom-select-trigger">
+                      <span class="custom-select-value">RxNorm</span>
+                      <svg class="custom-select-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                    </button>
+                    <div class="custom-select-menu">
+                      <div class="custom-select-option selected" data-value="RxNorm">RxNorm<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                      <div class="custom-select-option" data-value="NDC">NDC<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    </div>
+                    <input type="hidden" name="drugCodeType" value="RxNorm" />
+                  </div>
+                  <input type="text" name="drugCodeValue" placeholder="Enter code" required />
+                </div>
+              </div>
+              <div class="form-field">
+                <label>Status<span class="required-star">*</span></label>
+                <div class="custom-select" data-name="status">
+                  <button type="button" class="custom-select-trigger">
+                    <span class="custom-select-value placeholder">Select status</span>
+                    <svg class="custom-select-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                  </button>
+                  <div class="custom-select-menu">
+                    <div class="custom-select-option" data-value="Active">Active<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    <div class="custom-select-option" data-value="Inactive">Inactive<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                  </div>
+                  <input type="hidden" name="status" required />
+                </div>
+              </div>
+              <div class="form-field">
+                <label>Dose Form</label>
+                <div class="custom-select" data-name="doseForm">
+                  <button type="button" class="custom-select-trigger">
+                    <span class="custom-select-value placeholder">Select dose form</span>
+                    <svg class="custom-select-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                  </button>
+                  <div class="custom-select-menu">
+                    <div class="custom-select-option" data-value="Tablet">Tablet<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    <div class="custom-select-option" data-value="Capsule">Capsule<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    <div class="custom-select-option" data-value="Liquid">Liquid<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    <div class="custom-select-option" data-value="Injection">Injection<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    <div class="custom-select-option" data-value="Topical">Topical<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    <div class="custom-select-option" data-value="Inhaler">Inhaler<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    <div class="custom-select-option" data-value="Patch">Patch<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    <div class="custom-select-option" data-value="Suppository">Suppository<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    <div class="custom-select-option" data-value="Other">Other<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                  </div>
+                  <input type="hidden" name="doseForm" />
+                </div>
+              </div>
+              <div class="form-field">
+                <label>Amount</label>
+                <input type="text" name="amount" placeholder="e.g. 40 mg" />
+              </div>
+              <div class="form-field">
+                <label>Dose</label>
+                <input type="text" name="dose" placeholder="e.g. 1 tablet" />
+              </div>
+              <div class="form-field">
+                <label>Route</label>
+                <div class="custom-select" data-name="route">
+                  <button type="button" class="custom-select-trigger">
+                    <span class="custom-select-value placeholder">Select route</span>
+                    <svg class="custom-select-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                  </button>
+                  <div class="custom-select-menu">
+                    <div class="custom-select-option" data-value="Oral">Oral<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    <div class="custom-select-option" data-value="Intravenous">Intravenous<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    <div class="custom-select-option" data-value="Subcutaneous">Subcutaneous<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    <div class="custom-select-option" data-value="Intramuscular">Intramuscular<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    <div class="custom-select-option" data-value="Topical">Topical<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    <div class="custom-select-option" data-value="Inhalation">Inhalation<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    <div class="custom-select-option" data-value="Sublingual">Sublingual<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    <div class="custom-select-option" data-value="Rectal">Rectal<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    <div class="custom-select-option" data-value="Ophthalmic">Ophthalmic<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    <div class="custom-select-option" data-value="Other">Other<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                  </div>
+                  <input type="hidden" name="route" />
+                </div>
+              </div>
+              <div class="form-field">
+                <label>How Often<span class="required-star">*</span></label>
+                <div class="custom-select" data-name="howOften">
+                  <button type="button" class="custom-select-trigger">
+                    <span class="custom-select-value placeholder">Select how often</span>
+                    <svg class="custom-select-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                  </button>
+                  <div class="custom-select-menu">
+                    <div class="custom-select-option" data-value="Every day">Every day<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    <div class="custom-select-option" data-value="Every other day">Every other day<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    <div class="custom-select-option" data-value="On specific days of the week">On specific days of the week<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                  </div>
+                  <input type="hidden" name="howOften" required />
+                </div>
+              </div>
+              <div class="form-field med-days-field" hidden>
+                <label>Days<span class="required-star">*</span></label>
+                <div class="med-days-select">
+                  <button type="button" class="custom-select-trigger med-days-trigger" aria-haspopup="true" aria-expanded="false">
+                    <span class="custom-select-value placeholder">Select days</span>
+                    <svg class="custom-select-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                  </button>
+                  <div class="med-days-menu" role="group" aria-label="Days of the week">
+                    <label class="med-days-option"><input type="checkbox" value="Mon" /> Monday</label>
+                    <label class="med-days-option"><input type="checkbox" value="Tue" /> Tuesday</label>
+                    <label class="med-days-option"><input type="checkbox" value="Wed" /> Wednesday</label>
+                    <label class="med-days-option"><input type="checkbox" value="Thu" /> Thursday</label>
+                    <label class="med-days-option"><input type="checkbox" value="Fri" /> Friday</label>
+                    <label class="med-days-option"><input type="checkbox" value="Sat" /> Saturday</label>
+                    <label class="med-days-option"><input type="checkbox" value="Sun" /> Sunday</label>
+                  </div>
+                </div>
+                <input type="hidden" name="days" />
+                <p class="med-field-error" data-error="days" hidden>Choose at least one day.</p>
+              </div>
+              <div class="form-field">
+                <label>Effective Date</label>
+                <input type="date" name="effectiveDateTime" />
+              </div>
+              <div class="form-field med-end-field">
+                <div class="med-end-head">
+                  <label>End Date</label>
+                  <label class="med-ongoing"><input type="checkbox" class="med-ongoing-check" checked /> Ongoing</label>
+                </div>
+                <input type="hidden" name="endMode" value="ongoing" />
+                <input type="date" name="endDate" class="med-end-date" aria-label="End date" disabled />
+                <p class="med-field-error" data-error="end" hidden>End date can't be before the effective date.</p>
+              </div>
+              <div class="form-field">
+                <label>Frequency<span class="required-star">*</span></label>
+                <div class="custom-select" data-name="frequency">
+                  <button type="button" class="custom-select-trigger">
+                    <span class="custom-select-value placeholder">Select Frequency</span>
+                    <svg class="custom-select-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                  </button>
+                  <div class="custom-select-menu">
+                    <div class="custom-select-option" data-value="Once Daily">Once Daily<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    <div class="custom-select-option" data-value="Twice Daily">Twice Daily<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    <div class="custom-select-option" data-value="Three Times Daily">Three Times Daily<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                  </div>
+                  <input type="hidden" name="frequency" required />
+                </div>
+              </div>
+              <div class="form-field full dose-times-field" hidden>
+                <label class="dose-times-label">Dose Times</label>
+                <div class="dose-times-list"></div>
+              </div>
+              <div class="form-field full">
+                <label>Directions</label>
+                <textarea name="sig" rows="3" placeholder="e.g. Take one tablet by mouth daily"></textarea>
+              </div>
             </div>
-          </div>
-          <div class="form-field">
-            <label>Duration<span class="required-star">*</span></label>
-            <div class="unit-input"><input type="number" name="duration" min="1" step="1" placeholder="e.g. 14" required /><span>days</span></div>
-          </div>
-          <div class="form-field">
-            <label>Start Date</label>
-            <input type="date" name="startDate" />
-          </div>
+              </div>
+        </div>
+        <button type="button" class="rec-add-med-btn" id="addEditRecMedRow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Add Medication</button>
         </div>
 
         <div class="form-field" style="margin-top: 18px;">
@@ -1564,7 +1672,8 @@
 <script src="js/proto-chart-view.js?v=2"></script>
 <script src="js/table-scroll.js"></script>
 <script src="js/med-dose-times.js?v=9"></script>
-<script src="js/patient-data.js?v=3"></script>
+<script src="js/care-rec-meds.js"></script>
+<script src="js/patient-data.js?v=4"></script>
 <script src="js/med-commercial.js"></script>
 <script src="js/chart-pan.js"></script>
 <script src="js/overview-pan.js"></script>

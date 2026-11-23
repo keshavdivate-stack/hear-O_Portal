@@ -803,13 +803,11 @@ function openRecDrawer(id) {
   statusEl.textContent = meta.label;
   statusEl.className = `rec-status-chip ${meta.cls}`;
 
-  document.getElementById("recDrawerMedication").textContent = rec.medication || "—";
-  document.getElementById("recDrawerDoseChange").textContent = rec.currentDose ? `${rec.currentDose} → ${rec.newDose} mg` : `${rec.newDose} mg`;
-  document.getElementById("recDrawerFrequency").textContent = rec.frequency || "—";
-  document.getElementById("recDrawerDuration").textContent = rec.duration ? `${rec.duration} days` : "—";
-  document.getElementById("recDrawerStartDate").textContent = rec.startDate || "—";
   document.getElementById("recDrawerInvite").textContent = rec.invitePatient ? "Yes" : "No";
   document.getElementById("recDrawerCareTeam").textContent = rec.assignedCareTeam && rec.assignedCareTeam.length ? rec.assignedCareTeam.join(", ") : "—";
+
+  /* Medications: same fields as Create */
+  document.getElementById("recDrawerMeds").innerHTML = renderCareRecMedsView(rec);
 
   document.getElementById("recDrawerInstructionPatient").textContent = rec.instructionsPatient || "—";
   document.getElementById("recDrawerInstructionCareTeam").textContent = rec.instructionsCareTeam || "—";
@@ -1564,18 +1562,12 @@ medications.forEach((m, i) => (m.id = i));
 let nextMedId = medications.length;
 
 /* ---------------- Care Recommendation: Edit ---------------- */
-const editRecMedicationMenu = document.getElementById("editRecMedicationMenu");
-editRecMedicationMenu.innerHTML = medications
-  .map(
-    (m) => `
-    <div class="custom-select-option" data-value="${m.name}">${m.name}<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>`
-  )
-  .join("");
-
-document.getElementById("editRecMedicationSelect").addEventListener("change", (e) => {
-  const med = medications.find((m) => m.name === e.target.value);
-  document.getElementById("editRecCurrentDose").value = med ? med.dose : "—";
-});
+/* Medication cards, same as Create (wired on first open, after the page's custom selects) */
+let editRecMedsCtl = null;
+function editRecMeds() {
+  if (!editRecMedsCtl) editRecMedsCtl = wireCareRecMedRows(document.getElementById("editRecMedRows"), document.getElementById("addEditRecMedRow"));
+  return editRecMedsCtl;
+}
 
 const editRecCareTeamField = document.getElementById("editRecCareTeamField");
 const editRecCareTeamTrigger = editRecCareTeamField.querySelector(".care-team-trigger");
@@ -1613,12 +1605,7 @@ function openEditRecModal(id) {
   editRecForm.reset();
   resetCustomSelectsIn(editRecForm);
 
-  setCustomSelectValue(editRecForm.querySelector('.custom-select[data-name="medication"]'), rec.medication || "", { silent: true });
-  document.getElementById("editRecCurrentDose").value = rec.currentDose || "—";
-  editRecForm.newDose.value = rec.newDose || "";
-  setCustomSelectValue(editRecForm.querySelector('.custom-select[data-name="frequency"]'), rec.frequency || "", { silent: true });
-  editRecForm.duration.value = rec.duration || "";
-  editRecForm.startDate.value = rec.startDate || "";
+  editRecMeds().set(careRecMeds(rec));
   editRecForm.instructionsPatient.value = rec.instructionsPatient || "";
   editRecForm.instructionsCareTeam.value = rec.instructionsCareTeam || "";
   editRecForm.invitePatient.checked = !!rec.invitePatient;
@@ -1647,13 +1634,8 @@ editRecForm.addEventListener("submit", (e) => {
   const fd = new FormData(editRecForm);
   const t = timeLabel(new Date());
 
-  rec.medication = fd.get("medication");
-  rec.title = `${rec.medication} dose change`;
-  rec.currentDose = document.getElementById("editRecCurrentDose").value;
-  rec.newDose = fd.get("newDose");
-  rec.frequency = fd.get("frequency");
-  rec.duration = fd.get("duration");
-  rec.startDate = fd.get("startDate");
+  if (!editRecMeds().valid()) return;
+  applyCareRecMeds(rec, editRecMeds().read());
   rec.instructionsPatient = fd.get("instructionsPatient");
   rec.instructionsCareTeam = fd.get("instructionsCareTeam");
   rec.invitePatient = fd.get("invitePatient") === "on";
