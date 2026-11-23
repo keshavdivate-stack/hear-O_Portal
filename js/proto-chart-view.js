@@ -54,7 +54,7 @@
   section.className = "proto-popover-section";
   section.innerHTML = `
     <p class="proto-popover-sub">Patient chart</p>
-    ${VIEWS.filter((v) => !(current && v.value === "auto")).map((v) => `
+    ${VIEWS.filter((v) => v.value !== "auto").map((v) => `
       <label class="org-radio-item">
         <input type="radio" name="protoChartView" value="${v.value}" ${v.value === checked ? "checked" : ""} />
         <span class="radio-dot"></span>
