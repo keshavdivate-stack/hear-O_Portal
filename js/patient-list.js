@@ -254,7 +254,9 @@ function genderLabel(gender) {
    open the nurse view; everyone else opens the standard patient chart.
    Kept as separate pages/portals -- see ehr-integration/. */
 function patientChartHref(p) {
-  const base = p.chartView === "nurse" ? "nurse-view.html" : p.ehrOrg ? "ehr-integration/patient-data.html" : "patient-data.html";
+  /* Prototype controls > Patient chart can force one chart for every patient */
+  const forced = window.protoChartPage && window.protoChartPage();
+  const base = forced || (p.chartView === "nurse" ? "nurse-view.html" : p.ehrOrg ? "ehr-integration/patient-data.html" : "patient-data.html");
   const params = new URLSearchParams();
   if (p.account === "Discontinued") {
     params.set("discontinued", "1");
@@ -1499,3 +1501,5 @@ addActionForm.addEventListener("submit", (e) => {
   closeAddActionModal();
   renderPatientList();
 });
+
+document.addEventListener("chartviewchange", () => renderPatientList());

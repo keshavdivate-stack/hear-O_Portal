@@ -8450,6 +8450,7 @@ body.patient-discontinued #chatOpenBtn {
 .proto-popover { min-width: 200px; }
 .proto-popover-title { margin: 2px 8px 2px; font-size: 13px; font-weight: 700; color: #1F2933; }
 .proto-popover-sub { margin: 0 8px 6px; font-size: 12px; color: var(--gray-text); }
+.org-radio-item + .proto-popover-section { margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--gray-border); }
 
 /* Commercial organisation: medications are patient-added and view only */
 .med-commercial-note { display: none; flex: 1 0 100%; align-items: center; gap: 8px; margin: 0; padding: 10px 14px; border-radius: 8px; background: var(--blue-light); font-size: 13px; color: #23272E; }
