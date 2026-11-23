@@ -400,7 +400,7 @@ function renderPatientRow(p) {
   return `
     <tr>
       ${checkboxCell(p.id)}
-      <td><a class="lt-name ${p.status === "priority" ? "priority" : "active-name"}" href="patient-data.html">${p.name}</a></td>
+      <td><a class="lt-name ${p.status === "priority" ? "priority" : "active-name"}" href="patient-data.html?patient=${encodeURIComponent(p.name)}">${p.name}</a></td>
       <td>${p.username} / ${p.mrn}</td>
       <td>${p.account}</td>
       <td>${clinicalBadge(p)}</td>

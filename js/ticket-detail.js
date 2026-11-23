@@ -66,7 +66,7 @@ if (!ticket) {
     /* Patient tickets link the patient's name through to their chart (with
        the patient ID alongside); clinic tickets were raised by a clinic user. */
     const createdFor = ticket.type === "Patient"
-      ? `<a class="ticket-view-link" href="patient-data.html">${ticket.patientName || ticket.who}</a>${ticket.patientName ? ` (${ticket.who})` : ""}`
+      ? `<a class="ticket-view-link" href="patient-data.html?patient=${encodeURIComponent(ticket.patientName || ticket.who)}">${ticket.patientName || ticket.who}</a>${ticket.patientName ? ` (${ticket.who})` : ""}`
       : ticket.who;
     const sep = `<span class="ticket-detail-meta-sep">&middot;</span>`;
     /* Patient tickets also show the patient's email and mobile so the clinic

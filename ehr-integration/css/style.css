@@ -1700,6 +1700,7 @@ button, input, select, textarea, optgroup {
 }
 
 .chart-arrow:hover { background: var(--bg); }
+.chart-arrow:disabled { opacity: 0.3; cursor: default; background: transparent; }
 
 .chart-day-scale {
   display: flex;

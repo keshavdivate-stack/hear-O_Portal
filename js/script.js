@@ -59,7 +59,7 @@ function renderPatientRows(elId, items, iconSvg) {
       <tr class="p-row">
         <td>
           <button type="button" class="p-expand-btn" data-idx="${i}" aria-expanded="false" aria-label="Expand details">${chevSvg}</button>
-          <a class="p-name" href="patient-data.html" style="text-decoration:none;">
+          <a class="p-name" href="patient-data.html?patient=${encodeURIComponent(p.name)}" style="text-decoration:none;">
             ${iconSvg}
             <span class="p-name-text">${p.name}</span>
           </a>
@@ -156,7 +156,7 @@ function renderPriorityRows(elId, items) {
         <td>
           <div class="p-name-cell">
             <button type="button" class="p-expand-btn" data-idx="${i}" aria-expanded="${openPriorityIdx.has(i)}" aria-label="Expand details">${chevSvg}</button>
-            <a class="p-name" href="patient-data.html" style="text-decoration:none;">
+            <a class="p-name" href="patient-data.html?patient=${encodeURIComponent(p.name)}" style="text-decoration:none;">
               ${heartSvg}
               <span class="p-name-text">${p.name}</span>
             </a>

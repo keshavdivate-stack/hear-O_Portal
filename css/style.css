@@ -2223,6 +2223,7 @@ a.bo-btn-secondary { text-decoration: none; }
 }
 
 .chart-arrow:hover { background: var(--bg); }
+.chart-arrow:disabled { opacity: 0.3; cursor: default; background: transparent; }
 
 .chart-day-scale {
   display: flex;

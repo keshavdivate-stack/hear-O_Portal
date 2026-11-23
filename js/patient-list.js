@@ -257,7 +257,8 @@ function patientChartHref(p) {
   /* Prototype controls > Patient chart can force one chart for every patient */
   const forced = window.protoChartPage && window.protoChartPage();
   const base = forced || (p.chartView === "nurse" ? "nurse-view.html" : p.ehrOrg ? "ehr-integration/patient-data.html" : "patient-data.html");
-  const params = new URLSearchParams();
+  /* Tell the chart which patient was clicked (js/patient-identity.js fills the header). */
+  const params = new URLSearchParams({ patient: p.name, pid: p.username || "", mrn: p.mrn || "", enrolled: p.enrolledDate || "" });
   if (p.account === "Discontinued") {
     params.set("discontinued", "1");
     params.set("discontinuedDate", p.discontinuedDate || "");

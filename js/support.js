@@ -54,7 +54,7 @@ function renderTicketList() {
         <td>${
           t.type === "Patient"
             ? t.who
-              ? `<a class="ticket-view-link" href="patient-data.html">${t.patientName || t.who}</a><span class="ticket-who-id">${t.who}</span>`
+              ? `<a class="ticket-view-link" href="patient-data.html?patient=${encodeURIComponent(t.patientName || t.who)}">${t.patientName || t.who}</a><span class="ticket-who-id">${t.who}</span>`
               : "&mdash;"
             : t.organization || "&mdash;"
         }</td>
