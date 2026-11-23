@@ -654,6 +654,7 @@
                 <span class="subtab" data-subtab="care-plan">Care Plan</span>
                 <span class="subtab" data-subtab="goals">Goals</span>
                 <span class="subtab" data-subtab="documents">Documents</span>
+                <span class="subtab" data-subtab="related-persons">Designated Contact</span>
                 <span class="subtab" data-subtab="demographics">Patient Demographics</span>
               </div>
 
@@ -851,6 +852,25 @@
                     </tr>
                   </thead>
                   <tbody id="documentsTableBody"></tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Designated Contact (emergency contact) -->
+            <div class="subtab-panel" data-subpanel="related-persons">
+              <div class="rec-table-wrap">
+                <table class="rec-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Relationship</th>
+                      <th>Phone</th>
+                      <th>Email</th>
+                      <th>Primary Contact</th>
+                      <th>Source</th>
+                    </tr>
+                  </thead>
+                  <tbody id="relatedPersonsTableBody"></tbody>
                 </table>
               </div>
             </div>
@@ -1691,7 +1711,7 @@
 <script src="js/topbar.js"></script>
 <script src="js/table-scroll.js"></script>
 <script src="js/med-dose-times.js?v=8"></script>
-<script src="js/patient-data.js?v=3"></script>
+<script src="js/patient-data.js?v=4"></script>
 <script src="js/chart-pan.js"></script>
 <script src="js/modal-close.js"></script>
 </body>
