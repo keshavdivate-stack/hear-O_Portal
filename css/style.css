@@ -8567,3 +8567,6 @@ html[data-org-type="Commercial"] .med-block .btn-edit { display: none; }
 .modal:has(> .modal-close-x-auto) > h2,
 .modal:has(> .modal-close-x-auto) > form > h2,
 .modal:has(> .modal-close-x-auto) .modal-head h2 { padding-right: 40px; }
+/* Remove medication: red at rest, a little stronger on hover */
+.rec-med-remove { color: #C0392B; border-color: #F1B5AE; background: #FDF1F0; }
+.rec-med-remove:hover { color: #fff; border-color: #C0392B; background: #C0392B; }
