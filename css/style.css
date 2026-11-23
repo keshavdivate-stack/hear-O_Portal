@@ -8474,3 +8474,11 @@ html[data-org-type="Commercial"] #medStatusFilter { display: none; }
 html[data-org-type="Commercial"] .med-source-row .unit-toggle,
 html[data-org-type="Commercial"] #openAddMedBtn,
 html[data-org-type="Commercial"] .med-block .btn-edit { display: none; }
+
+/* Sub-tabs everywhere: compact, one line each; the row scrolls sideways
+   instead of wrapping labels onto two lines when there are many tabs. */
+.subtabs { gap: 20px; min-width: 0; overflow-x: auto; scrollbar-width: none; }
+.subtabs::-webkit-scrollbar { display: none; }
+.subtab { flex-shrink: 0; display: inline-flex; align-items: center; gap: 6px; font-size: 13.5px; white-space: nowrap; }
+/* No counts on sub-tabs or the Manual / EHR Medication switch */
+.subtab .count-pill { display: none; }

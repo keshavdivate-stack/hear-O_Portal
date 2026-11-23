@@ -147,7 +147,7 @@
   sourceRow.innerHTML = `
     <div class="unit-toggle" role="group" aria-label="Medication source">
       <span class="active" role="button" tabindex="0" data-med-source="manual" aria-pressed="true">Manual</span>
-      <span role="button" tabindex="0" data-med-source="ehr" aria-pressed="false">EHR Medication (${ehrMedications.length})</span>
+      <span role="button" tabindex="0" data-med-source="ehr" aria-pressed="false">EHR Medication</span>
     </div>`;
   if (legend) {
     legend.before(sourceRow);

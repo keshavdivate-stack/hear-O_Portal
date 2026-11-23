@@ -987,7 +987,7 @@ const ehrMedications = [
 ];
 
 function renderEhrMeds() {
-  document.getElementById("ehrMedCount").textContent = ehrMedications.length || "";
+  /* (no count on the EHR Medication switch) */
   document.getElementById("ehrMedTableBody").innerHTML = ehrMedications.length
     ? ehrMedications
         .map(
