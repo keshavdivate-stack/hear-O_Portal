@@ -80,14 +80,21 @@
   const checked = current || (/\/patient-list$/.test(path) ? getChartView() : null);
   const section = document.createElement("div");
   section.className = "proto-popover-section";
-  section.innerHTML = `
-    <p class="proto-popover-sub">Patient chart</p>
-    ${VIEWS.filter((v) => v.value !== "auto").map((v) => `
+  /* Two groups, one choice: Patient chart (normal / EHR) and Care team (nurse view) */
+  const radio = (value) => {
+    const v = VIEWS.find((x) => x.value === value);
+    return `
       <label class="org-radio-item">
         <input type="radio" name="protoChartView" value="${v.value}" ${v.value === checked ? "checked" : ""} />
         <span class="radio-dot"></span>
         ${v.label}
-      </label>`).join("")}`;
+      </label>`;
+  };
+  section.innerHTML = `
+    <p class="proto-popover-sub">Patient chart</p>
+    ${radio("standard")}${radio("ehr")}
+    <p class="proto-popover-sub proto-popover-sub-group">Care team</p>
+    ${radio("nurse")}`;
   pop.appendChild(section);
 
   section.addEventListener("change", (e) => {

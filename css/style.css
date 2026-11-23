@@ -8597,3 +8597,6 @@ html[data-org-type="Commercial"] .med-block .btn-edit { display: none; }
 .data-tab-panel[data-panel="clinical"] > .subtab-row .custom-select-trigger { padding: 6px 10px; font-size: 12.5px; min-height: 0; }
 .data-tab-panel[data-panel="clinical"] > .subtab-row .custom-select { min-width: 0; width: auto; }
 .data-tab-panel[data-panel="clinical"] > .subtab-row .clinical-add-link { font-size: 12.5px; white-space: nowrap; }
+
+/* Prototype controls: second group (Care team) under Patient chart */
+.proto-popover-sub-group { margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--gray-border); }

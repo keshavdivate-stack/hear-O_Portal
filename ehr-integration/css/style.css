@@ -6286,3 +6286,6 @@ label.checkbox-field {
 .rec-screen-view .rec-create-form .care-team-trigger svg { display: none; }
 .rec-screen-view .rec-create-form input::placeholder,
 .rec-screen-view .rec-create-form textarea::placeholder { color: transparent; -webkit-text-fill-color: transparent; }
+
+/* Prototype controls: second group (Care team) under Patient chart */
+.proto-popover-sub-group { margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--gray-border); }
