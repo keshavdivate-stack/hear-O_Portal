@@ -261,17 +261,17 @@ function agentsForLevel(level) {
 }
 
 document.getElementById("supDashLevelMenu").innerHTML = buildFilterSelectOptions(TIERS.filter((t) => t !== "Level 3"), "All levels"); // Level 3 isn't offered on this dashboard
-document.getElementById("supDashAgentMenu").innerHTML = buildAgentSelectOptions(SUPPORT_AGENTS);
+document.getElementById("supDashAgentMenu").innerHTML = buildSelectOptions(SUPPORT_AGENTS);
 initBoSelects();
 setBoSelectValue(supDashLevelSelect, AGENT_LEVEL[currentAgent] || "", { silent: true });
-document.getElementById("supDashAgentMenu").innerHTML = buildAgentSelectOptions(agentsForLevel(AGENT_LEVEL[currentAgent]));
+document.getElementById("supDashAgentMenu").innerHTML = buildSelectOptions(agentsForLevel(AGENT_LEVEL[currentAgent]));
 setBoSelectValue(supDashAgentSelect, currentAgent, { silent: true });
 
 /* Picking a level narrows the agent list to that tier's team; if the agent
    currently being viewed isn't on it, switch to the tier's first agent. */
 document.getElementById("supDashLevelFilter").addEventListener("change", (e) => {
   const agents = agentsForLevel(e.target.value);
-  document.getElementById("supDashAgentMenu").innerHTML = buildAgentSelectOptions(agents);
+  document.getElementById("supDashAgentMenu").innerHTML = buildSelectOptions(agents);
   if (!agents.includes(currentAgent)) currentAgent = agents[0];
   setBoSelectValue(supDashAgentSelect, currentAgent, { silent: true });
   renderDashboard();

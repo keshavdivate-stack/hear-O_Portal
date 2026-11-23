@@ -234,10 +234,10 @@ newTicketField("ticketLevel").querySelector(".bo-select-menu").innerHTML = build
 /* A dependent dropdown (Create For / Issue Type / Assigned To): new
    options, cleared value, and a placeholder that says what it's waiting
    on while it's locked. */
-function setNewTicketDependent(name, options, { enabled, placeholder, lockedPlaceholder, search }) {
+function setNewTicketDependent(name, options, { enabled, placeholder, lockedPlaceholder, search, build = buildSelectOptions }) {
   const select = newTicketField(name);
   const valueEl = select.querySelector(".bo-select-value");
-  select.querySelector(".bo-select-menu").innerHTML = buildSelectOptions(options);
+  select.querySelector(".bo-select-menu").innerHTML = build(options);
   if (search) addBoSelectSearch(select, search);
   valueEl.dataset.placeholder = enabled ? placeholder : lockedPlaceholder;
   resetBoSelect(select);
@@ -264,7 +264,7 @@ function renderNewTicketIssueOptions() {
 function renderNewTicketAssigneeOptions() {
   const level = newTicketValue("ticketLevel");
   setNewTicketDependent("ticketAssignee", TIER_AGENTS[level] || [], {
-    enabled: !!level, placeholder: "Select user", lockedPlaceholder: "Select a level first",
+    enabled: !!level, placeholder: "Select user", lockedPlaceholder: "Select a level first", build: buildAgentSelectOptions,
   });
 }
 

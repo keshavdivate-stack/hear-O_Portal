@@ -59,11 +59,13 @@ function buildSelectOptions(values) {
 
 /* Like buildSelectOptions, but for a list of support agent names. Shows the
    plain name only -- level has its own filter, so it isn't repeated here. */
+/* Assignees: name with their role in small text under it */
 function buildAgentSelectOptions(names) {
   return names
     .map(
-      (n) => `
-      <div class="bo-select-option" data-value="${n}">${n}
+      (v) => `
+      <div class="bo-select-option bo-select-option-person" data-value="${v}" data-label="${v}">
+        <span class="bo-option-person"><span class="bo-option-name">${v}</span><span class="bo-option-role">${(typeof AGENT_ROLE !== "undefined" && AGENT_ROLE[v]) || ""}</span></span>
         <svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </div>`
     )

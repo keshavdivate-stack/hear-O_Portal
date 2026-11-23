@@ -118,11 +118,11 @@ const TIER_AGENTS = {
 
 /* Each agent's role, shown under their name in the Assigned to list */
 const AGENT_ROLE = {
-  "Sarah Cohen": "Support Specialist",
-  "Daniel Avraham": "Support Specialist",
-  "Maya Gold": "Technical Support Engineer",
-  "Tomer Regev": "Technical Support Engineer",
-  "Liat Peretz": "R&D Engineer",
+  "Sarah Cohen": "Supervisor Support",
+  "Daniel Avraham": "Tech Support",
+  "Maya Gold": "Supervisor Support",
+  "Tomer Regev": "Tech Support",
+  "Liat Peretz": "Tech Support",
 };
 
 /* Reverse lookup from agent name to the level they were defined under above
