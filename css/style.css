@@ -8508,3 +8508,11 @@ html[data-org-type="Commercial"] .med-block .btn-edit { display: none; }
 .rec-add-med-btn:hover { text-decoration: underline; }
 .rec-tab-panel > .rec-form-alert { margin-bottom: 22px; }
 .rec-tab-panel > .rec-form-alert .rec-form-alert-header { margin-bottom: 0; }
+
+/* Care Recommendation: each medication sits in its own raised card, fields packed like the Add Medication popup */
+.rec-med-row { background: #fff; border: 1px solid var(--gray-border); border-radius: 12px; box-shadow: 0 2px 10px rgba(35, 39, 46, 0.06); padding: 16px 18px 18px; }
+.rec-med-row + .rec-med-row { margin-top: 14px; padding-top: 16px; border-top: 1px solid var(--gray-border); }
+.rec-med-row .form-grid { gap: 14px 16px; }
+.rec-med-row .form-field { margin-bottom: 0; }
+.rec-med-row-head { margin-bottom: 10px; }
+.rec-add-med-btn { margin-top: 14px; }
