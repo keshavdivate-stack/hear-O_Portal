@@ -1192,14 +1192,36 @@ patientRowMenu.addEventListener("click", (e) => {
   const patient = patientList.find((p) => p.id === activeRowPatientId);
   if (!patient) return;
 
-  if (item.dataset.action === "acknowledge") {
-    patient.acked = true;
-    patient.ackBy = CURRENT_TEAM_MEMBER;
-    renderPatientList();
-  }
+  if (item.dataset.action === "acknowledge") openAckPatientModal(patient);
   else if (item.dataset.action === "edit") openEditPatientModal(patient);
   else if (item.dataset.action === "account") openUpdateAccountModal(patient);
   else if (item.dataset.action === "reset") openResetPasswordModal(patient);
+});
+
+/* ---------------- Acknowledge confirmation ---------------- */
+const ackPatientOverlay = document.getElementById("ackPatientOverlay");
+let ackPatient = null;
+
+function openAckPatientModal(patient) {
+  ackPatient = patient;
+  document.getElementById("ackPatientName").textContent = patient.name;
+  ackPatientOverlay.classList.add("open");
+}
+
+function closeAckPatientModal() {
+  ackPatientOverlay.classList.remove("open");
+  ackPatient = null;
+}
+
+document.getElementById("cancelAckPatient").addEventListener("click", closeAckPatientModal);
+ackPatientOverlay.addEventListener("click", (e) => { if (e.target === ackPatientOverlay) closeAckPatientModal(); });
+document.getElementById("confirmAckPatient").addEventListener("click", () => {
+  if (ackPatient) {
+    ackPatient.acked = true;
+    ackPatient.ackBy = CURRENT_TEAM_MEMBER;
+    renderPatientList();
+  }
+  closeAckPatientModal();
 });
 
 /* ---------------- Edit Patient modal ---------------- */

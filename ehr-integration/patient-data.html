@@ -327,16 +327,6 @@
             </div>
           </div>
 
-          <div class="ehr-sync-col">
-            <span class="ehr-last-synced" id="cardLastSynced">
-              <span class="ehr-last-synced-line">Last synced with <strong>Epic</strong></span>
-              <span class="ehr-last-synced-line">Today, 09:42 AM</span>
-            </span>
-            <button type="button" class="btn-secondary btn-sync" id="syncCardBtn">
-              <svg class="sync-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 3v6h-6"/></svg>
-              <span class="btn-sync-label">Sync with EHR</span>
-            </button>
-          </div>
         </div>
 
         <!-- Overview -->
@@ -401,10 +391,6 @@
               </button>
               <button class="data-tab" data-tab="questionnaire">
                 Questionnaire
-                <svg class="chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </button>
-              <button class="data-tab" data-tab="patient-profile">
-                Patient Information
                 <svg class="chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
               </button>
             </div>
@@ -668,6 +654,7 @@
                 <span class="subtab" data-subtab="care-plan">Care Plan</span>
                 <span class="subtab" data-subtab="goals">Goals</span>
                 <span class="subtab" data-subtab="documents">Documents</span>
+                <span class="subtab" data-subtab="demographics">Patient Demographics</span>
               </div>
 
               <div class="clinical-head-actions" id="medSubtabActions" data-subtab-actions="medication">
@@ -712,11 +699,11 @@
 
               <!-- EHR-synced views: last-synced + Sync sit inline in the subtab row
                    (instead of a full-width row above each table) -->
-              <div class="clinical-head-actions ehr-sync-meta" id="ehrSyncMeta" style="display:none;">
-                <span class="ehr-sync-meta-text">Last synced <strong id="ehrSyncMetaTime">11/05/2026, 01:16 PM</strong></span>
+              <div class="clinical-head-actions ehr-sync-meta" id="ehrSyncMeta">
+                <span class="ehr-sync-meta-text">Last synced with <strong>Epic</strong> · <span id="ehrSyncMetaTime">Today, 09:42 AM</span></span>
                 <button type="button" class="btn-secondary btn-sync" id="ehrSyncMetaBtn">
                   <svg class="sync-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 3v6h-6"/></svg>
-                  <span class="btn-sync-label">Sync</span>
+                  <span class="btn-sync-label">Sync with EHR</span>
                 </button>
               </div>
 
@@ -867,6 +854,11 @@
                 </table>
               </div>
             </div>
+
+            <!-- Patient Demographics (from the EHR) -->
+            <div class="subtab-panel" data-subpanel="demographics">
+              <div class="profile-info-grid" id="demographicsGrid"></div>
+            </div>
           </div>
 
           <!-- Questionnaire panel -->
@@ -881,124 +873,6 @@
             <div class="quest-list" id="questList"></div>
           </div>
 
-          <!-- Patient Profile panel -->
-          <div class="data-tab-panel" data-panel="patient-profile">
-            <div class="subtab-row">
-              <div class="subtabs">
-                <span class="subtab active" data-subtab="demographics">Demographics</span>
-                <span class="subtab" data-subtab="contact">Contact Information</span>
-                <span class="subtab" data-subtab="insurance">Insurance</span>
-                <span class="subtab" data-subtab="related-persons">Designated Contact</span>
-                <span class="subtab" data-subtab="care-team-profile">Care Team</span>
-                <span class="subtab" data-subtab="documents">Documents</span>
-              </div>
-
-              <div class="clinical-head-actions" id="relatedPersonsSubtabActions" data-subtab-actions="related-persons" style="display:none;">
-                <a href="#" class="clinical-add-link" id="openAddRelatedPersonBtn">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-                  Add contact
-                </a>
-              </div>
-
-              <div class="clinical-head-actions" id="careTeamProfileSubtabActions" data-subtab-actions="care-team-profile" style="display:none;">
-                <a href="#" class="clinical-add-link" id="openAddCareTeamMemberBtn">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-                  Add team member
-                </a>
-              </div>
-            </div>
-
-            <!-- Demographics -->
-            <div class="subtab-panel open" data-subpanel="demographics">
-              <div class="profile-info-grid" id="demographicsGrid"></div>
-            </div>
-
-            <!-- Contact Information -->
-            <div class="subtab-panel" data-subpanel="contact">
-              <div class="profile-two-col">
-                <div class="profile-info-grid" id="contactGrid"></div>
-                <div class="profile-consent-panel">
-                  <p class="profile-consent-title">Communication Preferences</p>
-                  <div class="profile-consent-list" id="contactConsentList"></div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Insurance -->
-            <div class="subtab-panel" data-subpanel="insurance">
-              <div class="rec-table-wrap">
-                <table class="rec-table">
-                  <thead>
-                    <tr>
-                      <th>Payer</th>
-                      <th>Plan Type</th>
-                      <th>Member ID</th>
-                      <th>Group Number</th>
-                      <th>Effective Date</th>
-                      <th>Status</th>
-                      <th>Source</th>
-                    </tr>
-                  </thead>
-                  <tbody id="insuranceTableBody"></tbody>
-                </table>
-              </div>
-            </div>
-
-            <!-- Related Persons / Designated Contacts -->
-            <div class="subtab-panel" data-subpanel="related-persons">
-              <div class="rec-table-wrap">
-                <table class="rec-table">
-                  <thead>
-                    <tr>
-                      <th>Name</th>
-                      <th>Relationship</th>
-                      <th>Phone</th>
-                      <th>Email</th>
-                      <th>Primary Contact</th>
-                      <th>Source</th>
-                    </tr>
-                  </thead>
-                  <tbody id="relatedPersonsTableBody"></tbody>
-                </table>
-              </div>
-            </div>
-
-            <!-- Care Team -->
-            <div class="subtab-panel" data-subpanel="care-team-profile">
-              <div class="rec-table-wrap">
-                <table class="rec-table">
-                  <thead>
-                    <tr>
-                      <th>Name</th>
-                      <th>Role</th>
-                      <th>Team</th>
-                      <th>Phone</th>
-                      <th>Email</th>
-                    </tr>
-                  </thead>
-                  <tbody id="careTeamProfileTableBody"></tbody>
-                </table>
-              </div>
-            </div>
-
-            <!-- Documents -->
-            <div class="subtab-panel" data-subpanel="documents">
-              <div class="rec-table-wrap">
-                <table class="rec-table">
-                  <thead>
-                    <tr>
-                      <th>Document</th>
-                      <th>Type</th>
-                      <th>Date</th>
-                      <th>Source</th>
-                      <th class="rec-table-th-action">Action</th>
-                    </tr>
-                  </thead>
-                  <tbody id="patientProfileDocumentsTableBody"></tbody>
-                </table>
-              </div>
-            </div>
-          </div>
         </div>
 
         <!-- History Events -->
@@ -1825,7 +1699,7 @@
 <script src="js/topbar.js"></script>
 <script src="js/table-scroll.js"></script>
 <script src="js/med-dose-times.js?v=8"></script>
-<script src="js/patient-data.js"></script>
+<script src="js/patient-data.js?v=3"></script>
 <script src="js/chart-pan.js"></script>
 <script src="js/modal-close.js"></script>
 </body>

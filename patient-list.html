@@ -812,6 +812,62 @@
           </div>
         </div>
 
+        <hr class="form-divider" />
+
+        <p class="reg-section-label">Emergency Contact</p>
+        <div class="form-grid">
+          <div class="form-field">
+            <label>Relationship</label>
+            <div class="custom-select" data-name="editEcRelationship">
+              <button type="button" class="custom-select-trigger">
+                <span class="custom-select-value placeholder">Select...</span>
+                <svg class="custom-select-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="custom-select-menu">
+                <div class="custom-select-option" data-value="Spouse">Spouse<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Parent">Parent<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Child">Child<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Sibling">Sibling<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Friend">Friend<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="custom-select-option" data-value="Other">Other<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              </div>
+              <input type="hidden" name="editEcRelationship" />
+            </div>
+          </div>
+          <div class="form-field">
+            <label>First name</label>
+            <input type="text" name="editEcFirstName" placeholder="Enter first name" />
+          </div>
+          <div class="form-field">
+            <label>Last name</label>
+            <input type="text" name="editEcLastName" placeholder="Enter last name" />
+          </div>
+          <div class="form-field">
+            <label>Email</label>
+            <input type="email" name="editEcEmail" placeholder="you@email.com" />
+          </div>
+          <div class="form-field">
+            <label>Phone</label>
+            <div class="phone-field">
+              <div class="custom-select country-select" data-name="editEcCountryCode">
+                <button type="button" class="custom-select-trigger">
+                  <span class="custom-select-value">+972</span>
+                  <svg class="custom-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
+                <div class="custom-select-menu">
+                  <div class="custom-select-option" data-value="+1">+1<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                  <div class="custom-select-option" data-value="+91">+91<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                  <div class="custom-select-option selected" data-value="+972">+972<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                  <div class="custom-select-option" data-value="+44">+44<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                  <div class="custom-select-option" data-value="+380">+380<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                </div>
+                <input type="hidden" name="editEcCountryCode" value="+972" />
+              </div>
+              <input type="tel" name="editEcPhone" placeholder="Enter phone number" />
+            </div>
+          </div>
+        </div>
+
         <div class="modal-actions">
           <button type="button" class="btn-text" id="cancelEditPatient">Cancel</button>
           <button type="submit" class="btn-save" id="saveEditPatient" disabled>Save Changes</button>
@@ -866,6 +922,21 @@
       <div class="modal-actions">
         <button type="button" class="btn-text" id="cancelUpdateAccount">Cancel</button>
         <button type="button" class="btn-save" id="saveUpdateAccount" disabled>Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Acknowledge confirmation -->
+  <div class="modal-overlay" id="ackPatientOverlay">
+    <div class="modal">
+      <h2>Acknowledge Patient</h2>
+      <p class="account-modal-subtitle" style="margin-bottom:22px;">
+        Are you sure you want to acknowledge <b id="ackPatientName">&nbsp;</b>? This marks the priority as seen by you for the rest of the team.
+      </p>
+
+      <div class="modal-actions">
+        <button type="button" class="btn-text" id="cancelAckPatient">Cancel</button>
+        <button type="button" class="btn-save enabled" id="confirmAckPatient">Acknowledge</button>
       </div>
     </div>
   </div>
@@ -957,6 +1028,6 @@
 <script src="js/support-data.js"></script>
 <script src="js/topbar.js"></script>
 <script src="js/table-scroll.js"></script>
-<script src="js/patient-list.js"></script>
+<script src="js/patient-list.js?v=2"></script>
 </body>
 </html>

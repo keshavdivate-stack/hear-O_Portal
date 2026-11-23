@@ -968,7 +968,7 @@ wireSyncButton("syncCardBtn", () => {
 /* ---------------- Clinical: EHR data (mirrors the dev3 Clinical tab, Epic sync) ----------------
    Each EHR sub-tab shows "Last synced" + Sync inline in the subtab row
    (#ehrSyncMeta) rather than a full-width row above every table. */
-const EHR_SUBTABS = ["conditions", "allergies", "care-plan", "goals", "documents"];
+const EHR_SUBTABS = ["conditions", "allergies", "care-plan", "goals", "documents", "demographics"];
 const dash = `<span class="rec-muted">-</span>`;
 const orDash = (v) => (v == null || v === "" || v === "-" ? dash : v);
 const statusText = (s) => (s ? `<span class="rec-status-chip rec-status-${s.toLowerCase()}">${s[0].toUpperCase()}${s.slice(1)}</span>` : dash);
@@ -1035,7 +1035,8 @@ document.querySelectorAll("[data-med-source]").forEach((b) => {
    the generic subtab handler runs (see the .subtab listener further down). */
 function syncEhrHeadActions() {
   const active = document.querySelector('.data-tab-panel[data-panel="clinical"] .subtab.active')?.dataset.subtab;
-  const showSync = EHR_SUBTABS.includes(active) || (active === "medication" && medSource === "ehr");
+  /* Sync with EHR lives in the Clinical tab row and shows on every Clinical subtab */
+  const showSync = !!active;
   document.getElementById("ehrSyncMeta").style.display = showSync ? "flex" : "none";
   const medActions = document.getElementById("medSubtabActions");
   if (active === "medication") medActions.style.display = medSource === "ehr" ? "none" : "flex";
@@ -1054,7 +1055,7 @@ ehrSyncMetaBtn.addEventListener("click", () => {
   ehrSyncMetaBtn.querySelector(".btn-sync-label").textContent = "Syncing…";
   setTimeout(() => {
     ehrSyncMetaBtn.classList.remove("is-syncing");
-    ehrSyncMetaBtn.querySelector(".btn-sync-label").textContent = "Sync";
+    ehrSyncMetaBtn.querySelector(".btn-sync-label").textContent = "Sync with EHR";
     document.getElementById("ehrSyncMetaTime").textContent = "Just now";
   }, 900);
 });
@@ -1313,7 +1314,7 @@ const consentOptions = [
   { label: "Consent to Call", checked: false },
   { label: "Enable Call Recording", checked: true },
 ];
-document.getElementById("contactConsentList").innerHTML = consentOptions
+(document.getElementById("contactConsentList") || {}).innerHTML = consentOptions
   .map(
     (c, i) => `
     <label class="profile-consent-item">
@@ -1330,7 +1331,7 @@ const insurancePlans = [
 ];
 
 function renderInsurance() {
-  document.getElementById("insuranceTableBody").innerHTML = insurancePlans.length
+  (document.getElementById("insuranceTableBody") || {}).innerHTML = insurancePlans.length
     ? insurancePlans
         .map(
           (p) => `
@@ -1356,7 +1357,7 @@ const relatedPersons = [
 ];
 
 function renderRelatedPersons() {
-  document.getElementById("relatedPersonsTableBody").innerHTML = relatedPersons.length
+  (document.getElementById("relatedPersonsTableBody") || {}).innerHTML = relatedPersons.length
     ? relatedPersons
         .map(
           (p) => `
@@ -1383,7 +1384,7 @@ const careTeamProfile = [
 ];
 
 function renderCareTeamProfile() {
-  document.getElementById("careTeamProfileTableBody").innerHTML = careTeamProfile.length
+  (document.getElementById("careTeamProfileTableBody") || {}).innerHTML = careTeamProfile.length
     ? careTeamProfile
         .map(
           (m) => `
@@ -1411,7 +1412,7 @@ const patientDocuments = [
 ];
 
 function renderPatientProfileDocuments() {
-  document.getElementById("patientProfileDocumentsTableBody").innerHTML = patientDocuments.length
+  (document.getElementById("patientProfileDocumentsTableBody") || {}).innerHTML = patientDocuments.length
     ? patientDocuments
         .map(
           (d) => `
@@ -1483,7 +1484,7 @@ document.getElementById("docViewerDownloadBtn").addEventListener("click", () => 
   if (doc) downloadPatientDocument(doc);
 });
 
-document.getElementById("patientProfileDocumentsTableBody").addEventListener("click", (e) => {
+document.getElementById("patientProfileDocumentsTableBody")?.addEventListener("click", (e) => {
   const btn = e.target.closest("[data-doc-act]");
   if (!btn) return;
   const doc = patientDocuments.find((d) => d.id === Number(btn.dataset.docId));
