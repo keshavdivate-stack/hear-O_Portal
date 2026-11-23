@@ -707,16 +707,40 @@ function renderRecDrawerFooter(rec) {
           <input type="hidden" name="actionTakenBy" />
         </div>
       </div>
+      <div class="form-field" style="margin-bottom:16px;">
+        <label>Status<span class="required-star">*</span></label>
+        <div class="custom-select" data-name="recStatus" id="recStatusSelect">
+          <button type="button" class="custom-select-trigger">
+            <span class="custom-select-value">In Progress</span>
+            <svg class="custom-select-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="custom-select-menu">
+            <div class="custom-select-option selected" data-value="in-progress">In Progress<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="custom-select-option" data-value="completed">Completed<svg class="option-check" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          </div>
+          <input type="hidden" name="recStatus" value="in-progress" />
+        </div>
+      </div>
       <label class="drawer-label">Note for Provider</label>
       <textarea id="recNoteInput" placeholder="Add a note the provider will see..."></textarea>
       <div class="rec-footer-actions">
-        <span class="rec-completed-note">Add a note or mark this recommendation complete.</span>
+        <span class="rec-completed-note">Set the status, add a note if needed, then save.</span>
         <div class="rec-footer-actions-right">
-          <button type="button" class="btn-secondary" id="recAddNote">Save</button>
-          <button type="button" class="btn-complete" id="recMarkComplete">Mark as Complete</button>
+          <button type="button" class="btn-save enabled" id="recAddNote">Save</button>
+          <button type="button" class="btn-complete" id="recMarkComplete" hidden>Complete</button>
         </div>
       </div>
     </div>`;
+}
+
+/* Status "In Progress" -> Save; "Completed" -> Complete */
+function syncRecStatusButton() {
+  const value = document.querySelector('#recStatusSelect input[type=hidden]')?.value;
+  const done = value === "completed";
+  const save = document.getElementById("recAddNote");
+  const complete = document.getElementById("recMarkComplete");
+  if (save) save.hidden = done;
+  if (complete) complete.hidden = !done;
 }
 
 function openRecDrawer(id) {
@@ -746,6 +770,13 @@ function openRecDrawer(id) {
 
   document.getElementById("recDrawerTimeline").innerHTML = renderRecTimeline(rec);
   document.getElementById("recDrawerFooter").innerHTML = renderRecDrawerFooter(rec);
+
+  const statusSelect = document.getElementById("recStatusSelect");
+  if (statusSelect) {
+    wireCustomSelect(statusSelect);
+    statusSelect.querySelector("input[type=hidden]").addEventListener("change", syncRecStatusButton);
+    syncRecStatusButton();
+  }
 
   const actionTakenBySelect = document.getElementById("recActionTakenBy");
   if (actionTakenBySelect) {
@@ -836,10 +867,15 @@ document.getElementById("recDrawerFooter").addEventListener("click", (e) => {
     if (!actionTakenBy) return;
     const textarea = document.getElementById("recNoteInput");
     const note = textarea.value.trim();
-    if (!note) { textarea.focus(); return; }
-    if (rec.status === "recommended") rec.status = "in-progress";
+    const statusChanged = rec.status !== "in-progress";
+    if (!note && !statusChanged) { textarea.focus(); return; }
+    rec.status = "in-progress";
     if (!rec.pickedUpBy) rec.pickedUpBy = actionTakenBy;
-    rec.activity.push({ who: actionTakenBy, when: t.short, label: "Note added for provider", short: "Note added for provider", note });
+    if (statusChanged) {
+      rec.activity.push({ who: actionTakenBy, when: t.short, label: "Marked recommendation as In Progress.", short: "In Progress", note: note || undefined });
+    } else {
+      rec.activity.push({ who: actionTakenBy, when: t.short, label: "Note added for provider", short: "Note added for provider", note });
+    }
     rec.updatedAt = t.full;
     renderCareRecs();
     openRecDrawer(rec.id);
