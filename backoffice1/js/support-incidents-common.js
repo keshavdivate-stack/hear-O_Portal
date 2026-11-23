@@ -15,7 +15,7 @@ function setBoSelectValue(select, value, { silent = false } = {}) {
 
   if (option) {
     option.classList.add("selected");
-    trigger.textContent = option.textContent.trim();
+    trigger.textContent = option.dataset.label || option.textContent.trim();
     trigger.classList.remove("placeholder");
   } else {
     trigger.textContent = trigger.dataset.placeholder || trigger.textContent;
@@ -82,6 +82,19 @@ function buildSelectOptions(values) {
     .map(
       (v) => `
       <div class="bo-select-option" data-value="${v}">${v}
+        <svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>`
+    )
+    .join("");
+}
+
+/* People with their role in small text under the name */
+function buildAgentSelectOptions(names) {
+  return names
+    .map(
+      (v) => `
+      <div class="bo-select-option bo-select-option-person" data-value="${v}" data-label="${v}">
+        <span class="bo-option-person"><span class="bo-option-name">${v}</span><span class="bo-option-role">${(typeof AGENT_ROLE !== "undefined" && AGENT_ROLE[v]) || ""}</span></span>
         <svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </div>`
     )
@@ -177,7 +190,7 @@ function wireEscalateDrawer(getIncident, onEscalated) {
   field("taskLevel").querySelector(".bo-select-menu").innerHTML = buildSelectOptions(INC_ESCALATE_LEVELS);
 
   function renderAssignees() {
-    field("taskAssignee").querySelector(".bo-select-menu").innerHTML = buildSelectOptions(TIER_AGENTS[value("taskLevel")] || []);
+    field("taskAssignee").querySelector(".bo-select-menu").innerHTML = buildAgentSelectOptions(TIER_AGENTS[value("taskLevel")] || []);
     resetBoSelect(field("taskAssignee"));
   }
   field("taskLevel").querySelector("input[type=hidden]").addEventListener("change", renderAssignees);

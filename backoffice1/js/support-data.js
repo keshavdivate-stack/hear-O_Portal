@@ -116,6 +116,15 @@ const TIER_AGENTS = {
   "Level 3": ["Liat Peretz"],
 };
 
+/* Each agent's role, shown under their name in the Assigned to list */
+const AGENT_ROLE = {
+  "Sarah Cohen": "Support Specialist",
+  "Daniel Avraham": "Support Specialist",
+  "Maya Gold": "Technical Support Engineer",
+  "Tomer Regev": "Technical Support Engineer",
+  "Liat Peretz": "R&D Engineer",
+};
+
 /* Reverse lookup from agent name to the level they were defined under above
    (used to filter agents by level). */
 const AGENT_LEVEL = {};

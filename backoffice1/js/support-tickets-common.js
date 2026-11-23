@@ -88,7 +88,7 @@ function setBoSelectValue(select, value, { silent = false } = {}) {
 
   if (option) {
     option.classList.add("selected");
-    trigger.textContent = option.textContent.trim();
+    trigger.textContent = option.dataset.label || option.textContent.trim();
     trigger.classList.remove("placeholder");
   } else {
     trigger.textContent = trigger.dataset.placeholder || trigger.textContent;
