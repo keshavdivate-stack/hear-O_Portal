@@ -674,11 +674,13 @@
             <div class="subtab-row">
               <div class="subtabs">
                 <span class="subtab active" data-subtab="medication">Medication <span class="count-pill" id="medCount"></span></span>
+                <span class="subtab" data-subtab="care-rec">Care Recommendations <span class="count-pill" id="careRecCount"></span></span>
                 <span class="subtab" data-subtab="conditions">Conditions</span>
                 <span class="subtab" data-subtab="allergies">Allergies</span>
                 <span class="subtab" data-subtab="care-plan">Care Plan</span>
                 <span class="subtab" data-subtab="goals">Goals</span>
                 <span class="subtab" data-subtab="documents">Documents</span>
+                <span class="subtab" data-subtab="related-persons">Designated Contact</span>
                 <span class="subtab" data-subtab="demographics">Patient Demographics</span>
               </div>
 
@@ -875,6 +877,25 @@
                     </tr>
                   </thead>
                   <tbody id="documentsTableBody"></tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Designated Contact (emergency contact) -->
+            <div class="subtab-panel" data-subpanel="related-persons">
+              <div class="rec-table-wrap">
+                <table class="rec-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Relationship</th>
+                      <th>Phone</th>
+                      <th>Email</th>
+                      <th>Primary Contact</th>
+                      <th>Source</th>
+                    </tr>
+                  </thead>
+                  <tbody id="relatedPersonsTableBody"></tbody>
                 </table>
               </div>
             </div>
@@ -1717,7 +1738,7 @@
 <script src="../js/proto-chart-view.js"></script>
 <script src="js/table-scroll.js"></script>
 <script src="js/med-dose-times.js?v=8"></script>
-<script src="js/patient-data.js?v=5"></script>
+<script src="js/patient-data.js?v=4"></script>
 <script src="js/chart-pan.js"></script>
 <script src="../js/overview-pan.js"></script>
 <script src="js/modal-close.js"></script>
