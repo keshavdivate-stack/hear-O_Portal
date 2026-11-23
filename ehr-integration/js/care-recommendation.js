@@ -499,3 +499,9 @@ document.getElementById("cancelCareRecCreate").addEventListener("click", () => {
 });
 
 renderSummaryList();
+
+/* ---------------- View / Edit on this screen ----------------
+   Summary "View details" opens the recommendation here (no popup), and the
+   charts open ?mode=view|edit on this same screen. */
+openRecDrawer = (id) => openCareRecScreen(careRecs.find((r) => r.id === id), "view", "self");
+initCareRecScreen(careRecs);

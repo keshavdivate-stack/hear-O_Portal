@@ -1276,6 +1276,8 @@ document.querySelectorAll(".data-tab").forEach((tab) => {
   const openTab = new URLSearchParams(window.location.search).get("openTab");
   if (!openTab) return;
   document.querySelector(`.data-tab[data-tab="${openTab}"]`)?.click();
+  const openSubtab = new URLSearchParams(window.location.search).get("openSubtab");
+  if (openSubtab) setTimeout(() => document.querySelector(`.data-tab-panel[data-panel="${openTab}"] .subtab[data-subtab="${openSubtab}"]`)?.click(), 0);
 })();
 
 /* ---------------- Sub-tabs (Measurement/Wellness, Medication/Care Recommendations) ----------------
@@ -1966,3 +1968,10 @@ wireAddModal("addMeasurementOverlay", "addMeasurementForm", "cancelAddMeasuremen
 document.getElementById("openAddMeasurementBtn").addEventListener("click", () => setMeasurementWeightUnit(weightUnit));
 
 document.addEventListener("orgtypechange", () => renderMeds());
+
+/* ---------------- Care Recommendation View / Edit ----------------
+   They open the full Care Recommendation screen (the same one used to
+   create), not a popup. Changes made there come back via applyCareRecOverrides. */
+openRecDrawer = (id) => openCareRecScreen(careRecs.find((r) => r.id === id), "view", "nurse");
+applyCareRecOverrides(careRecs, "nurse");
+renderCareRecs();

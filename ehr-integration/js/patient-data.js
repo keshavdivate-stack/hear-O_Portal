@@ -2685,3 +2685,10 @@ document.querySelectorAll(".compliance-highlight").forEach((box) => {
   box.querySelector(".goal-progress-fill")?.classList.add(value >= 70 ? "fill-green" : "fill-orange");
 });
 
+/* ---------------- Care Recommendation View / Edit ----------------
+   They open the full Care Recommendation screen (the same one used to
+   create), not a popup. Changes made there come back via applyCareRecOverrides. */
+openRecDrawer = (id) => openCareRecScreen(careRecs.find((r) => r.id === id), "view", "ehr");
+openEditRecModal = (id) => openCareRecScreen(careRecs.find((r) => r.id === id), "edit", "ehr");
+applyCareRecOverrides(careRecs, "ehr");
+renderCareRecs();

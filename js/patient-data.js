@@ -2223,3 +2223,11 @@ if (patientHeaderKebab && patientHeaderMenu) {
 }
 
 document.addEventListener("orgtypechange", () => renderMeds());
+
+/* ---------------- Care Recommendation View / Edit ----------------
+   They open the full Care Recommendation screen (the same one used to
+   create), not a popup. Changes made there come back via applyCareRecOverrides. */
+openRecDrawer = (id) => openCareRecScreen(careRecs.find((r) => r.id === id), "view", "chart");
+openEditRecModal = (id) => openCareRecScreen(careRecs.find((r) => r.id === id), "edit", "chart");
+applyCareRecOverrides(careRecs, "chart");
+renderCareRecs();

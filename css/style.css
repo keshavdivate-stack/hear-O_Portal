@@ -8570,3 +8570,21 @@ html[data-org-type="Commercial"] .med-block .btn-edit { display: none; }
 /* Remove medication: red at rest, a little stronger on hover */
 .rec-med-remove { color: #C0392B; border-color: #F1B5AE; background: #FDF1F0; }
 .rec-med-remove:hover { color: #fff; border-color: #C0392B; background: #C0392B; }
+
+/* Care Recommendation screen in View / Edit mode */
+.rec-screen-details { margin-top: 8px; }
+.rec-screen-meta { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px 18px; }
+.rec-screen-meta .drawer-label { margin-bottom: 4px; }
+.rec-screen-action { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--gray-border); }
+.rec-screen-action .form-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 16px; }
+.rec-screen-action .form-field { margin-bottom: 0; }
+.rec-screen-action .form-field.full { grid-column: 1 / -1; }
+.rec-screen-action .rec-footer-actions { margin-top: 14px; }
+.rec-screen-view .rec-create-form input:disabled,
+.rec-screen-view .rec-create-form textarea:disabled,
+.rec-screen-view .rec-create-form .custom-select-trigger:disabled,
+.rec-screen-view .rec-create-form .care-team-trigger:disabled { background: #fff; color: #23272E; -webkit-text-fill-color: #23272E; opacity: 1; cursor: default; }
+.rec-screen-view .rec-create-form .custom-select-caret,
+.rec-screen-view .rec-create-form .care-team-trigger svg { display: none; }
+.rec-screen-view .rec-create-form input::placeholder,
+.rec-screen-view .rec-create-form textarea::placeholder { color: transparent; -webkit-text-fill-color: transparent; }
