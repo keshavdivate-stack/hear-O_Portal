@@ -35,12 +35,6 @@
     field.classList.toggle("full", many);
     const label = field.querySelector(".dose-times-label");
     label.textContent = freq === "Every X Hours" ? "First Dose Time" : many ? `Dose Times (${times.length} a day)` : "Dose Time";
-    /* Care Recommendation cards: the times follow the frequency and are not edited */
-    if (form.classList && form.classList.contains("rec-med-row")) {
-      list.innerHTML = times.map((t, i) => `
-        <span class="dose-time-fixed">${many ? `<span class="dose-time-name">${ORDINAL[i]} dose</span>` : ""}${(([h, mi]) => `${h % 12 || 12}:${String(mi).padStart(2, "0")} ${h < 12 ? "AM" : "PM"}`)(t.split(":").map(Number))}<input type="hidden" name="doseTime" value="${t}" /></span>`).join("");
-      return;
-    }
     list.innerHTML = times.map((t, i) => `
       <label class="dose-time-item">
         ${many ? `<span class="dose-time-name">${ORDINAL[i]} dose</span>` : ""}
