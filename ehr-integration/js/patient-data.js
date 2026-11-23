@@ -1037,7 +1037,7 @@ document.querySelectorAll("[data-med-source]").forEach((b) => {
 function syncEhrHeadActions() {
   const active = document.querySelector('.data-tab-panel[data-panel="clinical"] .subtab.active')?.dataset.subtab;
   /* Sync with EHR lives in the Clinical tab row and shows on every Clinical subtab */
-  const showSync = !!active;
+  const showSync = !!active && active !== "care-rec"; /* not on Care Recommendations */
   document.getElementById("ehrSyncMeta").style.display = showSync ? "flex" : "none";
   const medActions = document.getElementById("medSubtabActions");
   if (active === "medication") medActions.style.display = medSource === "ehr" ? "none" : "flex";
