@@ -8552,3 +8552,7 @@ html[data-org-type="Commercial"] .med-block .btn-edit { display: none; }
 .rec-view-field.form-field { margin-bottom: 0; }
 .rec-view-field.full { grid-column: 1 / -1; }
 .rec-view-field input:disabled, .rec-view-field textarea:disabled { background: #fff; color: #23272E; -webkit-text-fill-color: #23272E; opacity: 1; cursor: default; resize: none; }
+/* Care Recommendation: dose times are fixed by the frequency */
+.rec-med-row .dose-times-list { display: flex; flex-wrap: wrap; gap: 8px; }
+.dose-time-fixed { display: inline-flex; align-items: center; gap: 8px; padding: 9px 14px; border: 1px solid var(--gray-border); border-radius: 8px; background: #EEF2F6; font-size: 14px; color: #23272E; }
+.dose-time-fixed .dose-time-name { font-size: 12px; color: #6B7684; }
