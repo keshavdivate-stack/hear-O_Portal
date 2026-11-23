@@ -6237,3 +6237,16 @@ label.checkbox-field {
 @media (max-width: 1500px) {
   .data-tab-panel[data-panel="clinical"] > .subtab-row > .subtabs { gap: 11px; }
 }
+/* Sub-tab labels a little larger */
+.data-tab-panel[data-panel="clinical"] > .subtab-row .subtab { font-size: 13px; }
+@media (max-width: 1600px) {
+  .data-tab-panel[data-panel="clinical"] > .subtab-row > .subtabs { gap: 13px; }
+}
+@media (max-width: 1500px) {
+  .data-tab-panel[data-panel="clinical"] > .subtab-row > .subtabs { gap: 9px; }
+  .data-tab-panel[data-panel="clinical"] > .subtab-row .subtab { font-size: 12.5px; }
+}
+@media (max-width: 1500px) {
+  .data-tab-panel[data-panel="clinical"] > .subtab-row { column-gap: 8px; }
+  .data-tab-panel[data-panel="clinical"] > .subtab-row > .subtabs { gap: 8px; }
+}
