@@ -48,8 +48,36 @@
     if (typeof wireTopbarToggle === "function") wireTopbarToggle("profileBtn", "profilePopover");
   }
 
+  /* Pages whose topbar doesn't add the Organisation type control (EHR pages)
+     get it here, with the same storage and "orgtypechange" event. */
+  if (!pop.querySelector('input[name="protoOrgType"]')) {
+    const TYPES = ["Commercial", "R&D", "Study"];
+    let cur = null;
+    try { cur = localStorage.getItem("protoOrgType"); } catch (e) {}
+    if (!TYPES.includes(cur)) cur = "Study";
+    const org = document.createElement("div");
+    org.innerHTML = `
+      <p class="proto-popover-sub">Organisation type</p>
+      ${TYPES.map((t) => `
+        <label class="org-radio-item">
+          <input type="radio" name="protoOrgType" value="${t}" ${t === cur ? "checked" : ""} />
+          <span class="radio-dot"></span>
+          ${t}
+        </label>`).join("")}`;
+    pop.append(...org.childNodes);
+    pop.addEventListener("change", (e) => {
+      if (e.target.name !== "protoOrgType") return;
+      try { localStorage.setItem("protoOrgType", e.target.value); } catch (err) {}
+      document.documentElement.dataset.orgType = e.target.value;
+      document.dispatchEvent(new CustomEvent("orgtypechange", { detail: { type: e.target.value } }));
+      if (typeof closeAllTopbarPopovers === "function") closeAllTopbarPopovers();
+    });
+  }
+
   /* On a chart page the radio shows the chart you're on. */
-  const checked = current || getChartView();
+  /* Elsewhere nothing is ticked except on the patient list (its saved pick),
+     so any choice opens that chart. */
+  const checked = current || (/\/patient-list$/.test(path) ? getChartView() : null);
   const section = document.createElement("div");
   section.className = "proto-popover-section";
   section.innerHTML = `
@@ -70,6 +98,12 @@
     const view = VIEWS.find((x) => x.value === value);
     if (current && view.page && value !== current) {
       location.href = root + view.page + location.search;
+      return;
+    }
+    /* Any other page (except the patient list, whose names then open the
+       picked chart) goes straight to that chart. */
+    if (!current && view.page && !/\/patient-list$/.test(path)) {
+      location.href = root + view.page;
       return;
     }
     if (typeof closeAllTopbarPopovers === "function") closeAllTopbarPopovers();
