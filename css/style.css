@@ -8561,3 +8561,9 @@ html[data-org-type="Commercial"] .med-block .btn-edit { display: none; }
 .dose-times-field .dose-times-list { grid-template-columns: repeat(auto-fit, minmax(66px, 1fr)); gap: 6px; }
 .dose-times-field .dose-time-item input[type="time"] { padding-left: 8px; padding-right: 4px; font-size: 13.5px; }
 .dose-times-field .dose-times-list { grid-template-columns: repeat(auto-fit, minmax(92px, 1fr)); gap: 6px; }
+
+/* Close (X) added to every centred popup (js/modal-close.js): keep the title clear of it */
+.modal-close-x-auto { top: 22px; right: 22px; }
+.modal:has(> .modal-close-x-auto) > h2,
+.modal:has(> .modal-close-x-auto) > form > h2,
+.modal:has(> .modal-close-x-auto) .modal-head h2 { padding-right: 40px; }
