@@ -442,8 +442,23 @@ careRecCareTeamTrigger.addEventListener("click", (e) => {
   e.stopPropagation();
   const willOpen = !careRecCareTeamField.classList.contains("open");
   document.querySelectorAll(".checkbox-filter.open, .care-team-field.open").forEach((el) => el.classList.remove("open"));
+  if (willOpen) positionCareTeamMenu();
   careRecCareTeamField.classList.toggle("open", willOpen);
 });
+/* The form scrolls, so the menu is placed with fixed coordinates under the
+   trigger (above it when there is no room below) instead of being clipped. */
+function positionCareTeamMenu() {
+  const rect = careRecCareTeamTrigger.getBoundingClientRect();
+  const menuHeight = Math.min(careRecCareTeamMenu.scrollHeight || 200, 260) + 12;
+  const openUp = window.innerHeight - rect.bottom < menuHeight && rect.top > menuHeight;
+  Object.assign(careRecCareTeamMenu.style, {
+    position: "fixed", left: rect.left + "px", width: rect.width + "px",
+    top: openUp ? "auto" : rect.bottom + 6 + "px",
+    bottom: openUp ? window.innerHeight - rect.top + 6 + "px" : "auto",
+  });
+}
+document.addEventListener("scroll", (e) => { if (!careRecCareTeamMenu.contains(e.target)) careRecCareTeamField.classList.remove("open"); }, true);
+window.addEventListener("resize", () => careRecCareTeamField.classList.remove("open"));
 careRecCareTeamMenu.addEventListener("click", (e) => e.stopPropagation());
 document.addEventListener("click", () => careRecCareTeamField.classList.remove("open"));
 

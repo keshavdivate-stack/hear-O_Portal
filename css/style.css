@@ -8516,3 +8516,20 @@ html[data-org-type="Commercial"] .med-block .btn-edit { display: none; }
 .rec-med-row .form-field { margin-bottom: 0; }
 .rec-med-row-head { margin-bottom: 10px; }
 .rec-add-med-btn { margin-top: 14px; }
+
+/* Care Team dropdown (Care Recommendation): same look as the other dropdowns */
+.care-team-field .care-team-menu { width: auto; max-height: 260px; padding: 6px; border-radius: 10px; z-index: 1000; }
+.care-team-field .checkbox-filter-option { display: flex; align-items: center; gap: 10px; margin: 0; padding: 10px 10px; font-size: 14px; font-weight: 500; color: #23272E; }
+.care-team-field .checkbox-filter-option + .checkbox-filter-option { margin-top: 2px; }
+.care-team-field .checkbox-filter-option input[type="checkbox"] {
+  appearance: none; -webkit-appearance: none; width: 16px; height: 16px; margin: 0; padding: 0;
+  border: 1.5px solid #9AA5B1; border-radius: 4px; background: #fff; cursor: pointer; flex-shrink: 0;
+}
+.care-team-field .checkbox-filter-option input[type="checkbox"]:checked {
+  border-color: var(--blue); background: var(--blue) no-repeat center / 11px
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'><path d='M5 13L9.5 17.5L19 7' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+}
+
+/* Non-EHR charts have only a couple of Clinical sub-tabs: keep them on the same
+   line as the actions; the actions only move above when the row is too narrow. */
+.data-tab-panel[data-panel="clinical"] > .subtab-row > .subtabs { flex: 1 1 auto; }
