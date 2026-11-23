@@ -6175,3 +6175,5 @@ label.checkbox-field {
 .rec-med-remove:hover { color: #C0392B; border-color: #F1B5AE; background: #FDF1F0; }
 .rec-add-med-btn { display: inline-flex; align-items: center; gap: 6px; margin-top: 4px; padding: 0; border: none; background: none; color: var(--blue-text); font: inherit; font-size: 13.5px; font-weight: 700; cursor: pointer; }
 .rec-add-med-btn:hover { text-decoration: underline; }
+.rec-tab-panel > .rec-form-alert { margin-bottom: 22px; }
+.rec-tab-panel > .rec-form-alert .rec-form-alert-header { margin-bottom: 0; }

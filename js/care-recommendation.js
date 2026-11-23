@@ -494,8 +494,7 @@ careRecCreateForm.addEventListener("submit", (e) => {
 
   renderSummaryList();
 
-  /* No Summary tab: back to the chart's Care Recommendations list */
-  window.location.href = "patient-data.html?openTab=clinical&openSubtab=care-rec";
+  document.querySelector('.rec-tab[data-rec-tab="summary"]').click();
 });
 
 document.getElementById("cancelCareRecCreate").addEventListener("click", () => {
