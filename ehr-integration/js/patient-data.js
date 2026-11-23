@@ -740,7 +740,8 @@ document.getElementById("openCareRecBtn").addEventListener("click", (e) => {
 });
 
 function renderCareRecs() {
-  document.getElementById("careRecCount").textContent = careRecs.length;
+  const careRecCountEl = document.getElementById("careRecCount");
+  if (careRecCountEl) careRecCountEl.textContent = careRecs.length;
   updateCareRecTriggers();
 
   const list = careRecs
