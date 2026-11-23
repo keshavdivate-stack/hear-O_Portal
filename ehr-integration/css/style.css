@@ -6152,7 +6152,7 @@ label.checkbox-field {
 /* No counts on sub-tabs or the Manual / EHR Medication switch */
 .subtab .count-pill { display: none; }
 
-/* Clinical row: when the sub-tabs and the actions (filter, Add, Sync) do not fit
-   on one line, the actions move to a line above and every tab stays visible. */
+/* Clinical row: the actions (filter, Add, Sync) always sit together on one line
+   above the sub-tabs, so they never split up and every tab stays visible. */
 .data-tab-panel[data-panel="clinical"] > .subtab-row { flex-wrap: wrap-reverse; justify-content: flex-end; row-gap: 12px; }
-.data-tab-panel[data-panel="clinical"] > .subtab-row > .subtabs { flex: 1 0 auto; max-width: 100%; }
+.data-tab-panel[data-panel="clinical"] > .subtab-row > .subtabs { flex: 1 0 100%; max-width: 100%; }
