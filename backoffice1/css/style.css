@@ -6148,3 +6148,8 @@ a.bo-org-mini-row:hover .bo-org-mini-name { color: var(--blue-text); }
 .bo-secret-toggle .eye-closed { display: none; }
 .bo-secret-toggle.is-shown .eye-open { display: none; }
 .bo-secret-toggle.is-shown .eye-closed { display: block; }
+
+/* Organizations table: read-only (disabled) toggles for the on/off columns */
+.bo-switch-readonly { vertical-align: middle; }
+.bo-switch-readonly input:disabled { cursor: not-allowed; }
+.bo-switch-readonly input:disabled + .bo-switch-track { opacity: 0.75; }

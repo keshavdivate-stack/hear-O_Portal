@@ -43,11 +43,10 @@ function sortedOrgs() {
 }
 
 /* ---------------- Render ---------------- */
-/* On/off columns are read-only: a green check for on, a red cross for off.
+/* On/off columns show a toggle that is disabled (read-only): on = blue, off = grey.
    Values are changed from Edit Organization, not from the table. */
-const orgCheck = (id, field, on) => on
-  ? `<span class="bo-flag bo-flag-on" role="img" aria-label="Yes"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.5 4.5L19 7.5" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>`
-  : `<span class="bo-flag bo-flag-off" role="img" aria-label="No"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M7 7l10 10M17 7L7 17" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg></span>`;
+const orgCheck = (id, field, on) =>
+  `<label class="bo-switch bo-switch-readonly" title="Change from Edit Organization"><input type="checkbox" ${on ? "checked" : ""} disabled aria-label="${on ? "On" : "Off"}" /><span class="bo-switch-track"></span></label>`;
 const orgKebabIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="1.7" fill="currentColor"/><circle cx="12" cy="12" r="1.7" fill="currentColor"/><circle cx="12" cy="19" r="1.7" fill="currentColor"/></svg>`;
 
 /* Organizations without stored values: EHR is on when it has connections,
