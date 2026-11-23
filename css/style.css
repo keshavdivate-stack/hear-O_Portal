@@ -8588,3 +8588,12 @@ html[data-org-type="Commercial"] .med-block .btn-edit { display: none; }
 .rec-screen-view .rec-create-form .care-team-trigger svg { display: none; }
 .rec-screen-view .rec-create-form input::placeholder,
 .rec-screen-view .rec-create-form textarea::placeholder { color: transparent; -webkit-text-fill-color: transparent; }
+
+/* Clinical row (normal chart, nurse view): same compact layout as the EHR chart --
+   sub-tabs and actions on one line, smaller filter / Add, line under the whole row */
+.data-tab-panel[data-panel="clinical"] > .subtab-row { flex-wrap: nowrap; align-items: center; column-gap: 14px; border-bottom: 1px solid var(--gray-border); }
+.data-tab-panel[data-panel="clinical"] > .subtab-row > .subtabs { flex: 1 1 auto; border-bottom: none; }
+.data-tab-panel[data-panel="clinical"] > .subtab-row > .clinical-head-actions { flex-shrink: 0; gap: 10px; }
+.data-tab-panel[data-panel="clinical"] > .subtab-row .custom-select-trigger { padding: 6px 10px; font-size: 12.5px; min-height: 0; }
+.data-tab-panel[data-panel="clinical"] > .subtab-row .custom-select { min-width: 0; width: auto; }
+.data-tab-panel[data-panel="clinical"] > .subtab-row .clinical-add-link { font-size: 12.5px; white-space: nowrap; }
