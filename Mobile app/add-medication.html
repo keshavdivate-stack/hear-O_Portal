@@ -87,6 +87,9 @@
   .am-result-tag--generic { background: #E8F5EE; color: #1E7A4C; }
   .am-result-sub { font-size: calc(16px * var(--font-scale, 1)); color: #6F6F6F; line-height: 1.35; }
   .am-result-sub b { color: #434141; font-weight: 600; }
+  .am-result { padding: 14px 16px; }
+  .am-result-name { font-size: calc(19px * var(--font-scale, 1)); }
+  .am-result-alt { font-weight: 400; color: #8A8A8A; }
   .am-result--custom .am-result-name { font-weight: 500; color: #186DCE; }
   .am-results-note { margin: 4px 2px 0; font-size: calc(15px * var(--font-scale, 1)); color: #6F6F6F; }
   .am-end-choice .am-chip { flex: 1 1 0; }
@@ -275,22 +278,20 @@
     if (!q) return `<p class="am-results-note">Start typing to search the medication list.</p>`;
     const rows = searchCatalog(q).map((r) => {
       const on = w.picked && w.generic === r.generic && w.brand === r.brand;
+      // One line: the name the patient searched, the other name in grey
       const name = r.by === "brand"
-        ? `${esc(r.brand)} <span class="am-result-tag am-result-tag--brand">Brand</span>`
-        : `${esc(r.generic)} <span class="am-result-tag am-result-tag--generic">Generic</span>`;
-      const sub = r.by === "brand"
-        ? `Generic name: <b>${esc(r.generic)}</b>`
-        : `Brand names: ${r.brands.map(esc).join(", ")}`;
+        ? `${esc(r.brand)} <span class="am-result-alt">${esc(r.generic)}</span>`
+        : `${esc(r.generic)} <span class="am-result-alt">${esc(r.brands[0])}</span>`;
       return `
         <button type="button" class="am-result" role="option" data-generic="${esc(r.generic)}" data-brand="${esc(r.brand)}" aria-pressed="${on}">
-          <span class="am-result-text"><span class="am-result-name">${name}</span><span class="am-result-sub">${sub}</span></span>
+          <span class="am-result-text"><span class="am-result-name">${name}</span></span>
           <span class="am-opt-check">${ICONS.check}</span>
         </button>`;
     });
     const customOn = w.picked && !w.generic && w.name === q;
     rows.push(`
         <button type="button" class="am-result am-result--custom" role="option" data-custom="1" aria-pressed="${customOn}">
-          <span class="am-result-text"><span class="am-result-name">Add "${esc(q)}" as typed</span><span class="am-result-sub">Not in the list? Use the name from your box.</span></span>
+          <span class="am-result-text"><span class="am-result-name">Use "${esc(q)}"</span></span>
           <span class="am-opt-check">${ICONS.check}</span>
         </button>`);
     return rows.join("");
