@@ -45,6 +45,7 @@
 
   /* Numeric entry */
   .am-num-row { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+  .am-num-unit { flex-shrink: 0; min-width: 48px; font-size: calc(23px * var(--font-scale, 1)); font-weight: 600; color: #434141; }
   .am-num-row input { flex: 1; min-width: 0; height: 64px; padding: 0 16px; border: 1px solid #818080; border-radius: 16px; font-family: inherit; font-size: calc(25px * var(--font-scale, 1)); color: #434141; outline: none; -moz-appearance: textfield; }
   .am-num-row input::-webkit-outer-spin-button, .am-num-row input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
   .am-num-row input:focus { border-color: #4a9fd8; }
@@ -143,7 +144,9 @@
   /* ---------- answer options ---------- */
   const FORMS = [["pill", "Tablet / Capsule"], ["liquid", "Liquid"], ["drops", "Drops"], ["inhaler", "Inhaler"], ["injection", "Injection"], ["cream", "Cream"], ["patch", "Patch"], ["other", "Other"]];
   const UNITS = { pill: ["tablet", "tablets"], liquid: ["mL", "mL"], drops: ["drop", "drops"], inhaler: ["puff", "puffs"], injection: ["injection", "injections"], cream: ["application", "applications"], patch: ["patch", "patches"], other: ["unit", "units"] };
-  const STRENGTH_UNITS = ["mg", "mcg", "IU", "mL", "%"];
+  /* The strength unit follows the form: tablet -> mg, liquid -> mL, ... (no unit to pick). */
+  const STRENGTH_UNIT = { pill: "mg", liquid: "mL", drops: "mL", inhaler: "mcg", injection: "mg", cream: "%", patch: "mg", other: "mg" };
+  const strengthUnit = (w) => STRENGTH_UNIT[w.form] || "mg";
   const FREQ = [["daily", "Every day"], ["other", "Every other day"], ["days", "On specific days of the week"]];
   const COUNTS = [[1, "Once a day"], [2, "Twice a day"], [3, "Three times a day"], ["more", "More than 3 times a day"]];
   const DEFAULT_TIMES = { 1: ["08:00"], 2: ["08:00", "20:00"], 3: ["08:00", "14:00", "20:00"], 4: ["08:00", "12:00", "16:00", "20:00"] };
@@ -238,7 +241,7 @@
     ? Object.assign({ durMode: MY_MEDS[editKey].end ? "until" : "none", edit: true }, JSON.parse(JSON.stringify(MY_MEDS[editKey])))
     : { name: "", query: "", generic: "", brand: "", picked: false, form: "", strength: "", amt: 1, freq: "", days: [], start: TODAY_ISO, count: 0, more: false, times: [], durMode: "none", end: "", food: null, edit: false };
   // Strength is kept as a number + unit ("1000 IU").
-  [w.strNum, w.strUnit] = w.strength ? w.strength.split(" ") : ["", "mg"];
+  w.strNum = w.strength ? String(parseFloat(w.strength) || "") : "";
   let stepKey = w.edit ? "form" : "name";
 
   /* The steps that apply right now, in order. */
@@ -322,9 +325,8 @@
       h = `<h2 class="am-q">What form is ${esc(w.name)}?</h2>` + formOptions(w).map(([v, l]) => opt("data-form", v, l, w.form === v)).join("");
     } else if (k === "strength") {
       h = `<h2 class="am-q">What is the strength?</h2>
-        <p class="am-hint">It's written on the box or label, for example 40 mg.</p>
-        <div class="am-num-row"><input type="number" id="strengthInput" min="0" step="any" inputmode="decimal" placeholder="e.g. 40" value="${esc(w.strNum || "")}" aria-label="Strength" /></div>
-        <div class="am-chips" role="radiogroup" aria-label="Unit">${STRENGTH_UNITS.map((u) => `<button type="button" class="am-chip" data-sunit="${u}" role="radio" aria-pressed="${(w.strUnit || "mg") === u}">${u}</button>`).join("")}</div>`;
+        <p class="am-hint">It's written on the box or label, for example 40 ${strengthUnit(w)}.</p>
+        <div class="am-num-row"><input type="number" id="strengthInput" min="0" step="any" inputmode="decimal" placeholder="e.g. 40" value="${esc(w.strNum || "")}" aria-label="Strength in ${strengthUnit(w)}" /><span class="am-num-unit">${strengthUnit(w)}</span></div>`;
     } else if (k === "dose") {
       const minAmt = w.form === "pill" ? 0.5 : 1;
       h = `<h2 class="am-q">How much do you take each time?</h2>
@@ -333,7 +335,7 @@
           <div class="am-counter-value" aria-live="polite">${w.amt}<small>${unitWord(w)}</small></div>
           <button type="button" class="am-counter-btn" data-amt="1" aria-label="More" ${w.amt >= 20 ? "disabled" : ""}>+</button>
         </div>
-        ${w.strength ? `<p class="am-preview">${esc(w.strength)} each</p>` : ""}`;
+`;
     } else if (k === "freq") {
       h = `<h2 class="am-q">How often do you take it?</h2>` + FREQ.map(([v, l]) => opt("data-freq", v, l, w.freq === v)).join("");
     } else if (k === "days") {
@@ -452,7 +454,7 @@
     }
     if (e.target.id === "strengthInput") {
       w.strNum = e.target.value;
-      w.strength = parseFloat(w.strNum) > 0 ? `${w.strNum} ${w.strUnit || "mg"}` : "";
+      w.strength = parseFloat(w.strNum) > 0 ? `${w.strNum} ${strengthUnit(w)}` : "";
       document.getElementById("nextBtn").disabled = !stepDone("strength");
     }
     if (e.target.id === "startInput") {
@@ -485,7 +487,7 @@
       refreshResults();
       return;
     }
-    if (d.form) { w.form = d.form; w.amt = 1; return autoAdvance(); }
+    if (d.form) { w.form = d.form; w.amt = 1; if (parseFloat(w.strNum) > 0) w.strength = `${w.strNum} ${strengthUnit(w)}`; return autoAdvance(); }
     if (d.sunit) {
       w.strUnit = d.sunit;
       w.strength = parseFloat(w.strNum) > 0 ? `${w.strNum} ${w.strUnit}` : "";

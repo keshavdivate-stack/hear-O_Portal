@@ -46,6 +46,10 @@
   .mx-btn--skip { border: 2px solid #F59E0B; background: #FFF5F2; color: #F5880B; }
   .mx-btn--take { border: 2px solid #186DCE; background: #F6F9FD; color: #186DCE; }
   .fab-add-btn { width: 60px; height: 60px; right: 28px; bottom: 25px; background: #186DCE; font-size: calc(34px * var(--font-scale, 1)); font-weight: 300; }
+  /* Undo after Take / Skip: a few seconds to change your mind */
+  .mx-undo { position: absolute; left: 20px; right: 20px; bottom: 100px; z-index: 60; display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 56px; padding: 8px 8px 8px 18px; border-radius: 14px; background: #252424; color: #fff; font-size: calc(18px * var(--font-scale, 1)); box-shadow: 0 10px 28px rgba(0, 0, 0, 0.25); }
+  .mx-undo-btn { flex-shrink: 0; min-width: 88px; height: 44px; padding: 0 16px; border: none; border-radius: 10px; background: transparent; color: #8EC5FF; font-family: inherit; font-size: calc(18px * var(--font-scale, 1)); font-weight: 700; cursor: pointer; }
+  .mx-undo-btn:focus-visible { outline: 2px solid #8EC5FF; outline-offset: 2px; }
   .mx-toast { position: absolute; left: 24px; right: 24px; bottom: 100px; z-index: 50; padding: 14px 18px; border-radius: 14px; background: #252424; color: #fff; text-align: center; font-size: calc(17px * var(--font-scale, 1)); }
   #medTabs[hidden] { display: none; }
 </style>
@@ -277,18 +281,43 @@
   document.getElementById("medPrevDay").addEventListener("click", () => { TABS[activeTab].selectedDate = addDays(TABS[activeTab].selectedDate, -1); renderAll(); });
   document.getElementById("medNextDay").addEventListener("click", () => { TABS[activeTab].selectedDate = addDays(TABS[activeTab].selectedDate, 1); renderAll(); });
 
+  /* "Marked as taken  Undo" for a few seconds after Take / Skip / Mark all */
+  let undoTimer = null;
+  function showUndo(tab, ids, status) {
+    document.querySelector(".mx-undo")?.remove();
+    clearTimeout(undoTimer);
+    const day = dateKey(tab.selectedDate);
+    const one = ids.length === 1 ? tab.doses.find((d) => d.id === ids[0]) : null;
+    const what = one ? one.name : `${ids.length} doses`;
+    const bar = document.createElement("div");
+    bar.className = "mx-undo";
+    bar.setAttribute("role", "status");
+    bar.innerHTML = `<span>${what} ${status === "taken" ? "marked as taken" : "skipped"}</span><button type="button" class="mx-undo-btn">Undo</button>`;
+    bar.querySelector(".mx-undo-btn").addEventListener("click", () => {
+      ids.forEach((id) => { if (tab.dayStatus[day]) delete tab.dayStatus[day][id]; });
+      bar.remove();
+      clearTimeout(undoTimer);
+      renderAll();
+    });
+    document.querySelector(".phone-frame").appendChild(bar);
+    undoTimer = setTimeout(() => bar.remove(), 5000);
+  }
+
   document.getElementById("medTimeGroups").addEventListener("click", (e) => {
     const tab = TABS[activeTab];
     const markAll = e.target.closest("[data-mark-all]");
     if (markAll) {
-      tab.doses.filter((d) => d.time === markAll.dataset.markAll && !statusFor(tab, d.id)).forEach((d) => setStatus(tab, d.id, "taken"));
+      const ids = tab.doses.filter((d) => d.time === markAll.dataset.markAll && !statusFor(tab, d.id)).map((d) => d.id);
+      ids.forEach((id) => setStatus(tab, id, "taken"));
       renderAll();
+      if (ids.length) showUndo(tab, ids, "taken");
       return;
     }
     const action = e.target.closest("[data-action]");
     if (action) {
       setStatus(tab, Number(action.dataset.id), action.dataset.action);
       renderAll();
+      showUndo(tab, [Number(action.dataset.id)], action.dataset.action);
       return;
     }
     // Tapping a medication opens its details screen.
