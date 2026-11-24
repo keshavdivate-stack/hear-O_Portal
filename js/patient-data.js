@@ -1311,7 +1311,6 @@ function renderMeds() {
           <div class="chart-day-scale">${dayScaleHtml}</div>
           <div class="chart-month-row">${monthRowHtml(days)}</div>
         </div>
-        ${m.source === "Patient" && m.patientReason ? patientReasonBoxHtml(m, mi) : ""}
       </div>`;
     })
     .join("") || `<p class="empty-state-text">No medications match the selected filters.</p>`;
