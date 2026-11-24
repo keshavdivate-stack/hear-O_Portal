@@ -72,6 +72,23 @@
 
   .am-body input[type="date"] { border: 1px solid #818080; font-size: calc(21px * var(--font-scale, 1)); }
   .am-body input[type="text"] { border: 1px solid #818080; }
+  /* Step 1: search the medication catalog by brand (commercial) or generic (common) name */
+  .am-search { position: relative; }
+  .am-search svg { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: #818080; pointer-events: none; }
+  .am-search input[type="text"] { padding-left: 48px; }
+  .am-results { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
+  .am-result { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; padding: 12px 16px; border: 1px solid #D5D8DE; border-radius: 16px; background: #fff; font-family: inherit; text-align: left; cursor: pointer; }
+  .am-result[aria-pressed="true"] { border-color: #186DCE; background: #F0F7FF; }
+  .am-result[aria-pressed="true"] .am-opt-check { border-color: #186DCE; background: #186DCE; color: #fff; }
+  .am-result-text { min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+  .am-result-name { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; font-size: calc(20px * var(--font-scale, 1)); font-weight: 600; color: #252424; }
+  .am-result-tag { padding: 2px 8px; border-radius: 999px; font-size: calc(13px * var(--font-scale, 1)); font-weight: 600; }
+  .am-result-tag--brand { background: #F2EDFD; color: #6B3FD6; }
+  .am-result-tag--generic { background: #E8F5EE; color: #1E7A4C; }
+  .am-result-sub { font-size: calc(16px * var(--font-scale, 1)); color: #6F6F6F; line-height: 1.35; }
+  .am-result-sub b { color: #434141; font-weight: 600; }
+  .am-result--custom .am-result-name { font-weight: 500; color: #186DCE; }
+  .am-results-note { margin: 4px 2px 0; font-size: calc(15px * var(--font-scale, 1)); color: #6F6F6F; }
   .am-end-choice .am-chip { flex: 1 1 0; }
   .am-field-error { margin: 8px 0 0; font-size: calc(16px * var(--font-scale, 1)); color: #9F1C3B; }
   .am-field-error[hidden] { display: none; }
@@ -131,6 +148,53 @@
   const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
   const TODAY_ISO = "2026-08-18"; // the prototype's fixed "today"
 
+  /* Medication catalog: each generic (common) name with its brand (commercial)
+     names. Patients search by whichever is on their box; both are saved. */
+  const CATALOG = [
+    ["Metoprolol", ["Lopressor", "Toprol-XL"]],
+    ["Furosemide", ["Lasix"]],
+    ["Carvedilol", ["Coreg"]],
+    ["Spironolactone", ["Aldactone"]],
+    ["Sacubitril / Valsartan", ["Entresto"]],
+    ["Lisinopril", ["Zestril", "Prinivil"]],
+    ["Losartan", ["Cozaar"]],
+    ["Torsemide", ["Demadex", "Soaanz"]],
+    ["Bumetanide", ["Bumex"]],
+    ["Eplerenone", ["Inspra"]],
+    ["Dapagliflozin", ["Farxiga"]],
+    ["Empagliflozin", ["Jardiance"]],
+    ["Digoxin", ["Lanoxin"]],
+    ["Ivabradine", ["Corlanor"]],
+    ["Hydrochlorothiazide", ["Microzide"]],
+    ["Amlodipine", ["Norvasc"]],
+    ["Atorvastatin", ["Lipitor"]],
+    ["Rosuvastatin", ["Crestor"]],
+    ["Apixaban", ["Eliquis"]],
+    ["Rivaroxaban", ["Xarelto"]],
+    ["Warfarin", ["Coumadin", "Jantoven"]],
+    ["Aspirin", ["Bayer", "Ecotrin"]],
+    ["Clopidogrel", ["Plavix"]],
+    ["Metformin", ["Glucophage"]],
+    ["Ibuprofen", ["Advil", "Motrin"]],
+    ["Acetaminophen", ["Tylenol"]],
+  ].map(([generic, brands]) => ({ generic, brands }));
+
+  /* Matches for what the patient typed: a brand match shows that brand first
+     (with its generic name under it); a generic match lists its brands. */
+  function searchCatalog(q) {
+    q = q.trim().toLowerCase();
+    if (!q) return [];
+    const out = [];
+    CATALOG.forEach((m) => {
+      const brand = m.brands.find((b) => b.toLowerCase().includes(q));
+      if (brand) out.push({ generic: m.generic, brand, brands: m.brands, by: "brand", rank: brand.toLowerCase().startsWith(q) ? 0 : 1 });
+      else if (m.generic.toLowerCase().includes(q)) out.push({ generic: m.generic, brand: "", brands: m.brands, by: "generic", rank: m.generic.toLowerCase().startsWith(q) ? 0 : 1 });
+    });
+    return out.sort((a, b) => a.rank - b.rank).slice(0, 6);
+  }
+  /* How the medication reads everywhere else in the app: "Brand (Generic)" or just the generic name. */
+  const medLabel = (generic, brand) => (brand ? `${brand} (${generic})` : generic);
+
   const ICONS = {
     pill: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.5 3.5 3.5 10.5a4.95 4.95 0 0 0 7 7l7-7a4.95 4.95 0 0 0-7-7z"/><path d="M7 7l7 7"/></svg>`,
     check: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>`,
@@ -169,7 +233,7 @@
   /* ---------- wizard state ---------- */
   const w = editKey
     ? Object.assign({ durMode: MY_MEDS[editKey].end ? "until" : "none", edit: true }, JSON.parse(JSON.stringify(MY_MEDS[editKey])))
-    : { name: "", form: "", strength: "", amt: 1, freq: "", days: [], start: TODAY_ISO, count: 0, more: false, times: [], durMode: "none", end: "", food: null, edit: false };
+    : { name: "", query: "", generic: "", brand: "", picked: false, form: "", strength: "", amt: 1, freq: "", days: [], start: TODAY_ISO, count: 0, more: false, times: [], durMode: "none", end: "", food: null, edit: false };
   // Strength is kept as a number + unit ("1000 IU").
   [w.strNum, w.strUnit] = w.strength ? w.strength.split(" ") : ["", "mg"];
   let stepKey = w.edit ? "form" : "name";
@@ -189,7 +253,7 @@
 
   /* Whether the current step has an answer (enables Next). */
   function stepDone(k) {
-    if (k === "name") return !!w.name.trim();
+    if (k === "name") return w.picked && !!w.name.trim();
     if (k === "form") return !!w.form;
     if (k === "strength") return parseFloat(w.strNum) > 0;
     if (k === "freq") return !!w.freq;
@@ -205,6 +269,38 @@
       <span class="am-opt-check">${ICONS.check}</span>
     </button>`;
 
+  /* ---------- Step 1: catalog results ---------- */
+  function resultsHtml() {
+    const q = (w.query || "").trim();
+    if (!q) return `<p class="am-results-note">Start typing to search the medication list.</p>`;
+    const rows = searchCatalog(q).map((r) => {
+      const on = w.picked && w.generic === r.generic && w.brand === r.brand;
+      const name = r.by === "brand"
+        ? `${esc(r.brand)} <span class="am-result-tag am-result-tag--brand">Brand</span>`
+        : `${esc(r.generic)} <span class="am-result-tag am-result-tag--generic">Generic</span>`;
+      const sub = r.by === "brand"
+        ? `Generic name: <b>${esc(r.generic)}</b>`
+        : `Brand names: ${r.brands.map(esc).join(", ")}`;
+      return `
+        <button type="button" class="am-result" role="option" data-generic="${esc(r.generic)}" data-brand="${esc(r.brand)}" aria-pressed="${on}">
+          <span class="am-result-text"><span class="am-result-name">${name}</span><span class="am-result-sub">${sub}</span></span>
+          <span class="am-opt-check">${ICONS.check}</span>
+        </button>`;
+    });
+    const customOn = w.picked && !w.generic && w.name === q;
+    rows.push(`
+        <button type="button" class="am-result am-result--custom" role="option" data-custom="1" aria-pressed="${customOn}">
+          <span class="am-result-text"><span class="am-result-name">Add "${esc(q)}" as typed</span><span class="am-result-sub">Not in the list? Use the name from your box.</span></span>
+          <span class="am-opt-check">${ICONS.check}</span>
+        </button>`);
+    return rows.join("");
+  }
+  function refreshResults() {
+    const box = document.getElementById("medResults");
+    if (box) box.innerHTML = resultsHtml();
+    document.getElementById("nextBtn").disabled = !stepDone("name");
+  }
+
   /* ---------- render one step ---------- */
   function render() {
     const list = steps();
@@ -215,8 +311,12 @@
 
     if (k === "name") {
       h = `<h2 class="am-q">Which medication do you want to add?</h2>
-        <p class="am-hint">Type the name as it's written on the box.</p>
-        <input type="text" id="nameInput" placeholder="Medication name" autocomplete="off" value="${esc(w.name)}" aria-label="Medication name" />`;
+        <p class="am-hint">Search by the name on the box, brand or generic.</p>
+        <div class="am-search">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.5-4.5"/></svg>
+          <input type="text" id="nameInput" placeholder="e.g. Metoprolol or Toprol-XL" autocomplete="off" value="${esc(w.query || w.name)}" aria-label="Search medication" aria-controls="medResults" />
+        </div>
+        <div class="am-results" id="medResults" role="listbox" aria-label="Medication catalog">${resultsHtml()}</div>`;
     } else if (k === "form") {
       h = `<h2 class="am-q">What form is ${esc(w.name)}?</h2>` + formOptions(w).map(([v, l]) => opt("data-form", v, l, w.form === v)).join("");
     } else if (k === "strength") {
@@ -322,7 +422,7 @@
     w.name = w.name.trim();
     if (params.get("outcome") === "fail") { window.location.href = "/Mobile%20app/medication-add-failed.html"; return; }
     const rec = {
-      name: w.name, form: w.form, strength: w.strength, amt: w.amt, freq: w.freq, days: w.freq === "days" ? w.days.slice() : [],
+      name: w.name, generic: w.generic || "", brand: w.brand || "", form: w.form, strength: w.strength, amt: w.amt, freq: w.freq, days: w.freq === "days" ? w.days.slice() : [],
       start: w.start, count: w.count, more: w.more, times: w.times.slice(), end: w.durMode === "until" ? w.end : "", food: w.food,
     };
     if (w.edit) {
@@ -344,7 +444,11 @@
 
   /* ---------- events ---------- */
   document.getElementById("stepBody").addEventListener("input", (e) => {
-    if (e.target.id === "nameInput") { w.name = e.target.value; document.getElementById("nextBtn").disabled = !stepDone("name"); }
+    if (e.target.id === "nameInput") {
+      // Typing again clears the earlier pick until a result is chosen.
+      w.query = e.target.value; w.name = ""; w.generic = ""; w.brand = ""; w.picked = false;
+      refreshResults();
+    }
     if (e.target.id === "strengthInput") {
       w.strNum = e.target.value;
       w.strength = parseFloat(w.strNum) > 0 ? `${w.strNum} ${w.strUnit || "mg"}` : "";
@@ -373,6 +477,13 @@
     const t = e.target.closest("button");
     if (!t) return;
     const d = t.dataset;
+    if (d.generic !== undefined || d.custom) {
+      if (d.custom) { w.generic = ""; w.brand = ""; w.name = (w.query || "").trim(); }
+      else { w.generic = d.generic; w.brand = d.brand; w.name = medLabel(d.generic, d.brand); }
+      w.picked = true;
+      refreshResults();
+      return;
+    }
     if (d.form) { w.form = d.form; w.amt = 1; return autoAdvance(); }
     if (d.sunit) {
       w.strUnit = d.sunit;
