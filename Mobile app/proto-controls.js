@@ -43,6 +43,25 @@
       try { localStorage.setItem(KEY, b.dataset.version); } catch (err) {}
       location.reload();
     });
+    /* Medication details only: compare where Edit / Remove sit */
+    if (document.body.dataset.medActions) {
+      var OPTS = [["card", "On card"], ["header", "Header"], ["bottom", "Bottom"]];
+      var sec = document.createElement("div");
+      sec.innerHTML = '<p class="proto-ctl-sub" style="margin-top:12px;">Edit / Remove placement</p>' +
+        '<div class="proto-ctl-seg" role="radiogroup" aria-label="Edit and Remove placement">' +
+        OPTS.map(function (o) {
+          return '<button type="button" role="radio" data-med-actions="' + o[0] + '" aria-checked="' + (o[0] === document.body.dataset.medActions) + '">' + o[1] + "</button>";
+        }).join("") + "</div>";
+      sec.addEventListener("click", function (e) {
+        var b = e.target.closest("[data-med-actions]");
+        if (!b) return;
+        e.stopPropagation();
+        try { localStorage.setItem("hearo_med_actions", b.dataset.medActions); } catch (err) {}
+        document.body.dataset.medActions = b.dataset.medActions;
+        sec.querySelectorAll("[data-med-actions]").forEach(function (x) { x.setAttribute("aria-checked", String(x === b)); });
+      });
+      box.appendChild(sec);
+    }
     document.body.appendChild(box);
   }
 
