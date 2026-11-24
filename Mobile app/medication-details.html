@@ -88,6 +88,18 @@
   .md-dialog-remove { border: none; background: #9F1C3B; color: #fff; }
   .md-toast { position: absolute; left: 24px; right: 24px; bottom: 28px; z-index: 50; padding: 14px 18px; border-radius: 14px; background: #252424; color: #fff; text-align: center; font-size: calc(17px * var(--font-scale, 1)); }
 
+  /* Edit / Remove bar: pinned to the bottom, two equal labelled buttons.
+     Edit (safe, more common) is solid blue; Remove (destructive) is red-outlined
+     and still asks for confirmation. */
+  .md-actions { flex-shrink: 0; display: flex; gap: 12px; padding: 14px 24px 28px; border-top: 1px solid #ECECEC; background: #fff; }
+  .md-actions[hidden] { display: none; }
+  .md-action { flex: 1 1 0; min-width: 0; height: 56px; display: inline-flex; align-items: center; justify-content: center; gap: 10px; border-radius: 28px; font-family: inherit; font-size: calc(21px * var(--font-scale, 1)); font-weight: 600; cursor: pointer; }
+  .md-action--edit { border: 2px solid #186DCE; background: #186DCE; color: #fff; }
+  .md-action--edit:active { background: #1259AA; border-color: #1259AA; }
+  .md-action--remove { border: 2px solid #9F1C3B; background: #fff; color: #9F1C3B; }
+  .md-action--remove:active { background: #FBEDF0; }
+  .md-action:focus-visible { outline: 3px solid #0B3E78; outline-offset: 2px; }
+  .md-toast { bottom: 108px; }
   .md-empty { text-align: center; color: #8A8F97; font-size: calc(17px * var(--font-scale, 1)); padding: 20px 0; }
 </style>
 </head>
@@ -108,9 +120,6 @@
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M12.5 4L6.5 10L12.5 16" stroke="#252424" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
       <h1 id="medTitle">Medication</h1>
-      <button type="button" class="md-more-btn" id="moreBtn" aria-label="More options" aria-haspopup="dialog" aria-expanded="false" hidden>
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>
-      </button>
     </div>
 
     <div class="mx-body">
@@ -126,21 +135,19 @@
 
     </div>
 
-    <div class="md-sheet-overlay" id="actionSheet" hidden>
-      <div class="md-sheet" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
-        <div class="md-sheet-grip" aria-hidden="true"></div>
-        <p class="md-sheet-title" id="sheetTitle">Medication</p>
-        <button type="button" class="md-sheet-item" id="editMedBtn">
-          <span class="md-sheet-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></span>
-          Edit medication
-        </button>
-        <button type="button" class="md-sheet-item md-sheet-item--danger" id="removeMedBtn">
-          <span class="md-sheet-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg></span>
-          Remove medication
-        </button>
-        <button type="button" class="md-sheet-cancel" id="sheetCancel">Cancel</button>
-      </div>
+    <!-- Edit / Remove: always visible, labelled, large -- easy to find for older users.
+         Only for medications the patient added (clinic ones are read-only). -->
+    <div class="md-actions" id="medActions" hidden>
+      <button type="button" class="md-action md-action--edit" id="editMedBtn">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>
+        Edit
+      </button>
+      <button type="button" class="md-action md-action--remove" id="removeMedBtn">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+        Remove
+      </button>
     </div>
+
 
     <div class="md-overlay" id="removeDialog" role="alertdialog" aria-modal="true" aria-labelledby="removeTitle" aria-describedby="removeText" hidden>
       <div class="md-dialog">
@@ -366,25 +373,15 @@
 
   // Patient-added medications can be edited (same stepper as Add) or removed.
   if (med.source === "mine") {
-    const moreBtn = document.getElementById("moreBtn");
-    const sheet = document.getElementById("actionSheet");
     const dialog = document.getElementById("removeDialog");
-    moreBtn.hidden = false;
-    document.getElementById("sheetTitle").textContent = med.name;
-    const setSheet = (open) => {
-      sheet.hidden = !open;
-      moreBtn.setAttribute("aria-expanded", String(open));
-      (open ? sheet.querySelector(".md-sheet") : moreBtn).focus();
-    };
-    moreBtn.addEventListener("click", () => setSheet(true));
-    document.getElementById("sheetCancel").addEventListener("click", () => setSheet(false));
-    sheet.addEventListener("click", (e) => { if (e.target === sheet) setSheet(false); });
-    document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !sheet.hidden) setSheet(false); });
+    document.getElementById("medActions").hidden = false;
+    document.getElementById("editMedBtn").setAttribute("aria-label", `Edit ${med.name}`);
+    document.getElementById("removeMedBtn").setAttribute("aria-label", `Remove ${med.name}`);
     document.getElementById("removeText").textContent = `${med.name} will be removed from your medications and you won't get reminders for it.`;
     document.getElementById("editMedBtn").addEventListener("click", () => {
       window.location.href = `/Mobile%20app/add-medication.html?edit=${resolvedKey}`;
     });
-    document.getElementById("removeMedBtn").addEventListener("click", () => { sheet.hidden = true; moreBtn.setAttribute("aria-expanded", "false"); dialog.hidden = false; });
+    document.getElementById("removeMedBtn").addEventListener("click", () => { dialog.hidden = false; document.getElementById("removeCancel").focus(); });
     document.getElementById("removeCancel").addEventListener("click", () => { dialog.hidden = true; });
     document.getElementById("removeConfirm").addEventListener("click", () => {
       MyMeds.remove(resolvedKey);
