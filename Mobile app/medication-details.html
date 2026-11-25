@@ -429,7 +429,10 @@
     }
   }
 
-  if (med.source === "mine") {
+  // Commercial: every medication is patient-added, and the details screen keeps
+  // the same History / Updates tabs as the prescribed screen.
+  const COMMERCIAL = (() => { try { return localStorage.getItem("hearo_app_version") === "commercial"; } catch (e) { return false; } })();
+  if (med.source === "mine" && !COMMERCIAL) {
     // Self-tracked medications have no provider updates -- show History
     // only, with a plain label instead of a tab nobody can switch to.
     document.getElementById("historyOnlyLabel").hidden = false;
