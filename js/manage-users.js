@@ -15,9 +15,13 @@ const users = Array.from({ length: 32 }, (_, i) => {
     dateCreated: "02/08/2026",
     mfa: i % 5 === 0 ? "On" : "Off",
     blocked: i % 11 === 0 ? "Yes" : "No",
-    ehrInvite: i % 3 === 0 ? "Connected" : "Disconnected",
+    // EHR Connection (CMDN-7346): Not Invited -> Invited (invite sent, not connected yet)
+    // -> Connected (user connected to the EHR). Not Applicable: no EHR invite applies to this user.
+    ehrInvite: i % 7 === 6 ? "Not Applicable" : ["Connected", "Invited", "Not Invited"][i % 3],
   };
 });
+
+const EHR_PILL = { "Connected": "ehr-pill-connected", "Invited": "ehr-pill-invited", "Not Invited": "ehr-pill-notinvited", "Not Applicable": "ehr-pill-na" };
 
 /* ---------------- State ---------------- */
 const PAGE_SIZE = 20;
@@ -93,7 +97,7 @@ function renderUsers() {
         <td>${u.dateCreated}</td>
         <td>${u.mfa}</td>
         <td>${u.blocked}</td>
-        <td><span class="ehr-pill ${u.ehrInvite === "Connected" ? "ehr-pill-sent" : "ehr-pill-notsent"}">${u.ehrInvite}</span></td>
+        <td><span class="ehr-pill ${EHR_PILL[u.ehrInvite]}">${u.ehrInvite}</span></td>
         <td>
           <button class="action-icon kebab row-menu-trigger" data-id="${u.id}" aria-label="Row actions">${kebabIcon}</button>
         </td>
@@ -149,11 +153,14 @@ document.getElementById("usersRows").addEventListener("click", (e) => {
   e.stopPropagation();
   activeRowUserId = Number(trigger.dataset.id);
   const user = users.find((u) => u.id === activeRowUserId);
-  if (user && user.ehrInvite === "Connected") {
+  // The invite action follows the EHR status; nothing to send when it doesn't apply.
+  const ehr = user ? user.ehrInvite : "Not Invited";
+  rowMenuInviteItem.hidden = ehr === "Not Applicable";
+  if (ehr === "Connected") {
     rowMenuInviteItem.textContent = "Reauthenticate Your EHR";
     rowMenuInviteItem.dataset.action = "reauthenticate";
   } else {
-    rowMenuInviteItem.textContent = "Send EHR Invite";
+    rowMenuInviteItem.textContent = ehr === "Invited" ? "Resend EHR Invite" : "Send EHR Invite";
     rowMenuInviteItem.dataset.action = "invite";
   }
   const rect = trigger.getBoundingClientRect();
@@ -173,7 +180,7 @@ rowMenu.addEventListener("click", (e) => {
   rowMenu.classList.remove("open");
 
   if (item.dataset.action === "edit") openAddUserModal(user);
-  if (item.dataset.action === "invite") openEhrInviteModal();
+  if (item.dataset.action === "invite") { inviteTargetIds = user ? [user.id] : []; openEhrInviteModal(); }
   if (item.dataset.action === "reset" && user) openResetPassword([user]);
   // Reauthenticate Your EHR: triggers silently, no modal.
   // Reset Password / Delete User: no dedicated modal was provided in the design reference.
@@ -272,7 +279,7 @@ function openAddUserModal(user) {
     addUserForm.username.value = user.username;
     addUserForm.mobile.value = user.phone.replace(/^\+\d+-?/, "");
     addUserForm.email.value = user.email;
-    addUserForm.connectEhr.checked = user.ehrInvite === "Connected";
+    addUserForm.connectEhr.checked = user.ehrInvite === "Connected" || user.ehrInvite === "Invited";
   } else {
     addUserModalTitle.textContent = "Add User";
   }
@@ -310,6 +317,7 @@ const ehrOrgSelect = document.getElementById("ehrOrgSelect");
 const ehrTypeSelect = document.getElementById("ehrTypeSelect");
 const sendEhrInviteBtn = document.getElementById("sendEhrInvite");
 
+let inviteTargetIds = [];
 function openEhrInviteModal() {
   ehrInviteOverlay.querySelectorAll(".custom-select").forEach(resetCustomSelect);
   validateEhrInviteForm();
@@ -318,6 +326,7 @@ function openEhrInviteModal() {
 
 function closeEhrInviteModal() {
   ehrInviteOverlay.classList.remove("open");
+  inviteTargetIds = [];
 }
 
 function validateEhrInviteForm() {
@@ -328,16 +337,18 @@ function validateEhrInviteForm() {
 
 ehrOrgSelect.addEventListener("change", validateEhrInviteForm);
 ehrTypeSelect.addEventListener("change", validateEhrInviteForm);
-document.getElementById("cancelEhrInvite").addEventListener("click", closeEhrInviteModal);
+document.getElementById("cancelEhrInvite").addEventListener("click", () => { inviteTargetIds = []; closeEhrInviteModal(); });
 ehrInviteOverlay.addEventListener("click", (e) => { if (e.target === ehrInviteOverlay) closeEhrInviteModal(); });
 
 sendEhrInviteBtn.addEventListener("click", () => {
   if (sendEhrInviteBtn.disabled) return;
-  if (selectedUserIds.size) {
-    users.forEach((u) => { if (selectedUserIds.has(u.id)) u.ehrInvite = "Connected"; });
-    selectedUserIds.clear();
-    renderUsers();
-  }
+  // Sending marks users Invited -- they become Connected only once they connect.
+  // Already-connected users and users the invite doesn't apply to are left as they are.
+  const ids = inviteTargetIds.length ? inviteTargetIds : [...selectedUserIds];
+  users.forEach((u) => { if (ids.includes(u.id) && (u.ehrInvite === "Not Invited" || u.ehrInvite === "Invited")) u.ehrInvite = "Invited"; });
+  if (!inviteTargetIds.length) selectedUserIds.clear();
+  inviteTargetIds = [];
+  renderUsers();
   closeEhrInviteModal();
 });
 

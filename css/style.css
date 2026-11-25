@@ -8606,3 +8606,10 @@ html[data-org-type="Commercial"] .med-block .btn-edit { display: none; }
 .btn-bulk-reset:hover { background: var(--bg); }
 .mu-toast { position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%); z-index: 2000; padding: 11px 18px; border-radius: 10px; background: #23272E; color: #fff; font-size: 13.5px; box-shadow: 0 10px 30px rgba(20, 30, 50, 0.25); }
 .mu-toast[hidden] { display: none; }
+
+/* Manage Users: EHR Connection status (CMDN-7346) */
+.ehr-pill-connected { background: #E7F7F0; color: var(--green-text); }
+.ehr-pill-invited { background: #FFF4E5; color: var(--orange-text); }
+.ehr-pill-notinvited { background: #EEF0F3; color: #57626D; }
+.ehr-pill-na { background: #fff; color: #57626D; box-shadow: inset 0 0 0 1px #D5D8DE; }
+.row-menu-item[hidden] { display: none; }
