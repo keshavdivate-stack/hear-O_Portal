@@ -9,7 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/Mobile%20app/style.css?v=36">
 <script src="/Mobile%20app/font-scale.js?v=29"></script>
-<script src="/Mobile%20app/my-meds-store.js?v=1"></script>
+<script src="/Mobile%20app/my-meds-store.js?v=2"></script>
 <script src="/Mobile%20app/proto-controls.js?v=5" defer></script>
 <style>
   /* Medication details -- matches the client-approved My Medication screens:
@@ -289,7 +289,7 @@
   if (mine) {
     const u = UNITS[mine.form] || UNITS.other;
     MED_INFO[medKey] = {
-      name: mine.name, form: MyMeds.FORM_LABEL[mine.form] || "Tablet", dosage: mine.strength,
+      name: mine.name, form: (mine.form === "other" && mine.formOther) || MyMeds.FORM_LABEL[mine.form] || "Tablet", dosage: mine.strength,
       take: `Take ${mine.amt} ${mine.amt === 1 ? u[0] : u[1]}`, howOften: MyMeds.howOften(mine), food: mine.food,
       startDate: fmtDay(mine.start), endDate: mine.end ? fmtDay(mine.end) : null, source: "mine",
       schedule: mine.times.map((t) => ({ time: MyMeds.fmtTime(t), part: partOfDay(t) })),

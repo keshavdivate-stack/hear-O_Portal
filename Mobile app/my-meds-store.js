@@ -74,7 +74,7 @@
         (m.times || []).forEach(function (t, i) {
           var p = t.split(":").map(Number);
           out.push({
-            id: m.uid * 10 + i, med: slug, name: m.name, form: FORM_LABEL[m.form] || "Tablet", amt: m.amt || 1,
+            id: m.uid * 10 + i, med: slug, name: m.name, form: (m.form === "other" && m.formOther) || FORM_LABEL[m.form] || "Tablet", amt: m.amt || 1,
             time: fmtTime(t), sortKey: p[0] * 60 + p[1], food: m.food || undefined,
           });
         });

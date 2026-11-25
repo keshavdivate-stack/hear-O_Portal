@@ -9,7 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/Mobile%20app/style.css?v=36">
 <script src="/Mobile%20app/font-scale.js?v=29"></script>
-<script src="/Mobile%20app/my-meds-store.js?v=1"></script>
+<script src="/Mobile%20app/my-meds-store.js?v=2"></script>
 <script src="/Mobile%20app/proto-controls.js?v=3" defer></script>
 <style>
   /* Add / Edit Medication -- one question per screen (client flow):
@@ -272,7 +272,7 @@
   /* Whether the current step has an answer (enables Next). */
   function stepDone(k) {
     if (k === "name") return w.picked && !!w.name.trim();
-    if (k === "form") return !!w.form;
+    if (k === "form") return !!w.form && (w.form !== "other" || !!(w.formOther || "").trim());
     if (k === "strength") return parseFloat(w.strNum) > 0;
     if (k === "freq") return !!w.freq;
     if (k === "days") return w.days.length > 0;
@@ -386,7 +386,8 @@
         </div>
         <div class="am-results" id="medResults" role="listbox" aria-label="Medication catalog">${resultsHtml()}</div>`;
     } else if (k === "form") {
-      h = `<h2 class="am-q">What form is ${esc(w.name)}?</h2>` + formOptions(w).map(([v, l]) => opt("data-form", v, l, w.form === v)).join("");
+      h = `<h2 class="am-q">What form is ${esc(w.name)}?</h2>` + formOptions(w).map(([v, l]) => opt("data-form", v, l, w.form === v)).join("") +
+        (w.form === "other" ? `<label class="am-date-label" for="formOtherInput">Type the form</label><input type="text" id="formOtherInput" placeholder="e.g. Inhaler, Cream, Drops" autocomplete="off" value="${esc(w.formOther || "")}" />` : "");
     } else if (k === "strength") {
       h = `<h2 class="am-q">What is the strength?</h2>
         <p class="am-hint">It's written on the box or label, for example 40 ${strengthUnit(w)}.</p>
@@ -505,7 +506,7 @@
     w.name = w.name.trim();
     if (params.get("outcome") === "fail") { window.location.href = "/Mobile%20app/medication-add-failed.html"; return; }
     const rec = {
-      name: w.name, generic: w.generic || "", brand: w.brand || "", form: w.form, strength: w.strength, amt: w.amt, freq: w.freq, days: w.freq === "days" ? w.days.slice() : [],
+      name: w.name, generic: w.generic || "", brand: w.brand || "", form: w.form, formOther: w.form === "other" ? (w.formOther || "").trim() : "", strength: w.strength, amt: w.amt, freq: w.freq, days: w.freq === "days" ? w.days.slice() : [],
       start: w.start, count: w.count, more: w.more, times: w.times.slice(), end: w.durMode === "until" ? w.end : "", food: w.food,
     };
     if (w.edit) {
@@ -532,6 +533,7 @@
       w.query = e.target.value; w.name = ""; w.generic = ""; w.brand = ""; w.picked = false;
       refreshResults();
     }
+    if (e.target.id === "formOtherInput") { w.formOther = e.target.value; document.getElementById("nextBtn").disabled = !stepDone("form"); }
     if (e.target.id === "strengthInput") {
       w.strNum = e.target.value;
       w.strength = parseFloat(w.strNum) > 0 ? `${w.strNum} ${strengthUnit(w)}` : "";
@@ -568,7 +570,14 @@
       refreshResults();
       return;
     }
-    if (d.form) { w.form = d.form; w.amt = 1; if (parseFloat(w.strNum) > 0) w.strength = `${w.strNum} ${strengthUnit(w)}`; return autoAdvance(); }
+    if (d.form) {
+      w.form = d.form; w.amt = 1;
+      if (parseFloat(w.strNum) > 0) w.strength = `${w.strNum} ${strengthUnit(w)}`;
+      // Other: stay here and type the form
+      if (d.form === "other") { render(); document.getElementById("formOtherInput")?.focus(); return; }
+      w.formOther = "";
+      return autoAdvance();
+    }
     if (d.sunit) {
       w.strUnit = d.sunit;
       w.strength = parseFloat(w.strNum) > 0 ? `${w.strNum} ${w.strUnit}` : "";
