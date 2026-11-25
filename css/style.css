@@ -8600,3 +8600,9 @@ html[data-org-type="Commercial"] .med-block .btn-edit { display: none; }
 
 /* Prototype controls: second group (Care team) under Patient chart */
 .proto-popover-sub-group { margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--gray-border); }
+
+/* Manage Users: bulk Reset Password + confirmation toast */
+.btn-bulk-reset { background: #fff; color: var(--blue-text); border: 1.5px solid var(--gray-border); }
+.btn-bulk-reset:hover { background: var(--bg); }
+.mu-toast { position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%); z-index: 2000; padding: 11px 18px; border-radius: 10px; background: #23272E; color: #fff; font-size: 13.5px; box-shadow: 0 10px 30px rgba(20, 30, 50, 0.25); }
+.mu-toast[hidden] { display: none; }

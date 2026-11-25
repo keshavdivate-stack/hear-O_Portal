@@ -174,6 +174,7 @@ rowMenu.addEventListener("click", (e) => {
 
   if (item.dataset.action === "edit") openAddUserModal(user);
   if (item.dataset.action === "invite") openEhrInviteModal();
+  if (item.dataset.action === "reset" && user) openResetPassword([user]);
   // Reauthenticate Your EHR: triggers silently, no modal.
   // Reset Password / Delete User: no dedicated modal was provided in the design reference.
 });
@@ -367,6 +368,46 @@ document.getElementById("bulkDeleteBtn").addEventListener("click", () => {
   }
   selectedUserIds.clear();
   renderUsers();
+});
+
+/* ---------------- Reset Password (one user or several) ----------------
+   Each user gets an email with a link to set a new password. */
+const resetPasswordOverlay = document.getElementById("resetPasswordOverlay");
+let resetTargets = [];
+const userName = (u) => `${u.first || ""} ${u.last || ""}`.trim() || u.username;
+
+function openResetPassword(list) {
+  resetTargets = list;
+  const many = list.length > 1;
+  document.getElementById("resetPasswordTitle").textContent = many ? `Reset Password for ${list.length} Users` : "Send Reset Link";
+  document.getElementById("resetPasswordText").innerHTML = many
+    ? `Each of the <b>${list.length} selected users</b> will get an email with a link to set a new password.`
+    : `Are you sure you want to send a password reset link to <b>${userName(list[0])}</b>?`;
+  document.getElementById("confirmResetPassword").textContent = many ? "Send Reset Links" : "Send";
+  resetPasswordOverlay.classList.add("open");
+}
+function closeResetPassword() { resetPasswordOverlay.classList.remove("open"); resetTargets = []; }
+
+function showMuToast(text) {
+  const t = document.getElementById("muToast");
+  t.textContent = text;
+  t.hidden = false;
+  clearTimeout(t._t);
+  t._t = setTimeout(() => { t.hidden = true; }, 3200);
+}
+
+document.getElementById("cancelResetPassword").addEventListener("click", closeResetPassword);
+resetPasswordOverlay.addEventListener("click", (e) => { if (e.target === resetPasswordOverlay) closeResetPassword(); });
+document.getElementById("confirmResetPassword").addEventListener("click", () => {
+  const n = resetTargets.length;
+  const one = n === 1 ? userName(resetTargets[0]) : "";
+  closeResetPassword();
+  showMuToast(n === 1 ? `Reset link sent to ${one}` : `Reset links sent to ${n} users`);
+});
+
+document.getElementById("bulkResetBtn").addEventListener("click", () => {
+  if (!selectedUserIds.size) return;
+  openResetPassword(users.filter((u) => selectedUserIds.has(u.id)));
 });
 
 document.getElementById("bulkInviteBtn").addEventListener("click", () => {
