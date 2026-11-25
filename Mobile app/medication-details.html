@@ -128,6 +128,18 @@
   .md-remove-link { width: 100%; height: 56px; margin-top: 22px; align-items: center; justify-content: center; gap: 8px; border: 1.5px solid #E7C3CC; border-radius: 28px; background: #fff; color: #9F1C3B; font-family: inherit; font-size: calc(19px * var(--font-scale, 1)); font-weight: 600; cursor: pointer; }
   .md-head-edit:focus-visible, .md-card-edit:focus-visible, .md-remove-link:focus-visible { outline: 3px solid #0B3E78; outline-offset: 2px; }
   .md-toast { bottom: 28px; }
+  /* Final: Edit / Remove in a tinted strip along the bottom of the details card */
+  .md-card-actions { margin: 6px -12px -2px -15px; padding: 10px 12px; gap: 10px; border-top: 1px solid #E5E7EB; border-radius: 0 0 15px 15px; background: #F7F9FC; }
+  .md-card-btn { min-width: 0; height: 40px; padding: 0 16px; border-radius: 8px; font-size: calc(17px * var(--font-scale, 1)); font-weight: 500; }
+  .md-card-btn--remove { border: 1.5px solid #C2410C; color: #C2410C; }
+  .md-card-btn--remove:active { background: #FFF1EA; }
+  /* Remove dialog: warning title, message, Cancel / Remove side by side */
+  .md-dialog { text-align: left; padding: 22px 20px 20px; }
+  .md-dialog h2 { display: flex; align-items: center; gap: 8px; font-size: calc(22px * var(--font-scale, 1)); font-weight: 600; }
+  .md-dialog h2 svg { flex-shrink: 0; color: #C2410C; }
+  .md-dialog p { margin: 12px 0 20px; }
+  .md-dialog-remove { background: #C2410C; }
+  .md-dialog-remove:active { background: #9A3412; }
   .md-empty { text-align: center; color: #8A8F97; font-size: calc(17px * var(--font-scale, 1)); padding: 20px 0; }
 </style>
 </head>
@@ -151,9 +163,6 @@
     </div>
 
     <div class="mx-body">
-      <div class="md-card-head" id="medCardHead">
-        <span class="md-card-head-title">Medication details</span>
-      </div>
       <div class="md-card" id="summaryCard"></div>
 
       <div class="mx-tabs" id="detailTabs" hidden>
@@ -170,7 +179,7 @@
 
     <div class="md-overlay" id="removeDialog" role="alertdialog" aria-modal="true" aria-labelledby="removeTitle" aria-describedby="removeText" hidden>
       <div class="md-dialog">
-        <h2 id="removeTitle">Remove medication?</h2>
+        <h2 id="removeTitle"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9.5"/><path d="M12 7v6"/><path d="M12 16.5v.01"/></svg>Remove medication?</h2>
         <p id="removeText"></p>
         <div class="md-dialog-actions">
           <button type="button" class="md-dialog-cancel" id="removeCancel">Cancel</button>
@@ -324,7 +333,7 @@
       <span class="md-info-text"><span class="md-info-label">Duration</span><span class="md-info-value">${durationText}</span></span>
     </div>`;
 
-  const summaryRows = `<p class="md-card-name">${med.name}</p>` + (med.source === "mine"
+  const summaryRows = (med.source === "mine"
     ? `
     ${doseRow}
     <div class="md-info-row">
@@ -359,7 +368,7 @@
 
   /* Edit / Delete: text buttons at the bottom-right of the card (patient-added only) */
   const cardActions = med.source === "mine"
-    ? `<div class="md-card-actions"><button type="button" class="md-card-btn md-card-btn--edit md-edit-trigger">Edit</button><button type="button" class="md-card-btn md-card-btn--delete md-remove-trigger">Delete</button></div>`
+    ? `<div class="md-card-actions"><button type="button" class="md-card-btn md-card-btn--edit md-edit-trigger">Edit</button><button type="button" class="md-card-btn md-card-btn--remove md-remove-trigger">Remove</button></div>`
     : "";
   document.getElementById("summaryCard").innerHTML = summaryRows + cardActions;
 
@@ -400,7 +409,7 @@
     document.body.classList.add("md-mine");
     document.querySelectorAll(".md-edit-trigger").forEach((b) => b.setAttribute("aria-label", `Edit ${med.name}`));
     document.querySelectorAll(".md-remove-trigger").forEach((b) => b.setAttribute("aria-label", `Remove ${med.name}`));
-    document.getElementById("removeText").textContent = `${med.name} will be removed from your medications and you won't get reminders for it.`;
+    document.getElementById("removeText").textContent = `${med.name} will be removed from your medications`;
     document.querySelectorAll(".md-edit-trigger").forEach((b) => b.addEventListener("click", () => {
       window.location.href = `/Mobile%20app/add-medication.html?edit=${resolvedKey}`;
     }));
