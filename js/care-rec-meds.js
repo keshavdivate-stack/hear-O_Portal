@@ -96,7 +96,7 @@
             ${cell("End Date", m.endDate ? fmtDate(m.endDate) : "Ongoing")}
             ${cell("Frequency", m.frequency)}
             ${cell("Dose Times", (m.doseTimes || []).filter(Boolean).map(fmtTime).join(", "))}
-            ${cell("Directions", m.sig, true)}
+            ${cell("Note", m.sig, true)}
           </div>
         </div>`;
       }).join("")}`;

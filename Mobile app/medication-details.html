@@ -199,7 +199,6 @@
   const descIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M8 13h8M8 17h5"/></svg>`;
   const formIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="5"/></svg>`;
   const foodIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 2v8a2 2 0 1 1-4 0V2"/><path d="M5 10v12"/><path d="M11 2c2 0 3 2.2 3 5s-1 5-3 5"/><path d="M14 12v10"/></svg>`;
-  const noteIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`;
   const FOOD_LABEL = { before: "Before food", after: "After food", with: "With food" };
 
   // Every medication's current state (what Skip/Take acts on today), keyed
@@ -209,25 +208,21 @@
     spironolactone: {
       name: "Spironolactone", dosage: "40 mg", route: "Oral", frequency: "Twice daily", startDate: "Aug 1, 2026", endDate: null,
       description: "Used to reduce fluid buildup",
-      note: "Check your potassium levels at your next blood test.",
       source: "clinic", schedule: [{ time: "8:00 AM", food: "before" }, { time: "2:00 PM", food: "before" }],
     },
     carvedilol: {
       name: "Carvedilol", dosage: "40 mg", route: "Oral", frequency: "Twice daily", startDate: "Jul 15, 2026", endDate: null,
       description: "A beta-blocker used to lower heart rate and blood pressure.",
-      note: "Stand up slowly; it can make you feel dizzy at first.",
       source: "clinic", schedule: [{ time: "8:00 AM", food: "after" }, { time: "8:00 PM", food: "after" }],
     },
     furosemide: {
       name: "Furosemide", dosage: "40 mg", route: "Oral", frequency: "Twice daily", startDate: "Jul 15, 2026", endDate: null,
       description: "A diuretic (“water pill”) used to reduce fluid buildup.",
-      note: "Weigh yourself every morning and call us if you gain more than 1 kg in a day.",
       source: "clinic", schedule: [{ time: "8:00 AM", food: "after" }, { time: "8:00 PM", food: "after" }],
     },
     atorvastatin: {
       name: "Atorvastatin", dosage: "40 mg", route: "Oral", frequency: "Once daily", startDate: "Jun 2, 2026", endDate: null,
       description: "Used to lower cholesterol and reduce cardiovascular risk.",
-      note: "Avoid grapefruit juice while taking this medication.",
       source: "clinic", schedule: [{ time: "9:00 PM", food: "after" }],
     },
     hydrocortisone: {
@@ -368,12 +363,8 @@
     ${durationRow}
     <div class="md-info-row">
       <span class="md-info-icon md-info-icon--gray">${descIcon}</span>
-      <span class="md-info-text"><span class="md-info-label">Description</span><span class="md-info-value">${med.description}</span></span>
-    </div>${med.note ? `
-    <div class="md-info-row">
-      <span class="md-info-icon md-info-icon--blue">${noteIcon}</span>
-      <span class="md-info-text"><span class="md-info-label">Note from your clinic</span><span class="md-info-value">${med.note}</span></span>
-    </div>` : ""}`);
+      <span class="md-info-text"><span class="md-info-label">Note</span><span class="md-info-value">${med.description}</span></span>
+    </div>`);
 
   /* Edit / Delete: text buttons at the bottom-right of the card (patient-added only) */
   const cardActions = med.source === "mine"

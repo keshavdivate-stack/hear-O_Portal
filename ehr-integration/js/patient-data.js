@@ -1698,7 +1698,7 @@ function medInfoPopover(m, mi) {
       ${medInfoRow("Dose Times", fmtDoseTimes(m))}
       ${medInfoRow("End Date", fmtEndDate(m))}
       ${medInfoRow("Route", m.route)}
-      ${medInfoRow("Sig / Directions", m.sig)}
+      ${medInfoRow("Note", m.sig || m.note)}
       ${medInfoRow("Status Reason", m.statusReason)}
       ${medInfoRow("Lot Number", m.lotNumber)}
       ${medInfoRow("Expiry Date", medInfoDate(m.expiryDate))}
